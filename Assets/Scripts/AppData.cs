@@ -115,7 +115,8 @@ namespace Com.RedicalGames.Filar
             SelectionOptionsWidget,
             SelectedFileCopyOptionsWidget,
             LoadingWidget,
-            UserHelpScreenWidget
+            UserHelpScreenWidget,
+            AssetInfoWidget
         }
 
         public enum SubWidgetType
@@ -12854,7 +12855,7 @@ namespace Com.RedicalGames.Filar
 
                         case InputActionButtonType.Info:
 
-                            ShowInfo();
+                            OnInfo_ActionEvent(dataPackets);
 
                             break;
 
@@ -14036,6 +14037,16 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
+            void OnInfo_ActionEvent(SceneDataPackets dataPackets)
+            {
+                if (ScreenUIManager.Instance != null)
+                {
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                }
+                else
+                    LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
+            }
+
             #endregion
 
             #region Events
@@ -14080,11 +14091,6 @@ namespace Com.RedicalGames.Filar
                         LogWarning("Slider Value Pop Up Handler Component Required.", this, () => UndoChanges());
                     }
                 }
-            }
-
-            void ShowInfo()
-            {
-                LogInfo("Show Info.", this, () => ShowInfo());
             }
 
             protected WidgetLayoutView GetLayoutView()
