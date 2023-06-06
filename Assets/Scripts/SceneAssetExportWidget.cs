@@ -123,7 +123,7 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.ScreenWidgetTransitionType.PopUp:
 
-                    if (value)
+                    if (GetLayoutView(defaultLayoutType).layout)
                     {
                         if (exportedAssetNameInputField.value != null)
                         {
