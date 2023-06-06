@@ -112,7 +112,10 @@ namespace Com.RedicalGames.Filar
             PagerNavigationWidget,
             UIAssetActionWarningWidget,
             UIAssetRenameWidget,
-            SelectionOptionsWidget
+            SelectionOptionsWidget,
+            SelectedFileCopyOptionsWidget,
+            LoadingWidget,
+            UserHelpScreenWidget
         }
 
         public enum SubWidgetType
@@ -201,6 +204,8 @@ namespace Com.RedicalGames.Filar
             SelectionOptionsButton,
             SelectionButton,
             DeselectButton,
+            HelpButton,
+            MoveUISelectionButton,
             None
         }
 
@@ -12123,6 +12128,37 @@ namespace Com.RedicalGames.Filar
                 return widgetsContainer;
             }
 
+            public void ShowWidget(WidgetType widgetType, bool blurScreen = false, string title = null)
+            {
+                if (screenWidgetsList.Count == 0)
+                    return;
+
+                var widget = screenWidgetsList.Find(widget => widget.type.Equals(widgetType));
+
+                if (widget)
+                {
+                    SceneDataPackets dataPackets = new SceneDataPackets
+                    {
+                        widgetTitle = title,
+                        widgetType = widgetType,
+                        blurScreen = blurScreen
+                    };
+
+                    if (blurScreen)
+                        Blur(dataPackets);
+
+                    widget.ResetScrollPosition(scrollerResetCallback =>
+                    {
+                        if (scrollerResetCallback.Success())
+                            widget.ShowScreenWidget(dataPackets);
+                        else
+                            Log(scrollerResetCallback.resultsCode, scrollerResetCallback.results, this);
+                    });
+                }
+                else
+                    LogError($"Widget Of Type : {widgetType} - Missing / Not Found.", this);
+            }
+
             public void ShowWidget(SceneDataPackets dataPackets)
             {
                 if (screenWidgetsList.Count == 0)
@@ -12602,9 +12638,6 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public TMP_Text titleDisplayer;
 
-            [Space(5)] // Deprecated
-            public GameObject value;
-
             [Space(5)]
             public List<WidgetLayoutView> widgetLayouts = new List<WidgetLayoutView>();
 
@@ -12724,6 +12757,9 @@ namespace Com.RedicalGames.Filar
             protected PagerNavigationWidget pagerNavigationWidget;
             protected UIAssetActionWarningWidget uiAssetWarningWidget;
             protected SelectionOptionsWidget selectionOptionsWidget;
+            protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
+            protected LoadingWidget loadingWidget;
+            protected InfoScreenWidget infoScreenWidget;
 
             #endregion
 
@@ -12927,6 +12963,24 @@ namespace Com.RedicalGames.Filar
                         case InputActionButtonType.DeselectButton:
 
                             OnDeselect_ActionEvent(dataPackets);
+
+                            break;
+
+                        case InputActionButtonType.Copy_PasteButton:
+
+                            OnCopyPasteOptions_ActionEvent(dataPackets);
+
+                            break;
+
+                        case InputActionButtonType.Edit:
+
+                            OnEdit_ActionEvent(dataPackets);
+
+                            break;
+
+                        case InputActionButtonType.HelpButton:
+
+                            OnHelp_ActionEvent(dataPackets);
 
                             break;
                     }
@@ -13853,6 +13907,133 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     LogError("Selectable Manager Instance Is Not Yet Initialized.", this);
+            }
+
+            void OnCopyPasteOptions_ActionEvent(SceneDataPackets dataPackets)
+            {
+                if (ScreenUIManager.Instance != null)
+                {
+                    if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                    {
+                        if (SceneAssetsManager.Instance != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                        else
+                            LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+                    }
+                    else
+                        LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+                }
+                else
+                    LogError("Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+            }
+
+            void OnEdit_ActionEvent(SceneDataPackets dataPackets)
+            {
+                if (SceneAssetsManager.Instance != null)
+                {
+                    if (SelectableManager.Instance != null)
+                    {
+                        if (SelectableManager.Instance.GetFocusedSelectionDataCount() == 1)
+                        {
+                            SelectableManager.Instance.GetFocusedSelectionData(selectionDataCallback =>
+                            {
+                                if (selectionDataCallback.Success())
+                                {
+                                    var selectionInfo = selectionDataCallback.data.selections.FirstOrDefault(info => info.selectionInfoType == FocusedSelectionType.SelectedItem);
+
+                                    if (selectionInfo != null)
+                                    {
+                                        var selection = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(selectionInfo.name);
+
+                                        if (selection != null)
+                                        {
+                                            if (selection.GetSelectableAssetType() != SelectableAssetType.PlaceHolder)
+                                            {
+
+                                                switch (selection.GetSelectableAssetType())
+                                                {
+                                                    case SelectableAssetType.File:
+
+                                                        if (Application.platform == RuntimePlatform.Android)
+                                                        {
+                                                            if (AssetImportContentManager.Instance != null)
+                                                            {
+                                                                if (AssetImportContentManager.Instance.IsStoragePermissionsGranted())
+                                                                {
+                                                                    Debug.Log($"RG_Unity : UserRequestedAppPermissions Called From Unity - Permission Granted");
+
+                                                                    if (ScreenUIManager.Instance != null)
+                                                                        ScreenUIManager.Instance.ShowNewAssetScreen(dataPackets);
+                                                                    else
+                                                                        LogWarning("Screen Manager Missing.", this);
+
+                                                                    if (SceneAssetsManager.Instance)
+                                                                        SceneAssetsManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                                                                    else
+                                                                        LogWarning("Scene Assets Not Yet Initialized.", this);
+                                                                }
+                                                                else
+                                                                {
+                                                                    //ShowWidget(dataPackets);
+                                                                    AssetImportContentManager.Instance.SetRequestedPermissionData(dataPackets);
+                                                                }
+                                                            }
+                                                            else
+                                                                LogWarning("Asset Import Content Manager Not Yet Initialized.", this);
+                                                        }
+                                                        else
+                                                        {
+                                                            if (ScreenUIManager.Instance != null)
+                                                                ScreenUIManager.Instance.ShowNewAssetScreen(dataPackets);
+                                                            else
+                                                                LogWarning("Screen Manager Missing.", this);
+
+                                                            if (SceneAssetsManager.Instance)
+                                                                SceneAssetsManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                                                            else
+                                                                LogWarning("Scene Assets Not Yet Initialized.", this);
+                                                        }
+
+                                                        break;
+
+                                                    case SelectableAssetType.Folder:
+
+                                                        LogInfo($"=========================> Show Edit Panel Over : {selectionInfo.name} Folder.");
+
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                                LogWarning($"Selection : {selectionInfo.name} Widget Is Set As Place Holder.", this);
+                                        }
+                                        else
+                                            LogError($"Selection : {selectionInfo.name} Widget Not Found.", this);
+                                    }
+                                    else
+                                        LogError("Couldn't Edit File. No Selection Found.", this);
+                                }
+                                else
+                                    Log(selectionDataCallback.resultsCode, selectionDataCallback.results, this);
+                            });
+                        }
+                        else
+                            LogWarning($"Edit Is Not Supported For Multiple Selection. There's Currently : {SelectableManager.Instance.GetFocusedSelectionDataCount()} Items Selected.", this);
+                    }
+                    else
+                        LogError("Selectable Manager Instance Is Not Yet Initialized.", this);
+                }
+                else
+                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
+            }
+
+            void OnHelp_ActionEvent(SceneDataPackets dataPackets)
+            {
+                if (ScreenUIManager.Instance != null)
+                {
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                }
+                else
+                    LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
             #endregion
