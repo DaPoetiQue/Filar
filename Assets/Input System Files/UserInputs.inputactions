@@ -1,0 +1,56 @@
+{
+    "name": "UserInputs",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "42555042-d800-4935-9463-98c9138c142e",
+            "actions": [
+                {
+                    "name": "Screen Drag",
+                    "type": "PassThrough",
+                    "id": "52b280ef-5010-4307-a6b5-510a4917e4f9",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f4374b58-4fe7-44e7-a020-d6c3cf40e903",
+                    "path": "<Mouse>/delta",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "Mobile",
+                    "action": "Screen Drag",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Mobile",
+            "bindingGroup": "Mobile",
+            "devices": [
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Touchscreen>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<VirtualMouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
