@@ -181,7 +181,7 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.ScreenWidgetTransitionType.PopUp:
 
-                    if (value)
+                    if (GetLayoutView(defaultLayoutType).layout)
                         OnScreenTogglableStateEvent(AppData.TogglableWidgetType.ResetAssetModelRotationButton, false);
                     else
                         LogError("Pop Up Value Required.", this, () => OnShowScreenWidget(dataPackets));

@@ -746,6 +746,8 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenWidget != null)
                 {
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
                     screenWidget.gameObject.transform.SetParent(container, keepWorldPosition);
 
                     if (IsContainerActive())
@@ -1259,6 +1261,8 @@ namespace Com.RedicalGames.Filar
                             LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
 
                     await AppData.Helpers.GetWaitUntilAsync(GetContentCount() == 0);
+
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
 
                     if (container.childCount == 0)
                     {
