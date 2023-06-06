@@ -547,6 +547,9 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.UIScreenType.ProjectViewScreen:
 
+                            if(SceneAssetsManager.Instance.GetWidgetsContentCount() == 0)
+                                screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
+
                             if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentLayoutViewType() == AppData.LayoutViewType.ItemView)
                             {
                                 screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
