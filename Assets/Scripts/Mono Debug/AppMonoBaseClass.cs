@@ -6,20 +6,46 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        [Header("Debugging Log Info Attributes")]
-        [Space(10)]
-        [SerializeField]
-        protected AppData.LogInfoType enabledInfoLogs;
+        [Header("::: Component Info")]
 
-        [Space(10)]
-        [Header("Debugging Log Exceptions Attributes")]
-        [Space(10)]
+        [Space(5)]
         [SerializeField]
-        protected AppData.LogExceptionType enabledExceptionLogs;
+        protected string className;
+
+        [Space(5)]
+        [Header("::: Component Debug Attributes")]
+
+        [Space(5)]
+        [SerializeField]
+        protected AppData.DebugMonoLogHeaderAttributes logAttributes = new AppData.DebugMonoLogHeaderAttributes();
 
         #endregion
 
         #region Main
+
+        #region Initializations
+
+        public AppData.DebugMonoLogHeaderAttributes GetDebugMonoHeaderAttributes()
+        {
+            return logAttributes;
+        }
+
+        public string DebugLogCat(string log)
+        {
+            return logAttributes.GetLogCatInfoAttributes().GetDebugLogCat(log);
+        }
+
+        public bool HasDebugLogCat()
+        {
+            return logAttributes.GetLogCatInfoAttributes().HasDebugLogCat();
+        }
+
+        public string GetUniqueClassName()
+        {
+            return className;
+        }
+
+        #endregion
 
         #region Log Info Functions
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIScreenFolderHandler : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class UIScreenFolderWidget : AppData.UIScreenWidget<AppData.SceneDataPackets>
     {
         #region Components
 
@@ -67,7 +67,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        protected override void OnSetFolderData(AppData.Folder folder)
+        protected override void OnSetUIWidgetData(AppData.Folder folder)
         {
             if (!string.IsNullOrEmpty(folder.storageData.directory))
             {

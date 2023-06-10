@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SceneAssetUIHandler : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class UIAssetFileWidget : AppData.UIScreenWidget<AppData.SceneDataPackets>
     {
         #region Components
 
@@ -139,7 +139,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        protected override void OnSetFolderData(AppData.Folder folder)
+        protected override void OnSetUIWidgetData(AppData.Folder folder)
         {
             throw new System.NotImplementedException();
         }
@@ -164,7 +164,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetFileData(AppData.SceneAsset assetData)
         {
-            if (selectableAssetType == AppData.SelectableAssetType.File)
+            if (selectableComponent.selectableAssetType == AppData.SelectableAssetType.File)
             {
                 // Set Thumbnail.
                 if (assetData.assetFields.Count > 0)
