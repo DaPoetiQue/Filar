@@ -207,6 +207,7 @@ namespace Com.RedicalGames.Filar
             DeselectButton,
             HelpButton,
             MoveUISelectionButton,
+            ClipboardButton,
             None
         }
 
@@ -476,6 +477,12 @@ namespace Com.RedicalGames.Filar
             Bar,
             Spinner,
             Text
+        }
+
+        public enum TutorialInfoType
+        {
+            SelectionOptionsNavigation,
+            CopyOptionsNavigation
         }
 
         // Rename To Proper Types.
@@ -5093,6 +5100,8 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public InputActionButtonType actionType;
 
+            private SelectionState selectionState = new SelectionState();
+
             #endregion
 
             #region Main
@@ -5124,6 +5133,11 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
+            public (InputUIState inputState, SelectionState selectionState) GetUIState()
+            {
+                return (inputState, this.selectionState);
+            }
+
             public override void SetInteractableState(bool interactable)
             {
                 if (IsInitialized())
@@ -5137,6 +5151,26 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Debug.LogWarning("--> Set UI Input Interactable State Failed : Value Is Missing / Null.");
+            }
+
+            void SetUIInputSelectionState(SelectionState state)
+            {
+                if(fieldUIImageList != null && fieldUIImageList.Count > 0)
+                {
+                    var buttonIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.ButtonIcon);
+
+                    if (buttonIcon.value != null)
+                    {
+                        buttonIcon.value.color = state.color;
+
+                        if (state.value != null)
+                            buttonIcon.value.sprite = state.value;
+                    }
+                    else
+                        Debug.LogError("Button Icon Value Missing / Not Found.");
+                }
+
+                selectionState = state;
             }
 
             public override void SetUIInputVisibilityState(bool visible)
@@ -5197,7 +5231,6 @@ namespace Com.RedicalGames.Filar
 
                         if (selectableInput)
                         {
-
                             Debug.LogError($"--> Set UI State : {state}");
                             SetUIInputVisibilityState(true);
 
@@ -5209,6 +5242,8 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Shown:
 
+                  
+
                         SetUIInputVisibilityState(true);
 
                         break;
@@ -5218,6 +5253,14 @@ namespace Com.RedicalGames.Filar
                         SetUIInputVisibilityState(false);
 
                         break;
+                }
+
+                if (selectionStates != null && selectionStates.Count > 0)
+                {
+                    SelectionState selectionState = selectionStates.Find(selectionState => selectionState.state == state);
+
+                    if (!string.IsNullOrEmpty(selectionState.name) && selectionState.state == state)
+                        SetUIInputSelectionState(selectionState);
                 }
             }
 
@@ -7497,6 +7540,67 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             public T[] data;
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Tutorials
+
+        [Serializable]
+        public class TutorialInfoView
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public List<TutorialInfo> tutorialInfoList = new List<TutorialInfo>();
+
+            [Space(5)]
+            public SceneDataPackets dataPackets = new SceneDataPackets();
+
+            #endregion
+
+            #region Main
+
+            public void AddInfo(TutorialInfo info)
+            {
+                if (!tutorialInfoList.Contains(info))
+                    tutorialInfoList.Add(info);
+            }
+
+            public void RemoveInfo(TutorialInfo info)
+            {
+                if (tutorialInfoList.Contains(info))
+                    tutorialInfoList.Remove(info);
+            }
+
+            public void GetInfo(TutorialInfoType infoType, Action<CallbackData<TutorialInfo>> callback)
+            {
+                CallbackData<TutorialInfo> callbackResults = new CallbackData<TutorialInfo>();
+
+                callback.Invoke(callbackResults);
+            }
+
+            public SceneDataPackets GetDataPackets()
+            {
+                return dataPackets;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class TutorialInfo
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public TutorialInfoType infoType;
 
             #endregion
         }
@@ -11426,6 +11530,12 @@ namespace Com.RedicalGames.Filar
                         OnRefresh_ActionEvent();
 
                         break;
+
+                    case InputActionButtonType.ClipboardButton:
+
+                        OnClipboard_ActionEvent(actionButton.dataPackets);
+
+                        break;
                 }
 
                 ActionEvents.OnActionButtonClicked(actionButton.actionType);
@@ -11873,6 +11983,20 @@ namespace Com.RedicalGames.Filar
                     LogWarning("ScreenUIManager.Instance Is Not Yet Initialized", this, () => OnRefresh_ActionEvent());
             }
 
+            void OnClipboard_ActionEvent(SceneDataPackets dataPackets)
+            {
+                if (ScreenUIManager.Instance != null)
+                {
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(dataPackets.widgetType).SetActionButtonState(InputActionButtonType.DeselectButton, InputUIState.Disabled);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(dataPackets.widgetType).SetActionButtonState(InputActionButtonType.DuplicateButton, InputUIState.Disabled);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(dataPackets.widgetType).SetActionButtonState(InputActionButtonType.MoveUISelectionButton, InputUIState.Disabled);
+
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                }
+                else
+                    LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
+            }
+
             #endregion
 
             void OnDropDownFilterOptions(int dropdownIndex)
@@ -12245,31 +12369,28 @@ namespace Com.RedicalGames.Filar
                 if (screenWidgetsList.Count == 0)
                     return;
 
-                foreach (var widget in screenWidgetsList)
+                var widget = screenWidgetsList.Find(widget => widget.type == widgetType);
+
+                if(widget != null)
                 {
-                    if (widget.type == widgetType)
+                    widget.Hide();
+
+                    if (widgetType == WidgetType.ConfirmationPopWidget)
                     {
-                        widget.Hide();
-
-                        if (widgetType == WidgetType.ConfirmationPopWidget)
+                        if (SelectableManager.Instance)
                         {
-                            if (SelectableManager.Instance)
-                            {
-                                if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
-                                    ActionEvents.OnTransitionSceneEventCamera(dataPackets);
-                                else
-                                    LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
-                            }
+                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
+                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
                             else
-                                LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
                         }
-
-                        if (widget.type == WidgetType.SceneAssetPreviewWidget)
-                            if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
-                                ActionEvents.OnResetCameraToDefaultPoseEvent();
-
-                        break;
+                        else
+                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
                     }
+
+                    if (widget.type == WidgetType.SceneAssetPreviewWidget)
+                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                            ActionEvents.OnResetCameraToDefaultPoseEvent();
                 }
 
                 Focus();
@@ -12760,7 +12881,7 @@ namespace Com.RedicalGames.Filar
             protected SelectionOptionsWidget selectionOptionsWidget;
             protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
             protected LoadingWidget loadingWidget;
-            protected InfoScreenWidget infoScreenWidget;
+            protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
 
             #endregion
 
@@ -12981,7 +13102,7 @@ namespace Com.RedicalGames.Filar
 
                         case InputActionButtonType.HelpButton:
 
-                            OnHelp_ActionEvent(dataPackets);
+                            OnHelp_ActionEvent(popUpType, dataPackets);
 
                             break;
                     }
@@ -13339,11 +13460,11 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
 
-            void OnHideScreenWidget_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets)
+            void OnHideScreenWidget_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
             {
                 try
                 {
-                    if (popUpType == WidgetType.SceneAssetPreviewWidget)
+                    if (widgetType == WidgetType.SceneAssetPreviewWidget)
                     {
                         SceneAssetsManager.Instance.OnClearPreviewedContent(false, contentClrearedCallback =>
                         {
@@ -13362,23 +13483,23 @@ namespace Com.RedicalGames.Filar
                         //SceneAssetsManager.Instance.OnSceneAssetPreviewMode(dataPackets);
                     }
 
-                    if (popUpType == WidgetType.PermissionsRequestWidget)
+                    if (widgetType == WidgetType.PermissionsRequestWidget)
                     {
                         if (dataPackets.canTransitionSceneAsset)
                         {
                             if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
                                 ActionEvents.OnTransitionSceneEventCamera(dataPackets);
                             else
-                                LogWarning("There's Still A Selection Active.", this, () => OnHideScreenWidget_ActionEvent(popUpType, dataPackets));
+                                LogWarning("There's Still A Selection Active.", this, () => OnHideScreenWidget_ActionEvent(widgetType, dataPackets));
                         }
                     }
 
                     if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(popUpType, dataPackets);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(widgetType, dataPackets);
                     else
-                        LogWarning("Failed To Close Pop Up Because Screen Manager's Get Current Screen Data Value Is Null.", this, () => OnHideScreenWidget_ActionEvent(popUpType, dataPackets));
+                        LogWarning("Failed To Close Pop Up Because Screen Manager's Get Current Screen Data Value Is Null.", this, () => OnHideScreenWidget_ActionEvent(widgetType, dataPackets));
 
-                    if (popUpType == WidgetType.SnapShotWidget)
+                    if (widgetType == WidgetType.SnapShotWidget)
                     {
                         // Show Notification
                         Notification notification = new Notification
@@ -13395,15 +13516,37 @@ namespace Com.RedicalGames.Filar
                         NotificationSystemManager.Instance.ScheduleNotification(notification);
                     }
 
-                    if (popUpType == WidgetType.FolderCreationWidget)
+                    if (widgetType == WidgetType.FolderCreationWidget)
                     {
                         if (SceneAssetsManager.Instance.GetLoadedSceneAssetsList().Count == 0)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(ScreenNavigationManager.Instance.GetEmptyFolderDataPackets());
                     }
+
+                    if(widgetType == WidgetType.UserHelpScreenWidget)
+                    {
+                        var widget = ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(widgetType).GetComponent<UserHelpInfoScreenWidget>();
+
+                        if (widget != null)
+                        {
+                            widget.GetTutorialView(viewCallback => 
+                            {
+                                if (viewCallback.Success())
+                                {
+                                    if(viewCallback.data.dataPackets.refreshScreenOnLoad)
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(viewCallback.data.dataPackets);
+                                }
+                                else
+                                    Log(viewCallback.resultsCode, viewCallback.results, this);
+                            });
+                        }
+                        else
+                            LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
+                    }
+
                 }
                 catch (Exception exception)
                 {
-                    LogError($"Failed To Close Widget With Exception : {exception.Message}", this, () => OnHideScreenWidget_ActionEvent(popUpType, dataPackets));
+                    LogError($"Failed To Close Widget With Exception : {exception.Message}", this, () => OnHideScreenWidget_ActionEvent(widgetType, dataPackets));
                     throw exception;
                 }
             }
@@ -14027,11 +14170,27 @@ namespace Com.RedicalGames.Filar
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnHelp_ActionEvent(SceneDataPackets dataPackets)
+            void OnHelp_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                    var widget = ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.UserHelpScreenWidget).GetComponent<UserHelpInfoScreenWidget>();
+
+                    if (widget != null)
+                    {
+                        UserHelpManager.Instance.GetTutorialView(widgetType, tutorialFoundCallback =>
+                        {
+                            if (tutorialFoundCallback.Success())
+                            {
+                                widget.SetTutorialView(tutorialFoundCallback.data);
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                            }
+                            else
+                                Log(tutorialFoundCallback.resultsCode, tutorialFoundCallback.results, this);
+                        });
+                    }
+                    else
+                        LogError($"Widget Of Type : {dataPackets.widgetType} Missing / Not Found.", this);
                 }
                 else
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
