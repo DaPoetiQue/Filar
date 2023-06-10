@@ -1,12 +1,14 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class InfoScreenWidget : AppData.Widget
+    public class UserHelpInfoScreenWidget : AppData.Widget
     {
         #region Components
 
-
+        [SerializeField]
+        private AppData.TutorialInfoView view = new AppData.TutorialInfoView();
 
         #endregion
 
@@ -19,7 +21,7 @@ namespace Com.RedicalGames.Filar
 
         new void Init()
         {
-            infoScreenWidget = this;
+            userHelpInfoScreenWidget = this;
             base.Init();
         }
 
@@ -58,6 +60,28 @@ namespace Com.RedicalGames.Filar
         protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.SceneDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void SetTutorialView(AppData.TutorialInfoView view) => this.view = view;
+
+        public void GetTutorialView(Action<AppData.CallbackData<AppData.TutorialInfoView>> callback)
+        {
+            AppData.CallbackData<AppData.TutorialInfoView> callbackResults = new AppData.CallbackData<AppData.TutorialInfoView>();
+
+            if(view != null)
+            {
+                callbackResults.results = "View Found.";
+                callbackResults.data = view;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "View Is Not Assigned / Null.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
         }
 
         #endregion
