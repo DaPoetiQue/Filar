@@ -73,10 +73,10 @@ namespace Com.RedicalGames.Filar
 
         new public void Log(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action logFunc = null)
         {
-            if (enabledInfoLogs == AppData.LogInfoType.None)
-                return;
+            //if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.None)
+            //    return;
 
-            if (enabledInfoLogs == AppData.LogInfoType.All || logInfoType == enabledInfoLogs)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
             {
                 #region Symbols Info
 
@@ -118,12 +118,12 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        new public void Log<U>(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action<U> logFunc = null) where U : AppData.Callback
+        public void Log<U>(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action<U> logFunc = null) where U : AppData.Callback
         {
-            if (enabledInfoLogs == AppData.LogInfoType.None)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.None)
                 return;
 
-            if (enabledInfoLogs == AppData.LogInfoType.All || logInfoType == enabledInfoLogs)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
             {
                 #region Symbols Info
 
@@ -159,7 +159,10 @@ namespace Com.RedicalGames.Filar
 
                 string loggedInfo = $"<color=white><b>Debugging</b></color><color=grey> >>> </color> {logTypeString} <color=grey><b>--</b></color> {classInfo} {functionInfo} <color=grey><b>Log Message ==> </b></color> : {log}";
 
-                Debug.Log(loggedInfo);
+                if (GetDebugMonoHeaderAttributes().GetLogCatInfoAttributes().HasDebugLogCat())
+                    Debug.Log(GetDebugMonoHeaderAttributes().GetLogCatInfoAttributes().GetDebugLogCat(loggedInfo));
+                else
+                    Debug.Log(loggedInfo);
 
                 #endregion
             }
@@ -241,10 +244,10 @@ namespace Com.RedicalGames.Filar
 
         new public void ThrowException(AppData.LogExceptionType logExceptionType, Exception exception, string fromClass = null, string logFunc = null)
         {
-            if (enabledExceptionLogs == AppData.LogExceptionType.None)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogExceptionType() == AppData.LogExceptionType.None)
                 return;
 
-            if (enabledExceptionLogs == AppData.LogExceptionType.All || logExceptionType == enabledExceptionLogs)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogExceptionType() == AppData.LogExceptionType.All || logExceptionType == GetDebugMonoHeaderAttributes().GetEnabledLogExceptionType())
             { 
                 if(logExceptionType == AppData.LogExceptionType.Exception)
                 {

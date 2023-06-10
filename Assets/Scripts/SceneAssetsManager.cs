@@ -108,8 +108,15 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
+        AppData.UIScreenWidgetsPrefabDataLibrary screenWidgetPrefabLibrary = new AppData.UIScreenWidgetsPrefabDataLibrary();
+
+
+        [Header("Deprecated - Will Be Removed")]
+        [Space(5)]
+        [SerializeField]
         AppData.UIScreenWidget<AppData.SceneDataPackets> fileListViewHandlerPrefab = null;
 
+        [Header("Deprecated - Will Be Removed")]
         [Space(5)]
         [SerializeField]
         AppData.UIScreenWidget<AppData.SceneDataPackets> fileItemViewHandlerPrefab = null;
@@ -160,7 +167,7 @@ namespace Com.RedicalGames.Filar
 
         List<AppData.StorageDirectoryData> appDirectories = new List<AppData.StorageDirectoryData>();
 
-        [Space(25)]
+        [Space(5)]
         [SerializeField]
         AppData.StorageDirectoryData folderStructureDirectoryData = new AppData.StorageDirectoryData();
 
@@ -168,20 +175,27 @@ namespace Com.RedicalGames.Filar
 
         AppData.SceneAssetLibrary sceneAssetLibrary = new AppData.SceneAssetLibrary();
 
-        [Space(25)]
+        [Space(5)]
         [SerializeField]
         List<AppData.SceneAsset> sceneAssetList = new List<AppData.SceneAsset>();
+
         List<AppData.SceneAssetWidget> screenWidgetList = new List<AppData.SceneAssetWidget>();
         AppData.AssetExportData currentAssetExportData = new AppData.AssetExportData();
 
         [SerializeField]
         List<AppData.DropDownContentData> dropDownContentDataList = new List<AppData.DropDownContentData>();
 
-        [SerializeField]
-        UIScreenFolderHandler folderListViewHandlerPrefab = null;
+
+        [Header("Deprecated - Will Be Removed")]
+        [Space(5)]
 
         [SerializeField]
-        UIScreenFolderHandler folderItemViewHandlerPrefab = null;
+        UIScreenFolderWidget folderListViewHandlerPrefab = null;
+
+        [Header("Deprecated - Will Be Removed")]
+        [Space(5)]
+        [SerializeField]
+        UIScreenFolderWidget folderItemViewHandlerPrefab = null;
 
         RenderProfileUIHandler renderProfileUIHandlerPrefab = null;
         ColorSwatchButtonHandler colorSwatchButtonHandlerPrefab = null;
@@ -198,7 +212,7 @@ namespace Com.RedicalGames.Filar
         List<string> tempFolderNameList = new List<string>();
         public string CreateNewFolderName { get; set; }
 
-        List<UIScreenFolderHandler> folderHandlerComponentsList = new List<UIScreenFolderHandler>();
+        List<UIScreenFolderWidget> folderHandlerComponentsList = new List<UIScreenFolderWidget>();
 
         [SerializeField]
         AppData.Folder currentFolder;
@@ -345,13 +359,13 @@ namespace Com.RedicalGames.Filar
 
             if (folderListViewHandlerPrefab == null)
                 if (!string.IsNullOrEmpty(folderListViewWidgetPrefabDirectory))
-                    folderListViewHandlerPrefab = Resources.Load<UIScreenFolderHandler>(folderListViewWidgetPrefabDirectory);
+                    folderListViewHandlerPrefab = Resources.Load<UIScreenFolderWidget>(folderListViewWidgetPrefabDirectory);
                 else
                     LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this, () => Init());
 
             if (folderItemViewHandlerPrefab == null)
                 if (!string.IsNullOrEmpty(folderItemViewWidgetPrefabDirectory))
-                    folderItemViewHandlerPrefab = Resources.Load<UIScreenFolderHandler>(folderItemViewWidgetPrefabDirectory);
+                    folderItemViewHandlerPrefab = Resources.Load<UIScreenFolderWidget>(folderItemViewWidgetPrefabDirectory);
                 else
                     LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this, () => Init());
 
@@ -361,13 +375,13 @@ namespace Com.RedicalGames.Filar
 
             if (fileListViewHandlerPrefab == null)
                 if (!string.IsNullOrEmpty(fileListViewWidgetPrefabDirectory))
-                    fileListViewHandlerPrefab = Resources.Load<UIScreenFolderHandler>(fileListViewWidgetPrefabDirectory);
+                    fileListViewHandlerPrefab = Resources.Load<UIScreenFolderWidget>(fileListViewWidgetPrefabDirectory);
                 else
                     LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this, () => Init());
 
             if (fileItemViewHandlerPrefab == null)
                 if (!string.IsNullOrEmpty(fileItemViewWidgetPrefabDirectory))
-                    fileItemViewHandlerPrefab = Resources.Load<UIScreenFolderHandler>(fileItemViewWidgetPrefabDirectory);
+                    fileItemViewHandlerPrefab = Resources.Load<UIScreenFolderWidget>(fileItemViewWidgetPrefabDirectory);
                 else
                     LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this, () => Init());
 
@@ -1074,6 +1088,11 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> No Asset Container Found.");
 
             return containers;
+        }
+
+        public AppData.UIScreenWidgetsPrefabDataLibrary GetWidgetsPrefabDataLibrary()
+        {
+            return screenWidgetPrefabLibrary;
         }
 
         public Transform GetSceneAssetsContainer(AppData.UIScreenType screenType = AppData.UIScreenType.None)
@@ -1989,39 +2008,56 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (AppData.Helpers.IsSuccessCode(sortedList.resultsCode))
                                     {
-                                        pinnedFolders = sortedList.data;
-
-                                        foreach (var folder in pinnedFolders)
+                                        if(folderItemViewHandlerPrefab?.gameObject == null)
                                         {
-                                            GameObject folderWidget = Instantiate((folderStructureData.GetCurrentLayoutViewType() == AppData.LayoutViewType.ListView) ? folderListViewHandlerPrefab.gameObject : folderItemViewHandlerPrefab.gameObject);
+                                            LogError("Folder Item View Widget Not Found / Missing / Not Assigned In The Inspector Panel.", this);
+                                            return;
+                                        }
 
-                                            if (folderWidget != null)
+                                        if (folderListViewHandlerPrefab?.gameObject == null)
+                                        {
+                                            LogError("Folder List View Widget Not Found / Missing / Not Assigned In The Inspector Panel.", this);
+                                            return;
+                                        }
+
+                                        if (folderItemViewHandlerPrefab?.gameObject != null && folderListViewHandlerPrefab?.gameObject != null)
+                                        {
+                                            pinnedFolders = sortedList.data;
+
+                                            foreach (var folder in pinnedFolders)
                                             {
-                                                AppData.UIScreenWidget<AppData.SceneDataPackets> widgetComponent = folderWidget.GetComponent<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                                                GameObject folderWidget = Instantiate((folderStructureData.GetCurrentLayoutViewType() == AppData.LayoutViewType.ListView) ? folderListViewHandlerPrefab.gameObject : folderItemViewHandlerPrefab.gameObject);
 
-                                                if (widgetComponent != null)
+                                                if (folderWidget != null)
                                                 {
-                                                    widgetComponent.SetDefaultUIWidgetActionState(folder.defaultWidgetActionState);
+                                                    AppData.UIScreenWidget<AppData.SceneDataPackets> widgetComponent = folderWidget.GetComponent<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
 
-                                                    if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
-                                                        widgetComponent.Hide();
+                                                    if (widgetComponent != null)
+                                                    {
+                                                        widgetComponent.SetDefaultUIWidgetActionState(folder.defaultWidgetActionState);
 
-                                                    folderWidget.name = folder.name;
-                                                    widgetComponent.SetFolderData(folder);
-                                                    contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                        if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
+                                                            widgetComponent.Hide();
+
+                                                        folderWidget.name = folder.name;
+                                                        widgetComponent.SetFolderData(folder);
+                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                    }
+
+                                                    if (!loadedWidgetsList.Contains(widgetComponent))
+                                                        loadedWidgetsList.Add(widgetComponent);
                                                 }
-
-                                                if (!loadedWidgetsList.Contains(widgetComponent))
-                                                    loadedWidgetsList.Add(widgetComponent);
                                             }
                                         }
+                                        else
+                                            LogError("Folder Item/List View Widget Not Found / Missing / Not Assigned In The Inspector Panel.", this);
                                     }
                                     else
-                                        Debug.LogWarning($"--> GetSortedWidgetList Failed With Results : {sortedList.results}");
+                                        LogWarning(sortedList.results, this);
                                 });
                             }
                             else
-                                Debug.LogWarning($"--> LoadFolderData Failed With Results : {foldersLoaded.results}");
+                                LogWarning(foldersLoaded.results, this);
 
                             if (loadedWidgetsList.Count > 0)
                                 callbackResults.data = loadedWidgetsList;
@@ -2361,135 +2397,166 @@ namespace Com.RedicalGames.Filar
 
         public void CreateDirectory(AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
         {
-
-            AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
-
-            if (Application.platform == RuntimePlatform.Android)
+            try
             {
-                AndroidJavaClass jc = new AndroidJavaClass("com.redicalgames.designar.OverrideUnityActivity");
-                AndroidJavaObject overrideActivity = jc.GetStatic<AndroidJavaObject>("instance");
+                AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
 
-                if (overrideActivity != null)
-                    directoryData.directory = overrideActivity.Call<string>("GetAppDataDirectory", directoryData.directory);
-                else
-                    Debug.LogWarning("--> RG_Unity - Asset Import Content Manager Referenced Plugin Instance Is Null.");
-
-                //if (AssetImportContentManager.Instance.GetReferencedPluginInstance() != null)
-                //    directoryData.directory = AssetImportContentManager.Instance.GetReferencedPluginInstance().Call<string>("GetAppDataDirectory", directoryData.directory);
-                //else
-                //    Debug.LogWarning("--> RG_Unity - Asset Import Content Manager Referenced Plugin Instance Is Null.");
-
-                if (Directory.Exists(directoryData.directory))
+                if (Application.platform == RuntimePlatform.Android)
                 {
-                    if (!appDirectories.Contains(directoryData))
-                        appDirectories.Add(directoryData);
+                    AndroidJavaClass jc = new AndroidJavaClass("com.redicalgames.designar.OverrideUnityActivity");
+                    AndroidJavaObject overrideActivity = jc.GetStatic<AndroidJavaObject>("instance");
 
-                    callbackResults.results = "Success : Directory Exists.";
-                    callbackResults.data = directoryData;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    if (overrideActivity != null)
+                        directoryData.directory = overrideActivity.Call<string>("GetAppDataDirectory", directoryData.directory);
+                    else
+                        Debug.LogWarning("--> RG_Unity - Asset Import Content Manager Referenced Plugin Instance Is Null.");
+
+                    //if (AssetImportContentManager.Instance.GetReferencedPluginInstance() != null)
+                    //    directoryData.directory = AssetImportContentManager.Instance.GetReferencedPluginInstance().Call<string>("GetAppDataDirectory", directoryData.directory);
+                    //else
+                    //    Debug.LogWarning("--> RG_Unity - Asset Import Content Manager Referenced Plugin Instance Is Null.");
+
+                    if (Directory.Exists(directoryData.directory))
+                    {
+                        if (!appDirectories.Contains(directoryData))
+                            appDirectories.Add(directoryData);
+
+                        callbackResults.results = "Success : Directory Exists.";
+                        callbackResults.data = directoryData;
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    }
                 }
                 else
                 {
-                    callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    Directory.CreateDirectory(directoryData.directory);
+
+                    if (Directory.Exists(directoryData.directory))
+                    {
+                        if (!appDirectories.Contains(directoryData))
+                            appDirectories.Add(directoryData);
+
+                        callbackResults.results = "Success : Directory Exists.";
+                        callbackResults.data = directoryData;
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    }
                 }
+
+                callback?.Invoke(callbackResults);
             }
-            else
+            catch (Exception exception)
             {
-                Directory.CreateDirectory(directoryData.directory);
-
-                if (Directory.Exists(directoryData.directory))
-                {
-                    if (!appDirectories.Contains(directoryData))
-                        appDirectories.Add(directoryData);
-
-                    callbackResults.results = "Success : Directory Exists.";
-                    callbackResults.data = directoryData;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                }
+                LogError(exception.Message, this);
+                throw exception;
             }
-
-            callback?.Invoke(callbackResults);
         }
 
         public void CreateDirectory(string directory, Action<AppData.CallbackData<string>> callback)
         {
-            AppData.CallbackData<string> callbackResults = new AppData.CallbackData<string>();
-
-            if (!Directory.Exists(directory))
+            try
             {
-                Directory.CreateDirectory(directory);
+                AppData.CallbackData<string> callbackResults = new AppData.CallbackData<string>();
 
-                if (Directory.Exists(directory))
+                if (!Directory.Exists(directory))
                 {
-                    callbackResults.results = $"Create Directory - Success : {directory}.";
-                    callbackResults.data = directory;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    Directory.CreateDirectory(directory);
+
+                    if (Directory.Exists(directory))
+                    {
+                        callbackResults.results = $"Create Directory - Success : {directory}.";
+                        callbackResults.data = directory;
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Create Directory - Failed To Create Directory : {directory}.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    }
                 }
                 else
                 {
-                    callbackResults.results = $"Create Directory - Failed To Create Directory : {directory}.";
+                    callbackResults.results = $"Create Directory Failed : Directory : {directory} Already Exists.";
                     callbackResults.data = default;
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
-            }
-            else
-            {
-                callbackResults.results = $"Create Directory Failed : Directory : {directory} Already Exists.";
-                callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
 
-            callback?.Invoke(callbackResults);
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public bool CreateDirectory(string path)
         {
-            if (!Directory.Exists(path))
+            try
             {
-                Directory.CreateDirectory(path);
-
-                if (Directory.Exists(path))
-                    return true;
-                else
+                if (!Directory.Exists(path))
                 {
-                    Debug.LogWarning($"--> Failed To Create Directory : {path}");
-                    return false;
+                    Directory.CreateDirectory(path);
+
+                    if (Directory.Exists(path))
+                        return true;
+                    else
+                    {
+                        Debug.LogWarning($"--> Failed To Create Directory : {path}");
+                        return false;
+                    }
                 }
+                else
+                    return true;
             }
-            else
-                return true;
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         #endregion
 
         public AppData.StorageDirectoryData GetAppDirectory(AppData.DirectoryType directoryType)
         {
-            AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData();
-
-            if (appDirectories != null)
+            try
             {
-                foreach (AppData.StorageDirectoryData directory in appDirectories)
-                {
-                    if (directory.type == directoryType)
-                    {
-                        directoryData = directory;
+                AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData();
 
-                        break;
+                if (appDirectories != null)
+                {
+                    foreach (AppData.StorageDirectoryData directory in appDirectories)
+                    {
+                        if (directory.type == directoryType)
+                        {
+                            directoryData = directory;
+
+                            break;
+                        }
                     }
                 }
-            }
-            else
-                Debug.LogWarning("--> App Directories Are Null.");
+                else
+                    Debug.LogWarning("--> App Directories Are Null.");
 
-            return directoryData;
+                return directoryData;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public bool DirectoryFound(AppData.DirectoryType directoryType)
@@ -2519,156 +2586,204 @@ namespace Com.RedicalGames.Filar
 
         public bool DirectoryFound(AppData.StorageDirectoryData directoryData)
         {
-            bool directoryExists = false;
-
-            if (appDirectories.Count > 0)
+            try
             {
-                foreach (var appDirectory in appDirectories)
-                {
-                    if (appDirectory.type == directoryData.type)
-                    {
-                        if (Directory.Exists(appDirectory.directory))
-                        {
-                            directoryExists = true;
-                        }
-                        else
-                            directoryExists = false;
+                bool directoryExists = false;
 
-                        break;
+                if (appDirectories.Count > 0)
+                {
+                    foreach (var appDirectory in appDirectories)
+                    {
+                        if (appDirectory.type == directoryData.type)
+                        {
+                            if (Directory.Exists(appDirectory.directory))
+                            {
+                                directoryExists = true;
+                            }
+                            else
+                                directoryExists = false;
+
+                            break;
+                        }
                     }
                 }
-            }
 
-            return directoryExists;
+                return directoryExists;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public bool DirectoryFound(string directory)
         {
-            bool directoryExists = false;
+            try
+            { 
+                bool directoryExists = false;
 
-            if (Directory.Exists(directory))
-            {
-                directoryExists = true;
+                if (Directory.Exists(directory))
+                {
+                    directoryExists = true;
+                }
+                else
+                    directoryExists = false;
+
+                return directoryExists;
             }
-            else
-                directoryExists = false;
-
-            return directoryExists;
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public void DirectoryFound(string directory, Action<AppData.Callback> callback)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            if (Directory.Exists(directory))
+            try
             {
-                callbackResults.results = $"Directory Found At Path : {directory}.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.results = $"Directory : {directory} Not Found.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
+                AppData.Callback callbackResults = new AppData.Callback();
 
-            callback?.Invoke(callbackResults);
+                if (Directory.Exists(directory))
+                {
+                    callbackResults.results = $"Directory Found At Path : {directory}.";
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Directory : {directory} Not Found.";
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public void FileFound(string path, Action<AppData.Callback> callback)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            if (File.Exists(path))
+            try
             {
-                callbackResults.results = $"File Found At Path : {path}.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.results = $"File : {path} Not Found.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
+                AppData.Callback callbackResults = new AppData.Callback();
 
-            callback?.Invoke(callbackResults);
+                if (File.Exists(path))
+                {
+                    callbackResults.results = $"File Found At Path : {path}.";
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"File : {path} Not Found.";
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public void GetFolderContentCount(AppData.Folder folder, Action<AppData.CallbackData<int>> callback)
         {
-            AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
-
-            if (!string.IsNullOrEmpty(folder.storageData.directory))
+            try
             {
-                if (DirectoryFound(folder.storageData.directory))
+                AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
+
+                if (!string.IsNullOrEmpty(folder.storageData.directory))
                 {
-                    string[] files = Directory.GetFiles(folder.storageData.directory);
-
-                    if (files.Length > 0)
+                    if (DirectoryFound(folder.storageData.directory))
                     {
-                        List<string> validFiles = new List<string>();
+                        string[] files = Directory.GetFiles(folder.storageData.directory);
 
-                        for (int i = 0; i < files.Length; i++)
-                            if (files[i].Contains(".json") && !files[i].Contains(".meta"))
-                                validFiles.Add(files[i]);
-
-                        if (validFiles.Count > 0)
+                        if (files.Length > 0)
                         {
-                            callbackResults.results = $"GetFolderContentCount Success - Directory : {folder.storageData.directory} Found.";
-                            callbackResults.data = validFiles.Count;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            List<string> validFiles = new List<string>();
+
+                            for (int i = 0; i < files.Length; i++)
+                                if (files[i].Contains(".json") && !files[i].Contains(".meta"))
+                                    validFiles.Add(files[i]);
+
+                            if (validFiles.Count > 0)
+                            {
+                                callbackResults.results = $"GetFolderContentCount Success - Directory : {folder.storageData.directory} Found.";
+                                callbackResults.data = validFiles.Count;
+                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.results = $"GetFolderContentCount Failed - There Were No Valid Files Found In Directory : {folder.storageData.directory}.";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
                         }
                         else
                         {
-                            callbackResults.results = $"GetFolderContentCount Failed - There Were No Valid Files Found In Directory : {folder.storageData.directory}.";
+                            callbackResults.results = $"GetFolderContentCount Failed - There Were No Files Found In Directory : {folder.storageData.directory}.";
                             callbackResults.data = default;
                             callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"GetFolderContentCount Failed - There Were No Files Found In Directory : {folder.storageData.directory}.";
+                        callbackResults.results = $"GetFolderContentCount Failed - Directory : {folder.storageData.directory} Not Found.";
                         callbackResults.data = default;
                         callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"GetFolderContentCount Failed - Directory : {folder.storageData.directory} Not Found.";
+                    callbackResults.results = $"GetFolderContentCount Failed - Directory Is Null / Empty..";
                     callbackResults.data = default;
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
-            }
-            else
-            {
-                callbackResults.results = $"GetFolderContentCount Failed - Directory Is Null / Empty..";
-                callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
 
-            callback?.Invoke(callbackResults);
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public string GetFormattedName(string source, AppData.SelectableAssetType assetType, bool isDisplayName = true, int length = 0)
         {
-            string formattedName = string.Empty;
-
-            if (isDisplayName)
+            try
             {
-                bool isValid = (assetType == AppData.SelectableAssetType.Folder) ? !source.Contains("_FolderData") : !source.Contains("_FileData");
+                string formattedName = string.Empty;
 
-                if (isValid)
-                    formattedName = source;
+                if (isDisplayName)
+                {
+                    bool isValid = (assetType == AppData.SelectableAssetType.Folder) ? !source.Contains("_FolderData") : !source.Contains("_FileData");
+
+                    if (isValid)
+                        formattedName = source;
+                    else
+                        formattedName = (assetType == AppData.SelectableAssetType.Folder) ? source.Replace("_FolderData", "") : source.Replace("_FileData", "");
+                }
                 else
-                    formattedName = (assetType == AppData.SelectableAssetType.Folder) ? source.Replace("_FolderData", "") : source.Replace("_FileData", "");
+                {
+                    if (source.Contains("_FolderData") || source.Contains("_FileData"))
+                        formattedName = source;
+                    else
+                        formattedName = (assetType == AppData.SelectableAssetType.Folder) ? source + "_FolderData" : source + "_FileData";
+                }
+
+                return formattedName;
             }
-            else
+            catch (Exception exception)
             {
-                if (source.Contains("_FolderData") || source.Contains("_FileData"))
-                    formattedName = source;
-                else
-                    formattedName = (assetType == AppData.SelectableAssetType.Folder) ? source + "_FolderData" : source + "_FileData";
+                LogError(exception.Message, this);
+                throw exception;
             }
-
-            return formattedName;
         }
 
         public void SetWidgetsRefreshData(AppData.Folder folder, DynamicWidgetsContainer widgetsContainer = null)
@@ -2682,7 +2797,15 @@ namespace Com.RedicalGames.Filar
 
         public (AppData.Folder folder, DynamicWidgetsContainer widgetsContainer) GetWidgetsRefreshData()
         {
-            return (widgetsRefreshFolder, widgetsRefreshDynamicContainer);
+            try
+            {
+                return (widgetsRefreshFolder, widgetsRefreshDynamicContainer);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         #region On Refresh Functionsas
@@ -2709,33 +2832,35 @@ namespace Com.RedicalGames.Filar
 
         public bool Refreshed(AppData.Folder folder, DynamicWidgetsContainer widgetsContainer, AppData.SceneDataPackets dataPackets)
         {
-            bool isRefreshed = false;
-
-            if (ScreenUIManager.Instance != null)
+            try
             {
-                widgetsContainer.SetAssetsLoaded(isRefreshed);
+                bool isRefreshed = false;
 
-                if (dataPackets.refreshScreenOnLoad)
+                if (ScreenUIManager.Instance != null)
                 {
-                    switch(dataPackets.screenType)
+                    widgetsContainer.SetAssetsLoaded(isRefreshed);
+
+                    if (dataPackets.refreshScreenOnLoad)
                     {
-                        case AppData.UIScreenType.ProjectViewScreen:
+                        switch (dataPackets.screenType)
+                        {
+                            case AppData.UIScreenType.ProjectViewScreen:
 
-                            widgetsContainer.ClearWidgets(widgetsClearedCallback =>
-                            {
-                                if (widgetsClearedCallback.Success())
+                                widgetsContainer.ClearWidgets(widgetsClearedCallback =>
                                 {
-                                    LoadFolderStuctureData((structureLoader) =>
+                                    if (widgetsClearedCallback.Success())
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(structureLoader.resultsCode))
+                                        LoadFolderStuctureData((structureLoader) =>
                                         {
-                                            if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectViewScreen)
+                                            if (AppData.Helpers.IsSuccessCode(structureLoader.resultsCode))
                                             {
-                                                SetCurrentFolder(folder);
+                                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectViewScreen)
+                                                {
+                                                    SetCurrentFolder(folder);
 
-                                                GetWidgetsRefreshData().widgetsContainer.SetViewLayout(folderStructureData.GetFolderLayoutView(folderStructureData.GetCurrentLayoutViewType()));
+                                                    GetWidgetsRefreshData().widgetsContainer.SetViewLayout(folderStructureData.GetFolderLayoutView(folderStructureData.GetCurrentLayoutViewType()));
 
-                                                RefreshLayoutViewButtonIcon();
+                                                    RefreshLayoutViewButtonIcon();
 
                                                 #region Pegination
 
@@ -2745,129 +2870,135 @@ namespace Com.RedicalGames.Filar
 
                                                 loadedWidgets = new List<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
 
-                                                int contentCount = 0;
+                                                    int contentCount = 0;
 
-                                                CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
-                                                {
+                                                    CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
+                                                    {
                                                     // Get Loaded Widgets
                                                     if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
+                                                        {
+                                                            contentCount += widgetsCreated.data.Count;
+
+                                                            if (widgetsCreated.data != null)
+                                                                if (widgetsCreated.data.Count > 0)
+                                                                    foreach (var widget in widgetsCreated.data)
+                                                                        if (!loadedWidgets.Contains(widget))
+                                                                            loadedWidgets.Add(widget);
+                                                        }
+                                                    });
+
+                                                    CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
                                                     {
-                                                        contentCount += widgetsCreated.data.Count;
-
-                                                        if (widgetsCreated.data != null)
-                                                            if (widgetsCreated.data.Count > 0)
-                                                                foreach (var widget in widgetsCreated.data)
-                                                                    if (!loadedWidgets.Contains(widget))
-                                                                        loadedWidgets.Add(widget);
-                                                    }
-                                                });
-
-                                                CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
-                                                {
                                                     // Get Loaded Widgets
                                                     if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
-                                                    {
-                                                        contentCount += widgetsCreated.data.Count;
+                                                        {
+                                                            contentCount += widgetsCreated.data.Count;
 
-                                                        if (widgetsCreated.data != null)
-                                                            if (widgetsCreated.data.Count > 0)
-                                                                foreach (var widget in widgetsCreated.data)
-                                                                    if (!loadedWidgets.Contains(widget))
-                                                                        loadedWidgets.Add(widget);
+                                                            if (widgetsCreated.data != null)
+                                                                if (widgetsCreated.data.Count > 0)
+                                                                    foreach (var widget in widgetsCreated.data)
+                                                                        if (!loadedWidgets.Contains(widget))
+                                                                            loadedWidgets.Add(widget);
+                                                        }
+                                                    });
+
+                                                    if (loadedWidgets.Count > 0)
+                                                    {
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.UITextDisplayerWidget);
+                                                        SelectableManager.Instance.AddSelectables(loadedWidgets);
                                                     }
-                                                });
+                                                    else
+                                                        StartCoroutine(RefreshAssetsAsync());
 
-                                                if (loadedWidgets.Count > 0)
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.UITextDisplayerWidget);
-                                                    SelectableManager.Instance.AddSelectables(loadedWidgets);
-                                                }
-                                                else
-                                                    StartCoroutine(RefreshAssetsAsync());
-
-                                                if (widgetsContainer.GetContentCount() == 0)
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, string.Empty);
-                                                }
-                                                else
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
-
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, folderStructureSearchFieldPlaceHolderTextValue);
-                                                }
-
-                                                widgetsContainer.GetUIScroller().ScrollToBottom();
-                                                isRefreshed = loadedWidgets.Count > 0;
-
-                                                if(isRefreshed)
-                                                {
-                                                    AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
-
-                                                    switch(GetLayoutViewType())
+                                                    if (widgetsContainer.GetContentCount() == 0)
                                                     {
-                                                        case AppData.LayoutViewType.ItemView:
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
 
-                                                            if (SelectableManager.Instance.HasActiveSelection())
-                                                            {
-                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback => 
-                                                                {
-                                                                    if(selectedAllCallback.Success())
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
-                                                                    else
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
-                                                                });
-                                                            }
-                                                            else
-                                                                selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, string.Empty);
+                                                    }
+                                                    else
+                                                    {
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
 
-                                                            break;
-
-                                                        case AppData.LayoutViewType.ListView:
-
-                                                            if (SelectableManager.Instance.HasActiveSelection())
-                                                            {
-                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                {
-                                                                    if (selectedAllCallback.Success())
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
-                                                                    else
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
-                                                                });
-                                                            }
-                                                            else
-                                                                selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
-
-                                                            break;
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Enabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Enabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, folderStructureSearchFieldPlaceHolderTextValue);
                                                     }
 
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, selectionOptionImageViewType);
+                                                    widgetsContainer.GetUIScroller().ScrollToBottom();
+                                                    isRefreshed = loadedWidgets.Count > 0;
+
+                                                    if (isRefreshed)
+                                                    {
+                                                        AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
+
+                                                        switch (GetLayoutViewType())
+                                                        {
+                                                            case AppData.LayoutViewType.ItemView:
+
+                                                                if (SelectableManager.Instance.HasActiveSelection())
+                                                                {
+                                                                    widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                    {
+                                                                        if (selectedAllCallback.Success())
+                                                                            selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
+                                                                        else
+                                                                            selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+                                                                    });
+                                                                }
+                                                                else
+                                                                    selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+
+                                                                break;
+
+                                                            case AppData.LayoutViewType.ListView:
+
+                                                                if (SelectableManager.Instance.HasActiveSelection())
+                                                                {
+                                                                    widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                    {
+                                                                        if (selectedAllCallback.Success())
+                                                                            selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
+                                                                        else
+                                                                            selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
+                                                                    });
+                                                                }
+                                                                else
+                                                                    selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
+
+                                                                break;
+                                                        }
+
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, selectionOptionImageViewType);
+                                                    }
                                                 }
                                             }
-                                        }
-                                        else
-                                            Debug.LogWarning($"--> Folder Structure Failed To Load With Results : {structureLoader.results}");
-                                    });
-                                }
-                                else
-                                    Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
-                            });
+                                            else
+                                                Debug.LogWarning($"--> Folder Structure Failed To Load With Results : {structureLoader.results}");
+                                        });
+                                    }
+                                    else
+                                        Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
+                                });
 
-                            break;
-                    };
+                                break;
+                        };
+                    }
                 }
-            }
-            else
-                LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
+                else
+                    LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
 
-            return isRefreshed;
+                return isRefreshed;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         IEnumerator RefreshAssetsAsync()
@@ -3322,196 +3453,212 @@ namespace Com.RedicalGames.Filar
 
         public void OnMoveToDirectory(AppData.StorageDirectoryData sourceStorageData, AppData.StorageDirectoryData targetStorageData, AppData.SelectableAssetType type, Action<AppData.CallbackData<AppData.DirectoryInfo>> callback = null)
         {
-            AppData.CallbackData<AppData.DirectoryInfo> callbackResults = new AppData.CallbackData<AppData.DirectoryInfo>();
-
-            if (type == AppData.SelectableAssetType.File)
+            try
             {
-                #region File Data
+                AppData.CallbackData<AppData.DirectoryInfo> callbackResults = new AppData.CallbackData<AppData.DirectoryInfo>();
 
-                FileFound(sourceStorageData.path, fileCheckCallback =>
+                if (type == AppData.SelectableAssetType.File)
                 {
-                    if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultsCode))
+                    #region File Data
+
+                    FileFound(sourceStorageData.path, fileCheckCallback =>
                     {
-                        if (!File.Exists(targetStorageData.path))
+                        if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultsCode))
                         {
-                            MoveFile(sourceStorageData.path, targetStorageData.path, type, fileDataMoveCallback =>
+                            if (!File.Exists(targetStorageData.path))
                             {
-                                Debug.LogError($"==> File Moved : {fileDataMoveCallback.resultsCode}");
-
-                                callbackResults.results = fileDataMoveCallback.results;
-                                callbackResults.data = default;
-                                callbackResults.resultsCode = fileDataMoveCallback.resultsCode;
-
-                                if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultsCode))
-                                    callback.Invoke(callbackResults);
-                            });
-                        }
-                        else
-                        {
-                            callbackResults.results = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-
-                            callbackResults.data = new AppData.DirectoryInfo
-                            {
-                                name = sourceStorageData.name,
-                                assetType = type,
-                                dataAlreadyExistsInTargetDirectory = true
-                            };
-
-                            callback?.Invoke(callbackResults);
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.results = fileCheckCallback.results;
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = fileCheckCallback.resultsCode;
-                    }
-
-                    callback?.Invoke(callbackResults);
-
-                });
-
-                #endregion
-            }
-
-            if (type == AppData.SelectableAssetType.Folder)
-            {
-                #region File Data
-
-                FileFound(sourceStorageData.path, fileCheckCallback =>
-                {
-                    if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultsCode))
-                    {
-                        if (!File.Exists(targetStorageData.path))
-                        {
-                            MoveFile(sourceStorageData.path, targetStorageData.path, type, fileDataMoveCallback =>
-                            {
-                                callbackResults.results = fileDataMoveCallback.results;
-                                callbackResults.data = default;
-                                callbackResults.resultsCode = fileDataMoveCallback.resultsCode;
-
-                                if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultsCode))
-                                    callback.Invoke(callbackResults);
-                            });
-                        }
-                        else
-                        {
-                            callbackResults.results = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-
-                            callbackResults.data = new AppData.DirectoryInfo
-                            {
-                                name = sourceStorageData.name,
-                                assetType = type,
-                                dataAlreadyExistsInTargetDirectory = true
-                            };
-
-                            callback?.Invoke(callbackResults);
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.results = fileCheckCallback.results;
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = fileCheckCallback.resultsCode;
-                    }
-                });
-
-                #endregion
-
-                #region Folder Moved
-
-                DirectoryFound(sourceStorageData.directory, checkDirectoryCallback =>
-                {
-                    if (AppData.Helpers.IsSuccessCode(checkDirectoryCallback.resultsCode))
-                    {
-                        if (!Directory.Exists(targetStorageData.directory))
-                        {
-                            MoveDirectory(sourceStorageData.directory, targetStorageData.directory, checkDirectoryMoveCallback =>
-                            {
-                                callbackResults.resultsCode = checkDirectoryMoveCallback.resultsCode;
-
-                                if (AppData.Helpers.IsSuccessCode(checkDirectoryMoveCallback.resultsCode))
+                                MoveFile(sourceStorageData.path, targetStorageData.path, type, fileDataMoveCallback =>
                                 {
-                                    string sourceDirectoryName = Path.GetFileNameWithoutExtension(sourceStorageData.path);
-                                    string sourceDirectoryNameFormatted = GetAssetNameFormatted(sourceDirectoryName, type);
+                                    Debug.LogError($"==> File Moved : {fileDataMoveCallback.resultsCode}");
 
-                                    string targetDirectoryName = Path.GetFileNameWithoutExtension(targetStorageData.path);
-                                    string targetDirectoryNameFormatted = GetAssetNameFormatted(targetDirectoryName, type);
+                                    callbackResults.results = fileDataMoveCallback.results;
+                                    callbackResults.data = default;
+                                    callbackResults.resultsCode = fileDataMoveCallback.resultsCode;
 
-                                    callbackResults.results = $"<b>{sourceDirectoryNameFormatted}</b> Moved From <b>{currentFolder.name}</b> To <b>{GetFormattedName(targetStorageData.name, type, true)}</b>";
+                                    if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultsCode))
+                                        callback.Invoke(callbackResults);
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
 
-                                    var storageData = new AppData.StorageDirectoryData
-                                    {
-                                        name = sourceStorageData.name,
-                                        directory = targetStorageData.directory
-                                    };
+                                callbackResults.data = new AppData.DirectoryInfo
+                                {
+                                    name = sourceStorageData.name,
+                                    assetType = type,
+                                    dataAlreadyExistsInTargetDirectory = true
+                                };
 
-                                    callbackResults.data = new AppData.DirectoryInfo
-                                    {
-                                        name = sourceStorageData.name,
-                                        storageData = storageData,
-                                        dataAlreadyExistsInTargetDirectory = false
-                                    };
-                                }
-                                else
-                                    callback.Invoke(callbackResults);
-                            });
+                                callback?.Invoke(callbackResults);
+                            }
                         }
                         else
                         {
-                            callbackResults.results = $"Directory : {sourceStorageData.directory} Already Exists In : {targetStorageData.name}";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-
-                            callbackResults.data = new AppData.DirectoryInfo
-                            {
-                                name = sourceStorageData.name,
-                                assetType = type,
-                                dataAlreadyExistsInTargetDirectory = true
-                            };
-
-                            callback?.Invoke(callbackResults);
+                            callbackResults.results = fileCheckCallback.results;
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = fileCheckCallback.resultsCode;
                         }
-                    }
-                    else
+
+                        callback?.Invoke(callbackResults);
+
+                    });
+
+                    #endregion
+                }
+
+                if (type == AppData.SelectableAssetType.Folder)
+                {
+                    #region File Data
+
+                    FileFound(sourceStorageData.path, fileCheckCallback =>
                     {
-                        callbackResults.results = checkDirectoryCallback.results;
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = checkDirectoryCallback.resultsCode;
-                    }
-                });
+                        if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultsCode))
+                        {
+                            if (!File.Exists(targetStorageData.path))
+                            {
+                                MoveFile(sourceStorageData.path, targetStorageData.path, type, fileDataMoveCallback =>
+                                {
+                                    callbackResults.results = fileDataMoveCallback.results;
+                                    callbackResults.data = default;
+                                    callbackResults.resultsCode = fileDataMoveCallback.resultsCode;
 
-                callback.Invoke(callbackResults);
+                                    if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultsCode))
+                                        callback.Invoke(callbackResults);
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
 
-                #endregion
+                                callbackResults.data = new AppData.DirectoryInfo
+                                {
+                                    name = sourceStorageData.name,
+                                    assetType = type,
+                                    dataAlreadyExistsInTargetDirectory = true
+                                };
+
+                                callback?.Invoke(callbackResults);
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = fileCheckCallback.results;
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = fileCheckCallback.resultsCode;
+                        }
+                    });
+
+                    #endregion
+
+                    #region Folder Moved
+
+                    DirectoryFound(sourceStorageData.directory, checkDirectoryCallback =>
+                    {
+                        if (AppData.Helpers.IsSuccessCode(checkDirectoryCallback.resultsCode))
+                        {
+                            if (!Directory.Exists(targetStorageData.directory))
+                            {
+                                MoveDirectory(sourceStorageData.directory, targetStorageData.directory, checkDirectoryMoveCallback =>
+                                {
+                                    callbackResults.resultsCode = checkDirectoryMoveCallback.resultsCode;
+
+                                    if (AppData.Helpers.IsSuccessCode(checkDirectoryMoveCallback.resultsCode))
+                                    {
+                                        string sourceDirectoryName = Path.GetFileNameWithoutExtension(sourceStorageData.path);
+                                        string sourceDirectoryNameFormatted = GetAssetNameFormatted(sourceDirectoryName, type);
+
+                                        string targetDirectoryName = Path.GetFileNameWithoutExtension(targetStorageData.path);
+                                        string targetDirectoryNameFormatted = GetAssetNameFormatted(targetDirectoryName, type);
+
+                                        callbackResults.results = $"<b>{sourceDirectoryNameFormatted}</b> Moved From <b>{currentFolder.name}</b> To <b>{GetFormattedName(targetStorageData.name, type, true)}</b>";
+
+                                        var storageData = new AppData.StorageDirectoryData
+                                        {
+                                            name = sourceStorageData.name,
+                                            directory = targetStorageData.directory
+                                        };
+
+                                        callbackResults.data = new AppData.DirectoryInfo
+                                        {
+                                            name = sourceStorageData.name,
+                                            storageData = storageData,
+                                            dataAlreadyExistsInTargetDirectory = false
+                                        };
+                                    }
+                                    else
+                                        callback.Invoke(callbackResults);
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Directory : {sourceStorageData.directory} Already Exists In : {targetStorageData.name}";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+
+                                callbackResults.data = new AppData.DirectoryInfo
+                                {
+                                    name = sourceStorageData.name,
+                                    assetType = type,
+                                    dataAlreadyExistsInTargetDirectory = true
+                                };
+
+                                callback?.Invoke(callbackResults);
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = checkDirectoryCallback.results;
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = checkDirectoryCallback.resultsCode;
+                        }
+                    });
+
+                    callback.Invoke(callbackResults);
+
+                    #endregion
+                }
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
             }
         }
 
         public void MoveFile(AppData.StorageDirectoryData sourceStorageData, AppData.StorageDirectoryData targetStorageData, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
         {
-            AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
+            try
+            { 
+                AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
 
-            string sourceFileName = sourceStorageData.name + ".json";
-            string targetDirectory = Path.Combine(targetStorageData.directory, sourceFileName);
-            string formattedDirectory = targetDirectory.Replace("\\", "/");
+                string sourceFileName = sourceStorageData.name + ".json";
+                string targetDirectory = Path.Combine(targetStorageData.directory, sourceFileName);
+                string formattedDirectory = targetDirectory.Replace("\\", "/");
 
-            File.Move(sourceStorageData.directory, formattedDirectory);
+                File.Move(sourceStorageData.directory, formattedDirectory);
 
-            FileFound(formattedDirectory, fileCheckCallback =>
+                FileFound(formattedDirectory, fileCheckCallback =>
+                {
+                    callbackResults.results = fileCheckCallback.results;
+                    callbackResults.resultsCode = fileCheckCallback.resultsCode;
+
+                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                        callbackResults.data = new AppData.StorageDirectoryData
+                        {
+                            name = sourceStorageData.name,
+                            directory = formattedDirectory
+                        };
+                });
+
+                callback.Invoke(callbackResults);
+            }
+            catch (Exception exception)
             {
-                callbackResults.results = fileCheckCallback.results;
-                callbackResults.resultsCode = fileCheckCallback.resultsCode;
-
-                if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
-                    callbackResults.data = new AppData.StorageDirectoryData
-                    {
-                        name = sourceStorageData.name,
-                        directory = formattedDirectory
-                    };
-            });
-
-            callback.Invoke(callbackResults);
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public void MoveFile(string sourceDirectory, string targetDirectory, AppData.SelectableAssetType assetType, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
@@ -4676,14 +4823,14 @@ namespace Com.RedicalGames.Filar
             {
                 GameObject folder = Instantiate(folderListViewHandlerPrefab.gameObject);
 
-                UIScreenFolderHandler folderHandler = folder.GetComponent<UIScreenFolderHandler>();
+                UIScreenFolderWidget folderHandler = folder.GetComponent<UIScreenFolderWidget>();
 
                 if (folderHandler != null)
                 {
                     folderHandlerComponentsList.Add(folderHandler);
                 }
                 else
-                    folderHandlerComponentsList.Add(folderHandler = folder.AddComponent<UIScreenFolderHandler>());
+                    folderHandlerComponentsList.Add(folderHandler = folder.AddComponent<UIScreenFolderWidget>());
 
                 AddContentToDynamicWidgetContainer(folder.GetComponent<AppData.UIScreenWidget<AppData.ButtonDataPackets>>(), dataPackets.containerType, dataPackets.containerContentOrientation);
 

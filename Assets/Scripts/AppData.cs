@@ -208,6 +208,8 @@ namespace Com.RedicalGames.Filar
             HelpButton,
             MoveUISelectionButton,
             ClipboardButton,
+            CreateNewProjectButton,
+            OpenProjectButton,
             None
         }
 
@@ -215,6 +217,13 @@ namespace Com.RedicalGames.Filar
         {
             ActionButton,
             ActionWidget
+        }
+
+        public enum LockState
+        {
+            Default,
+            Locked,
+            Unlocked
         }
 
         public enum InputUIState
@@ -397,7 +406,8 @@ namespace Com.RedicalGames.Filar
             TimeDateDisplayer,
             InfoDisplayer,
             NavigationRootTitleDisplayer,
-            PageCountDisplayer
+            PageCountDisplayer,
+            TypeDisplayer,
         }
 
         public enum SliderValueType
@@ -456,7 +466,8 @@ namespace Com.RedicalGames.Filar
             ProjectViewScreen,
             AssetCreationScreen,
             ARViewScreen,
-            HomeScreen
+            ProjectScreen,
+            LandingPageScreen
         }
 
         public enum ContentContainerType
@@ -762,10 +773,11 @@ namespace Com.RedicalGames.Filar
             SubFolder
         }
 
-        public enum LayoutViewType
+        public enum LayoutViewType : int
         {
-            ItemView,
-            ListView
+            ItemView = 0,
+            ListView = 1,
+            Default = 2
         }
 
         public enum PaginationViewType
@@ -791,6 +803,9 @@ namespace Com.RedicalGames.Filar
             BadgeIcon,
             NotificationIcon,
             PinnedIcon,
+            LockIcon,
+            TintComponent,
+            BlurComponent,
             None
         }
 
@@ -813,7 +828,9 @@ namespace Com.RedicalGames.Filar
             ItemViewSelectionIcon,
             ItemViewDeselectionIcon,
             ListViewSelectionIcon,
-            ListViewDeselectionIcon
+            ListViewDeselectionIcon,
+            LockedIcon,
+            UnlockedIcon
         }
 
         public enum SelectableAssetType
@@ -912,6 +929,75 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public string logColorValue;
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct LogCatAttributes
+        {
+            #region Components
+
+            [Space(10)]
+            public string debugClassLogCat;
+
+            #endregion
+
+            #region Main
+
+            public bool HasDebugLogCat()
+            {
+                return !string.IsNullOrEmpty(debugClassLogCat);
+            }
+
+            public string GetDebugLogCat(string log)
+            {
+                return debugClassLogCat + log;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct DebugMonoLogHeaderAttributes
+        {
+            #region Components
+
+            [Header("Debugging : Log Info Attributes")]
+            [Space(10)]
+            [SerializeField]
+            public LogInfoType enabledInfoLogs;
+
+            [Space(10)]
+            [Header("Debugging : Exceptions Attributes")]
+            [Space(10)]
+            [SerializeField]
+            public LogExceptionType enabledExceptionLogs;
+
+            [Space(10)]
+            [Header("Debugging : Log Cat Attributes")]
+            [Space(10)]
+            [SerializeField]
+            public LogCatAttributes logCatInfo;
+
+            #endregion
+
+            #region Main
+
+            public LogInfoType GetEnabledLogInfoType()
+            {
+                return enabledInfoLogs;
+            }
+
+            public LogExceptionType GetEnabledLogExceptionType()
+            {
+                return enabledExceptionLogs;
+            }
+
+            public LogCatAttributes GetLogCatInfoAttributes()
+            {
+                return logCatInfo;
+            }
 
             #endregion
         }
@@ -1079,8 +1165,10 @@ namespace Com.RedicalGames.Filar
         #region UI Image Data
 
         [Serializable]
-        public struct UIImageDisplayer
+        public class UIImageDisplayer
         {
+            #region Components
+
             public string name;
 
             [Space(5)]
@@ -1088,11 +1176,73 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public UIImageDisplayerType imageDisplayerType;
+
+            #endregion
+
+            #region Main
+
+            public void SetUIImage(UIImageType imageType, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                IsInitialized(initializationCallback =>
+                {
+                    if (initializationCallback.Success())
+                    {
+                        value.sprite = SceneAssetsManager.Instance.GetImageFromLibrary(imageType).value;
+
+                        if (value?.sprite == SceneAssetsManager.Instance.GetImageFromLibrary(imageType).value)
+                        {
+                            callbackResults.results = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Has Been Set Successfully";
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Couldn't Set UI Image Data For Some Weired Reasons - Please Check Here.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        callbackResults = initializationCallback;
+                });
+
+                callback.Invoke(callbackResults);
+            }
+
+            void IsInitialized(Action<Callback> callback)
+            {
+                Callback callbackResults = new Callback();
+
+                if (value != null)
+                {
+                    if (value.sprite != null)
+                    {
+                        callbackResults.results = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Has Been Initialized Successfully.";
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Value Sprite Component Is Missing / Null / Not Assigned In The Inspector Panel.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Value Is Missing / Null / Not Assigned In The Inspector Panel.";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
         }
 
         [Serializable]
-        public struct UIImageData
+        public class UIImageData
         {
+            #region Components
+
             public string name;
 
             [Space(5)]
@@ -1100,6 +1250,58 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public UIImageType imageType;
+
+            #endregion
+
+            #region Main
+
+            public void SetUIImage(UIImageType imageType, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                IsInitialized(initializationCallback => 
+                {
+                    if(initializationCallback.Success())
+                    {
+                        value = SceneAssetsManager.Instance.GetImageFromLibrary(imageType).value;
+
+                        if(value == SceneAssetsManager.Instance.GetImageFromLibrary(imageType).value)
+                        {
+                            callbackResults.results = $"UI Image Data Set Successfully";
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Couldn't Set UI Image Data For Some Wiered Reasons - Please Check Here.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        callbackResults = initializationCallback;
+                });
+
+                callback.Invoke(callbackResults);
+            }
+
+            void IsInitialized(Action<Callback> callback)
+            {
+                Callback callbackResults = new Callback();
+
+                if(value != null)
+                {
+                    callbackResults.results = $"UI Image Displayer : {name} Of Type {imageType}'s Has Been Initialized Successfully.";
+                    callbackResults.resultsCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"UI Image Displayer : {name} Of Type {imageType}'s Value Is Missing / Null / Not Assigned In The Inspector Panel.";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
         }
 
         #endregion
@@ -2279,18 +2481,290 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public struct UISelectionFrame
+        public class LockStateDataComponent<T> where T : AppMonoBaseClass
         {
             #region Components
 
+            [Space(5)]
+            public string name;
+
+            [Space(5)]
+            public bool isLockable;
+
+            [Space(5)]
+            public LockState initialLockState;
+
+            [Space(5)]
+            public UIImageDisplayer lockStateDisplayer;
+
+            private LockState currentLockState;
+
+            #endregion
+
+            #region Main
+
+            public void Init(T fromClass, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                SetLockState(initialLockState, fromClass, lockStateCallback =>
+                {
+                    callback = lockStateCallback;
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            void IsInitialized(T fromClass, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (isLockable && lockStateDisplayer.value != null && lockStateDisplayer.imageDisplayerType == UIImageDisplayerType.LockIcon)
+                {
+                    callbackResults.results = $"Lock State Component Has Been Initialized Successfully From Class : {fromClass.name}.";
+                    callbackResults.resultsCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    if (!isLockable)
+                    {
+                        callbackResults.results = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name} - UI Screen Asset Is Not Set To Lockable.";
+                        callbackResults.resultsCode = Helpers.WarningCode;
+
+                        callback?.Invoke(callbackResults);
+                    }
+
+                    if (lockStateDisplayer.value == null)
+                    {
+                        callbackResults.results = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name}. - Lock State Component Displayer Value Not Found / Missing / Null / Not Assigned In The Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+
+                        callback?.Invoke(callbackResults);
+                    }
+
+                    if (lockStateDisplayer.imageDisplayerType != UIImageDisplayerType.LockIcon)
+                    {
+                        callbackResults.results = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name}. - Lock State Component Displayer Is Set To : {lockStateDisplayer.imageDisplayerType}. Expected Image Displayer Type Is :  {UIImageDisplayerType.LockIcon}.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+
+                        callback?.Invoke(callbackResults);
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetLockState(LockState state, T fromClass = null, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                IsInitialized(fromClass, initializationCallback =>
+                {
+                    if (initializationCallback.Success())
+                    {
+                        if(state != LockState.Default)
+                        {
+                            if (state == LockState.Locked)
+                            {
+                                lockStateDisplayer.SetUIImage(UIImageType.LockedIcon, lockStateCallback => 
+                                {
+                                    callbackResults = lockStateCallback;
+                                });
+                            }
+
+                            if (state == LockState.Unlocked)
+                            {
+                                lockStateDisplayer.SetUIImage(UIImageType.UnlockedIcon, lockStateCallback =>
+                                {
+                                    callbackResults = lockStateCallback;
+                                });
+                            }
+                        }
+                        else
+                        {
+                            lockStateDisplayer.SetUIImage(UIImageType.Null_TransparentIcon, lockStateCallback =>
+                            {
+                                callbackResults = lockStateCallback;
+                            });
+                        }
+
+                        currentLockState = state;
+                    }
+                    else
+                        callbackResults = initializationCallback;
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public LockState GetLockState()
+            {
+                return currentLockState;
+            }
+
+            public bool IsLockable()
+            {
+                return isLockable;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct UISelectionStateComponent
+        {
+            #region Components
+
+            [Space(5)]
+            [Header("Selection Visualization Components")]
+
+            [Space(5)]
             public UIImageDisplayer selectionFrame;
 
             [Space(5)]
-            public GameObject tint;
+            public UIImageDisplayer selectionTint;
+
+            [Space(5)]
+            public RectTransform uiSelectionContentContainer;
+
+            #endregion
+
+            #region Main
+
+            public UIImageDisplayer GetSelectionFrameWidget()
+            {
+                return selectionFrame;
+            }
+
+            public UIImageDisplayer GetSelectionTintWidget()
+            {
+                return selectionTint;
+            }
+
+            public RectTransform GetUISelectionContentContainer()
+            {
+                return uiSelectionContentContainer;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct SelectionDataInfo
+        {
+            #region Components
+
+            [Space(5)]
+            [Header("Selection Info")]
+
+            [Space(5)]
+            public float selectionThreshHold;
+
+            [Space(5)]
+            public float selectionUIDimensionRatio;
+
+            [Space(5)]
+            public DraggableSelectionInfo selectionDragInfo;
+
+            Vector2 uiSelectionScreenSpaceDimension;
+            Vector3 uiSelectionWorldSpaceDimension;
+
+            #endregion
+
+            #region Main
+
+            public void SetSelectionThreshHold(float threshhold) => selectionThreshHold = threshhold;
+
+            public void SetSelectionUIDimensionRatio(float ratio) => selectionUIDimensionRatio = ratio;
+
+            public DraggableSelectionInfo GetDraggableSelectionInfo()
+            {
+                return selectionDragInfo;
+            }
+
+            public Vector2 GetScreenSpaceSelectionDimension()
+            {
+                uiSelectionScreenSpaceDimension.x = selectionUIDimensionRatio;
+                uiSelectionScreenSpaceDimension.y = selectionUIDimensionRatio;
+
+                return uiSelectionScreenSpaceDimension;
+            }
+
+            public Vector3 GetWorldSpaceSelectionDimension()
+            {
+                uiSelectionWorldSpaceDimension.x = selectionUIDimensionRatio;
+                uiSelectionWorldSpaceDimension.y = selectionUIDimensionRatio;
+                uiSelectionWorldSpaceDimension.z = selectionUIDimensionRatio;
+
+                return uiSelectionWorldSpaceDimension;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct DraggableSelectionInfo
+        {
+            #region Components
+
+            [Space(5)]
+            [Header("Draggable UI Settings")]
+
+            [Space(5)]
+            public bool isDraggable;
+
+            [Space(5)]
+            public float selectionDragTriggerRadius;
+
+            [Space(5)]
+            public bool updateSelectionDimensionsOnDrag;
+
+            #endregion
+
+            #region Main
+
+            public bool IsDraggable()
+            {
+                return isDraggable;
+            }
+
+            public float GetSelectionDragTriggerRadius()
+            {
+                return selectionDragTriggerRadius;
+            }
+
+            public bool UpdateSelectionDimensionsOnDragEnabled()
+            {
+                return updateSelectionDimensionsOnDrag;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct UISelectionStateData
+        {
+            #region Components
+
+            [Space(5)]
+            [Header("Selectable UI Settings")]
+
+            [Space(5)]
+            public SelectionDataInfo selectionInfo;
+
+            [Space(5)]
+            public SelectableWidgetType selectableWidgetType;
+
+            [Space(5)]
+            public SelectableAssetType selectableAssetType;
+
+            [Space(5)]
+            public UISelectionStateComponent selectionComponent;
 
             [Space(5)]
             public List<SelectionStateColorProperties> selectionStates;
 
+            [Space(5)]
             public UIStateData uiStateInfoData;
 
             #endregion
@@ -2299,9 +2773,9 @@ namespace Com.RedicalGames.Filar
 
             public (bool hasSelectionFrame, bool hasSelectionState, bool hasTint) IsInitialized()
             {
-                bool hasSelectionFrame = selectionFrame.value != null;
+                bool hasSelectionFrame = selectionComponent.selectionFrame.value != null;
                 bool hasSelectionState = selectionStates.Count > 0;
-                bool hasTint = tint != null;
+                bool hasTint = selectionComponent.selectionTint.value != null;
 
                 return (hasSelectionFrame, hasSelectionState, hasTint);
             }
@@ -2310,9 +2784,9 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                if (selectionFrame.value != null)
+                if (selectionComponent.selectionFrame.value != null)
                 {
-                    if (selectionFrame.imageDisplayerType == UIImageDisplayerType.SelectionFrame)
+                    if (selectionComponent.selectionFrame.imageDisplayerType == UIImageDisplayerType.SelectionFrame)
                     {
                         uiStateInfoData = new UIStateData
                         {
@@ -2321,12 +2795,15 @@ namespace Com.RedicalGames.Filar
                         };
 
                         if (uiStateInfoData.color != null)
-                            selectionFrame.value.color = uiStateInfoData.color;
+                            selectionComponent.selectionFrame.value.color = uiStateInfoData.color;
 
-                        selectionFrame.value.gameObject.SetActive(true);
+                        selectionComponent.selectionFrame.value.gameObject.SetActive(true);
 
                         if (IsInitialized().hasTint)
-                            tint.SetActive(showTint);
+                        {
+                            if(selectionComponent.selectionTint.imageDisplayerType == UIImageDisplayerType.TintComponent)
+                                selectionComponent.selectionTint.value.gameObject.SetActive(showTint);
+                        }
 
                         if (callback != null)
                         {
@@ -2383,8 +2860,8 @@ namespace Com.RedicalGames.Filar
 
             public (UIStateData uiStateData, bool showSelection, bool showTint) GetCurrentSelectionState()
             {
-                bool showSelectionInfo = selectionFrame.value.isActiveAndEnabled && selectionFrame.value.gameObject.activeInHierarchy && selectionFrame.value.gameObject.activeSelf;
-                bool showTintInfo = tint.activeInHierarchy && tint.activeSelf;
+                bool showSelectionInfo = selectionComponent.selectionFrame.value.isActiveAndEnabled && selectionComponent.selectionFrame.value.gameObject.activeInHierarchy && selectionComponent.selectionFrame.value.gameObject.activeSelf;
+                bool showTintInfo = selectionComponent.selectionTint.value.gameObject.activeInHierarchy && selectionComponent.selectionTint.value.gameObject.activeSelf;
                 uiStateInfoData.selectionType = SelectableManager.Instance.GetFocusedSelectionTypeFromState(uiStateInfoData.state);
 
                 return (uiStateInfoData, showSelectionInfo, showTintInfo);
@@ -2396,34 +2873,36 @@ namespace Com.RedicalGames.Filar
 
                 if (IsInitialized().hasSelectionFrame)
                 {
-                    if (selectionFrame.imageDisplayerType == UIImageDisplayerType.SelectionFrame)
+                    if (selectionComponent.selectionFrame.imageDisplayerType == UIImageDisplayerType.SelectionFrame)
                     {
-                        selectionFrame.value.gameObject.SetActive(false);
-                        tint.SetActive(false);
+                        selectionComponent.selectionFrame.value.gameObject.SetActive(false);
 
-                        bool hidden = selectionFrame.value.gameObject.activeSelf == false && selectionFrame.value.gameObject.activeInHierarchy == false;
+                        if(selectionComponent.selectionTint.imageDisplayerType == UIImageDisplayerType.TintComponent)
+                            selectionComponent.selectionTint.value.gameObject.SetActive(false);
+
+                        bool hidden = selectionComponent.selectionFrame.value.gameObject.activeSelf == false && selectionComponent.selectionFrame.value.gameObject.activeInHierarchy == false;
                         await Helpers.GetWaitUntilAsync(hidden);
 
                         if (hidden)
                         {
-                            callbackResults.results = $"Selection Frame : {selectionFrame.name} Hidden.";
+                            callbackResults.results = $"Selection Frame : {selectionComponent.selectionFrame.name} Hidden.";
                             callbackResults.resultsCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Hide Selection Frame : {selectionFrame.name} For Some Reason.";
+                            callbackResults.results = $"Couldn't Hide Selection Frame : {selectionComponent.selectionFrame.name} For Some Reason.";
                             callbackResults.resultsCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Hide : {selectionFrame.name}. UI Image Displayer Type Is Not Set To Selection Frame.";
+                        callbackResults.results = $"Couldn't Hide : {selectionComponent.selectionFrame.name}. UI Image Displayer Type Is Not Set To Selection Frame.";
                         callbackResults.resultsCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Hide : {selectionFrame.name}. - Selection Frame Missing / Null / Not Yet Initialized.";
+                    callbackResults.results = $"Couldn't Hide : {selectionComponent.selectionFrame.name}. - Selection Frame Missing / Null / Not Yet Initialized.";
                     callbackResults.resultsCode = Helpers.ErrorCode;
                 }
 
@@ -2432,8 +2911,74 @@ namespace Com.RedicalGames.Filar
 
             public bool IsActive()
             {
-                return selectionFrame.value.gameObject.activeSelf;
+                return selectionComponent.selectionFrame.value.gameObject.activeSelf;
             }
+
+            public SelectableWidgetType GetSelectableWidgetType()
+            {
+                return selectableWidgetType;
+            }
+
+            public SelectableAssetType GetSelectableAssetType()
+            {
+                return selectableAssetType;
+            }
+
+            #region Selectable Data
+
+            public UIStateData GetUIStateData()
+            {
+                return uiStateInfoData;
+            }
+
+            public RectTransform GetUISelectionContentContainer()
+            {
+                return selectionComponent.GetUISelectionContentContainer();
+            }
+
+            #endregion
+
+            #region Selection Info
+
+            public Vector2 GetScreenSpaceSelectionDimension()
+            {
+                return selectionInfo.GetScreenSpaceSelectionDimension();
+            }
+
+            public Vector3 GetWorldSpaceSelectionDimension()
+            {
+                return selectionInfo.GetWorldSpaceSelectionDimension();
+            }
+
+            public float GetSelectionThreshHold()
+            {
+                return selectionInfo.selectionThreshHold;
+            }
+
+            public void SetSelectionThreshHold(float threshhold) => selectionInfo.SetSelectionThreshHold(threshhold);
+
+            public void SetSelectionUIDimensionRatio(float ratio) => selectionInfo.SetSelectionUIDimensionRatio(ratio);
+            
+            #endregion
+
+            #region Drag Info
+
+            public bool IsDraggable()
+            {
+                return selectionInfo.GetDraggableSelectionInfo().IsDraggable();
+            }
+
+            public float GetSelectionDragTriggerRadius()
+            {
+                return selectionInfo.GetDraggableSelectionInfo().GetSelectionDragTriggerRadius();
+            }
+
+            public bool UpdateSelectionDimensionsOnDragEnabled()
+            {
+                return selectionInfo.GetDraggableSelectionInfo().UpdateSelectionDimensionsOnDragEnabled();
+            }
+
+            #endregion
 
             #endregion
         }
@@ -2443,6 +2988,10 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Space(5)]
+            [Header("UI Selection State Color Properties")]
+
+            [Space(5)]
             public string name;
 
             [Space(5)]
@@ -3899,6 +4448,8 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public struct Notification
         {
+            #region Components
+
             public string title;
 
             [Space(5)]
@@ -3922,8 +4473,67 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public float duration;
 
+            [Space(5)]
+            public bool showNotifications;
+
             [HideInInspector]
             public bool proccessed;
+
+            #endregion
+
+            #region Main
+
+            public UIScreenType GetScreenType()
+            {
+                return screenType;
+            }
+
+            public string GetTitle()
+            {
+                return title;
+            }
+
+            public string GetMessage()
+            {
+                return message;
+            }
+
+            public SceneAssetPivot GetScreenPosition()
+            {
+                return screenPosition;
+            }
+
+            public NotificationType GetNotificationType()
+            {
+                return notificationType;
+            }
+
+            public bool BlurScreenOnShow()
+            {
+                return blurScreen;
+            }
+
+            public bool Show()
+            {
+                return showNotifications;
+            }
+
+            public float GetDelay()
+            {
+                return delay;
+            }
+
+            public float GetDuration()
+            {
+                return duration;
+            }
+
+            public bool IsProccessed()
+            {
+                return proccessed;
+            }
+
+            #endregion
         }
 
         [Serializable]
@@ -7458,6 +8068,11 @@ namespace Com.RedicalGames.Filar
                 return Helpers.IsSuccessCode(resultsCode);
             }
 
+            public static implicit operator Action<object>(Callback v)
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion
         }
 
@@ -8080,6 +8695,11 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            #region Inspector Components
+
+            [Space(10)]
+            [Header("::: Component UI Action Inputs")]
+
             [Space(5)]
             [SerializeField]
             List<UIButton<T>> actionButtonList = new List<UIButton<T>>();
@@ -8087,6 +8707,9 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             [SerializeField]
             List<UIInputField<T>> actionInputFieldList = new List<UIInputField<T>>();
+
+            [Space(10)]
+            [Header("::: Component UI")]
 
             [Space(5)]
             [SerializeField]
@@ -8096,61 +8719,38 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             List<UIImageDisplayer> imageDisplayerList = new List<UIImageDisplayer>();
 
-            [Space(5)]
-            [SerializeField]
-            protected SelectableWidgetType selectableType;
+            [Space(10)]
+            [Header("::: Component UI Selection")]
 
             [Space(5)]
             [SerializeField]
-            protected SelectableAssetType selectableAssetType;
+            protected UISelectionStateData selectableComponent = new UISelectionStateData();
 
-            [Space(5)]
-            [SerializeField]
-            protected UISelectionFrame selectionFrame = new UISelectionFrame();
-
-            [Space(5)]
-            [SerializeField]
-            protected float pressAndHoldDuration = 0.25f;
-
-            [Space(5)]
-            [SerializeField]
-            protected float selectionStateButtonScale = 0.9f;
-
-            [Space(5)]
-            [SerializeField]
-            RectTransform folderContentContainer = null;
+            [Space(10)]
+            [Header("::: Component Data Packet")]
 
             [Space(5)]
             [SerializeField]
             protected T dataPackets;
 
-            [SerializeField]
-            List<UIScreenWidget<SceneDataPackets>> containerFolderWidgetsReferenceList = new List<UIScreenWidget<SceneDataPackets>>();
-
-            [Space(5)]
-            [SerializeField]
-            protected float dragActiveDistance = 25.0f;
-
-            [Space(5)]
-            [SerializeField]
-            protected bool scaleWidgetOnDrag = false;
-
-            [Space(5)]
-            [SerializeField]
-            protected bool showNotifications = false;
+            [Space(10)]
+            [Header("::: Component Scene Notifications")]
 
             [Space(5)]
             [SerializeField]
             protected Notification notification;
 
-            protected FocusedSelectionInfoData<SceneDataPackets> focusedSelectionInfoData = new AppData.FocusedSelectionInfoData<SceneDataPackets>();
+            #endregion
 
+            #region Non Inspector Components
+
+            List<UIScreenWidget<SceneDataPackets>> containerFolderWidgetsReferenceList = new List<UIScreenWidget<SceneDataPackets>>();
+
+            protected FocusedSelectionInfoData<SceneDataPackets> focusedSelectionInfoData = new AppData.FocusedSelectionInfoData<SceneDataPackets>();
             protected DynamicWidgetsContainer container;
 
             protected Button buttonComponent = null;
             protected LayoutElement layout = null;
-
-            [SerializeField]
             protected SceneAsset assetData;
 
             protected DefaultUIWidgetActionState defaultUIWidgetAction;
@@ -8181,24 +8781,18 @@ namespace Com.RedicalGames.Filar
             protected UIScreenWidget<SceneDataPackets> hoveredWidget = null;
 
             bool isFingerDown = false;
-
-            [SerializeField]
             bool isSelected = false;
-
             bool isDragging = false;
             bool isScrolling = false;
-
-            [SerializeField]
             bool canDrag = false;
-
             bool isHovered = false;
 
             float currentPressDuration = 0;
-
-            [SerializeField]
             int contentIndex = 0;
 
             PointerEventData currentEventData;
+
+            #endregion
 
             #endregion
 
@@ -8226,9 +8820,7 @@ namespace Com.RedicalGames.Filar
                     Deselected();
                     contentIndex = transform.GetSiblingIndex();
 
-                    selectionButtonScaleVect.x = selectionStateButtonScale;
-                    selectionButtonScaleVect.y = selectionStateButtonScale;
-                    selectionButtonScaleVect.z = selectionStateButtonScale;
+                    selectionButtonScaleVect = selectableComponent.GetWorldSpaceSelectionDimension();
 
                     container = GetComponentInParent<DynamicWidgetsContainer>();
 
@@ -8293,12 +8885,17 @@ namespace Com.RedicalGames.Filar
 
                 this.folder = folder;
                 this.folder.name = folder.name.Replace("_FolderData", "");
-                OnSetFolderData(folder);
+                OnSetUIWidgetData(folder);
             }
 
             public Folder GetFolderData()
             {
                 return folder;
+            }
+
+            public bool IsDraggableWidget()
+            {
+                return selectableComponent.IsDraggable();
             }
 
             public void SetContentSiblingIndex(int contentIndex)
@@ -8309,6 +8906,16 @@ namespace Com.RedicalGames.Filar
             public int GetContentSiblingIndex()
             {
                 return contentIndex;
+            }
+
+            public T GetDataPackets()
+            {
+                return dataPackets;
+            }
+
+            public UIScreenType GetUIWidgetPresenterScreenType()
+            {
+                return dataPackets.screenType;
             }
 
             public bool GetActive()
@@ -8347,7 +8954,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetFileData(SceneAsset assetData) => OnSetFileData(assetData);
             protected abstract void OnActionButtonInputs(UIButton<T> actionButton);
-            protected abstract void OnSetFolderData(Folder folder);
+            protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetFileData(SceneAsset assetData);
             protected abstract void OnScreenUIRefreshed();
 
@@ -8403,6 +9010,11 @@ namespace Com.RedicalGames.Filar
             public LayoutElement GetWidgetLayoutElement()
             {
                 return layout;
+            }
+
+            public LayoutViewType GetLayoutViewType()
+            {
+                return dataPackets.layoutViewType;
             }
 
             public RectTransform GetWidgetRect()
@@ -8519,19 +9131,19 @@ namespace Com.RedicalGames.Filar
 
             public SelectableWidgetType GetSelectableType()
             {
-                return selectableType;
+                return selectableComponent.GetSelectableWidgetType();
             }
 
             public SelectableAssetType GetSelectableAssetType()
             {
-                return selectableAssetType;
+                return selectableComponent.GetSelectableAssetType();
             }
 
             public void SetContentContainerPositionIndex(int index) => transform.SetSiblingIndex(index);
 
             public RectTransform GetFolderContentContainer()
             {
-                return folderContentContainer;
+                return selectableComponent.GetUISelectionContentContainer();
             }
 
             protected void SetUITextDisplayerValue(string value, ScreenTextType textType)
@@ -8587,15 +9199,15 @@ namespace Com.RedicalGames.Filar
                         if (!isFingerDown || isDragging)
                             return;
 
-                        if (currentPressDuration < pressAndHoldDuration)
+                        if (currentPressDuration < selectableComponent.GetSelectionThreshHold())
                         {
                             currentPressDuration += 1 * Time.deltaTime;
 
-                            if (currentPressDuration > 0.15f && currentPressDuration < pressAndHoldDuration)
+                            if (currentPressDuration > 0.15f && currentPressDuration < selectableComponent.GetSelectionThreshHold())
                                 canDrag = true;
                         }
 
-                        if (currentPressDuration >= pressAndHoldDuration)
+                        if (currentPressDuration >= selectableComponent.GetSelectionThreshHold())
                         {
                             SetSelected(true);
 
@@ -8616,7 +9228,7 @@ namespace Com.RedicalGames.Filar
 
             bool OnPressAndHold()
             {
-                return (currentPressDuration >= pressAndHoldDuration);
+                return (currentPressDuration >= selectableComponent.GetSelectionThreshHold());
             }
 
             void OnReset()
@@ -8707,13 +9319,13 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableType} - Action Buttons For This Widget Are Missing / Null.";
+                        callbackResults.results = $"Set Action Button Event Failed - UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - Action Buttons On This Widget Are Missing / Null.";
                         callbackResults.resultsCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableType} - This UI Screen Widget Is Not Yet Active.";
+                    callbackResults.results = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
                     callbackResults.resultsCode = Helpers.ErrorCode;
                 }
 
@@ -8834,68 +9446,73 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (SelectableManager.Instance != null)
+                    if (IsDraggableWidget())
                     {
-                        if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
+                        if (SelectableManager.Instance != null)
                         {
-                            if (GetActive())
+                            if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                             {
-                                if (GetWidgetContainer().GetScrollerDragViewPort() == null)
-                                    return;
-
-                                Vector2 pos;
-
-                                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(GetWidgetContainer().GetScrollerDragViewPort(), eventData.position, eventData.pressEventCamera, out pos))
+                                if (GetActive())
                                 {
-                                    if (!IsSelected())
+                                    if (GetWidgetContainer().GetScrollerDragViewPort() == null)
+                                        return;
+
+                                    Vector2 pos;
+
+                                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(GetWidgetContainer().GetScrollerDragViewPort(), eventData.position, eventData.pressEventCamera, out pos))
                                     {
-                                        #region Setup
-
-                                        ResetWidgetOnBeginDrag(eventData, pos);
-                                        // GetFolderWidgets();
-
-                                        GetWidgetContainer().SetFingerDragEvent();
-
-                                        Deselected();
-
-                                        #endregion
-
-                                        #region Set Sibling Index Data
-
-                                        OnSetSiblingIndexData();
-
-                                        #endregion
-
-                                        #region On Disbale Selections On Drag
-
-                                        ResetWidgetsSelectionOnBeginDrag();
-
-                                        #endregion
-
-                                        #region Parent Widget
-
-                                        GetWidgetContainer().GetPlaceHolder(placeholder =>
+                                        if (!IsSelected())
                                         {
-                                            if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                            #region Setup
+
+                                            ResetWidgetOnBeginDrag(eventData, pos);
+                                            // GetFolderWidgets();
+
+                                            GetWidgetContainer().SetFingerDragEvent();
+
+                                            Deselected();
+
+                                            #endregion
+
+                                            #region Set Sibling Index Data
+
+                                            OnSetSiblingIndexData();
+
+                                            #endregion
+
+                                            #region On Disbale Selections On Drag
+
+                                            ResetWidgetsSelectionOnBeginDrag();
+
+                                            #endregion
+
+                                            #region Parent Widget
+
+                                            GetWidgetContainer().GetPlaceHolder(placeholder =>
                                             {
-                                                if (!placeholder.data.IsActive())
-                                                    placeholder.data.ShowPlaceHolder(GetWidgetContainer().GetContentContainer(), widgetRect.sizeDelta, GetContentSiblingIndex());
+                                                if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                {
+                                                    if (!placeholder.data.IsActive())
+                                                        placeholder.data.ShowPlaceHolder(GetWidgetContainer().GetContentContainer(), widgetRect.sizeDelta, GetContentSiblingIndex());
 
-                                                widgetRect.SetParent(GetWidgetContainer().GetItemDragContainer(), false);
-                                                GetFolderWidgets();
-                                            }
-                                            else
-                                                LogWarning(placeholder.results, this, () => OnBeginDragExecuted(eventData));
-                                        });
+                                                    widgetRect.SetParent(GetWidgetContainer().GetItemDragContainer(), false);
+                                                    GetFolderWidgets();
+                                                }
+                                                else
+                                                    LogWarning(placeholder.results, this, () => OnBeginDragExecuted(eventData));
+                                            });
 
-                                        #endregion
+                                            #endregion
+                                        }
                                     }
                                 }
                             }
                         }
+                        else
+                            LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnBeginDragExecuted(eventData));
                     }
                     else
-                        LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnBeginDragExecuted(eventData));
+                        LogWarning($"On Begin Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                 }
                 catch(Exception exception)
                 {
@@ -8908,56 +9525,61 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (SelectableManager.Instance != null)
+                    if (IsDraggableWidget())
                     {
-                        if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
+                        if (SelectableManager.Instance != null)
                         {
-                            if (this != null && GetActive())
+                            if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                             {
-                                if (GetWidgetContainer().GetScrollerDragViewPort() == null)
-                                    return;
-
-                                var actionType = (selectableAssetType == SelectableAssetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
-                                OnSetActionButtonEvent(actionType);
-
-                                if (!IsSelected() && canDrag)
+                                if (this != null && GetActive())
                                 {
-                                    #region On Drag Item
+                                    if (GetWidgetContainer().GetScrollerDragViewPort() == null)
+                                        return;
 
-                                    OnDragWidgetEvent(eventData, GetWidgetContainer().GetScrollerDragViewPort(), currentDragEventData =>
+                                    var actionType = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
+                                    OnSetActionButtonEvent(actionType);
+
+                                    if (!IsSelected() && canDrag)
                                     {
-                                        if (Helpers.IsSuccessCode(currentDragEventData.resultsCode))
+                                        #region On Drag Item
+
+                                        OnDragWidgetEvent(eventData, GetWidgetContainer().GetScrollerDragViewPort(), currentDragEventData =>
                                         {
-                                            OnEdgeScrolling(currentDragEventData.data);
-                                            HighlightHoveredFolderOnDrag(eventData, currentDragEventData.data);
-                                        }
-                                        else
-                                            LogError(currentDragEventData.results, this, () => OnDragExecuted(eventData));
-                                    });
+                                            if (Helpers.IsSuccessCode(currentDragEventData.resultsCode))
+                                            {
+                                                OnEdgeScrolling(currentDragEventData.data);
+                                                HighlightHoveredFolderOnDrag(eventData, currentDragEventData.data);
+                                            }
+                                            else
+                                                LogError(currentDragEventData.results, this, () => OnDragExecuted(eventData));
+                                        });
 
-                                    #endregion
-                                }
-                                else
-                                {
-                                    if (isScrolling == false)
-                                        isScrolling = true;
-
-                                    if (isScrolling)
+                                        #endregion
+                                    }
+                                    else
                                     {
-                                        eventData.pointerDrag = GetWidgetContainer().GetUIScroller().value.gameObject;
-                                        EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().value.gameObject);
+                                        if (isScrolling == false)
+                                            isScrolling = true;
 
-                                        GetWidgetContainer().GetUIScroller().value.OnInitializePotentialDrag(eventData);
-                                        GetWidgetContainer().GetUIScroller().value.OnBeginDrag(eventData);
+                                        if (isScrolling)
+                                        {
+                                            eventData.pointerDrag = GetWidgetContainer().GetUIScroller().value.gameObject;
+                                            EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().value.gameObject);
 
-                                        OnDeselect();
+                                            GetWidgetContainer().GetUIScroller().value.OnInitializePotentialDrag(eventData);
+                                            GetWidgetContainer().GetUIScroller().value.OnBeginDrag(eventData);
+
+                                            OnDeselect();
+                                        }
                                     }
                                 }
                             }
                         }
+                        else
+                            LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnDragExecuted(eventData));
                     }
                     else
-                        LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnDragExecuted(eventData));
+                        LogWarning($"On Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                 }
                 catch(Exception execption)
                 {
@@ -8970,48 +9592,53 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (SelectableManager.Instance != null)
+                    if (IsDraggableWidget())
                     {
-                        if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
+                        if (SelectableManager.Instance != null)
                         {
-                            if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                            if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                             {
-                                if (!IsSelected())
+                                if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
                                 {
-                                    buttonComponent.interactable = true;
-                                    buttonComponent.CancelInvoke();
-
-                                    widgetRect.localScale = Vector3.one;
-                                    //OnSelectionFrameState(false, InputUIState.Normal, false);
-
-                                    ResetFolderWidgets();
-
-                                    GetWidgetContainer().GetPlaceHolder(placeholder =>
+                                    if (!IsSelected())
                                     {
-                                        if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                        buttonComponent.interactable = true;
+                                        buttonComponent.CancelInvoke();
+
+                                        widgetRect.localScale = Vector3.one;
+                                        //OnSelectionFrameState(false, InputUIState.Normal, false);
+
+                                        ResetFolderWidgets();
+
+                                        GetWidgetContainer().GetPlaceHolder(placeholder =>
                                         {
-                                            if (placeholder.data.IsActive())
+                                            if (Helpers.IsSuccessCode(placeholder.resultsCode))
                                             {
-                                                widgetRect.SetParent(GetWidgetContainer().GetContentContainer(), false);
-                                                placeholder.data.ResetPlaceHolder(ref widgetRect);
+                                                if (placeholder.data.IsActive())
+                                                {
+                                                    widgetRect.SetParent(GetWidgetContainer().GetContentContainer(), false);
+                                                    placeholder.data.ResetPlaceHolder(ref widgetRect);
+                                                }
                                             }
-                                        }
-                                        else
-                                            Debug.LogWarning($"--> Failed With Results : {placeholder.results}");
-                                    });
+                                            else
+                                                Debug.LogWarning($"--> Failed With Results : {placeholder.results}");
+                                        });
 
-                                    isDragging = false;
+                                        isDragging = false;
 
-                                    // This below here works but not desirable.
-                                    //ScreenUIManager.Instance.Refresh();
+                                        // This below here works but not desirable.
+                                        //ScreenUIManager.Instance.Refresh();
+                                    }
+
+                                    OnReset();
                                 }
-
-                                OnReset();
                             }
                         }
+                        else
+                            LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnEndDragExecuted(eventData));
                     }
                     else
-                        LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnEndDragExecuted(eventData));
+                        LogWarning($"On Drag End Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                 }
                 catch(Exception exception)
                 {
@@ -9139,7 +9766,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (Helpers.IsSuccessCode(directoryCheckCallback.resultsCode))
                                             {
-                                                StorageDirectoryData sourceDirectoryData = (selectableAssetType == SelectableAssetType.Folder) ? GetFolderData().storageData : GetSceneAssetData().storageData;
+                                                StorageDirectoryData sourceDirectoryData = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? GetFolderData().storageData : GetSceneAssetData().storageData;
                                                 StorageDirectoryData targetStorageData = GetTargetDirectoryFromSourceStorageDirectoryData(sourceDirectoryData, hoveredFolderData.storageData);
 
                                                 OnDragInsideFolderEvent(sourceDirectoryData, targetStorageData, widgetMovedCallback =>
@@ -9169,7 +9796,7 @@ namespace Com.RedicalGames.Filar
                                                     // Reload Screen
                                                     ScreenUIManager.Instance.Refresh();
 
-                                                        if (showNotifications)
+                                                        if (notification.showNotifications)
                                                         {
                                                             notification.message = widgetMovedCallback.results;
                                                             NotificationSystemManager.Instance.ScheduleNotification(notification);
@@ -9205,7 +9832,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 OnReset();
 
-                                                                string widgetTitle = (selectableAssetType == SelectableAssetType.Folder) ? $"Folder Already Exist" : "File Already Exist";
+                                                                string widgetTitle = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? $"Folder Already Exist" : "File Already Exist";
 
                                                                 SceneDataPackets dataPackets = new SceneDataPackets
                                                                 {
@@ -9358,7 +9985,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 hoveredWidget = containerFolderWidgetsReferenceList[widgetIndex];
 
-                                if (hoveredWidget.selectableAssetType == SelectableAssetType.Folder)
+                                if (hoveredWidget.selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder)
                                 {
                                     if (canHighlightHoveredWidget.snapToHoveredFolder && GetWidgetContainer().SnapDraggedWidgetToHoveredFolder())
                                     {
@@ -9428,7 +10055,7 @@ namespace Com.RedicalGames.Filar
 
             void OnWidgetScaleEvent(Vector3 widgetScale)
             {
-                if (!scaleWidgetOnDrag)
+                if (!selectableComponent.UpdateSelectionDimensionsOnDragEnabled())
                     return;
 
                 widgetRect.localScale = widgetScale;
@@ -9546,102 +10173,110 @@ namespace Com.RedicalGames.Filar
 
             void OnDragInsideFolderEvent(StorageDirectoryData sourceDirectoryData, StorageDirectoryData targetDirectoryData, Action<CallbackData<DirectoryInfo>> callback = null)
             {
-                CallbackData<DirectoryInfo> callbackResults = new CallbackData<DirectoryInfo>();
-
-                bool targetStorageDataDoesntExist = (selectableAssetType == SelectableAssetType.Folder) ? !Directory.Exists(targetDirectoryData.directory) : !File.Exists(targetDirectoryData.path);
-
-                if (targetStorageDataDoesntExist)
+                try
                 {
-                    UIScreenWidget<SceneDataPackets> widget = this as UIScreenWidget<SceneDataPackets>;
+                    CallbackData<DirectoryInfo> callbackResults = new CallbackData<DirectoryInfo>();
 
-                    Debug.LogError($"==> Path : {targetDirectoryData.path} - Directory : {targetDirectoryData.directory} Doesn't Exist");
+                    bool targetStorageDataDoesntExist = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? !Directory.Exists(targetDirectoryData.directory) : !File.Exists(targetDirectoryData.path);
 
-                    if (widget != null)
+                    if (targetStorageDataDoesntExist)
                     {
-                        bool hasStorageData = !string.IsNullOrEmpty(sourceDirectoryData.directory) && !string.IsNullOrEmpty(targetDirectoryData.directory);
+                        UIScreenWidget<SceneDataPackets> widget = this as UIScreenWidget<SceneDataPackets>;
 
-                        if (hasStorageData)
+                        Debug.LogError($"==> Path : {targetDirectoryData.path} - Directory : {targetDirectoryData.directory} Doesn't Exist");
+
+                        if (widget != null)
                         {
-                            SceneAssetsManager.Instance.OnMoveToDirectory(sourceDirectoryData, targetDirectoryData, widget.GetSelectableAssetType(), fileMoveCallback =>
+                            bool hasStorageData = !string.IsNullOrEmpty(sourceDirectoryData.directory) && !string.IsNullOrEmpty(targetDirectoryData.directory);
+
+                            if (hasStorageData)
                             {
-                                if (Helpers.IsSuccessCode(fileMoveCallback.resultsCode))
+                                SceneAssetsManager.Instance.OnMoveToDirectory(sourceDirectoryData, targetDirectoryData, widget.GetSelectableAssetType(), fileMoveCallback =>
                                 {
-                                    if (widget != null)
+                                    if (Helpers.IsSuccessCode(fileMoveCallback.resultsCode))
                                     {
-                                        if (widgetRect != null)
+                                        if (widget != null)
                                         {
-                                            widgetRect.SetParent(hoveredWidget.GetFolderContentContainer(), true);
-                                            widgetRect.gameObject.SetActive(false);
-                                        }
-
-                                        hoveredWidget = null;
-
-                                        GetWidgetContainer().GetPlaceHolder(placeholder =>
-                                        {
-                                            if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                            if (widgetRect != null)
                                             {
-                                                if (placeholder.data.IsActive())
-                                                    placeholder.data.ResetPlaceHolder();
+                                                widgetRect.SetParent(hoveredWidget.GetFolderContentContainer(), true);
+                                                widgetRect.gameObject.SetActive(false);
                                             }
-                                            else
-                                                LogWarning(placeholder.results, this);
-                                        });
-                                    }
-                                    else
-                                        LogError("Widget Is Already Destroyed.", this);
 
-                                    if (callback != null)
-                                    {
-                                        callbackResults.results = fileMoveCallback.results;
-                                        callbackResults.resultsCode = fileMoveCallback.resultsCode;
-                                    }
-                                }
-                                else
-                                {
-                                    if (fileMoveCallback.data.dataAlreadyExistsInTargetDirectory)
-                                    {
-                                        callbackResults = fileMoveCallback;
-                                        callback?.Invoke(callbackResults);
-                                    }
-                                    else
-                                    {
+                                            hoveredWidget = null;
+
+                                            GetWidgetContainer().GetPlaceHolder(placeholder =>
+                                            {
+                                                if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                {
+                                                    if (placeholder.data.IsActive())
+                                                        placeholder.data.ResetPlaceHolder();
+                                                }
+                                                else
+                                                    LogWarning(placeholder.results, this);
+                                            });
+                                        }
+                                        else
+                                            LogError("Widget Is Already Destroyed.", this);
+
                                         if (callback != null)
                                         {
                                             callbackResults.results = fileMoveCallback.results;
                                             callbackResults.resultsCode = fileMoveCallback.resultsCode;
                                         }
-                                        else
-                                            LogWarning($"On Move To Directory Failed With Results : {fileMoveCallback.results}", this);
                                     }
-                                }
-                            });
+                                    else
+                                    {
+                                        if (fileMoveCallback.data.dataAlreadyExistsInTargetDirectory)
+                                        {
+                                            callbackResults = fileMoveCallback;
+                                            callback?.Invoke(callbackResults);
+                                        }
+                                        else
+                                        {
+                                            if (callback != null)
+                                            {
+                                                callbackResults.results = fileMoveCallback.results;
+                                                callbackResults.resultsCode = fileMoveCallback.resultsCode;
+                                            }
+                                            else
+                                                LogWarning($"On Move To Directory Failed With Results : {fileMoveCallback.results}", this);
+                                        }
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = "Source / Target Directory Data Is Missing / Null Or Invalid.";
+                                callbackResults.resultsCode = Helpers.ErrorCode;
+                            }
                         }
                         else
                         {
-                            callbackResults.results = "Source / Target Directory Data Is Missing / Null Or Invalid.";
+                            callbackResults.results = "Widget Is Null / Couldn't Cats This To UIScreenWidget<SceneDataPackets>";
                             callbackResults.resultsCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "Widget Is Null / Couldn't Cats This To UIScreenWidget<SceneDataPackets>";
+                        string assetType = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? "Folder" : "File";
+                        callbackResults.results = $"{assetType} Already Exist In Folder : {targetDirectoryData.name} ";
                         callbackResults.resultsCode = Helpers.ErrorCode;
+
+                        callbackResults.data = new DirectoryInfo
+                        {
+                            assetType = selectableComponent.GetSelectableAssetType(),
+                            dataAlreadyExistsInTargetDirectory = true
+                        };
                     }
+
+                    callback?.Invoke(callbackResults);
                 }
-                else
+                catch(Exception exception)
                 {
-                    string assetType = (selectableAssetType == SelectableAssetType.Folder) ? "Folder" : "File";
-                    callbackResults.results = $"{assetType} Already Exist In Folder : {targetDirectoryData.name} ";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
-
-                    callbackResults.data = new DirectoryInfo
-                    {
-                        assetType = selectableAssetType,
-                        dataAlreadyExistsInTargetDirectory = true
-                    };
+                    LogError(exception.Message, this);
+                    throw exception;
                 }
-
-                callback?.Invoke(callbackResults);
             }
 
             StorageDirectoryData GetTargetDirectoryFromSourceStorageDirectoryData(StorageDirectoryData sourceStorageData, StorageDirectoryData targetStorageData)
@@ -9660,7 +10295,7 @@ namespace Com.RedicalGames.Filar
                 #region Target Directory
 
                 // Get Source Folder Directory info
-                string folderTargetDirectoryPath = Path.Combine(targetStorageData.directory, SceneAssetsManager.Instance.GetAssetNameFormatted(sourceStorageData.name, selectableAssetType));
+                string folderTargetDirectoryPath = Path.Combine(targetStorageData.directory, SceneAssetsManager.Instance.GetAssetNameFormatted(sourceStorageData.name, selectableComponent.GetSelectableAssetType()));
                 targetStorageData.directory = Helpers.GetFormattedDirectoryPath(folderTargetDirectoryPath); ;
 
                 #endregion
@@ -9689,20 +10324,20 @@ namespace Com.RedicalGames.Filar
 
                 source.name = name;
                 source.selection = this;
-                source.selectionInfoType = selectionFrame.GetCurrentSelectionState().uiStateData.selectionType;
-                source.state = selectionFrame.GetCurrentSelectionState().uiStateData.state;
-                source.showSelection = selectionFrame.GetCurrentSelectionState().showSelection;
-                source.showTint = selectionFrame.GetCurrentSelectionState().showTint;
+                source.selectionInfoType = selectableComponent.GetCurrentSelectionState().uiStateData.selectionType;
+                source.state = selectableComponent.GetCurrentSelectionState().uiStateData.state;
+                source.showSelection = selectableComponent.GetCurrentSelectionState().showSelection;
+                source.showTint = selectableComponent.GetCurrentSelectionState().showTint;
 
                 return source;
             }
 
             public FocusedSelectionInfoData<T> GetWidgetSelectionInfoData(FocusedSelectionInfoData<T> source)
             {
-                source.selectionInfoType = selectionFrame.GetCurrentSelectionState().uiStateData.selectionType;
-                source.state = selectionFrame.GetCurrentSelectionState().uiStateData.state;
-                source.showSelection = selectionFrame.GetCurrentSelectionState().showSelection;
-                source.showTint = selectionFrame.GetCurrentSelectionState().showTint;
+                source.selectionInfoType = selectableComponent.GetCurrentSelectionState().uiStateData.selectionType;
+                source.state = selectableComponent.GetCurrentSelectionState().uiStateData.state;
+                source.showSelection = selectableComponent.GetCurrentSelectionState().showSelection;
+                source.showTint = selectableComponent.GetCurrentSelectionState().showTint;
 
                 return source;
             }
@@ -9711,11 +10346,11 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<FocusedSelectionInfoData<T>> callbackResults = new CallbackData<FocusedSelectionInfoData<T>>();
 
-                if (selectableAssetType != SelectableAssetType.PlaceHolder)
+                if (selectableComponent.GetSelectableAssetType() != SelectableAssetType.PlaceHolder)
                 {
                     if (!async)
                     {
-                        if (selectionFrame.IsInitialized().hasSelectionFrame && selectionFrame.IsInitialized().hasSelectionState && selectionFrame.IsInitialized().hasTint)
+                        if (selectableComponent.IsInitialized().hasSelectionFrame && selectableComponent.IsInitialized().hasSelectionState && selectableComponent.IsInitialized().hasTint)
                         {
                             #region Selection Info Data
                             FocusedSelectionInfoData<T> newSelectionInfoData = new FocusedSelectionInfoData<T>();
@@ -9733,7 +10368,7 @@ namespace Com.RedicalGames.Filar
                             if (newSelectionInfoData.selection != null)
                             {
 
-                                Debug.LogError($"==> New Selection State : {selectionFrame.GetCurrentSelectionState().showSelection}");
+                                Debug.LogError($"==> New Selection State : {selectableComponent.GetCurrentSelectionState().showSelection}");
 
                                 callbackResults.results = $"Showing Selection Frame For [State] : {selectionInfoData.state} - (Widget) Selection For Game Object [Named] {this.name}.";
                                 callbackResults.data = GetWidgetSelectionInfoData(newSelectionInfoData);
@@ -9794,21 +10429,21 @@ namespace Com.RedicalGames.Filar
 
             public void OnSelectionFrameState(bool show, InputUIState state, bool showTint, bool async = false)
             {
-                if (selectableAssetType != SelectableAssetType.PlaceHolder)
+                if (selectableComponent.GetSelectableAssetType() != SelectableAssetType.PlaceHolder)
                 {
                     if (!async)
                     {
-                        if (selectionFrame.IsInitialized().hasSelectionFrame && selectionFrame.IsInitialized().hasSelectionState && selectionFrame.IsInitialized().hasTint)
+                        if (selectableComponent.IsInitialized().hasSelectionFrame && selectableComponent.IsInitialized().hasSelectionState && selectableComponent.IsInitialized().hasTint)
                         {
                             if (show)
                             {
-                                selectionFrame.Show(state, showTint);
+                                selectableComponent.Show(state, showTint);
 
                                 if (state == InputUIState.Selected && !IsSelected())
                                     OnSelected();
                             }
                             else
-                                selectionFrame.Hide();
+                                selectableComponent.Hide();
                         }
                         else
                             LogWarning($"SelectionFrame For State Type : {state} is Missing / Null For Game Object Named : {this.name}.", this, () => OnSelectionFrameState(show, state, showTint, async = false));
@@ -9824,12 +10459,12 @@ namespace Com.RedicalGames.Filar
             {
                 yield return new WaitForSeconds(2);
 
-                if (selectionFrame.IsInitialized().hasSelectionFrame && selectionFrame.IsInitialized().hasSelectionState && selectionFrame.IsInitialized().hasTint)
+                if (selectableComponent.IsInitialized().hasSelectionFrame && selectableComponent.IsInitialized().hasSelectionState && selectableComponent.IsInitialized().hasTint)
                 {
                     if (show)
-                        selectionFrame.Show(state, showTint);
+                        selectableComponent.Show(state, showTint);
                     else
-                        selectionFrame.Hide();
+                        selectableComponent.Hide();
                 }
                 else
                     LogWarning($"Selection Frame is Missing / Null For Game Object [Named] : {this.name}.", this, () => OnSelectionFrameStateAsync(show, state, showTint));
@@ -9837,12 +10472,12 @@ namespace Com.RedicalGames.Filar
 
             public void OnSelectionFrameState(bool show, InputUIState state, bool showTint, Vector3 sizeDelta)
             {
-                if (selectionFrame.IsInitialized().hasSelectionFrame && selectionFrame.IsInitialized().hasSelectionState && selectionFrame.IsInitialized().hasTint)
+                if (selectableComponent.IsInitialized().hasSelectionFrame && selectableComponent.IsInitialized().hasSelectionState && selectableComponent.IsInitialized().hasTint)
                 {
                     if (show)
-                        selectionFrame.Show(state, showTint);
+                        selectableComponent.Show(state, showTint);
                     else
-                        selectionFrame.Hide();
+                        selectableComponent.Hide();
                 }
                 else
                     LogWarning("On Selection Frame State Failed : selectionFrame is Missing / Null.", this, () => OnSelectionFrameState(show, state, showTint, sizeDelta));
@@ -9881,7 +10516,7 @@ namespace Com.RedicalGames.Filar
                 if (!IsSelected())
                     if (buttonComponent)
                     {
-                        var actionType = (selectableAssetType == SelectableAssetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
+                        var actionType = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
                         OnSetActionButtonEvent(actionType, OnActionButtonInputs);
                     }
             }
@@ -9894,7 +10529,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (GetActive())
                         {
-                            var actionType = (selectableAssetType == SelectableAssetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
+                            var actionType = (selectableComponent.GetSelectableAssetType() == SelectableAssetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
 
                             if (selectionState == InputUIState.Selected)
                             {
@@ -11173,7 +11808,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region UI Action Dropdown States
+            #region UI Action Dropdown State\s
 
             public void SetActionDropdownState(InputDropDownActionType actionType, InputUIState state)
             {
@@ -12755,6 +13390,399 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class UIScreenWidgetsPrefabDataLibrary
+        {
+            #region Components
+
+            [Header("Widgets Prefabs Library")]
+
+            [Space(5)]
+            public List<UIScreenWidgetsPrefabData<SceneDataPackets>> screenWidgetPrefabDataList = new List<UIScreenWidgetsPrefabData<SceneDataPackets>>() ;
+
+            #endregion
+
+            #region Main
+
+            public void GetAllUIScreenWidgetsPrefabData(Action<CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>> callback)
+            {
+                CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>> callbackResults = new CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>();
+
+                if (screenWidgetPrefabDataList != null && screenWidgetPrefabDataList.Count > 0)
+                {
+                    var initializedWidgetPrefabList = screenWidgetPrefabDataList.FindAll(widgetPrefab => widgetPrefab.IsInitialized());
+
+                    if (initializedWidgetPrefabList != null && initializedWidgetPrefabList.Count > 0 )
+                    {
+                        callbackResults.results = $"{screenWidgetPrefabDataList.Count} Initialized Screen UI Widgets Prefabs Data Found - Loaded.";
+                        callbackResults.data = screenWidgetPrefabDataList;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Find Initialized UI Screen Widgets Prefab Data From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Couldn't Get All UI Screen Widgets Prefab Data From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetAllUIScreenWidgetsPrefabDataForScreen(UIScreenType screenType, Action<CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>> callback)
+            {
+                CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>> callbackResults = new CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>();
+
+                if(screenWidgetPrefabDataList != null && screenWidgetPrefabDataList.Count > 0 )
+                {
+                    var widgetsPefabsFoundForScreenTypeList = screenWidgetPrefabDataList.FindAll(widgetPrefab => widgetPrefab.GetScreenType() == screenType);
+
+                    if(widgetsPefabsFoundForScreenTypeList != null && widgetsPefabsFoundForScreenTypeList.Count > 0)
+                    {
+                        var initializedWidgetPrefabList = widgetsPefabsFoundForScreenTypeList.FindAll(widgetPrefab => widgetPrefab.IsInitialized());
+
+                        if (initializedWidgetPrefabList != null && initializedWidgetPrefabList.Count > 0)
+                        {
+                            callbackResults.results = $"{widgetsPefabsFoundForScreenTypeList.Count} Initialized UI Screen Widget Prefab(s) For Screen Type : {screenType} Found - Loaded.";
+                            callbackResults.data = widgetsPefabsFoundForScreenTypeList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Couldn't Find Initialized UI Screen Widgets Prefab Data For Screen Type : {screenType} - From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Find Any UI Screen Widget Prefab Data For Screen Type : {screenType} - Please Make Sure UI Screen Widget Prefabs Data For Screen Type : {screenType} Is Initialized In Scene Assets Manager Editor Inspector.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Couldn't Get All UI Screen Widgets Prefab Data For Screen Type : {screenType} - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+        }
+
+
+        [Serializable]
+        public class UIScreenWidgetsPrefabData<T> where T : DataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public string name;
+
+            [Space(5)]
+            public List<UIScreenWidget<T>> screenWidgetPrefabList = new List<UIScreenWidget<T>>();
+
+            [Space(5)]
+            public UIScreenType screenType;
+
+            [Space(5)]
+            public bool initializePrefabData = false;
+
+            #endregion
+
+            #region Main
+
+            public void SetInitialized(bool initialize) => initializePrefabData = initialize;
+
+            public bool IsInitialized()
+            {
+                return initializePrefabData;
+            }
+
+            public List<UIScreenWidget<T>> GetUIScreenWidgetsPrefabData()
+            {
+                return screenWidgetPrefabList;
+            }
+
+            public void AddUIScreenWidgetPrefabData(UIScreenWidget<T> widgetPrefab, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (screenWidgetPrefabList != null)
+                {
+                    if (widgetPrefab != null)
+                    {
+                        if (widgetPrefab.GetUIWidgetPresenterScreenType() == screenType)
+                        {
+                            if (!screenWidgetPrefabList.Contains(widgetPrefab))
+                            {
+                                screenWidgetPrefabList.Add(widgetPrefab);
+
+                                if (screenWidgetPrefabList.Contains(widgetPrefab))
+                                {
+                                    callbackResults.results = $"Added UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Library For Screen Type : {screenType}.";
+                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data For Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Library Of Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}. Not Sure What Could Be The Issue, Please Check Scene Assets Manager Prefab Library..";
+                                    callbackResults.resultsCode = Helpers.WarningCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Of Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Already Exists In The UI Screen Woidgets Data Library.";
+                                callbackResults.resultsCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Of Screen Type : {screenType} - Screen Type : Is Invalid For This Data. Please Add To Matching Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}";
+                            callbackResults.resultsCode = Helpers.WarningCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data To UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Widget Is Null / Missing / Not Found.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Dat To UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Widgets List Is Null / Not Initialized In SCene Assets Manager's Editor.";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveUIScreenWidgetPrefabData(UIScreenWidget<T> widgetPrefab, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (screenWidgetPrefabList != null)
+                {
+                    if (widgetPrefab != null)
+                    {
+                        if (widgetPrefab.GetUIWidgetPresenterScreenType() == screenType)
+                        {
+                            if (screenWidgetPrefabList.Contains(widgetPrefab))
+                            {
+                                screenWidgetPrefabList.Remove(widgetPrefab);
+
+                                if (!screenWidgetPrefabList.Contains(widgetPrefab))
+                                {
+                                    callbackResults.results = $"Removed UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType}.";
+                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Not Removed. Not Sure What Could Be The Issue, Please Check Here.";
+                                    callbackResults.resultsCode = Helpers.WarningCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Doesn't Exist In The UI Screen Widgets Data Library.";
+                                callbackResults.resultsCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab Data For Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Type : Is Invalid For This Data. Please Check To See If Is Matching Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}";
+                            callbackResults.resultsCode = Helpers.WarningCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Widget Is Null / Missing / Not Found.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Widgets List Is Null / Not Initialized In SCene Assets Manager's Editor.";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetUIScreenWidgetData(SelectableAssetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget<T>>> callback)
+            {
+                CallbackData<UIScreenWidget<T>> callbackResults = new CallbackData<UIScreenWidget<T>>();
+
+                if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
+                {
+                    // Find Asset Type
+                    var foundScreenWidgetsList = screenWidgetPrefabList.FindAll(widgets => widgets.GetSelectableAssetType() == assetType);
+
+                    if (foundScreenWidgetsList != null && foundScreenWidgetsList.Count > 0)
+                    {
+                        // Find Layout View Type
+                        var foundWidgetOfViewType = foundScreenWidgetsList.FindAll(widgets => widgets.GetLayoutViewType() == viewType);
+
+                        if (foundWidgetOfViewType != null && foundWidgetOfViewType.Count > 0)
+                        {
+                            var widget = foundWidgetOfViewType.FirstOrDefault(widget => widget.GetUIWidgetPresenterScreenType() == screenType);
+
+                            if (widget != null)
+                            {
+                                callbackResults.results = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
+                                callbackResults.data = widget;
+                                callbackResults.resultsCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.results = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableAssetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget<T>>> callback)
+            {
+                CallbackData<UIScreenWidget<T>> callbackResults = new CallbackData<UIScreenWidget<T>>();
+
+                if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
+                {
+                    // Find Widget Type
+                    var foundWidgetsOfTypeList = screenWidgetPrefabList.FindAll(widgets => widgets.GetSelectableType() == widgetType);
+
+                    if(foundWidgetsOfTypeList != null && foundWidgetsOfTypeList.Count > 0)
+                    {
+                        // Find Asset Type
+                        var foundScreenWidgetsList = foundWidgetsOfTypeList.FindAll(widgets => widgets.GetSelectableAssetType() == assetType);
+
+                        if (foundScreenWidgetsList != null && foundScreenWidgetsList.Count > 0)
+                        {
+                            // Find Layout View Type
+                            var foundWidgetOfViewType = foundScreenWidgetsList.FindAll(widgets => widgets.GetLayoutViewType() == viewType);
+
+                            if(foundWidgetOfViewType != null && foundWidgetOfViewType.Count > 0)
+                            {
+                                var widget = foundWidgetOfViewType.FirstOrDefault(widget => widget.GetUIWidgetPresenterScreenType() == screenType);
+
+                                if(widget != null)
+                                {
+                                    callbackResults.results = $"UI Screen Widgets Prefab Data Of Widget Type : {widgetType} - On Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
+                                    callbackResults.data = widget;
+                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.results = $"UI Screen Widgets Prefab Data Of Widget Type : {widgetType} - On Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"There Are No Screen Widgets Of Selectable Widgets Type : {widgetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} Please Varify If UI Screen Widgets Prefab Data Library Is Initialized With Widget Of Type : {widgetType} - In Scene Assets Manager's Editor Panel.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }    
+
+                callback.Invoke(callbackResults);
+            }
+
+            public UIScreenWidget<T> GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableAssetType assetType, LayoutViewType viewType)
+            {
+                UIScreenWidget<T> screenWidgetData = null;
+
+                if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
+                {
+                    // Find Widget Type
+                    var foundWidgetsOfTypeList = screenWidgetPrefabList.FindAll(widgets => widgets.GetSelectableType() == widgetType);
+
+                    if (foundWidgetsOfTypeList != null && foundWidgetsOfTypeList.Count > 0)
+                    {
+                        // Find Asset Type
+                        var foundScreenWidgetsList = foundWidgetsOfTypeList.FindAll(widgets => widgets.GetSelectableAssetType() == assetType);
+
+                        if (foundScreenWidgetsList != null && foundScreenWidgetsList.Count > 0)
+                        {
+                            // Find Layout View Type
+                            var foundWidgetOfViewType = foundScreenWidgetsList.FindAll(widgets => widgets.GetLayoutViewType() == viewType);
+
+                            if (foundWidgetOfViewType != null && foundWidgetOfViewType.Count > 0)
+                            {
+                                var widget = foundWidgetOfViewType.FirstOrDefault(widget => widget.GetUIWidgetPresenterScreenType() == screenType);
+
+                                if (widget != null)
+                                    screenWidgetData = widget;
+                            }
+                        }
+                    }
+                }
+
+                return screenWidgetData;
+            }
+
+            public UIScreenType GetScreenType()
+            {
+                return screenType;
+            }
+
+            public void Clear() => screenWidgetPrefabList.Clear();
+
+            #endregion
+        }
+
+        [Serializable]
         public abstract class Widget : AppMonoBaseClass
         {
             [Space(5)]
@@ -12850,7 +13878,7 @@ namespace Com.RedicalGames.Filar
 
             protected RectTransform widgetRect;
 
-            //[HideInInspector]
+            [HideInInspector]
             public SceneDataPackets currentDataPackets;
 
             Coroutine showWidgetAsyncRoutine;
@@ -18793,6 +19821,9 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public UIScreenType screenType;
+
+            [Space(5)]
+            public LayoutViewType layoutViewType = LayoutViewType.Default;
 
             [Space(5)]
             public ContentContainerType containerType;

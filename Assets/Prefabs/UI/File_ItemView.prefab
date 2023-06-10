@@ -395,8 +395,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad034a4585f21a449a38458838d9b94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enabledInfoLogs: 0
-  enabledExceptionLogs: 0
+  className: Selectable File Widget_Draggable
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: Redical Games =>
+  viewType: 0
   actionButtonList:
   - name: Open Asset Preview Buttton
     fieldName: {fileID: 0}
@@ -435,6 +440,7 @@ MonoBehaviour:
         blurScreen: 0
         delay: 0
         duration: 0
+        showNotifications: 0
         proccessed: 0
       screenWidgetPrefab: {fileID: 0}
       dynamicWidgetsContainer: {fileID: 0}
@@ -555,6 +561,7 @@ MonoBehaviour:
         blurScreen: 0
         delay: 0
         duration: 0
+        showNotifications: 0
         proccessed: 0
       screenWidgetPrefab: {fileID: 0}
       dynamicWidgetsContainer: {fileID: 0}
@@ -673,6 +680,7 @@ MonoBehaviour:
         blurScreen: 0
         delay: 0
         duration: 0
+        showNotifications: 0
         proccessed: 0
       screenWidgetPrefab: {fileID: 0}
       dynamicWidgetsContainer: {fileID: 0}
@@ -764,27 +772,27 @@ MonoBehaviour:
   - name: Pinned Asset Icon Displayer
     value: {fileID: 3117047176746360431}
     imageDisplayerType: 8
-  selectableType: 0
-  selectableAssetType: 0
-  selectionFrame:
-    selectionFrame:
-      name: Selection Frame
-      value: {fileID: 1885884894441238015}
-      imageDisplayerType: 2
-    tint: {fileID: 5019118987476297293}
-    selectionStates:
-    - name: Normal
-      selectionColor: {r: 1, g: 1, b: 1, a: 1}
-      selectionColorState: 0
-    - name: Selected
-      selectionColor: {r: 0.7019608, g: 0.7372549, b: 0.5372549, a: 1}
-      selectionColorState: 3
-    - name: Highlighted
-      selectionColor: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 1}
-      selectionColorState: 9
-  pressAndHoldDuration: 0.5
-  selectionStateButtonScale: 0.95
-  folderContentContainer: {fileID: 0}
+  selectableComponent:
+    selectionInfo:
+      selectionThreshHold: 0
+      selectionUIDimensionRatio: 0
+      selectionDragInfo:
+        isDraggable: 0
+        selectionDragTriggerRadius: 0
+        updateSelectionDimensionsOnDrag: 0
+    selectableWidgetType: 0
+    selectableAssetType: 0
+    selectionComponent:
+      selectionFrame:
+        name: 
+        value: {fileID: 0}
+        imageDisplayerType: 0
+      selectionTint:
+        name: 
+        value: {fileID: 0}
+        imageDisplayerType: 0
+      uiSelectionContentContainer: {fileID: 0}
+    selectionStates: []
   dataPackets:
     inputType: 1
     selectionOption: 0
@@ -801,6 +809,7 @@ MonoBehaviour:
       blurScreen: 0
       delay: 0
       duration: 0
+      showNotifications: 0
       proccessed: 0
     screenWidgetPrefab: {fileID: 0}
     dynamicWidgetsContainer: {fileID: 0}
@@ -872,9 +881,6 @@ MonoBehaviour:
     isRootFolder: 0
     referencedActionButtonDataList: []
   containerFolderWidgetsReferenceList: []
-  dragActiveDistance: 20
-  scaleWidgetOnDrag: 1
-  showNotifications: 1
   notification:
     title: 
     message: 
@@ -884,42 +890,8 @@ MonoBehaviour:
     blurScreen: 1
     delay: 0.75
     duration: 1.75
+    showNotifications: 0
     proccessed: 0
-  assetData:
-    name: 
-    modelAsset: {fileID: 0}
-    info:
-      fields: []
-    sceneObject:
-      info:
-        fields: []
-      value: {fileID: 0}
-    materialProperties:
-      mainTexturePath: 
-      normalMapTexturePath: 
-      aoMapTexturePath: 
-      glossiness: 0
-      bumpScale: 0
-      aoStrength: 0
-    sceneScale: 0
-    description: 
-    currentAssetMode: 0
-    creationDateTime: 
-    hasMLTFile: 0
-    storageData:
-      name: 
-      type: 0
-      path: 
-      directory: 
-    assetFields: []
-    dontShowMetadataWidget: 0
-    categoryType: 0
-    defaultWidgetActionState: 0
-    assetImportPosition: {x: 0, y: 0, z: 0}
-    assetImportRotation: {x: 0, y: 0, z: 0}
-  isSelected: 0
-  canDrag: 0
-  contentIndex: 0
 --- !u!114 &8336177150311654027
 MonoBehaviour:
   m_ObjectHideFlags: 0
