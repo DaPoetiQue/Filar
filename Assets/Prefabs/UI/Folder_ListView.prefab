@@ -589,7 +589,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 375598612570533825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da576fedf70e6e645800efe4a0a998b2, type: 3}
+  m_Script: {fileID: 11500000, guid: a7ffc7b7e4f4854459953df613df6e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enabledInfoLogs: 0
@@ -600,21 +600,21 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 6949749420808757972}
     selectionStates:
-    - name: Normal
+    - name: Normal State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 0
-    - name: Selected
+    - name: Selected State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 3
-    - name: Enabled
+    - name: Enabled State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 1
-    - name: Disabled
+    - name: Disabled State
       value: {fileID: 0}
-      color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
       state: 2
     dataPackets:
       inputType: 1
@@ -680,7 +680,7 @@ MonoBehaviour:
       storageDirectoryType: 1
       folderStructureType: 1
       requiredPermission: 0
-      screenRefreshLoadingItemType: 1
+      screenRefreshLoadingItemType: 0
       sceneMode: 0
       sceneAssetMode: 0
       blurScreen: 0
@@ -720,27 +720,27 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 375598611828543873}
     selectionStates:
-    - name: Normal
+    - name: Normal State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 0
-    - name: Selected
+    - name: Selected State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 3
-    - name: Enabled
+    - name: Enabled State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 1
-    - name: Disabled
+    - name: Disabled State
       value: {fileID: 0}
-      color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
       state: 2
     dataPackets:
       inputType: 7
       selectionOption: 0
-      screenType: 0
-      containerType: 0
+      screenType: 1
+      containerType: 2
       stateType: 0
       showNotification: 0
       notification:
@@ -838,27 +838,27 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 375598612868695786}
     selectionStates:
-    - name: Normal
+    - name: Normal State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 0
-    - name: Selected
+    - name: Selected State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 3
-    - name: Enabled
+    - name: Enabled State
       value: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
       state: 1
-    - name: Disabled
+    - name: Disabled State
       value: {fileID: 0}
-      color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
       state: 2
     dataPackets:
       inputType: 7
       selectionOption: 0
-      screenType: 0
-      containerType: 0
+      screenType: 1
+      containerType: 2
       stateType: 0
       showNotification: 0
       notification:
@@ -958,7 +958,7 @@ MonoBehaviour:
   - name: Action Icon
     value: {fileID: 375598612893605525}
     imageDisplayerType: 3
-  - name: Pinned Asset Icon
+  - name: Pinned Item Icon Displayer
     value: {fileID: 8026467339168458640}
     imageDisplayerType: 8
   selectableType: 0
@@ -970,19 +970,22 @@ MonoBehaviour:
       imageDisplayerType: 2
     tint: {fileID: 9145588308959201615}
     selectionStates:
-    - name: Normal
+    - name: Normal Selection State
       selectionColor: {r: 1, g: 1, b: 1, a: 1}
       selectionColorState: 0
-    - name: Selected
+    - name: Selected Selection State
       selectionColor: {r: 0.7019608, g: 0.7372549, b: 0.5372549, a: 1}
       selectionColorState: 3
-    - name: Hovered
+    - name: Hovered Selection State
       selectionColor: {r: 0.3764706, g: 0.7176471, b: 0.7058824, a: 1}
       selectionColorState: 8
-    - name: Interacted
+    - name: Hovered Selection State
+      selectionColor: {r: 0.3764706, g: 0.7176471, b: 0.7058824, a: 1}
+      selectionColorState: 8
+    - name: Highlighted Selection State
       selectionColor: {r: 0.1882353, g: 0.2, b: 0.19607843, a: 1}
       selectionColorState: 9
-    - name: Focused
+    - name: Focused Selection State
       selectionColor: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 1}
       selectionColorState: 10
   pressAndHoldDuration: 0.5
@@ -1046,7 +1049,7 @@ MonoBehaviour:
       assetImportRotation: {x: 0, y: 0, z: 0}
     sceneAssetScaleValueType: 0
     dynamicWidgetsContainerOrientation: 0
-    widgetType: 16
+    widgetType: 0
     widgetScreenPosition: {x: 0, y: 0}
     assetFieldConfiguration: 0
     storageDirectoryType: 0

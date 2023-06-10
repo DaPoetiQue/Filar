@@ -60,7 +60,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnSetFolderData(AppData.Folder folder)
+        protected override void OnSetUIWidgetData(AppData.Folder folder)
         {
             throw new System.NotImplementedException();
         }
