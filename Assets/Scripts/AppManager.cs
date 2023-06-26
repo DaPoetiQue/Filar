@@ -35,7 +35,6 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-
         #region Unity Callbacks
 
         void Awake() => SetupInstance();
@@ -69,6 +68,17 @@ namespace Com.RedicalGames.Filar
 
             //if (SceneAssetsManager.Instance != null)
             //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
+
+            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+            {
+                if (containerResults.Success())
+                {
+                    var rootFolder = SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
+                    var container = containerResults.data;
+
+                    SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                }
+            });
 
 
 

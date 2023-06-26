@@ -131,7 +131,7 @@ namespace Com.RedicalGames.Filar
 
         public void OnLoadingCompleted() => loadingCompleted = true;
 
-        public void SetScreenTextContent(string content, AppData.ScreenUITextType textType)
+        public void SetScreenTextContent(string content, AppData.ScreenTextType textType)
         {
             OnScreenUITextInitialized((textInitializedCallbackResults) =>
             {
@@ -167,7 +167,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonClickedEvent(AppData.ButtonDataPackets dataPackets)
         {
-            if (dataPackets.actionType == AppData.InputActionButtonType.Cancel)
+            if (dataPackets.action == AppData.InputActionButtonType.Cancel)
             {
                 loadingCompleted = true;
                 TriggerOnAbortRefreshEvent();

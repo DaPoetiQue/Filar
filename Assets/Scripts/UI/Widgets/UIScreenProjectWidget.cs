@@ -1,13 +1,13 @@
+using System.IO;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIScreenProjectWidget : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class UIScreenProjectWidget : AppData.UIScreenWidget
     {
         #region Components
 
         #endregion
-
 
         #region Unity Callbacks
 
@@ -32,11 +32,13 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.SceneDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            switch (actionButton.actionType)
+            LogInfo($"===> Button Action : {actionButton.dataPackets.action}");
+
+            switch (actionButton.dataPackets.action)
             {
-                case AppData.InputActionButtonType.OpenFolderButton:
+                case AppData.InputActionButtonType.OpenProject:
 
                     if (SelectableManager.Instance != null)
                     {
@@ -54,7 +56,7 @@ namespace Com.RedicalGames.Filar
                                     selectionState = AppData.InputUIState.Highlighted
                                 };
 
-                                ScreenNavigationManager.Instance.NavigateToFolder(folder, selectedWidget, actionButton.dataPackets.folderStructureType);
+                                OnGoToProfile_ActionEvent(actionButton.dataPackets);
                             }
                             else
                                 Debug.LogWarning("--> OnActionButtonInputs Failed : SceneAssetsManager.Instance Is Not Yet Initialized.");
@@ -67,17 +69,31 @@ namespace Com.RedicalGames.Filar
             }
         }
 
+        void OnGoToProfile_ActionEvent(AppData.ButtonDataPackets dataPackets)
+        {
+            if (ScreenUIManager.Instance != null)
+                ScreenUIManager.Instance.ShowScreen(dataPackets);
+            else
+                LogWarning("Screen Manager Missing.", this, () => OnGoToProfile_ActionEvent(dataPackets));
+        }
+
         protected override void OnSetUIWidgetData(AppData.Folder folder)
         {
-          
+            SetUITextDisplayerValue(folder.name, AppData.ScreenTextType.TitleDisplayer);
+
+            string lastModified = File.GetLastAccessTime(folder.storageData.path).Minute.ToString() + " Minutes Ago";
+            SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
+
+            SetUITextDisplayerValue("AR", AppData.ScreenTextType.TypeDisplayer);
         }
 
         public override void OnSelect(bool isInitialSelection = false)
         {
             if (SelectableManager.Instance != null)
             {
-                SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
-                Selected();
+                Debug.LogError("===========> Please Fix Selection Here");
+                //SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
+                //Selected();
             }
             else
                 Debug.LogWarning("--> OnSelect Failed :  SelectableManager.Instance Is Not Yet initialized.");

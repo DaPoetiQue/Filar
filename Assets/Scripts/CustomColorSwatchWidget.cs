@@ -16,7 +16,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonClickedEvent(AppData.ButtonDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputActionButtonType.HideScreenWidget:
 
