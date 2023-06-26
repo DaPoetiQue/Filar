@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class RenderProfileUIHandler : AppData.UIScreenWidget<AppData.ButtonDataPackets>
+    public class RenderProfileUIHandler : AppData.UIScreenWidget
     {
         #region Components
 
@@ -38,7 +38,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            switch (actionButton.actionType)
+            switch (actionButton.dataPackets.action)
             {
                 case AppData.InputActionButtonType.Edit:
 

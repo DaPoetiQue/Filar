@@ -57,7 +57,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonClickedEvent(AppData.ButtonDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputActionButtonType.HideScreenWidget:
 
@@ -96,7 +96,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionInputFieldValueChangedEvent(string value, AppData.InputFieldDataPackets dataPackets)
         {
-            if (dataPackets.actionType == AppData.InputFieldActionType.ColorReferenceImageURLField)
+            if (dataPackets.action == AppData.InputFieldActionType.ColorReferenceImageURLField)
             {
                 if (string.IsNullOrEmpty(value))
                     SetActionButtonState(AppData.InputActionButtonType.GenerateColorSwatchButton, AppData.InputUIState.Disabled);
@@ -186,7 +186,7 @@ namespace Com.RedicalGames.Filar
 
                 bool isLargeFileSize = (texture.width > referenceImageTargetResolution.width || texture.height > referenceImageTargetResolution.height) ? true : false;
 
-                loadingSpinner.SetScreenTextContent("Please Wait - Extracting Image Color Data...", AppData.ScreenUITextType.MessageDisplayer);
+                loadingSpinner.SetScreenTextContent("Please Wait - Extracting Image Color Data...", AppData.ScreenTextType.MessageDisplayer);
 
                 loadingSpinner.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Enabled);
 
@@ -250,7 +250,7 @@ namespace Com.RedicalGames.Filar
                         Debug.LogWarning($"--> OnCreateGeneratedColorInfo - SceneAssetsManager's GetHexidecimalFromColor Failed With Results : {getHexCallbackResults.results}");
                 });
 
-            loadingSpinner.SetScreenTextContent("Please Wait - Populating Color Swatch...", AppData.ScreenUITextType.MessageDisplayer);
+            loadingSpinner.SetScreenTextContent("Please Wait - Populating Color Swatch...", AppData.ScreenTextType.MessageDisplayer);
             loadingSpinner.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Disabled);
             loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.DefaultScreenRefreshDuration).value;
             loadingData.isLargeFileSize = false;
@@ -335,14 +335,14 @@ namespace Com.RedicalGames.Filar
             //});
 
             string message = $"{generatedColorInfoList.Count} colors has been generated successfully. Do you wish to generate more colors or proceed?";
-            parentWidget.ShowChildWidget(AppData.SettingsWidgetType.ColorGeneratorInfoWidget, message, AppData.ScreenUITextType.MessageDisplayer);
+            parentWidget.ShowChildWidget(AppData.SettingsWidgetType.ColorGeneratorInfoWidget, message, AppData.ScreenTextType.MessageDisplayer);
         }
 
         void OnRefreshFailed()
         {
             Debug.LogError("==> Refresh Failed.");
             string message = $"Warning : {Application.productName} has failed to extract color infomation from image. The image used has a resolution that exceeds the target limit of  W : {referenceImageTargetResolution.width} - H : {referenceImageTargetResolution.height}";
-            parentWidget.ShowChildWidget(AppData.SettingsWidgetType.ScreenWarningInfoWidget, message, AppData.ScreenUITextType.MessageDisplayer);
+            parentWidget.ShowChildWidget(AppData.SettingsWidgetType.ScreenWarningInfoWidget, message, AppData.ScreenTextType.MessageDisplayer);
             //parentWidget.HideChildWidget(AppData.SettingsWidgetType.LoadingSpinnerWidget);
         }
 

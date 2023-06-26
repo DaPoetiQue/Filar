@@ -186,7 +186,7 @@ namespace Com.RedicalGames.Filar
             return snapDraggedWidgetToHoveredFolder;
         }
 
-        public void UpdateWidgetsList<T>(List<AppData.UIScreenWidget<T>> widgets) where T : AppData.DataPackets
+        public void UpdateWidgetsList(List<AppData.UIScreenWidget> widgets)
         {
             if (widgets != null)
             {
@@ -738,7 +738,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public void AddDynamicWidget<T>(AppData.UIScreenWidget<T> screenWidget, AppData.OrientationType orientation, bool keepWorldPosition, Action<AppData.Callback> callback = null) where T : AppData.DataPackets
+        public void AddDynamicWidget(AppData.UIScreenWidget screenWidget, AppData.OrientationType orientation, bool keepWorldPosition, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -785,15 +785,15 @@ namespace Com.RedicalGames.Filar
             return gameObject.activeSelf && gameObject.activeInHierarchy;
         }
 
-        public void UpdateContentOnRefresh<T>() where T : AppData.DataPackets
+        public void UpdateContentOnRefresh()
         {
             if (container.childCount > 0)
             {
-                List<AppData.UIScreenWidget<T>> skyboxWidgetsList = new List<AppData.UIScreenWidget<T>>();
+                List<AppData.UIScreenWidget> skyboxWidgetsList = new List<AppData.UIScreenWidget>();
 
                 for (int i = 0; i < container.childCount; i++)
                 {
-                    AppData.UIScreenWidget<T> widgetHandler = container.GetChild(i).GetComponent<AppData.UIScreenWidget<T>>();
+                    AppData.UIScreenWidget widgetHandler = container.GetChild(i).GetComponent<AppData.UIScreenWidget>();
 
                     if (widgetHandler != null)
                     {
@@ -844,7 +844,7 @@ namespace Com.RedicalGames.Filar
 
         public void DeselectAllContentWidgets()
         {
-            GetContent<AppData.SceneDataPackets>(contentFound =>
+            GetContent(contentFound =>
             {
                 if (AppData.Helpers.IsSuccessCode(contentFound.resultsCode))
                 {
@@ -866,7 +866,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>();
 
-            GetContent<AppData.SceneDataPackets>(contentFound =>
+            GetContent(contentFound =>
             {
                 if (AppData.Helpers.IsSuccessCode(contentFound.resultsCode))
                 {
@@ -1065,17 +1065,17 @@ namespace Com.RedicalGames.Filar
                 LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => SetSelectionStateInfo());
         }
 
-        public void GetSelectedWidgetList(AppData.FocusedSelectionData selectionData, Action<AppData.CallbackData<List<AppData.UIScreenWidget<AppData.SceneDataPackets>>>> callback)
+        public void GetSelectedWidgetList(AppData.FocusedSelectionData selectionData, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget<AppData.SceneDataPackets>>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget<AppData.SceneDataPackets>>>();
+            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
 
             if(GetContentCount() > 0)
             {
-                GetContent<AppData.SceneDataPackets>(contentCallback =>
+                GetContent(contentCallback =>
                 {
                     if (contentCallback.Success())
                     {
-                        List<AppData.UIScreenWidget<AppData.SceneDataPackets>> widgets = new List<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                        List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
 
                         foreach (var selection in selectionData.selections)
                             widgets.Add(contentCallback.data.Find(widget => widget.name == selection.name));
@@ -1183,7 +1183,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void OnFocusToWidget<T>(AppData.UIScreenWidget<T> focusToWidget, bool transitionTo = false, bool selectWidget = false) where T : AppData.DataPackets
+        public void OnFocusToWidget(AppData.UIScreenWidget focusToWidget, bool transitionTo = false, bool selectWidget = false)
         {
             if (orientation == AppData.OrientationType.Vertical)
             {
@@ -1197,7 +1197,7 @@ namespace Com.RedicalGames.Filar
                         focusToWidget.OnSelect();
                 }
                 else
-                    LogWarning("Focus Widget Is Missing / Null.", this, () => OnFocusToWidget<T>(focusToWidget, transitionTo = false, selectWidget = false));
+                    LogWarning("Focus Widget Is Missing / Null.", this);
             }
 
             if (orientation == AppData.OrientationType.Horizontal)
@@ -1217,7 +1217,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    LogWarning("Focus Widget Is Missing / Null.", this, () => OnFocusToWidget<T>(focusToWidget, transitionTo = false, selectWidget = false));
+                    LogWarning("Focus Widget Is Missing / Null.", this);
             }
         }
 
@@ -1250,9 +1250,9 @@ namespace Com.RedicalGames.Filar
                 if (GetContentCount() > 0)
                 {
                     for (int i = 0; i < GetContentCount(); i++)
-                        if (container.GetChild(i).GetComponent<AppData.UIScreenWidget<AppData.SceneDataPackets>>())
+                        if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
                         {
-                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget<AppData.SceneDataPackets>>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
+                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
                                 Destroy(container.GetChild(i).gameObject);
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
@@ -1295,17 +1295,17 @@ namespace Com.RedicalGames.Filar
             return container.childCount;
         }
 
-        public void GetContent<T>(Action<AppData.CallbackData<List<AppData.UIScreenWidget<T>>>> callback) where T : AppData.DataPackets
+        public void GetContent(Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget<T>>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget<T>>>();
+            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
 
             if (GetContentCount() > 0)
             {
-                List<AppData.UIScreenWidget<T>> widgetsList = new List<AppData.UIScreenWidget<T>>();
+                List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
 
                 for (int i = 0; i < GetContentCount(); i++)
                 {
-                    AppData.UIScreenWidget<T> widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget<T>>();
+                    AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
 
                     if (widget != null)
                     {
@@ -1341,17 +1341,17 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetContent<T>(AppData.UIScreenWidget<T> widgetToExcludeFromList, Action<AppData.CallbackData<List<AppData.UIScreenWidget<AppData.SceneDataPackets>>>> callback) where T : AppData.SceneDataPackets
+        public void GetContent(AppData.UIScreenWidget widgetToExcludeFromList, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget<AppData.SceneDataPackets>>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget<AppData.SceneDataPackets>>>();
+            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
 
             if (GetContentCount() > 0)
             {
-                List<AppData.UIScreenWidget<AppData.SceneDataPackets>> widgetsList = new List<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
 
                 for (int i = 0; i < GetContentCount(); i++)
                 {
-                    AppData.UIScreenWidget<AppData.SceneDataPackets> widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                    AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
 
                     if (widget != null && widget.GetActive() && widget != widgetToExcludeFromList)
                     {
@@ -1389,11 +1389,11 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetContent<T>(string contentName, Action<AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>>> callback)
+        public void GetContent(string contentName, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
 
-            GetContent<AppData.SceneDataPackets>(contentFound =>
+            GetContent(contentFound =>
             {
                 if (AppData.Helpers.IsSuccessCode(contentFound.resultsCode))
                 {
@@ -1473,7 +1473,7 @@ namespace Com.RedicalGames.Filar
 
             if(selections != null && selections.Count > 0)
             {
-                List<AppData.UIScreenWidget<AppData.SceneDataPackets>> widgets = new List<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
 
                 foreach (var selection in selections)
                 {
@@ -1523,7 +1523,7 @@ namespace Com.RedicalGames.Filar
 
             if (selections != null && selections.Count > 0)
             {
-                List<AppData.UIScreenWidget<AppData.SceneDataPackets>> widgets = new List<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
 
                 foreach (var selection in selections)
                 {
@@ -1601,7 +1601,7 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                GetContent<AppData.SceneDataPackets>(foundWidgetsCallback => 
+                                GetContent(foundWidgetsCallback => 
                                 {
                                     if(AppData.Helpers.IsSuccessCode(foundWidgetsCallback.resultsCode))
                                     {
@@ -1702,7 +1702,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetContent<AppData.SceneDataPackets>(allContentCallback => 
+            GetContent(allContentCallback => 
             {
                 if(AppData.Helpers.IsSuccessCode(allContentCallback.resultsCode))
                 {
@@ -1743,7 +1743,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void HasSelectedAll(List<AppData.UIScreenWidget<AppData.SceneDataPackets>> widgetList, Action<AppData.Callback> callback)
+        public void HasSelectedAll(List<AppData.UIScreenWidget> widgetList, Action<AppData.Callback> callback)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1768,13 +1768,13 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public AppData.UIScreenWidget<AppData.SceneDataPackets> GetWidgetNamed(string widgetName)
+        public AppData.UIScreenWidget GetWidgetNamed(string widgetName)
         {
-            AppData.UIScreenWidget<AppData.SceneDataPackets> widgetFound = null;
+            AppData.UIScreenWidget widgetFound = null;
 
             if (GetContentCount() > 0)
             {
-                GetContent<AppData.SceneDataPackets>(contentCallback =>
+                GetContent(contentCallback =>
                 {
                     if (AppData.Helpers.IsSuccessCode(contentCallback.resultsCode))
                     {
@@ -1805,13 +1805,13 @@ namespace Com.RedicalGames.Filar
             return widgetFound;
         }
 
-        public void GetItem<T>(string itemName, Action<AppData.CallbackData<AppData.PageItem<T>>> callback) where T : AppData.UIScreenWidget<AppData.SceneDataPackets>
+        public void GetItem<T>(string itemName, Action<AppData.CallbackData<AppData.PageItem<T>>> callback) where T : AppData.UIScreenWidget
         {
             AppData.CallbackData<AppData.PageItem<T>> callbackResults = new AppData.CallbackData<AppData.PageItem<T>>();
 
             if (GetContentCount() > 0)
             {
-                GetContent<AppData.SceneDataPackets>(contentCallback =>
+                GetContent(contentCallback =>
                 {
                     if (AppData.Helpers.IsSuccessCode(contentCallback.resultsCode))
                     {
@@ -1859,13 +1859,13 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void GetWidgetNamed(string widgetName, Action<AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>>> callback)
+        public void GetWidgetNamed(string widgetName, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
 
             if (GetContentCount() > 0)
             {
-                GetContent<AppData.SceneDataPackets>(contentCallback =>
+                GetContent(contentCallback =>
                 {
                     if (AppData.Helpers.IsSuccessCode(contentCallback.resultsCode))
                     {
@@ -1930,7 +1930,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetWidgetSiblingIndex<T>(AppData.UIScreenWidget<T> widget, Action<AppData.CallbackData<int>> callback) where T : AppData.DataPackets
+        public void GetWidgetSiblingIndex(AppData.UIScreenWidget widget, Action<AppData.CallbackData<int>> callback)
         {
             AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
 
@@ -1941,7 +1941,7 @@ namespace Com.RedicalGames.Filar
 
                 for (int i = 0; i < container.childCount; i++)
                 {
-                    if (!widgetFound && container.GetChild(i).GetComponent<AppData.UIScreenWidget<T>>() == widget)
+                    if (!widgetFound && container.GetChild(i).GetComponent<AppData.UIScreenWidget>() == widget)
                     {
                         siblingIndex = i;
                         widgetFound = true;
@@ -2080,7 +2080,7 @@ namespace Com.RedicalGames.Filar
             return paginationComponent;
         }
 
-        public void Pagination_GoToItemPage(AppData.UIScreenWidget<AppData.SceneDataPackets> item)
+        public void Pagination_GoToItemPage(AppData.UIScreenWidget item)
         {
             paginationComponent.GetItemPageIndex(item.name, onItemPageIndexResults =>
             {
@@ -2094,7 +2094,7 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        public void Pagination_GoToItemPageAsync(AppData.UIScreenWidget<AppData.SceneDataPackets> item, Action<AppData.Callback> callback = null)
+        public void Pagination_GoToItemPageAsync(AppData.UIScreenWidget item, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -2116,7 +2116,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        IEnumerator GoToItemPageAsync(AppData.UIScreenWidget<AppData.SceneDataPackets> item, Action<AppData.Callback> callback = null)
+        IEnumerator GoToItemPageAsync(AppData.UIScreenWidget item, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -2139,7 +2139,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public int Pagination_GetItemPageIndex(AppData.UIScreenWidget<AppData.SceneDataPackets> item)
+        public int Pagination_GetItemPageIndex(AppData.UIScreenWidget item)
         {
             int pageIndex = 0;
 
@@ -2165,7 +2165,7 @@ namespace Com.RedicalGames.Filar
             return pageIndex;
         }
 
-        public bool Pagination_ItemExistInCurrentPage(AppData.UIScreenWidget<AppData.SceneDataPackets> item)
+        public bool Pagination_ItemExistInCurrentPage(AppData.UIScreenWidget item)
         {
             return paginationComponent.ItemExistInCurrentPage(item);
         }
@@ -2233,12 +2233,12 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public List<AppData.UIScreenWidget<AppData.SceneDataPackets>> Pagination_GetCurrentPage()
+        public List<AppData.UIScreenWidget> Pagination_GetCurrentPage()
         {
             return paginationComponent.GetCurrentPage();
         }
 
-        public List<AppData.UIScreenWidget<AppData.SceneDataPackets>> Pagination_GetPage(int pageIndex)
+        public List<AppData.UIScreenWidget> Pagination_GetPage(int pageIndex)
         {
             return paginationComponent.GetPage(pageIndex);
         }
@@ -2256,7 +2256,7 @@ namespace Com.RedicalGames.Filar
 
             yield return new WaitForEndOfFrame();
 
-            GetItem<AppData.UIScreenWidget<AppData.SceneDataPackets>>(selectionName, selectionCallback =>
+            GetItem<AppData.UIScreenWidget>(selectionName, selectionCallback =>
             {
                 if (AppData.Helpers.IsSuccessCode(selectionCallback.resultsCode))
                 {
@@ -2301,7 +2301,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (GetContentCount() > 0)
                 {
-                    GetContent<AppData.SceneDataPackets>(loadedContent =>
+                    GetContent(loadedContent =>
                     {
                         if (AppData.Helpers.IsSuccessCode(loadedContent.resultsCode))
                         {
@@ -2382,7 +2382,7 @@ namespace Com.RedicalGames.Filar
         public void OnSetWidgetsVisibilityState(bool visible)
         {
             for (int i = 0; i < container.childCount; i++)
-                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget<AppData.SceneDataPackets>>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
+                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
                     container.GetChild(i).gameObject.SetActive(visible);
         }
 
