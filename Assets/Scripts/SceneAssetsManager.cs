@@ -1831,6 +1831,8 @@ namespace Com.RedicalGames.Filar
 
         #region On Create Functions
 
+        #region Create UI
+
         public void CreateUIScreenProjectSelectionWidgets(AppData.UIScreenType screenType, List<AppData.FolderStructureData> projectData, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDatas<AppData.UIScreenWidget>> callback)
         {
             try
@@ -2513,6 +2515,19 @@ namespace Com.RedicalGames.Filar
             }
         }
 
+        #endregion
+
+        #region Create Data
+
+        public void CreateNewProjectData(AppData.FolderStructureData newProjectStructureData, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void CreateDirectory(AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
         {
             try
@@ -2644,6 +2659,8 @@ namespace Com.RedicalGames.Filar
                 throw exception;
             }
         }
+
+        #endregion
 
         #endregion
 
