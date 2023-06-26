@@ -2,21 +2,15 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class AssetImportWidget : AppData.Widget
+    public class ProjectCreationWarningWidget : AppData.Widget
     {
         #region Components
 
-        [SerializeField]
-        Vector2 showWidgetidgetScreenPoint;
 
-        [Space(5)]
-        [SerializeField]
-        Vector2 hideWidgetidgetScreenPoint;
 
         #endregion
 
         #region Unity Callbacks
-
         void Start() => Init();
 
         #endregion
@@ -25,19 +19,8 @@ namespace Com.RedicalGames.Filar
 
         new void Init()
         {
-            assetImportWidget = this;
+            projectCreationWarningWidget = this;
             base.Init();
-        }
-
-
-        protected override void OnScreenWidget()
-        {
-
-        }
-
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
-        {
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
         protected override void OnHideScreenWidget()
@@ -55,15 +38,22 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnSubscribeToActionEvents(bool subscribe)
+        protected override void OnScreenWidget()
         {
-            throw new System.NotImplementedException();
+
         }
 
-        protected override void OnScrollerValueChanged(Vector2 value)
+        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
-            throw new System.NotImplementedException();
+            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
+
+        protected override void OnSubscribeToActionEvents(bool subscribe)
+        {
+            LogInfo($"===============> Subscribe : {subscribe}", this);
+        }
+
+        protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
 
         protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)
         {
@@ -71,6 +61,5 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
-
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class DynamicContainerUIWidgetPlaceHolder : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class DynamicContainerUIWidgetPlaceHolder : AppData.UIScreenWidget
     {
         #region Components
 
@@ -32,7 +32,7 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.SceneDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
             throw new System.NotImplementedException();
         }

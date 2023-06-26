@@ -102,7 +102,7 @@ namespace Com.RedicalGames.Filar
                             if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
                                 foreach (var dropdown in actionDropdownList)
                                 {
-                                    switch (dropdown.dataPackets.actionType)
+                                    switch (dropdown.dataPackets.action)
                                     {
                                         case AppData.InputDropDownActionType.ColorModeSelection:
 
@@ -159,7 +159,7 @@ namespace Com.RedicalGames.Filar
         void OnResetDropDownSelection(AppData.InputDropDownActionType actionType)
         {
             foreach (var dropdown in actionDropdownList)
-                if (dropdown.dataPackets.actionType == actionType)
+                if (dropdown.dataPackets.action == actionType)
                 {
                     switch (actionType)
                     {
@@ -169,7 +169,7 @@ namespace Com.RedicalGames.Filar
 
                         case AppData.InputDropDownActionType.ColorPickerSelection:
 
-                            Debug.LogError($"--> OnActionDropdownInitialized Type : {dropdown.dataPackets.actionType}.");
+                            Debug.LogError($"--> OnActionDropdownInitialized Type : {dropdown.dataPackets.action}.");
 
                             List<string> colorPickerList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorPickers).data);
 
@@ -192,7 +192,7 @@ namespace Com.RedicalGames.Filar
         void OnSelectDropDownOption(AppData.InputDropDownActionType actionType, int optionID)
         {
             foreach (var dropdown in actionDropdownList)
-                if (dropdown.dataPackets.actionType == actionType)
+                if (dropdown.dataPackets.action == actionType)
                 {
                     dropdown.value.value = optionID;
                     break;
@@ -530,7 +530,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonClickedEvent(AppData.ButtonDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputActionButtonType.CreateNewColorButton:
 
@@ -583,7 +583,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionInputFieldValueChangedEvent(string value, AppData.InputFieldDataPackets dataPackets)
         {
-            if (dataPackets.actionType == AppData.InputFieldActionType.ColorHexidecimalField)
+            if (dataPackets.action == AppData.InputFieldActionType.ColorHexidecimalField)
                 if (SceneAssetsManager.Instance != null)
                 {
                     if (value.Length < (colorValueInputCharacterLimit / 2) || value.Length > (colorValueInputCharacterLimit / 2) && value.Length < colorValueInputCharacterLimit)
@@ -609,9 +609,9 @@ namespace Com.RedicalGames.Filar
         protected override void OnActionDropdownValueChangedEvent(string value, AppData.DropdownDataPackets dataPackets)
         {
 
-            Debug.LogError($"--> Selection Value : {value} from type : {dataPackets.actionType}");
+            Debug.LogError($"--> Selection Value : {value} from type : {dataPackets.action}");
 
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputDropDownActionType.SwatchPicker:
 
@@ -650,7 +650,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionDropdownValueChangedEvent(int value, List<string> contentList, AppData.DropdownDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputDropDownActionType.ColorModeSelection:
 
@@ -744,7 +744,7 @@ namespace Com.RedicalGames.Filar
                         SetActionDropdownState(AppData.InputDropDownActionType.SwatchPicker, AppData.InputUIState.Enabled);
                     }
 
-                    ShowWidgetOnDropDownSelection(AppData.Helpers.GetStringToEnum<AppData.SettingsWidgetTabID>(contentList[value]), dataPackets.actionType);
+                    ShowWidgetOnDropDownSelection(AppData.Helpers.GetStringToEnum<AppData.SettingsWidgetTabID>(contentList[value]), dataPackets.action);
 
                     break;
             }
@@ -752,7 +752,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnInputSliderValueChangedEvent(float value, AppData.InputSliderDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputSliderActionType.RedColorChannelField:
 
@@ -833,7 +833,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnInputSliderValueChangedEvent(string value, AppData.InputSliderDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputSliderActionType.RedColorChannelField:
 
@@ -1240,7 +1240,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionCheckboxValueChangedEvent(bool value, AppData.CheckboxDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.CheckboxInputActionType.ToggleColorDropPicker:
 

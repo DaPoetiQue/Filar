@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ColorSwatchButtonHandler : AppData.UIScreenWidget<AppData.ButtonDataPackets>
+    public class ColorSwatchButtonHandler : AppData.UIScreenWidget
     {
         #region Components
 
@@ -56,7 +56,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            if (actionButton.dataPackets.actionType == AppData.InputActionButtonType.ColorPickerButton)
+            if (actionButton.dataPackets.action == AppData.InputActionButtonType.ColorPickerButton)
             {
                 AppData.ActionEvents.OnSwatchColorPickedEvent(colorInfo, true, false);
 
@@ -107,7 +107,7 @@ namespace Com.RedicalGames.Filar
         {
             var buttonList = GetActionInputUIButtonList();
 
-            var button = buttonList.Find((x) => x.actionType == type);
+            var button = buttonList.Find((x) => x.dataPackets.action == type);
 
             if (button != null)
             {

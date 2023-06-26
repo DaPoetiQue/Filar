@@ -742,6 +742,17 @@ namespace Com.RedicalGames.Filar
                 if (currentScreen.value != null)
                     currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
+                SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(GetCurrentUIScreenType()), containerResults => 
+                {
+                    if(containerResults.Success())
+                    {
+                        var rootFolder = SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
+                        var container = containerResults.data;
+
+                        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                    }
+                });
+
                 if (currentScreen.value.GetScreenData().refreshSceneAssets)
                     yield return new WaitUntil(() => SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer, dataPackets)); // Wait For Assets To Be Refreshed.
                 else
