@@ -53,7 +53,7 @@ namespace Com.RedicalGames.Filar
                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
                         foreach (var dropdown in actionDropdownList)
                         {
-                            switch (dropdown.dataPackets.actionType)
+                            switch (dropdown.dataPackets.action)
                             {
                                 case AppData.InputDropDownActionType.SettingsSelectionType:
 
@@ -141,13 +141,13 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonClickedEvent(AppData.ButtonDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputActionButtonType.CreateSkyboxButton:
 
                     skyboxCreated = false;
 
-                    loadingSpinner.SetScreenTextContent("Please Wait - Configuring Lighting Data...", AppData.ScreenUITextType.MessageDisplayer);
+                    loadingSpinner.SetScreenTextContent("Please Wait - Configuring Lighting Data...", AppData.ScreenTextType.MessageDisplayer);
 
                     AppData.ScreenLoadingInitializationData loadingData = new AppData.ScreenLoadingInitializationData();
                     loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.DefaultAssetCreationYieldValue).value;
@@ -188,11 +188,11 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionDropdownValueChangedEvent(int value, List<string> contentList, AppData.DropdownDataPackets dataPackets)
         {
-            switch (dataPackets.actionType)
+            switch (dataPackets.action)
             {
                 case AppData.InputDropDownActionType.SettingsSelectionType:
 
-                    ShowWidgetOnDropDownSelection(AppData.Helpers.GetStringToEnum<AppData.SettingsWidgetTabID>(contentList[value]), dataPackets.actionType);
+                    ShowWidgetOnDropDownSelection(AppData.Helpers.GetStringToEnum<AppData.SettingsWidgetTabID>(contentList[value]), dataPackets.action);
 
                     break;
 

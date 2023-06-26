@@ -824,7 +824,7 @@ namespace Com.RedicalGames.Filar
                         else
                             skyboxUIHandlerComponentsList.Add(skyboxAsset.AddComponent<SkyboxUIHandler>());
 
-                        AddContentToDynamicWidgetContainer(skyboxAsset.GetComponent<AppData.UIScreenWidget<AppData.ButtonDataPackets>>(), container, orientationType);
+                        AddContentToDynamicWidgetContainer(skyboxAsset.GetComponent<AppData.UIScreenWidget>(), container, orientationType);
 
                         callbackResults.results = "Skybox Handler Created Successfully.";
                         callbackResults.resultsCode = AppData.Helpers.SuccessCode;
@@ -850,12 +850,12 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void AddContentToDynamicWidgetContainer<T>(AppData.UIScreenWidget<T> contentWidget, DynamicWidgetsContainer container, AppData.OrientationType orientation) where T : AppData.DataPackets
+        public void AddContentToDynamicWidgetContainer(AppData.UIScreenWidget contentWidget, DynamicWidgetsContainer container, AppData.OrientationType orientation)
         {
             if (contentWidget != null)
             {
                 container.AddDynamicWidget(contentWidget, orientation, false);
-                container.UpdateContentOnRefresh<T>();
+                container.UpdateContentOnRefresh();
             }
             else
                 Debug.LogWarning("--> AddContentToDynamicWidgetContainer Failed : Content Widget Is Null.");

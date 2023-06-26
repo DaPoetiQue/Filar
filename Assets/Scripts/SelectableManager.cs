@@ -474,7 +474,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget<AppData.SceneDataPackets> selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
+        public void Select(AppData.UIScreenWidget selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
@@ -501,7 +501,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget<AppData.SceneDataPackets> selectable, AppData.SceneDataPackets dataPackets, bool isInitialSelection = false) => GetFolderStructureSelectionData().Select(selectable, dataPackets, isInitialSelection);
+        public void Select(AppData.UIScreenWidget selectable, AppData.SceneDataPackets dataPackets, bool isInitialSelection = false) => GetFolderStructureSelectionData().Select(selectable, dataPackets, isInitialSelection);
 
         public void Selected(string name, AppData.FocusedSelectionType selectionType) => GetFolderStructureSelectionData().Select(name, selectionType);
 
@@ -635,9 +635,9 @@ namespace Com.RedicalGames.Filar
             return GetFolderStructureSelectionData().GetFocusedSelectionDataCount();
         }
 
-        public void SetSelectionInfoState(List<AppData.UIScreenWidget<AppData.SceneDataPackets>> selectionList, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>>> callback = null)
+        public void SetSelectionInfoState(List<AppData.UIScreenWidget> selectionList, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback = null)
         {
-            AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
 
             GetFolderStructureSelectionData().SetSelectionInfoState(selectionList, selectionType, getFolderStructureSelectionCallback => { callbackResults = getFolderStructureSelectionCallback; });
 
@@ -1089,7 +1089,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public (bool pinned, bool disableButton, int selectionCount, int pinnedCount) HasPinnedSelection(List<AppData.UIScreenWidget<AppData.SceneDataPackets>> selected)
+        public (bool pinned, bool disableButton, int selectionCount, int pinnedCount) HasPinnedSelection(List<AppData.UIScreenWidget> selected)
         {
             bool hasPinned = false;
             bool disableButton = false;
@@ -1123,7 +1123,7 @@ namespace Com.RedicalGames.Filar
             return (hasPinned, disableButton, selectionCount, pinnedCount);
         }
 
-        public void AddSelectables(List<AppData.UIScreenWidget<AppData.SceneDataPackets>> selectables)
+        public void AddSelectables(List<AppData.UIScreenWidget> selectables)
         {
             if (onSelectionRoutine != null)
             {
@@ -1135,7 +1135,7 @@ namespace Com.RedicalGames.Filar
                 onSelectionRoutine = StartCoroutine(OnSelection(selectables));
         }
 
-        public void OnDeselect(AppData.UIScreenWidget<AppData.SceneDataPackets> deselectedWidget)
+        public void OnDeselect(AppData.UIScreenWidget deselectedWidget)
         {
             if (onDeselectRoutine != null)
             {
@@ -1159,7 +1159,7 @@ namespace Com.RedicalGames.Filar
                 onDeselectAllRoutine = StartCoroutine(OnDeselectAllAsync());
         }
 
-        IEnumerator OnSelection(List<AppData.UIScreenWidget<AppData.SceneDataPackets>> widgets)
+        IEnumerator OnSelection(List<AppData.UIScreenWidget> widgets)
         {
             yield return new WaitForEndOfFrame();
             yield return new WaitUntil(() => SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.ContainerRefreshed() == true);
@@ -1167,7 +1167,7 @@ namespace Com.RedicalGames.Filar
             folderStructureSelection.AddSelectables(widgets);
         }
 
-        IEnumerator OnDeselectAsync(AppData.UIScreenWidget<AppData.SceneDataPackets> deselectedWidget)
+        IEnumerator OnDeselectAsync(AppData.UIScreenWidget deselectedWidget)
         {
             yield return new WaitForEndOfFrame();
             folderStructureSelection.Deselect(deselectedWidget);
