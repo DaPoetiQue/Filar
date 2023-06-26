@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SkyboxUIHandler : AppData.UIScreenWidget<AppData.ButtonDataPackets>
+    public class SkyboxUIHandler : AppData.UIScreenWidget
     {
 
         #region Components
@@ -43,7 +43,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            switch (actionButton.dataPackets.actionType)
+            switch (actionButton.dataPackets.action)
             {
                 case AppData.InputActionButtonType.CreateSkyboxButton:
 

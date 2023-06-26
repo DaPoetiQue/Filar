@@ -47,11 +47,11 @@ namespace Com.RedicalGames.Filar
             {
                 if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == AppData.PaginationViewType.Pager)
                 {
-                    List<AppData.UIScreenWidget<AppData.SceneDataPackets>> currentPage = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
+                    List<AppData.UIScreenWidget> currentPage = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
 
                     if (currentPage != null && currentPage.Count > 0)
                     {
-                        List<AppData.UIScreenWidget<AppData.SceneDataPackets>> selectedWidgets = new List<AppData.UIScreenWidget<AppData.SceneDataPackets>>();
+                        List<AppData.UIScreenWidget> selectedWidgets = new List<AppData.UIScreenWidget>();
                         var currentSelections = SelectableManager.Instance.GetFolderStructureSelectionData().GetCurrentSelections();
 
                         foreach (var item in currentPage)
@@ -101,7 +101,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (contentCount == 1)
                                 {
-                                    AppData.UIScreenWidget<AppData.SceneDataPackets> widget = getFolderStructureSelectionData.data[contentCount - 1];
+                                    AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[contentCount - 1];
 
                                     if (widget != null)
                                     {
@@ -115,7 +115,7 @@ namespace Com.RedicalGames.Filar
                                 if (contentCount > 1)
                                 {
                                     int focusedIndex = Mathf.RoundToInt(contentCount / 2);
-                                    AppData.UIScreenWidget<AppData.SceneDataPackets> widget = getFolderStructureSelectionData.data[focusedIndex];
+                                    AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[focusedIndex];
 
                                     if (widget != null)
                                     {
@@ -144,7 +144,7 @@ namespace Com.RedicalGames.Filar
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        void UpdateWidgetSelection(AppData.UIScreenWidget<AppData.SceneDataPackets> selectedWidget)
+        void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)
         {
             if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentPaginationViewType() == AppData.PaginationViewType.Pager)
             {
@@ -166,7 +166,7 @@ namespace Com.RedicalGames.Filar
             SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
         }
 
-        void UpdateWidgetsSelection(List<AppData.UIScreenWidget<AppData.SceneDataPackets>> selectedWidgets)
+        void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
         {
             int focusedIndex = Mathf.RoundToInt(selectedWidgets.Count / 2);
             var selectedWidget = selectedWidgets[focusedIndex];
@@ -214,12 +214,12 @@ namespace Com.RedicalGames.Filar
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnInputFieldValueChanged(string value, AppData.SceneDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnInputFieldValueChanged(int value, AppData.SceneDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -229,7 +229,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.SceneDataPackets dataPackets)
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }

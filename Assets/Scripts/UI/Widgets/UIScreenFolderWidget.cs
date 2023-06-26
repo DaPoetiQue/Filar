@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIScreenFolderWidget : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class UIScreenFolderWidget : AppData.UIScreenWidget
     {
         #region Components
 
@@ -32,9 +32,9 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.SceneDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            switch (actionButton.actionType)
+            switch (actionButton.dataPackets.action)
             {
                 case AppData.InputActionButtonType.OpenFolderButton:
 
@@ -54,7 +54,8 @@ namespace Com.RedicalGames.Filar
                                     selectionState = AppData.InputUIState.Highlighted
                                 };
 
-                                ScreenNavigationManager.Instance.NavigateToFolder(folder, selectedWidget, actionButton.dataPackets.folderStructureType);
+                                Debug.LogError("=============> Please Fix Here............. Important");
+                                //ScreenNavigationManager.Instance.NavigateToFolder(folder, selectedWidget, actionButton.dataPackets.folderStructureType);
                             }
                             else
                                 Debug.LogWarning("--> OnActionButtonInputs Failed : SceneAssetsManager.Instance Is Not Yet Initialized.");
@@ -89,8 +90,9 @@ namespace Com.RedicalGames.Filar
         {
             if (SelectableManager.Instance != null)
             {
-                SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
-                Selected();
+                Debug.LogError("=============> Please Fix Here............. Important");
+                //SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
+                //Selected();
             }
             else
                 Debug.LogWarning("--> OnSelect Failed :  SelectableManager.Instance Is Not Yet initialized.");

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
@@ -116,7 +117,9 @@ namespace Com.RedicalGames.Filar
             SelectedFileCopyOptionsWidget,
             LoadingWidget,
             UserHelpScreenWidget,
-            AssetInfoWidget
+            AssetInfoWidget,
+            CreateNewProjectWidget,
+            ProjectCreationWarningWidget
         }
 
         public enum SubWidgetType
@@ -158,7 +161,7 @@ namespace Com.RedicalGames.Filar
             OpenSceneAssetPreview,
             OpenARView,
             ResetAssetPreviewPose,
-            GoToProfile,
+            OpenProject,
             PlaceItemInAR,
             CaptureSnapShot,
             ExportAsset,
@@ -210,6 +213,7 @@ namespace Com.RedicalGames.Filar
             ClipboardButton,
             CreateNewProjectButton,
             OpenProjectButton,
+            OpenProjectFolderButton,
             None
         }
 
@@ -299,6 +303,8 @@ namespace Com.RedicalGames.Filar
             ColorModeSelection,
             SettingsSelectionType,
             RotationalDirection,
+            ProjectType,
+            ProjectTamplate,
             None
         }
 
@@ -317,7 +323,8 @@ namespace Com.RedicalGames.Filar
             ColorHexidecimalField,
             ColorReferenceImageURLField,
             ColorPromptField,
-            InputPageNumberField
+            InputPageNumberField,
+            None
         }
 
         public enum CheckboxInputActionType
@@ -327,13 +334,8 @@ namespace Com.RedicalGames.Filar
             TriangulateWireframe,
             ToggleColorDropPicker,
             ToggleVoiceInput,
-            InverseSelection
-        }
-
-        public enum ScreenUITextType
-        {
-            TitleDisplayer,
-            MessageDisplayer
+            InverseSelection,
+            None
         }
 
         public enum InputSliderActionType
@@ -408,6 +410,7 @@ namespace Com.RedicalGames.Filar
             NavigationRootTitleDisplayer,
             PageCountDisplayer,
             TypeDisplayer,
+            None
         }
 
         public enum SliderValueType
@@ -431,6 +434,7 @@ namespace Com.RedicalGames.Filar
 
         public enum UIStateType
         {
+            Default,
             InteractivityState,
             VisibilityState
         }
@@ -448,16 +452,17 @@ namespace Com.RedicalGames.Filar
             Value
         }
 
-        public enum InputType
+        public enum InputType : int
         {
-            None,
-            Button,
-            Checkbox,
-            Input,
-            Slider,
-            InputSlider,
-            DropDown,
-            Text
+            None = 0,
+            Button = 1,
+            Checkbox = 2,
+            InputField = 3,
+            Slider = 4,
+            InputSlider = 5,
+            DropDown = 6,
+            Text = 7,
+            Image = 8
         }
 
         public enum UIScreenType
@@ -466,7 +471,7 @@ namespace Com.RedicalGames.Filar
             ProjectViewScreen,
             AssetCreationScreen,
             ARViewScreen,
-            ProjectScreen,
+            ProjectSelectionScreen,
             LandingPageScreen
         }
 
@@ -480,6 +485,7 @@ namespace Com.RedicalGames.Filar
             ColorSwatches,
             SkyboxContent,
             FolderStuctureContent,
+            ProjectSelectionContent,
             None
         }
 
@@ -837,6 +843,7 @@ namespace Com.RedicalGames.Filar
         {
             File,
             Folder,
+            Project,
             PlaceHolder
         }
 
@@ -1650,12 +1657,12 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public int listView_ItemsPerPage;
 
-            public List<List<UIScreenWidget<SceneDataPackets>>> pages = new List<List<UIScreenWidget<SceneDataPackets>>>();
+            public List<List<UIScreenWidget>> pages = new List<List<UIScreenWidget>>();
 
             public int CurrentPageIndex { get; set; }
 
-            List<UIScreenWidget<SceneDataPackets>> itemList = new List<UIScreenWidget<SceneDataPackets>>();
-            List<UIScreenWidget<SceneDataPackets>> currentPage = new List<UIScreenWidget<SceneDataPackets>>();
+            List<UIScreenWidget> itemList = new List<UIScreenWidget>();
+            List<UIScreenWidget> currentPage = new List<UIScreenWidget>();
 
             Widget paginationWidget;
 
@@ -1668,7 +1675,7 @@ namespace Com.RedicalGames.Filar
                 paginationWidget = ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.PagerNavigationWidget);
             }
 
-            public void Paginate(List<UIScreenWidget<SceneDataPackets>> source, int itemsPerPage)
+            public void Paginate(List<UIScreenWidget> source, int itemsPerPage)
             {
                 itemList = source;
                 pages = AppDataExtensions.GetSubList(itemList, itemsPerPage);
@@ -1804,7 +1811,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public bool ItemExistInCurrentPage(UIScreenWidget<SceneDataPackets> itemToCheck)
+            public bool ItemExistInCurrentPage(UIScreenWidget itemToCheck)
             {
                 bool itemExist = false;
 
@@ -1851,17 +1858,17 @@ namespace Com.RedicalGames.Filar
                 return itemExist;
             }
 
-            public List<UIScreenWidget<SceneDataPackets>> GetPage(int pageIndex)
+            public List<UIScreenWidget> GetPage(int pageIndex)
             {
                 return pages[pageIndex];
             }
 
-            public List<UIScreenWidget<SceneDataPackets>> GetCurrentPage()
+            public List<UIScreenWidget> GetCurrentPage()
             {
                 return currentPage;
             }
 
-            public List<UIScreenWidget<SceneDataPackets>> GoToPageIndex(int pageIndex)
+            public List<UIScreenWidget> GoToPageIndex(int pageIndex)
             {
                 CurrentPageIndex = pageIndex;
 
@@ -1932,7 +1939,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetSlotAvailableOnScroller(List<UIScreenWidget<SceneDataPackets>> itemList, Action<Callback> callback)
+            public void GetSlotAvailableOnScroller(List<UIScreenWidget> itemList, Action<Callback> callback)
             {
                 Callback callbackResults = new Callback();
 
@@ -3038,7 +3045,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public RectTransform GetPlaceHolder(UIScreenWidget<SceneDataPackets> screenWidget)
+            public RectTransform GetPlaceHolder(UIScreenWidget screenWidget)
             {
                 value.name = screenWidget.name;
                 value.anchoredPosition = screenWidget.GetWidgetRect().anchoredPosition;
@@ -3048,9 +3055,9 @@ namespace Com.RedicalGames.Filar
                 return value;
             }
 
-            public UIScreenWidget<SceneDataPackets> GetWidget()
+            public UIScreenWidget GetWidget()
             {
-                return value.GetComponent<UIScreenWidget<SceneDataPackets>>();
+                return value.GetComponent<UIScreenWidget>();
             }
 
             public RectTransform GetContainer()
@@ -3212,7 +3219,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Select(UIScreenWidget<SceneDataPackets> selectable, SceneDataPackets dataPackets, bool isInitialSelection = false)
+            public void Select(UIScreenWidget selectable, SceneDataPackets dataPackets, bool isInitialSelection = false)
             {
                 if(isInitialSelection)
                 {
@@ -3257,7 +3264,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            public void Deselect(UIScreenWidget<SceneDataPackets> deselectedWidget, Action<Callback> callback = null)
+            public void Deselect(UIScreenWidget deselectedWidget, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -3304,7 +3311,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            public void AddSelectables(List<UIScreenWidget<SceneDataPackets>> selectables)
+            public void AddSelectables(List<UIScreenWidget> selectables)
             {
 
                 Debug.LogError($"=====> Added {selectables.Count} Items On Refresh");
@@ -3325,9 +3332,9 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> AddSelectables Failed : Selectables List Is Null.");
             }
 
-            public List<UIScreenWidget<SceneDataPackets>> GetCurrentSelections()
+            public List<UIScreenWidget> GetCurrentSelections()
             {
-                List<UIScreenWidget<SceneDataPackets>> widgetsList = new List<UIScreenWidget<SceneDataPackets>>();
+                List<UIScreenWidget> widgetsList = new List<UIScreenWidget>();
 
                 OnGetSelectedWidgets(selectionCallback => 
                 {
@@ -3520,17 +3527,17 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void OnGetSelectedWidgets(Action<CallbackDatas<UIScreenWidget<SceneDataPackets>>> callback)
+            public void OnGetSelectedWidgets(Action<CallbackDatas<UIScreenWidget>> callback)
             {
-                CallbackDatas<UIScreenWidget<SceneDataPackets>> callbackResults = new CallbackDatas<UIScreenWidget<SceneDataPackets>>();
+                CallbackDatas<UIScreenWidget> callbackResults = new CallbackDatas<UIScreenWidget>();
 
                 if (HasActiveSelections())
                 {
-                    List<UIScreenWidget<SceneDataPackets>> selectionList = new List<UIScreenWidget<SceneDataPackets>>();
+                    List<UIScreenWidget> selectionList = new List<UIScreenWidget>();
 
                     foreach (var widget in focusedSelectionData?.selections)
                     {
-                        UIScreenWidget<SceneDataPackets> screenWidget = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(widget.name);
+                        UIScreenWidget screenWidget = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(widget.name);
 
                         if (screenWidget != null)
                         {
@@ -4225,9 +4232,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetSelectionInfoState(List<UIScreenWidget<SceneDataPackets>> selectionList, FocusedSelectionType selectionType, Action<CallbackData<UIScreenWidget<SceneDataPackets>>> callback = null)
+            public void SetSelectionInfoState(List<UIScreenWidget> selectionList, FocusedSelectionType selectionType, Action<CallbackData<UIScreenWidget>> callback = null)
             {
-                CallbackData<UIScreenWidget<SceneDataPackets>> callbackResults = new CallbackData<UIScreenWidget<SceneDataPackets>>();
+                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
 
                 if (selectionList != null && selectionList.Count > 0)
                 {
@@ -5428,6 +5435,8 @@ namespace Com.RedicalGames.Filar
             public ShaderType shaderType;
         }
 
+        #region UI Data
+
         #region UI Actions
 
         [Serializable]
@@ -5450,6 +5459,23 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class UIScreenInputComponent : AppMonoBaseClass
+        {
+            #region Components
+
+            [Header("::: Input Component Info")]
+
+            [Space(5)]
+            new public string name;
+
+            #endregion
+
+            #region Main
+
+            #endregion
+        }
+
+        [Serializable]
         public abstract class UIInputComponent<T, U, V> : IUIInputComponent<V> where T : UnityEngine.Object
         {
             #region Components
@@ -5467,35 +5493,35 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public List<SelectionState> selectionStates = new List<SelectionState>
-        {
-            new SelectionState
             {
-                name = "Normal",
-                color = Color.white,
-                state = InputUIState.Normal
-            },
+                new SelectionState
+                {
+                    name = "Normal",
+                    color = Color.white,
+                    state = InputUIState.Normal
+                },
 
-            new SelectionState
-            {
-                name = "Selected",
-                color = Color.white,
-                state = InputUIState.Selected
-            },
+                new SelectionState
+                {
+                    name = "Selected",
+                    color = Color.white,
+                    state = InputUIState.Selected
+                },
 
-            new SelectionState
-            {
-                name = "Enabled",
-                color = Color.white,
-                state = InputUIState.Enabled
-            },
+                new SelectionState
+                {
+                    name = "Enabled",
+                    color = Color.white,
+                    state = InputUIState.Enabled
+                },
 
-            new SelectionState
-            {
-                name = "Disabled",
-                color = Color.grey,
-                state = InputUIState.Disabled
-            }
-        };
+                new SelectionState
+                {
+                    name = "Disabled",
+                    color = Color.grey,
+                    state = InputUIState.Disabled
+                }
+            };
 
             [Space(5)]
             public U dataPackets;
@@ -5518,6 +5544,11 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Main
+
+            public U GetDataPackets()
+            {
+                return dataPackets;
+            }
 
             /// <summary>
             /// Sets The Title Of The UI Input.
@@ -5661,7 +5692,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public abstract class SelectableUIInputComponent<T, U, V> : AppMonoBaseClass, IPointerDownHandler where T : UnityEngine.Object
+        public abstract class SelectableUIInputComponent<T, U, V> : AppMonoBaseClass, IPointerDownHandler where T : Component
         {
 
             #region Components
@@ -5706,9 +5737,6 @@ namespace Com.RedicalGames.Filar
         public class UIButton<T> : UIInputComponent<Button, T, UIButton<T>>
         {
             #region Components
-
-            [Space(5)]
-            public InputActionButtonType actionType;
 
             private SelectionState selectionState = new SelectionState();
 
@@ -6630,12 +6658,6 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public class UIText<T> : UIInputComponent<TMP_Text, T, UIText<T>>
         {
-            #region Components
-
-            [Space(5)]
-            public ScreenTextType textType;
-
-            #endregion
 
             #region Main
 
@@ -7073,7 +7095,6 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-
         [Serializable]
         public class UIImageDisplayer<T> : UIInputComponent<Image, T, UIInputSlider<T>>
         {
@@ -7199,6 +7220,820 @@ namespace Com.RedicalGames.Filar
 
             #endregion
         }
+
+        #endregion
+
+        #region UI Initializable Component Groups
+
+        #region Action Groups
+
+        #region UI Screen Action Group Component Wildcard *
+
+        [Serializable]
+        public class UIScreenActionComponent<T, U> : UIInputComponent<T, U, UIScreenActionComponent<T, U>> where T : UnityEngine.Object
+        {
+            #region Components
+
+            public override bool GetInteractableState()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override InputUIState GetUIInputState()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool GetUIInputVisibilityState()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+
+            #region Main
+
+            public override void OnInputDeselected()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void OnInputPointerDownEvent()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void OnInputSelected()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetChildWidgetsState(bool interactable, bool isSelected)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetFieldColor(Color color)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetInteractableState(bool interactable)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetUIInputState(InputUIState state)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetUIInputState(UIScreenActionComponent<T, U> input, InputUIState state)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetUIInputVisibilityState(bool visible)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class UIScreenActionGroup<T, U> where T : UnityEngine.Object where U : DataPackets
+        {
+            #region Components
+
+            [Space(10)]
+            [Header("::: Group Info")]
+
+            [Space(5)]
+            public string name;
+
+            [Space(10)]
+            [Header("::: Action Group Components")]
+
+            [Space(5)]
+            public List<UIScreenActionComponent<T, U>> actionComponents = new List<UIScreenActionComponent<T, U>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<W>(W fromClass = null, Action<CallbackData<List<UIScreenActionComponent<T, U>>>> callback = null) where W : AppMonoBaseClass
+            {
+                CallbackData<List<UIScreenActionComponent<T, U>>> callbackResults = new CallbackData<List<UIScreenActionComponent<T, U>>>();
+
+                if (IsInitialized())
+                {
+                    if (actionComponents == null || actionComponents.Count > 0)
+                    {
+                        var initializedActionButtonList = actionComponents.FindAll(actionComponent => actionComponent.value != null);
+
+                        if (initializedActionButtonList != null && initializedActionButtonList.Count == actionComponents.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Components Group Has Been Initialized Successfully With : {initializedActionButtonList.Count} Action Components.";
+                            callbackResults.data = actionComponents;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = actionComponents.Count - initializedActionButtonList.Count;
+                            callbackResults.results = $"Couldn't Initialized {actionComponents.Count} Action Component(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Components - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't  Initialized Action Component Group List From : {fromClass?.GetUniqueClassName()}. Action Components List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Component Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class UIScreenActionGroup
+        {
+            #region Components
+
+            public string name;
+
+            public AppData.InputType inputGroup;
+
+            public List<UIScreenInputWidget> screenActionGroup;
+
+            public bool initialize;
+
+            #endregion
+        }
+
+        #endregion
+
+        #region UI Screen Action Component
+
+        #region Action Button Group
+
+        [Serializable]
+        public class UIButtonGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UIButton<T>> buttons = new List<UIButton<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UIButton<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UIButton<T>> callbackResults = new CallbackDatas<UIButton<T>>();
+
+                if (IsInitialized())
+                {
+                    if (buttons == null || buttons.Count > 0)
+                    {
+                        var initializedActionInputFieldsList = buttons.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedActionInputFieldsList != null && initializedActionInputFieldsList.Count == buttons.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Button Group Has Been Initialized Successfully With : {initializedActionInputFieldsList.Count} Input Buttons.";
+                            callbackResults.data = initializedActionInputFieldsList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = buttons.Count - initializedActionInputFieldsList.Count;
+                            callbackResults.results = $"Couldn't Initialized {buttons.Count} Action Button(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Action Button(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't  Initialized Action Button Group List From : {fromClass?.GetUniqueClassName()}. Action Button(s) List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Button Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action UI Input Field Group
+
+        [Serializable]
+        public class UIInputFieldGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UIInputField<T>> actionInputFields = new List<UIInputField<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UIInputField<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UIInputField<T>> callbackResults = new CallbackDatas<UIInputField<T>>();
+
+                if (IsInitialized())
+                {
+                    if (actionInputFields == null || actionInputFields.Count > 0)
+                    {
+                        var initializedActionInputFieldsList = actionInputFields.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedActionInputFieldsList != null && initializedActionInputFieldsList.Count == actionInputFields.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Fields Group Has Been Initialized Successfully With : {initializedActionInputFieldsList.Count} Input Fields.";
+                            callbackResults.data = initializedActionInputFieldsList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = actionInputFields.Count - initializedActionInputFieldsList.Count;
+                            callbackResults.results = $"Couldn't Initialized {actionInputFields.Count} Action Input Field(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Field(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't  Initialized Action Input Fields Group List From : {fromClass?.GetUniqueClassName()}. Action Input Fields List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Input Fields Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action UI Input Slider Group
+
+        [Serializable]
+        public class UIInputSliderGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UIInputSlider<T>> actionInputSliders = new List<UIInputSlider<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UIInputSlider<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UIInputSlider<T>> callbackResults = new CallbackDatas<UIInputSlider<T>>();
+
+                if (IsInitialized())
+                {
+                    if (actionInputSliders == null || actionInputSliders.Count > 0)
+                    {
+                        var initializedActionInputSlidersList = actionInputSliders.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedActionInputSlidersList != null && initializedActionInputSlidersList.Count == actionInputSliders.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Sliders Group Has Been Initialized Successfully With : {initializedActionInputSlidersList.Count} Input Sliders.";
+                            callbackResults.data = initializedActionInputSlidersList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = actionInputSliders.Count - initializedActionInputSlidersList.Count;
+                            callbackResults.results = $"Couldn't Initialized {actionInputSliders.Count} Action Input Slider(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Slider(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't  Initialized Action Input Sliders Group List From : {fromClass?.GetUniqueClassName()}. Action Input Sliders List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Input Sliders Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action UI Checkbox Group
+
+        [Serializable]
+        public class UIInputCheckboxGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UICheckbox<T>> actionInputCheckboxes = new List<UICheckbox<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UICheckbox<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UICheckbox<T>> callbackResults = new CallbackDatas<UICheckbox<T>>();
+
+                if (IsInitialized())
+                {
+                    if (actionInputCheckboxes == null || actionInputCheckboxes.Count > 0)
+                    {
+                        var initializedActionInputCheckboxesList = actionInputCheckboxes.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedActionInputCheckboxesList != null && initializedActionInputCheckboxesList.Count == actionInputCheckboxes.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Checkbox Group Has Been Initialized Successfully With : {initializedActionInputCheckboxesList.Count} Input Checkboxes.";
+                            callbackResults.data = initializedActionInputCheckboxesList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = actionInputCheckboxes.Count - initializedActionInputCheckboxesList.Count;
+                            callbackResults.results = $"Couldn't Initialized {actionInputCheckboxes.Count} Action Input Checkbox(es) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Checkbox(es) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't  Initialized Action Input Checkboxes Group List From : {fromClass?.GetUniqueClassName()}. Action Input Checkboxes List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Input Checkboxes Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action UI Dropdown Group
+
+        [Serializable]
+        public class UIInputDropdownGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UIDropDown<T>> actionInputDropdowns = new List<UIDropDown<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UIDropDown<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UIDropDown<T>> callbackResults = new CallbackDatas<UIDropDown<T>>();
+
+                if (IsInitialized())
+                {
+                    if (actionInputDropdowns == null || actionInputDropdowns.Count > 0)
+                    {
+                        var initializedActionInputDropdownsList = actionInputDropdowns.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedActionInputDropdownsList != null && initializedActionInputDropdownsList.Count == actionInputDropdowns.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Dropdown Group Has Been Initialized Successfully With : {initializedActionInputDropdownsList.Count} Input Dropdowns.";
+                            callbackResults.data = initializedActionInputDropdownsList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = actionInputDropdowns.Count - initializedActionInputDropdownsList.Count;
+                            callbackResults.results = $"Couldn't Initialized {actionInputDropdowns.Count} Action Input Dropdown(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Dropdown(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't  Initialized Action Input Dropdowns Group List From : {fromClass?.GetUniqueClassName()}. Action Input Dropdowns List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Input Dropdowns Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action UI Slider Group
+
+        [Serializable]
+        public class InputUISliderGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UISlider<T>> actionUISliders = new List<UISlider<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UISlider<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UISlider<T>> callbackResults = new CallbackDatas<UISlider<T>>();
+
+                if (IsInitialized())
+                {
+                    if (actionUISliders == null || actionUISliders.Count > 0)
+                    {
+                        var initializedUISliderssList = actionUISliders.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedUISliderssList != null && initializedUISliderssList.Count == actionUISliders.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input UI Sliders Group Has Been Initialized Successfully With : {initializedUISliderssList.Count} Input UI Sliders.";
+                            callbackResults.data = initializedUISliderssList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = actionUISliders.Count - initializedUISliderssList.Count;
+                            callbackResults.results = $"Couldn't Initialized {actionUISliders.Count} Action Input UI Slider(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input UI Slider(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Initialized Action Input UI Sliders Group List From : {fromClass?.GetUniqueClassName()}. Action Input UI Sliders List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"Action Input UI Sliders Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action UI Components Group
+
+        [Serializable]
+        public class ActionUIComponentsGroup<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            [Header("::: Action Buttons Group")]
+
+            [Space(5)]
+            public UIButtonGroupComponent<T> buttonsGroup = new UIButtonGroupComponent<T>();
+
+            [Space(5)]
+            [Header("::: Action Input Fields Group")]
+
+            [Space(5)]
+            public UIInputFieldGroupComponent<T> fieldsGroup = new UIInputFieldGroupComponent<T>();
+
+            [Space(5)]
+            [Header("::: Action Field Sliders Group")]
+
+            [Space(5)]
+            public UIInputSliderGroupComponent<T> fieldSlidersGroup = new UIInputSliderGroupComponent<T>();
+
+            [Space(5)]
+            [Header("::: Action Dropdowns Group")]
+
+            [Space(5)]
+            public InputUISliderGroupComponent<T> uiSlidersGroup = new InputUISliderGroupComponent<T>();
+
+            [Space(5)]
+            [Header("::: Action Checkboxes Group")]
+
+            [Space(5)]
+            public UIInputCheckboxGroupComponent<T> checkboxesGroup = new UIInputCheckboxGroupComponent<T>();
+
+            [Space(5)]
+            [Header("::: Action Dropdowns Group")]
+
+            [Space(5)]
+            public UIInputDropdownGroupComponent<T> dropdownsGroup = new UIInputDropdownGroupComponent<T>();
+
+            #endregion
+
+            #region Main
+
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region UI Groups
+
+        #region UI Text Group
+
+        [Serializable]
+        public class UITextGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UIText<T>> uiTexts = new List<UIText<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(U fromClass = null, Action<CallbackDatas<UIText<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UIText<T>> callbackResults = new CallbackDatas<UIText<T>>();
+
+                if (IsInitialized())
+                {
+                    if (uiTexts == null || uiTexts.Count > 0)
+                    {
+                        var initializedUITextsList = uiTexts.FindAll(button => button.value != null);
+
+                        if (initializedUITextsList != null && initializedUITextsList.Count == uiTexts.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. UI Text Group Has Been Initialized Successfully With : {initializedUITextsList.Count} UI Text(s).";
+                            callbackResults.data = initializedUITextsList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = uiTexts.Count - initializedUITextsList.Count;
+                            callbackResults.results = $"Couldn't Initialized {uiTexts.Count} UI Text(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} UI Text(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Initialized UI Texts Group List From : {fromClass?.GetUniqueClassName()}. UI Texts List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"UI Text Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region UI Image Displayer Group
+
+        [Serializable]
+        public class UIImageDisplayerGroupComponent<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            public List<UIImageDisplayer<T>> imageDisplayers = new List<UIImageDisplayer<T>>();
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDatas<UIImageDisplayer<T>>> callback = null) where U : AppMonoBaseClass
+            {
+                CallbackDatas<UIImageDisplayer<T>> callbackResults = new CallbackDatas<UIImageDisplayer<T>>();
+
+                if (IsInitialized())
+                {
+                    if (imageDisplayers == null || imageDisplayers.Count > 0)
+                    {
+                        var initializedimageDisplayersList = imageDisplayers.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+
+                        if (initializedimageDisplayersList != null && initializedimageDisplayersList.Count == imageDisplayers.Count)
+                        {
+                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. UI Image Displayer Group Has Been Initialized Successfully With : {initializedimageDisplayersList.Count} UI Image Displayer(s).";
+                            callbackResults.data = initializedimageDisplayersList;
+                            callbackResults.resultsCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            int invalidDataCount = imageDisplayers.Count - initializedimageDisplayersList.Count;
+                            callbackResults.results = $"Couldn't Initialized {imageDisplayers.Count} UI Image Displayer(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} UI Image Displayer(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Initialized UI Image Displayer Group List From : {fromClass?.GetUniqueClassName()}. UI Image Displayer List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"UI Image Displayer Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                initialize = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public bool IsInitialized()
+            {
+                return initialize;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region UI Components Group
+
+        [Serializable]
+        public class UIComponentsGroup<T> where T : SceneDataPackets
+        {
+            #region Components
+
+            [Space(5)]
+            [Header("::: UI Text Group")]
+
+            [Space(5)]
+            public UITextGroupComponent<T> uiTextsGroup = new UITextGroupComponent<T>();
+
+            [Space(5)]
+            [Header("::: UI Image Displayer Group")]
+
+            [Space(5)]
+            public UIImageDisplayerGroupComponent<T> uiImageDisplayersGroup = new UIImageDisplayerGroupComponent<T>();
+
+            #endregion
+
+            #region Initializations
+
+            #endregion
+
+            #region Main
+
+            public UITextGroupComponent<T> GetUITextsGroup()
+            {
+                return uiTextsGroup;
+            }
+
+            public UIImageDisplayerGroupComponent<T> GetUIImageDisplayersGroup()
+            {
+                return uiImageDisplayersGroup;
+            }
+
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
 
         #endregion
 
@@ -8223,10 +9058,10 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         [Serializable]
-        public class FocusedSelectionInfoData<T> where T : DataPackets
+        public class FocusedSelectionInfoData
         {
             public string name;
-            public UIScreenWidget<T> selection;
+            public UIScreenWidget selection;
 
             public InputUIState state;
             public bool showSelection;
@@ -8691,29 +9526,27 @@ namespace Com.RedicalGames.Filar
         [RequireComponent(typeof(LayoutElement))]
         [RequireComponent(typeof(Button))]
 
-        public abstract class UIScreenWidget<T> : AppMonoBaseClass, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler where T : DataPackets
+        public abstract class UIScreenWidget : AppMonoBaseClass, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
         {
             #region Components
 
             #region Inspector Components
 
             [Space(10)]
-            [Header("::: Component UI Action Inputs")]
+            [Header("::: Component UI Action Groups")]
+
+            public List<UIScreenActionGroup> actionGroup = new List<UIScreenActionGroup>();
 
             [Space(5)]
             [SerializeField]
-            List<UIButton<T>> actionButtonList = new List<UIButton<T>>();
-
-            [Space(5)]
-            [SerializeField]
-            List<UIInputField<T>> actionInputFieldList = new List<UIInputField<T>>();
+            List<UIInputField<InputFieldDataPackets>> actionInputFieldList = new List<UIInputField<InputFieldDataPackets>>();
 
             [Space(10)]
-            [Header("::: Component UI")]
+            [Header("::: Component UI - Deprectated")]
 
             [Space(5)]
             [SerializeField]
-            List<UIText<T>> textDisplayerList = new List<UIText<T>>();
+            List<UIText<TextDataPackets>> textDisplayerList = new List<UIText<TextDataPackets>>();
 
             [Space(5)]
             [SerializeField]
@@ -8730,8 +9563,7 @@ namespace Com.RedicalGames.Filar
             [Header("::: Component Data Packet")]
 
             [Space(5)]
-            [SerializeField]
-            protected T dataPackets;
+            public SceneDataPackets dataPackets;
 
             [Space(10)]
             [Header("::: Component Scene Notifications")]
@@ -8744,9 +9576,9 @@ namespace Com.RedicalGames.Filar
 
             #region Non Inspector Components
 
-            List<UIScreenWidget<SceneDataPackets>> containerFolderWidgetsReferenceList = new List<UIScreenWidget<SceneDataPackets>>();
+            List<UIScreenWidget> containerFolderWidgetsReferenceList = new List<UIScreenWidget>();
 
-            protected FocusedSelectionInfoData<SceneDataPackets> focusedSelectionInfoData = new AppData.FocusedSelectionInfoData<SceneDataPackets>();
+            protected FocusedSelectionInfoData focusedSelectionInfoData = new FocusedSelectionInfoData();
             protected DynamicWidgetsContainer container;
 
             protected Button buttonComponent = null;
@@ -8777,8 +9609,8 @@ namespace Com.RedicalGames.Filar
 
             private RectTransform parent;
 
-            protected UIScreenWidget<SceneDataPackets> widgetComponent = null;
-            protected UIScreenWidget<SceneDataPackets> hoveredWidget = null;
+            protected UIScreenWidget widgetComponent = null;
+            protected UIScreenWidget hoveredWidget = null;
 
             bool isFingerDown = false;
             bool isSelected = false;
@@ -8810,9 +9642,42 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
+                    if(actionGroup != null && actionGroup.Count > 0)
+                    {
+                        var initialized = actionGroup.FindAll(input => input.initialize);
+
+                        if(initialized != null &&  initialized.Count > 0)
+                        {
+                            foreach (var item in initialized)
+                            {
+                                foreach(var widget in item.screenActionGroup)
+                                {
+                                    if(widget.inputType == InputType.Button)
+                                    {
+                                        widget.Init<ButtonDataPackets>(initializationCallback =>
+                                        {
+                                            if(initializationCallback.Success())
+                                            {
+                                               var button = widget.GetButtonComponent();
+
+                                                if (button.value != null)
+                                                    button.value.onClick.AddListener(() => OnActionButtonInputs(button));
+                                                else
+                                                    LogError($"Button : {button.name}'s Value Missing / Not Assigned In The Editor Inspector.", this);
+                                            }
+
+                                            Log(initializationCallback.resultsCode, initializationCallback.results, this);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
                     Callback callbackResults = new Callback();
 
-                    widgetComponent = GetComponent<UIScreenWidget<SceneDataPackets>>();
+                    widgetComponent = GetComponent<UIScreenWidget>();
                     widgetRect = GetComponent<RectTransform>();
                     layout = GetComponent<LayoutElement>();
                     buttonComponent = GetComponent<Button>();
@@ -8826,37 +9691,37 @@ namespace Com.RedicalGames.Filar
 
                     //dragPosition = widgetRect.anchoredPosition;
 
-                    if (actionButtonList == null)
-                    {
-                        callbackResults.results = "Action Buttons Required.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    //if (actionButtonList == null)
+                    //{
+                    //    callbackResults.results = "Action Buttons Required.";
+                    //    callbackResults.resultsCode = Helpers.ErrorCode;
 
-                        callback.Invoke(callbackResults);
-                        return;
-                    }
+                    //    callback.Invoke(callbackResults);
+                    //    return;
+                    //}
 
-                    if (actionButtonList.Count > 0)
-                    {
-                        //foreach (var button in actionButtonList)
-                        //{
-                        //    if (button.value != null)
-                        //        button.value.onClick.AddListener(() => OnActionButtonInputs(button));
-                        //    else
-                        //    {
-                        //        callbackResults.results = "--> Action Button Value Required.";
-                        //        callbackResults.success = false;
-                        //        break;
-                        //    }
-                        //}
+                    //if (actionButtonList.Count > 0)
+                    //{
+                    //    //foreach (var button in actionButtonList)
+                    //    //{
+                    //    //    if (button.value != null)
+                    //    //        button.value.onClick.AddListener(() => OnActionButtonInputs(button));
+                    //    //    else
+                    //    //    {
+                    //    //        callbackResults.results = "--> Action Button Value Required.";
+                    //    //        callbackResults.success = false;
+                    //    //        break;
+                    //    //    }
+                    //    //}
 
-                        callbackResults.results = "--> Initialized Successfully.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.results = "--> Action Buttons Required.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
-                    }
+                    //    callbackResults.results = "--> Initialized Successfully.";
+                    //    callbackResults.resultsCode = Helpers.SuccessCode;
+                    //}
+                    //else
+                    //{
+                    //    callbackResults.results = "--> Action Buttons Required.";
+                    //    callbackResults.resultsCode = Helpers.ErrorCode;
+                    //}
 
                     callback.Invoke(callbackResults);
                 }
@@ -8908,7 +9773,7 @@ namespace Com.RedicalGames.Filar
                 return contentIndex;
             }
 
-            public T GetDataPackets()
+            public SceneDataPackets GetDataPackets()
             {
                 return dataPackets;
             }
@@ -8953,7 +9818,7 @@ namespace Com.RedicalGames.Filar
             public void SetFileData() => OnSetFileData(assetData);
 
             public void SetFileData(SceneAsset assetData) => OnSetFileData(assetData);
-            protected abstract void OnActionButtonInputs(UIButton<T> actionButton);
+            protected abstract void OnActionButtonInputs(UIButton<ButtonDataPackets> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetFileData(SceneAsset assetData);
             protected abstract void OnScreenUIRefreshed();
@@ -8968,7 +9833,7 @@ namespace Com.RedicalGames.Filar
                 return assetData;
             }
 
-            public UIScreenWidget<SceneDataPackets> GetWidgetComponent()
+            public UIScreenWidget GetWidgetComponent()
             {
                 return widgetComponent;
             }
@@ -9110,23 +9975,23 @@ namespace Com.RedicalGames.Filar
                 Debug.LogError($"--> Button : {buttonType} State - : {state}");
             }
 
-            protected void SetActionButtonState(UIButton<T> button, InputUIState state)
+            protected void SetActionButtonState(UIButton<ButtonDataPackets> button, InputUIState state)
             {
-                foreach (var actionButton in actionButtonList)
-                    if (actionButton.value)
-                    {
-                        if (actionButton == button)
-                            actionButton.SetUIInputState(button, state);
-                        else
-                            actionButton.SetUIInputState(actionButton, InputUIState.Deselect);
-                    }
-                    else
-                        Debug.LogError($"--> Show Action Button Failed : {actionButton.actionType} Not Found");
+                var actionButtons = actionGroup.FindAll(inputs => inputs.screenActionGroup.Find(input => input.inputType == InputType.Button));
+
+                if(actionButtons != null && actionButtons.Count > 0)
+                {
+                    
+                }
+                else
+                    LogError($"=============> Button Action Group Not Found.", this);
+                       
             }
 
-            public List<UIButton<T>> GetActionInputUIButtonList()
+            public List<UIButton<ButtonDataPackets>> GetActionInputUIButtonList()
             {
-                return actionButtonList;
+                LogError("===========> Fix This Now - Return Proper Data", this);
+                return new List<UIButton<ButtonDataPackets>>();
             }
 
             public SelectableWidgetType GetSelectableType()
@@ -9148,24 +10013,58 @@ namespace Com.RedicalGames.Filar
 
             protected void SetUITextDisplayerValue(string value, ScreenTextType textType)
             {
-                if (textDisplayerList.Count > 0)
+                if (actionGroup != null && actionGroup.Count > 0)
                 {
-                    foreach (var displayer in textDisplayerList)
+                    var initialized = actionGroup.FindAll(input => input.initialize);
+
+                    if (initialized != null && initialized.Count > 0)
                     {
-                        if (displayer.textType == textType)
+                        foreach (var item in initialized)
                         {
-                            if (displayer.value)
+                            foreach (var widget in item.screenActionGroup)
                             {
-                                displayer.SetScreenUITextValue(value);
-                                break;
+                                if (widget.inputType == InputType.Text)
+                                {
+                                    widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback => 
+                                    {
+                                        if (dataPacketsCallback.Success())
+                                        {
+                                            if (dataPacketsCallback.data.textType == textType)
+                                            {
+                                                LogSuccess($"===> Yes - Now About To Set Widget Data Folder Name : {value} To Text Type : {textType}", this);
+                                                widget.GetTextComponent().SetScreenUITextValue(value);
+                                            }
+                                            else
+                                                LogError($"===> No - Text Displayer Not Set To Type : {textType}", this);
+                                        }
+                                        else
+                                            LogError("====> Failed To Get Data" + dataPacketsCallback.results, this);
+                                    });
+                                }
                             }
-                            else
-                                Debug.LogWarning("--> Failed : textDisplayer Value Is Null / Empty.");
                         }
                     }
                 }
-                else
-                    Debug.LogWarning("--> SetUITextDisplayerValue Failed : textDisplayerList Is Null / Empty.");
+
+
+                //if (textDisplayerList.Count > 0)
+                //{
+                //    foreach (var displayer in textDisplayerList)
+                //    {
+                //        if (displayer.dataPackets.textType == textType)
+                //        {
+                //            if (displayer.value)
+                //            {
+                //                displayer.SetScreenUITextValue(value);
+                //                break;
+                //            }
+                //            else
+                //                Debug.LogWarning("--> Failed : textDisplayer Value Is Null / Empty.");
+                //        }
+                //    }
+                //}
+                //else
+                //    Debug.LogWarning("--> SetUITextDisplayerValue Failed : textDisplayerList Is Null / Empty.");
             }
 
             protected void SetUIImageDisplayerValue(UIImageDisplayerType displayerType, UIImageType imageType)
@@ -9214,7 +10113,7 @@ namespace Com.RedicalGames.Filar
                             if (!SelectableManager.Instance.SmoothTransitionToSelection)
                                 SelectableManager.Instance.SmoothTransitionToSelection = true;
 
-                            var widgetData = this as UIScreenWidget<SceneDataPackets>;
+                            var widgetData = this as UIScreenWidget;
                             var dataPacket = dataPackets as SceneDataPackets;
 
                             SelectableManager.Instance.OnClearFocusedSelectionsInfo();
@@ -9286,41 +10185,55 @@ namespace Com.RedicalGames.Filar
                 return container;
             }
 
-            protected void OnSetActionButtonEvent(InputActionButtonType actionType, ActionEvents.ButtonAction<T> buttonAction = null, Action<Callback> callback = null)
+            protected void OnSetActionButtonEvent(InputActionButtonType actionType, ActionEvents.ButtonAction<ButtonDataPackets> buttonAction = null, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
                 if (GetActive())
                 {
-                    if (actionButtonList.Count > 0)
+                    if (actionGroup != null && actionGroup.Count > 0)
                     {
-                        UIButton<T> button = actionButtonList.Find(button => button.actionType == actionType);
+                        var initialized = actionGroup.FindAll(input => input.initialize);
 
-                        if (button != null)
+                        if (initialized != null && initialized.Count > 0)
                         {
-                            if (button.value)
+                            foreach (var item in initialized)
                             {
-                                button.SetButtonActionEvent(buttonAction);
+                                foreach (var widget in item.screenActionGroup)
+                                {
+                                    if (widget.inputType == InputType.Button)
+                                    {
+                                        widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var button = widget.GetButtonComponent();
 
-                                callbackResults.results = $"Set Action Button Event Success - Action Button : {button.name} Of Type : {actionType} Found.";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
-                            }
-                            else
-                            {
-                                callbackResults.results = $"Set Action Button Event Failed - Action Button : {button.name} Of Type : {actionType} Found With Missing Value - For Screen Widget : {name} With : {actionButtonList?.Count} Buttons Assigned.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                                if (button != null)
+                                                {
+                                                    if (button.value)
+                                                    {
+                                                        button.SetButtonActionEvent(buttonAction);
+
+                                                        callbackResults.results = $"Set Action Button Event Success - Action Button : {button.name} Of Type : {actionType} Found.";
+                                                        callbackResults.resultsCode = Helpers.SuccessCode;
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.results = $"Set Action Button Event Failed - Action Button : {button.name} Of Type : {actionType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    LogError("Action Group Button Component Not Found", this);
+                                            }
+                                            else
+                                                Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                        });
+                                    }
+                                }
                             }
                         }
-                        else
-                        {
-                            callbackResults.results = $"Set Action Button Event Failed - Action Button Of Type : {actionType} Not Found For Screen Widget : {name} With : {actionButtonList?.Count} Buttons Assigned.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.results = $"Set Action Button Event Failed - UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - Action Buttons On This Widget Are Missing / Null.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
                     }
                 }
                 else
@@ -9334,15 +10247,42 @@ namespace Com.RedicalGames.Filar
 
             protected void OnSetActionButtonState(InputActionButtonType actionType, InputUIState state)
             {
-                if (actionButtonList.Count > 0)
+                if (actionGroup != null && actionGroup.Count > 0)
                 {
-                    UIButton<T> button = actionButtonList.Find(button => button.actionType == actionType);
+                    var initialized = actionGroup.FindAll(input => input.initialize);
 
-                    if (button != null)
-                        button.SetUIInputState(state);
+                    if (initialized != null && initialized.Count > 0)
+                    {
+                        foreach (var item in initialized)
+                        {
+                            foreach (var widget in item.screenActionGroup)
+                            {
+                                if (widget.inputType == InputType.Button)
+                                {
+                                    widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
+                                    {
+                                        if (dataPacketsCallback.Success())
+                                        {
+                                            var button = widget.GetButtonComponent();
+
+                                            if (button != null)
+                                            {
+                                                if (button.value)
+                                                    button.SetUIInputState(state);
+                                                else
+                                                    LogError("Action Group Button Value Missing", this);
+                                            }
+                                            else
+                                                LogError("Action Group Button Component Not Found", this);
+                                        }
+                                        else
+                                            Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
-                else
-                    LogWarning("Action Button List Is Null / Empty.", this, () => OnSetActionButtonState(actionType, state));
             }
 
             void ResetWidgetOnBeginDrag(PointerEventData eventData, Vector2 pos)
@@ -9367,13 +10307,11 @@ namespace Com.RedicalGames.Filar
             {
                 if (GetWidgetContainer().GetContentCount() > 0)
                 {
-                    containerFolderWidgetsReferenceList = new List<UIScreenWidget<SceneDataPackets>>();
+                    containerFolderWidgetsReferenceList = new List<UIScreenWidget>();
 
                     if (containerFolderWidgetsReferenceList.Count == 0)
                     {
-                        var ignoreWidget = this as UIScreenWidget<SceneDataPackets>;
-
-                        GetWidgetContainer().GetContent(ignoreWidget, contentFound =>
+                        GetWidgetContainer().GetContent(this, contentFound =>
                         {
                             if (Helpers.IsSuccessCode(contentFound.resultsCode))
                                 containerFolderWidgetsReferenceList = contentFound.data;
@@ -10181,7 +11119,7 @@ namespace Com.RedicalGames.Filar
 
                     if (targetStorageDataDoesntExist)
                     {
-                        UIScreenWidget<SceneDataPackets> widget = this as UIScreenWidget<SceneDataPackets>;
+                        UIScreenWidget widget = this as UIScreenWidget;
 
                         Debug.LogError($"==> Path : {targetDirectoryData.path} - Directory : {targetDirectoryData.directory} Doesn't Exist");
 
@@ -10303,24 +11241,24 @@ namespace Com.RedicalGames.Filar
                 return targetStorageData;
             }
 
-            FocusedSelectionInfoData<T> widgetSelectionInfoData = new FocusedSelectionInfoData<T>();
+            FocusedSelectionInfoData widgetSelectionInfoData = new FocusedSelectionInfoData();
 
-            public FocusedSelectionInfoData<T> OnGetFocusedSelectionInfoData()
+            public FocusedSelectionInfoData OnGetFocusedSelectionInfoData()
             {
-                //if(widgetSelectionInfoData.selection == null)
-                //{
-                //    widgetSelectionInfoData.selection = this;
-                //    widgetSelectionInfoData.name = name;
-                //}
+                if (widgetSelectionInfoData.selection == null)
+                {
+                    widgetSelectionInfoData.selection = this;
+                    widgetSelectionInfoData.name = name;
+                }
 
                 return GetWidgetSelectionInfoData();
             }
 
-            public void OnSetFocusedSelectionInfoData(FocusedSelectionInfoData<T> selectionInfoData) => widgetSelectionInfoData = selectionInfoData;
+            public void OnSetFocusedSelectionInfoData(FocusedSelectionInfoData selectionInfoData) => widgetSelectionInfoData = selectionInfoData;
 
-            public FocusedSelectionInfoData<T> GetWidgetSelectionInfoData()
+            public FocusedSelectionInfoData GetWidgetSelectionInfoData()
             {
-                FocusedSelectionInfoData<T> source = new FocusedSelectionInfoData<T>();
+                FocusedSelectionInfoData source = new FocusedSelectionInfoData();
 
                 source.name = name;
                 source.selection = this;
@@ -10332,7 +11270,7 @@ namespace Com.RedicalGames.Filar
                 return source;
             }
 
-            public FocusedSelectionInfoData<T> GetWidgetSelectionInfoData(FocusedSelectionInfoData<T> source)
+            public FocusedSelectionInfoData GetWidgetSelectionInfoData(FocusedSelectionInfoData source)
             {
                 source.selectionInfoType = selectableComponent.GetCurrentSelectionState().uiStateData.selectionType;
                 source.state = selectableComponent.GetCurrentSelectionState().uiStateData.state;
@@ -10342,9 +11280,9 @@ namespace Com.RedicalGames.Filar
                 return source;
             }
 
-            public void OnSelectionFrameState(FocusedSelectionStateInfo selectionInfoData, bool async = false, Action<CallbackData<FocusedSelectionInfoData<T>>> callback = null)
+            public void OnSelectionFrameState(FocusedSelectionStateInfo selectionInfoData, bool async = false, Action<CallbackData<FocusedSelectionInfoData>> callback = null)
             {
-                CallbackData<FocusedSelectionInfoData<T>> callbackResults = new CallbackData<FocusedSelectionInfoData<T>>();
+                CallbackData<FocusedSelectionInfoData> callbackResults = new CallbackData<FocusedSelectionInfoData>();
 
                 if (selectableComponent.GetSelectableAssetType() != SelectableAssetType.PlaceHolder)
                 {
@@ -10353,7 +11291,7 @@ namespace Com.RedicalGames.Filar
                         if (selectableComponent.IsInitialized().hasSelectionFrame && selectableComponent.IsInitialized().hasSelectionState && selectableComponent.IsInitialized().hasTint)
                         {
                             #region Selection Info Data
-                            FocusedSelectionInfoData<T> newSelectionInfoData = new FocusedSelectionInfoData<T>();
+                            FocusedSelectionInfoData newSelectionInfoData = new FocusedSelectionInfoData();
 
                             if (selectionInfoData.showSelection)
                             {
@@ -10762,7 +11700,7 @@ namespace Com.RedicalGames.Filar
         #region UI Action Components
 
         [Serializable]
-        public class UIActionButtonComponent<ComponentType, T, U, V> where ComponentType : UIInputComponent<T, U, V> where T : UnityEngine.Object where U : DataPackets
+        public class UIActionButtonComponent<ComponentType, T, U, V> where ComponentType : UIInputComponent<T, U, V> where T : Component where U : DataPackets
         {
             #region Components
 
@@ -11060,31 +11998,31 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            List<UIButton<SceneDataPackets>> screenActionButtonList = new List<UIButton<SceneDataPackets>>();
+            List<UIButton<ButtonDataPackets>> screenActionButtonList = new List<UIButton<ButtonDataPackets>>();
 
             [Space(5)]
             [SerializeField]
-            List<UIDropDown<SceneDataPackets>> screenActionDropDownList = new List<UIDropDown<SceneDataPackets>>();
+            List<UIDropDown<DropdownDataPackets>> screenActionDropDownList = new List<UIDropDown<DropdownDataPackets>>();
 
             [Space(5)]
             [SerializeField]
-            List<UIInputField<SceneDataPackets>> screenActionInputFieldList = new List<UIInputField<SceneDataPackets>>();
+            List<UIInputField<InputFieldDataPackets>> screenActionInputFieldList = new List<UIInputField<InputFieldDataPackets>>();
 
             [Space(5)]
             [SerializeField]
-            List<UISlider<SceneDataPackets>> screenActionSliderList = new List<UISlider<SceneDataPackets>>();
+            List<UISlider<SliderDataPackets>> screenActionSliderList = new List<UISlider<SliderDataPackets>>();
 
             [Space(5)]
             [SerializeField]
-            List<UICheckbox<SceneDataPackets>> screenActionCheckboxList = new List<UICheckbox<SceneDataPackets>>();
+            List<UICheckbox<CheckboxDataPackets>> screenActionCheckboxList = new List<UICheckbox<CheckboxDataPackets>>();
 
             [Space(5)]
             [SerializeField]
-            List<UIText<SceneDataPackets>> screenTextList = new List<UIText<SceneDataPackets>>();
+            List<UIText<TextDataPackets>> screenTextList = new List<UIText<TextDataPackets>>();
 
             [Space(5)]
             [SerializeField]
-            List<UIImageDisplayer<SceneDataPackets>> screenImageDisplayerList = new List<UIImageDisplayer<SceneDataPackets>>();
+            List<UIImageDisplayer<ImageDataPackets>> screenImageDisplayerList = new List<UIImageDisplayer<ImageDataPackets>>();
 
             [Space(5)]
             [Header("Screen Data")]
@@ -11369,7 +12307,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 if (button.value != null)
                                                 {
-                                                    button.value.onClick.AddListener(() => OnButtonClicked(widget, button.actionType, button.dataPackets));
+                                                    button.value.onClick.AddListener(() => OnButtonClicked(widget, button.dataPackets.action, button.dataPackets));
                                                 }
                                                 else
                                                     Debug.LogError($"--> RG_Unity - Init Failed  : Screen Widget List Value For : {widget.name} Is Missing / Null.");
@@ -11579,7 +12517,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (!state)
                     {
-                        AppData.ScreenTogglableWidget<GameObject> screenTogglableWidget = screenTogglableWidgetsList.Find((x) => x.widgetType == widgetType);
+                        ScreenTogglableWidget<GameObject> screenTogglableWidget = screenTogglableWidgetsList.Find((x) => x.widgetType == widgetType);
 
                         if (screenTogglableWidget.value != null)
                         {
@@ -11648,7 +12586,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (actionType != InputActionButtonType.None)
                             {
-                                if (actionButton.actionType == actionType)
+                                if (actionButton.dataPackets.action == actionType)
                                 {
                                     actionButton.SetChildWidgetsState(interactable, isSelected);
                                     break;
@@ -11692,7 +12630,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (screenActionButtonList.Count > 0)
                         {
-                            UIButton<SceneDataPackets> button = screenActionButtonList.Find(button => button.actionType == actionType);
+                            UIButton<ButtonDataPackets> button = screenActionButtonList.Find(button => button.dataPackets.action == actionType);
 
                             if (button != null)
                                 button.SetUIImageValue(SceneAssetsManager.Instance.GetImageFromLibrary(imageType), displayerType);
@@ -11730,7 +12668,7 @@ namespace Com.RedicalGames.Filar
                             if (button.value != null)
                                 button.SetUIInputState(state);
                             else
-                                LogError($"Button Of Type : {button.actionType}'s Value Missing.", this, () => SetActionButtonState(state));
+                                LogError($"Button Of Type : {button.dataPackets.action}'s Value Missing.", this, () => SetActionButtonState(state));
                         }
                     }
                     else
@@ -11744,7 +12682,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (screenActionButtonList.Count > 0)
                     {
-                        UIButton<SceneDataPackets> button = screenActionButtonList.Find(button => button.actionType == actionType);
+                        UIButton<ButtonDataPackets> button = screenActionButtonList.Find(button => button.dataPackets.action == actionType);
 
                         if (button != null)
                             button.SetUIInputState(state);
@@ -11780,7 +12718,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionInputFieldList.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = screenActionInputFieldList.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = screenActionInputFieldList.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetUIInputState(state);
@@ -11795,7 +12733,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionInputFieldList.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = screenActionInputFieldList.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = screenActionInputFieldList.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
@@ -11814,7 +12752,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionDropDownList.Count > 0)
                 {
-                    UIDropDown<SceneDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.actionType == actionType);
+                    UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
 
                     if (dropdown.value != null)
                         dropdown.SetUIInputState(state);
@@ -11829,7 +12767,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionDropDownList.Count > 0)
                 {
-                    UIDropDown<SceneDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.actionType == actionType);
+                    UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
 
                     if (dropdown.value != null)
                     {
@@ -11879,7 +12817,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionSliderList.Count > 0)
                 {
-                    UISlider<SceneDataPackets> slider = screenActionSliderList.Find(slider => slider.valueType == valueType);
+                    UISlider<SliderDataPackets> slider = screenActionSliderList.Find(slider => slider.dataPackets.valueType == valueType);
 
                     if (slider.value != null)
                         slider.SetUIInputState(state);
@@ -11914,7 +12852,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionCheckboxList.Count > 0)
                 {
-                    UICheckbox<SceneDataPackets> checkbox = screenActionCheckboxList.Find(checkbox => checkbox.actionType == actionType);
+                    UICheckbox<CheckboxDataPackets> checkbox = screenActionCheckboxList.Find(checkbox => checkbox.dataPackets.action == actionType);
 
                     if (checkbox != null)
                         checkbox.SetUIInputState(state);
@@ -11949,7 +12887,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionCheckboxList.Count > 0)
                 {
-                    UICheckbox<SceneDataPackets> checkbox = screenActionCheckboxList.Find(checkbox => checkbox.actionType == actionType);
+                    UICheckbox<CheckboxDataPackets> checkbox = screenActionCheckboxList.Find(checkbox => checkbox.dataPackets.action == actionType);
 
                     if (checkbox != null)
                         checkbox.SetSelectionState(value);
@@ -11984,7 +12922,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenTextList.Count > 0)
                 {
-                    UIText<SceneDataPackets> textDisplayer = screenTextList.Find(textDisplayer => textDisplayer.textType == textType);
+                    UIText<TextDataPackets> textDisplayer = screenTextList.Find(textDisplayer => textDisplayer.dataPackets.textType == textType);
 
                     if (textDisplayer != null)
                         textDisplayer.SetScreenUITextValue(value);
@@ -12003,7 +12941,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenImageDisplayerList.Count > 0)
                 {
-                    UIImageDisplayer<SceneDataPackets> imageDisplayer = screenImageDisplayerList.Find(imageDisplayer => imageDisplayer.imageType == displayerType);
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = screenImageDisplayerList.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(screenCaptureData, dataPackets);
@@ -12018,7 +12956,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenImageDisplayerList.Count > 0)
                 {
-                    UIImageDisplayer<SceneDataPackets> imageDisplayer = screenImageDisplayerList.Find(imageDisplayer => imageDisplayer.imageType == displayerType);
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = screenImageDisplayerList.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(imageData);
@@ -12033,7 +12971,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenImageDisplayerList.Count > 0)
                 {
-                    UIImageDisplayer<SceneDataPackets> imageDisplayer = screenImageDisplayerList.Find(imageDisplayer => imageDisplayer.imageType == displayerType);
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = screenImageDisplayerList.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(image);
@@ -12050,48 +12988,48 @@ namespace Com.RedicalGames.Filar
 
             #region Get Screen Action Inputs
 
-            public List<UIButton<SceneDataPackets>> GetScreenActionButtonList()
+            public List<UIButton<ButtonDataPackets>> GetScreenActionButtonList()
             {
                 return screenActionButtonList;
             }
 
-            public List<UIInputField<SceneDataPackets>> GetScreenActionInputFieldList()
+            public List<UIInputField<InputFieldDataPackets>> GetScreenActionInputFieldList()
             {
                 return screenActionInputFieldList;
             }
 
-            public List<UIDropDown<SceneDataPackets>> GetScreenActionDropdownList()
+            public List<UIDropDown<DropdownDataPackets>> GetScreenActionDropdownList()
             {
                 return screenActionDropDownList;
             }
 
-            public List<UISlider<SceneDataPackets>> GetScreenActionSliderList()
+            public List<UISlider<SliderDataPackets>> GetScreenActionSliderList()
             {
                 return screenActionSliderList;
             }
 
-            public List<UICheckbox<SceneDataPackets>> GetScreenActionCheckboxList()
+            public List<UICheckbox<CheckboxDataPackets>> GetScreenActionCheckboxList()
             {
                 return screenActionCheckboxList;
             }
 
-            public List<UIText<SceneDataPackets>> GetScreenUITextDisplayerList()
+            public List<UIText<TextDataPackets>> GetScreenUITextDisplayerList()
             {
                 return screenTextList;
             }
 
-            public List<UIImageDisplayer<SceneDataPackets>> GetScreenUIImageDisplayerList()
+            public List<UIImageDisplayer<ImageDataPackets>> GetScreenUIImageDisplayerList()
             {
                 return screenImageDisplayerList;
             }
 
             #endregion
 
-            void ScreenButtonInputs(UIButton<SceneDataPackets> actionButton)
+            void ScreenButtonInputs(UIButton<ButtonDataPackets> actionButton)
             {
-                LogInfo($"Clicked Button Of Action Type : {actionButton.actionType}", this, () => ScreenButtonInputs(actionButton));
+                LogInfo($"Clicked Button Of Action Type : {actionButton.dataPackets.action}", this, () => ScreenButtonInputs(actionButton));
 
-                switch (actionButton.actionType)
+                switch (actionButton.dataPackets.action)
                 {
                     case InputActionButtonType.OpenPopUp:
 
@@ -12108,7 +13046,6 @@ namespace Com.RedicalGames.Filar
                     case InputActionButtonType.CreateNewAsset:
 
                         OnCreateNewAsset_ActionEvent(actionButton.dataPackets);
-
 
                         break;
 
@@ -12133,12 +13070,6 @@ namespace Com.RedicalGames.Filar
                     case InputActionButtonType.OpenARView:
 
                         OnOpenARView_ActionEvent(actionButton.dataPackets);
-
-                        break;
-
-                    case InputActionButtonType.GoToProfile:
-
-                        OnGoToProfile_ActionEvent(actionButton.dataPackets);
 
                         break;
 
@@ -12171,9 +13102,15 @@ namespace Com.RedicalGames.Filar
                         OnClipboard_ActionEvent(actionButton.dataPackets);
 
                         break;
+
+                    case InputActionButtonType.CreateNewProjectButton:
+
+                        OnCreateNewProject_ActionEvent(actionButton.dataPackets);
+
+                        break;
                 }
 
-                ActionEvents.OnActionButtonClicked(actionButton.actionType);
+                ActionEvents.OnActionButtonClicked(actionButton.dataPackets.action);
             }
 
             #region Action Events Callbacks
@@ -12413,14 +13350,6 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Screen Manager Missing.", this, () => OnOpenARView_ActionEvent(dataPackets));
             }
 
-            void OnGoToProfile_ActionEvent(SceneDataPackets dataPackets)
-            {
-                if (ScreenUIManager.Instance != null)
-                    ScreenUIManager.Instance.ShowScreen(dataPackets);
-                else
-                    LogWarning("Screen Manager Missing.", this, () => OnGoToProfile_ActionEvent(dataPackets));
-            }
-
             void OnCreateNewFolder_ActionEvent(SceneDataPackets dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
@@ -12632,6 +13561,11 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
+            void OnCreateNewProject_ActionEvent(SceneDataPackets dataPackets)
+            {
+                ShowWidget(dataPackets);
+            }
+
             #endregion
 
             void OnDropDownFilterOptions(int dropdownIndex)
@@ -12665,7 +13599,7 @@ namespace Com.RedicalGames.Filar
                    LogWarning("Assets Manager Not Yet Initialized.", this, () => OnDropDownSceneAssetRenderModeOptions(dropdownIndex));
             }
 
-            void OnInputSliderValueChangedAction(UISlider<SceneDataPackets> slider, float value)
+            void OnInputSliderValueChangedAction(UISlider<SliderDataPackets> slider, float value)
             {
                 switch (slider.valueType)
                 {
@@ -12695,7 +13629,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnInputCheckboxValueChangedAction(UICheckbox<SceneDataPackets> checkbox, bool value)
+            void OnInputCheckboxValueChangedAction(UICheckbox<CheckboxDataPackets> checkbox, bool value)
             {
                 // Update - Remove This Shit Load Here!
                 switch (checkbox.actionType)
@@ -12711,7 +13645,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnInputFieldAction(UIInputField<SceneDataPackets> inputField, string inputValue)
+            void OnInputFieldAction(UIInputField<InputFieldDataPackets> inputField, string inputValue)
             {
                 switch (inputField.actionType)
                 {
@@ -12726,7 +13660,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnClearInputFieldAction(UIInputField<SceneDataPackets> inputField)
+            void OnClearInputFieldAction(UIInputField<InputFieldDataPackets> inputField)
             {
                 if (screenActionInputFieldList.Count > 0)
                 {
@@ -12829,7 +13763,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (screenText.value)
                         {
-                            if (screenText.textType == textType)
+                            if (screenText.dataPackets.textType == textType)
                                 screenText.value.text = text;
 
                             screenText.SetUIInputVisibilityState(setVisible);
@@ -13347,7 +14281,7 @@ namespace Com.RedicalGames.Filar
  ;
                 if (IsInitialized())
                 {
-                    layout.SetActive(true);
+                    layout?.SetActive(true);
 
                     callbackResults.results = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Set To Active.";
                     callbackResults.resultsCode = Helpers.SuccessCode;
@@ -13367,7 +14301,7 @@ namespace Com.RedicalGames.Filar
 
                 if (IsInitialized())
                 {
-                    layout.SetActive(false);
+                    layout?.SetActive(false);
 
                     callbackResults.results = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Deactivated.";
                     callbackResults.resultsCode = Helpers.SuccessCode;
@@ -13397,15 +14331,15 @@ namespace Com.RedicalGames.Filar
             [Header("Widgets Prefabs Library")]
 
             [Space(5)]
-            public List<UIScreenWidgetsPrefabData<SceneDataPackets>> screenWidgetPrefabDataList = new List<UIScreenWidgetsPrefabData<SceneDataPackets>>() ;
+            public List<UIScreenWidgetsPrefabData> screenWidgetPrefabDataList = new List<UIScreenWidgetsPrefabData>() ;
 
             #endregion
 
             #region Main
 
-            public void GetAllUIScreenWidgetsPrefabData(Action<CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>> callback)
+            public void GetAllUIScreenWidgetsPrefabData(Action<CallbackDatas<UIScreenWidgetsPrefabData>> callback)
             {
-                CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>> callbackResults = new CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>();
+                CallbackDatas<UIScreenWidgetsPrefabData> callbackResults = new CallbackDatas<UIScreenWidgetsPrefabData>();
 
                 if (screenWidgetPrefabDataList != null && screenWidgetPrefabDataList.Count > 0)
                 {
@@ -13434,9 +14368,9 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public void GetAllUIScreenWidgetsPrefabDataForScreen(UIScreenType screenType, Action<CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>> callback)
+            public void GetAllUIScreenWidgetsPrefabDataForScreen(UIScreenType screenType, Action<CallbackDatas<UIScreenWidgetsPrefabData>> callback)
             {
-                CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>> callbackResults = new CallbackDatas<UIScreenWidgetsPrefabData<SceneDataPackets>>();
+                CallbackDatas<UIScreenWidgetsPrefabData> callbackResults = new CallbackDatas<UIScreenWidgetsPrefabData>();
 
                 if(screenWidgetPrefabDataList != null && screenWidgetPrefabDataList.Count > 0 )
                 {
@@ -13481,7 +14415,7 @@ namespace Com.RedicalGames.Filar
 
 
         [Serializable]
-        public class UIScreenWidgetsPrefabData<T> where T : DataPackets
+        public class UIScreenWidgetsPrefabData
         {
             #region Components
 
@@ -13489,7 +14423,7 @@ namespace Com.RedicalGames.Filar
             public string name;
 
             [Space(5)]
-            public List<UIScreenWidget<T>> screenWidgetPrefabList = new List<UIScreenWidget<T>>();
+            public List<UIScreenWidget> screenWidgetPrefabList = new List<UIScreenWidget>();
 
             [Space(5)]
             public UIScreenType screenType;
@@ -13508,12 +14442,12 @@ namespace Com.RedicalGames.Filar
                 return initializePrefabData;
             }
 
-            public List<UIScreenWidget<T>> GetUIScreenWidgetsPrefabData()
+            public List<UIScreenWidget> GetUIScreenWidgetsPrefabData()
             {
                 return screenWidgetPrefabList;
             }
 
-            public void AddUIScreenWidgetPrefabData(UIScreenWidget<T> widgetPrefab, Action<Callback> callback = null)
+            public void AddUIScreenWidgetPrefabData(UIScreenWidget widgetPrefab, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -13565,7 +14499,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void RemoveUIScreenWidgetPrefabData(UIScreenWidget<T> widgetPrefab, Action<Callback> callback = null)
+            public void RemoveUIScreenWidgetPrefabData(UIScreenWidget widgetPrefab, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -13617,9 +14551,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetUIScreenWidgetData(SelectableAssetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget<T>>> callback)
+            public void GetUIScreenWidgetData(SelectableAssetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget>> callback)
             {
-                CallbackData<UIScreenWidget<T>> callbackResults = new CallbackData<UIScreenWidget<T>>();
+                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -13672,9 +14606,9 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public void GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableAssetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget<T>>> callback)
+            public void GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableAssetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget>> callback)
             {
-                CallbackData<UIScreenWidget<T>> callbackResults = new CallbackData<UIScreenWidget<T>>();
+                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -13739,9 +14673,9 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public UIScreenWidget<T> GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableAssetType assetType, LayoutViewType viewType)
+            public UIScreenWidget GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableAssetType assetType, LayoutViewType viewType)
             {
-                UIScreenWidget<T> screenWidgetData = null;
+                UIScreenWidget screenWidgetData = null;
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -13800,28 +14734,28 @@ namespace Com.RedicalGames.Filar
             [Header("Widget UI Inputs")]
 
             [Space(5)]
-            public List<UIButton<SceneDataPackets>> buttons;
+            public List<UIButton<ButtonDataPackets>> buttons;
 
             [Space(5)]
-            public List<UIInputField<SceneDataPackets>> inputs;
+            public List<UIInputField<InputFieldDataPackets>> inputs;
 
             [Space(5)]
-            public List<UIDropDown<SceneDataPackets>> dropdowns;
+            public List<UIDropDown<DropdownDataPackets>> dropdowns;
 
             [Space(5)]
-            public List<UIInputSlider<SceneDataPackets>> sliders;
+            public List<UIInputSlider<InputSliderDataPackets>> sliders;
 
             [Space(5)]
-            public List<UISlider<SceneDataPackets>> uiSliders;
+            public List<UISlider<SliderDataPackets>> uiSliders;
 
             [Space(5)]
-            public List<UICheckbox<SceneDataPackets>> checkboxes;
+            public List<UICheckbox<CheckboxDataPackets>> checkboxes;
 
             [Space(5)]
-            public List<UIText<SceneDataPackets>> textDisplayerList;
+            public List<UIText<TextDataPackets>> textDisplayerList;
 
             [Space(5)]
-            public List<UIImageDisplayer<SceneDataPackets>> imageDisplayers;
+            public List<UIImageDisplayer<ImageDataPackets>> imageDisplayers;
 
             #endregion
 
@@ -13910,6 +14844,8 @@ namespace Com.RedicalGames.Filar
             protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
             protected LoadingWidget loadingWidget;
             protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
+            protected CreateNewProjectWidget createNewProjectWidget;
+            protected ProjectCreationWarningWidget projectCreationWarningWidget;
 
             #endregion
 
@@ -14264,11 +15200,11 @@ namespace Com.RedicalGames.Filar
                 {
                     if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == PaginationViewType.Pager)
                     {
-                        List<UIScreenWidget<SceneDataPackets>> currentPage = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
+                        List<UIScreenWidget> currentPage = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
 
                         if (currentPage != null && currentPage.Count > 0)
                         {
-                            List<UIScreenWidget<SceneDataPackets>> selectedWidgets = new List<UIScreenWidget<SceneDataPackets>>();
+                            List<UIScreenWidget> selectedWidgets = new List<UIScreenWidget>();
 
                             foreach (var selectedWidget in currentPage)
                                 if (selectedWidget.IsSelected())
@@ -14281,7 +15217,7 @@ namespace Com.RedicalGames.Filar
                                     if (Helpers.IsSuccessCode(getFolderStructureSelectionData.resultsCode))
                                     {
                                         int lastSelectionIndex = getFolderStructureSelectionData.data.Count - 1;
-                                        UIScreenWidget<SceneDataPackets> lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
+                                        UIScreenWidget lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
 
                                         if (lastSelectedWidget != null)
                                             SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GoToItemPage(lastSelectedWidget);
@@ -14403,7 +15339,7 @@ namespace Com.RedicalGames.Filar
                         {
                             ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.ButtonIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
 
-                            if (dataPackets.showNotification)
+                            if (dataPackets.notification.showNotifications)
                             {
                                 if (pinItemsCount == 1)
                                 {
@@ -14414,7 +15350,7 @@ namespace Com.RedicalGames.Filar
                                 if (pinItemsCount > 1)
                                     dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{pinItemsCount} Items Pinned" : $"{pinItemsCount} Items Removed From Pinned";
 
-                                SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetContent<SceneDataPackets>(contentLoadedCallback =>
+                                SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetContent(contentLoadedCallback =>
                                 {
                                     if (Helpers.IsSuccessCode(contentLoadedCallback.resultsCode))
                                     {
@@ -14681,6 +15617,26 @@ namespace Com.RedicalGames.Filar
                         OnCreateNewFolder_ActionEvent(dataPackets);
 
                         break;
+
+                    case WidgetType.CreateNewProjectWidget:
+
+                        OnCreateNewProject_ActionEvent(dataPackets);
+
+                        break;
+
+                    case WidgetType.ProjectCreationWarningWidget:
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.CreateNewProjectWidget, dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+
+                        break;
                 }
             }
 
@@ -14796,7 +15752,7 @@ namespace Com.RedicalGames.Filar
 
                                     ScreenUIManager.Instance.Refresh();
 
-                                    if (dataPackets.showNotification)
+                                    if (dataPackets.notification.showNotifications)
                                     {
                                         if (deletedFileCount == 1)
                                         {
@@ -14852,7 +15808,7 @@ namespace Com.RedicalGames.Filar
 
                                             if(widgetsContainer.GetPaginationViewType() == PaginationViewType.Scroller)
                                             {
-                                                if (dataPackets.showNotification)
+                                                if (dataPackets.notification.showNotifications)
                                                     NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                                             }
 
@@ -14866,7 +15822,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         if (Helpers.IsSuccessCode(goToPageCallback.resultsCode))
                                                         {
-                                                            if (dataPackets.showNotification)
+                                                            if (dataPackets.notification.showNotifications)
                                                                 NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                                                         }
                                                         else
@@ -14906,6 +15862,33 @@ namespace Com.RedicalGames.Filar
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+
+                        break;
+
+                    case WidgetType.CreateNewProjectWidget:
+
+                        dataPackets.widgetType = WidgetType.ProjectCreationWarningWidget;
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+
+                        break;
+
+                    case WidgetType.ProjectCreationWarningWidget:
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+
+                        dataPackets.widgetType = WidgetType.CreateNewProjectWidget;
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
                         else
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
 
@@ -15234,6 +16217,11 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
+            void OnCreateNewProject_ActionEvent(SceneDataPackets dataPackets)
+            {
+                LogInfo("Create New Project");
+            }
+
             #endregion
 
             #region Events
@@ -15292,11 +16280,11 @@ namespace Com.RedicalGames.Filar
 
             public void OnScrollerValueChangedEvent(Vector2 value) => OnScrollerValueChanged(value);
 
-            public void SetOnInputValueChanged(string value, SceneDataPackets dataPackets) => OnInputFieldValueChanged(value, dataPackets);
+            public void SetOnInputValueChanged(string value, InputFieldDataPackets dataPackets) => OnInputFieldValueChanged(value, dataPackets);
 
-            public void SetOnInputValueChanged(int value, SceneDataPackets dataPackets) => OnInputFieldValueChanged(value, dataPackets);
+            public void SetOnInputValueChanged(int value, InputFieldDataPackets dataPackets) => OnInputFieldValueChanged(value, dataPackets);
 
-            public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, SceneDataPackets dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
+            public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxDataPackets dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
 
             public void ShowScreenWidget(SceneDataPackets dataPackets)
             {
@@ -15480,7 +16468,7 @@ namespace Com.RedicalGames.Filar
             {
                 yield return new WaitForEndOfFrame();
 
-                UIScreenWidget<SceneDataPackets> widget = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(widgetName);
+                UIScreenWidget widget = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(widgetName);
 
                 if (widget != null)
                     SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnFocusToWidget(widget, true);
@@ -15493,9 +16481,9 @@ namespace Com.RedicalGames.Filar
             #region Overrides
 
             protected abstract void OnScrollerValueChanged(Vector2 value);
-            protected abstract void OnInputFieldValueChanged(string value, SceneDataPackets dataPackets);
-            protected abstract void OnInputFieldValueChanged(int value, SceneDataPackets dataPackets);
-            protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, SceneDataPackets dataPackets);
+            protected abstract void OnInputFieldValueChanged(string value, InputFieldDataPackets dataPackets);
+            protected abstract void OnInputFieldValueChanged(int value, InputFieldDataPackets dataPackets);
+            protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxDataPackets dataPackets);
 
             protected abstract void OnScreenWidget();
 
@@ -15513,7 +16501,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> input = inputs.Find((input) => input.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
 
                     if (input.value != null)
                     {
@@ -15537,7 +16525,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (checkboxes.Count > 0)
                 {
-                    UICheckbox<SceneDataPackets> checkbox = checkboxes.Find((checkbox) => checkbox.actionType == actionType);
+                    UICheckbox<CheckboxDataPackets> checkbox = checkboxes.Find((checkbox) => checkbox.dataPackets.action == actionType);
 
                     if (checkbox.value != null)
                         checkbox.SetSelectionState(value);
@@ -15556,7 +16544,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> input = inputs.Find((input) => input.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
                     input.OnSelect();
                 }
                 else
@@ -15750,13 +16738,13 @@ namespace Com.RedicalGames.Filar
 
             #region UI Accessors
 
-            public void GetActionButtonOfType(InputActionButtonType actionType, Action<CallbackData<List<UIButton<SceneDataPackets>>>> callback)
+            public void GetActionButtonOfType(InputActionButtonType actionType, Action<CallbackData<List<UIButton<ButtonDataPackets>>>> callback)
             {
-                CallbackData<List<UIButton<SceneDataPackets>>> callbackResults = new CallbackData<List<UIButton<SceneDataPackets>>>();
+                CallbackData<List<UIButton<ButtonDataPackets>>> callbackResults = new CallbackData<List<UIButton<ButtonDataPackets>>>();
 
                 if(buttons != null && buttons.Count > 0)
                 {
-                    List<UIButton<SceneDataPackets>> foundButtons = buttons.FindAll(x => x.actionType == actionType);
+                    List<UIButton<ButtonDataPackets>> foundButtons = buttons.FindAll(x => x.dataPackets.action == actionType);
 
                     if(foundButtons.Count > 0)
                     {
@@ -15789,7 +16777,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (buttons.Count > 0)
                 {
-                    UIButton<SceneDataPackets> button = buttons.Find(button => button.actionType == actionType);
+                    UIButton<ButtonDataPackets> button = buttons.Find(button => button.dataPackets.action == actionType);
 
                     if (button != null)
                         button.SetUIImageValue(SceneAssetsManager.Instance.GetImageFromLibrary(imageType), displayerType);
@@ -15809,7 +16797,7 @@ namespace Com.RedicalGames.Filar
                         if (button.value != null)
                             button.SetUIInputState(state);
                         else
-                            LogWarning($"Button Of Type : {button.actionType}'s Value Missing.", this, () => SetActionButtonState(state));
+                            LogWarning($"Button Of Type : {button.dataPackets.action}'s Value Missing.", this, () => SetActionButtonState(state));
                     }
                 }
                 else
@@ -15820,7 +16808,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (buttons.Count > 0)
                 {
-                    UIButton<SceneDataPackets> button = buttons.Find(button => button.actionType == actionType);
+                    UIButton<ButtonDataPackets> button = buttons.Find(button => button.dataPackets.action == actionType);
 
                     if (button != null)
                         button.SetTitle(title);
@@ -15835,7 +16823,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (buttons.Count > 0)
                 {
-                    UIButton<SceneDataPackets> button = buttons.Find(button => button.actionType == actionType);
+                    UIButton<ButtonDataPackets> button = buttons.Find(button => button.dataPackets.action == actionType);
 
                     if (button != null)
                         button.SetUIInputState(state);
@@ -15870,7 +16858,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
 
                     if (inputField != null)
                         inputField.SetUIInputState(state);
@@ -15885,7 +16873,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
 
                     if (inputField != null)
                         inputField.SetValue(value);
@@ -15900,7 +16888,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetValue(value.ToString());
@@ -15915,7 +16903,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
@@ -15930,7 +16918,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<SceneDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
@@ -15949,7 +16937,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (dropdowns.Count > 0)
                 {
-                    UIDropDown<SceneDataPackets> dropdown = dropdowns.Find(dropdown => dropdown.actionType == actionType);
+                    UIDropDown<DropdownDataPackets> dropdown = dropdowns.Find(dropdown => dropdown.dataPackets.action == actionType);
 
                     if (dropdown.value != null)
                         dropdown.SetUIInputState(state);
@@ -15964,7 +16952,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (dropdowns.Count > 0)
                 {
-                    UIDropDown<SceneDataPackets> dropdown = dropdowns.Find(dropdown => dropdown.actionType == actionType);
+                    UIDropDown<DropdownDataPackets> dropdown = dropdowns.Find(dropdown => dropdown.dataPackets.action == actionType);
 
                     if (dropdown.value != null)
                     {
@@ -16011,7 +16999,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (uiSliders.Count > 0)
                 {
-                    UISlider<SceneDataPackets> slider = uiSliders.Find(slider => slider.valueType == valueType);
+                    UISlider<SliderDataPackets> slider = uiSliders.Find(slider => slider.dataPackets.valueType == valueType);
 
                     if (slider.value != null)
                         slider.SetUIInputState(state);
@@ -16047,7 +17035,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (checkboxes.Count > 0)
                 {
-                    UICheckbox<SceneDataPackets> checkbox = checkboxes.Find(checkbox => checkbox.actionType == actionType);
+                    UICheckbox<CheckboxDataPackets> checkbox = checkboxes.Find(checkbox => checkbox.dataPackets.action == actionType);
 
                     if (checkbox != null)
                         checkbox.SetUIInputState(state);
@@ -16082,7 +17070,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (checkboxes.Count > 0)
                 {
-                    UICheckbox<SceneDataPackets> checkbox = checkboxes.Find(checkbox => checkbox.actionType == actionType);
+                    UICheckbox<CheckboxDataPackets> checkbox = checkboxes.Find(checkbox => checkbox.dataPackets.action == actionType);
 
                     if (checkbox != null)
                         checkbox.SetSelectionState(value);
@@ -16117,7 +17105,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (textDisplayerList.Count > 0)
                 {
-                    UIText<SceneDataPackets> textDisplayer = textDisplayerList.Find(textDisplayer => textDisplayer.textType == textType);
+                    UIText<TextDataPackets> textDisplayer = textDisplayerList.Find(textDisplayer => textDisplayer.dataPackets.textType == textType);
 
                     if (textDisplayer != null)
                         textDisplayer.SetScreenUITextValue(value);
@@ -16132,7 +17120,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (textDisplayerList.Count > 0)
                 {
-                    UIText<SceneDataPackets> textDisplayer = textDisplayerList.Find(textDisplayer => textDisplayer.textType == textType);
+                    UIText<TextDataPackets> textDisplayer = textDisplayerList.Find(textDisplayer => textDisplayer.dataPackets.textType == textType);
 
                     if (textDisplayer != null)
                         textDisplayer.SetScreenUITextValue(value.ToString());
@@ -16151,7 +17139,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (imageDisplayers.Count > 0)
                 {
-                    UIImageDisplayer<SceneDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.imageType == displayerType);
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(screenCaptureData, dataPackets);
@@ -16166,7 +17154,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (imageDisplayers.Count > 0)
                 {
-                    UIImageDisplayer<SceneDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.imageType == displayerType);
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(imageData);
@@ -16181,7 +17169,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (imageDisplayers.Count > 0)
                 {
-                    UIImageDisplayer<SceneDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.imageType == displayerType);
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(image);
@@ -16557,7 +17545,7 @@ namespace Com.RedicalGames.Filar
                 foreach (var actionButton in actionButtonList)
                     if (actionButton.value)
                     {
-                        if (actionButton.dataPackets.actionType == buttonType)
+                        if (actionButton.dataPackets.action == buttonType)
                         {
                             actionButton.SetUIInputState(buttonState);
                             break;
@@ -16566,7 +17554,7 @@ namespace Com.RedicalGames.Filar
                             continue;
                     }
                     else
-                        LogWarning($"Action Button : {actionButton.actionType} Not Found", this, () => SetActionButtonState(buttonType, buttonState));
+                        LogWarning($"Action Button : {actionButton.dataPackets.action} Not Found", this, () => SetActionButtonState(buttonType, buttonState));
             }
 
             protected void SetActionDropdownState(InputDropDownActionType dropdownType, InputUIState dropdownState)
@@ -16574,7 +17562,7 @@ namespace Com.RedicalGames.Filar
                 foreach (var dropdown in actionDropdownList)
                     if (dropdown.value)
                     {
-                        if (dropdown.dataPackets.actionType == dropdownType)
+                        if (dropdown.dataPackets.action == dropdownType)
                         {
                             dropdown.SetUIInputState(dropdownState);
                             break;
@@ -16609,7 +17597,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultsCode))
                     {
-                        UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.actionType == actionType);
+                        UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.action == actionType);
 
                         if (inputField.value)
                         {
@@ -16629,7 +17617,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultsCode))
                     {
-                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.actionType == actionType);
+                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
 
                         if (inputSlider.IsInitialized())
                         {
@@ -16650,7 +17638,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultsCode))
                     {
-                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.actionType == actionType);
+                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
 
                         if (inputSlider.IsInitialized())
                             inputSlider.slider.value = sliderValue;
@@ -16668,7 +17656,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultsCode))
                     {
-                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.actionType == actionType);
+                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
 
                         if (inputSlider.IsInitialized())
                             inputSlider.inputField.text = inputValue;
@@ -16784,7 +17772,7 @@ namespace Com.RedicalGames.Filar
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
                 foreach (var dropdown in actionDropdownList)
-                    if (dropdown.dataPackets.actionType != actionType && dropdown.selectableInput)
+                    if (dropdown.dataPackets.action != actionType && dropdown.selectableInput)
                         dropdown.value.Hide();
             }
 
@@ -16862,7 +17850,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropdown.value != null)
                         {
-                            if (dropdown.dataPackets.actionType == dropdownType)
+                            if (dropdown.dataPackets.action == dropdownType)
                             {
                                 if (contentList != null)
                                 {
@@ -17056,7 +18044,7 @@ namespace Com.RedicalGames.Filar
 
                 if (actionInputFieldList.Count > 0)
                 {
-                    UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.actionType == type);
+                    UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.action == type);
 
                     if (inputField.value)
                     {
@@ -17087,7 +18075,7 @@ namespace Com.RedicalGames.Filar
                     if (Helpers.IsSuccessCode(callbackResults.resultsCode))
                         foreach (var inputSlider in actionInputSliderList)
                         {
-                            if (inputSlider.dataPackets.actionType == actionType)
+                            if (inputSlider.dataPackets.action == actionType)
                             {
                                 inputSlider.SetTitle(fieldName);
                                 inputSlider.SetFieldColor(fieldColor);
@@ -17109,7 +18097,7 @@ namespace Com.RedicalGames.Filar
                     {
                         foreach (var checkbox in actionCheckboxList)
                         {
-                            if (checkbox.dataPackets.actionType == actionType)
+                            if (checkbox.dataPackets.action == actionType)
                             {
                                 if (checkbox.value != null)
                                     checkbox.SetSelectionState(isSelected);
@@ -17131,7 +18119,7 @@ namespace Com.RedicalGames.Filar
                         foreach (var inputSlider in actionInputSliderList)
                         {
 
-                            if (inputSlider.dataPackets.actionType == actionType)
+                            if (inputSlider.dataPackets.action == actionType)
                             {
                                 inputSlider.SetUIInputState(state);
                                 break;
@@ -17144,7 +18132,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            protected void SetScreenUITextValue(string value, ScreenUITextType textType)
+            protected void SetScreenUITextValue(string value, ScreenTextType textType)
             {
                 OnScreenUITextInitialized((screenTextCallbackResults) =>
                 {
@@ -17165,7 +18153,7 @@ namespace Com.RedicalGames.Filar
                         foreach (var inputSlider in actionInputSliderList)
                         {
 
-                            if (inputSlider.dataPackets.actionType == actionType)
+                            if (inputSlider.dataPackets.action == actionType)
                             {
                                 inputSlider.SetValue(value.ToString(), value);
                                 break;
@@ -17196,7 +18184,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            public void ShowChildWidget(SettingsWidgetType widgetType, string message, ScreenUITextType textType)
+            public void ShowChildWidget(SettingsWidgetType widgetType, string message, ScreenTextType textType)
             {
                 OnSettingsSubWidgetsInitialized((subWidgetCallbackResults) =>
                 {
@@ -17274,7 +18262,7 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void OnActionDropdownValueChangedEvent(string value, DropdownDataPackets dataPackets);
             protected abstract void OnActionDropdownValueChangedEvent(int value, DropdownDataPackets dataPackets);
-            protected abstract void OnActionDropdownValueChangedEvent(int value, List<string> contentList, AppData.DropdownDataPackets dataPackets);
+            protected abstract void OnActionDropdownValueChangedEvent(int value, List<string> contentList, DropdownDataPackets dataPackets);
 
             protected abstract void OnInputSliderValueChangedEvent(float value, InputSliderDataPackets dataPackets);
             protected abstract void OnInputSliderValueChangedEvent(string value, InputSliderDataPackets dataPackets);
@@ -17291,7 +18279,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Widget Value Missing / Null.", this, () => ShowWidget());
             }
 
-            public void ShowWidget(string messsage, ScreenUITextType textType)
+            public void ShowWidget(string messsage, ScreenTextType textType)
             {
                 if (value)
                 {
@@ -18527,7 +19515,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (button.value != null)
                             {
-                                button.value.onClick.AddListener(() => OnActionButtonPressedEvent(button.dataPackets, button.dataPackets.actionType));
+                                button.value.onClick.AddListener(() => OnActionButtonPressedEvent(button.dataPackets, button.dataPackets.action));
 
                                 callbackResults.results = "Initialized Successfully";
                                 callbackResults.resultsCode = Helpers.SuccessCode;
@@ -19088,7 +20076,7 @@ namespace Com.RedicalGames.Filar
             public List<UIButton<ButtonDataPackets>> actionButtonsList = new List<UIButton<ButtonDataPackets>>();
 
             [Space(5)]
-            public List<UIDropDown<ButtonDataPackets>> actionDropDownList = new List<UIDropDown<ButtonDataPackets>>();
+            public List<UIDropDown<DropdownDataPackets>> actionDropDownList = new List<UIDropDown<DropdownDataPackets>>();
 
             [Space(5)]
             public NavigationTabType tabType;
@@ -19201,9 +20189,9 @@ namespace Com.RedicalGames.Filar
 
             void OnActionButtonClickedEvent(ButtonDataPackets dataPackets)
             {
-                Debug.Log($"----> Clicked On Button Type : {dataPackets.actionType}");
+                Debug.Log($"----> Clicked On Button Type : {dataPackets.action}");
 
-                switch (dataPackets.actionType)
+                switch (dataPackets.action)
                 {
                     case InputActionButtonType.Confirm:
 
@@ -19814,9 +20802,6 @@ namespace Com.RedicalGames.Filar
             [Header("Default Data Packet")]
 
             [Space(5)]
-            public InputType inputType;
-
-            [Space(5)]
             public SelectionOption selectionOption;
 
             [Space(5)]
@@ -19832,9 +20817,6 @@ namespace Com.RedicalGames.Filar
             public UIStateType stateType;
 
             [Space(5)]
-            public bool showNotification;
-
-            [Space(5)]
             public Notification notification;
         }
 
@@ -19845,7 +20827,7 @@ namespace Com.RedicalGames.Filar
             [Header("Scene Data")]
 
             [Space(5)]
-            public UIScreenWidget<SceneDataPackets> screenWidgetPrefab;
+            public UIScreenWidget screenWidgetPrefab;
 
             [Space(5)]
             public DynamicWidgetsContainer dynamicWidgetsContainer;
@@ -19929,9 +20911,6 @@ namespace Com.RedicalGames.Filar
             public string popUpMessage;
 
             [Space(5)]
-            public float sliderValue;
-
-            [Space(5)]
             public bool canTransitionScreen;
 
             [Space(5)]
@@ -19967,13 +20946,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ButtonDataPackets : DataPackets
+        public class ButtonDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Button Data Packet")]
+            [Header("Button")]
 
             [Space(5)]
-            public InputActionButtonType actionType;
+            public InputActionButtonType action;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public NavigationTabID tabID;
@@ -19992,13 +20974,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class InputFieldDataPackets : DataPackets
+        public class InputFieldDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Input Field Data Packet")]
+            [Header("Input Field")]
 
             [Space(5)]
-            public InputFieldActionType actionType;
+            public InputFieldActionType action;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public NavigationTabID tabID;
@@ -20008,13 +20993,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class DropdownDataPackets : DataPackets
+        public class DropdownDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Dropdown Data Packet")]
+            [Header("Drop Down")]
 
             [Space(5)]
-            public InputDropDownActionType actionType;
+            public InputDropDownActionType action;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public NavigationTabID tabID;
@@ -20024,10 +21012,10 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SliderDataPackets : DataPackets
+        public class SliderDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Slider Data Packet")]
+            [Header("Config Data")]
 
             [Space(5)]
             public SliderValueType valueType;
@@ -20046,13 +21034,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class InputSliderDataPackets : DataPackets
+        public class InputSliderDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Input Slider Data Packet")]
+            [Header("Input Slider")]
 
             [Space(5)]
-            public InputSliderActionType actionType;
+            public InputSliderActionType action;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public NavigationTabID tabID;
@@ -20062,13 +21053,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class CheckboxDataPackets : DataPackets
+        public class CheckboxDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Checkbox Data Packet")]
+            [Header("Checkbox")]
 
             [Space(5)]
-            public CheckboxInputActionType actionType;
+            public CheckboxInputActionType action;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public NavigationTabID tabID;
@@ -20078,13 +21072,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class TextDataPackets : DataPackets
+        public class TextDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Text Data Packet")]
+            [Header("Text Displayer")]
 
             [Space(5)]
-            public ScreenUITextType textType;
+            public ScreenTextType textType;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public NavigationTabID tabID;
@@ -20094,13 +21091,16 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ImageDataPackets : DataPackets
+        public class ImageDataPackets : SceneDataPackets
         {
             [Space(5)]
-            [Header("Image Data Packet")]
+            [Header("Image Displayer")]
 
             [Space(5)]
             public ScreenImageType imageType;
+
+            [Space(5)]
+            [Header("Config Data")]
 
             [Space(5)]
             public UIScreenDimensions resolution;
@@ -20113,13 +21113,10 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SettingsDataPackets : DataPackets
+        public class SettingsDataPackets : SceneDataPackets
         {
             [Space(5)]
             [Header("Panel Widget Data Packet")]
-
-            [Space(5)]
-            public InputDropDownActionType actionType;
 
             [Space(5)]
             public SettingsWidgetTabID widgetTabID;
@@ -21204,7 +22201,7 @@ namespace Com.RedicalGames.Filar
             public static void OnNavigationTabWidgetEvent(ButtonDataPackets dataPackets) => _OnNavigationTabWidgetEvent?.Invoke(dataPackets);
             public static void OnNavigationSubTabChangedEvent(NavigationTabID navigationTab, NavigationRenderSettingsProfileID selectionTypedID) => _OnNavigationSubTabChangedEvent?.Invoke(navigationTab, selectionTypedID);
             public static void OnScreenViewStateChangedEvent(ScreenViewState state) => _OnScreenViewStateChangedEvent?.Invoke(state);
-            public static void OnScreenTogglableStateEvent(AppData.TogglableWidgetType widgetType, bool state = false, bool useInteractability = false) => _OnScreenTogglableStateEvent?.Invoke(widgetType, state, useInteractability);
+            public static void OnScreenTogglableStateEvent(TogglableWidgetType widgetType, bool state = false, bool useInteractability = false) => _OnScreenTogglableStateEvent?.Invoke(widgetType, state, useInteractability);
             public static void OnARSceneAssetStateEvent(ARSceneContentState contentState) => _OnARSceneAssetStateEvent?.Invoke(contentState);
             public static void OnPermissionGrantedResults(bool isGranted) => _OnPermissionGrantedResults?.Invoke(isGranted);
             public static void OnSetCurrentActiveSceneCameraEvent(SceneEventCameraType eventCameraType) => _OnSetCurrentActiveSceneCameraEvent?.Invoke(eventCameraType);
