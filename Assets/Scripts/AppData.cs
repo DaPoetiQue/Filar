@@ -15869,12 +15869,18 @@ namespace Com.RedicalGames.Filar
 
                     case WidgetType.CreateNewProjectWidget:
 
-                        dataPackets.widgetType = WidgetType.ProjectCreationWarningWidget;
+                        SceneDataPackets sceneDataPackets = new SceneDataPackets
+                        {
+                            screenType = dataPackets.screenType,
+                            widgetType = WidgetType.ProjectCreationWarningWidget,
+                            blurScreen = true,
+                            blurContainerLayerType = ScreenBlurContainerLayerType.ForeGround
+                        };
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(sceneDataPackets);
                         else
-                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         break;
 
@@ -15882,15 +15888,19 @@ namespace Com.RedicalGames.Filar
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
-                        else
-                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
 
-                        dataPackets.widgetType = WidgetType.CreateNewProjectWidget;
+                        SceneDataPackets projectDataPackets = new SceneDataPackets
+                        {
+                            screenType = dataPackets.screenType,
+                            widgetType = WidgetType.CreateNewProjectWidget,
+                            blurScreen = true,
+                            blurContainerLayerType = ScreenBlurContainerLayerType.Default
+                        };
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(projectDataPackets);
                         else
-                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         break;
                 }
@@ -16219,7 +16229,23 @@ namespace Com.RedicalGames.Filar
 
             void OnCreateNewProject_ActionEvent(SceneDataPackets dataPackets)
             {
-                LogInfo("Create New Project");
+                if(SceneAssetsManager.Instance != null)
+                {
+                    FolderStructureData newData = new FolderStructureData();
+
+                    SceneAssetsManager.Instance.CreateNewProjectData(newData, createNewProjectCallbackResults => 
+                    {
+                        if (createNewProjectCallbackResults.Success())
+                        {
+                            if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+                        }
+                        else
+                            Log(createNewProjectCallbackResults.resultsCode, createNewProjectCallbackResults.results, this);
+                    });
+                }
+                else
+                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
             }
 
             #endregion
@@ -20344,6 +20370,9 @@ namespace Com.RedicalGames.Filar
                 {
                     AddToSelectedContainer(layerType, addedToContainerCallback => 
                     {
+
+                        Debug.Log($"===> Blur Screen With Layer Type : {layerType} - Success : {addedToContainerCallback.resultsCode} - Results : {addedToContainerCallback.results}");
+
                         bool isVisible = addedToContainerCallback.resultsCode == Helpers.SuccessCode;
 
                         OnSetBlurObjectVisibilityState(isVisible);
@@ -20390,9 +20419,12 @@ namespace Com.RedicalGames.Filar
 
                     if (container.HasValueAssigned())
                     {
-                        OnSetBlurObjectContainer(container.GetValueAssigned(), false);
 
-                        callbackResults.results = $"Container Of Type : {layerType} Found.";
+                        Debug.Log($"===> Setting Blur Object : {value.name} To Container : {container.value.name}");
+
+                        OnSetBlurObjectContainer(container.GetValueAssigned(), true);
+
+                        callbackResults.results = $"Setting Blur Object : {value.name} To Container : {container.value.name} Of Type : {layerType}.";
                         callbackResults.resultsCode = Helpers.SuccessCode;
                     }
                     else
@@ -20441,7 +20473,7 @@ namespace Com.RedicalGames.Filar
 
             public void OnSetBlurObjectAlphaValue(float value) => canvasGroup.alpha = value;
 
-            public void OnSetBlurObjectContainer(Transform value, bool keepWorldPos) => value.transform.SetParent(value, keepWorldPos);
+            public void OnSetBlurObjectContainer(Transform value, bool keepWorldPos) => this.value.transform.SetParent(value, keepWorldPos);
 
             #endregion
         }
