@@ -1,6 +1,6 @@
 namespace Com.RedicalGames.Filar
 {
-    public class FolderEmptyContentWidgetHandler : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class FolderEmptyContentWidgetHandler : AppData.UIScreenWidget
     {
         #region Components
 
@@ -8,7 +8,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.SceneDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
             throw new System.NotImplementedException();
         }

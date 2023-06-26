@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIAssetFileWidget : AppData.UIScreenWidget<AppData.SceneDataPackets>
+    public class UIAssetFileWidget : AppData.UIScreenWidget
     {
         #region Components
 
@@ -31,9 +31,9 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.SceneDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            switch (actionButton.actionType)
+            switch (actionButton.dataPackets.action)
             {
                 case AppData.InputActionButtonType.Delete:
 
@@ -152,8 +152,9 @@ namespace Com.RedicalGames.Filar
 
                     if (SelectableManager.Instance != null)
                     {
-                        SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
-                        Selected();
+                        Debug.LogError("===========> Please Fix Selection Here");
+                        //SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
+                        //Selected();
                     }
                     else
                         Debug.LogWarning("--> OnSelect Failed :  SelectableManager.Instance Is Not Yet initialized.");

@@ -42,6 +42,9 @@ namespace Com.RedicalGames.Filar
 
         public string GetUniqueClassName()
         {
+            if (string.IsNullOrEmpty(className))
+                className = name;
+
             return className;
         }
 

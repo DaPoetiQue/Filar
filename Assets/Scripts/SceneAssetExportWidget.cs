@@ -168,12 +168,12 @@ namespace Com.RedicalGames.Filar
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnInputFieldValueChanged(string value, AppData.SceneDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnInputFieldValueChanged(int value, AppData.SceneDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -188,7 +188,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.SceneDataPackets dataPackets)
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }
