@@ -49,6 +49,9 @@ namespace Com.RedicalGames.Filar
 
                             if (SceneAssetsManager.Instance != null)
                             {
+                                SceneAssetsManager.Instance.SetCurrentProjectStructureData(structureData);
+                                //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "New Project Name");
+
                                 AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
                                 {
                                     widgetName = name,
@@ -79,12 +82,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetUIWidgetData(AppData.Folder folder)
         {
-            SetUITextDisplayerValue(folder.name, AppData.ScreenTextType.TitleDisplayer);
-
-            string lastModified = File.GetLastAccessTime(folder.storageData.path).Minute.ToString() + " Minutes Ago";
-            SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
-
-            SetUITextDisplayerValue("AR", AppData.ScreenTextType.TypeDisplayer);
+            throw new System.NotImplementedException();
         }
 
         public override void OnSelect(bool isInitialSelection = false)
@@ -109,6 +107,20 @@ namespace Com.RedicalGames.Filar
         protected override void OnScreenUIRefreshed()
         {
 
+        }
+
+        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        {
+            if (!string.IsNullOrEmpty(structureData.projectInfo.name))
+            {
+                SetUITextDisplayerValue(structureData?.projectInfo?.name, AppData.ScreenTextType.TitleDisplayer);
+
+                string lastModified = structureData?.projectInfo?.creationDateTime?.ToString();
+                SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
+
+                string projectType = structureData?.projectInfo?.projectType.ToString().Replace("Project_", "");
+                SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
+            }
         }
 
         #endregion
