@@ -68,33 +68,44 @@ namespace Com.RedicalGames.Filar
 
         public void ShowNotification(AppData.Notification notification)
         {
-            AppData.NotificationWidget widget = notificationWidgetsList.Find((x) => x.notificationType == notification.notificationType);
+            AppData.NotificationWidget widget = notificationWidgetsList.Find((x) =>x.screenType == notification.screenType && x.notificationType == notification.notificationType);
 
             if (widget != null)
             {
-                AppData.UIScreenWidgetContainer container = notificationWidgetContainersList.Find((container) => container.notificationType == notification.notificationType);
+                AppData.UIScreenWidgetContainer container = notificationWidgetContainersList.Find((container) => container.screenType == notification.screenType && container.notificationType == notification.notificationType);      
 
-                if (container.value != null)
+                if (container != null)
                 {
-                    if (container.screenType == notification.screenType && container.screenPosition == notification.screenPosition)
+                    if (container.value != null)
                     {
-                        this.notification = notification;
-                        widget.SetNotificationScreenData(notification, container);
-                        notificationWidget = widget;
+                        LogInfo($"Found Container : {container.name} - Value Name : {container.value.name} - Type : {container.notificationType} - Screen : {container.screenType}");
 
-                        if (notificationRoutine != null)
+                        if (container.screenType == notification.screenType && container.screenPosition == notification.screenPosition)
                         {
-                            StopCoroutine(notificationRoutine);
-                            notificationRoutine = null;
-                        }
+                            this.notification = notification;
+                            widget.SetNotificationScreenData(notification, container);
+                            notificationWidget = widget;
 
-                        notificationRoutine = StartCoroutine(OnExecuteNotificationState(true));
+                            if (notificationRoutine != null)
+                            {
+                                StopCoroutine(notificationRoutine);
+                                notificationRoutine = null;
+                            }
+
+                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
+                            {
+                                blurScreen = notification.blurScreen,
+                                blurContainerLayerType = notification.blurLayer
+                            };
+
+                            notificationRoutine = StartCoroutine(OnExecuteNotificationState(true, dataPackets));
+                        }
                     }
                     else
-                        LogWarning($"Show Notification Failed - No Container Found For Notification Type : {notification.notificationType}", this, () => ShowNotification(notification));
+                        LogWarning($"Show Notification Failed - No Value Assigned On Container : {container.name} For Notification Type : {notification.notificationType}", this);
                 }
                 else
-                    LogWarning("Container Not Found", this, () => ShowNotification(notification));
+                    LogWarning($"Container Of Type : {notification.notificationType} Not Found For Screen : {notification.screenType}", this);
             }
             else
                 LogWarning($"Widget : {notification.notificationType} Not Found.", this, () => ShowNotification(notification));
@@ -135,7 +146,18 @@ namespace Com.RedicalGames.Filar
                     else
                     {
                         if (notification.blurScreen)
-                            screenBlur.Hide(true, true);
+                        {
+                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
+                            {
+                                blurScreen = false,
+                                blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                            };
+
+                            if (ScreenUIManager.Instance != null)
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.Blur(dataPackets);
+                            else
+                                LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
+                        }
 
                         inProgress = false;
                     }
@@ -145,17 +167,25 @@ namespace Com.RedicalGames.Filar
                 return;
         }
 
-        IEnumerator OnExecuteNotificationState(bool onShow)
+        IEnumerator OnExecuteNotificationState(bool onShow, AppData.SceneDataPackets dataPackets = null)
         {
             if (onShow)
             {
-                yield return new WaitForSecondsRealtime(notification.delay);
+                if (dataPackets != null)
+                {
+                    yield return new WaitForSecondsRealtime(notification.delay);
 
-                if (notification.blurScreen)
-                    screenBlur.Show(AppData.ScreenBlurContainerLayerType.Default, true);
+                    if (dataPackets.blurScreen)
+                    {
+                        if (ScreenUIManager.Instance != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.Blur(dataPackets);
+                        else
+                            LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
+                    }
 
-                this.onShow = true;
-                inProgress = true;
+                    this.onShow = true;
+                    inProgress = true;
+                }
             }
             else
             {
