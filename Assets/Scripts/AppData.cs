@@ -922,6 +922,16 @@ namespace Com.RedicalGames.Filar
             None
         }
 
+
+        public enum ValidationResultsType
+        {
+            None,
+            Default,
+            Success,
+            Warning,
+            Error
+        }
+
         #region Debugging
 
         [Serializable]
@@ -1452,6 +1462,8 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public bool isRootFolder;
+
+            public DirectoryType directoryType;
 
             [HideInInspector]
             public DefaultUIWidgetActionState defaultWidgetActionState;
@@ -6213,6 +6225,43 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ValidationUI
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public Image value;
+
+            [Space(5)]
+            public ValidationResultsType resultsType;
+
+            [Space(5)]
+            public bool initialVisibilityState;
+
+            #endregion
+
+            #region Main
+
+            public void Init()
+            {
+                if (initialVisibilityState)
+                    Show();
+                else
+                    Hide();
+            }
+
+            public void SetImageValue(Sprite value) => this.value.sprite = value;
+
+            public void Show() => value?.gameObject.SetActive(true);
+
+            public void Hide() => value?.gameObject.SetActive(false);
+
+            #endregion
+        }
+
+        [Serializable]
         public class UIInputField<T> : UIInputComponent<TMP_InputField, T, UIInputField<T>>
         {
             #region Components
@@ -6222,6 +6271,9 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public TMP_Text placeholderDisplayer;
+
+            [Space(5)]
+            public List<ValidationUI> uiValidationList;
 
             [Space(5)]
             public int characterLimit;
@@ -6245,6 +6297,10 @@ namespace Com.RedicalGames.Filar
 
                 if (value != null)
                     value.characterLimit = characterLimit;
+
+                if (uiValidationList.Count > 0)
+                    foreach (var item in uiValidationList)
+                        item.Init();
             }
 
             public void SetPlaceHolderText(string placeholder)
@@ -6294,6 +6350,33 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Debug.LogWarning("--> On Select Failed : Value Missing / Null.");
+            }
+
+            public void OnValidation(ValidationResultsType results, bool show = true)
+            {
+                if (results != ValidationResultsType.None)
+                {
+                    var validationUI = uiValidationList.Find(validation => validation.resultsType == results);
+
+                    if (validationUI != null)
+                    {
+                        if (show)
+                            validationUI.Show();
+                        else
+                            validationUI.Hide();
+                    }
+                }
+                else
+                {
+                    foreach (var validation in uiValidationList)
+                        validation.Hide();
+                }
+            }
+
+            public void OnClearValidation()
+            {
+                foreach (var validation in uiValidationList)
+                    validation.Hide();
             }
 
             bool IsInitialized()
@@ -15084,6 +15167,8 @@ namespace Com.RedicalGames.Filar
 
                 ActionEvents.OnPopUpActionEvent(popUpType, actionType, dataPackets);
                 ActionEvents.OnActionButtonClicked(actionType);
+
+                OnActionButtonEvent(popUpType, actionType, dataPackets);
             }
 
             #region Action Inputs Callbacks
@@ -15623,12 +15708,6 @@ namespace Com.RedicalGames.Filar
                     case WidgetType.FolderCreationWidget:
 
                         OnCreateNewFolder_ActionEvent(dataPackets);
-
-                        break;
-
-                    case WidgetType.CreateNewProjectWidget:
-
-                        OnCreateNewProject_ActionEvent(dataPackets);
 
                         break;
 
@@ -16235,32 +16314,6 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
-            void OnCreateNewProject_ActionEvent(SceneDataPackets dataPackets)
-            {
-                if(SceneAssetsManager.Instance != null)
-                {
-                    FolderStructureData newData = new FolderStructureData();
-
-                    SceneAssetsManager.Instance.CreateNewProjectData(newData, createNewProjectCallbackResults => 
-                    {
-                        if (createNewProjectCallbackResults.Success())
-                        {
-                            if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                                ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
-
-                            dataPackets.notification.message = createNewProjectCallbackResults.results;
-
-                            if (dataPackets.notification.showNotifications)
-                                NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
-                        }
-                        else
-                            Log(createNewProjectCallbackResults.resultsCode, createNewProjectCallbackResults.results, this);
-                    });
-                }
-                else
-                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
-            }
-
             #endregion
 
             #region Events
@@ -16519,6 +16572,7 @@ namespace Com.RedicalGames.Filar
 
             #region Overrides
 
+            protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets);
             protected abstract void OnScrollerValueChanged(Vector2 value);
             protected abstract void OnInputFieldValueChanged(string value, InputFieldDataPackets dataPackets);
             protected abstract void OnInputFieldValueChanged(int value, InputFieldDataPackets dataPackets);
@@ -16554,6 +16608,36 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     LogWarning("Set Input Field Value Failed : No Input Fields Found.", this, () => SetInputFieldValue(value, actionType));
+            }
+
+            protected void OnInputFieldValidation(ValidationResultsType results, InputFieldActionType actionType)
+            {
+                if (inputs.Count > 0)
+                {
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
+
+                    if (input != null)
+                        input.OnValidation(results);
+                    else
+                        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
+                }
+                else
+                    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+            }
+
+            protected void OnClearInputFieldValidation(InputFieldActionType actionType)
+            {
+                if (inputs.Count > 0)
+                {
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
+
+                    if (input != null)
+                        input.OnClearValidation();
+                    else
+                        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
+                }
+                else
+                    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
             }
 
             #endregion

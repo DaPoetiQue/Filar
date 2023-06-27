@@ -157,6 +157,11 @@ namespace Com.RedicalGames.Filar
         protected void TriggerOnAbortRefreshEvent() => _OnAbortRefresh_AddEventListener?.Invoke();
         protected void TriggerOnRefreshFailedEvent() => _OnRefreshFailed_AddEventListener?.Invoke();
 
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
