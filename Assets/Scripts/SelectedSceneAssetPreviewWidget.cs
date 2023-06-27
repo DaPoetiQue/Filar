@@ -231,6 +231,11 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
         #endregion
 
         #endregion
