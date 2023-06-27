@@ -932,6 +932,12 @@ namespace Com.RedicalGames.Filar
             Error
         }
 
+        public enum ProjectType
+        {
+            Project_AR,
+            Project_3D
+        }
+
         #region Debugging
 
         [Serializable]
@@ -1326,6 +1332,28 @@ namespace Com.RedicalGames.Filar
         #region Folder Structure
 
         [Serializable]
+        public class ProjectInfo
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public ProjectType projectType;
+
+            [HideInInspector]
+            public string creationDateTime;
+
+            #endregion
+
+            #region Main
+
+            public void UpdateDateTimeValue(string dateTime) => creationDateTime = dateTime;
+
+            #endregion
+        }
+
+        [Serializable]
         public class FolderStructureData : SerializableData
         {
             #region Components
@@ -1361,6 +1389,9 @@ namespace Com.RedicalGames.Filar
 
             [HideInInspector]
             public bool inverseSelect = false;
+
+            [HideInInspector]
+            public ProjectInfo projectInfo = new ProjectInfo();
 
             #endregion
 
@@ -9692,6 +9723,7 @@ namespace Com.RedicalGames.Filar
             protected ScreenUIManager screenManager;
 
             protected Folder folder;
+            protected FolderStructureData structureData;
 
             private RectTransform parent;
 
@@ -9833,10 +9865,15 @@ namespace Com.RedicalGames.Filar
 
             public void SetFolderData(Folder folder)
             {
-
                 this.folder = folder;
                 this.folder.name = folder.name.Replace("_FolderData", "");
                 OnSetUIWidgetData(folder);
+            }
+
+            public void SetFolderData(FolderStructureData folderStructure)
+            {
+                this.structureData = folderStructure;
+                OnSetUIWidgetData(folderStructure);
             }
 
             public Folder GetFolderData()
@@ -9906,6 +9943,7 @@ namespace Com.RedicalGames.Filar
             public void SetFileData(SceneAsset assetData) => OnSetFileData(assetData);
             protected abstract void OnActionButtonInputs(UIButton<ButtonDataPackets> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
+            protected abstract void OnSetUIWidgetData(FolderStructureData structureData);
             protected abstract void OnSetFileData(SceneAsset assetData);
             protected abstract void OnScreenUIRefreshed();
 
