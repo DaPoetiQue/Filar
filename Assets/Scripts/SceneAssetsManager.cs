@@ -2524,6 +2524,7 @@ namespace Com.RedicalGames.Filar
             AppData.Callback callbackResults = new AppData.Callback();
 
             callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            callbackResults.results = $"New Project Name {newProjectStructureData.name} Has Been Created.";
 
             callback?.Invoke(callbackResults);
         }
