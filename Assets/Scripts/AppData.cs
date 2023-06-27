@@ -4475,6 +4475,9 @@ namespace Com.RedicalGames.Filar
             public bool blurScreen;
 
             [Space(5)]
+            public AppData.ScreenBlurContainerLayerType blurLayer;
+
+            [Space(5)]
             public float delay;
 
             [Space(5)]
@@ -4611,7 +4614,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public struct UIScreenWidgetContainer
+        public class UIScreenWidgetContainer
         {
             public string name;
 
@@ -14015,12 +14018,17 @@ namespace Com.RedicalGames.Filar
 
             public void Blur(SceneDataPackets dataPackets)
             {
-                screenBlur.Show(dataPackets.blurContainerLayerType);
+                if (dataPackets.blurScreen)
+                {
+                    screenBlur.Show(dataPackets.blurContainerLayerType);
 
-                if (dataPackets.screenViewState == ScreenViewState.None)
-                    dataPackets.screenViewState = ScreenViewState.Blurred;
+                    if (dataPackets.screenViewState == ScreenViewState.None)
+                        dataPackets.screenViewState = ScreenViewState.Blurred;
 
-                ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
+                    ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
+                }
+                else
+                    screenBlur.Hide();
             }
 
             public GameObject GetScreenObject()
@@ -16239,6 +16247,11 @@ namespace Com.RedicalGames.Filar
                         {
                             if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+
+                            dataPackets.notification.message = createNewProjectCallbackResults.results;
+
+                            if (dataPackets.notification.showNotifications)
+                                NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                         }
                         else
                             Log(createNewProjectCallbackResults.resultsCode, createNewProjectCallbackResults.results, this);
@@ -20419,9 +20432,6 @@ namespace Com.RedicalGames.Filar
 
                     if (container.HasValueAssigned())
                     {
-
-                        Debug.Log($"===> Setting Blur Object : {value.name} To Container : {container.value.name}");
-
                         OnSetBlurObjectContainer(container.GetValueAssigned(), true);
 
                         callbackResults.results = $"Setting Blur Object : {value.name} To Container : {container.value.name} Of Type : {layerType}.";
