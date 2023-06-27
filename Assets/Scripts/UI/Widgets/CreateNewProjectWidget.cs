@@ -10,7 +10,9 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.FolderStructureData folderStructureData;
+        AppData.FolderStructureData folderStructureDataTemplate = new AppData.FolderStructureData();
+
+        AppData.FolderStructureData newFolderStructureData = new AppData.FolderStructureData();
 
         #endregion
 
@@ -35,7 +37,7 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.InputActionButtonType.Confirm:
 
-                        OnDataValidation(folderStructureData, dataValidCallbackResults => 
+                        OnDataValidation(newFolderStructureData, dataValidCallbackResults => 
                         {
                             if (dataValidCallbackResults.Success())
                             {
@@ -43,7 +45,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (SceneAssetsManager.Instance != null)
                                 {
-                                    SceneAssetsManager.Instance.CreateNewProjectData(folderStructureData, createNewProjectCallbackResults =>
+                                    SceneAssetsManager.Instance.CreateNewProjectData(newFolderStructureData, createNewProjectCallbackResults =>
                                     {
                                         if (createNewProjectCallbackResults.Success())
                                         {
@@ -77,6 +79,19 @@ namespace Com.RedicalGames.Filar
             }
         }
 
+        AppData.FolderStructureData CreateNewFolderStructureData()
+        {
+            return new AppData.FolderStructureData
+            {
+                rootFolder = folderStructureDataTemplate.rootFolder,
+                excludedSystemFiles = folderStructureDataTemplate.excludedSystemFiles,
+                excludedSystemFolders = folderStructureDataTemplate.excludedSystemFolders,
+                currentLayoutViewType = folderStructureDataTemplate.currentLayoutViewType,
+                currentPaginationViewType = folderStructureDataTemplate.currentPaginationViewType,
+                layouts = folderStructureDataTemplate.layouts,
+            };
+        }
+
         protected override void OnHideScreenWidget()
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
@@ -90,7 +105,10 @@ namespace Com.RedicalGames.Filar
 
                     OnInputFieldValidation(AppData.ValidationResultsType.Default, AppData.InputFieldActionType.AssetNameField);
 
-                    folderStructureData.name = value;
+                    if (newFolderStructureData != null)
+                        newFolderStructureData.name = value;
+                    else
+                        LogError("New Folder Structure Data Is Null.", this);
 
                     break;
             }
@@ -101,10 +119,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
-        {
-
-        }
+        protected override void OnScreenWidget() => newFolderStructureData = CreateNewFolderStructureData();
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
