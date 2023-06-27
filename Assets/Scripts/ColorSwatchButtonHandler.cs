@@ -160,6 +160,11 @@ namespace Com.RedicalGames.Filar
 
         }
 
+        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
     }

@@ -479,6 +479,8 @@ namespace Com.RedicalGames.Filar
                                                 screenFoundCallback.data.value.SetScreenData(dataPackets);
                                                 SetCurrentScreenData(screenFoundCallback.data);
 
+                                                screenFoundCallback.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "");
+
                                                 AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
 
                                                 if (dataPackets.canTransitionScreen)
