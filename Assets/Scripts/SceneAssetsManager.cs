@@ -2519,14 +2519,83 @@ namespace Com.RedicalGames.Filar
 
         #region Create Data
 
-        public void CreateNewProjectData(AppData.FolderStructureData newProjectStructureData, Action<AppData.Callback> callback = null)
+        public void CreateNewProjectData(AppData.FolderStructureData newProjectFolder, Action<AppData.CallbackData<AppData.FolderStructureData>> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            try
+            {
+                AppData.CallbackData<AppData.FolderStructureData> callbackResults = new AppData.CallbackData<AppData.FolderStructureData>();
 
-            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            callbackResults.results = $"New Project Name {newProjectStructureData.name} Has Been Created.";
+                AppData.StorageDirectoryData directoryData = GetAppDirectoryData(newProjectFolder.rootFolder.directoryType);
 
-            callback?.Invoke(callbackResults);
+                LogInfo($"===> Checking For : {newProjectFolder.name}'s Directory.", this);
+
+                if (DirectoryFound(directoryData))
+                {
+                  
+
+                    AppData.Folder mainFolder = new AppData.Folder();
+                    mainFolder.name = newProjectFolder.name;
+                    string fileName = mainFolder.name + "_Root";
+                    string fileNameWithExtension = GetFileDataNameWithExtension(fileName, AppData.SelectableAssetType.Folder);
+                    string fileNameWithoutExtension = GetFileDataNameWithoutExtension(fileNameWithExtension, AppData.SelectableAssetType.Folder);
+
+                    var storageData = GetAppDirectoryData(newProjectFolder.rootFolder.directoryType);
+
+                    string path = Path.Combine(storageData.directory, fileNameWithExtension);
+                    string validPath = path.Replace("\\", "/");
+
+                    string directory = Path.Combine(storageData.directory, mainFolder.name);
+                    string validDirectory = directory.Replace("\\", "/");
+
+                    storageData.path = validPath;
+                    storageData.directory = validDirectory;
+
+                    mainFolder.storageData = storageData;
+                    mainFolder.isRootFolder = true;
+
+                    newProjectFolder.name = fileNameWithoutExtension;
+                    newProjectFolder.storageData.name = mainFolder.name;
+                    newProjectFolder.rootFolder = mainFolder;
+
+
+
+                    LogSuccess($"===>Storage Data : {storageData.name} Directory :  {storageData.directory} Found - Path : {storageData.path} - Type : {storageData.type} ", this);
+
+                    CreateData(newProjectFolder, directoryData, (folderStructureCreated) =>
+                    {
+                        callbackResults = folderStructureCreated;
+
+                        if (AppData.Helpers.IsSuccessCode(folderStructureCreated.resultsCode))
+                        {
+                            CreateDirectory(validDirectory, directoryCreatedCallback =>
+                            {
+                                callbackResults.resultsCode = directoryCreatedCallback.resultsCode;
+
+                                if (directoryCreatedCallback.Success())
+                                    callbackResults.results = $"A New Project Titled : {mainFolder.name} Has Been Created.";
+                                else
+                                    LogWarning(directoryCreatedCallback.results, this);
+                            });
+                        }
+                        else
+                            LogWarning(folderStructureCreated.results, this);
+
+                    });
+                }
+                else
+                {
+                    callbackResults.results = $"Directory : {directoryData.directory} Not Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public void CreateDirectory(AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
