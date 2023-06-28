@@ -1695,11 +1695,15 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            public PaginationViewType viewType;
+
+            [Space(5)]
             public int itemView_ItemsPerPage;
 
             [Space(5)]
             public int listView_ItemsPerPage;
 
+            [Space(5)]
             public List<List<UIScreenWidget>> pages = new List<List<UIScreenWidget>>();
 
             public int CurrentPageIndex { get; set; }

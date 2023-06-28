@@ -51,6 +51,7 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.PaginationComponent paginationComponent = new AppData.PaginationComponent();
 
+
         [Space(5)]
         [SerializeField]
         bool assetsLoaded = false;
@@ -1281,6 +1282,11 @@ namespace Com.RedicalGames.Filar
                     callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                 }
             }
+            else
+            {      
+                callbackResults.results = $"Container Screen Type : {GetUIScreenType()} Doesn't Match Current Screen Type : {ScreenUIManager.Instance.GetCurrentUIScreenType()}";
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
 
             callback?.Invoke(callbackResults);
         }
@@ -2072,7 +2078,7 @@ namespace Com.RedicalGames.Filar
 
         public AppData.PaginationViewType GetPaginationViewType()
         {
-            return SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentPaginationViewType();
+            return paginationComponent.viewType;
         }
 
         public AppData.PaginationComponent GetPaginationComponent()
