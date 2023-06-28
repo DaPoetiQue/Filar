@@ -442,12 +442,6 @@ namespace Com.RedicalGames.Filar
 
                                             if (showScreenViewCallback.Success())
                                             {
-                                                SceneAssetsManager.Instance.GetFolderContentCount(SceneAssetsManager.Instance.GetCurrentFolder(), folderFound =>
-                                                {
-                                                    if (!AppData.Helpers.IsSuccessCode(folderFound.resultsCode))
-                                                        SceneAssetsManager.Instance.DisableUIOnScreenEnter(dataPackets.screenType);
-                                                });
-
                                                 OnUpdateUIScreenOnEnter(screenFoundCallback.data, uiScreenUpdatedCallback =>
                                                 {
                                                     if (AppData.Helpers.IsSuccessCode(uiScreenUpdatedCallback.resultsCode))
@@ -551,6 +545,12 @@ namespace Com.RedicalGames.Filar
 
                             if(SceneAssetsManager.Instance.GetWidgetsContentCount() == 0)
                                 screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
+
+                            SceneAssetsManager.Instance.GetFolderContentCount(SceneAssetsManager.Instance.GetCurrentFolder(), folderFound =>
+                            {
+                                if (!AppData.Helpers.IsSuccessCode(folderFound.resultsCode))
+                                    SceneAssetsManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                            });
 
                             if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentLayoutViewType() == AppData.LayoutViewType.ItemView)
                             {
@@ -748,7 +748,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if(containerResults.Success())
                     {
-                        var rootFolder = SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
+                        var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen)? AppManager.Instance.GetInitialStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
                         var container = containerResults.data;
 
                         SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
@@ -768,7 +768,7 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents.OnScreenRefreshed(currentScreen);
             }
             else
-                LogError("On Screen Refresh Failed : Scene Assets Manager Not Initialized.", this, () => OnScreenRefresh(dataPackets));
+                LogError("On Screen Refresh Failed : Scene Assets Manager Not Initialized.", this);
         }
 
         public void UpdateInfoDisplayer(AppData.UIScreenViewComponent screen)
