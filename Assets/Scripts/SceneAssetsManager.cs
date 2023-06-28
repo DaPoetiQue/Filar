@@ -110,17 +110,6 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.UIScreenWidgetsPrefabDataLibrary screenWidgetPrefabLibrary = new AppData.UIScreenWidgetsPrefabDataLibrary();
 
-
-        [Header("Deprecated - Will Be Removed")]
-        [Space(5)]
-        [SerializeField]
-        AppData.UIScreenWidget fileListViewHandlerPrefab = null;
-
-        [Header("Deprecated - Will Be Removed")]
-        [Space(5)]
-        [SerializeField]
-        AppData.UIScreenWidget fileItemViewHandlerPrefab = null;
-
         [Space(5)]
         [SerializeField]
         List<AppData.UIImageData> imageDataLibrary = new List<AppData.UIImageData>();
@@ -787,7 +776,7 @@ namespace Com.RedicalGames.Filar
                                     var screen = ScreenUIManager.Instance.GetCurrentScreenData();
                                     screen.value.GetScreenData().sceneAsset = currentSceneAsset;
 
-                                   ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
+                                    ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
                                 }
                                 else
                                     Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
@@ -945,7 +934,7 @@ namespace Com.RedicalGames.Filar
                         Debug.LogWarning($"--> Container Found Assigned For Game Object : {content.name}.");
                 }
 
-                if(assetContainerList.Count == 0)
+                if (assetContainerList.Count == 0)
                     callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                 else
                 {
@@ -1356,8 +1345,8 @@ namespace Com.RedicalGames.Filar
                                             string validPath = GetAppDirectory(field.directoryType).directory;
                                             string newDirectory = Path.Combine(validPath, assetData.name);
 
-                                        // Create New Directory.
-                                        if (CreateDirectory(newDirectory))
+                                            // Create New Directory.
+                                            if (CreateDirectory(newDirectory))
                                             {
                                                 string fileNameWithExtension = field.name + "." + field.extensionType.ToString().ToLower();
                                                 string newPath = Path.Combine(newDirectory, fileNameWithExtension);
@@ -1564,7 +1553,11 @@ namespace Com.RedicalGames.Filar
             this.newAssetName = newAssetName;
         }
 
-        public void SetCurrentProjectStructureData(AppData.FolderStructureData structureData = null) => currentProjectStructureData = structureData;
+        public void SetCurrentProjectStructureData(AppData.FolderStructureData structureData = null)
+        {
+            currentProjectStructureData = structureData;
+            SetCurrentFolder(currentProjectStructureData.rootFolder);
+        }
 
         public AppData.FolderStructureData GetCurrentProjectStructureData()
         {
@@ -2048,8 +2041,6 @@ namespace Com.RedicalGames.Filar
                 {
                     contentContainer.InitializeContainer();
 
-                    LogSuccess($"====> Creating Folder UI For Screen Type : {screenType} ", this);
-
                     switch (screenType)
                     {
                         case AppData.UIScreenType.ProjectViewScreen:
@@ -2068,10 +2059,15 @@ namespace Com.RedicalGames.Filar
 
                                     GetSortedWidgetList(foldersLoaded.data, pinnedFolders, sortedList =>
                                     {
+                                        callbackResults.results = sortedList.results;
+                                        callbackResults.resultsCode = sortedList.resultsCode;
+
                                         if (AppData.Helpers.IsSuccessCode(sortedList.resultsCode))
                                         {
                                             GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                             {
+                                                callbackResults.results = widgetsCallback.results;
+                                                callbackResults.resultsCode = widgetsCallback.resultsCode;
 
                                                 if (widgetsCallback.Success())
                                                 {
@@ -2079,11 +2075,16 @@ namespace Com.RedicalGames.Filar
 
                                                     if (widgetPrefabData != null)
                                                     {
-                                                        widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Folder, folderStructureData.GetCurrentLayoutViewType(), prefabCallbackResults =>
+                                                        widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Folder, GetCurrentProjectStructureData().GetCurrentLayoutViewType(), prefabCallbackResults =>
                                                         {
+                                                            callbackResults.results = prefabCallbackResults.results;
+                                                            callbackResults.resultsCode = prefabCallbackResults.resultsCode;
+
                                                             if (prefabCallbackResults.Success())
                                                             {
                                                                 pinnedFolders = sortedList.data;
+
+                                                                LogSuccess($"====> Loaded - {pinnedFolders.Count} Pinned Items - Prefab : {prefabCallbackResults.data.gameObject.name}", this);
 
                                                                 foreach (var folder in pinnedFolders)
                                                                 {
@@ -2097,16 +2098,32 @@ namespace Com.RedicalGames.Filar
                                                                         {
                                                                             widgetComponent.SetDefaultUIWidgetActionState(folder.defaultWidgetActionState);
 
-                                                                            if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
+                                                                            if (GetCurrentProjectStructureData().currentPaginationViewType == AppData.PaginationViewType.Pager)
                                                                                 widgetComponent.Hide();
 
                                                                             folderWidget.name = folder.name;
                                                                             widgetComponent.SetFolderData(folder);
                                                                             contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
-                                                                        }
 
-                                                                        if (!loadedWidgetsList.Contains(widgetComponent))
-                                                                            loadedWidgetsList.Add(widgetComponent);
+                                                                            if (!loadedWidgetsList.Contains(widgetComponent))
+                                                                                loadedWidgetsList.Add(widgetComponent);
+
+                                                                            callbackResults.results = "Folder Widget Loaded.";
+                                                                            callbackResults.data = loadedWidgetsList;
+                                                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            callbackResults.results = "Folder Widget Component Missing.";
+                                                                            callbackResults.data = default;
+                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        callbackResults.results = "Folder Widget Failed To Instantiate.";
+                                                                        callbackResults.data = default;
+                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                                                                     }
                                                                 }
                                                             }
@@ -2281,6 +2298,9 @@ namespace Com.RedicalGames.Filar
 
                             LoadSceneAssets(folder, (loadedAssetsResults) =>
                             {
+                                callbackResults.results = loadedAssetsResults.results;
+                                callbackResults.resultsCode = loadedAssetsResults.resultsCode;
+
                                 if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultsCode))
                                 {
                                     sceneAssetList = new List<AppData.SceneAsset>();
@@ -2289,55 +2309,94 @@ namespace Com.RedicalGames.Filar
                                     {
                                         List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
 
-                                        foreach (AppData.SceneAsset asset in loadedAssetsResults.data)
+                                        GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                         {
-                                            if (!sceneAssetList.Contains(asset))
+                                            callbackResults.results = widgetsCallback.results;
+                                            callbackResults.resultsCode = widgetsCallback.resultsCode;
+
+                                            if (widgetsCallback.Success())
                                             {
-                                                GameObject newWidget = Instantiate((folderStructureData.GetCurrentLayoutViewType() == AppData.LayoutViewType.ListView) ? fileListViewHandlerPrefab.GetSceneAssetObject() : fileItemViewHandlerPrefab.GetSceneAssetObject());
+                                                var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
 
-                                                if (newWidget != null)
+                                                if (widgetPrefabData != null)
                                                 {
-                                                    AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
-
-                                                    if (widgetComponent != null)
+                                                    widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Folder, folderStructureData.GetCurrentLayoutViewType(), prefabCallbackResults =>
                                                     {
-                                                        widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
+                                                        callbackResults.results = prefabCallbackResults.results;
+                                                        callbackResults.resultsCode = prefabCallbackResults.resultsCode;
 
-                                                        if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
-                                                            widgetComponent.Hide();
+                                                        if (prefabCallbackResults.Success())
+                                                        {
+                                                            foreach (AppData.SceneAsset asset in loadedAssetsResults.data)
+                                                            {
+                                                                if (!sceneAssetList.Contains(asset))
+                                                                {
+                                                                    GameObject newWidget = Instantiate(prefabCallbackResults.data.gameObject);
 
-                                                        newWidget.name = asset.name;
+                                                                    if (newWidget != null)
+                                                                    {
+                                                                        AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
 
-                                                        widgetComponent.SetSceneAssetData(asset);
-                                                        widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
-                                                        widgetComponent.SetWidgetAssetData(asset);
+                                                                        if (widgetComponent != null)
+                                                                        {
+                                                                            widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
 
-                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                            if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
+                                                                                widgetComponent.Hide();
 
-                                                        sceneAssetList.Add(asset);
+                                                                            newWidget.name = asset.name;
 
-                                                        AppData.SceneAssetWidget assetWidget = new AppData.SceneAssetWidget();
-                                                        assetWidget.name = widgetComponent.GetSceneAssetData().name;
-                                                        assetWidget.value = newWidget;
-                                                        assetWidget.categoryType = widgetComponent.GetSceneAssetData().categoryType;
-                                                        assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
+                                                                            widgetComponent.SetSceneAssetData(asset);
+                                                                            widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
+                                                                            widgetComponent.SetWidgetAssetData(asset);
 
-                                                        screenWidgetList.Add(assetWidget);
+                                                                            contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
 
-                                                        widgetComponent.SetFileData();
+                                                                            sceneAssetList.Add(asset);
 
-                                                        if (!loadedWidgetsList.Contains(widgetComponent))
-                                                            loadedWidgetsList.Add(widgetComponent);
-                                                    }
-                                                    else
-                                                        Debug.LogWarning($"--> Failed To Load Screen Widget : {asset.modelAsset.name}");
+                                                                            AppData.SceneAssetWidget assetWidget = new AppData.SceneAssetWidget();
+                                                                            assetWidget.name = widgetComponent.GetSceneAssetData().name;
+                                                                            assetWidget.value = newWidget;
+                                                                            assetWidget.categoryType = widgetComponent.GetSceneAssetData().categoryType;
+                                                                            assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
+
+                                                                            screenWidgetList.Add(assetWidget);
+
+                                                                            //widgetComponent.SetFileData();
+
+                                                                            if (!loadedWidgetsList.Contains(widgetComponent))
+                                                                                loadedWidgetsList.Add(widgetComponent);
+
+                                                                            callbackResults.results = "Widget Prefab Loaded.";
+                                                                            callbackResults.data = loadedWidgetsList;
+                                                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            callbackResults.results = "Widget Prefab Component Missing.";
+                                                                            callbackResults.data = default;
+                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        callbackResults.results = "Widget Prefab Failed To Instantiate.";
+                                                                        callbackResults.data = default;
+                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Debug.LogWarning($"--> Widget : {asset.modelAsset.name} Already Exists.");
+                                                            }
+                                                        }
+                                                        else
+                                                            Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                    });
                                                 }
                                                 else
-                                                    Debug.LogWarning($"--> Failed To Instantiate Prefab For Screen Widget : {asset.modelAsset.name}");
+                                                    LogError("Widget Prefab Data Missing.", this);
                                             }
-                                            else
-                                                Debug.LogWarning($"--> Widget : {asset.modelAsset.name} Already Exists.");
-                                        }
+                                        });
 
                                         if (loadedWidgetsList.Count >= loadedAssetsResults.data.Count)
                                         {
@@ -2412,55 +2471,94 @@ namespace Com.RedicalGames.Filar
                                     {
                                         List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
 
-                                        foreach (AppData.SceneAsset asset in loadedAssetsResults.data)
+                                        GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                         {
-                                            if (!sceneAssetList.Contains(asset))
+                                            callbackResults.results = widgetsCallback.results;
+                                            callbackResults.resultsCode = widgetsCallback.resultsCode;
+
+                                            if (widgetsCallback.Success())
                                             {
-                                                GameObject newWidget = Instantiate((folderStructureData.GetCurrentLayoutViewType() == AppData.LayoutViewType.ListView) ? fileListViewHandlerPrefab.GetSceneAssetObject() : fileItemViewHandlerPrefab.GetSceneAssetObject());
+                                                var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
 
-                                                if (newWidget != null)
+                                                if (widgetPrefabData != null)
                                                 {
-                                                    AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
-
-                                                    if (widgetComponent != null)
+                                                    widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Folder, folderStructureData.GetCurrentLayoutViewType(), prefabCallbackResults =>
                                                     {
-                                                        widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
+                                                        callbackResults.results = prefabCallbackResults.results;
+                                                        callbackResults.resultsCode = prefabCallbackResults.resultsCode;
 
-                                                        if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
-                                                            widgetComponent.Hide();
+                                                        if (prefabCallbackResults.Success())
+                                                        {
+                                                            foreach (AppData.SceneAsset asset in loadedAssetsResults.data)
+                                                            {
+                                                                if (!sceneAssetList.Contains(asset))
+                                                                {
+                                                                    GameObject newWidget = Instantiate(prefabCallbackResults.data.gameObject);
 
-                                                        newWidget.name = asset.name;
+                                                                    if (newWidget != null)
+                                                                    {
+                                                                        AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
 
-                                                        widgetComponent.SetSceneAssetData(asset);
-                                                        widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
-                                                        widgetComponent.SetWidgetAssetData(asset);
+                                                                        if (widgetComponent != null)
+                                                                        {
+                                                                            widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
 
-                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                            if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
+                                                                                widgetComponent.Hide();
 
-                                                        sceneAssetList.Add(asset);
+                                                                            newWidget.name = asset.name;
 
-                                                        AppData.SceneAssetWidget assetWidget = new AppData.SceneAssetWidget();
-                                                        assetWidget.name = widgetComponent.GetSceneAssetData().name;
-                                                        assetWidget.value = newWidget;
-                                                        assetWidget.categoryType = widgetComponent.GetSceneAssetData().categoryType;
-                                                        assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
+                                                                            widgetComponent.SetSceneAssetData(asset);
+                                                                            widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
+                                                                            widgetComponent.SetWidgetAssetData(asset);
 
-                                                        screenWidgetList.Add(assetWidget);
+                                                                            contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
 
-                                                        widgetComponent.SetFileData();
+                                                                            sceneAssetList.Add(asset);
 
-                                                        if (!loadedWidgetsList.Contains(widgetComponent))
-                                                            loadedWidgetsList.Add(widgetComponent);
-                                                    }
-                                                    else
-                                                        Debug.LogWarning($"--> Failed To Load Screen Widget : {asset.modelAsset.name}");
+                                                                            AppData.SceneAssetWidget assetWidget = new AppData.SceneAssetWidget();
+                                                                            assetWidget.name = widgetComponent.GetSceneAssetData().name;
+                                                                            assetWidget.value = newWidget;
+                                                                            assetWidget.categoryType = widgetComponent.GetSceneAssetData().categoryType;
+                                                                            assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
+
+                                                                            screenWidgetList.Add(assetWidget);
+
+                                                                            widgetComponent.SetFileData();
+
+                                                                            if (!loadedWidgetsList.Contains(widgetComponent))
+                                                                                loadedWidgetsList.Add(widgetComponent);
+
+                                                                            callbackResults.results = "Widget Prefab Component Loaded.";
+                                                                            callbackResults.data = loadedWidgetsList;
+                                                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            callbackResults.results = "Widget Prefab Component Missing.";
+                                                                            callbackResults.data = default;
+                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        callbackResults.results = $"Failed To Instantiate Prefab For Screen Widget : {asset.modelAsset.name}";
+                                                                        callbackResults.data = default;
+                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Debug.LogWarning($"--> Widget : {asset.modelAsset.name} Already Exists.");
+                                                            }
+                                                        }
+                                                        else
+                                                            Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                    });
                                                 }
                                                 else
-                                                    Debug.LogWarning($"--> Failed To Instantiate Prefab For Screen Widget : {asset.modelAsset.name}");
+                                                    LogError("Widget Prefab Data Missing.", this);
                                             }
-                                            else
-                                                Debug.LogWarning($"--> Widget : {asset.modelAsset.name} Already Exists.");
-                                        }
+                                        });
 
                                         if (loadedWidgetsList.Count >= loadedAssetsResults.data.Count)
                                         {
