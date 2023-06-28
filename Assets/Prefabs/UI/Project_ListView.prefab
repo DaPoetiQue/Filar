@@ -291,7 +291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5373198097524180252
 RectTransform:
   m_ObjectHideFlags: 0
@@ -627,6 +627,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -750,6 +751,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -837,6 +839,7 @@ MonoBehaviour:
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
+    uiValidationList: []
     characterLimit: 0
     actionType: 0
     valueType: 0
@@ -875,6 +878,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -1001,6 +1005,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -1125,6 +1130,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -1248,6 +1254,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -1369,6 +1376,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -1489,6 +1497,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -1927,6 +1936,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2046,6 +2056,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2165,6 +2176,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2253,8 +2265,8 @@ MonoBehaviour:
   imageDisplayerList: []
   selectableComponent:
     selectionInfo:
-      selectionThreshHold: 0
-      selectionUIDimensionRatio: 0
+      selectionThreshHold: 0.5
+      selectionUIDimensionRatio: 0.95
       selectionDragInfo:
         isDraggable: 0
         selectionDragTriggerRadius: 0
@@ -2263,15 +2275,33 @@ MonoBehaviour:
     selectableAssetType: 2
     selectionComponent:
       selectionFrame:
-        name: 
-        value: {fileID: 0}
-        imageDisplayerType: 0
+        name: Selection
+        value: {fileID: 5373198097524180255}
+        imageDisplayerType: 2
       selectionTint:
-        name: 
-        value: {fileID: 0}
-        imageDisplayerType: 0
+        name: Tint
+        value: {fileID: 5373198099470164608}
+        imageDisplayerType: 10
       uiSelectionContentContainer: {fileID: 0}
-    selectionStates: []
+    selectionStates:
+    - name: Normal
+      selectionColor: {r: 1, g: 1, b: 1, a: 1}
+      selectionColorState: 0
+    - name: Enabled
+      selectionColor: {r: 1, g: 1, b: 1, a: 1}
+      selectionColorState: 1
+    - name: Disabled
+      selectionColor: {r: 0.46666667, g: 0.46666667, b: 0.46666667, a: 1}
+      selectionColorState: 2
+    - name: Selected
+      selectionColor: {r: 0.3764706, g: 0.7176471, b: 0.7058824, a: 1}
+      selectionColorState: 3
+    - name: Interacted
+      selectionColor: {r: 0.1882353, g: 0.2, b: 0.19607843, a: 1}
+      selectionColorState: 9
+    - name: Focused
+      selectionColor: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 1}
+      selectionColorState: 10
   dataPackets:
     selectionOption: 0
     screenType: 4
@@ -2285,6 +2315,7 @@ MonoBehaviour:
       screenType: 0
       screenPosition: 0
       blurScreen: 0
+      blurLayer: 0
       delay: 0
       duration: 0
       showNotifications: 0
@@ -2364,6 +2395,7 @@ MonoBehaviour:
     screenType: 0
     screenPosition: 0
     blurScreen: 0
+    blurLayer: 0
     delay: 0
     duration: 0
     showNotifications: 0
@@ -2425,6 +2457,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2548,6 +2581,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2635,6 +2669,7 @@ MonoBehaviour:
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
+    uiValidationList: []
     characterLimit: 0
     actionType: 0
     valueType: 0
@@ -2673,6 +2708,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2799,6 +2835,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -2923,6 +2960,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3046,6 +3084,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3167,6 +3206,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3287,6 +3327,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3569,6 +3610,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3692,6 +3734,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3779,6 +3822,7 @@ MonoBehaviour:
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
+    uiValidationList: []
     characterLimit: 0
     actionType: 0
     valueType: 0
@@ -3817,6 +3861,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -3943,6 +3988,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4067,6 +4113,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4190,6 +4237,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4311,6 +4359,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4431,6 +4480,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4713,6 +4763,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4836,6 +4887,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -4923,6 +4975,7 @@ MonoBehaviour:
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
+    uiValidationList: []
     characterLimit: 0
     actionType: 0
     valueType: 0
@@ -4961,6 +5014,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -5087,6 +5141,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -5211,6 +5266,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -5334,6 +5390,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -5455,6 +5512,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
@@ -5575,6 +5633,7 @@ MonoBehaviour:
         screenType: 0
         screenPosition: 0
         blurScreen: 0
+        blurLayer: 0
         delay: 0
         duration: 0
         showNotifications: 0
