@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
                                 };
 
                                 Debug.LogError("=============> Please Fix Here............. Important");
-                                //ScreenNavigationManager.Instance.NavigateToFolder(folder, selectedWidget, actionButton.dataPackets.folderStructureType);
+                                ScreenNavigationManager.Instance.NavigateToFolder(folder, selectedWidget, actionButton.dataPackets.folderStructureType);
                             }
                             else
                                 Debug.LogWarning("--> OnActionButtonInputs Failed : SceneAssetsManager.Instance Is Not Yet Initialized.");
@@ -90,9 +90,9 @@ namespace Com.RedicalGames.Filar
         {
             if (SelectableManager.Instance != null)
             {
-                Debug.LogError("=============> Please Fix Here............. Important");
-                //SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
-                //Selected();
+                //Debug.LogError("=============> Please Fix Here............. Important");
+                SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
+                Selected();
             }
             else
                 Debug.LogWarning("--> OnSelect Failed :  SelectableManager.Instance Is Not Yet initialized.");

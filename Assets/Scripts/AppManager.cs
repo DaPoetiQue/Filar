@@ -26,6 +26,10 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
+        [Space(5)]
+        [SerializeField]
+        AppData.FolderStructureData initialStructureData = new AppData.FolderStructureData();
+
         [SerializeField]
         AppData.SceneDataPackets initialLoadDataPackets = new AppData.SceneDataPackets();
 
@@ -69,15 +73,23 @@ namespace Com.RedicalGames.Filar
             //if (SceneAssetsManager.Instance != null)
             //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
 
+            LogInfo($"===> Getting Dynamic Widget Container For Screen Type : {initialLoadDataPackets.screenType} ", this);
+
+            SceneAssetsManager.Instance.SetCurrentProjectStructureData(initialStructureData);
+
             SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
             {
                 if (containerResults.Success())
                 {
-                    var rootFolder = SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
+                    LogSuccess($"===> Found Dynamic Widget Container For Screen Type : {initialLoadDataPackets.screenType} Named : {containerResults.data.name} ", this);
+
+                    var rootFolder = initialStructureData.rootFolder;
                     var container = containerResults.data;
 
                     SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
                 }
+                else
+                    Log(containerResults.resultsCode, containerResults.results, this);
             });
 
 
@@ -102,6 +114,11 @@ namespace Com.RedicalGames.Filar
                 ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
             else
                 Debug.LogWarning("--> Screen Manager Missing.");
+        }
+
+        public AppData.FolderStructureData GetInitialStructureData()
+        {
+            return initialStructureData;
         }
 
         public void StoragePermissionRequest()
