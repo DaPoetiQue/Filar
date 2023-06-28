@@ -570,12 +570,12 @@ MonoBehaviour:
     imageDisplayerType: 8
   selectableComponent:
     selectionInfo:
-      selectionThreshHold: 0
-      selectionUIDimensionRatio: 0
+      selectionThreshHold: 0.5
+      selectionUIDimensionRatio: 0.95
       selectionDragInfo:
-        isDraggable: 0
-        selectionDragTriggerRadius: 0
-        updateSelectionDimensionsOnDrag: 0
+        isDraggable: 1
+        selectionDragTriggerRadius: 25
+        updateSelectionDimensionsOnDrag: 1
     selectableWidgetType: 0
     selectableAssetType: 1
     selectionComponent:
@@ -592,12 +592,24 @@ MonoBehaviour:
     - name: Normal
       selectionColor: {r: 1, g: 1, b: 1, a: 1}
       selectionColorState: 0
+    - name: Enabled
+      selectionColor: {r: 1, g: 1, b: 1, a: 1}
+      selectionColorState: 1
+    - name: Disabled
+      selectionColor: {r: 0.46666667, g: 0.46666667, b: 0.46666667, a: 1}
+      selectionColorState: 2
     - name: Selected
-      selectionColor: {r: 0.964616, g: 1, b: 0.20188677, a: 1}
+      selectionColor: {r: 0.7019608, g: 0.7372549, b: 0.5372549, a: 1}
       selectionColorState: 3
-    - name: Highlighted
-      selectionColor: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+    - name: Hovered
+      selectionColor: {r: 0.3764706, g: 0.7176471, b: 0.7058824, a: 1}
+      selectionColorState: 8
+    - name: Interacted
+      selectionColor: {r: 0.1882353, g: 0.2, b: 0.19607843, a: 1}
       selectionColorState: 9
+    - name: Focused
+      selectionColor: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 1}
+      selectionColorState: 10
   dataPackets:
     selectionOption: 0
     screenType: 1
