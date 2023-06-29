@@ -192,7 +192,7 @@ namespace Com.RedicalGames.Filar
                 // Set Info
                 SetUITextDisplayerValue(assetData.name, AppData.ScreenTextType.TitleDisplayer);
                 SetUITextDisplayerValue(assetData.description, AppData.ScreenTextType.InfoDisplayer);
-                SetUITextDisplayerValue(assetData.creationDateTime, AppData.ScreenTextType.TimeDateDisplayer);
+                SetUITextDisplayerValue(assetData.creationDateTime.dateTime, AppData.ScreenTextType.TimeDateDisplayer);
             }
         }
 
