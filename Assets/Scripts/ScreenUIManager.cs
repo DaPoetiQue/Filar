@@ -427,6 +427,8 @@ namespace Com.RedicalGames.Filar
 
                             await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
 
+                            AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
+
                             LogInfo($"Has Required Components : {HasRequiredComponentsAssigned()} So If True - Broer Please Show Screen Of Type : {dataPackets.screenType}", this);
 
                             if (HasRequiredComponentsAssigned())
