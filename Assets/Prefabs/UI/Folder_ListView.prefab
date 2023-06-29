@@ -1613,8 +1613,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   className: 
   logAttributes:
-    enabledInfoLogs: 0
-    enabledExceptionLogs: 0
+    enabledInfoLogs: 5
+    enabledExceptionLogs: 14
     logCatInfo:
       debugClassLogCat: 
   actionGroup:
@@ -2088,9 +2088,9 @@ MonoBehaviour:
       state: 2
     dataPackets:
       selectionOption: 0
-      screenType: 0
-      layoutViewType: 2
-      containerType: 0
+      screenType: 1
+      layoutViewType: 1
+      containerType: 7
       stateType: 0
       notification:
         title: 
@@ -2172,7 +2172,7 @@ MonoBehaviour:
       sceneAssetTransitionSpeed: 0
       isRootFolder: 0
       referencedActionButtonDataList: []
-      action: 0
+      action: 51
       tabID: 0
       navigationTabWidgetType: 0
       navigationWidgetVisibilityState: 0
