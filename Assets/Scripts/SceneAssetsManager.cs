@@ -725,6 +725,8 @@ namespace Com.RedicalGames.Filar
 
         void OnSceneAssetScreenPreviewSetup(AppData.SceneDataPackets dataPackets)
         {
+            LogSuccess($"==============> Get Scene Asset Container Of Type : {dataPackets.containerType} - For Screen : {dataPackets.screenType}", this);
+
             if (GetSceneAssetsContainer(dataPackets.containerType, dataPackets.screenType))
             {
                 if (sceneAssetLibrary.SceneAssetExists(dataPackets.sceneAsset.name))
@@ -2435,7 +2437,7 @@ namespace Com.RedicalGames.Filar
 
                                                 if (widgetPrefabData != null)
                                                 {
-                                                    widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Folder, GetFolderStructureData().GetCurrentLayoutViewType(), prefabCallbackResults =>
+                                                    widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.File, GetFolderStructureData().GetCurrentLayoutViewType(), prefabCallbackResults =>
                                                     {
                                                         callbackResults.results = prefabCallbackResults.results;
                                                         callbackResults.resultsCode = prefabCallbackResults.resultsCode;
@@ -2505,7 +2507,11 @@ namespace Com.RedicalGames.Filar
                                                             }
                                                         }
                                                         else
+                                                        {
+
+                                                            LogError($"==================> Widget Prefab Not Found Results : {prefabCallbackResults.results}", this);
                                                             Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                        }
                                                     });
                                                 }
                                                 else
@@ -2614,8 +2620,13 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
 
+                                                                        LogSuccess($"=================> hecking Component For Asset Data : {asset.name}.", this);
+
                                                                         if (widgetComponent != null)
                                                                         {
+
+                                                                            LogSuccess($"=================> Setting File : {widgetComponent.name} Asset Data : {asset.name}.", this);
+
                                                                             widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
 
                                                                             if (GetFolderStructureData().currentPaginationViewType == AppData.PaginationViewType.Pager)
@@ -2638,8 +2649,6 @@ namespace Com.RedicalGames.Filar
                                                                             assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
 
                                                                             screenWidgetList.Add(assetWidget);
-
-                                                                            widgetComponent.SetFileData();
 
                                                                             if (!loadedWidgetsList.Contains(widgetComponent))
                                                                                 loadedWidgetsList.Add(widgetComponent);
