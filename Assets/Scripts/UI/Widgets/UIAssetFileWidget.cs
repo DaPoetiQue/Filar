@@ -19,15 +19,17 @@ namespace Com.RedicalGames.Filar
         void Initialization()
         {
             // Initialize Assets.
-            Init((callback) =>
+            Init((initializationCallbackResults) =>
             {
-                if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                if (initializationCallbackResults.Success())
+                {
                     if (screenManager == null)
                         screenManager = ScreenUIManager.Instance;
                     else
-                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {callback.results}.");
+                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {initializationCallbackResults.results}.");
+                }
                 else
-                    Debug.LogWarning("--> Failed to Initialize Scene Asset UI.");
+                    LogError("Failed to Initialize Scene Asset UI.", this);
             });
         }
 
@@ -85,10 +87,12 @@ namespace Com.RedicalGames.Filar
                             assetData.currentAssetMode = AppData.SceneAssetModeType.PreviewMode;
                             actionButton.dataPackets.sceneAsset = assetData;
 
-                            if (SceneAssetsManager.Instance != null)
-                                SceneAssetsManager.Instance.OnSceneAssetPreviewMode(actionButton.dataPackets);
-                            else
-                                Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
+                            //if (SceneAssetsManager.Instance != null)
+                            //    SceneAssetsManager.Instance.OnSceneAssetPreviewMode(actionButton.dataPackets);
+                            //else
+                            //    Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
+
+                            LogSuccess($"===================> Show Widget : {actionButton.dataPackets.widgetType} - Blur Screen : {actionButton.dataPackets.blurScreen}", this);
 
                             if (widgetParentScreen != null)
                             {
@@ -165,6 +169,8 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetFileData(AppData.SceneAsset assetData)
         {
+            LogSuccess("====================> Setting Asset Data");
+
             if (selectableComponent.selectableAssetType == AppData.SelectableAssetType.File)
             {
                 // Set Thumbnail.
