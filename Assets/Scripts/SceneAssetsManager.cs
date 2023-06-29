@@ -519,6 +519,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if(widgetsClearedCallbackResults.Success())
                         {
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(ScreenNavigationManager.Instance.GetEmptyFolderDataPackets().widgetType);
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
                         }
                     });
@@ -1392,8 +1393,6 @@ namespace Com.RedicalGames.Filar
                         string filePath = Path.Combine(directoryData.directory, fileNameWithJSONExtension);
                         string formattedFilePath = AppData.Helpers.GetFormattedDirectoryPath(filePath);
 
-                        var dateTime = DateTime.Now;
-
                         AppData.StorageDirectoryData storageDirectory = new AppData.StorageDirectoryData
                         {
                             name = validAssetName,
@@ -1402,7 +1401,7 @@ namespace Com.RedicalGames.Filar
                             directory = directoryData.directory
                         };
 
-                        assetData.creationDateTime = dateTime.ToString();
+                        assetData.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
                         assetData.storageData = storageDirectory;
 
                         string JSONString = JsonUtility.ToJson(assetData);
@@ -2475,7 +2474,7 @@ namespace Com.RedicalGames.Filar
                                                                             assetWidget.name = widgetComponent.GetSceneAssetData().name;
                                                                             assetWidget.value = newWidget;
                                                                             assetWidget.categoryType = widgetComponent.GetSceneAssetData().categoryType;
-                                                                            assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
+                                                                            assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime.dateTime;
 
                                                                             screenWidgetList.Add(assetWidget);
 
@@ -2646,7 +2645,7 @@ namespace Com.RedicalGames.Filar
                                                                             assetWidget.name = widgetComponent.GetSceneAssetData().name;
                                                                             assetWidget.value = newWidget;
                                                                             assetWidget.categoryType = widgetComponent.GetSceneAssetData().categoryType;
-                                                                            assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime;
+                                                                            assetWidget.creationDateTime = widgetComponent.GetSceneAssetData().creationDateTime.dateTime;
 
                                                                             screenWidgetList.Add(assetWidget);
 
@@ -2774,7 +2773,6 @@ namespace Com.RedicalGames.Filar
                     newProjectFolder.rootFolder = mainFolder;
 
                     newProjectFolder.projectInfo.name = mainFolder.name;
-                    newProjectFolder.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
 
                     CreateData(newProjectFolder, directoryData, (folderStructureCreated) =>
                     {
@@ -3417,7 +3415,20 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                     else
                                                     {
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ClipboardButton, AppData.InputUIState.Disabled);
+
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, string.Empty);
+
                                                         isRefreshed = true;
+
+                                                        StartCoroutine(RefreshAssetsAsync());
+
                                                         Log(hasContentCallbackResults.resultsCode, hasContentCallbackResults.results, this);
                                                     }
                                                 
@@ -4682,8 +4693,7 @@ namespace Com.RedicalGames.Filar
 
                     case AppData.SceneAssetSortType.DateModified:
 
-                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.creationDateTime.date.CompareTo(firstWidget.creationDateTime.date));
-                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.creationDateTime.time.CompareTo(firstWidget.creationDateTime.time));
+                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.creationDateTime.ToDateTime().CompareTo(firstWidget.creationDateTime.ToDateTime()));
 
                         break;
                 }
@@ -5999,6 +6009,8 @@ namespace Com.RedicalGames.Filar
                     if (string.IsNullOrEmpty(data.name))
                         data.name = data.GetType().ToString();
 
+                    data.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+
                     string storageDirectory = data.storageData.directory;
 
                     string fileNameWithJSONExtension = data.storageData.name + ".json";
@@ -6064,6 +6076,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (!AppData.Helpers.IsSuccessCode(checkFileFoundCallback.resultsCode))
                         {
+                            data.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+
                             string JSONString = JsonUtility.ToJson(data);
                             File.WriteAllText(storageData.path, JSONString);
 
@@ -6181,6 +6195,8 @@ namespace Com.RedicalGames.Filar
 
             if (File.Exists(data.storageData.path))
             {
+                data.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+
                 string JSONString = JsonUtility.ToJson(data);
 
                 if (!string.IsNullOrEmpty(JSONString))

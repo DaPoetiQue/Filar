@@ -214,6 +214,7 @@ namespace Com.RedicalGames.Filar
             CreateNewProjectButton,
             OpenProjectButton,
             OpenProjectFolderButton,
+            GoToScreenButton,
             None
         }
 
@@ -1728,7 +1729,8 @@ namespace Com.RedicalGames.Filar
                 Callback callbackResults = new Callback();
 
                 foreach (var item in itemList)
-                    item.Hide();
+                    if (item != null)
+                        item.Hide();
 
                 if (pageIndex >= pages.Count)
                     pageIndex = pages.Count - 1;
@@ -5138,7 +5140,7 @@ namespace Com.RedicalGames.Filar
             public SceneAssetModeType currentAssetMode;
 
             [HideInInspector]
-            public string creationDateTime;
+            public DateTimeComponent creationDateTime;
 
             [Space(5)]
             public bool hasMLTFile;
@@ -5300,8 +5302,6 @@ namespace Com.RedicalGames.Filar
             public float sceneScale;
 
             public string description;
-
-            public string creationDateTime;
 
             public SceneAssetModeType currentAssetMode;
 
@@ -13192,12 +13192,28 @@ namespace Com.RedicalGames.Filar
                         OnCreateNewProject_ActionEvent(actionButton.dataPackets);
 
                         break;
+
+                    case InputActionButtonType.GoToScreenButton:
+
+                        OnGoToScreen_ActionEvent(actionButton.dataPackets);
+
+                        break;
                 }
 
                 ActionEvents.OnActionButtonClicked(actionButton.dataPackets.action);
             }
 
             #region Action Events Callbacks
+
+            void OnGoToScreen_ActionEvent(SceneDataPackets dataPackets)
+            {
+                if (ScreenUIManager.Instance != null)
+                {
+                    ScreenUIManager.Instance.ShowScreen(dataPackets);
+                }
+                else
+                    LogWarning("Screen Manager Missing.", this);
+            }
 
             void OnOpenPopUp_ActionEvent(SceneDataPackets dataPackets)
             {
@@ -13431,7 +13447,7 @@ namespace Com.RedicalGames.Filar
                     ScreenUIManager.Instance.ShowScreen(dataPackets);
                 }
                 else
-                    LogWarning("Screen Manager Missing.", this, () => OnOpenARView_ActionEvent(dataPackets));
+                    LogWarning("Screen Manager Missing.", this);
             }
 
             void OnCreateNewFolder_ActionEvent(SceneDataPackets dataPackets)
@@ -18633,6 +18649,11 @@ namespace Com.RedicalGames.Filar
 
                 dateTimeTick = dateTime.Ticks;
 
+            }
+
+            public DateTime ToDateTime()
+            {
+                return new DateTime(dateTimeTick);
             }
 
             public void UpdateDateTime(DateTime dateTime)
