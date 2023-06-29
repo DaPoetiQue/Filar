@@ -115,7 +115,7 @@ namespace Com.RedicalGames.Filar
             {
                 SetUITextDisplayerValue(structureData?.projectInfo?.name, AppData.ScreenTextType.TitleDisplayer);
 
-                string lastModified = structureData?.projectInfo?.creationDateTime?.ToString();
+                string lastModified = structureData?.creationDateTime.date;
                 SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
 
                 string projectType = structureData?.projectInfo?.projectType.ToString().Replace("Project_", "");
