@@ -1883,8 +1883,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   className: 
   logAttributes:
-    enabledInfoLogs: 0
-    enabledExceptionLogs: 0
+    enabledInfoLogs: 5
+    enabledExceptionLogs: 14
     logCatInfo:
       debugClassLogCat: 
   actionGroup:

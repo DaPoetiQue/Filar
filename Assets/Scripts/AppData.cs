@@ -935,7 +935,8 @@ namespace Com.RedicalGames.Filar
         public enum ProjectType
         {
             Project_AR,
-            Project_3D
+            Project_3D,
+            Project_VR
         }
 
         #region Debugging
@@ -9755,7 +9756,9 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if(actionGroup != null && actionGroup.Count > 0)
+                    Callback callbackResults = new Callback();
+
+                    if (actionGroup != null && actionGroup.Count > 0)
                     {
                         var initialized = actionGroup.FindAll(input => input.initialize);
 
@@ -9769,14 +9772,25 @@ namespace Com.RedicalGames.Filar
                                     {
                                         widget.Init<ButtonDataPackets>(initializationCallback =>
                                         {
-                                            if(initializationCallback.Success())
+                                            callbackResults.results = initializationCallback.results;
+                                            callbackResults.resultsCode = initializationCallback.resultsCode;
+
+                                            if (initializationCallback.Success())
                                             {
                                                var button = widget.GetButtonComponent();
 
                                                 if (button.value != null)
+                                                {
                                                     button.value.onClick.AddListener(() => OnActionButtonInputs(button));
+
+                                                    callbackResults.results = "Action Group Initialized";
+                                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                                }
                                                 else
-                                                    LogError($"Button : {button.name}'s Value Missing / Not Assigned In The Editor Inspector.", this);
+                                                {
+                                                    callbackResults.results = $"Button : {button.name}'s Value Missing / Not Assigned In The Editor Inspector.";
+                                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                                }
                                             }
 
                                             Log(initializationCallback.resultsCode, initializationCallback.results, this);
@@ -9787,54 +9801,20 @@ namespace Com.RedicalGames.Filar
                         }
                     }
 
+                    if(callbackResults.Success())
+                    {
+                        widgetComponent = GetComponent<UIScreenWidget>();
+                        widgetRect = GetComponent<RectTransform>();
+                        layout = GetComponent<LayoutElement>();
+                        buttonComponent = GetComponent<Button>();
+                        parent = GetComponentInChildren<RectTransform>();
+                        Deselected();
+                        contentIndex = transform.GetSiblingIndex();
 
-                    Callback callbackResults = new Callback();
+                        selectionButtonScaleVect = selectableComponent.GetWorldSpaceSelectionDimension();
 
-                    widgetComponent = GetComponent<UIScreenWidget>();
-                    widgetRect = GetComponent<RectTransform>();
-                    layout = GetComponent<LayoutElement>();
-                    buttonComponent = GetComponent<Button>();
-                    parent = GetComponentInChildren<RectTransform>();
-                    Deselected();
-                    contentIndex = transform.GetSiblingIndex();
-
-                    selectionButtonScaleVect = selectableComponent.GetWorldSpaceSelectionDimension();
-
-                    container = GetComponentInParent<DynamicWidgetsContainer>();
-
-                    //dragPosition = widgetRect.anchoredPosition;
-
-                    //if (actionButtonList == null)
-                    //{
-                    //    callbackResults.results = "Action Buttons Required.";
-                    //    callbackResults.resultsCode = Helpers.ErrorCode;
-
-                    //    callback.Invoke(callbackResults);
-                    //    return;
-                    //}
-
-                    //if (actionButtonList.Count > 0)
-                    //{
-                    //    //foreach (var button in actionButtonList)
-                    //    //{
-                    //    //    if (button.value != null)
-                    //    //        button.value.onClick.AddListener(() => OnActionButtonInputs(button));
-                    //    //    else
-                    //    //    {
-                    //    //        callbackResults.results = "--> Action Button Value Required.";
-                    //    //        callbackResults.success = false;
-                    //    //        break;
-                    //    //    }
-                    //    //}
-
-                    //    callbackResults.results = "--> Initialized Successfully.";
-                    //    callbackResults.resultsCode = Helpers.SuccessCode;
-                    //}
-                    //else
-                    //{
-                    //    callbackResults.results = "--> Action Buttons Required.";
-                    //    callbackResults.resultsCode = Helpers.ErrorCode;
-                    //}
+                        container = GetComponentInParent<DynamicWidgetsContainer>();
+                    }
 
                     callback.Invoke(callbackResults);
                 }
@@ -9974,22 +9954,7 @@ namespace Com.RedicalGames.Filar
                 return this.gameObject;
             }
 
-            public void SetWidgetAssetData(SceneAsset asset)
-            {
-                if (thumbnailDisplayerRef != null)
-                    Helpers.ShowImage(asset, thumbnailDisplayerRef);
-                else
-                    Debug.LogWarning("-------> SetWidgetAssetData Failed : thumbnailDisplayerRef Is Null.");
-
-                if (titleDisplayerRef != null && !string.IsNullOrEmpty(asset.name))
-                    titleDisplayerRef.text = asset.name;
-
-                if (descriptionDisplayerRef != null && !string.IsNullOrEmpty(asset.description))
-                    descriptionDisplayerRef.text = asset.description;
-
-                if (dateTimeDisplayerRef != null && !string.IsNullOrEmpty(asset.creationDateTime))
-                    dateTimeDisplayerRef.text = asset.creationDateTime;
-            }
+            public void SetWidgetAssetData(SceneAsset asset) => SetFileData(asset);
 
             public LayoutElement GetWidgetLayoutElement()
             {
@@ -18625,6 +18590,7 @@ namespace Com.RedicalGames.Filar
 
             public string time;
             public string date;
+            public string dateTime;
 
             public int second, minute, hour;
 
@@ -18636,7 +18602,7 @@ namespace Com.RedicalGames.Filar
 
             public long dateTimeTick;
 
-            public DateTime dateTime;
+            public DateTime dateTimeComponent;
 
             #endregion
 
@@ -18649,10 +18615,11 @@ namespace Com.RedicalGames.Filar
 
             public DateTimeComponent(DateTime dateTime)
             {
-                this.dateTime = dateTime;
+                this.dateTimeComponent = dateTime;
 
                 time = dateTime.ToString("t");
                 date = dateTime.ToString("d");
+                this.dateTime = dateTime.ToString("g");
 
                 second = dateTime.Second;
                 minute = dateTime.Minute;
@@ -18670,10 +18637,11 @@ namespace Com.RedicalGames.Filar
 
             public void UpdateDateTime(DateTime dateTime)
             {
-                this.dateTime = dateTime;
+                this.dateTimeComponent = dateTime;
 
                 time = dateTime.ToString("t");
                 date = dateTime.ToString("d");
+                this.dateTime = dateTime.ToString("g");
 
                 second = dateTime.Second;
                 minute = dateTime.Minute;
@@ -18690,7 +18658,7 @@ namespace Com.RedicalGames.Filar
 
             public DateTime GetDateTime()
             {
-                return dateTime;
+                return dateTimeComponent;
             }
 
             #endregion
