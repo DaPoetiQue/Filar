@@ -498,78 +498,34 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents._OnActionButtonFieldUploadedEvent += OnActionButtonFieldUploadedEvent;
                 AppData.ActionEvents._OnScreenRefreshed += OnScreenRefreshedEvent;
                 AppData.ActionEvents._OnUpdateSceneAssetDefaultRotation += OnUpdateSceneAssetDefaultRotationEvent;
-                AppData.ActionEvents._OnScreenChangedEvent += ActionEvents__OnScreenChangedEvent;
+                AppData.ActionEvents._OnScreenExitEvent += ActionEvents__OnScreenExitEvent;
             }
             else
             {
                 AppData.ActionEvents._OnActionButtonFieldUploadedEvent -= OnActionButtonFieldUploadedEvent;
                 AppData.ActionEvents._OnScreenRefreshed -= OnScreenRefreshedEvent;
                 AppData.ActionEvents._OnUpdateSceneAssetDefaultRotation -= OnUpdateSceneAssetDefaultRotationEvent; 
-                AppData.ActionEvents._OnScreenChangedEvent -= ActionEvents__OnScreenChangedEvent;
+                AppData.ActionEvents._OnScreenExitEvent -= ActionEvents__OnScreenExitEvent;
             }
         }
 
-        private void ActionEvents__OnScreenChangedEvent(AppData.UIScreenType screenType)
+        private void ActionEvents__OnScreenExitEvent(AppData.UIScreenType screenType)
         {
-           switch(ScreenUIManager.Instance.GetCurrentUIScreenType())
+            GetDynamicWidgetsContainerForScreen(screenType, foundContainersCallbackResults => 
             {
-                case AppData.UIScreenType.ProjectSelectionScreen:
-
-                    GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, containerCallback =>
+                if (foundContainersCallbackResults.Success())
+                {
+                    foundContainersCallbackResults.data.ClearWidgets(widgetsClearedCallbackResults =>
                     {
-                        if (containerCallback.Success())
+                        if(widgetsClearedCallbackResults.Success())
                         {
-                            containerCallback.data.ClearWidgets(widgetsClearedCallback =>
-                            {
-                                if (!widgetsClearedCallback.Success())
-                                    Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
-
-                            });
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
                         }
-                        else
-                            Log(containerCallback.resultsCode, containerCallback.results, this);
                     });
-
-                    break;
-
-                case AppData.UIScreenType.ProjectViewScreen:
-
-                    GetDynamicWidgetsContainer(AppData.ContentContainerType.ProjectSelectionContent, containerCallback => 
-                    {
-                        if (containerCallback.Success())
-                        {
-                            containerCallback.data.ClearWidgets(widgetsClearedCallback => 
-                            {
-                                if (!widgetsClearedCallback.Success())
-                                    Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
-                            
-                            });
-                        }
-                        else
-                            Log(containerCallback.resultsCode, containerCallback.results, this);
-                    });
-
-                    break;
-
-                case AppData.UIScreenType.AssetCreationScreen:
-
-                    GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, containerCallback =>
-                    {
-                        if (containerCallback.Success())
-                        {
-                            containerCallback.data.ClearWidgets(widgetsClearedCallback =>
-                            {
-                                if (!widgetsClearedCallback.Success())
-                                    Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
-
-                            });
-                        }
-                        else
-                            Log(containerCallback.resultsCode, containerCallback.results, this);
-                    });
-
-                    break;
-            }
+                }
+                else
+                    Log(foundContainersCallbackResults.resultsCode, foundContainersCallbackResults.results, this);
+            });
         }
 
         void OnUpdateSceneAssetDefaultRotationEvent(Quaternion rotation)
@@ -1876,6 +1832,88 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public void GetDynamicWidgetsContainerForScreen(AppData.UIScreenType screenType, Action<AppData.CallbackData<DynamicWidgetsContainer>> callback)
+        {
+            AppData.CallbackData<DynamicWidgetsContainer> callbackResults = new AppData.CallbackData<DynamicWidgetsContainer>();
+
+            if (dynamicWidgetsContainersList.Count > 0)
+            {
+                DynamicWidgetsContainer container = dynamicWidgetsContainersList.Find(container => container.GetUIScreenType() == screenType);
+
+                if (container != null)
+                {
+                    callbackResults.results = $"Container For Screen Type : {screenType} Found.";
+                    callbackResults.data = container;
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Container For Screen Type : {screenType} Doesn't Exist In The Dynamic Widgets Container List - Not Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            }
+            else
+            {
+                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void GetAllDynamicWidgetsContainers(Action<AppData.CallbackDatas<DynamicWidgetsContainer>> callback)
+        {
+            AppData.CallbackDatas<DynamicWidgetsContainer> callbackResults = new AppData.CallbackDatas<DynamicWidgetsContainer>();
+
+            if (dynamicWidgetsContainersList.Count > 0)
+            {
+                callbackResults.results = $"{dynamicWidgetsContainersList.Count} Containers Found.";
+                callbackResults.data = dynamicWidgetsContainersList;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void GetAllDynamicWidgetsContainerExcludingFromScreen(AppData.UIScreenType screenType, Action<AppData.CallbackDatas<DynamicWidgetsContainer>> callback)
+        {
+            AppData.CallbackDatas<DynamicWidgetsContainer> callbackResults = new AppData.CallbackDatas<DynamicWidgetsContainer>();
+
+            if (dynamicWidgetsContainersList.Count > 0)
+            {
+                List<DynamicWidgetsContainer> containers = dynamicWidgetsContainersList.FindAll(container => container.GetUIScreenType() != screenType);
+
+                if (containers != null && containers.Count > 0)
+                {
+                    callbackResults.results = $"{containers.Count} Containers Found.";
+                    callbackResults.data = containers;
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Failed : There Are No Containers Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            }
+            else
+            {
+                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
         public AppData.FolderStructureType GetCurrentViewedFolderStructure()
         {
             return currentViewedFolderStructure;
@@ -1902,51 +1940,59 @@ namespace Com.RedicalGames.Filar
 
                     if(screenType == AppData.UIScreenType.ProjectSelectionScreen)
                     {
-                        GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
+
+                        GetSortedWidgetList(projectData, sortedListCallbackResults => 
                         {
-                            if (widgetsCallback.Success())
+                            if (sortedListCallbackResults.Success())
                             {
-                                var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
-
-                                if (widgetPrefabData != null)
+                                GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                 {
-                                    widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Project, AppData.LayoutViewType.ListView, prefabCallbackResults =>
+                                    if (widgetsCallback.Success())
                                     {
-                                        if (prefabCallbackResults.Success())
+                                        var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
+
+                                        if (widgetPrefabData != null)
                                         {
-                                            foreach (var project in projectData)
+                                            widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableAssetType.Project, AppData.LayoutViewType.ListView, prefabCallbackResults =>
                                             {
-                                                GameObject projectWidget = Instantiate(prefabCallbackResults.data.gameObject);
-
-                                                if (projectWidget != null)
+                                                if (prefabCallbackResults.Success())
                                                 {
-                                                    AppData.UIScreenWidget widgetComponent = projectWidget.GetComponent<AppData.UIScreenWidget>();
-
-                                                    if (widgetComponent != null)
+                                                    foreach (var project in sortedListCallbackResults.data)
                                                     {
-                                                        //if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
-                                                        //    widgetComponent.Hide();
+                                                        GameObject projectWidget = Instantiate(prefabCallbackResults.data.gameObject);
 
+                                                        if (projectWidget != null)
+                                                        {
+                                                            AppData.UIScreenWidget widgetComponent = projectWidget.GetComponent<AppData.UIScreenWidget>();
 
-                                                        widgetComponent.SetFolderData(project);
+                                                            if (widgetComponent != null)
+                                                            {
+                                                                //if (folderStructureData.currentPaginationViewType == AppData.PaginationViewType.Pager)
+                                                                //    widgetComponent.Hide();
 
-                                                        projectWidget.name = project.name;
-                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                widgetComponent.SetFolderData(project);
+
+                                                                projectWidget.name = project.name;
+                                                                contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                            }
+                                                            else
+                                                                LogError("Project Widget Component Is Null.", this);
+                                                        }
+                                                        else
+                                                            LogError("Project Widget Prefab Data Is Null.", this);
                                                     }
-                                                    else
-                                                        LogError("Project Widget Component Is Null.", this);
                                                 }
                                                 else
-                                                    LogError("Project Widget Prefab Data Is Null.", this);
-                                            }
+                                                    Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                            });
                                         }
                                         else
-                                            Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
-                                    });
-                                }
-                                else
-                                    LogError("Widget Prefab Data Missing.", this);
+                                            LogError("Widget Prefab Data Missing.", this);
+                                    }
+                                });
                             }
+                            else
+                                Log(sortedListCallbackResults.resultsCode, sortedListCallbackResults.results, this);                       
                         });
                     }
                 }
@@ -2719,7 +2765,7 @@ namespace Com.RedicalGames.Filar
                     newProjectFolder.rootFolder = mainFolder;
 
                     newProjectFolder.projectInfo.name = mainFolder.name;
-                    newProjectFolder.projectInfo.creationDateTime = DateTime.UtcNow.Date.ToString();
+                    newProjectFolder.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
 
                     CreateData(newProjectFolder, directoryData, (folderStructureCreated) =>
                     {
@@ -3242,119 +3288,132 @@ namespace Com.RedicalGames.Filar
 
                                                 RefreshLayoutViewButtonIcon();
 
-                                                #region Pegination
-
-                                                OnPaginationViewRefreshed(widgetsContainer);
-
-                                                #endregion
-
-                                                loadedWidgets = new List<AppData.UIScreenWidget>();
-
-                                                int contentCount = 0;
-
-                                                CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
+                                                FolderHasContentToLoad(folder, hasContentCallbackResults => 
                                                 {
-                                                    // Get Loaded Widgets
-                                                    if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
+                                                    if(hasContentCallbackResults.Success())
                                                     {
-                                                        contentCount += widgetsCreated.data.Count;
+                                                        #region Pegination
 
-                                                        if (widgetsCreated.data != null)
-                                                            if (widgetsCreated.data.Count > 0)
-                                                                foreach (var widget in widgetsCreated.data)
-                                                                    if (!loadedWidgets.Contains(widget))
-                                                                        loadedWidgets.Add(widget);
-                                                    }
-                                                });
+                                                        OnPaginationViewRefreshed(widgetsContainer);
 
-                                                CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
-                                                {
-                                                    // Get Loaded Widgets
-                                                    if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
-                                                    {
-                                                        contentCount += widgetsCreated.data.Count;
+                                                        #endregion
 
-                                                        if (widgetsCreated.data != null)
-                                                            if (widgetsCreated.data.Count > 0)
-                                                                foreach (var widget in widgetsCreated.data)
-                                                                    if (!loadedWidgets.Contains(widget))
-                                                                        loadedWidgets.Add(widget);
-                                                    }
-                                                });
+                                                        loadedWidgets = new List<AppData.UIScreenWidget>();
 
-                                                if (loadedWidgets.Count > 0)
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.UITextDisplayerWidget);
-                                                    SelectableManager.Instance.AddSelectables(loadedWidgets);
-                                                }
-                                                else
-                                                    StartCoroutine(RefreshAssetsAsync());
+                                                        int contentCount = 0;
 
-                                                if (widgetsContainer.GetContentCount() == 0)
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, string.Empty);
-                                                }
-                                                else
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
-
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, folderStructureSearchFieldPlaceHolderTextValue);
-                                                }
-
-                                                widgetsContainer.GetUIScroller().ScrollToBottom();
-                                                isRefreshed = loadedWidgets.Count > 0;
-
-                                                if (isRefreshed)
-                                                {
-                                                    AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
-
-                                                    switch (GetLayoutViewType())
-                                                    {
-                                                        case AppData.LayoutViewType.ItemView:
-
-                                                            if (SelectableManager.Instance.HasActiveSelection())
+                                                        CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
+                                                        {
+                                                            // Get Loaded Widgets
+                                                            if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
                                                             {
-                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                {
-                                                                    if (selectedAllCallback.Success())
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
+                                                                contentCount += widgetsCreated.data.Count;
+
+                                                                if (widgetsCreated.data != null)
+                                                                    if (widgetsCreated.data.Count > 0)
+                                                                        foreach (var widget in widgetsCreated.data)
+                                                                            if (!loadedWidgets.Contains(widget))
+                                                                                loadedWidgets.Add(widget);
+                                                            }
+                                                        });
+
+                                                        CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
+                                                        {
+                                                            // Get Loaded Widgets
+                                                            if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
+                                                            {
+                                                                contentCount += widgetsCreated.data.Count;
+
+                                                                if (widgetsCreated.data != null)
+                                                                    if (widgetsCreated.data.Count > 0)
+                                                                        foreach (var widget in widgetsCreated.data)
+                                                                            if (!loadedWidgets.Contains(widget))
+                                                                                loadedWidgets.Add(widget);
+                                                            }
+                                                        });
+
+                                                        if (loadedWidgets.Count > 0)
+                                                        {
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.UITextDisplayerWidget);
+                                                            SelectableManager.Instance.AddSelectables(loadedWidgets);
+                                                        }
+                                                        else
+                                                            StartCoroutine(RefreshAssetsAsync());
+
+                                                        if (widgetsContainer.GetContentCount() == 0)
+                                                        {
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
+
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, string.Empty);
+                                                        }
+                                                        else
+                                                        {
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
+
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Enabled);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Enabled);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, folderStructureSearchFieldPlaceHolderTextValue);
+                                                        }
+
+                                                        widgetsContainer.GetUIScroller().ScrollToBottom();
+                                                        isRefreshed = loadedWidgets.Count > 0;
+
+                                                        if (isRefreshed)
+                                                        {
+                                                            AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
+
+                                                            switch (GetLayoutViewType())
+                                                            {
+                                                                case AppData.LayoutViewType.ItemView:
+
+                                                                    if (SelectableManager.Instance.HasActiveSelection())
+                                                                    {
+                                                                        widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                        {
+                                                                            if (selectedAllCallback.Success())
+                                                                                selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
+                                                                            else
+                                                                                selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+                                                                        });
+                                                                    }
                                                                     else
                                                                         selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
-                                                                });
-                                                            }
-                                                            else
-                                                                selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
 
-                                                            break;
+                                                                    break;
 
-                                                        case AppData.LayoutViewType.ListView:
+                                                                case AppData.LayoutViewType.ListView:
 
-                                                            if (SelectableManager.Instance.HasActiveSelection())
-                                                            {
-                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                {
-                                                                    if (selectedAllCallback.Success())
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
+                                                                    if (SelectableManager.Instance.HasActiveSelection())
+                                                                    {
+                                                                        widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                        {
+                                                                            if (selectedAllCallback.Success())
+                                                                                selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
+                                                                            else
+                                                                                selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
+                                                                        });
+                                                                    }
                                                                     else
                                                                         selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
-                                                                });
+
+                                                                    break;
                                                             }
-                                                            else
-                                                                selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
 
-                                                            break;
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, selectionOptionImageViewType);
+                                                        }
                                                     }
-
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, selectionOptionImageViewType);
-                                                }
+                                                    else
+                                                    {
+                                                        isRefreshed = true;
+                                                        Log(hasContentCallbackResults.resultsCode, hasContentCallbackResults.results, this);
+                                                    }
+                                                
+                                                });
+                                            
                                             }
                                         }
                                         else
@@ -3510,6 +3569,35 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Content Load
+
+        public void FolderHasContentToLoad(AppData.Folder folder, Action<AppData.Callback> callback)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            if (DirectoryFound(folder.storageData.directory))
+            {
+                var folders = Directory.GetFiles(folder.storageData.directory, "*_FolderData.json", SearchOption.TopDirectoryOnly).ToList();
+                var files = Directory.GetFiles(folder.storageData.directory, "*_FileData.json", SearchOption.TopDirectoryOnly).ToList();
+
+                if(folders.Count == 0 && files.Count == 0)
+                {
+                    callbackResults.results = $"Directory : {folder.storageData.directory} Has No Content.";
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Directory : {folder.storageData.directory} Has Content.";
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+            }
+            else
+            {
+                callbackResults.results = $"Directory : {folder.storageData.directory} Not Found.";
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
+        }
 
         public void LoadFolderData(AppData.Folder folder, Action<AppData.CallbackDatas<AppData.Folder>> callback)
         {
@@ -4539,6 +4627,56 @@ namespace Com.RedicalGames.Filar
                         serializableDataList.Remove(pinnedList[i]);
                         serializableDataList.Insert(i, pinnedList[i]);
                     }
+                }
+
+                callbackResults.results = "GetSortedWidgetList Success";
+                callbackResults.data = serializableDataList;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "GetSortedWidgetList Failed : serializableDataList Is Null / Empty.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void GetSortedWidgetList<T>(List<T> serializableDataList, Action<AppData.CallbackDatas<T>> callback) where T : AppData.SerializableData
+        {
+            AppData.CallbackDatas<T> callbackResults = new AppData.CallbackDatas<T>();
+
+            if (serializableDataList != null)
+            {
+                switch (GetSceneAssetSortType())
+                {
+                    case AppData.SceneAssetSortType.Ascending:
+
+                        serializableDataList.Sort((firstWidget, secondWidget) => firstWidget.name.CompareTo(secondWidget.name));
+
+                        break;
+
+
+                    case AppData.SceneAssetSortType.Category:
+
+                        //serializableDataList.Sort((firstWidget, secondWidget) => firstWidget.categoryType.CompareTo(secondWidget.categoryType));
+
+                        break;
+
+
+                    case AppData.SceneAssetSortType.Descending:
+
+                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.name.CompareTo(firstWidget.name));
+
+                        break;
+
+                    case AppData.SceneAssetSortType.DateModified:
+
+                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.creationDateTime.date.CompareTo(firstWidget.creationDateTime.date));
+                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.creationDateTime.time.CompareTo(firstWidget.creationDateTime.time));
+
+                        break;
                 }
 
                 callbackResults.results = "GetSortedWidgetList Success";
