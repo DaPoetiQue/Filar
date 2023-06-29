@@ -1341,15 +1341,6 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public ProjectType projectType;
 
-            [HideInInspector]
-            public string creationDateTime;
-
-            #endregion
-
-            #region Main
-
-            public void UpdateDateTimeValue(string dateTime) => creationDateTime = dateTime;
-
             #endregion
         }
 
@@ -11715,7 +11706,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("SceneAssetsManager Instance Is Not Initialed!", this, () => OnScreenChangeEvent(dataPackets));
             }
 
-            protected void OnScreenExitEvent()
+            protected void OnScreenExitEvent(UIScreenType screenType)
             {
                 Hide();
             }
@@ -18607,10 +18598,102 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public class SerializableData
         {
+            #region Components
+
             public string name;
 
             [HideInInspector]
             public StorageDirectoryData storageData;
+
+
+            [HideInInspector]
+            public DateTimeComponent creationDateTime;
+
+            #endregion
+
+            #region Main
+
+            public void UpdateDateTimeValue(DateTime dateTime) => creationDateTime = new DateTimeComponent(dateTime);
+
+            #endregion
+        }
+
+        [Serializable]
+        public class DateTimeComponent
+        {
+            #region Components
+
+            public string time;
+            public string date;
+
+            public int second, minute, hour;
+
+            public string day;
+            public string month;
+            public string year;
+
+            public string monthDay;
+
+            public long dateTimeTick;
+
+            public DateTime dateTime;
+
+            #endregion
+
+            #region Main
+
+            public DateTimeComponent()
+            {
+
+            }
+
+            public DateTimeComponent(DateTime dateTime)
+            {
+                this.dateTime = dateTime;
+
+                time = dateTime.ToString("t");
+                date = dateTime.ToString("d");
+
+                second = dateTime.Second;
+                minute = dateTime.Minute;
+                hour = dateTime.Hour;
+
+                day = dateTime.ToString("dddd");
+                month = dateTime.ToString("MMMM");
+                year = dateTime.ToString("yyyy");
+
+                monthDay = dateTime.ToString("M");
+
+                dateTimeTick = dateTime.Ticks;
+
+            }
+
+            public void UpdateDateTime(DateTime dateTime)
+            {
+                this.dateTime = dateTime;
+
+                time = dateTime.ToString("t");
+                date = dateTime.ToString("d");
+
+                second = dateTime.Second;
+                minute = dateTime.Minute;
+                hour = dateTime.Hour;
+
+                day = dateTime.ToString("dddd");
+                month = dateTime.ToString("MMMM");
+                year = dateTime.ToString("yyyy");
+
+                monthDay = dateTime.ToString("M");
+
+                dateTimeTick = dateTime.Ticks;
+            }
+
+            public DateTime GetDateTime()
+            {
+                return dateTime;
+            }
+
+            #endregion
         }
 
         [Serializable]
@@ -22297,7 +22380,6 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnSceneAssetsRemoved;
             public static event Void _OnAssetDeleteRefresh;
             public static event Void _OnScreenUIRefreshed;
-            public static event Void _OnScreenExitEvent;
             public static event Void _OnScreenPressAndHoldInput;
             public static event Void _OnScreenDoubleTapInput;
             public static event Void _OnClearAllAssetSelectionEvent;
@@ -22318,6 +22400,7 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<SceneAsset> _OnCreatedAssetDataEditEvent;
             public static event ParamVoid<SceneDataPackets> _OnScreenChangeEvent;
             public static event ParamVoid<UIScreenType> _OnScreenChangedEvent;
+            public static event ParamVoid<UIScreenType> _OnScreenExitEvent;
             public static event ParamVoid<UIScreenViewComponent> _OnScreenRefreshed;
             public static event ParamVoid<WidgetType, InputActionButtonType, SceneDataPackets> _OnPopUpActionEvent;
             public static event ParamVoid<SceneAssetModeType> _OnResetSceneAssetPreviewPoseEvent;
@@ -22359,7 +22442,6 @@ namespace Com.RedicalGames.Filar
             public static void OnSceneAssetsRemoved() => _OnSceneAssetsRemoved?.Invoke();
             public static void OnAssetDeleteRefresh() => _OnAssetDeleteRefresh?.Invoke();
             public static void OnScreenUIRefreshed() => _OnScreenUIRefreshed?.Invoke();
-            public static void OnScreenExitEvent() => _OnScreenExitEvent?.Invoke();
             public static void OnscrollToTopEvent() => _OnscrollToTopEvent?.Invoke();
             public static void OnWidgetSelectionEvent() => _OnWidgetSelectionEvent?.Invoke();
             public static void OnWidgetSelectionAdded() => _OnWidgetSelectionAdded?.Invoke();
@@ -22369,6 +22451,7 @@ namespace Com.RedicalGames.Filar
             public static void OnNavigationTabWidgetEvent(ButtonDataPackets dataPackets) => _OnNavigationTabWidgetEvent?.Invoke(dataPackets);
             public static void OnNavigationSubTabChangedEvent(NavigationTabID navigationTab, NavigationRenderSettingsProfileID selectionTypedID) => _OnNavigationSubTabChangedEvent?.Invoke(navigationTab, selectionTypedID);
             public static void OnScreenViewStateChangedEvent(ScreenViewState state) => _OnScreenViewStateChangedEvent?.Invoke(state);
+            public static void OnScreenExitEvent(UIScreenType screenType) => _OnScreenExitEvent?.Invoke(screenType);
             public static void OnScreenTogglableStateEvent(TogglableWidgetType widgetType, bool state = false, bool useInteractability = false) => _OnScreenTogglableStateEvent?.Invoke(widgetType, state, useInteractability);
             public static void OnARSceneAssetStateEvent(ARSceneContentState contentState) => _OnARSceneAssetStateEvent?.Invoke(contentState);
             public static void OnPermissionGrantedResults(bool isGranted) => _OnPermissionGrantedResults?.Invoke(isGranted);

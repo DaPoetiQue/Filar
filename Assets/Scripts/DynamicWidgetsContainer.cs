@@ -126,6 +126,8 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents._OnScrollAndFocusToSelectionEvent -= ActionEvents__ScrollAndFocusToSelectionEvent;
                 AppData.ActionEvents._OnNavigateAndFocusToSelectionEvent -= ActionEvents__OnNavigateAndFocusToSelectionEvent;
             }
+
+            ClearWidgets();
         }
 
         private void ActionEvents__OnNavigateAndFocusToSelectionEvent(string widgetName) => OnFocusToSelection(widgetName);
