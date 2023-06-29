@@ -77,6 +77,8 @@ namespace Com.RedicalGames.Filar
                 string fileCountString = folder.GetFileCount().ToString() + " Files";
                 SetUITextDisplayerValue(fileCountString, AppData.ScreenTextType.FileCountDisplayer);
 
+                SetUITextDisplayerValue(folder?.creationDateTime?.dateTime, AppData.ScreenTextType.TimeDateDisplayer);
+
                 if (folder.GetFileCount() == 0)
                     SetUIImageDisplayerValue(AppData.UIImageDisplayerType.ItemThumbnail, AppData.UIImageType.EmptyFolderIcon);
                 else if (folder.GetFileCount() == 1)
