@@ -738,7 +738,9 @@ namespace Com.RedicalGames.Filar
             ColorPickers,
             SkyboxSettings,
             Directions,
-            ProjectCategory
+            ProjectCategory,
+            ProjectType,
+            None
         }
 
         public enum ScreenBlurContainerLayerType
@@ -948,6 +950,14 @@ namespace Com.RedicalGames.Filar
             Project_3D,
             Project_VR
         }
+
+        public enum ProjectTamplateType
+        {
+            DefaultSample,
+            ARRendering,
+            PhysicalBasedRendering
+        }
+
 
         #region Debugging
 
@@ -1350,7 +1360,7 @@ namespace Com.RedicalGames.Filar
             public string name;
 
             [Space(5)]
-            public ProjectType projectType;
+            public ProjectCategoryType projectType;
 
             #endregion
         }
@@ -15000,9 +15010,55 @@ namespace Com.RedicalGames.Filar
                 if (dontShowAgainToggleField != null)
                     dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
 
+                #region Initialize Dropdowns
+
+                if(dropdowns != null && dropdowns.Count > 0)
+                {
+                    foreach (var dropdown in dropdowns)
+                    {
+                        if (dropdown.value != null)
+                        {
+                            dropdown.value.ClearOptions();
+
+                            List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+                            DropDownContentData dropDownContent = new DropDownContentData();
+
+                            switch (dropdown.dataPackets.action)
+                            {
+                                case InputDropDownActionType.ProjectType:
+
+                                    dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_", "All");
+
+                                    break;
+
+                                case InputDropDownActionType.ProjectTamplate:
+
+                                    dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectTamplateType>();
+
+                                    break;
+                            }
+
+                            foreach (var filter in dropDownContent.data)
+                                dropdownOption.Add(new TMP_Dropdown.OptionData() { text = filter });
+
+                            dropdown.value.AddOptions(dropdownOption);
+                            dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value));
+
+                        }
+                        else
+                        {
+                            LogError($"Checkbox : {dropdown.name} Value Is Null.", this, () => Init());
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
                 #region Initialize Checkbox
 
-                if(checkboxes != null && checkboxes.Count > 0)
+                if (checkboxes != null && checkboxes.Count > 0)
                 {
                     foreach (var checkbox in checkboxes)
                     {
@@ -15017,6 +15073,11 @@ namespace Com.RedicalGames.Filar
                 }
 
                 #endregion
+            }
+
+            void OnDropDownOptionValueChange(int value)
+            {
+                LogSuccess($"======> Dropdown Index : {value}", this);
             }
 
             protected abstract void OnSubscribeToActionEvents(bool subscribe);
