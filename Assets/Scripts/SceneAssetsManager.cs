@@ -373,6 +373,49 @@ namespace Com.RedicalGames.Filar
             Resources.UnloadUnusedAssets();
         }
 
+        public AppData.DropDownContentData GetDropdownContent<T>() where T : Enum
+        {
+            return new AppData.DropDownContentData
+            {
+                data = AppData.Helpers.GetEnumToStringList<T>()
+            };
+        }
+
+        public AppData.DropDownContentData GetDropdownContent<T>(params string[] args) where T : Enum
+        {
+            var datas = AppData.Helpers.GetEnumToStringList<T>();
+
+            List<string> dataList = new List<string>();
+
+            if (args.Length > 0 && datas.Count > 0)
+            {
+                foreach (var data in datas)
+                {
+                    foreach (var item in args)
+                    {
+                        string dataString = "";
+
+                        if (data.Contains(item))
+                            dataString = data.Replace(item, "");
+                        else
+                            dataString = data;
+
+                        dataList.Add(dataString);
+
+                        if (dataList.Contains(item))
+                            dataList.Remove(item);
+                    }
+                }
+            }
+            else
+                LogError("Failed To Get Dropdown Content", this);
+
+            return new AppData.DropDownContentData
+            {
+                data = dataList
+            };
+        }
+
         void InitializeDropDownContentDataList()
         {
             if (dropDownContentDataList == null)
@@ -389,7 +432,7 @@ namespace Com.RedicalGames.Filar
             if (exportExtensionsData.data.Count <= 0)
                 LogWarning($"Couldn't Create Drop Down Content Data For : {exportExtensionsData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Asset Categories
+            // Project Categories
             AppData.DropDownContentData projectCategoriesData = new AppData.DropDownContentData
             {
                 name = "Project Categories Data List",
@@ -5025,23 +5068,16 @@ namespace Com.RedicalGames.Filar
                                     LogSuccess($"==========> Search Results Found : {projectsFound}", this);
 
                                     if (!projectsFound)
-                                    {
-                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
-                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, true);
-                                    }
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, $"No Search Results Found For {searchValue}");
                                     else
-                                    {
-                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
-                                    
-
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-                                    }
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, "");
 
                                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.SortingList, AppData.InputUIState.Disabled);
                                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Disabled);
+
                                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Disabled);
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Disabled);
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
                                 }
                                 else
                                     Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
@@ -5291,22 +5327,18 @@ namespace Com.RedicalGames.Filar
                                             if (ScreenUIManager.Instance)
                                             {
                                                 if (!folderFound && !fileFound)
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, true);
-                                                }
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, $"No Results Found For : {searchValue}");
                                                 else
-                                                {
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, "");
 
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-                                                }
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.SortingList, AppData.InputUIState.Enabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Enabled);
 
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
                                                 ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, AppData.InputUIState.Disabled);
                                                 ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, AppData.InputUIState.Disabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ClipboardButton, AppData.InputUIState.Disabled);
                                             }
                                             else
                                                 Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
@@ -5335,7 +5367,9 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.UIScreenType.ProjectSelectionScreen:
 
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Enabled);       
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Enabled);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Enabled);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
 
                         break;
 
