@@ -66,6 +66,14 @@ namespace Com.RedicalGames.Filar
             Vehicle = 12,
         }
 
+        public enum ProjectCategoryType
+        {
+            All,
+            Project_AR,
+            Project_3D,
+            Project_VR
+        }
+
         public enum SceneAssetSortType : int
         {
             Ascending = 0,
@@ -721,7 +729,7 @@ namespace Com.RedicalGames.Filar
         // --> Add This Manualy To List In Scene Assets Manager.
         public enum DropDownContentType
         {
-            Categories,
+            AssetCategory,
             Extensions,
             Sorting,
             RenderingModes,
@@ -729,7 +737,8 @@ namespace Com.RedicalGames.Filar
             ColorSpaces,
             ColorPickers,
             SkyboxSettings,
-            Directions
+            Directions,
+            ProjectCategory
         }
 
         public enum ScreenBlurContainerLayerType
@@ -12249,7 +12258,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (screenActionDropDownList.Count > 0)
                                 {
-                                    List<string> categoriesList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.Categories).data);
+                                    List<string> categoriesList = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.ProjectCategory).data) : SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.AssetCategory).data);
                                     List<string> sortList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.Sorting).data);
                                     List<string> renderModeList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.RenderingModes).data);
 
@@ -12269,7 +12278,10 @@ namespace Com.RedicalGames.Filar
 
                                                         foreach (var filter in categoriesList)
                                                         {
-                                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
+                                                           
+                                                            string formattedFilter = filter.Replace("Project ", "");
+                                                            LogSuccess($"Filter Name : {filter} - Formatted : {formattedFilter}", this);
+                                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (formattedFilter.Contains("None")) ? "All" : formattedFilter });
                                                         }
 
                                                         dropDown.value.AddOptions(dropdownOption);

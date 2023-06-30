@@ -390,11 +390,19 @@ namespace Com.RedicalGames.Filar
                 LogWarning($"Couldn't Create Drop Down Content Data For : {exportExtensionsData.name}", this, () => InitializeDropDownContentDataList());
 
             // Asset Categories
+            AppData.DropDownContentData projectCategoriesData = new AppData.DropDownContentData
+            {
+                name = "Project Categories Data List",
+                data = AppData.Helpers.GetEnumToStringList<AppData.ProjectCategoryType>(),
+                contentType = AppData.DropDownContentType.ProjectCategory
+            };
+
+            // Asset Categories
             AppData.DropDownContentData assetCategoriesData = new AppData.DropDownContentData
             {
                 name = "Asset Categories Data List",
                 data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetCategoryType>(),
-                contentType = AppData.DropDownContentType.Categories
+                contentType = AppData.DropDownContentType.AssetCategory
             };
 
             if (assetCategoriesData.data.Count <= 0)
@@ -478,6 +486,7 @@ namespace Com.RedicalGames.Filar
                 LogWarning($"Couldn't Create Drop Down Content Data For : {rotationalDirectionsData.name}", this, () => InitializeDropDownContentDataList());
 
             dropDownContentDataList.Add(exportExtensionsData);
+            dropDownContentDataList.Add(projectCategoriesData);
             dropDownContentDataList.Add(assetCategoriesData);
             dropDownContentDataList.Add(assetSortingData);
             dropDownContentDataList.Add(renderModegData);
@@ -4868,274 +4877,449 @@ namespace Com.RedicalGames.Filar
             {
                 if (GetWidgetsRefreshData().widgetsContainer && GetWidgetsRefreshData().widgetsContainer.IsContainerActive())
                 {
-                    #region Search
-
-                    var searchFolder = GetCurrentFolder();
-
-                    if (!string.IsNullOrEmpty(searchFolder.storageData.directory))
+                    switch(ScreenUIManager.Instance.GetCurrentUIScreenType())
                     {
-                        DirectoryFound(searchFolder.storageData.directory, foundDirectoriesCallback =>
-                        {
-                            GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
+                        case AppData.UIScreenType.ProjectSelectionScreen:
 
-                            if (AppData.Helpers.IsSuccessCode(foundDirectoriesCallback.resultsCode))
-                            {
-                                var searchedItems = Directory.GetFileSystemEntries(searchFolder.storageData.directory, "*.json", SearchOption.AllDirectories);
+                            #region Serach For Projects Files
 
-                                if (searchedItems.Length > 0)
+                            var searchDirectory = GetAppDirectoryData(AppManager.Instance.GetInitialStructureData().rootFolder.directoryType);
+
+                                if (DirectoryFound(searchDirectory))
                                 {
-                                #region Get System Files
+                                    GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
 
-                                List<string> validFoldersfound = new List<string>();
-                                    List<string> validFilesfound = new List<string>();
+                                    var searchedProjects = Directory.GetFileSystemEntries(searchDirectory.directory, "*.json", SearchOption.TopDirectoryOnly);
 
-                                    List<string> foldersDataBlackList = new List<string>();
-                                    List<string> filesDataBlackList = new List<string>();
+                                    #region Get System Files
 
-                                    bool folderFound = false;
-                                    bool fileFound = false;
+                                    List<string> validProjectsfound = new List<string>();
 
-                                    foreach (var searchedItem in searchedItems)
+                                    List<string> projectsDataBlackList = new List<string>();
+
+                                    bool projectsFound = false;
+
+                                    foreach (var searchedProject in searchedProjects)
                                     {
                                         if (GetFolderStructureData().GetExcludedSystemFileData() != null)
                                         {
-                                            foreach (var excludedFolder in GetFolderStructureData().GetExcludedSystemFileData())
+                                            foreach (var excludedFile in AppManager.Instance.GetInitialStructureData().GetExcludedSystemFileData())
                                             {
-                                                if (!searchedItem.Contains(excludedFolder) && !filesDataBlackList.Contains(searchedItem))
+                                                if (!searchedProject.Contains(excludedFile) && !projectsDataBlackList.Contains(searchedProject))
                                                 {
-                                                    if (!validFoldersfound.Contains(searchedItem))
-                                                        validFoldersfound.Add(searchedItem);
+                                                    if (!validProjectsfound.Contains(searchedProject))
+                                                        validProjectsfound.Add(searchedProject);
                                                 }
                                                 else
-                                                    filesDataBlackList.Add(searchedItem);
+                                                    projectsDataBlackList.Add(searchedProject);
                                             }
                                         }
                                         else
                                             Debug.LogWarning($"==> LoadFolderData's GetExcludedSystemFolders Failed - GetFolderStructureData().GetExcludedSystemFileData() Returned Null.");
-
-                                        if (GetFolderStructureData().GetExcludedSystemFolderData() != null)
-                                        {
-                                            foreach (var excludedFile in GetFolderStructureData().GetExcludedSystemFolderData())
-                                            {
-                                                if (!searchedItem.Contains(excludedFile) && !foldersDataBlackList.Contains(searchedItem))
-                                                {
-                                                    if (!validFilesfound.Contains(searchedItem))
-                                                        validFilesfound.Add(searchedItem);
-                                                }
-                                                else
-                                                    foldersDataBlackList.Add(searchedItem);
-                                            }
-                                        }
-                                        else
-                                            Debug.LogWarning($"==> LoadFilesData's GetExcludedSystemFolders Failed - GetFolderStructureData().GetExcludedSystemFolders() Returned Null.");
                                     }
 
                                 #endregion
 
-                                #region Search Files
+                                #region Projects
 
-                                #region Folders
+                                if (validProjectsfound.Count > 0)
+                                {
+                                    List<AppData.FolderStructureData> validProjectsfoundDirectories = new List<AppData.FolderStructureData>();
+                                    List<AppData.FolderStructureData> projectsSearchResults = new List<AppData.FolderStructureData>();
 
-                                if (validFoldersfound.Count > 0)
+                                    foreach (var validProject in validProjectsfound)
                                     {
-                                        List<AppData.StorageDirectoryData> validFoldersfoundDirectories = new List<AppData.StorageDirectoryData>();
-                                        List<AppData.StorageDirectoryData> foldersSearchResults = new List<AppData.StorageDirectoryData>();
+                                        var fileName = Path.GetFileName(validProject);
 
-                                        foreach (var validFolder in validFoldersfound)
+                                        LogSuccess($"====> Project :{fileName} - Directory : {validProject}", this);
+
+                                        AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
                                         {
-                                            var fileName = Path.GetFileName(validFolder);
-                                            AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
-                                            {
-                                                name = fileName,
-                                                directory = validFolder,
-                                                type = searchFolder.storageData.type
-                                            };
+                                            name = fileName,
+                                            directory = validProject,
+                                            type = searchDirectory.type
+                                        };
 
-                                            validFoldersfoundDirectories.Add(directoryData);
-                                        }
-
-                                        if (validFoldersfoundDirectories.Count > 0)
+                                        LoadData<AppData.FolderStructureData>(directoryData, loadedProjectCallbackResults => 
                                         {
-                                        #region Folder Search Filter
+                                            if (loadedProjectCallbackResults.Success())
+                                            { 
+                                                LogSuccess($"====> Project Data Loaded", this);
 
-                                        foreach (var validDirectory in validFoldersfoundDirectories)
+                                                validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
+                                            }
+                                            else
                                             {
-                                                string folderName = validDirectory.name.ToLower();
+                                                LogError($"====> Project Data Failed To Load : {loadedProjectCallbackResults.results}", this);
+                                            }
+                                        
+                                        });
+                                    }
 
-                                                if (strictValidateAssetSearch)
+                                    if (validProjectsfoundDirectories.Count > 0)
+                                    {
+                                        #region Project Search Filter
+
+                                        foreach (var validDirectory in validProjectsfoundDirectories)
+                                        {
+                                            string folderName = validDirectory.name.ToLower();
+
+                                            if (strictValidateAssetSearch)
+                                            {
+                                                if (folderName.Contains(searchValue.ToLower()) && folderName.StartsWith(searchValue[0].ToString().ToLower()))
                                                 {
-                                                    if (folderName.Contains(searchValue.ToLower()) && folderName.StartsWith(searchValue[0].ToString().ToLower()))
-                                                    {
-                                                        if (!foldersSearchResults.Contains(validDirectory))
-                                                            foldersSearchResults.Add(validDirectory);
-                                                    }
-                                                    else
-                                                    {
-                                                        if (foldersSearchResults.Contains(validDirectory))
-                                                            foldersSearchResults.Remove(validDirectory);
-                                                    }
+                                                    if (!projectsSearchResults.Contains(validDirectory))
+                                                        projectsSearchResults.Add(validDirectory);
                                                 }
                                                 else
                                                 {
-                                                    if (folderName.Contains(searchValue.ToLower()))
-                                                    {
-                                                        if (!foldersSearchResults.Contains(validDirectory))
-                                                            foldersSearchResults.Add(validDirectory);
-                                                    }
-                                                    else
-                                                    {
-                                                        if (foldersSearchResults.Contains(validDirectory))
-                                                            foldersSearchResults.Remove(validDirectory);
-                                                    }
+                                                    if (projectsSearchResults.Contains(validDirectory))
+                                                        projectsSearchResults.Remove(validDirectory);
                                                 }
                                             }
-
-                                        #endregion
-
-                                        #region Create Folder Widgets
-
-                                        if (foldersSearchResults.Count > 0)
+                                            else
                                             {
-                                                CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), foldersSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
+                                                if (folderName.Contains(searchValue.ToLower()))
                                                 {
-                                                    folderFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
-                                                });
-                                            }
-
-                                        #endregion
-                                    }
-                                    }
-
-                                #endregion
-
-                                #region Files
-
-                                if (validFilesfound.Count > 0)
-                                    {
-                                        List<AppData.StorageDirectoryData> validFilesfoundDirectories = new List<AppData.StorageDirectoryData>();
-                                        List<AppData.StorageDirectoryData> filesSearchResults = new List<AppData.StorageDirectoryData>();
-
-                                        foreach (var validFileDirectory in validFilesfound)
-                                        {
-                                            var fileName = Path.GetFileName(validFileDirectory);
-                                            AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
-                                            {
-                                                name = fileName,
-                                                directory = validFileDirectory,
-                                                type = searchFolder.storageData.type
-                                            };
-
-                                            validFilesfoundDirectories.Add(directoryData);
-                                        }
-
-                                        if (validFilesfoundDirectories.Count > 0)
-                                        {
-                                        #region File Search Filter
-
-                                        foreach (var validDirectory in validFilesfoundDirectories)
-                                            {
-                                                string fileName = validDirectory.name.ToLower();
-
-                                                if (strictValidateAssetSearch)
-                                                {
-                                                    if (fileName.Contains(searchValue.ToLower()) && fileName.StartsWith(searchValue[0].ToString().ToLower()))
-                                                    {
-                                                        if (!filesSearchResults.Contains(validDirectory))
-                                                            filesSearchResults.Add(validDirectory);
-                                                    }
-                                                    else
-                                                    {
-                                                        if (filesSearchResults.Contains(validDirectory))
-                                                            filesSearchResults.Remove(validDirectory);
-                                                    }
+                                                    if (!projectsSearchResults.Contains(validDirectory))
+                                                        projectsSearchResults.Add(validDirectory);
                                                 }
                                                 else
                                                 {
-                                                    if (fileName.Contains(searchValue.ToLower()))
-                                                    {
-                                                        if (!filesSearchResults.Contains(validDirectory))
-                                                            filesSearchResults.Add(validDirectory);
-                                                    }
-                                                    else
-                                                    {
-                                                        if (filesSearchResults.Contains(validDirectory))
-                                                            filesSearchResults.Remove(validDirectory);
-                                                    }
+                                                    if (projectsSearchResults.Contains(validDirectory))
+                                                        projectsSearchResults.Remove(validDirectory);
                                                 }
                                             }
+                                        }
 
                                         #endregion
 
-                                        #region Create File Widgets
+                                        #region Create Project Widgets
 
-                                        if (filesSearchResults.Count > 0)
-                                            {
-                                                foreach (var file in filesSearchResults)
-                                                {
-
-                                                    Debug.LogError($"==> Found File : {file.name} : Directory : {file.directory}");
-                                                }
-                                            }
+                                        if (projectsSearchResults.Count > 0)
+                                        {
 
 
-                                        #region Create File Widgets
+                                            LogSuccess($"===========> Creating Project Widget For : {projectsSearchResults[0].name}", this);
 
-                                        if (filesSearchResults.Count > 0)
-                                            {
-                                                CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), filesSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
-                                                {
-                                                    folderFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
-                                                });
-                                            }
-
-                                        #endregion
+                                            //CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
+                                            //{
+                                            //    projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                            //});
+                                        }
 
                                         #endregion
                                     }
-                                    }
+                                }
 
                                 #endregion
 
                                 #region No Results Found
 
                                 if (ScreenUIManager.Instance)
+                                {
+                                    if (!projectsFound)
                                     {
-                                        if (!folderFound && !fileFound)
-                                        {
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
+                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
+                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
 
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, true);
-                                        }
-                                        else
-                                        {
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
-
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-                                        }
-
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, AppData.InputUIState.Disabled);
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, AppData.InputUIState.Disabled);
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, true);
                                     }
                                     else
-                                        Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
+                                    {
+                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
+                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
+
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
+                                    }
+
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Disabled);
+                                }
+                                else
+                                    Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
 
                                 #endregion
 
-                                #endregion
-                            }
                             }
                             else
-                                Debug.LogWarning($"--> SearchScreenWidgetList Failed With Results : {foundDirectoriesCallback.results}.");
-                        });
+                                    LogError($"Directory Of Type {AppManager.Instance.GetInitialStructureData().rootFolder.directoryType} Not Found ", this);
+
+                            #endregion
+
+                            break;
+
+                        case AppData.UIScreenType.ProjectViewScreen:
+
+                            #region Search For Files And Folders
+
+                            var searchFolder = GetCurrentFolder();
+
+                            if (!string.IsNullOrEmpty(searchFolder.storageData.directory))
+                            {
+                                DirectoryFound(searchFolder.storageData.directory, foundDirectoriesCallback =>
+                                {
+                                    GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
+
+                                    if (AppData.Helpers.IsSuccessCode(foundDirectoriesCallback.resultsCode))
+                                    {
+                                        var searchedItems = Directory.GetFileSystemEntries(searchFolder.storageData.directory, "*.json", SearchOption.AllDirectories);
+
+                                        if (searchedItems.Length > 0)
+                                        {
+                                            #region Get System Files
+
+                                            List<string> validFoldersfound = new List<string>();
+                                            List<string> validFilesfound = new List<string>();
+
+                                            List<string> foldersDataBlackList = new List<string>();
+                                            List<string> filesDataBlackList = new List<string>();
+
+                                            bool folderFound = false;
+                                            bool fileFound = false;
+
+                                            foreach (var searchedItem in searchedItems)
+                                            {
+                                                if (GetFolderStructureData().GetExcludedSystemFileData() != null)
+                                                {
+                                                    foreach (var excludedFolder in GetFolderStructureData().GetExcludedSystemFileData())
+                                                    {
+                                                        if (!searchedItem.Contains(excludedFolder) && !filesDataBlackList.Contains(searchedItem))
+                                                        {
+                                                            if (!validFoldersfound.Contains(searchedItem))
+                                                                validFoldersfound.Add(searchedItem);
+                                                        }
+                                                        else
+                                                            filesDataBlackList.Add(searchedItem);
+                                                    }
+                                                }
+                                                else
+                                                    Debug.LogWarning($"==> LoadFolderData's GetExcludedSystemFolders Failed - GetFolderStructureData().GetExcludedSystemFileData() Returned Null.");
+
+                                                if (GetFolderStructureData().GetExcludedSystemFolderData() != null)
+                                                {
+                                                    foreach (var excludedFile in GetFolderStructureData().GetExcludedSystemFolderData())
+                                                    {
+                                                        if (!searchedItem.Contains(excludedFile) && !foldersDataBlackList.Contains(searchedItem))
+                                                        {
+                                                            if (!validFilesfound.Contains(searchedItem))
+                                                                validFilesfound.Add(searchedItem);
+                                                        }
+                                                        else
+                                                            foldersDataBlackList.Add(searchedItem);
+                                                    }
+                                                }
+                                                else
+                                                    Debug.LogWarning($"==> LoadFilesData's GetExcludedSystemFolders Failed - GetFolderStructureData().GetExcludedSystemFolders() Returned Null.");
+                                            }
+
+                                            #endregion
+
+                                            #region Search Files
+
+                                            #region Folders
+
+                                            if (validFoldersfound.Count > 0)
+                                            {
+                                                List<AppData.StorageDirectoryData> validFoldersfoundDirectories = new List<AppData.StorageDirectoryData>();
+                                                List<AppData.StorageDirectoryData> foldersSearchResults = new List<AppData.StorageDirectoryData>();
+
+                                                foreach (var validFolder in validFoldersfound)
+                                                {
+                                                    var fileName = Path.GetFileName(validFolder);
+                                                    AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
+                                                    {
+                                                        name = fileName,
+                                                        directory = validFolder,
+                                                        type = searchFolder.storageData.type
+                                                    };
+
+                                                    validFoldersfoundDirectories.Add(directoryData);
+                                                }
+
+                                                if (validFoldersfoundDirectories.Count > 0)
+                                                {
+                                                    #region Folder Search Filter
+
+                                                    foreach (var validDirectory in validFoldersfoundDirectories)
+                                                    {
+                                                        string folderName = validDirectory.name.ToLower();
+
+                                                        if (strictValidateAssetSearch)
+                                                        {
+                                                            if (folderName.Contains(searchValue.ToLower()) && folderName.StartsWith(searchValue[0].ToString().ToLower()))
+                                                            {
+                                                                if (!foldersSearchResults.Contains(validDirectory))
+                                                                    foldersSearchResults.Add(validDirectory);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (foldersSearchResults.Contains(validDirectory))
+                                                                    foldersSearchResults.Remove(validDirectory);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (folderName.Contains(searchValue.ToLower()))
+                                                            {
+                                                                if (!foldersSearchResults.Contains(validDirectory))
+                                                                    foldersSearchResults.Add(validDirectory);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (foldersSearchResults.Contains(validDirectory))
+                                                                    foldersSearchResults.Remove(validDirectory);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    #endregion
+
+                                                    #region Create Folder Widgets
+
+                                                    if (foldersSearchResults.Count > 0)
+                                                    {
+                                                        CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), foldersSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
+                                                        {
+                                                            folderFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                        });
+                                                    }
+
+                                                    #endregion
+                                                }
+                                            }
+
+                                            #endregion
+
+                                            #region Files
+
+                                            if (validFilesfound.Count > 0)
+                                            {
+                                                List<AppData.StorageDirectoryData> validFilesfoundDirectories = new List<AppData.StorageDirectoryData>();
+                                                List<AppData.StorageDirectoryData> filesSearchResults = new List<AppData.StorageDirectoryData>();
+
+                                                foreach (var validFileDirectory in validFilesfound)
+                                                {
+                                                    var fileName = Path.GetFileName(validFileDirectory);
+                                                    AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
+                                                    {
+                                                        name = fileName,
+                                                        directory = validFileDirectory,
+                                                        type = searchFolder.storageData.type
+                                                    };
+
+                                                    validFilesfoundDirectories.Add(directoryData);
+                                                }
+
+                                                if (validFilesfoundDirectories.Count > 0)
+                                                {
+                                                    #region File Search Filter
+
+                                                    foreach (var validDirectory in validFilesfoundDirectories)
+                                                    {
+                                                        string fileName = validDirectory.name.ToLower();
+
+                                                        if (strictValidateAssetSearch)
+                                                        {
+                                                            if (fileName.Contains(searchValue.ToLower()) && fileName.StartsWith(searchValue[0].ToString().ToLower()))
+                                                            {
+                                                                if (!filesSearchResults.Contains(validDirectory))
+                                                                    filesSearchResults.Add(validDirectory);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (filesSearchResults.Contains(validDirectory))
+                                                                    filesSearchResults.Remove(validDirectory);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (fileName.Contains(searchValue.ToLower()))
+                                                            {
+                                                                if (!filesSearchResults.Contains(validDirectory))
+                                                                    filesSearchResults.Add(validDirectory);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (filesSearchResults.Contains(validDirectory))
+                                                                    filesSearchResults.Remove(validDirectory);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    #endregion
+
+                                                    #region Create File Widgets
+
+                                                    if (filesSearchResults.Count > 0)
+                                                    {
+                                                        foreach (var file in filesSearchResults)
+                                                        {
+
+                                                            Debug.LogError($"==> Found File : {file.name} : Directory : {file.directory}");
+                                                        }
+                                                    }
+
+
+                                                    #region Create File Widgets
+
+                                                    if (filesSearchResults.Count > 0)
+                                                    {
+                                                        CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), filesSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
+                                                        {
+                                                            folderFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                        });
+                                                    }
+
+                                                    #endregion
+
+                                                    #endregion
+                                                }
+                                            }
+
+                                            #endregion
+
+                                            #region No Results Found
+
+                                            if (ScreenUIManager.Instance)
+                                            {
+                                                if (!folderFound && !fileFound)
+                                                {
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
+
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, true);
+                                                }
+                                                else
+                                                {
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Enabled);
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
+
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
+                                                }
+
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, AppData.InputUIState.Disabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, AppData.InputUIState.Disabled);
+                                            }
+                                            else
+                                                Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
+
+                                            #endregion
+
+                                            #endregion
+                                        }
+                                    }
+                                    else
+                                        Debug.LogWarning($"--> SearchScreenWidgetList Failed With Results : {foundDirectoriesCallback.results}.");
+                                });
+                            }
+                            else
+                                Debug.LogWarning($"--> SearchScreenWidgetList Failed - Search Folder Directory Data Is Missing / Null.");
+
+                            #endregion
+
+                            break;
                     }
-                    else
-                        Debug.LogWarning($"--> SearchScreenWidgetList Failed - Search Folder Directory Data Is Missing / Null.");
-
-                    #endregion
                 }
-
             }
             else
             {
@@ -5207,7 +5391,7 @@ namespace Com.RedicalGames.Filar
 
         public List<string> GetAssetCategoryList()
         {
-            return dropDownContentDataList.Find((x) => x.contentType == AppData.DropDownContentType.Categories).data;
+            return dropDownContentDataList.Find((x) => x.contentType == AppData.DropDownContentType.AssetCategory).data;
         }
 
         #endregion
