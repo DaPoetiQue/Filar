@@ -68,7 +68,7 @@ namespace Com.RedicalGames.Filar
 
         public enum ProjectCategoryType
         {
-            All,
+            Project_All,
             Project_AR,
             Project_3D,
             Project_VR
@@ -1351,6 +1351,18 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Folder Structure
+
+        [Serializable]
+        public class Project
+        {
+            #region Components
+
+            public string name;
+            public UIScreenWidget widget;
+            public FolderStructureData structureData;
+
+            #endregion
+        }
 
         [Serializable]
         public class ProjectInfo
@@ -12285,6 +12297,11 @@ namespace Com.RedicalGames.Filar
 
                                                     var filterContent = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_") : SceneAssetsManager.Instance.GetDropdownContent<SceneAssetCategoryType>();
 
+                                                    LogSuccess($"===============> Found : {filterContent.data.Count}", this);
+
+                                                    foreach (var item in filterContent.data)
+                                                        LogSuccess($"===============> Found Item : {item}", this);
+
                                                     if (filterContent.data != null)
                                                     {
                                                         dropDown.value.ClearOptions();
@@ -15044,7 +15061,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 case InputDropDownActionType.ProjectType:
 
-                                    dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_", "All");
+                                    dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project", "Project_All");
 
                                     break;
 
