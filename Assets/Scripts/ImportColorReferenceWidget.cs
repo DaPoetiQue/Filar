@@ -124,8 +124,8 @@ namespace Com.RedicalGames.Filar
         {
             SetInputFieldValue(AppData.InputFieldActionType.ColorReferenceImageURLField, string.Empty, (setValueCallbackResults) =>
             {
-                if (!AppData.Helpers.IsSuccessCode(setValueCallbackResults.resultsCode))
-                    Debug.LogWarning($"--> ActionEvents__OnFilePickerDirectoryFieldSelectedEvent's SetInputFieldValue Failed With results : {setValueCallbackResults.results}");
+                if (!setValueCallbackResults.Success())
+                    Log(setValueCallbackResults.resultsCode, setValueCallbackResults.results, this);
             });
         }
 
@@ -170,10 +170,10 @@ namespace Com.RedicalGames.Filar
 
                 SetInputFieldValue(AppData.InputFieldActionType.ColorReferenceImageURLField, filePathFormatted, (setValueCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(setValueCallbackResults.resultsCode))
+                    if (setValueCallbackResults.Success())
                         this.directoryData = directoryData;
                     else
-                        Debug.LogWarning($"--> ActionEvents__OnFilePickerDirectoryFieldSelectedEvent's SetInputFieldValue Failed With results : {setValueCallbackResults.results}");
+                        Log(setValueCallbackResults.resultsCode, setValueCallbackResults.results, this);
                 });
             }
         }
@@ -358,10 +358,10 @@ namespace Com.RedicalGames.Filar
             {
                 SetInputFieldValue(AppData.InputFieldActionType.ColorReferenceImageURLField, string.Empty, (setValueCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(setValueCallbackResults.resultsCode))
+                    if (setValueCallbackResults.Success())
                         parentWidget.HideChildWidget(AppData.SettingsWidgetType.ScreenWarningInfoWidget);
                     else
-                        Debug.LogWarning($"--> ActionEvents__OnFilePickerDirectoryFieldSelectedEvent's SetInputFieldValue Failed With results : {setValueCallbackResults.results}");
+                        Log(setValueCallbackResults.resultsCode, setValueCallbackResults.results, this);
                 });
             }
         }
