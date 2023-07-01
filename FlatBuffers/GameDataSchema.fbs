@@ -1,0 +1,20 @@
+// Game Data Scema File System
+namespace redical.games;
+
+struct Vec3
+{
+    x : float;
+    y : float;
+    z : float;
+}
+
+table Randomized
+{
+    name: string;
+    scale: Vec3;
+    rotation : Vec3;
+    color : int;
+}
+
+root_type Randomized;
+file_identifier "RAND";

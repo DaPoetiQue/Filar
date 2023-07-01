@@ -40,8 +40,8 @@ namespace Com.RedicalGames.Filar
 
                 SetInputFieldValue(AppData.InputFieldActionType.ColorPromptField, randomColor, (colorNameFieldCallbackResults) =>
                 {
-                    if (!AppData.Helpers.IsSuccessCode(colorNameFieldCallbackResults.resultsCode))
-                        Debug.LogWarning($"--> RandomizeColors's SetInputFieldValue Failed With Results : {colorNameFieldCallbackResults.results}");
+                    if (!colorNameFieldCallbackResults.Success())
+                        Log(colorNameFieldCallbackResults.resultsCode, colorNameFieldCallbackResults.results, this);
                 });
             }
             else
@@ -193,16 +193,18 @@ namespace Com.RedicalGames.Filar
         {
             OnActionInputFieldInitialized((inputFieldInitializedCallbackResults) =>
             {
-                if (AppData.Helpers.IsSuccessCode(inputFieldInitializedCallbackResults.resultsCode))
+                if (inputFieldInitializedCallbackResults.Success())
+                {
                     SetInputFieldValue(AppData.InputFieldActionType.ColorPromptField, string.Empty, (fieldSetCallbackResults) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(fieldSetCallbackResults.resultsCode))
+                        if (fieldSetCallbackResults.Success())
                             OnResetColorInfo();
                         else
-                            Debug.LogWarning($"--> OnWidgetClosed OnActionInputFieldInitialized's SetInputFieldValue Failed With Results : {inputFieldInitializedCallbackResults.results}");
+                            Log(fieldSetCallbackResults.resultsCode, fieldSetCallbackResults.results, this);
                     });
+                }
                 else
-                    Debug.LogWarning($"--> OnWidgetClosed's OnActionInputFieldInitialized Failed With Results : {inputFieldInitializedCallbackResults.results}");
+                    Log(inputFieldInitializedCallbackResults.resultsCode, inputFieldInitializedCallbackResults.results, this);
             });
         }
 
@@ -257,8 +259,8 @@ namespace Com.RedicalGames.Filar
                 {
                     SetInputFieldValue(AppData.InputFieldActionType.ColorPromptField, executableCommandsList[0], (colorNameFieldCallbackResults) =>
                     {
-                        if (!AppData.Helpers.IsSuccessCode(colorNameFieldCallbackResults.resultsCode))
-                            Debug.LogWarning($"--> RandomizeColors's SetInputFieldValue Failed With Results : {colorNameFieldCallbackResults.results}");
+                        if (!colorNameFieldCallbackResults.Success())
+                            Log(colorNameFieldCallbackResults.resultsCode, colorNameFieldCallbackResults.results, this);
                     });
                 }
 

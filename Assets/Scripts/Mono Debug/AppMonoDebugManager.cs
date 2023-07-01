@@ -73,8 +73,8 @@ namespace Com.RedicalGames.Filar
 
         new public void Log(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action logFunc = null)
         {
-            //if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.None)
-            //    return;
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.None || logInfoType == AppData.LogInfoType.None)
+                return;
 
             if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
             {

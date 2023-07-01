@@ -75,6 +75,11 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
         #endregion
 
     }

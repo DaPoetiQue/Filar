@@ -143,69 +143,93 @@ namespace Com.RedicalGames.Filar
 
         private void ActionEvents__OnWidgetSelectionRemoved()
         {
-            switch (SceneAssetsManager.Instance.GetLayoutViewType())
+            SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
             {
-                case AppData.LayoutViewType.ItemView:
+                if (layoutViewCallbackResults.Success())
+                {
+                    switch (layoutViewCallbackResults.data)
+                    {
+                        case AppData.LayoutViewType.ItemView:
 
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
 
-                    break;
+                            break;
 
-                case AppData.LayoutViewType.ListView:
+                        case AppData.LayoutViewType.ListView:
 
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
 
-                    break;
-            }
+                            break;
+                    }
+                }
+                else
+                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+            });
         }
 
         private void ActionEvents__OnWidgetSelectionAdded()
         {
-            switch (SceneAssetsManager.Instance.GetLayoutViewType())
+            SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
             {
-                case AppData.LayoutViewType.ItemView:
-
-                    SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback => 
+                if (layoutViewCallbackResults.Success())
+                {
+                    switch (layoutViewCallbackResults.data)
                     {
-                        if(selectionCallback.Success())
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewDeselectionIcon);
-                        else
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
-                    });
+                        case AppData.LayoutViewType.ItemView:
 
-                    break;
+                            SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
+                            {
+                                if (selectionCallback.Success())
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewDeselectionIcon);
+                                else
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            });
 
-                case AppData.LayoutViewType.ListView:
+                            break;
 
-                    SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
-                    {
-                        if (selectionCallback.Success())
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewDeselectionIcon);
-                        else
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
-                    });
+                        case AppData.LayoutViewType.ListView:
+
+                            SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
+                            {
+                                if (selectionCallback.Success())
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewDeselectionIcon);
+                                else
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            });
 
 
-                    break;
-            }
+                            break;
+                    }
+                }
+                else
+                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+            });
         }
 
         private void ActionEvents__OnWidgetSelectionEvent()
         {
-            switch(SceneAssetsManager.Instance.GetLayoutViewType())
+            SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
             {
-                case AppData.LayoutViewType.ItemView:
+                if (layoutViewCallbackResults.Success())
+                {
+                    switch (layoutViewCallbackResults.data)
+                    {
+                        case AppData.LayoutViewType.ItemView:
 
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
 
-                    break;
+                            break;
 
-                case AppData.LayoutViewType.ListView:
+                        case AppData.LayoutViewType.ListView:
 
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
 
-                    break;
-            }
+                            break;
+                    }
+                }
+                else
+                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+            });
         }
 
         #endregion
@@ -692,10 +716,6 @@ namespace Com.RedicalGames.Filar
 
         void OnScreenChangedEvent(AppData.UIScreenType screenType)
         {
-            // Reset Preview Pose.
-            AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
-            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(focusedModeDataPackets);
-
             switch (screenType)
             {
                 case AppData.UIScreenType.AssetCreationScreen:
@@ -705,6 +725,10 @@ namespace Com.RedicalGames.Filar
                     break;
 
                 case AppData.UIScreenType.ProjectViewScreen:
+
+                    // Reset Preview Pose.
+                    AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(focusedModeDataPackets);
 
                     sceneAssetInteractableMode = AppData.SceneAssetInteractableMode.Orbit;
 

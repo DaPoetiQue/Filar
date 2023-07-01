@@ -53,15 +53,15 @@ namespace Com.RedicalGames.Filar
             {
                 if (SceneAssetsManager.Instance != null)
                 {
-                    List<string> extensionsList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(AppData.DropDownContentType.Extensions).data);
+                    var content = SceneAssetsManager.Instance.GetDropdownContent<AppData.ExportExtensionType>();
 
-                    if (extensionsList != null)
+                    if (content.data != null)
                     {
                         exportExtensionDropDown.value.ClearOptions();
 
                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                        foreach (var extension in extensionsList)
+                        foreach (var extension in content.data)
                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = extension });
 
                         exportExtensionDropDown.value.AddOptions(dropdownOption);
@@ -194,6 +194,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
         {
             throw new System.NotImplementedException();
         }

@@ -852,6 +852,16 @@ namespace Com.RedicalGames.Filar
             return currentScreen;
         }
 
+        public bool ScreenInitialized(AppData.UIScreenViewComponent screen)
+        {
+            return screen?.value != null;
+        }
+
+        public bool HasCurrentScreen()
+        {
+            return currentScreen != null && currentScreen.value != null;
+        }
+
         #region UI States
 
         #region Screen States
