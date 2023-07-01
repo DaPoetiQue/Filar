@@ -87,6 +87,8 @@ namespace Com.RedicalGames.Filar
                     var container = containerResults.data;
 
                     SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+
+                    //ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
                 }
                 else
                     Log(containerResults.resultsCode, containerResults.results, this);

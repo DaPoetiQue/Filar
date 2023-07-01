@@ -83,65 +83,138 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.InputType.Button:
 
-                        callbackResults.results = (buttonComponentConfig.value)? $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = buttonComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (buttonComponentConfig.value)? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (buttonComponentConfig != null && buttonComponentConfig.value != null)
+                        {
+
+                            callbackResults.results = (buttonComponentConfig.value) ? $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = buttonComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (buttonComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Button Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.InputField:
 
-                        callbackResults.results = (inputFieldComponentConfig.value) ? $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = inputFieldComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (inputFieldComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (inputFieldComponentConfig != null && inputFieldComponentConfig.value != null)
+                        {
+                            callbackResults.results = (inputFieldComponentConfig.value) ? $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = inputFieldComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (inputFieldComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Input Field Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.InputSlider:
 
-                        callbackResults.results = (inputSliderComponentConfig.value) ? $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = inputSliderComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (inputSliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (inputSliderComponentConfig != null && inputSliderComponentConfig.value != null)
+                        {
+                            callbackResults.results = (inputSliderComponentConfig.value) ? $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = inputSliderComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (inputSliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Input Slider Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.Slider:
 
-                        callbackResults.results = (sliderComponentConfig.value) ? $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = sliderComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (sliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (sliderComponentConfig != null && sliderComponentConfig.value != null)
+                        {
+                            callbackResults.results = (sliderComponentConfig.value) ? $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = sliderComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (sliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Slider Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.Checkbox:
 
-                        callbackResults.results = (checkboxComponentConfig.value) ? $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = checkboxComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (checkboxComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (checkboxComponentConfig != null && checkboxComponentConfig.value != null)
+                        {
+                            callbackResults.results = (checkboxComponentConfig.value) ? $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = checkboxComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (checkboxComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Checkbox Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.DropDown:
 
-                        callbackResults.results = (dropdownComponentConfig.value) ? $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = dropdownComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (dropdownComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (dropdownComponentConfig != null && dropdownComponentConfig.value != null)
+                        {
+                            callbackResults.results = (dropdownComponentConfig.value) ? $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = dropdownComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (dropdownComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Dropdown Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.Text:
 
-                        callbackResults.results = (textComponentConfig.value) ? $"Text Displayer Name : {textComponentConfig.name} - Text Displayer Type Is Set To {inputType} Successfully" : $"Text Displayer Name : {textComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = textComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (textComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (textComponentConfig != null && textComponentConfig.value != null)
+                        {
+                            callbackResults.results = (textComponentConfig.value) ? $"Text Displayer Name : {textComponentConfig.name} - Text Displayer Type Is Set To {inputType} Successfully" : $"Text Displayer Name : {textComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = textComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (textComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Text Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
 
                     case AppData.InputType.Image:
 
-                        callbackResults.results = (imageComponentConfig.value) ? $"Image Displayer Name : {imageComponentConfig.name} - Image Displayer Type Is Set To {inputType} Successfully" : $"Image Displayer Name : {imageComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
-                        callbackResults.data = imageComponentConfig.dataPackets as T;
-                        callbackResults.resultsCode = (imageComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        if (imageComponentConfig != null && imageComponentConfig.value != null)
+                        {
+                            callbackResults.results = (imageComponentConfig.value) ? $"Image Displayer Name : {imageComponentConfig.name} - Image Displayer Type Is Set To {inputType} Successfully" : $"Image Displayer Name : {imageComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = imageComponentConfig.dataPackets as T;
+                            callbackResults.resultsCode = (imageComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.results = "Image Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
 
                         break;
                 }
@@ -155,6 +228,116 @@ namespace Com.RedicalGames.Filar
 
             callback.Invoke(callbackResults);
         }
+
+        public bool HasComponent(AppData.InputType inputType)
+        {
+            bool hasComponent = false;
+
+            switch(inputType)
+            {
+                case AppData.InputType.Button:
+
+                    hasComponent = buttonComponentConfig != null && buttonComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.InputField:
+
+                    hasComponent = inputFieldComponentConfig != null && inputFieldComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.InputSlider:
+
+                    hasComponent = inputSliderComponentConfig != null && inputSliderComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.Slider:
+
+                    hasComponent = sliderComponentConfig != null && sliderComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.Checkbox:
+
+                    hasComponent = checkboxComponentConfig != null && checkboxComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.DropDown:
+
+                    hasComponent = dropdownComponentConfig != null && dropdownComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.Text:
+
+                    hasComponent = textComponentConfig != null && textComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.Image:
+
+                    hasComponent = imageComponentConfig != null && imageComponentConfig.value != null;
+
+                    break;
+            }
+
+            return hasComponent;
+        }
+
+        #region Check Component Of Type
+
+        #region Actions
+
+        public bool HasComponent(AppData.InputActionButtonType action)
+        {
+            return buttonComponentConfig != null && buttonComponentConfig.value != null && buttonComponentConfig.dataPackets.action == action;
+        }
+
+        public bool HasComponent(AppData.InputFieldActionType action)
+        {
+            return inputFieldComponentConfig != null && inputFieldComponentConfig.value != null && inputFieldComponentConfig.dataPackets.action == action;
+        }
+
+        public bool HasComponent(AppData.InputSliderActionType action)
+        {
+            return inputSliderComponentConfig != null && inputSliderComponentConfig.value != null && inputSliderComponentConfig.dataPackets.action == action;
+        }
+
+        public bool HasComponent(AppData.SliderValueType value)
+        {
+            return sliderComponentConfig != null && sliderComponentConfig.value != null && sliderComponentConfig.dataPackets.valueType == value;
+        }
+
+        public bool HasComponent(AppData.CheckboxInputActionType action)
+        {
+            return checkboxComponentConfig != null && checkboxComponentConfig.value != null && checkboxComponentConfig.dataPackets.action == action;
+        }
+
+        public bool HasComponent(AppData.InputDropDownActionType action)
+        {
+            return dropdownComponentConfig != null && dropdownComponentConfig.value != null && dropdownComponentConfig.dataPackets.action == action;
+        }
+
+        #endregion
+
+        #region Displayers
+
+        public bool HasComponent(AppData.ScreenTextType type)
+        {
+            return textComponentConfig != null && textComponentConfig.value != null && textComponentConfig.dataPackets.textType == type;
+        }
+
+        public bool HasComponent(AppData.ScreenImageType type)
+        {
+            return imageComponentConfig != null && imageComponentConfig.value != null && imageComponentConfig.dataPackets.imageType == type;
+        }
+
+        #endregion
+
+        #endregion
 
         #region Get Action Components
 
