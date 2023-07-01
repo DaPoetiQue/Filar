@@ -26,12 +26,14 @@ namespace Com.RedicalGames.Filar
             Init((callback) =>
             {
                 if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                {
                     if (screenManager == null)
                         screenManager = ScreenUIManager.Instance;
                     else
-                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {callback.results}.");
+                        LogError($"Screen UI Manager Instance Is Not Yet Initialized.");
+                }
                 else
-                    Debug.LogWarning("--> Failed to Initialize Scene Asset UI.");
+                    Log(callback.resultsCode, callback.results, this);
             });
         }
 
