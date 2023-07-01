@@ -170,6 +170,8 @@ namespace Com.RedicalGames.Filar
                     int index = value + 1;
                     var categoryType = (AppData.ProjectCategoryType)index;
 
+                    LogSuccess($"========================> Create Project Type : {categoryType}", this);
+
                     if (newFolderStructureData != null)
                         newFolderStructureData.projectInfo.projectType = categoryType;
                     else
