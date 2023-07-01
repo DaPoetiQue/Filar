@@ -112,31 +112,6 @@ namespace Com.RedicalGames.Filar
 
         List<AppData.UIScreenWidget> loadedWidgets = new List<AppData.UIScreenWidget>();
 
-        #region Folder Data
-
-        [Space(5)]
-        [SerializeField]
-        string folderListViewWidgetPrefabDirectory = "UI Prefabs/Folder_ListView";
-
-        [Space(5)]
-        [SerializeField]
-        string folderItemViewWidgetPrefabDirectory = "UI Prefabs/Folder_ItemView";
-
-        #endregion
-
-        #region File Data
-
-        [Space(5)]
-        [SerializeField]
-        string fileListViewWidgetPrefabDirectory = "UI Prefabs/File_ListView";
-
-        [Space(5)]
-        [SerializeField]
-        string fileItemViewWidgetPrefabDirectory = "UI Prefabs/File_ItemView";
-
-        #endregion
-
-
         [Space(5)]
         [SerializeField]
         string profileWidgetPrefabDirectory = "UI Prefabs/Profile";
@@ -167,6 +142,8 @@ namespace Com.RedicalGames.Filar
         List<AppData.SceneAssetWidget> screenWidgetList = new List<AppData.SceneAssetWidget>();
         AppData.AssetExportData currentAssetExportData = new AppData.AssetExportData();
 
+        Dictionary<AppData.FolderStructureData, AppData.UIScreenWidget> loadedProjectData = new Dictionary<AppData.FolderStructureData, AppData.UIScreenWidget>();
+
         [SerializeField]
         List<AppData.DropDownContentData> dropDownContentDataList = new List<AppData.DropDownContentData>();
 
@@ -180,6 +157,8 @@ namespace Com.RedicalGames.Filar
         AppData.FolderStructureType currentViewedFolderStructure;
 
         AppData.SceneAssetCategoryType assetFilterType;
+        AppData.ProjectCategoryType projectFilterType;
+
         AppData.SceneAssetSortType assetSortType;
 
         Quaternion assetDefaultImportRotation;
@@ -268,7 +247,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            InitializeDropDownContentDataList();
+            // InitializeDropDownContentDataList();
 
             foreach (var directory in defaultDirectories)
             {
@@ -329,25 +308,7 @@ namespace Com.RedicalGames.Filar
 
             #region Move This To Streaming Assets Or Addressables (Prefered).
 
-            // Load from Resources Folder
-
-            #region File Data
-
-            Debug.LogError("===========> Please Load Prefabs From Library........");
-
-            //if (fileListViewHandlerPrefab == null)
-            //    if (!string.IsNullOrEmpty(fileListViewWidgetPrefabDirectory))
-            //        fileListViewHandlerPrefab = Resources.Load<UIScreenFolderWidget>(fileListViewWidgetPrefabDirectory);
-            //    else
-            //        LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this, () => Init());
-
-            //if (fileItemViewHandlerPrefab == null)
-            //    if (!string.IsNullOrEmpty(fileItemViewWidgetPrefabDirectory))
-            //        fileItemViewHandlerPrefab = Resources.Load<UIScreenFolderWidget>(fileItemViewWidgetPrefabDirectory);
-            //    else
-            //        LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this, () => Init());
-
-            #endregion
+            // Load from Resources Folde
 
             if (renderProfileUIHandlerPrefab == null)
                 if (!string.IsNullOrEmpty(profileWidgetPrefabDirectory))
@@ -366,9 +327,13 @@ namespace Com.RedicalGames.Filar
             // SetWidgetsRefreshData(folderStructureData.rootFolder, folderStructureData.GetMainFolderDynamicWidgetsContainer());
 
 
-            
-
-            InitializeFolderLayoutView(GetLayoutViewType());
+            SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
+            {
+                if (layoutViewCallbackResults.Success())
+                    InitializeFolderLayoutView(layoutViewCallbackResults.data);
+                else
+                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+            });     
 
             Resources.UnloadUnusedAssets();
         }
@@ -397,10 +362,9 @@ namespace Com.RedicalGames.Filar
 
                         if (data.Contains(item))
                             dataString = data.Replace(item, "");
-                        else
-                            dataString = data;
 
-                        dataList.Add(dataString);
+                        if(!string.IsNullOrEmpty(dataString) && !dataString.Contains(item))
+                            dataList.Add(dataString);
 
                         if (dataList.Contains(item))
                             dataList.Remove(item);
@@ -418,129 +382,129 @@ namespace Com.RedicalGames.Filar
 
         void InitializeDropDownContentDataList()
         {
-            if (dropDownContentDataList == null)
-                dropDownContentDataList = new List<AppData.DropDownContentData>();
+            //if (dropDownContentDataList == null)
+            //    dropDownContentDataList = new List<AppData.DropDownContentData>();
 
-            // Export Extensions
-            AppData.DropDownContentData exportExtensionsData = new AppData.DropDownContentData
-            {
-                name = "Export Extensions Data List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.ExportExtensionType>(),
-                contentType = AppData.DropDownContentType.Extensions
-            };
+            //// Export Extensions
+            //AppData.DropDownContentData exportExtensionsData = new AppData.DropDownContentData
+            //{
+            //    name = "Export Extensions Data List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.ExportExtensionType>(),
+            //    contentType = AppData.DropDownContentType.Extensions
+            //};
 
-            if (exportExtensionsData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {exportExtensionsData.name}", this, () => InitializeDropDownContentDataList());
+            //if (exportExtensionsData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {exportExtensionsData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Project Categories
-            AppData.DropDownContentData projectCategoriesData = new AppData.DropDownContentData
-            {
-                name = "Project Categories Data List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.ProjectCategoryType>(),
-                contentType = AppData.DropDownContentType.ProjectCategory
-            };
+            //// Project Categories
+            //AppData.DropDownContentData projectCategoriesData = new AppData.DropDownContentData
+            //{
+            //    name = "Project Categories Data List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.ProjectCategoryType>(),
+            //    contentType = AppData.DropDownContentType.ProjectCategory
+            //};
 
-            // Asset Categories
-            AppData.DropDownContentData assetCategoriesData = new AppData.DropDownContentData
-            {
-                name = "Asset Categories Data List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetCategoryType>(),
-                contentType = AppData.DropDownContentType.AssetCategory
-            };
+            //// Asset Categories
+            //AppData.DropDownContentData assetCategoriesData = new AppData.DropDownContentData
+            //{
+            //    name = "Asset Categories Data List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetCategoryType>(),
+            //    contentType = AppData.DropDownContentType.AssetCategory
+            //};
 
-            if (assetCategoriesData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {assetCategoriesData.name}", this, () => InitializeDropDownContentDataList());
+            //if (assetCategoriesData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {assetCategoriesData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Asset Sorting List
-            AppData.DropDownContentData assetSortingData = new AppData.DropDownContentData
-            {
-                name = "Asset Sorting List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetSortType>(),
-                contentType = AppData.DropDownContentType.Sorting
-            };
+            //// Asset Sorting List
+            //AppData.DropDownContentData assetSortingData = new AppData.DropDownContentData
+            //{
+            //    name = "Asset Sorting List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetSortType>(),
+            //    contentType = AppData.DropDownContentType.Sorting
+            //};
 
-            if (assetSortingData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {assetSortingData.name}", this, () => InitializeDropDownContentDataList());
+            //if (assetSortingData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {assetSortingData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Rendering Modes List
-            AppData.DropDownContentData renderModegData = new AppData.DropDownContentData
-            {
-                name = "Rendering Mode List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetRenderMode>(),
-                contentType = AppData.DropDownContentType.RenderingModes
-            };
+            //// Rendering Modes List
+            //AppData.DropDownContentData renderModegData = new AppData.DropDownContentData
+            //{
+            //    name = "Rendering Mode List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.SceneAssetRenderMode>(),
+            //    contentType = AppData.DropDownContentType.RenderingModes
+            //};
 
-            if (renderModegData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {renderModegData.name}", this, () => InitializeDropDownContentDataList());
+            //if (renderModegData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {renderModegData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Render Profile List
-            AppData.DropDownContentData renderProfileData = new AppData.DropDownContentData
-            {
-                name = "Render Profile List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.NavigationRenderSettingsProfileID>(),
-                contentType = AppData.DropDownContentType.RenderProfiles
-            };
+            //// Render Profile List
+            //AppData.DropDownContentData renderProfileData = new AppData.DropDownContentData
+            //{
+            //    name = "Render Profile List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.NavigationRenderSettingsProfileID>(),
+            //    contentType = AppData.DropDownContentType.RenderProfiles
+            //};
 
-            if (renderProfileData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {renderProfileData.name}", this, () => InitializeDropDownContentDataList());
+            //if (renderProfileData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {renderProfileData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Color Space List
-            AppData.DropDownContentData colorSpaceData = new AppData.DropDownContentData
-            {
-                name = "Color Space List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.ColorSpaceType>(),
-                contentType = AppData.DropDownContentType.ColorSpaces
-            };
+            //// Color Space List
+            //AppData.DropDownContentData colorSpaceData = new AppData.DropDownContentData
+            //{
+            //    name = "Color Space List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.ColorSpaceType>(),
+            //    contentType = AppData.DropDownContentType.ColorSpaces
+            //};
 
-            if (renderProfileData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {colorSpaceData.name}", this, () => InitializeDropDownContentDataList());
+            //if (renderProfileData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {colorSpaceData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Color Picker Type List
-            AppData.DropDownContentData colorPickerData = new AppData.DropDownContentData
-            {
-                name = "Color Picker Type List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.ColorPickerType>(),
-                contentType = AppData.DropDownContentType.ColorPickers
-            };
+            //// Color Picker Type List
+            //AppData.DropDownContentData colorPickerData = new AppData.DropDownContentData
+            //{
+            //    name = "Color Picker Type List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.ColorPickerType>(),
+            //    contentType = AppData.DropDownContentType.ColorPickers
+            //};
 
-            if (renderProfileData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {colorPickerData.name}", this, () => InitializeDropDownContentDataList());
+            //if (renderProfileData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {colorPickerData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Skybox Settings Type List
-            AppData.DropDownContentData skyboxSettingsData = new AppData.DropDownContentData
-            {
-                name = "Skybox Settings Type List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.SkyboxSettingsType>(),
-                contentType = AppData.DropDownContentType.SkyboxSettings
-            };
+            //// Skybox Settings Type List
+            //AppData.DropDownContentData skyboxSettingsData = new AppData.DropDownContentData
+            //{
+            //    name = "Skybox Settings Type List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.SkyboxSettingsType>(),
+            //    contentType = AppData.DropDownContentType.SkyboxSettings
+            //};
 
-            if (skyboxSettingsData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {skyboxSettingsData.name}", this, () => InitializeDropDownContentDataList());
+            //if (skyboxSettingsData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {skyboxSettingsData.name}", this, () => InitializeDropDownContentDataList());
 
-            // Rotational Direction List
-            AppData.DropDownContentData rotationalDirectionsData = new AppData.DropDownContentData
-            {
-                name = "Rotational Direction List",
-                data = AppData.Helpers.GetEnumToStringList<AppData.RotationalDirection>(),
-                contentType = AppData.DropDownContentType.Directions
-            };
+            //// Rotational Direction List
+            //AppData.DropDownContentData rotationalDirectionsData = new AppData.DropDownContentData
+            //{
+            //    name = "Rotational Direction List",
+            //    data = AppData.Helpers.GetEnumToStringList<AppData.RotationalDirection>(),
+            //    contentType = AppData.DropDownContentType.Directions
+            //};
 
-            if (rotationalDirectionsData.data.Count <= 0)
-                LogWarning($"Couldn't Create Drop Down Content Data For : {rotationalDirectionsData.name}", this, () => InitializeDropDownContentDataList());
+            //if (rotationalDirectionsData.data.Count <= 0)
+            //    LogWarning($"Couldn't Create Drop Down Content Data For : {rotationalDirectionsData.name}", this, () => InitializeDropDownContentDataList());
 
-            dropDownContentDataList.Add(exportExtensionsData);
-            dropDownContentDataList.Add(projectCategoriesData);
-            dropDownContentDataList.Add(assetCategoriesData);
-            dropDownContentDataList.Add(assetSortingData);
-            dropDownContentDataList.Add(renderModegData);
-            dropDownContentDataList.Add(renderProfileData);
-            dropDownContentDataList.Add(colorSpaceData);
-            dropDownContentDataList.Add(colorPickerData);
-            dropDownContentDataList.Add(skyboxSettingsData);
-            dropDownContentDataList.Add(rotationalDirectionsData);
+            //dropDownContentDataList.Add(exportExtensionsData);
+            //dropDownContentDataList.Add(projectCategoriesData);
+            //dropDownContentDataList.Add(assetCategoriesData);
+            //dropDownContentDataList.Add(assetSortingData);
+            //dropDownContentDataList.Add(renderModegData);
+            //dropDownContentDataList.Add(renderProfileData);
+            //dropDownContentDataList.Add(colorSpaceData);
+            //dropDownContentDataList.Add(colorPickerData);
+            //dropDownContentDataList.Add(skyboxSettingsData);
+            //dropDownContentDataList.Add(rotationalDirectionsData);
 
-            if (dropDownContentDataList.Count > 0)
-                AppData.ActionEvents.OnDropDownContentDataInitializedEvent();
+            //if (dropDownContentDataList.Count > 0)
+            //    AppData.ActionEvents.OnDropDownContentDataInitializedEvent();
         }
 
         void OnActionEventSubscription(bool subscribe = false)
@@ -1844,9 +1808,26 @@ namespace Com.RedicalGames.Filar
                 LogError("Widgets Container Not Found. Please Initialize First.", this);
         }
 
-        public AppData.LayoutViewType GetLayoutViewType()
+        public void GetLayoutViewType(Action<AppData.CallbackData<AppData.LayoutViewType>> callback)
         {
-            return GetWidgetsRefreshData().widgetsContainer.GetLayout().viewType;
+            AppData.CallbackData<AppData.LayoutViewType> callbackResults = new AppData.CallbackData<AppData.LayoutViewType>();
+
+            var container = GetWidgetsRefreshData().widgetsContainer;
+
+            if(container != null)
+            {
+                callbackResults.results = $"Content Container Found With Layout View Type : {container.GetLayout().viewType}.";
+                callbackResults.data = container.GetLayout().viewType; ;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "There Is No Content Container Found.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
         }
 
         public AppData.PaginationViewType GetPaginationViewType()
@@ -2036,6 +2017,9 @@ namespace Com.RedicalGames.Filar
 
                                                                 projectWidget.name = project.name;
                                                                 contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+
+                                                                if(!loadedProjectData.ContainsKey(project))
+                                                                    loadedProjectData.Add(project, widgetComponent);
 
                                                                 callbackResults.results = $"Project Widget : { projectWidget.name} Created.";
                                                                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
@@ -3315,6 +3299,8 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (widgetsClearedCallback.Success())
                                     {
+                                        loadedProjectData = new Dictionary<AppData.FolderStructureData, AppData.UIScreenWidget>();
+
                                         LoadProjectStructureData((structureLoader) =>
                                         {
                                             if (AppData.Helpers.IsSuccessCode(structureLoader.resultsCode))
@@ -3440,42 +3426,50 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
 
-                                                            switch (GetLayoutViewType())
+                                                            GetLayoutViewType(layoutViewCallbackResults =>
                                                             {
-                                                                case AppData.LayoutViewType.ItemView:
-
-                                                                    if (SelectableManager.Instance.HasActiveSelection())
+                                                                if (layoutViewCallbackResults.Success())
+                                                                {
+                                                                    switch (layoutViewCallbackResults.data)
                                                                     {
-                                                                        widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                        {
-                                                                            if (selectedAllCallback.Success())
-                                                                                selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
+                                                                        case AppData.LayoutViewType.ItemView:
+
+                                                                            if (SelectableManager.Instance.HasActiveSelection())
+                                                                            {
+                                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                                {
+                                                                                    if (selectedAllCallback.Success())
+                                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
+                                                                                    else
+                                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+                                                                                });
+                                                                            }
                                                                             else
                                                                                 selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
 
-                                                                    break;
+                                                                            break;
 
-                                                                case AppData.LayoutViewType.ListView:
+                                                                        case AppData.LayoutViewType.ListView:
 
-                                                                    if (SelectableManager.Instance.HasActiveSelection())
-                                                                    {
-                                                                        widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                        {
-                                                                            if (selectedAllCallback.Success())
-                                                                                selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
+                                                                            if (SelectableManager.Instance.HasActiveSelection())
+                                                                            {
+                                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                                {
+                                                                                    if (selectedAllCallback.Success())
+                                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
+                                                                                    else
+                                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
+                                                                                });
+                                                                            }
                                                                             else
                                                                                 selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
 
-                                                                    break;
-                                                            }
+                                                                            break;
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                                            });
 
                                                             ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, selectionOptionImageViewType);
                                                         }
@@ -4653,9 +4647,23 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.InputDropDownActionType.FilterList:
 
-                        SetSceneAssetFilterType((AppData.SceneAssetCategoryType)dropDownIndex);
+                        switch(ScreenUIManager.Instance.GetCurrentUIScreenType())
+                        {
+                            case AppData.UIScreenType.ProjectSelectionScreen:
+
+                                SetProjectrFilterType((AppData.ProjectCategoryType)dropDownIndex);
+
+                                break;
+
+                            case AppData.UIScreenType.ProjectViewScreen:
+
+                                SetSceneAssetFilterType((AppData.SceneAssetCategoryType)dropDownIndex);
+
+                                break;
+                        }
+
                         ScreenUIManager.Instance.Refresh();
-                        //FilterSceneAssetWidgets();
+                        FilterSceneAssetWidgets();
 
                         break;
 
@@ -4878,6 +4886,8 @@ namespace Com.RedicalGames.Filar
         }
 
         void SetSceneAssetFilterType(AppData.SceneAssetCategoryType filterType) => assetFilterType = filterType;
+
+        void SetProjectrFilterType(AppData.ProjectCategoryType filterType) => projectFilterType = filterType;
 
         public AppData.SceneAssetCategoryType GetSceneAssetFilterType()
         {
@@ -5401,25 +5411,97 @@ namespace Com.RedicalGames.Filar
         public void FilterSceneAssetWidgets()
         {
 
-            if (screenWidgetList.Count > 0)
+            var widgetsContainer = GetWidgetsRefreshData().widgetsContainer;
+
+            if (widgetsContainer != null && widgetsContainer.IsContainerActive())
             {
-                foreach (var widget in screenWidgetList)
+                switch (GetWidgetsRefreshData().widgetsContainer.GetUIScreenType())
                 {
-                    if (assetFilterType != AppData.SceneAssetCategoryType.None)
-                    {
-                        if (widget.categoryType == assetFilterType)
-                            widget.SetVisibilityState(true);
+                    case AppData.UIScreenType.ProjectSelectionScreen:
+
+                        if (loadedProjectData.Count > 0)
+                        {
+                            if(projectFilterType != AppData.ProjectCategoryType.All)
+                            {
+                                widgetsContainer.ClearWidgets();
+                            }
+
+                            //if (projectFilterType != AppData.ProjectCategoryType.All)
+                            //{
+                            //    var widgets = loadedProjectData.Keys.ToList();
+                            //    var filteredWidgets = widgets.FindAll(widget => widget.projectInfo.projectType == projectFilterType);
+
+                            //    if (filteredWidgets.Count > 0)
+                            //    {
+                            //        LogSuccess($"================> Found : {filteredWidgets.Count} Widget(s) Of Type : {projectFilterType} - Container : {GetWidgetsRefreshData().widgetsContainer.name}", this);
+
+                            //        GetWidgetsRefreshData().widgetsContainer.ClearWidgets(widgetsClearedCallbackResults =>
+                            //        {
+                            //            LogSuccess($"================> Loaded : {filteredWidgets.Count} Widget(s) Of Type : {projectFilterType} - Container : {GetWidgetsRefreshData().widgetsContainer.name}", this);
+
+                            //            if (widgetsClearedCallbackResults.Success())
+                            //            {
+                            //                CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentUIScreenType(), filteredWidgets, GetWidgetsRefreshData().widgetsContainer, widgetCreatedCallbackResults =>
+                            //                {
+                            //                    Log(widgetCreatedCallbackResults.resultsCode, widgetCreatedCallbackResults.results, this);
+                            //                });
+                            //            }
+                            //            else
+                            //                Log(widgetsClearedCallbackResults.resultsCode, widgetsClearedCallbackResults.results, this);
+                            //        });
+                            //    }
+                            //    else
+                            //        LogWarning("There Are no Filtered Widgets Found", this);
+                            //}
+                            //else
+                            //{
+                            //    //GetWidgetsRefreshData().widgetsContainer.ClearWidgets(widgetsClearedCallbackResults =>
+                            //    //{
+                            //    //    if (widgetsClearedCallbackResults.Success())
+                            //    //    {
+                            //    //        CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentUIScreenType(), loadedProjectData.Keys.ToList(), GetWidgetsRefreshData().widgetsContainer, widgetCreatedCallbackResults =>
+                            //    //        {
+                            //    //            Log(widgetCreatedCallbackResults.resultsCode, widgetCreatedCallbackResults.results, this);
+                            //    //        });
+                            //    //    }
+                            //    //    else
+                            //    //        Log(widgetsClearedCallbackResults.resultsCode, widgetsClearedCallbackResults.results, this);
+                            //    //});
+                            //}
+                        }
                         else
-                            widget.SetVisibilityState(false);
-                    }
-                    else
-                    {
-                        widget.SetVisibilityState(true);
-                    }
+                            LogError("Loaded Project Data Missing / Not Initialized.", this);
+
+                        break;
+
+                    case AppData.UIScreenType.ProjectViewScreen:
+
+                        if (screenWidgetList.Count > 0)
+                        {
+                            foreach (var widget in screenWidgetList)
+                            {
+                                if (assetFilterType != AppData.SceneAssetCategoryType.None)
+                                {
+                                    if (widget.categoryType == assetFilterType)
+                                        widget.SetVisibilityState(true);
+                                    else
+                                        widget.SetVisibilityState(false);
+                                }
+                                else
+                                {
+                                    widget.SetVisibilityState(true);
+                                }
+                            }
+                        }
+                        else
+                            Debug.LogWarning("--> Screen Widget List Is Null / Not Initialized.");
+
+
+                        break;
                 }
             }
             else
-                Debug.LogWarning("--> Screen Widget List Is Null / Not Initialized.");
+                LogError("Widgets Container For Screen Type : {} Not Found / Not Yet Initialized", this);
         }
 
         public void FilterSceneAssetWidgets(AppData.SceneAssetCategoryType filterType)

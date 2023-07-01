@@ -1362,6 +1362,10 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public ProjectCategoryType projectType;
 
+
+            [Space(5)]
+            public ProjectTamplateType templateType;
+
             #endregion
         }
 
@@ -10124,50 +10128,49 @@ namespace Com.RedicalGames.Filar
                     {
                         foreach (var item in initialized)
                         {
-                            foreach (var widget in item.screenActionGroup)
+                            if (item != null)
                             {
-                                if (widget.inputType == InputType.Text)
+                                foreach (var widget in item.screenActionGroup)
                                 {
-                                    widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback => 
+                                    if (widget != null)
                                     {
-                                        if (dataPacketsCallback.Success())
+                                        if (widget.HasComponent(textType))
                                         {
-                                            if (dataPacketsCallback.data.textType == textType)
+                                            if (widget.inputType == InputType.Text)
                                             {
-                                                LogSuccess($"===> Yes - Now About To Set Widget Data Folder Name : {value} To Text Type : {textType}", this);
-                                                widget.GetTextComponent().SetScreenUITextValue(value);
+                                                widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
+                                                {
+                                                    if (dataPacketsCallback.Success())
+                                                    {
+                                                        if (dataPacketsCallback.data.textType == textType)
+                                                        {
+                                                            LogSuccess($"===> Yes - Now About To Set Widget Data Folder Name : {value} To Text Type : {textType}", this);
+                                                            widget.GetTextComponent().SetScreenUITextValue(value);
+                                                        }
+                                                        else
+                                                            LogError($"===> No Text Displayer Set To Type : {textType}", this);
+                                                    }
+                                                    else
+                                                        Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                                });
                                             }
                                             else
-                                                LogError($"===> No - Text Displayer Not Set To Type : {textType}", this);
+                                                LogWarning($"Action Group Widget Is Not Set To Text Type : {textType}.", this);
                                         }
                                         else
-                                            LogError("====> Failed To Get Data" + dataPacketsCallback.results, this);
-                                    });
+                                            LogWarning($"Action Group Widget Of Text Type : {textType} Doesn't Exist.", this);
+                                    }
+                                    else
+                                        LogError($"Action Group : {item.name} Widget Is Null / Invalid.", this);
                                 }
                             }
+                            else
+                                LogError("Action Group Is Null / Invalid.", this);
                         }
                     }
                 }
-
-
-                //if (textDisplayerList.Count > 0)
-                //{
-                //    foreach (var displayer in textDisplayerList)
-                //    {
-                //        if (displayer.dataPackets.textType == textType)
-                //        {
-                //            if (displayer.value)
-                //            {
-                //                displayer.SetScreenUITextValue(value);
-                //                break;
-                //            }
-                //            else
-                //                Debug.LogWarning("--> Failed : textDisplayer Value Is Null / Empty.");
-                //        }
-                //    }
-                //}
-                //else
-                //    Debug.LogWarning("--> SetUITextDisplayerValue Failed : textDisplayerList Is Null / Empty.");
+                else
+                    LogWarning("Action Group Is Null / Empty / Not Yet Initialized.", this);
             }
 
             protected void SetUIImageDisplayerValue(UIImageDisplayerType displayerType, UIImageType imageType)
@@ -12268,9 +12271,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (screenActionDropDownList.Count > 0)
                                 {
-                                    List<string> categoriesList = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.ProjectCategory).data) : SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.AssetCategory).data);
-                                    List<string> sortList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.Sorting).data);
-                                    List<string> renderModeList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.RenderingModes).data);
+                                    //List<string> categoriesList = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.ProjectCategory).data) : SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.AssetCategory).data);
+                                    //List<string> sortList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.Sorting).data);
+                                    //List<string> renderModeList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.RenderingModes).data);
 
                                     foreach (var dropDown in screenActionDropDownList)
                                     {
@@ -12280,19 +12283,16 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 case InputDropDownActionType.FilterList:
 
-                                                    if (categoriesList != null)
+                                                    var filterContent = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_") : SceneAssetsManager.Instance.GetDropdownContent<SceneAssetCategoryType>();
+
+                                                    if (filterContent.data != null)
                                                     {
                                                         dropDown.value.ClearOptions();
 
                                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                                        foreach (var filter in categoriesList)
-                                                        {
-                                                           
-                                                            string formattedFilter = filter.Replace("Project ", "");
-                                                            LogSuccess($"Filter Name : {filter} - Formatted : {formattedFilter}", this);
-                                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (formattedFilter.Contains("None")) ? "All" : formattedFilter });
-                                                        }
+                                                        foreach (var filter in filterContent.data)
+                                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
                                                         dropDown.value.AddOptions(dropdownOption);
 
@@ -12305,16 +12305,16 @@ namespace Com.RedicalGames.Filar
 
                                                 case InputDropDownActionType.SceneAssetRenderMode:
 
-                                                    if (renderModeList != null)
+                                                    var rendererContent = SceneAssetsManager.Instance.GetDropdownContent<SceneAssetRenderMode>();
+
+                                                    if (rendererContent.data != null)
                                                     {
                                                         dropDown.value.ClearOptions();
 
                                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                                        foreach (var renderMode in renderModeList)
-                                                        {
+                                                        foreach (var renderMode in rendererContent.data)
                                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = renderMode });
-                                                        }
 
                                                         dropDown.value.AddOptions(dropdownOption);
 
@@ -12327,16 +12327,16 @@ namespace Com.RedicalGames.Filar
 
                                                 case InputDropDownActionType.SortingList:
 
-                                                    if (sortList != null)
+                                                    var sortingContent = SceneAssetsManager.Instance.GetDropdownContent<SceneAssetSortType>();
+
+                                                    if (sortingContent.data != null)
                                                     {
                                                         dropDown.value.ClearOptions();
 
                                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                                        foreach (var sort in sortList)
-                                                        {
+                                                        foreach (var sort in sortingContent.data)
                                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
-                                                        }
 
                                                         dropDown.value.AddOptions(dropdownOption);
 
@@ -13527,7 +13527,7 @@ namespace Com.RedicalGames.Filar
                 {
                     SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, contentContainer =>
                     {
-                        if (Helpers.IsSuccessCode(contentContainer.resultsCode))
+                        if (contentContainer.Success())
                         {
                             if(SelectableManager.Instance != null)
                             {
@@ -13553,40 +13553,56 @@ namespace Com.RedicalGames.Filar
 
                                     }
 
-                                    switch (SceneAssetsManager.Instance.GetLayoutViewType())
+                                    SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                                     {
-                                        case LayoutViewType.ListView:
+                                        if (layoutViewCallbackResults.Success())
+                                        {
+                                            switch (layoutViewCallbackResults.data)
+                                            {
+                                                case LayoutViewType.ListView:
 
-                                            SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
+                                                    SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
 
-                                            break;
+                                                    break;
 
-                                        case LayoutViewType.ItemView:
+                                                case LayoutViewType.ItemView:
 
-                                            SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
+                                                    SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
 
-                                            break;
-                                    }
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                            Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                    });
 
                                     if (!string.IsNullOrEmpty(selectionName))
                                         contentContainer.data.OnLayoutViewChangeSelection(selectionName);
                                 }
                                 else
                                 {
-                                    switch (SceneAssetsManager.Instance.GetLayoutViewType())
+                                    SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                                     {
-                                        case LayoutViewType.ListView:
+                                        if (layoutViewCallbackResults.Success())
+                                        {
+                                            switch (layoutViewCallbackResults.data)
+                                            {
+                                                case LayoutViewType.ListView:
 
-                                            SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
+                                                    SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
 
-                                            break;
+                                                    break;
 
-                                        case LayoutViewType.ItemView:
+                                                case LayoutViewType.ItemView:
 
-                                            SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
+                                                    SceneAssetsManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
 
-                                            break;
-                                    }
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                            Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                    });
                                 }
 
                                 //ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, selectionOptionImageViewType);
@@ -15043,7 +15059,7 @@ namespace Com.RedicalGames.Filar
                                 dropdownOption.Add(new TMP_Dropdown.OptionData() { text = filter });
 
                             dropdown.value.AddOptions(dropdownOption);
-                            dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value));
+                            dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value, dropdown.dataPackets));
 
                         }
                         else
@@ -15075,10 +15091,7 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
 
-            void OnDropDownOptionValueChange(int value)
-            {
-                LogSuccess($"======> Dropdown Index : {value}", this);
-            }
+            void OnDropDownOptionValueChange(int value, DropdownDataPackets dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
 
             protected abstract void OnSubscribeToActionEvents(bool subscribe);
 
@@ -15339,20 +15352,29 @@ namespace Com.RedicalGames.Filar
 
                                         if (widgetsContainer.GetContentCount() == SelectableManager.Instance.GetFocusedSelectionDataCount())
                                         {
-                                            switch (SceneAssetsManager.Instance.GetLayoutViewType())
+                                            SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults => 
                                             {
-                                                case LayoutViewType.ItemView:
+                                                if (layoutViewCallbackResults.Success())
+                                                {
+                                                    switch (layoutViewCallbackResults.data)
+                                                    {
+                                                        case LayoutViewType.ItemView:
 
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ItemViewDeselectionIcon);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ItemViewDeselectionIcon);
 
-                                                    break;
+                                                            break;
 
-                                                case LayoutViewType.ListView:
+                                                        case LayoutViewType.ListView:
 
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ListViewDeselectionIcon);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ListViewDeselectionIcon);
 
-                                                    break;
-                                            }
+                                                            break;
+                                                    }
+
+                                                }
+                                                else
+                                                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                            });
                                         }
 
                                         //Check This Man And Above
@@ -16407,20 +16429,28 @@ namespace Com.RedicalGames.Filar
 
             void OnWidgetSelectionEvent()
             {
-                switch (SceneAssetsManager.Instance.GetLayoutViewType())
+                SceneAssetsManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                 {
-                    case LayoutViewType.ItemView:
+                    if (layoutViewCallbackResults.Success())
+                    {
+                        switch (layoutViewCallbackResults.data)
+                        {
+                            case LayoutViewType.ItemView:
 
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ItemViewDeselectionIcon);
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ItemViewDeselectionIcon);
 
-                        break;
+                                break;
 
-                    case LayoutViewType.ListView:
+                            case LayoutViewType.ListView:
 
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ListViewDeselectionIcon);
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ListViewDeselectionIcon);
 
-                        break;
-                }
+                                break;
+                        }
+                    }
+                    else
+                        Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                });
             }
 
             #endregion
@@ -16660,6 +16690,7 @@ namespace Com.RedicalGames.Filar
             #region Overrides
 
             protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets);
+            protected abstract void OnActionDropdownValueChanged(int value, DropdownDataPackets dataPackets);
             protected abstract void OnScrollerValueChanged(Vector2 value);
             protected abstract void OnInputFieldValueChanged(string value, InputFieldDataPackets dataPackets);
             protected abstract void OnInputFieldValueChanged(int value, InputFieldDataPackets dataPackets);
@@ -18252,26 +18283,42 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                if (actionInputFieldList.Count > 0)
+                if (!string.IsNullOrEmpty(value))
                 {
-                    UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.action == type);
-
-                    if (inputField.value)
+                    if (actionInputFieldList != null && actionInputFieldList?.Count > 0)
                     {
-                        inputField.SetValue(value);
+                        UIInputField<InputFieldDataPackets> inputField = actionInputFieldList?.Find((x) => x.dataPackets.action == type);
 
-                        callbackResults.results = $"ActionInputFieldList Value : {value} Set For Type : {type}.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        if (inputField != null)
+                        {
+                            if (inputField?.value)
+                            {
+                                inputField.SetValue(value);
+
+                                callbackResults.results = $"ActionInputFieldList Value : {value} Set For Type : {type}.";
+                                callbackResults.resultsCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Action InputField List Value : {value} For Type : {type} Is Missing / Null.";
+                                callbackResults.resultsCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Input Field Of Type : {type} Is Missing / Not Found In Action Input Field List.";
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.results = $"ActionInputFieldList Set Value : {value} For Type : {type} Is Missing / Null.";
+                        callbackResults.results = "ActionInputFieldList Is Null.";
                         callbackResults.resultsCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "ActionInputFieldList Is Null.";
+                    callbackResults.results = "Set Input Field Failed : Inpu Is Null.";
                     callbackResults.resultsCode = Helpers.ErrorCode;
                 }
 

@@ -25,6 +25,10 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
+        bool selectableContentContainer;
+
+        [Space(5)]
+        [SerializeField]
         List<AppData.UILayoutDimensions> widgetsUILayoutDimensionList = new List<AppData.UILayoutDimensions>();
 
         [Space(5)]
@@ -749,7 +753,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenWidget != null)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
 
                     screenWidget.gameObject.transform.SetParent(container, keepWorldPosition);
 
@@ -1033,39 +1037,47 @@ namespace Com.RedicalGames.Filar
 
         void SetSelectionStateInfo()
         {
-            if (SelectableManager.Instance != null)
+            if (IsSelectableContentContainer())
             {
-                if (SelectableManager.Instance.HasActiveSelection())
+                if (SelectableManager.Instance != null)
                 {
-                    SelectableManager.Instance.GetFocusedSelectionData(focusedSelectionDataCallback =>
+                    if (SelectableManager.Instance.HasActiveSelection())
                     {
-                        if (focusedSelectionDataCallback.Success())
+                        SelectableManager.Instance.GetFocusedSelectionData(focusedSelectionDataCallback =>
                         {
-                            GetSelectedWidgetList(focusedSelectionDataCallback.data, selectionCallback => 
+                            if (focusedSelectionDataCallback.Success())
                             {
-                                if (selectionCallback.Success())
+                                GetSelectedWidgetList(focusedSelectionDataCallback.data, selectionCallback =>
                                 {
-                                    SelectableManager.Instance.SetSelectionInfoState(selectionCallback.data, focusedSelectionDataCallback.data.selectionType, selectionSetCallback =>
+                                    if (selectionCallback.Success())
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(selectionSetCallback.resultsCode))
-                                            OnFocusToSelection(selectionSetCallback.data.GetWidgetAnchoredPosition());
-                                        else
-                                            LogError(selectionSetCallback.results, this, () => SetSelectionStateInfo());
-                                    });
-                                }
-                                else
-                                    Log(selectionCallback.resultsCode, selectionCallback.results, this);
-                            });
-                        }
-                        else
-                            LogError("Have Not Focused On Any Widget.", this, () => SetSelectionStateInfo());
-                    });
+                                        SelectableManager.Instance.SetSelectionInfoState(selectionCallback.data, focusedSelectionDataCallback.data.selectionType, selectionSetCallback =>
+                                        {
+                                            if (AppData.Helpers.IsSuccessCode(selectionSetCallback.resultsCode))
+                                                OnFocusToSelection(selectionSetCallback.data.GetWidgetAnchoredPosition());
+                                            else
+                                                LogError(selectionSetCallback.results, this, () => SetSelectionStateInfo());
+                                        });
+                                    }
+                                    else
+                                        Log(selectionCallback.resultsCode, selectionCallback.results, this);
+                                });
+                            }
+                            else
+                                LogError("Have Not Focused On Any Widget.", this, () => SetSelectionStateInfo());
+                        });
+                    }
+                    else
+                        LogError("Doesn't Have Focused Selection Data.", this, () => SetSelectionStateInfo());
                 }
                 else
-                    LogError("Doesn't Have Focused Selection Data.", this, () => SetSelectionStateInfo());
+                    LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => SetSelectionStateInfo());
             }
-            else
-                LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => SetSelectionStateInfo());
+        }
+
+        public bool IsSelectableContentContainer()
+        {
+            return selectableContentContainer;
         }
 
         public void GetSelectedWidgetList(AppData.FocusedSelectionData selectionData, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
@@ -1248,45 +1260,53 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            if (GetUIScreenType() == ScreenUIManager.Instance.GetCurrentUIScreenType())
+            if (ScreenUIManager.Instance.HasCurrentScreen())
             {
-                if (GetContentCount() > 0)
+                if (GetUIScreenType() == ScreenUIManager.Instance.GetCurrentScreenData()?.value?.GetUIScreenType())
                 {
-                    for (int i = 0; i < GetContentCount(); i++)
-                        if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
-                        {
-                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
-                                Destroy(container.GetChild(i).gameObject);
+                    if (GetContentCount() > 0)
+                    {
+                        for (int i = 0; i < GetContentCount(); i++)
+                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                            {
+                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
+                                    Destroy(container.GetChild(i).gameObject);
+                                else
+                                    LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                            }
                             else
-                                LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+
+                        await AppData.Helpers.GetWaitUntilAsync(GetContentCount() == 0);
+
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+
+                        if (container.childCount == 0)
+                        {
+                            callbackResults.results = $"{GetContentCount()} : Widgets Cleared Successfully From Container : {gameObject.name}";
+                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                         }
                         else
-                            LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
-
-                    await AppData.Helpers.GetWaitUntilAsync(GetContentCount() == 0);
-
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
-
-                    if (container.childCount == 0)
-                    {
-                        callbackResults.results = $"{GetContentCount()} : Widgets Cleared Successfully From Container : {gameObject.name}";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        {
+                            callbackResults.results = $"Widgets Failed To Clear From Container : {gameObject.name}";
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.results = $"Widgets Failed To Clear From Container : {gameObject.name}";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.results = $"No Widgets To Clear From Container : {gameObject.name}";
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"No Widgets To Clear From Container : {gameObject.name}";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.results = $"Container Screen Type : {GetUIScreenType()} Doesn't Match Current Screen Type : {ScreenUIManager.Instance.GetCurrentUIScreenType()}";
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
-            {      
-                callbackResults.results = $"Container Screen Type : {GetUIScreenType()} Doesn't Match Current Screen Type : {ScreenUIManager.Instance.GetCurrentUIScreenType()}";
+            {
+                callbackResults.results = $"Curent Screen Is Not Yet Initialized.";
                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
             }
 
@@ -1683,7 +1703,6 @@ namespace Com.RedicalGames.Filar
 
             callback?.Invoke(callbackResults);
         }
-
 
         public void HasAllWidgetsSelected(Action<AppData.CallbackData<int>> callback)
         {

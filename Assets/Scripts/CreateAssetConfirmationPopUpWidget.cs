@@ -63,34 +63,29 @@ namespace Com.RedicalGames.Filar
 
             if (SceneAssetsManager.Instance != null)
             {
-                List<string> categories = SceneAssetsManager.Instance.GetAssetCategoryList();
+                var content = SceneAssetsManager.Instance.GetDropdownContent<AppData.SceneAssetCategoryType>();
 
-                if (categories != null)
+                if (content.data != null)
                 {
                     if (assetCategoryDropdown != null)
                     {
-                        assetCategoryDropdown.ClearOptions();
-
                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                        foreach (var category in categories)
-                        {
+                        foreach (var category in content.data)
                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = category });
-                        }
 
                         assetCategoryDropdown.AddOptions(dropdownOption);
 
                         assetCategoryDropdown.onValueChanged.AddListener((value) => OnAssetCategorySelectionDropdownValueChanged(value));
                     }
                     else
-                        Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
+                        LogError("Category Drop Down Missing / Not Assigned In The Editor Inspector Panel.", this);
                 }
                 else
-                    Debug.LogWarning("--> Asset Manager Asset Category List Not Initialized.");
-
+                    LogError("Scene Asset Category Content Missing / Not Found.", this);
             }
             else
-                Debug.LogWarning("--> Asset Manager Not Initialized.");
+                LogError("Scene Asset Manager Instance Not Initialized.", this);
 
             if (GetLayoutView().layout.GetComponent<RectTransform>())
                 screenRect = GetLayoutView().layout.GetComponent<RectTransform>();
@@ -257,6 +252,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
         {
             throw new NotImplementedException();
         }

@@ -119,13 +119,13 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget() => newFolderStructureData = CreateNewFolderStructureData();
-
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnScreenWidget()
         {
+            newFolderStructureData = CreateNewFolderStructureData();
             OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
+
+        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
         protected override void OnSubscribeToActionEvents(bool subscribe)
         {
@@ -161,8 +161,36 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+           switch(dataPackets.action)
+            {
+                case AppData.InputDropDownActionType.ProjectType:
+
+                    int index = value + 1;
+                    var categoryType = (AppData.ProjectCategoryType)index;
+
+                    if (newFolderStructureData != null)
+                        newFolderStructureData.projectInfo.projectType = categoryType;
+                    else
+                        LogError("New Folder Structure Data Is Null.", this);
+
+                    break;
+
+                case AppData.InputDropDownActionType.ProjectTamplate:
+
+                    var templateType = (AppData.ProjectTamplateType)value;
+
+                    if (newFolderStructureData != null)
+                        newFolderStructureData.projectInfo.templateType = templateType;
+                    else
+                        LogError("New Folder Structure Data Is Null.", this);
+
+                    break;
+            }
+        }
+
         #endregion
 
-      
     }
 }
