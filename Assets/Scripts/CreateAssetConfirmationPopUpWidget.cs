@@ -63,7 +63,7 @@ namespace Com.RedicalGames.Filar
 
             if (SceneAssetsManager.Instance != null)
             {
-                var content = SceneAssetsManager.Instance.GetDropdownContent<AppData.SceneAssetCategoryType>();
+                var content = SceneAssetsManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
 
                 if (content.data != null)
                 {
@@ -106,10 +106,10 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Pop Up Title Displayer Missing / Not Assigned In The Inspector Panel.");
 
-                    if (SceneAssetsManager.Instance.GetCurrentSceneAsset().currentAssetMode == AppData.SceneAssetModeType.CreateMode)
+                    if (SceneAssetsManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.CreateMode)
                         ClearInputFields();
 
-                    if (SceneAssetsManager.Instance.GetCurrentSceneAsset().currentAssetMode == AppData.SceneAssetModeType.EditMode)
+                    if (SceneAssetsManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.EditMode)
                     {
                         if (nameInputField)
                             nameInputField.text = SceneAssetsManager.Instance.GetCurrentSceneAsset().name;
@@ -206,7 +206,7 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.SceneAsset sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                AppData.SceneAssetCategoryType selectedCategory = (AppData.SceneAssetCategoryType)dropdownIndex;
+                AppData.AssetCategoryType selectedCategory = (AppData.AssetCategoryType)dropdownIndex;
 
                 sceneAsset.categoryType = selectedCategory;
 

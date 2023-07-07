@@ -60,7 +60,7 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> Scene Asset Container List Is Null / Not Initialized In The Inspector Panel.");
         }
 
-        void OnResetSceneAssetPreviewPoseEvent(AppData.SceneAssetModeType assetModeType)
+        void OnResetSceneAssetPreviewPoseEvent(AppData.AssetModeType assetModeType)
         {
             if (sceneAssetContainerList.Count > 0)
             {

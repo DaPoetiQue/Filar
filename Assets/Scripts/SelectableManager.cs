@@ -65,7 +65,7 @@ namespace Com.RedicalGames.Filar
         List<GameObject> selectableGameObjectList = new List<GameObject>();
 
         [SerializeField]
-        AppData.FolderStructureSelectionSystem folderStructureSelection = new AppData.FolderStructureSelectionSystem();
+        AppData.ProjectStructureSelectionSystem projectStructureSelectionSystem = new AppData.ProjectStructureSelectionSystem();
 
         [SerializeField]
         Queue<AppData.UIWidgetInfo> focusedWidgetInfo = new Queue<AppData.UIWidgetInfo>();
@@ -135,8 +135,8 @@ namespace Com.RedicalGames.Filar
         {
             Debug.Log($"--> Selectable Manager Initialized From : {this.gameObject.name}");
 
-            folderStructureSelection.OnSelection = ShowWidgetOnSelection;
-            folderStructureSelection.OnDeselection = HideWidgetOnDeselection;
+            projectStructureSelectionSystem.OnSelection = ShowWidgetOnSelection;
+            projectStructureSelectionSystem.OnDeselection = HideWidgetOnDeselection;
         }
 
         #region Events
@@ -234,9 +234,33 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public AppData.FolderStructureSelectionSystem GetFolderStructureSelectionData()
+        public void GetProjectStructureSelectionSystem(Action<AppData.CallbackData<AppData.ProjectStructureSelectionSystem>> callback)
         {
-            return folderStructureSelection;
+            AppData.CallbackData<AppData.ProjectStructureSelectionSystem> callbackResults = new AppData.CallbackData<AppData.ProjectStructureSelectionSystem>();
+
+            AppData.Helpers.ProjectDataComponentValid(projectStructureSelectionSystem, validComponentCallbackResults => 
+            {
+                callbackResults.results = validComponentCallbackResults.results;
+                callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    if (projectStructureSelectionSystem != null)
+                    {
+                        callbackResults.results = $"Project Structure Selection System : {projectStructureSelectionSystem.name} Found.";
+                        callbackResults.data = projectStructureSelectionSystem;
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = "ProjectStructureSelectionSystem Not Found / Not Yet Initialized.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+            });
+
+            callback.Invoke(callbackResults);
         }
 
         public void AddToSelectableList(GameObject asset, AppData.ContentContainerType containerType, AppData.UIScreenType screenType)
@@ -490,9 +514,17 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
-            GetFolderStructureSelectionData().Select(selectionName, selectionType, selectionCallback => 
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults => 
             {
-                callbackResults = selectionCallback; 
+                if (projectSelectionCallbackResults.Success())
+                {
+                    projectSelectionCallbackResults.data.Select(selectionName, selectionType, selectionCallback =>
+                    {
+                        callbackResults = selectionCallback;
+                    });
+                }
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -502,7 +534,13 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
-            GetFolderStructureSelectionData().Select(selection.name, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.Select(selection.name, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -511,7 +549,13 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
-            GetFolderStructureSelectionData().Select(selection.name, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.Select(selection.name, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -520,20 +564,50 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
-            GetFolderStructureSelectionData().Select(selectionNames, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.Select(selectionNames, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget selectable, AppData.SceneDataPackets dataPackets, bool isInitialSelection = false) => GetFolderStructureSelectionData().Select(selectable, dataPackets, isInitialSelection);
+        public void Select(AppData.UIScreenWidget selectable, AppData.SceneDataPackets dataPackets, bool isInitialSelection = false)
+        {
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.Select(selectable, dataPackets, isInitialSelection);
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+        }
 
-        public void Selected(string name, AppData.FocusedSelectionType selectionType) => GetFolderStructureSelectionData().Select(name, selectionType);
+        public void Selected(string name, AppData.FocusedSelectionType selectionType)
+        {
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.Select(name, selectionType);
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+        }
 
         public void CacheSelection(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().CacheSelection(cacheCallback => { callbackResults = cacheCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.CacheSelection(cacheCallback => { callbackResults = cacheCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -542,30 +616,58 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().ClearSelectionCache(cacheCallback => { callbackResults = cacheCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.ClearSelectionCache(cacheCallback => { callbackResults = cacheCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
         public bool HasCachedSelectionInfo()
         {
-            return GetFolderStructureSelectionData().HasCachedSelectionInfo();
+            bool hasCachedInfo = false;
+
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    hasCachedInfo = projectSelectionCallbackResults.data.HasCachedSelectionInfo();
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+
+            return hasCachedInfo;
         }
 
-        public void GetCachedSelectionInfo(Action<AppData.CallbackDatas<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
+        public void GetCachedSelectionInfo(Action<AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
         {
-            AppData.CallbackDatas<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackDatas<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
-            GetFolderStructureSelectionData().GetCachedSelectionInfo(getCacheCallback => { callbackResults = getCacheCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.GetCachedSelectionInfo(getCacheCallback => { callbackResults = getCacheCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback.Invoke(callbackResults);
         }
 
-        public void GetCachedSelectionInfoNameList(Action<AppData.CallbackDatas<string>> callback)
+        public void GetCachedSelectionInfoNameList(Action<AppData.CallbackDataList<string>> callback)
         {
-            AppData.CallbackDatas<string> callbackResults = new AppData.CallbackDatas<string>();
+            AppData.CallbackDataList<string> callbackResults = new AppData.CallbackDataList<string>();
 
-            GetFolderStructureSelectionData().GetCachedSelectionInfoNameList(getCacheCallback => { callbackResults = getCacheCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.GetCachedSelectionInfoNameList(getCacheCallback => { callbackResults = getCacheCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback.Invoke(callbackResults);
         }
@@ -574,7 +676,13 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
 
-            GetFolderStructureSelectionData().OnAddSelection(selectionName, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.OnAddSelection(selectionName, selectionType, selectionCallback => { callbackResults = selectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -583,23 +691,54 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().OnRemoveSelection(selectionName, selectionType, removeSelectionCallback => { callbackResults = removeSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.OnRemoveSelection(selectionName, selectionType, removeSelectionCallback => { callbackResults = removeSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
-        public void DeselectAll() => GetFolderStructureSelectionData().DeselectAll();
+        public void DeselectAll()
+        {
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.DeselectAll();
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+        }
 
         public AppData.FocusedSelectionType GetCurrentSelectionType()
         {
-            return GetFolderStructureSelectionData().GetCurrentSelectionType();
+            AppData.FocusedSelectionType selectionType = AppData.FocusedSelectionType.Default;
+
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    selectionType = projectSelectionCallbackResults.data.GetCurrentSelectionType();
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+
+            return selectionType;
         }
 
         public void HasFocusedSelectionInfo(string selectionName, Action<AppData.Callback> callback)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().HasFocusedSelectionInfo(selectionName, hasSelectionCallback => { callbackResults = hasSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.HasFocusedSelectionInfo(selectionName, hasSelectionCallback => { callbackResults = hasSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback.Invoke(callbackResults);
         }
@@ -608,7 +747,13 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().OnSetFocusedWidgetSelectionInfo(newSelectionInfo, isActiveSelection, onSetFocusedWidgetSelectionCallback => { callbackResults = onSetFocusedWidgetSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.OnSetFocusedWidgetSelectionInfo(newSelectionInfo, isActiveSelection, onSetFocusedWidgetSelectionCallback => { callbackResults = onSetFocusedWidgetSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -617,21 +762,43 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().OnSetFocusedWidgetSelectionInfo(newSelectionInfoList, selectionType, isActiveSelection, onSetFocusedWidgetSelectionCallback => { callbackResults = onSetFocusedWidgetSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.OnSetFocusedWidgetSelectionInfo(newSelectionInfoList, selectionType, isActiveSelection, onSetFocusedWidgetSelectionCallback => { callbackResults = onSetFocusedWidgetSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
         public bool HasActiveSelection()
         {
-            return GetFolderStructureSelectionData().HasActiveSelections();
+            bool hasActiveContent = false;
+
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    hasActiveContent = projectSelectionCallbackResults.data.HasActiveSelections();
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+
+            return hasActiveContent;
         }
 
         public void OnClearFocusedSelectionsInfo(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().OnClearFocusedSelectionsInfo(onClearFocusedSelectionsInfoCallback => { callbackResults = onClearFocusedSelectionsInfoCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.OnClearFocusedSelectionsInfo(onClearFocusedSelectionsInfoCallback => { callbackResults = onClearFocusedSelectionsInfoCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -640,7 +807,13 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            GetFolderStructureSelectionData().OnClearFocusedSelectionsInfo(resetWidgets, onClearFocusedSelectionsInfoCallback => { callbackResults = onClearFocusedSelectionsInfoCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.OnClearFocusedSelectionsInfo(resetWidgets, onClearFocusedSelectionsInfoCallback => { callbackResults = onClearFocusedSelectionsInfoCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
@@ -649,42 +822,90 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.FocusedSelectionData> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionData>();
 
-            GetFolderStructureSelectionData().GetFocusedSelectionData(getFocusedSelectionCallback => { callbackResults = getFocusedSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.GetFocusedSelectionData(getFocusedSelectionCallback => { callbackResults = getFocusedSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
         public int GetFocusedSelectionDataCount()
         {
-            return GetFolderStructureSelectionData().GetFocusedSelectionDataCount();
+            int dataCount = 0;
+
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    dataCount = projectSelectionCallbackResults.data.GetFocusedSelectionDataCount();
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+
+            return dataCount;
         }
 
         public void SetSelectionInfoState(List<AppData.UIScreenWidget> selectionList, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback = null)
         {
             AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
 
-            GetFolderStructureSelectionData().SetSelectionInfoState(selectionList, selectionType, getFolderStructureSelectionCallback => { callbackResults = getFolderStructureSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.SetSelectionInfoState(selectionList, selectionType, getFolderStructureSelectionCallback => { callbackResults = getFolderStructureSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
         public AppData.FocusedSelectionType GetFocusedSelectionTypeFromState(AppData.InputUIState state)
         {
-            return GetFolderStructureSelectionData().GetFocusedSelectionTypeFromState(state);
+            AppData.FocusedSelectionType selectionType = AppData.FocusedSelectionType.Default;
+
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    selectionType = projectSelectionCallbackResults.data.GetFocusedSelectionTypeFromState(state);
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+
+            return selectionType;
         }
 
         public void GetFocusedSelectionState(AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionStateInfo>> callback)
         {
             AppData.CallbackData<AppData.FocusedSelectionStateInfo> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionStateInfo>();
 
-            GetFolderStructureSelectionData().GetFocusedSelectionState(selectionType, getFocusedSelectionCallback => { callbackResults = getFocusedSelectionCallback; });
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    projectSelectionCallbackResults.data.GetFocusedSelectionState(selectionType, getFocusedSelectionCallback => { callbackResults = getFocusedSelectionCallback; });
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             callback?.Invoke(callbackResults);
         }
 
         public List<AppData.FocusedSelectionStateInfo> GetSelectionStates()
         {
-            return GetFolderStructureSelectionData().GetSelectionStates();
+            List<AppData.FocusedSelectionStateInfo> selectionInfo = new List<AppData.FocusedSelectionStateInfo>();
+
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+            {
+                if (projectSelectionCallbackResults.Success())
+                    selectionInfo = projectSelectionCallbackResults.data.GetSelectionStates();
+                else
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
+
+            return selectionInfo;
         }
 
         #endregion
@@ -760,9 +981,9 @@ namespace Com.RedicalGames.Filar
             return selectedSceneAsset != null;
         }
 
-        public AppData.FolderStructureSelectionSystem GetFolderStructureSelection()
+        public AppData.ProjectStructureSelectionSystem GetFolderStructureSelection()
         {
-            return folderStructureSelection;
+            return projectStructureSelectionSystem;
         }
 
         public void SetSelectedSceneAsset(SelectableSceneAssetHandler selectableSceneAsset, bool eventCameraTransition = true)
@@ -1049,49 +1270,57 @@ namespace Com.RedicalGames.Filar
         {
             #region Pin Button State
 
-            int selectionCount = GetFolderStructureSelectionData().GetCurrentSelections().Count;
-            var pinData = HasPinnedSelection(GetFolderStructureSelectionData().GetCurrentSelections());
-
-            if (pinData.disableButton)
+            GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
-                return;
-            }
-            else
-            {
-                if (pinData.pinned)
+                if (projectSelectionCallbackResults.Success())
                 {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.PinDisabledIcon);
+                    int selectionCount = projectSelectionCallbackResults.data.GetCurrentSelections().Count;
+                    var pinData = HasPinnedSelection(projectSelectionCallbackResults.data.GetCurrentSelections());
+
+                    if (pinData.disableButton)
+                    {
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
+                        return;
+                    }
+                    else
+                    {
+                        if (pinData.pinned)
+                        {
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.PinDisabledIcon);
+                        }
+                        else
+                        {
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.PinEnabledIcon);
+                        }
+                    }
+
+                    #endregion
+
+                    #region Edit Button State
+
+                    if (selectionCount == 1)
+                    {
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Enabled);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
+                    }
+                    else if (selectionCount > 1)
+                    {
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
+                    }
+                    else
+                    {
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Disabled);
+                        //ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Hide, AppData.InputUIState.Disabled);
+                    }
                 }
                 else
-                {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.PinEnabledIcon);
-                }
-            }
-
-            #endregion
-
-            #region Edit Button State
-
-            if (selectionCount == 1)
-            {
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Enabled);
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
-            }
-            else if (selectionCount > 1)
-            {
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
-            }
-            else
-            {
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
-                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Disabled);
-                //ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Hide, AppData.InputUIState.Disabled);
-            }
+                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+            });
 
             #endregion
         }
@@ -1188,13 +1417,13 @@ namespace Com.RedicalGames.Filar
             yield return new WaitForEndOfFrame();
             yield return new WaitUntil(() => SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.ContainerRefreshed() == true);
 
-            folderStructureSelection.AddSelectables(widgets);
+            projectStructureSelectionSystem.AddSelectables(widgets);
         }
 
         IEnumerator OnDeselectAsync(AppData.UIScreenWidget deselectedWidget)
         {
             yield return new WaitForEndOfFrame();
-            folderStructureSelection.Deselect(deselectedWidget);
+            projectStructureSelectionSystem.Deselect(deselectedWidget);
 
             OnTriggerFocusToWidgets(true);
         }
@@ -1202,7 +1431,7 @@ namespace Com.RedicalGames.Filar
         IEnumerator OnDeselectAllAsync()
         {
             yield return new WaitForEndOfFrame();
-            folderStructureSelection.DeselectAll();
+            projectStructureSelectionSystem.DeselectAll();
         }
 
         IEnumerator OnShowSelectionOptions(AppData.SceneDataPackets dataPackets)
@@ -1253,7 +1482,7 @@ namespace Com.RedicalGames.Filar
                         {
                             case AppData.OrientationType.Vertical:
 
-                                foreach (var selection in folderStructureSelection.GetCurrentSelections())
+                                foreach (var selection in projectStructureSelectionSystem.GetCurrentSelections())
                                 {
                                     if (!positions.Contains(selection.GetWidgetLocalPosition().y))
                                     {
@@ -1270,7 +1499,7 @@ namespace Com.RedicalGames.Filar
 
                             case AppData.OrientationType.Horizontal:
 
-                                foreach (var selection in folderStructureSelection.GetCurrentSelections())
+                                foreach (var selection in projectStructureSelectionSystem.GetCurrentSelections())
                                 {
                                     if (!positions.Contains(selection.GetWidgetLocalPosition().x))
                                     {
@@ -1290,7 +1519,7 @@ namespace Com.RedicalGames.Filar
                     {
                         Vector2 widgetPosition = Vector2.zero;
 
-                        foreach (var selection in folderStructureSelection.GetCurrentSelections())
+                        foreach (var selection in projectStructureSelectionSystem.GetCurrentSelections())
                             widgetPosition += selection.GetWidgetLocalPosition();
 
                         AppData.ActionEvents.ScrollAndFocusToSelectionEvent(widgetPosition, SmoothTransitionToSelection);

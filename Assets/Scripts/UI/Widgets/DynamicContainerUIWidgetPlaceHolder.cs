@@ -8,7 +8,6 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-
         #region Unity Callbacks
 
         void Start() => Initialization();
@@ -49,7 +48,7 @@ namespace Com.RedicalGames.Filar
 
         public override void OnDeselect() => Deselected();
 
-        protected override void OnSetFileData(AppData.SceneAsset assetData)
+        protected override void OnSetAssetData(AppData.SceneAsset assetData)
         {
             throw new System.NotImplementedException();
         }
@@ -59,7 +58,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        protected override void OnSetUIWidgetData(AppData.ProjectStructureData structureData)
         {
             throw new System.NotImplementedException();
         }

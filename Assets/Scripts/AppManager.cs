@@ -28,7 +28,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.FolderStructureData initialStructureData = new AppData.FolderStructureData();
+        AppData.ProjectStructureData initialStructureData = new AppData.ProjectStructureData();
 
         [SerializeField]
         AppData.SceneDataPackets initialLoadDataPackets = new AppData.SceneDataPackets();
@@ -77,6 +77,15 @@ namespace Com.RedicalGames.Filar
 
             SceneAssetsManager.Instance.SetCurrentProjectStructureData(initialStructureData);
 
+            var projectInfo = new AppData.ProjectInfo
+            {
+                name = initialStructureData.name,
+                sortType = AppData.SortType.Ascending,
+                categoryType = AppData.ProjectCategoryType.Project_All
+            };
+
+            initialStructureData.projectInfo = projectInfo;
+
             SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
             {
                 if (containerResults.Success())
@@ -118,7 +127,7 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> Screen Manager Missing.");
         }
 
-        public AppData.FolderStructureData GetInitialStructureData()
+        public AppData.ProjectStructureData GetInitialStructureData()
         {
             return initialStructureData;
         }
