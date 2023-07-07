@@ -50,7 +50,7 @@ namespace Com.RedicalGames.Filar
         AppData.SceneDataPackets currentDataPackets = new AppData.SceneDataPackets();
 
         [SerializeField]
-        AppData.SceneAssetData currentSceneAssetData;
+        AppData.AssetData currentSceneAssetData;
 
         AndroidJavaObject filePickerPluginInstance;
 
@@ -300,7 +300,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (results)
                                     {
-                                        createdAsset.currentAssetMode = AppData.SceneAssetModeType.CreateMode;
+                                        createdAsset.assetMode = AppData.AssetModeType.CreateMode;
                                         SceneAssetsManager.Instance.UpdateCurrentSceneAsset(createdAsset);
 
                                     // Update Button Field Widgets.
@@ -327,7 +327,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        void GenerateNewSceneAssetData(string assetPath, string assetMTLPath, Action<AppData.SceneAssetData, bool> callBack)
+        void GenerateNewSceneAssetData(string assetPath, string assetMTLPath, Action<AppData.AssetData, bool> callBack)
         {
             try
             {
@@ -345,15 +345,15 @@ namespace Com.RedicalGames.Filar
                     mtlField.name = "Asset Model MTL Field";
                     mtlField.path = assetMTLPath;
                     mtlField.fieldType = AppData.AssetFieldType.MTLFile;
-                    mtlField.extensionType = AppData.AssetFileExtensionType.MTL;
+                    mtlField.extensionType = AppData.FileExtensionType.MTL;
                     mtlField.directoryType = AppData.DirectoryType.Meta_File_Storage;
 
                     if (assetPath.Contains(".obj"))
-                        objectField.extensionType = AppData.AssetFileExtensionType.OBJ;
+                        objectField.extensionType = AppData.FileExtensionType.OBJ;
 
                     switch (objectField.extensionType)
                     {
-                        case AppData.AssetFileExtensionType.OBJ:
+                        case AppData.FileExtensionType.OBJ:
 
                             objectField.fieldType = AppData.AssetFieldType.OBJFile;
 
@@ -368,7 +368,7 @@ namespace Com.RedicalGames.Filar
                     if (!assetFieldList.Contains(mtlField))
                         assetFieldList.Add(mtlField);
 
-                    AppData.SceneAssetData assetData = new AppData.SceneAssetData()
+                    AppData.AssetData assetData = new AppData.AssetData()
                     {
                         assetFields = assetFieldList,
                         hasMLTFile = true
@@ -387,11 +387,11 @@ namespace Com.RedicalGames.Filar
                     field.path = assetPath;
 
                     if (assetPath.Contains(".obj"))
-                        field.extensionType = AppData.AssetFileExtensionType.OBJ;
+                        field.extensionType = AppData.FileExtensionType.OBJ;
 
                     switch (field.extensionType)
                     {
-                        case AppData.AssetFileExtensionType.OBJ:
+                        case AppData.FileExtensionType.OBJ:
 
                             field.fieldType = AppData.AssetFieldType.OBJFile;
 
@@ -403,7 +403,7 @@ namespace Com.RedicalGames.Filar
                     if (!assetFieldList.Contains(field))
                         assetFieldList.Add(field);
 
-                    AppData.SceneAssetData assetData = new AppData.SceneAssetData()
+                    AppData.AssetData assetData = new AppData.AssetData()
                     {
                         assetFields = assetFieldList,
                         hasMLTFile = false
@@ -449,13 +449,13 @@ namespace Com.RedicalGames.Filar
                     #region Extension Data
 
                     if (path.Contains(".png"))
-                        field.extensionType = AppData.AssetFileExtensionType.PNG;
+                        field.extensionType = AppData.FileExtensionType.PNG;
 
                     if (path.Contains(".jpg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPG;
+                        field.extensionType = AppData.FileExtensionType.JPG;
 
                     if (path.Contains(".jpeg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPEG;
+                        field.extensionType = AppData.FileExtensionType.JPEG;
 
                     #endregion
 
@@ -503,13 +503,13 @@ namespace Com.RedicalGames.Filar
                     #region Extension Data
 
                     if (path.Contains(".png"))
-                        field.extensionType = AppData.AssetFileExtensionType.PNG;
+                        field.extensionType = AppData.FileExtensionType.PNG;
 
                     if (path.Contains(".jpg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPG;
+                        field.extensionType = AppData.FileExtensionType.JPG;
 
                     if (path.Contains(".jpeg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPEG;
+                        field.extensionType = AppData.FileExtensionType.JPEG;
 
                     #endregion
 
@@ -570,13 +570,13 @@ namespace Com.RedicalGames.Filar
                     #region Extension Data
 
                     if (path.Contains(".png"))
-                        field.extensionType = AppData.AssetFileExtensionType.PNG;
+                        field.extensionType = AppData.FileExtensionType.PNG;
 
                     if (path.Contains(".jpg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPG;
+                        field.extensionType = AppData.FileExtensionType.JPG;
 
                     if (path.Contains(".jpeg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPEG;
+                        field.extensionType = AppData.FileExtensionType.JPEG;
 
                     #endregion
 
@@ -636,13 +636,13 @@ namespace Com.RedicalGames.Filar
                     #region Extension Data
 
                     if (path.Contains(".png"))
-                        field.extensionType = AppData.AssetFileExtensionType.PNG;
+                        field.extensionType = AppData.FileExtensionType.PNG;
 
                     if (path.Contains(".jpg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPG;
+                        field.extensionType = AppData.FileExtensionType.JPG;
 
                     if (path.Contains(".jpeg"))
-                        field.extensionType = AppData.AssetFileExtensionType.JPEG;
+                        field.extensionType = AppData.FileExtensionType.JPEG;
 
                     #endregion
 
@@ -691,7 +691,7 @@ namespace Com.RedicalGames.Filar
                 AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
                 {
                     name = "Image Field",
-                    directory = path,
+                    projectDirectory = path,
                     type = AppData.DirectoryType.Image_Asset_Storage
                 };
 
@@ -716,7 +716,7 @@ namespace Com.RedicalGames.Filar
                 AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
                 {
                     name = "HDRI Field",
-                    directory = path,
+                    projectDirectory = path,
                     type = AppData.DirectoryType.Image_Asset_Storage
                 };
 

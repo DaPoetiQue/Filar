@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
                                 };
 
                                 Debug.LogError("=============> Please Fix Here............. Important");
-                                ScreenNavigationManager.Instance.NavigateToFolder(folder, selectedWidget, actionButton.dataPackets.folderStructureType);
+                                ScreenNavigationManager.Instance.NavigateToFolder(folderData, selectedWidget, actionButton.dataPackets.folderStructureType);
                             }
                             else
                                 Debug.LogWarning("--> OnActionButtonInputs Failed : SceneAssetsManager.Instance Is Not Yet Initialized.");
@@ -70,7 +70,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetUIWidgetData(AppData.Folder folder)
         {
-            if (!string.IsNullOrEmpty(folder.storageData.directory))
+            if (!string.IsNullOrEmpty(folder.storageData.projectDirectory))
             {
                 SetUITextDisplayerValue(folder.name, AppData.ScreenTextType.TitleDisplayer);
 
@@ -102,7 +102,7 @@ namespace Com.RedicalGames.Filar
 
         public override void OnDeselect() => Deselected();
 
-        protected override void OnSetFileData(AppData.SceneAsset assetData)
+        protected override void OnSetAssetData(AppData.SceneAsset assetData)
         {
             throw new System.NotImplementedException();
         }
@@ -112,7 +112,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        protected override void OnSetUIWidgetData(AppData.ProjectStructureData structureData)
         {
             throw new System.NotImplementedException();
         }
