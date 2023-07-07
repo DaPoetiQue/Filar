@@ -163,10 +163,10 @@ namespace Com.RedicalGames.Filar
             {
                 string filePathFormatted = string.Empty;
 
-                if (directoryData.directory.Length > displayedPathLength)
-                    filePathFormatted = directoryData.directory.Substring(0, displayedPathLength) + "...";
+                if (directoryData.projectDirectory.Length > displayedPathLength)
+                    filePathFormatted = directoryData.projectDirectory.Substring(0, displayedPathLength) + "...";
                 else
-                    filePathFormatted = directoryData.directory;
+                    filePathFormatted = directoryData.projectDirectory;
 
                 SetInputFieldValue(AppData.InputFieldActionType.ColorReferenceImageURLField, filePathFormatted, (setValueCallbackResults) =>
                 {
@@ -180,9 +180,9 @@ namespace Com.RedicalGames.Filar
 
         void GenerateColorData()
         {
-            if (!string.IsNullOrEmpty(directoryData.directory))
+            if (!string.IsNullOrEmpty(directoryData.projectDirectory))
             {
-                Texture2D texture = AppData.Helpers.LoadTextureFile(directoryData.directory);
+                Texture2D texture = AppData.Helpers.LoadTextureFile(directoryData.projectDirectory);
 
                 bool isLargeFileSize = (texture.width > referenceImageTargetResolution.width || texture.height > referenceImageTargetResolution.height) ? true : false;
 

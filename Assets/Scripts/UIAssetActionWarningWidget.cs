@@ -41,94 +41,133 @@ namespace Com.RedicalGames.Filar
         {
             if (snapToSelection)
             {
-                if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionSystemCallbackResults =>
                 {
-                    List<AppData.UIScreenWidget> currentPage = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
-
-                    if (currentPage != null && currentPage.Count > 0)
+                    if (projectSelectionSystemCallbackResults.Success())
                     {
-                        List<AppData.UIScreenWidget> selectedWidgets = new List<AppData.UIScreenWidget>();
-                        var currentSelections = SelectableManager.Instance.GetFolderStructureSelectionData().GetCurrentSelections();
+                        var currentSelections = projectSelectionSystemCallbackResults.data.GetCurrentSelections();
 
-                        foreach (var item in currentPage)
+                        SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults => 
                         {
-                            foreach (var selection in currentSelections)
+                            if(containerCallbackResults.Success())
                             {
-                                if (selection == item)
-                                    selectedWidgets.Add(item);
-                            }
-                        }
+                                var paginationViewType = containerCallbackResults.data.GetPaginationViewType();
 
-                        if (selectedWidgets.Count > 0)
-                        {
-                            SceneAssetsManager.Instance.GetSortedWidgetsFromList(selectedWidgets, getFolderStructureSelectionData =>
-                            {
-                                if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultsCode))
+                                if (paginationViewType == AppData.PaginationViewType.Pager)
                                 {
-                                    int contentCount = getFolderStructureSelectionData.data.Count;
+                                    List<AppData.UIScreenWidget> currentPage = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
 
-                                    if (getFolderStructureSelectionData.data.Count == 1)
-                                        UpdateWidgetSelection(getFolderStructureSelectionData.data[contentCount - 1]);
-                                    else
-                                        UpdateWidgetsSelection(getFolderStructureSelectionData.data);
-                                }
-                                else
-                                    Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.results}");
-                            });
-                        }
-                        else
-                            Debug.LogWarning("--> OnScreenWidget Failed : No Selected Items Found In Current Page.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Page Not Found / Null.");
-                }
-
-                if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
-                {
-                    var currentSelections = SelectableManager.Instance.GetFolderStructureSelectionData().GetCurrentSelections();
-
-                    if (currentSelections != null && currentSelections.Count > 0)
-                    {
-                        SceneAssetsManager.Instance.GetSortedWidgetsFromList(currentSelections, getFolderStructureSelectionData =>
-                        {
-                            if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultsCode))
-                            {
-                                int contentCount = getFolderStructureSelectionData.data.Count;
-
-                                if (contentCount == 1)
-                                {
-                                    AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[contentCount - 1];
-
-                                    if (widget != null)
+                                    if (currentPage != null && currentPage.Count > 0)
                                     {
-                                        SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnFocusToWidget(widget);
-                                        UpdateWidgetSelection(widget);
+                                        List<AppData.UIScreenWidget> selectedWidgets = new List<AppData.UIScreenWidget>();
+
+                                        foreach (var item in currentPage)
+                                        {
+                                            foreach (var selection in currentSelections)
+                                            {
+                                                if (selection == item)
+                                                    selectedWidgets.Add(item);
+                                            }
+                                        }
+
+                                        AppData.Helpers.ComponentValid(selectedWidgets, validComponentCallbackResults =>
+                                        {
+                                            if (validComponentCallbackResults.Success())
+                                            {
+                                                SceneAssetsManager.Instance.GetSortedWidgetsFromList(selectedWidgets, GetSelectableAssetType(), getFolderStructureSelectionData =>
+                                                {
+                                                    if (getFolderStructureSelectionData.Success())
+                                                    {
+                                                        int contentCount = getFolderStructureSelectionData.data.Count;
+
+                                                        if (getFolderStructureSelectionData.data.Count == 1)
+                                                            UpdateWidgetSelection(getFolderStructureSelectionData.data[contentCount - 1]);
+                                                        else
+                                                            UpdateWidgetsSelection(getFolderStructureSelectionData.data);
+                                                    }
+                                                    else
+                                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.results}");
+                                                });
+                                            }
+                                            else
+                                                Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                        });
                                     }
                                     else
-                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed - Widget Is Null.");
+                                        Debug.LogWarning("--> Current Page Not Found / Null.");
                                 }
 
-                                if (contentCount > 1)
+                                if (paginationViewType == AppData.PaginationViewType.Scroller)
                                 {
-                                    int focusedIndex = Mathf.RoundToInt(contentCount / 2);
-                                    AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[focusedIndex];
-
-                                    if (widget != null)
+                                    AppData.Helpers.ComponentValid(currentSelections, validComponentCallbackResults =>
                                     {
-                                        SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnFocusToWidget(widget);
-                                        UpdateWidgetsSelection(getFolderStructureSelectionData.data);
-                                    }
-                                    else
-                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed - Widget Is Null.");
+                                        if (validComponentCallbackResults.Success())
+                                        {
+                                            SceneAssetsManager.Instance.GetSortedWidgetsFromList(currentSelections, GetSelectableAssetType(), getFolderStructureSelectionData =>
+                                            {
+                                                if (getFolderStructureSelectionData.Success())
+                                                {
+                                                    int contentCount = getFolderStructureSelectionData.data.Count;
+
+                                                    AppData.Helpers.ValueIsEqualToReference(contentCount, 1, valueValidCallbackResults => 
+                                                    {
+                                                        if (valueValidCallbackResults.Success())
+                                                        {
+                                                            AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[contentCount - 1];
+
+                                                            AppData.Helpers.ComponentValid(widget, validComponentCallbackResults =>
+                                                            {
+                                                                if (validComponentCallbackResults.Success())
+                                                                {
+                                                                    containerCallbackResults.data.OnFocusToWidget(widget);
+                                                                    UpdateWidgetSelection(widget);
+                                                                }
+                                                                else
+                                                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(valueValidCallbackResults.resultsCode, valueValidCallbackResults.results, this);
+                                                    });
+
+                                                    AppData.Helpers.ValueIsGraterThanReference(contentCount, 1, valueAssignedCallbackResults => 
+                                                    {
+                                                        if (valueAssignedCallbackResults.Success())
+                                                        {
+                                                            int focusedIndex = Mathf.RoundToInt(contentCount / 2);
+                                                            AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[focusedIndex];
+
+                                                            AppData.Helpers.ComponentValid(widget, validComponentCallbackResults =>
+                                                            {
+                                                                if (validComponentCallbackResults.Success())
+                                                                {
+                                                                    containerCallbackResults.data.OnFocusToWidget(widget);
+                                                                    UpdateWidgetsSelection(getFolderStructureSelectionData.data);
+                                                                }
+                                                                else
+                                                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(getFolderStructureSelectionData.resultsCode, getFolderStructureSelectionData.results, this);
+                                            });
+                                        }
+                                        else
+                                            Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                    });
                                 }
                             }
                             else
-                                Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.results}");
+                                Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
                         });
                     }
                     else
-                        Debug.LogWarning("--> OnScreenWidget's GetCurrentSelections Failed - No Selections Found.");
-                }
+                        Log(projectSelectionSystemCallbackResults.resultsCode, projectSelectionSystemCallbackResults.results, this);
+                });
             }
         }
 
@@ -142,7 +181,7 @@ namespace Com.RedicalGames.Filar
 
         void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)
         {
-            if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentPaginationViewType() == AppData.PaginationViewType.Pager)
+            if (SceneAssetsManager.Instance.GetFolderStructureData().GetPaginationViewType() == AppData.PaginationViewType.Pager)
             {
                 if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_ItemExistInCurrentPage(selectedWidget))
                 {
@@ -152,7 +191,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentPaginationViewType() == AppData.PaginationViewType.Scroller)
+            if (SceneAssetsManager.Instance.GetFolderStructureData().GetPaginationViewType() == AppData.PaginationViewType.Scroller)
             {
                 Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
                 SetWidgetPosition(widgetPosition);

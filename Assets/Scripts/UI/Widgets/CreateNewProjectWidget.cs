@@ -10,9 +10,9 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.FolderStructureData folderStructureDataTemplate = new AppData.FolderStructureData();
+        AppData.ProjectStructureData folderStructureDataTemplate = new AppData.ProjectStructureData();
 
-        AppData.FolderStructureData newFolderStructureData = new AppData.FolderStructureData();
+        AppData.ProjectStructureData newProjectStructureData = new AppData.ProjectStructureData();
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.InputActionButtonType.Confirm:
 
-                        OnDataValidation(newFolderStructureData, dataValidCallbackResults => 
+                        OnDataValidation(newProjectStructureData, dataValidCallbackResults => 
                         {
                             if (dataValidCallbackResults.Success())
                             {
@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (SceneAssetsManager.Instance != null)
                                 {
-                                    SceneAssetsManager.Instance.CreateNewProjectData(newFolderStructureData, createNewProjectCallbackResults =>
+                                    SceneAssetsManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
                                     {
                                         if (createNewProjectCallbackResults.Success())
                                         {
@@ -79,15 +79,16 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        AppData.FolderStructureData CreateNewFolderStructureData()
+        AppData.ProjectStructureData CreateNewFolderStructureData()
         {
-            return new AppData.FolderStructureData
+            return new AppData.ProjectStructureData
             {
+                projectInfo = new AppData.ProjectInfo(string.Empty, AppData.ProjectCategoryType.Project_3D), 
                 rootFolder = folderStructureDataTemplate.rootFolder,
                 excludedSystemFiles = folderStructureDataTemplate.excludedSystemFiles,
                 excludedSystemFolders = folderStructureDataTemplate.excludedSystemFolders,
-                currentLayoutViewType = folderStructureDataTemplate.currentLayoutViewType,
-                currentPaginationViewType = folderStructureDataTemplate.currentPaginationViewType,
+                layoutViewType = folderStructureDataTemplate.layoutViewType,
+                paginationViewType = folderStructureDataTemplate.paginationViewType,
                 layouts = folderStructureDataTemplate.layouts,
             };
         }
@@ -105,8 +106,8 @@ namespace Com.RedicalGames.Filar
 
                     OnInputFieldValidation(AppData.ValidationResultsType.Default, AppData.InputFieldActionType.AssetNameField);
 
-                    if (newFolderStructureData != null)
-                        newFolderStructureData.name = value;
+                    if (newProjectStructureData != null)
+                        newProjectStructureData.name = value;
                     else
                         LogError("New Folder Structure Data Is Null.", this);
 
@@ -121,7 +122,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-            newFolderStructureData = CreateNewFolderStructureData();
+            newProjectStructureData = CreateNewFolderStructureData();
             OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
         }
 
@@ -139,7 +140,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        void OnDataValidation(AppData.FolderStructureData info, Action<AppData.CallbackData<AppData.InputFieldActionType>> callback)
+        void OnDataValidation(AppData.ProjectStructureData info, Action<AppData.CallbackData<AppData.InputFieldActionType>> callback)
         {
             bool isValidName = !string.IsNullOrEmpty(info.name);
 
@@ -167,15 +168,23 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputDropDownActionType.ProjectType:
 
-                    int index = value + 1;
+                    int contentIndexA = SceneAssetsManager.Instance.GetDropdownContentCount<AppData.ProjectCategoryType>();
+                    int contentIndexB = SceneAssetsManager.Instance.GetDropdownContentCount<AppData.ProjectCategoryType>("Project_", "All");
+
+                    int index = value + SceneAssetsManager.Instance.GetDropdownContentIndex(contentIndexA, contentIndexB);
                     var categoryType = (AppData.ProjectCategoryType)index;
 
-                    LogSuccess($"========================> Create Project Type : {categoryType}", this);
+                    int projectIndex = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(categoryType);
 
-                    if (newFolderStructureData != null)
-                        newFolderStructureData.projectInfo.projectType = categoryType;
+                    if (index.Equals(projectIndex))
+                    {
+                        if (newProjectStructureData != null)
+                            newProjectStructureData.GetProjectInfo().SetCategoryType(categoryType);
+                        else
+                            LogError("New Folder Structure Data Is Null.", this);
+                    }
                     else
-                        LogError("New Folder Structure Data Is Null.", this);
+                        LogWarning($"Project Type Index Is Invalid - Index Value {index} Is Not Equals To Project Type Index Value : {projectIndex}", this);
 
                     break;
 
@@ -183,10 +192,17 @@ namespace Com.RedicalGames.Filar
 
                     var templateType = (AppData.ProjectTamplateType)value;
 
-                    if (newFolderStructureData != null)
-                        newFolderStructureData.projectInfo.templateType = templateType;
+                    int templateIndex = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(templateType);
+
+                    if (value.Equals(templateIndex))
+                    {
+                        if (newProjectStructureData != null)
+                            newProjectStructureData.projectInfo.templateType = templateType;
+                        else
+                            LogError("New Folder Structure Data Is Null.", this);
+                    }
                     else
-                        LogError("New Folder Structure Data Is Null.", this);
+                        LogWarning($"Project Tamplate Type Index Is Invalid - Index Value {value} Is Not Equals To Project template Type Index Value : {templateIndex}", this);
 
                     break;
             }
