@@ -1304,7 +1304,7 @@ namespace Com.RedicalGames.Filar
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
 
-                         await AppData.Helpers.GetWaitForSecondsAsync(AppData.Helpers.GetDeltaTime(200));
+                         await AppData.Helpers.GetWaitForSecondsAsync(AppData.Helpers.GetDeltaTime(500));
 
                         if (container.childCount == 0)
                         {

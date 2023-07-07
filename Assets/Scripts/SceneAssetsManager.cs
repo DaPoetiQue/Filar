@@ -504,6 +504,59 @@ namespace Com.RedicalGames.Filar
             };
         }
 
+        public AppData.DropDownContentData GetFormattedDropdownContent(List<string> datas, params string[] args)
+        {
+            List<string> contentDataList = new List<string>();
+            List<string> validContentDataList = new List<string>();
+
+            if (args.Length > 0 && datas.Count > 0)
+            {
+                foreach (var item in args)
+                {
+                    foreach (var data in datas)
+                    {
+                        if (data.Contains(item) && data != item)
+                        {
+                            string content = data.Replace(item, "");
+
+                            if (!contentDataList.Contains(content))
+                                contentDataList.Add(content);
+                        }
+
+                        if (data.Contains(item) && data == item)
+                        {
+                            if (contentDataList.Contains(data))
+                                contentDataList.Remove(data);
+                        }
+                    }
+                }
+
+                if (contentDataList.Count > 0)
+                {
+                    foreach (var item in args)
+                    {
+                        for (int i = 0; i < datas.Count; i++)
+                        {
+                            if (!validContentDataList.Contains(contentDataList[i]) && !contentDataList[i].Contains(item) && contentDataList[i] != item)
+                                validContentDataList.Add(contentDataList[i]);
+                        }
+
+                        if (validContentDataList.Contains(item))
+                            validContentDataList.Remove(item);
+                    }
+                }
+                else
+                    LogError("Failed To Get Dropdown Content", this);
+            }
+            else
+                LogError("Failed There Are No Args Or Data Content Is Null.", this);
+
+            return new AppData.DropDownContentData
+            {
+                data = validContentDataList
+            };
+        }
+
         public int GetDropdownContentCount<T>() where T : Enum
         {
             var datas = AppData.Helpers.GetEnumToStringList<T>();
@@ -568,6 +621,53 @@ namespace Com.RedicalGames.Filar
             return contentA - ContentB;
         }
 
+        public void GetDropdownContentIndex<T>(string content, Action<AppData.CallbackData<int>> callback) where T : Enum
+        {
+            AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
+
+            var datas = AppData.Helpers.GetEnumToStringList<T>();
+
+            AppData.Helpers.StringListValueValid(datas, hasComponentsCallbackResults => 
+            {
+                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+            
+                if(callbackResults.Success())
+                {
+                    var contentType = datas.Find(x => x.Contains(content));
+
+                    AppData.Helpers.StringValueValid(contentType, valueValidCallbackResults => 
+                    {
+                        callbackResults.resultsCode = valueValidCallbackResults.resultsCode;
+
+                        if(callbackResults.Success())
+                        {
+                            int index = datas.IndexOf(contentType);
+
+                            callbackResults.results = $"Content : {content} Is Found At Index : {index}.";
+                            callbackResults.data = index;
+                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+
+                            LogSuccess($"========================>> Results: {callbackResults.results}", this);
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Couldn't Find Type That Matches / Contains Content {content}.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
+                    });
+                }
+                else
+                {
+                    callbackResults.results = $"Failed To Get Data For Enum : Couldn't Get Content : {content}'s Index.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            });
+
+            callback.Invoke(callbackResults);
+        }
+
         public int GetDropdownContentTypeIndex<T>(T type) where T : Enum
         {
             var data = AppData.Helpers.GetEnumToStringList<T>();
@@ -594,6 +694,71 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(convertedEnumDataCallbackResults.resultsCode, convertedEnumDataCallbackResults.results, this);
+            });
+
+            callback.Invoke(callbackResults);
+        }
+
+        public void GetSortedDropdownContent<T>(List<string> contents, Action<AppData.CallbackDataList<string>> callback) where T : Enum
+        {
+            AppData.CallbackDataList<string> callbackResults = new AppData.CallbackDataList<string>();
+
+            AppData.Helpers.StringListValueValid(contents, hasValueCallbackResults => 
+            {
+                callbackResults.resultsCode = hasValueCallbackResults.resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    var datas = AppData.Helpers.GetEnumToStringList<T>();
+
+                    AppData.Helpers.StringListValueValid(contents, hasValueCallbackResults => 
+                    {
+                        callbackResults.resultsCode = hasValueCallbackResults.resultsCode;
+
+                        if(callbackResults.Success())
+                        {
+                            List<string> sortedList = new List<string>();
+
+                            foreach (var data in datas)
+                            {
+                                foreach (var content in contents)
+                                {
+                                    if (data.Contains(content))
+                                    {
+                                        if (!sortedList.Contains(content))
+                                            sortedList.Insert(datas.IndexOf(data), content);
+                                    }
+                                }
+                            }
+
+                            AppData.Helpers.StringListValueValid(sortedList, hasValueCallbackResults => 
+                            {
+                                callbackResults.resultsCode = hasValueCallbackResults.resultsCode;
+
+                                if(callbackResults.Success())
+                                {
+                                    callbackResults.results = $"{sortedList.Count} Content Sorted.";
+                                    callbackResults.data = sortedList;
+                                }
+                                else
+                                {
+                                    callbackResults.results = "Couldn't Find Any Matching Contents To Sort.";
+                                    callbackResults.data = default;
+                                }
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.results = "Couldn't Get Content From Type - Please Check Here.";
+                            callbackResults.data = default;
+                        }
+                    });
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Content Assigned To Sort.";
+                    callbackResults.data = default;
+                }
             });
 
             callback.Invoke(callbackResults);
@@ -3575,7 +3740,24 @@ namespace Com.RedicalGames.Filar
                                                         CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), structureLoader.data, widgetsContainer, createProjectWidgetCallback =>
                                                         {
                                                             if (createProjectWidgetCallback.Success())
+                                                            {
                                                                 loadedProjectData = createProjectWidgetCallback.data;
+
+                                                                GetFilterTypesFromContent(structureLoader.data, filterContentCallbackResults =>
+                                                                {
+                                                                    if (filterContentCallbackResults.Success())
+                                                                    {
+                                                                        var sortedFilterList = filterContentCallbackResults.data;
+                                                                        sortedFilterList.Sort((x, y) => x.CompareTo(y));
+                                                                        sortedFilterList.Insert(0, "All");
+
+                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, sortedFilterList);
+                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, GetDropdownContent<AppData.SortType>().data);
+                                                                    }
+                                                                    else
+                                                                        Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
+                                                                }, "Project_");
+                                                            }
                                                             else
                                                                 Log(createProjectWidgetCallback.resultsCode, createProjectWidgetCallback.results, this);
                                                         });
@@ -3584,7 +3766,7 @@ namespace Com.RedicalGames.Filar
                                                         LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
                                                 }
                                                 else
-                                                    Log(structureLoader.resultsCode, structureLoader.results, this);
+                                                    DisableScreenUIOnEmptyContent(dataPackets.screenType);
                                             });
 
 
@@ -3844,6 +4026,19 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
+
+        void DisableScreenUIOnEmptyContent(AppData.UIScreenType screenType)
+        {
+            switch(screenType)
+            {
+                case AppData.UIScreenType.ProjectSelectionScreen:
+
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, null);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, null);
+
+                    break;
+            }
+        }
 
         public AppData.ContentContainerType GetContainerType(AppData.UIScreenType screenType)
         {
@@ -5449,7 +5644,6 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-
         #region Sort Functions
 
         public void OnSortScreenWidgets(int sortIndex, Action<AppData.CallbackData<AppData.SortType>> callback)
@@ -6237,107 +6431,125 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        void DeleteThis()
+        void GetFilterTypesFromContent(List<AppData.ProjectStructureData> contents, Action<AppData.CallbackDataList<string>> callback = null, params string[] args)
         {
-            #region Projects
+            AppData.CallbackDataList<string> callbackResults = new AppData.CallbackDataList<string>();
 
-            //if (validProjectsfound.Count > 0)
-            //{
-            //    List<AppData.ProjectStructureData> validProjectsfoundDirectories = new List<AppData.ProjectStructureData>();
-            //    List<AppData.ProjectStructureData> projectsFilteredResults = new List<AppData.ProjectStructureData>();
+            AppData.Helpers.SerializableComponentValid(contents, hasComponentsCallbackResults => 
+            {
+                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
 
-            //    foreach (var validProject in validProjectsfound)
-            //    {
-            //        var fileName = Path.GetFileName(validProject);
+                if(callbackResults.Success())
+                {
+                    List<string> filterContent = new List<string>();
 
-            //        AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
-            //        {
-            //            name = fileName,
-            //            path = validProject,
-            //            projectDirectory = filterDirectory.projectDirectory,
-            //            type = filterDirectory.type
-            //        };
+                    foreach (var content in contents)
+                        if (!filterContent.Contains(content.GetProjectInfo().categoryType.ToString()))
+                            filterContent.Add(content.GetProjectInfo().categoryType.ToString());
 
-            //        LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
-            //        {
-            //            if (loadedProjectCallbackResults.Success())
-            //                validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
-            //            else
-            //                LogError($"Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
-            //        });
-            //    }
+                    AppData.Helpers.StringListValueValid(filterContent, hasComponentsCallbackResults => 
+                    {
+                        callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
 
-            //    if (validProjectsfoundDirectories.Count > 0)
-            //    {
-            //        #region Project Search Filter
+                        if(callbackResults.Success())
+                        {
+                            List<string> contentDataList = new List<string>();
+                            List<string> validContentDataList = new List<string>();
 
-            //        foreach (var validDirectory in validProjectsfoundDirectories)
-            //        {
-            //            LogSuccess($"================> Found : {validProjectsfoundDirectories.Count} Valid Directories - Project Name : {validDirectory.name} - Project Type : {validDirectory.GetProjectInfo().GetCategoryType()} - Selected Filter Type : {filterType}", this);
+                            if (args.Length > 0 && filterContent.Count > 0)
+                            {
+                                foreach (var item in args)
+                                {
+                                    foreach (var data in filterContent)
+                                    {
+                                        if (data.Contains(item) && data != item)
+                                        {
+                                            string content = data.Replace(item, "");
 
-            //            if (validDirectory.GetProjectInfo().GetCategoryType() == filterType)
-            //            {
-            //                if (!projectsFilteredResults.Contains(validDirectory))
-            //                    projectsFilteredResults.Add(validDirectory);
-            //                else
-            //                {
-            //                    callbackResults.results = $"Projects Filtered Results Already Contains Valid File Data Directory : {validDirectory}.";
-            //                    callbackResults.data = default;
-            //                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            if (!contentDataList.Contains(content))
+                                                contentDataList.Add(content);
+                                        }
 
-            //                    break;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (projectsFilteredResults.Contains(validDirectory))
-            //                    projectsFilteredResults.Remove(validDirectory);
+                                        if (data.Contains(item) && data == item)
+                                        {
+                                            if (contentDataList.Contains(data))
+                                                contentDataList.Remove(data);
+                                        }
+                                    }
+                                }
 
-            //                if (projectsFilteredResults.Contains(validDirectory))
-            //                {
-            //                    callbackResults.results = $"Failed To Remove Valid Directory Data : {validDirectory} From Projects Filtered Results.";
-            //                    callbackResults.data = default;
-            //                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            //                }
-            //            }
-            //        }
+                                AppData.Helpers.StringListValueValid(contentDataList, hasValuesComponentsCallbackResults =>
+                                {
+                                    callbackResults.resultsCode = hasValuesComponentsCallbackResults.resultsCode;
 
-            //        #endregion
+                                    if (callbackResults.Success())
+                                    {
+                                        foreach (var item in args)
+                                        {
+                                            for (int i = 0; i < filterContent.Count; i++)
+                                                if (!validContentDataList.Contains(contentDataList[i]) && !contentDataList[i].Contains(item) && contentDataList[i] != item)
+                                                    validContentDataList.Add(contentDataList[i]);
 
-            //        #region Create Project Widgets
+                                            if (validContentDataList.Contains(item))
+                                                validContentDataList.Remove(item);
+                                        }
 
-            //        if (projectsFilteredResults.Count > 0)
-            //        {
-            //            CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsFilteredResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
-            //            {
-            //                callbackResults.results = widgetsCreated.results;
-            //                callbackResults.resultsCode = widgetsCreated.resultsCode;
+                                        AppData.Helpers.StringListValueValid(validContentDataList, hasValuesComponentsCallbackResults =>
+                                        {
+                                            callbackResults.resultsCode = hasValuesComponentsCallbackResults.resultsCode;
 
-            //                if (callbackResults.Success())
-            //                {
-            //                    callbackResults.data = filterType;
-            //                    projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
-            //                }
-            //            });
-            //        }
-            //        else
-            //        {
-            //            callbackResults.results = $"There Are No Filtered Projects Results Found For Filter Type : {filterType}.";
-            //            callbackResults.data = default;
-            //            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            //        }
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.results = $"Found : {hasValuesComponentsCallbackResults.data.Count} Widget Type(s).";
+                                                callbackResults.data = hasValuesComponentsCallbackResults.data;
+                                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            }
+                                            else
+                                            {
+                                                callbackResults.results = "Couldn't Get Any Filter Types - Please Check Here.";
+                                                callbackResults.data = default;
+                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        callbackResults.results = "Failed To Get Dropdown Content";
+                                        callbackResults.data = default;
+                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = "Failed There Are No Args Or Data Content Is Null.";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = "There Were No Filter Contents Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                        }
+                    });
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Contents Assigned To Get Filter Types From.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            });
 
-            //        #endregion
-            //    }
-            //    else
-            //    {
-            //        callbackResults.results = "Couldn't Get Valid Projects File Data.";
-            //        callbackResults.data = default;
-            //        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            //    }
-            //}
 
-            #endregion
+            if(callbackResults.Success())
+                Log(callbackResults.resultsCode, $"===========================>> Get Filter Types For :{callbackResults.data.Count} Content.", this);
+            else
+                Log(callbackResults.resultsCode, $"===========================>> Get Filter Content Failed.", this);
+
+            callback?.Invoke(callbackResults);
         }
 
         #endregion
