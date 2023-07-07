@@ -293,7 +293,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        void OnResetSceneAssetPreviewPoseEvent(AppData.SceneAssetModeType assetModeType)
+        void OnResetSceneAssetPreviewPoseEvent(AppData.AssetModeType assetModeType)
         {
             OnResetCameraPose();
             AppData.ActionEvents.OnResetContaineToDefaultPoseEvent();
