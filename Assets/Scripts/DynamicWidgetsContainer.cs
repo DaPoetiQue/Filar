@@ -228,7 +228,7 @@ namespace Com.RedicalGames.Filar
 
         void OnAssetDeleteRefreshEvent()
         {
-            ClearWidgets(onScreenWigetsCleared =>
+            ClearWidgets(false, onScreenWigetsCleared =>
             {
                 if (AppData.Helpers.IsSuccessCode(onScreenWigetsCleared.resultsCode))
                     InitializeContainer();
@@ -860,9 +860,15 @@ namespace Com.RedicalGames.Filar
 
                     Debug.LogError("==> Check, Has Something To Do With Ambushed Selection Data");
                     //currentFocusedWidget.Clear();
-                   // SelectableManager.Instance.ClearFocusedWidgetInfo();
+                    // SelectableManager.Instance.ClearFocusedWidgetInfo();
 
-                    SelectableManager.Instance.GetFolderStructureSelectionData().DeselectAll();
+                    SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionCallbackResults => 
+                    {
+                        if (projectSelectionCallbackResults.Success())
+                            projectSelectionCallbackResults.data.DeselectAll();
+                        else
+                            Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    });
                 }
                 else
                     Debug.LogWarning($"--> DeselectAllContentWidgets Failed With Results : {contentFound.results}");
@@ -1245,31 +1251,52 @@ namespace Com.RedicalGames.Filar
 
             var currentPage = Pagination_GetCurrentPage();
 
-            if (currentPage != null && currentPage.Count > 0)
+            AppData.Helpers.ComponentValid(currentPage, validComponentCallbackResults => 
             {
-                foreach (var item in currentPage)
-                    foreach (var selection in SelectableManager.Instance.GetFolderStructureSelectionData().GetCurrentSelections())
-                        if (item == selection)
-                            item.OnSelectionFrameState(show, state, showTint, async);
-            }
-            else
-                LogWarning("Current Page Not Found.", this, () => OnUpdateSelectedWidgets(show, state, showTint, async = false));
+                if (validComponentCallbackResults.Success())
+                {
+                    AppData.Helpers.ValueAssigned(currentPage.Count, valueAssignedCallbackResults => 
+                    {
+                        if (validComponentCallbackResults.Success())
+                        {
+                            SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
+                            {
+                                if (projectSelectionCallbackResults.Success())
+                                {
+                                    foreach (var item in currentPage)
+                                    {
+                                        foreach (var selection in projectSelectionCallbackResults.data.GetCurrentSelections())
+                                            if (item == selection)
+                                                item.OnSelectionFrameState(show, state, showTint, async);
+                                    }
+                                }
+                                else
+                                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                            });
+                        }
+                        else
+                            Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                    });
+                }
+                else
+                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results);
+            });
         }
 
-        public async void ClearWidgets(Action<AppData.Callback> callback = null)
+        public async void ClearWidgets(bool showSpinner = false, Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            if (ScreenUIManager.Instance.HasCurrentScreen())
+            try
             {
-                if (GetUIScreenType() == ScreenUIManager.Instance.GetCurrentScreenData()?.value?.GetUIScreenType())
+                AppData.Callback callbackResults = new AppData.Callback();
+
+                if (ScreenUIManager.Instance.HasCurrentScreen())
                 {
                     if (GetContentCount() > 0)
                     {
                         for (int i = 0; i < GetContentCount(); i++)
                             if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
                             {
-                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
+                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
                                     Destroy(container.GetChild(i).gameObject);
                                 else
                                     LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
@@ -1277,18 +1304,19 @@ namespace Com.RedicalGames.Filar
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
 
-                        await AppData.Helpers.GetWaitUntilAsync(GetContentCount() == 0);
-
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+                         await AppData.Helpers.GetWaitForSecondsAsync(AppData.Helpers.GetDeltaTime(200));
 
                         if (container.childCount == 0)
                         {
-                            callbackResults.results = $"{GetContentCount()} : Widgets Cleared Successfully From Container : {gameObject.name}";
+                            if (showSpinner)
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+
+                            callbackResults.results = "All Widgets Cleared.";
                             callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"Widgets Failed To Clear From Container : {gameObject.name}";
+                            callbackResults.results = $"{container.childCount} : Widgets Failed To Clear.";
                             callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                         }
                     }
@@ -1300,17 +1328,17 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"Container Screen Type : {GetUIScreenType()} Doesn't Match Current Screen Type : {ScreenUIManager.Instance.GetCurrentUIScreenType()}";
+                    callbackResults.results = $"Curent Screen Is Not Yet Initialized.";
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
-            }
-            else
-            {
-                callbackResults.results = $"Curent Screen Is Not Yet Initialized.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
 
-            callback?.Invoke(callbackResults);
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         public AppData.ContentContainerType GetContentContainerType()
@@ -1321,6 +1349,11 @@ namespace Com.RedicalGames.Filar
         public int GetContentCount()
         {
             return container.childCount;
+        }
+
+        public bool HasContent()
+        {
+            return GetContentCount() > 0;
         }
 
         public void GetContent(Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
@@ -1369,6 +1402,62 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public void SetWidgetListIndex(AppData.UIScreenWidget widget, int index, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            if (widget)
+            {
+                widget.SetContentSiblingIndexValue(index);
+
+                callbackResults.results = $"Asset : {widget.name} Has Been Set To index : {index}.";
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = $"Set Asset List Index Value For : {widget} Missing / Not Assigned.";
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void GetSelectableWidgetType(List<AppData.UIScreenWidget> widgets, Action<AppData.CallbackData<AppData.SelectableWidgetType>> callback)
+        {
+            AppData.CallbackData<AppData.SelectableWidgetType> callbackResults = new AppData.CallbackData<AppData.SelectableWidgetType>();
+
+            AppData.Helpers.ComponentValid(widgets, hasComponentsCallbackResults => 
+            {
+                callbackResults.results = hasComponentsCallbackResults.results;
+                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+
+                if(callbackResults.Success())
+                {
+                    var selectableWidgetType = widgets[0].GetSelectableWidgetType();
+
+                    foreach (var selectable in widgets)
+                    {
+                        if(selectable.GetSelectableWidgetType() != selectableWidgetType)
+                        {
+                            callbackResults.results = $"Widget Selection Type : {selectable.GetSelectableWidgetType()} Mismatch From Type : {selectableWidgetType}";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+
+                            break;
+                        }
+                    }
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.results = $"Selectable Type Found : {selectableWidgetType}";
+                        callbackResults.data = selectableWidgetType;
+                    }
+                }
+            });
+
+            callback.Invoke(callbackResults);
+        }
+
         public void GetContent(AppData.UIScreenWidget widgetToExcludeFromList, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
         {
             AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
@@ -1383,7 +1472,7 @@ namespace Com.RedicalGames.Filar
 
                     if (widget != null && widget.GetActive() && widget != widgetToExcludeFromList)
                     {
-                        if (widget.GetSelectableAssetType() == AppData.SelectableAssetType.Folder || widget.GetSelectableAssetType() == AppData.SelectableAssetType.PlaceHolder)
+                        if (widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.Folder || widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.PlaceHolder)
 
                             if (!widgetsList.Contains(widget))
                                 widgetsList.Add(widget);
@@ -2409,7 +2498,7 @@ namespace Com.RedicalGames.Filar
         public void OnSetWidgetsVisibilityState(bool visible)
         {
             for (int i = 0; i < container.childCount; i++)
-                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableAssetType() != AppData.SelectableAssetType.PlaceHolder)
+                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
                     container.GetChild(i).gameObject.SetActive(visible);
         }
 
@@ -2439,7 +2528,7 @@ namespace Com.RedicalGames.Filar
             int verticalSpacingBottom = heightSpacingMultiplied + heightSpacing;
 
             int top = -(height + (verticalSpacingTop / 2));
-            int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentLayoutViewType()).containerDimensions.height;
+            int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType()).containerDimensions.height;
             int bottom = (-layoutHeight) - (-(height + verticalSpacingBottom));
 
             screenBounds.top = top;

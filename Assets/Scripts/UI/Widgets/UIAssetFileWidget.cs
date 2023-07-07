@@ -56,7 +56,7 @@ namespace Com.RedicalGames.Filar
 
                     if (screenManager != null)
                     {
-                        assetData.currentAssetMode = AppData.SceneAssetModeType.EditMode;
+                        assetData.assetMode = AppData.AssetModeType.EditMode;
 
                         actionButton.dataPackets.sceneAsset = assetData;
 
@@ -84,7 +84,7 @@ namespace Com.RedicalGames.Filar
 
                         if (screenManager != null)
                         {
-                            assetData.currentAssetMode = AppData.SceneAssetModeType.PreviewMode;
+                            assetData.assetMode = AppData.AssetModeType.PreviewMode;
                             actionButton.dataPackets.sceneAsset = assetData;
 
                             //if (SceneAssetsManager.Instance != null)
@@ -125,7 +125,7 @@ namespace Com.RedicalGames.Filar
 
                     if (screenManager != null)
                     {
-                        assetData.currentAssetMode = AppData.SceneAssetModeType.ARMode;
+                        assetData.assetMode = AppData.AssetModeType.ARMode;
                         actionButton.dataPackets.sceneAsset = assetData;
 
                         if (SceneAssetsManager.Instance != null)
@@ -167,11 +167,11 @@ namespace Com.RedicalGames.Filar
 
         public override void OnDeselect() => Deselected();
 
-        protected override void OnSetFileData(AppData.SceneAsset assetData)
+        protected override void OnSetAssetData(AppData.SceneAsset assetData)
         {
             LogSuccess("====================> Setting Asset Data");
 
-            if (selectableComponent.selectableAssetType == AppData.SelectableAssetType.File)
+            if (selectableComponent.selectableAssetType == AppData.SelectableWidgetType.Asset)
             {
                 // Set Thumbnail.
                 if (assetData.assetFields.Count > 0)
@@ -201,7 +201,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        protected override void OnSetUIWidgetData(AppData.ProjectStructureData structureData)
         {
             throw new System.NotImplementedException();
         }

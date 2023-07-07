@@ -313,7 +313,7 @@ namespace Com.RedicalGames.Filar
         {
             if (fieldType == AppData.AssetFieldType.HDRI)
             {
-                Texture2D skyboxTexture = AppData.Helpers.LoadTextureFile(directoryData.directory);
+                Texture2D skyboxTexture = AppData.Helpers.LoadTextureFile(directoryData.projectDirectory);
                 SetupSkyboxHDRI(skyboxTexture);
             }
         }

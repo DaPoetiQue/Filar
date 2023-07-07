@@ -99,7 +99,7 @@ namespace Com.RedicalGames.Filar
 
         public override void OnDeselect() => Deselected();
 
-        protected override void OnSetFileData(AppData.SceneAsset assetData)
+        protected override void OnSetAssetData(AppData.SceneAsset assetData)
         {
             throw new System.NotImplementedException();
         }
@@ -109,7 +109,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        protected override void OnSetUIWidgetData(AppData.ProjectStructureData structureData)
         {
             if (!string.IsNullOrEmpty(structureData.projectInfo.name))
             {
@@ -118,7 +118,7 @@ namespace Com.RedicalGames.Filar
                 string lastModified = structureData?.creationDateTime.date;
                 SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
 
-                string projectType = structureData?.projectInfo?.projectType.ToString().Replace("Project_", "");
+                string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
                 SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
             }
         }

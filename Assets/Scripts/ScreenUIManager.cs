@@ -83,9 +83,9 @@ namespace Com.RedicalGames.Filar
             _instance = this;
         }
 
-        void Init(Action<AppData.CallbackDatas<AppData.UIScreenViewComponent>> callback = null)
+        void Init(Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
         {
-            AppData.CallbackDatas<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDatas<AppData.UIScreenViewComponent>();
+            AppData.CallbackDataList<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>();
 
             if (!HasRequiredComponentsAssigned())
             {
@@ -170,9 +170,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void AddScreen(AppData.UIScreenViewComponent screen, Action<AppData.CallbackDatas<AppData.UIScreenViewComponent>> callback = null)
+        public void AddScreen(AppData.UIScreenViewComponent screen, Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
         {
-            AppData.CallbackDatas<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDatas<AppData.UIScreenViewComponent>();
+            AppData.CallbackDataList<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>();
 
             if (screen.value)
             {
@@ -323,7 +323,7 @@ namespace Com.RedicalGames.Filar
 
                                 sceneAsset.info = info;
 
-                                sceneAsset.currentAssetMode = AppData.SceneAssetModeType.CreateMode;
+                                sceneAsset.assetMode = AppData.AssetModeType.CreateMode;
                                 SceneAssetsManager.Instance.SetCurrentSceneAsset(sceneAsset);
                                 SceneAssetsManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
@@ -554,7 +554,7 @@ namespace Com.RedicalGames.Filar
                                     SceneAssetsManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
                             });
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentLayoutViewType() == AppData.LayoutViewType.ItemView)
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                             {
                                 screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
                                 {
@@ -563,7 +563,7 @@ namespace Com.RedicalGames.Filar
                                 });
                             }
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().GetCurrentLayoutViewType() == AppData.LayoutViewType.ListView)
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == AppData.LayoutViewType.ListView)
                             {
                                 screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
                                 {
@@ -753,7 +753,16 @@ namespace Com.RedicalGames.Filar
                         var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen)? AppManager.Instance.GetInitialStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
                         var container = containerResults.data;
 
-                        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults => 
+                        {
+                            if (dataSetupCallbackResults.Success())
+                            {
+                                SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback => 
+                                {
+                                    Log(assetsInitializedCallback.resultsCode, assetsInitializedCallback.results, this);
+                                });
+                            }
+                        });
                     }
                 });
 
@@ -859,7 +868,41 @@ namespace Com.RedicalGames.Filar
 
         public bool HasCurrentScreen()
         {
-            return currentScreen != null && currentScreen.value != null;
+            return currentScreen != null && currentScreen?.value != null;
+        }
+
+        public void HasCurrentScreen(Action<AppData.Callback> callback)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            if(currentScreen != null && currentScreen?.value != null)
+            {
+                callbackResults.results = $"Screen Data : {currentScreen.name} Loaded.";
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "Has No Current Screen Data";
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        public void GetCurrentScreen(Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
+        {
+            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+
+            HasCurrentScreen(currentScreenCallbackResults => 
+            {
+                callbackResults.results = currentScreenCallbackResults.results;
+                callbackResults.resultsCode = currentScreenCallbackResults.resultsCode;
+
+                if (callbackResults.Success())
+                    callbackResults.data = currentScreen;
+            });
+
+            callback?.Invoke(callbackResults);
         }
 
         #region UI States
