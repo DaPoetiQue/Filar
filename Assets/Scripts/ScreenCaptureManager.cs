@@ -27,7 +27,7 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         [SerializeField]
-        AppData.AssetFileExtensionType captureFileExtension = AppData.AssetFileExtensionType.JPG;
+        AppData.FileExtensionType captureFileExtension = AppData.FileExtensionType.JPG;
 
         [Space(5)]
         [SerializeField]
@@ -135,13 +135,13 @@ namespace Com.RedicalGames.Filar
 
                 switch (captureFileExtension)
                 {
-                    case AppData.AssetFileExtensionType.JPG:
+                    case AppData.FileExtensionType.JPG:
 
                         captureData.data = (cropImage) ? croppedTexture.EncodeToJPG() : capturedTexture.EncodeToJPG();
 
                         break;
 
-                    case AppData.AssetFileExtensionType.PNG:
+                    case AppData.FileExtensionType.PNG:
 
                         captureData.data = (cropImage) ? croppedTexture.EncodeToPNG() : capturedTexture.EncodeToPNG();
 

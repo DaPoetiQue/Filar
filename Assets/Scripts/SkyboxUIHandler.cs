@@ -80,7 +80,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnSetFileData(AppData.SceneAsset assetData)
+        protected override void OnSetAssetData(AppData.SceneAsset assetData)
         {
 
         }
@@ -90,7 +90,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnSetUIWidgetData(AppData.FolderStructureData structureData)
+        protected override void OnSetUIWidgetData(AppData.ProjectStructureData structureData)
         {
             throw new System.NotImplementedException();
         }
