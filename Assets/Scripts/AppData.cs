@@ -13332,7 +13332,115 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region UI Action Dropdown State\s
+            #region UI Action Dropdown States
+
+            public void SetActionDropdownOptions(InputDropDownActionType actionType, List<string> contents)
+            {
+                if (screenActionDropDownList.Count > 0)
+                {
+                    UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
+
+                    if (dropdown.value != null)
+                    {
+                        switch(actionType)
+                        {
+                            case InputDropDownActionType.FilterList:
+
+                                string filterPlaceholderText = "Filter";
+                                string defaultValue = "All";
+                                string previousSelection = string.Empty;
+
+                                Helpers.StringListValueValid(contents, hasContentsCallbackResults => 
+                                {
+                                    if (hasContentsCallbackResults.Success())
+                                    {
+                                        SceneAssetsManager.Instance.GetDropdownContentTypeFromIndex<ProjectCategoryType>(dropdown.value.value, dropdownTypeCallbackResults => 
+                                        {
+                                            if (dropdownTypeCallbackResults.Success())
+                                                previousSelection = dropdownTypeCallbackResults.data.ToString().Replace("Project_", "");
+                                        });
+
+                                        dropdown.value.ClearOptions();
+                                        dropdown.SetUIInputState(InputUIState.Enabled);
+
+                                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+                                        foreach (var filter in contents)
+                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? defaultValue : filter });
+
+                                        dropdown.value.AddOptions(dropdownOption);
+
+                                        dropdown.value.onValueChanged.AddListener((value) =>
+                                        {
+                                            SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(contents[value], contentIndexCallbackResults =>
+                                            {
+                                                if (contentIndexCallbackResults.Success())
+                                                {
+                                                    OnDropDownFilterOptions(contentIndexCallbackResults.data);
+                                                }
+                                                else
+                                                    Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                            });
+                                        });
+
+                                        Helpers.StringValueValid(previousSelection, hasSelectionCallbackResults => 
+                                        {
+                                            if (hasSelectionCallbackResults.Success())
+                                            {
+                                                SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(previousSelection, contentIndexCallbackResults =>
+                                                {
+                                                    if (contentIndexCallbackResults.Success())
+                                                        dropdown.value.value = contentIndexCallbackResults.data;
+                                                    else
+                                                        Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                });
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        dropdown.SetContent(new List<string> { filterPlaceholderText });
+                                        dropdown.SetUIInputState(InputUIState.Disabled);
+                                    }
+                                });
+
+                                break;
+
+                            case InputDropDownActionType.SortingList:
+
+                                Helpers.StringListValueValid(contents, hasContentsCallbackResults => 
+                                {
+                                    string sortPlaceholderText = "Sort";
+
+                                    if (hasContentsCallbackResults.Success())
+                                    {
+                                        dropdown.value.ClearOptions();
+                                        dropdown.SetUIInputState(InputUIState.Enabled);
+
+                                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+                                        foreach (var sort in contents)
+                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
+
+                                        dropdown.value.AddOptions(dropdownOption);
+                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
+                                    }
+                                    else
+                                    {
+                                        dropdown.SetContent(new List<string> { sortPlaceholderText });
+                                        dropdown.SetUIInputState(InputUIState.Disabled);
+                                    }
+                                });
+
+                                break;
+                        }
+                    }
+                    else
+                        LogWarning($"Input Field Of Type : {actionType} Not Found In Screen Type : {screenType} With Input Field List With : {screenActionDropDownList.Count} Dropdowns");
+                }
+                else
+                    LogWarning("ScreenActionDropDownList Is Null / Empty.", this);
+            }
 
             public void SetActionDropdownState(InputDropDownActionType actionType, InputUIState state)
             {
