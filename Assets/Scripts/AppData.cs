@@ -1371,6 +1371,32 @@ namespace Com.RedicalGames.Filar
         #region Folder Structure
 
         [Serializable]
+        public class ProjectRootStructureData : SerializableData
+        {
+            #region Components
+
+            public ProjectStructureData rootProjectStructure;
+
+            #endregion
+
+            #region Main
+
+            public ProjectRootStructureData()
+            {
+
+            }
+
+            public ProjectRootStructureData(ProjectStructureData root) => rootProjectStructure = root;
+
+            public ProjectStructureData GetProjectStructureData()
+            {
+                return rootProjectStructure;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
         public class Project
         {
             #region Components
@@ -19634,79 +19660,84 @@ namespace Com.RedicalGames.Filar
 
                 if (SceneAssetsManager.Instance != null)
                 {
-                    StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage);
-
-                    if (SceneAssetsManager.Instance.DirectoryFound(directoryData))
+                    if (SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).Success())
                     {
-                        SceneAssetsManager.Instance.LoadData<SwatchData>(fileName, directoryData, (loadedDataResults) =>
+                        StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).data;
+
+                        if (SceneAssetsManager.Instance.DirectoryFound(directoryData))
                         {
-                            if (Helpers.IsSuccessCode(loadedDataResults.resultsCode))
+                            SceneAssetsManager.Instance.LoadData<SwatchData>(fileName, directoryData, (loadedDataResults) =>
                             {
-                                foreach (var swatch in loadedDataResults.data.swatches)
-                                    if (!swatchDropDownList.Contains(swatch.name))
-                                        swatchDropDownList.Add(swatch.name);
-
-                                HasSwatchDropDownContent((callbackDataResults) =>
+                                if (Helpers.IsSuccessCode(loadedDataResults.resultsCode))
                                 {
-                                    callbackResults.results = callbackDataResults.results;
-                                    callbackResults.data = swatchDropDownList;
-                                    callbackResults.resultsCode = callbackDataResults.resultsCode;
-                                });
+                                    foreach (var swatch in loadedDataResults.data.swatches)
+                                        if (!swatchDropDownList.Contains(swatch.name))
+                                            swatchDropDownList.Add(swatch.name);
 
-                                loadedSwatchData = loadedDataResults.data;
-
-                                callbackResults.results = $"CreateSwatchDropDownList Sucess : {loadedDataResults.data.name} Loaded.Successfully.";
-                                callbackResults.data = swatchDropDownList;
-                                callbackResults.resultsCode = Helpers.SuccessCode;
-                            }
-                            else
-                            {
-                                if (swatches.Count > 0)
-                                {
-                                    SwatchData swatchData = new SwatchData(fileName, swatches);
-
-                                    SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
-                                 {
-                                        if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
-                                        {
-                                            loadedSwatchData = createDataCallback.data;
-
-                                            foreach (var swatch in swatches)
-                                                if (!swatchDropDownList.Contains(swatch.name))
-                                                    swatchDropDownList.Add(swatch.name);
-
-                                            HasSwatchDropDownContent((callbackDataResults) =>
-                                            {
-                                                callbackResults.results = callbackDataResults.results;
-                                                callbackResults.data = swatchDropDownList;
-                                                callbackResults.resultsCode = callbackDataResults.resultsCode;
-                                            });
-
-                                        }
-                                        else
-                                        {
-                                            callbackResults.results = createDataCallback.results;
-                                            callbackResults.data = default;
-                                            callbackResults.resultsCode = createDataCallback.resultsCode;
-                                        }
+                                    HasSwatchDropDownContent((callbackDataResults) =>
+                                    {
+                                        callbackResults.results = callbackDataResults.results;
+                                        callbackResults.data = swatchDropDownList;
+                                        callbackResults.resultsCode = callbackDataResults.resultsCode;
                                     });
+
+                                    loadedSwatchData = loadedDataResults.data;
+
+                                    callbackResults.results = $"CreateSwatchDropDownList Sucess : {loadedDataResults.data.name} Loaded.Successfully.";
+                                    callbackResults.data = swatchDropDownList;
+                                    callbackResults.resultsCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"CreateSwatchDropDownList Failed : Swatches List Is Empty.";
-                                    callbackResults.data = default;
-                                    callbackResults.resultsCode = Helpers.ErrorCode;
-                                }
-                            }
-                        });
+                                    if (swatches.Count > 0)
+                                    {
+                                        SwatchData swatchData = new SwatchData(fileName, swatches);
 
+                                        SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                        {
+                                            if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                            {
+                                                loadedSwatchData = createDataCallback.data;
+
+                                                foreach (var swatch in swatches)
+                                                    if (!swatchDropDownList.Contains(swatch.name))
+                                                        swatchDropDownList.Add(swatch.name);
+
+                                                HasSwatchDropDownContent((callbackDataResults) =>
+                                                {
+                                                    callbackResults.results = callbackDataResults.results;
+                                                    callbackResults.data = swatchDropDownList;
+                                                    callbackResults.resultsCode = callbackDataResults.resultsCode;
+                                                });
+
+                                            }
+                                            else
+                                            {
+                                                callbackResults.results = createDataCallback.results;
+                                                callbackResults.data = default;
+                                                callbackResults.resultsCode = createDataCallback.resultsCode;
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        callbackResults.results = $"CreateSwatchDropDownList Failed : Swatches List Is Empty.";
+                                        callbackResults.data = default;
+                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                    }
+                                }
+                            });
+
+                        }
+                        else
+                        {
+                            callbackResults.results = $"CreateSwatchDropDownList Failed : Storage Directory : {directoryData.projectDirectory} Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
                     }
                     else
-                    {
-                        callbackResults.results = $"CreateSwatchDropDownList Failed : Storage Directory : {directoryData.projectDirectory} Not Found.";
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
-                    }
+                        Debug.LogError("");
                 }
                 else
                 {
@@ -19837,52 +19868,62 @@ namespace Com.RedicalGames.Filar
 
                                                             SceneAssetsManager.Instance.CreateColorInfoContent(colorInfo, swatchName, ContentContainerType.ColorSwatches, OrientationType.HorizontalGrid, (callbackDataResults) =>
                                                             {
-                                                                if (Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                                                                callbackResults.results = callbackDataResults.results;
+                                                                callbackResults.resultsCode = callbackDataResults.resultsCode;
+
+                                                                if (callbackResults.Success())
                                                                 {
                                                                     SceneAssetsManager.Instance.GetColorSwatchData((colorSwatchDataResults) =>
                                                                     {
-                                                                        if (Helpers.IsSuccessCode(colorSwatchDataResults.resultsCode))
+                                                                        callbackResults.results = colorSwatchDataResults.results;
+                                                                        callbackResults.resultsCode = colorSwatchDataResults.resultsCode;
+
+                                                                        if (callbackResults.Success())
                                                                         {
                                                                             colorSwatchDataResults.data.AddColorToSwatch(colorInfo, swatch, (addSwatchCallback) =>
                                                                             {
                                                                                 callbackResults.results = addSwatchCallback.results;
                                                                                 callbackResults.resultsCode = addSwatchCallback.resultsCode;
 
-                                                                                if (Helpers.IsSuccessCode(addSwatchCallback.resultsCode))
+                                                                                if (callbackResults.Success())
                                                                                 {
-                                                                                    SwatchData swatchData = new SwatchData(fileName, swatches);
-
-                                                                                    StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(directoryType);
-
-                                                                                    SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                                                                    if (SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).Success())
                                                                                     {
-                                                                                        if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                                                                        SwatchData swatchData = new SwatchData(fileName, swatches);
+
+                                                                                        StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(directoryType).data;
+
+                                                                                        SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                                                         {
-                                                                                            swatchDropDownList = new List<string>();
-
-                                                                                            foreach (var colorSwatch in swatchData.swatches)
-                                                                                                if (!swatchDropDownList.Contains(colorSwatch.name))
-                                                                                                    swatchDropDownList.Add(colorSwatch.name);
-
-                                                                                            HasSwatchDropDownContent((callbackDataResults) =>
+                                                                                            if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
                                                                                             {
-                                                                                                callbackResults.results = createDataCallback.results;
-                                                                                                callbackResults.data = swatchDropDownList;
-                                                                                                callbackResults.resultsCode = createDataCallback.resultsCode;
-                                                                                            });
+                                                                                                swatchDropDownList = new List<string>();
 
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
-                                                                                            callbackResults.data = default;
-                                                                                            callbackResults.resultsCode = Helpers.ErrorCode;
-                                                                                        }
-                                                                                    });
+                                                                                                foreach (var colorSwatch in swatchData.swatches)
+                                                                                                    if (!swatchDropDownList.Contains(colorSwatch.name))
+                                                                                                        swatchDropDownList.Add(colorSwatch.name);
+
+                                                                                                HasSwatchDropDownContent((callbackDataResults) =>
+                                                                                                {
+                                                                                                    callbackResults.results = createDataCallback.results;
+                                                                                                    callbackResults.data = swatchDropDownList;
+                                                                                                    callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                                                                });
+
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
+                                                                                                callbackResults.data = default;
+                                                                                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        Debug.LogError($"{SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).results}");
                                                                                 }
                                                                                 else
-                                                                                    Debug.LogError($"--> CreateColorInCustomSwatch Failed With Results : {addSwatchCallback.results}");
-
+                                                                                    Debug.LogError($"Create Color In Custom Swatch Failed With Results : {callbackResults.results}");
                                                                             });
                                                                         }
                                                                         else
@@ -19920,35 +19961,40 @@ namespace Com.RedicalGames.Filar
                                                             callbackResults.resultsCode = Helpers.ErrorCode;
                                                         }
 
-                                                        SwatchData swatchData = new SwatchData(fileName, swatches);
-
-                                                        StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(directoryType);
-
-                                                        SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                                        if (SceneAssetsManager.Instance.GetAppDirectoryData(directoryType).Success())
                                                         {
-                                                            if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                                            SwatchData swatchData = new SwatchData(fileName, swatches);
+
+                                                            StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(directoryType).data;
+
+                                                            SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                             {
-                                                                swatchDropDownList = new List<string>();
-
-                                                                foreach (var colorSwatch in swatchData.swatches)
-                                                                    if (!swatchDropDownList.Contains(colorSwatch.name))
-                                                                        swatchDropDownList.Add(colorSwatch.name);
-
-                                                                HasSwatchDropDownContent((callbackDataResults) =>
+                                                                if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
                                                                 {
-                                                                    callbackResults.results = createDataCallback.results;
-                                                                    callbackResults.data = swatchDropDownList;
-                                                                    callbackResults.resultsCode = createDataCallback.resultsCode;
-                                                                });
+                                                                    swatchDropDownList = new List<string>();
 
-                                                            }
-                                                            else
-                                                            {
-                                                                callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
-                                                                callbackResults.data = default;
-                                                                callbackResults.resultsCode = Helpers.ErrorCode;
-                                                            }
-                                                        });
+                                                                    foreach (var colorSwatch in swatchData.swatches)
+                                                                        if (!swatchDropDownList.Contains(colorSwatch.name))
+                                                                            swatchDropDownList.Add(colorSwatch.name);
+
+                                                                    HasSwatchDropDownContent((callbackDataResults) =>
+                                                                    {
+                                                                        callbackResults.results = createDataCallback.results;
+                                                                        callbackResults.data = swatchDropDownList;
+                                                                        callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                                    });
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
+                                                                    callbackResults.data = default;
+                                                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                                                }
+                                                            });
+                                                        }
+                                                        else
+                                                            Debug.LogError($"Results : {SceneAssetsManager.Instance.GetAppDirectoryData(directoryType)}");
                                                     }
                                                 });
 
@@ -19979,35 +20025,40 @@ namespace Com.RedicalGames.Filar
                                             if (!swatches.Contains(swatch))
                                                 swatches.Add(swatch);
 
-                                            SwatchData swatchData = new SwatchData(fileName, swatches);
-
-                                            StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(directoryType);
-
-                                            SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                            if (SceneAssetsManager.Instance.GetAppDirectoryData(directoryType).Success())
                                             {
-                                                if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                                SwatchData swatchData = new SwatchData(fileName, swatches);
+
+                                                StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(directoryType).data;
+
+                                                SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                 {
-                                                    swatchDropDownList = new List<string>();
-
-                                                    foreach (var colorSwatch in swatchData.swatches)
-                                                        if (!swatchDropDownList.Contains(colorSwatch.name))
-                                                            swatchDropDownList.Add(colorSwatch.name);
-
-                                                    HasSwatchDropDownContent((callbackDataResults) =>
+                                                    if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
                                                     {
-                                                        callbackResults.results = createDataCallback.results;
-                                                        callbackResults.data = swatchDropDownList;
-                                                        callbackResults.resultsCode = createDataCallback.resultsCode;
-                                                    });
+                                                        swatchDropDownList = new List<string>();
 
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
-                                                    callbackResults.data = default;
-                                                    callbackResults.resultsCode = Helpers.ErrorCode;
-                                                }
-                                            });
+                                                        foreach (var colorSwatch in swatchData.swatches)
+                                                            if (!swatchDropDownList.Contains(colorSwatch.name))
+                                                                swatchDropDownList.Add(colorSwatch.name);
+
+                                                        HasSwatchDropDownContent((callbackDataResults) =>
+                                                        {
+                                                            callbackResults.results = createDataCallback.results;
+                                                            callbackResults.data = swatchDropDownList;
+                                                            callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                        });
+
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
+                                                        callbackResults.data = default;
+                                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                Debug.LogError($"Results : {SceneAssetsManager.Instance.GetAppDirectoryData(directoryType)}");
                                         }
                                         else
                                         {

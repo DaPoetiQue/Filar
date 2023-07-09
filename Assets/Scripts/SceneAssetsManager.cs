@@ -133,7 +133,11 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.StorageDirectoryData folderStructureDirectoryData = new AppData.StorageDirectoryData();
+        AppData.StorageDirectoryData rootStructureStorageData = new AppData.StorageDirectoryData();
+
+        [Space(5)]
+        [SerializeField]
+        AppData.ProjectRootStructureData rootProjectStructureData = new AppData.ProjectRootStructureData();
 
         [Space(5)]
         [SerializeField]
@@ -218,6 +222,93 @@ namespace Com.RedicalGames.Filar
             _instance = this;
         }
 
+        public void InitializeStorage(Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            #region Directories
+
+            if (defaultDirectories == null)
+            {
+                callbackResults.results = "App Default Directories Missing.";
+                callbackResults.resultsCode = AppData.Helpers.WarningCode;
+
+                callback?.Invoke(callbackResults);
+            }
+
+            foreach (var directory in defaultDirectories)
+            {
+                if (directory.type != AppData.DirectoryType.None)
+                {
+                    string path = defaultAppDirectoryFolderName + "/" + directory.type.ToString();
+
+                    string directoryPath = directoryPath = Application.productName;
+                    string defaultDirectory = String.Empty;
+
+                    if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+                    {
+                        defaultDirectory = Path.Combine(directoryPath, path);
+                    }
+                    else
+                    {
+                        defaultDirectory = Path.Combine(Application.dataPath, path);
+                    }
+
+                    string formattedDirectory = defaultDirectory.Replace("\\", "/");
+
+                    // Create a new default storage path
+                    AppData.StorageDirectoryData appDirectory = new AppData.StorageDirectoryData
+                    {
+                        name = directory.name,
+                        projectDirectory = formattedDirectory,
+                        type = directory.type
+                    };
+
+                    if (!Directory.Exists(formattedDirectory))
+                    {
+                        CreateDirectory(appDirectory, (directoryCreatedCallbackResults) =>
+                        {
+                            callbackResults.results = directoryCreatedCallbackResults.results;
+                            callbackResults.resultsCode = directoryCreatedCallbackResults.resultsCode;
+
+                            if (callbackResults.Success())
+                            {
+                                if (!appDirectories.Contains(appDirectory))
+                                {
+                                    appDirectories.Add(appDirectory);
+                                    callbackResults.results = $"Created And Added Directory : {directory} To App Directories.";
+                                }
+                                else
+                                    callbackResults.results = $"Directory : {directory} Already Exist In App Directories.";
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Failed To Create Directory : {directory}";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
+                        });
+                    }
+                    else
+                    {
+                        if (!appDirectories.Contains(appDirectory))
+                        {
+                            appDirectories.Add(appDirectory);
+                            callbackResults.results = $"Added Existing Directory : {appDirectory} To App Directories.";
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "App Data Path Set To None.";
+                    callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                }
+            }
+
+            #endregion
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void Init(AppData.Folder rootFolder, DynamicWidgetsContainer container, Action<AppData.Callback> callback = null)
         {
             try
@@ -281,86 +372,6 @@ namespace Com.RedicalGames.Filar
                                 callback?.Invoke(callbackResults);
                                 break;
                             }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Directories
-
-                    if (defaultDirectories == null)
-                    {
-                        callbackResults.results = "App Default Directories Missing.";
-                        callbackResults.resultsCode = AppData.Helpers.WarningCode;
-
-                        callback?.Invoke(callbackResults);
-                    }
-
-                    foreach (var directory in defaultDirectories)
-                    {
-                        if (directory.type != AppData.DirectoryType.None)
-                        {
-                            string path = defaultAppDirectoryFolderName + "/" + directory.type.ToString();
-
-                            string directoryPath = directoryPath = Application.productName;
-                            string defaultDirectory = String.Empty;
-
-                            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-                            {
-                                defaultDirectory = Path.Combine(directoryPath, path);
-                            }
-                            else
-                            {
-                                defaultDirectory = Path.Combine(Application.dataPath, path);
-                            }
-
-                            string formattedDirectory = defaultDirectory.Replace("\\", "/");
-
-                            // Create a new default storage path
-                            AppData.StorageDirectoryData appDirectory = new AppData.StorageDirectoryData
-                            {
-                                name = directory.name,
-                                projectDirectory = formattedDirectory,
-                                type = directory.type
-                            };
-
-                            if (!Directory.Exists(formattedDirectory))
-                            {
-                                CreateDirectory(appDirectory, (directoryCreatedCallbackResults) =>
-                                {
-                                    callbackResults.results = directoryCreatedCallbackResults.results;
-                                    callbackResults.resultsCode = directoryCreatedCallbackResults.resultsCode;
-
-                                    if (callbackResults.Success())
-                                    {
-                                        if (!appDirectories.Contains(appDirectory))
-                                        {
-                                            appDirectories.Add(appDirectory);
-                                            callbackResults.results = $"Created And Added Directory : {directory} To App Directories.";
-                                        }
-                                        else
-                                            callbackResults.results = $"Directory : {directory} Already Exist In App Directories.";
-                                    }
-                                    else
-                                    {
-                                        callbackResults.results = $"Failed To Create Directory : {directory}";
-                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                if (!appDirectories.Contains(appDirectory))
-                                {
-                                    appDirectories.Add(appDirectory);
-                                    callbackResults.results = $"Added Existing Directory : {appDirectory} To App Directories.";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            callbackResults.results = "App Data Path Set To None.";
-                            callbackResults.resultsCode = AppData.Helpers.WarningCode;
                         }
                     }
 
@@ -1582,23 +1593,37 @@ namespace Com.RedicalGames.Filar
             return defaultAssetName;
         }
 
-        public AppData.StorageDirectoryData GetAppDirectoryData(AppData.DirectoryType directoryType)
+        public AppData.CallbackData<AppData.StorageDirectoryData>  GetAppDirectoryData(AppData.DirectoryType directoryType)
         {
+            AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
+
             AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData();
 
             if (appDirectories.Count > 0)
             {
-                foreach (var directory in appDirectories)
+                directoryData = appDirectories.Find(data => data.type == directoryType);
+
+                if(directoryData != null)
                 {
-                    if (directory.type == directoryType)
-                    {
-                        directoryData = directory;
-                        break;
-                    }
+                    callbackResults.results = $"App Directory Data Of Type : {directoryType} Found.";
+                    callbackResults.data = directoryData;
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"App Directory Data Of Type : {directoryType} Not Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
             }
+            else
+            {
+                callbackResults.results = "There Are No App Directories Found.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
 
-            return directoryData;
+            return callbackResults;
         }
 
         public void BuildSceneAsset(AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback = null)
@@ -2079,11 +2104,7 @@ namespace Com.RedicalGames.Filar
             var widgetsContainer = GetWidgetsRefreshData().widgetsContainer;
 
             if (widgetsContainer != null)
-            {
-                LogSuccess($"Setting Layout View Type : {viewType} ", this);
-
-                GetWidgetsRefreshData().widgetsContainer.SetViewLayout(AppManager.Instance.GetInitialStructureData().GetFolderLayoutView(viewType));
-            }
+                GetWidgetsRefreshData().widgetsContainer.SetViewLayout(rootProjectStructureData.GetProjectStructureData().GetFolderLayoutView(viewType));
             else
                 LogError("Widgets Container Not Found. Please Initialize First.", this);
         }
@@ -3142,69 +3163,74 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        AppData.StorageDirectoryData directoryData = GetAppDirectoryData(newProject.rootFolder.directoryType);
-
-                        if (DirectoryFound(directoryData))
+                        if (GetAppDirectoryData(newProject.rootFolder.directoryType).Success())
                         {
-                            GetDataNameWithExtension(newProject.name, AppData.SelectableWidgetType.Project, fileNameCallbackResults => 
+                            AppData.StorageDirectoryData directoryData = GetAppDirectoryData(newProject.rootFolder.directoryType).data;
+
+                            if (DirectoryFound(directoryData))
                             {
-                                callbackResults.results = fileNameCallbackResults.results;
-                                callbackResults.resultsCode = fileNameCallbackResults.resultsCode;
-
-                                if(callbackResults.Success())
+                                GetDataNameWithExtension(newProject.name, AppData.SelectableWidgetType.Project, fileNameCallbackResults =>
                                 {
-                                    string fileNameWithoutExtension = GetDataNameWithoutExtension(fileNameCallbackResults.data, AppData.SelectableWidgetType.Project);
+                                    callbackResults.results = fileNameCallbackResults.results;
+                                    callbackResults.resultsCode = fileNameCallbackResults.resultsCode;
 
-                                    var storageData = GetAppDirectoryData(newProject.rootFolder.directoryType);
-
-                                    string path = Path.Combine(storageData.projectDirectory, fileNameCallbackResults.data);
-                                    string validPath = path.Replace("\\", "/");
-
-                                    //string directory = Path.Combine(storageData.directory, mainFolder.name);
-                                    string projectDirectory = storageData.projectDirectory.Replace("\\", "/");
-                                    string folderDirectory = Path.Combine(projectDirectory, newProject.name);
-                                    string rootDirectory = folderDirectory.Replace("\\", "/");
-
-                                    storageData.name = fileNameWithoutExtension;
-                                    storageData.path = validPath;
-                                    storageData.projectDirectory = projectDirectory;
-                                    storageData.rootDirectory = rootDirectory;
-
-                                    newProject.projectInfo.name = newProject.name;
-                                    newProject.storageData = storageData;
-                                    newProject.rootFolder.name = newProject.name;
-                                    newProject.rootFolder.isRootFolder = true;
-                                    newProject.rootFolder.storageData = storageData;
-
-                                    CreateData(newProject, directoryData, (folderStructureCreated) =>
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults = folderStructureCreated;
+                                        string fileNameWithoutExtension = GetDataNameWithoutExtension(fileNameCallbackResults.data, AppData.SelectableWidgetType.Project);
 
-                                        if (folderStructureCreated.Success())
+                                        var storageData = GetAppDirectoryData(newProject.rootFolder.directoryType).data;
+
+                                        string path = Path.Combine(storageData.projectDirectory, fileNameCallbackResults.data);
+                                        string validPath = path.Replace("\\", "/");
+
+                                        //string directory = Path.Combine(storageData.directory, mainFolder.name);
+                                        string projectDirectory = storageData.projectDirectory.Replace("\\", "/");
+                                        string folderDirectory = Path.Combine(projectDirectory, newProject.name);
+                                        string rootDirectory = folderDirectory.Replace("\\", "/");
+
+                                        storageData.name = fileNameWithoutExtension;
+                                        storageData.path = validPath;
+                                        storageData.projectDirectory = projectDirectory;
+                                        storageData.rootDirectory = rootDirectory;
+
+                                        newProject.projectInfo.name = newProject.name;
+                                        newProject.storageData = storageData;
+                                        newProject.rootFolder.name = newProject.name;
+                                        newProject.rootFolder.isRootFolder = true;
+                                        newProject.rootFolder.storageData = storageData;
+
+                                        CreateData(newProject, directoryData, (folderStructureCreated) =>
                                         {
-                                            CreateDirectory(rootDirectory, directoryCreatedCallback =>
+                                            callbackResults = folderStructureCreated;
+
+                                            if (folderStructureCreated.Success())
                                             {
-                                                callbackResults.resultsCode = directoryCreatedCallback.resultsCode;
+                                                CreateDirectory(rootDirectory, directoryCreatedCallback =>
+                                                {
+                                                    callbackResults.resultsCode = directoryCreatedCallback.resultsCode;
 
-                                                if (directoryCreatedCallback.Success())
-                                                    callbackResults.results = $"A New Project Titled : {newProject.name} Has Been Created.";
-                                                else
-                                                    LogWarning(directoryCreatedCallback.results, this);
-                                            });
-                                        }
-                                        else
-                                            Log(folderStructureCreated.resultsCode, folderStructureCreated.results, this);
+                                                    if (directoryCreatedCallback.Success())
+                                                        callbackResults.results = $"A New Project Titled : {newProject.name} Has Been Created.";
+                                                    else
+                                                        LogWarning(directoryCreatedCallback.results, this);
+                                                });
+                                            }
+                                            else
+                                                Log(folderStructureCreated.resultsCode, folderStructureCreated.results, this);
 
-                                    });
-                                }
-                            });
+                                        });
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Directory : {directoryData.projectDirectory} Not Found.";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
                         }
                         else
-                        {
-                            callbackResults.results = $"Directory : {directoryData.projectDirectory} Not Found.";
-                            callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                        }
+                            Log(GetAppDirectoryData(newProject.rootFolder.directoryType).resultsCode, GetAppDirectoryData(newProject.rootFolder.directoryType).results, this);
                     }
                 });
 
@@ -4416,88 +4442,100 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.CallbackDataList<AppData.ProjectStructureData> callbackResults = new AppData.CallbackDataList<AppData.ProjectStructureData>();
 
-                AppData.StorageDirectoryData directoryData = GetAppDirectoryData(folderStructureDirectoryData.type);
-
-                if (DirectoryFound(directoryData))
+                LoadRootStructureData(rootProjectCallbackResults => 
                 {
-                    var projectFiles = Directory.GetFileSystemEntries(directoryData.projectDirectory);
+                    callbackResults.results = rootProjectCallbackResults.results;
+                    callbackResults.resultsCode = rootProjectCallbackResults.resultsCode;
 
-                    if (projectFiles != null && projectFiles.Length > 0)
+                    if(callbackResults.Success())
                     {
-                        List<AppData.StorageDirectoryData> validEntries = new List<AppData.StorageDirectoryData>();
-
-                        foreach (var item in projectFiles)
+                        if (GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).Success())
                         {
-                            if (item.Contains(".json") && !item.Contains(".meta"))
+                            AppData.StorageDirectoryData directoryData = GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).data;
+
+                            if (DirectoryFound(directoryData))
                             {
-                                AppData.StorageDirectoryData validEntry = new AppData.StorageDirectoryData
+                                var projectFiles = Directory.GetFileSystemEntries(directoryData.projectDirectory);
+
+                                if (projectFiles != null && projectFiles.Length > 0)
                                 {
-                                    name = Path.GetFileName(item).Replace(".json", ""),
-                                    path = item,
-                                    projectDirectory = directoryData.projectDirectory
-                                };
+                                    List<AppData.StorageDirectoryData> validEntries = new List<AppData.StorageDirectoryData>();
 
-                                validEntries.Add(validEntry);
-                            }
-                        }
+                                    foreach (var item in projectFiles)
+                                    {
+                                        if (item.Contains(".json") && !item.Contains(".meta"))
+                                        {
+                                            AppData.StorageDirectoryData validEntry = new AppData.StorageDirectoryData
+                                            {
+                                                name = Path.GetFileName(item).Replace(".json", ""),
+                                                path = item,
+                                                projectDirectory = directoryData.projectDirectory
+                                            };
 
-                        ///////////////////////////////////////////////////////////////////////////
+                                            validEntries.Add(validEntry);
+                                        }
+                                    }
 
-                        if (validEntries.Count > 0)
-                        {
-                            List<AppData.ProjectStructureData> loadedEntries = new List<AppData.ProjectStructureData>();
+                                    if (validEntries.Count > 0)
+                                    {
+                                        List<AppData.ProjectStructureData> loadedEntries = new List<AppData.ProjectStructureData>();
 
-                            foreach (var entry in validEntries)
-                            {
-                                LoadData<AppData.ProjectStructureData>(entry, loadedResults =>
+                                        foreach (var entry in validEntries)
+                                        {
+                                            LoadData<AppData.ProjectStructureData>(entry, loadedResults =>
+                                            {
+                                                callbackResults.results = loadedResults.results;
+                                                callbackResults.resultsCode = loadedResults.resultsCode;
+
+                                                if (callbackResults.Success())
+                                                    loadedEntries.Add(loadedResults.data);
+                                            });
+
+                                            if (!callbackResults.Success())
+                                                break;
+                                        }
+
+                                        LogSuccess($"===========> Found : {loadedEntries.Count} Loaded Entries.", this);
+
+                                        if (loadedEntries.Count > 0)
+                                        {
+                                            callbackResults.results = $"Directory : {directoryData.projectDirectory} Found.";
+                                            callbackResults.data = loadedEntries;
+                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                        }
+                                        else
+                                        {
+
+                                            callbackResults.results = $" Failed To Load Project Structure From Directory : {directoryData.projectDirectory} - Please Check Here For Details.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.projectDirectory}.";
+                                        callbackResults.data = default;
+                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    }
+                                }
+                                else
                                 {
-                                    callbackResults.results = loadedResults.results;
-                                    callbackResults.resultsCode = loadedResults.resultsCode;
-
-                                    if (callbackResults.Success())
-                                        loadedEntries.Add(loadedResults.data);
-                                });
-
-                                if (!callbackResults.Success())
-                                    break;
-                            }
-
-                            LogSuccess($"===========> Found : {loadedEntries.Count} Loaded Entries.", this);
-
-                            if (loadedEntries.Count > 0)
-                            {
-                                callbackResults.results = $"Directory : {directoryData.projectDirectory} Found.";
-                                callbackResults.data = loadedEntries;
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.projectDirectory}.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                }
                             }
                             else
                             {
-
-                                callbackResults.results = $" Failed To Load Project Structure From Directory : {directoryData.projectDirectory} - Please Check Here For Details.";
+                                callbackResults.results = $"Directory : {directoryData.projectDirectory} Of Type : {rootStructureStorageData.type} Not Found.";
                                 callbackResults.data = default;
                                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
-                        {
-                            callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.projectDirectory}.";
-                            callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                        }
+                            Log(GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).results, this);
                     }
-                    else
-                    {
-                        callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.projectDirectory}.";
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.results = $"Directory : {directoryData.projectDirectory} Of Type : {folderStructureDirectoryData.type} Not Found.";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                }
+                });
 
                 callback?.Invoke(callbackResults);
             }
@@ -5183,152 +5221,161 @@ namespace Com.RedicalGames.Filar
 
                                 #region Serach For Projects Files
 
-                                var searchDirectory = GetAppDirectoryData(AppManager.Instance.GetInitialStructureData().rootFolder.directoryType);
-
-                                if (DirectoryFound(searchDirectory))
+                                if (GetProjectRootStructureData().Success())
                                 {
-                                    GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
-
-                                    var searchedProjects = Directory.GetFileSystemEntries(searchDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
-
-                                    #region Get System Files
-
-                                    List<string> validProjectsfound = new List<string>();
-
-                                    List<string> projectsDataBlackList = new List<string>();
-
-                                    bool projectsFound = false;
-
-                                    foreach (var searchedProject in searchedProjects)
+                                    if (GetAppDirectoryData(GetProjectRootStructureData().data.GetProjectStructureData().rootFolder.directoryType).Success())
                                     {
-                                        if (GetFolderStructureData().GetExcludedSystemFileData() != null)
+                                        var searchDirectory = GetAppDirectoryData(GetProjectRootStructureData().data.GetProjectStructureData().rootFolder.directoryType).data;
+
+                                        if (DirectoryFound(searchDirectory))
                                         {
-                                            foreach (var excludedFile in AppManager.Instance.GetInitialStructureData().GetExcludedSystemFileData())
+                                            GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
+
+                                            var searchedProjects = Directory.GetFileSystemEntries(searchDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
+
+                                            #region Get System Files
+
+                                            List<string> validProjectsfound = new List<string>();
+                                            List<string> projectsDataBlackList = new List<string>();
+
+                                            bool projectsFound = false;
+
+                                            foreach (var searchedProject in searchedProjects)
                                             {
-                                                if (!searchedProject.Contains(excludedFile) && !projectsDataBlackList.Contains(searchedProject))
+                                                if (GetFolderStructureData().GetExcludedSystemFileData() != null)
                                                 {
-                                                    if (!validProjectsfound.Contains(searchedProject))
-                                                        validProjectsfound.Add(searchedProject);
+                                                    foreach (var excludedFile in GetProjectRootStructureData().data.GetProjectStructureData().GetExcludedSystemFileData())
+                                                    {
+                                                        if (!searchedProject.Contains(excludedFile) && !projectsDataBlackList.Contains(searchedProject))
+                                                        {
+                                                            if (!validProjectsfound.Contains(searchedProject))
+                                                                validProjectsfound.Add(searchedProject);
+                                                        }
+                                                        else
+                                                            projectsDataBlackList.Add(searchedProject);
+                                                    }
                                                 }
                                                 else
-                                                    projectsDataBlackList.Add(searchedProject);
+                                                    Debug.LogWarning($"==> LoadFolderData's GetExcludedSystemFolders Failed - GetFolderStructureData().GetExcludedSystemFileData() Returned Null.");
                                             }
-                                        }
-                                        else
-                                            Debug.LogWarning($"==> LoadFolderData's GetExcludedSystemFolders Failed - GetFolderStructureData().GetExcludedSystemFileData() Returned Null.");
-                                    }
 
-                                    #endregion
+                                            #endregion
 
-                                    #region Projects
+                                            #region Projects
 
-                                    if (validProjectsfound.Count > 0)
-                                    {
-                                        List<AppData.ProjectStructureData> validProjectsfoundDirectories = new List<AppData.ProjectStructureData>();
-                                        List<AppData.ProjectStructureData> projectsSearchResults = new List<AppData.ProjectStructureData>();
-
-                                        foreach (var validProject in validProjectsfound)
-                                        {
-                                            var fileName = Path.GetFileName(validProject);
-
-                                            AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
+                                            if (validProjectsfound.Count > 0)
                                             {
-                                                name = fileName,
-                                                path = validProject,
-                                                projectDirectory = searchDirectory.projectDirectory,
-                                                type = searchDirectory.type
-                                            };
+                                                List<AppData.ProjectStructureData> validProjectsfoundDirectories = new List<AppData.ProjectStructureData>();
+                                                List<AppData.ProjectStructureData> projectsSearchResults = new List<AppData.ProjectStructureData>();
 
-                                            LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
-                                            {
-                                                if (loadedProjectCallbackResults.Success())
-                                                    validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
-                                                else
-                                                    LogError($"====> Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
-                                            });
-                                        }
-
-                                        if (validProjectsfoundDirectories.Count > 0)
-                                        {
-                                            #region Project Search Filter
-
-                                            foreach (var validDirectory in validProjectsfoundDirectories)
-                                            {
-                                                string folderName = validDirectory.name.ToLower();
-
-                                                if (strictValidateAssetSearch)
+                                                foreach (var validProject in validProjectsfound)
                                                 {
-                                                    if (folderName.Contains(searchValue.ToLower()) && folderName.StartsWith(searchValue[0].ToString().ToLower()))
+                                                    var fileName = Path.GetFileName(validProject);
+
+                                                    AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
                                                     {
-                                                        if (!projectsSearchResults.Contains(validDirectory))
-                                                            projectsSearchResults.Add(validDirectory);
-                                                    }
-                                                    else
+                                                        name = fileName,
+                                                        path = validProject,
+                                                        projectDirectory = searchDirectory.projectDirectory,
+                                                        type = searchDirectory.type
+                                                    };
+
+                                                    LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
                                                     {
-                                                        if (projectsSearchResults.Contains(validDirectory))
-                                                            projectsSearchResults.Remove(validDirectory);
-                                                    }
+                                                        if (loadedProjectCallbackResults.Success())
+                                                            validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
+                                                        else
+                                                            LogError($"====> Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
+                                                    });
                                                 }
-                                                else
+
+                                                if (validProjectsfoundDirectories.Count > 0)
                                                 {
-                                                    if (folderName.Contains(searchValue.ToLower()))
+                                                    #region Project Search Filter
+
+                                                    foreach (var validDirectory in validProjectsfoundDirectories)
                                                     {
-                                                        if (!projectsSearchResults.Contains(validDirectory))
-                                                            projectsSearchResults.Add(validDirectory);
+                                                        string folderName = validDirectory.name.ToLower();
+
+                                                        if (strictValidateAssetSearch)
+                                                        {
+                                                            if (folderName.Contains(searchValue.ToLower()) && folderName.StartsWith(searchValue[0].ToString().ToLower()))
+                                                            {
+                                                                if (!projectsSearchResults.Contains(validDirectory))
+                                                                    projectsSearchResults.Add(validDirectory);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (projectsSearchResults.Contains(validDirectory))
+                                                                    projectsSearchResults.Remove(validDirectory);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (folderName.Contains(searchValue.ToLower()))
+                                                            {
+                                                                if (!projectsSearchResults.Contains(validDirectory))
+                                                                    projectsSearchResults.Add(validDirectory);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (projectsSearchResults.Contains(validDirectory))
+                                                                    projectsSearchResults.Remove(validDirectory);
+                                                            }
+                                                        }
                                                     }
-                                                    else
+
+                                                    #endregion
+
+                                                    #region Create Project Widgets
+
+                                                    if (projectsSearchResults.Count > 0)
                                                     {
-                                                        if (projectsSearchResults.Contains(validDirectory))
-                                                            projectsSearchResults.Remove(validDirectory);
+                                                        CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
+                                                        {
+                                                            projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                        });
                                                     }
+
+                                                    #endregion
                                                 }
                                             }
 
                                             #endregion
 
-                                            #region Create Project Widgets
+                                            #region No Results Found
 
-                                            if (projectsSearchResults.Count > 0)
+                                            if (ScreenUIManager.Instance)
                                             {
-                                                CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
-                                                {
-                                                    projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
-                                                });
+
+                                                LogSuccess($"==========> Search Results Found : {projectsFound}", this);
+
+                                                if (!projectsFound)
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, $"No Search Results Found For {searchValue}");
+                                                else
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, "");
+
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.SortingList, AppData.InputUIState.Disabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Disabled);
+
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Disabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Disabled);
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
                                             }
+                                            else
+                                                Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
 
                                             #endregion
+
                                         }
-                                    }
-
-                                    #endregion
-
-                                    #region No Results Found
-
-                                    if (ScreenUIManager.Instance)
-                                    {
-
-                                        LogSuccess($"==========> Search Results Found : {projectsFound}", this);
-
-                                        if (!projectsFound)
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, $"No Search Results Found For {searchValue}");
                                         else
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.ResultsNotFound, "");
-
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.SortingList, AppData.InputUIState.Disabled);
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Disabled);
-
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Disabled);
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Disabled);
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
+                                            LogError($"Directory Of Type {rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType} Not Found ", this);
                                     }
                                     else
-                                        Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
-
-                                    #endregion
-
+                                        Log(GetAppDirectoryData(GetProjectRootStructureData().data.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(GetProjectRootStructureData().data.GetProjectStructureData().rootFolder.directoryType).results, this);
                                 }
                                 else
-                                    LogError($"Directory Of Type {AppManager.Instance.GetInitialStructureData().rootFolder.directoryType} Not Found ", this);
+                                    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
 
                                 #endregion
 
@@ -6183,196 +6230,201 @@ namespace Com.RedicalGames.Filar
 
                                                 if (filterType != AppData.ProjectCategoryType.Project_All)
                                                 {
-                                                    var filterDirectory = GetAppDirectoryData(AppManager.Instance.GetInitialStructureData().rootFolder.directoryType);
-
-                                                    if (DirectoryFound(filterDirectory))
+                                                    if (GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).Success())
                                                     {
-                                                        var filteredProjectFiles = Directory.GetFileSystemEntries(filterDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
+                                                        var filterDirectory = GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).data;
 
-                                                        AppData.Helpers.StringArrayValueValid(filteredProjectFiles, valueIsValidCallbackResults =>
+                                                        if (DirectoryFound(filterDirectory))
                                                         {
-                                                            callbackResults.resultsCode = valueIsValidCallbackResults.resultsCode;
+                                                            var filteredProjectFiles = Directory.GetFileSystemEntries(filterDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
 
-                                                            if (callbackResults.Success())
+                                                            AppData.Helpers.StringArrayValueValid(filteredProjectFiles, valueIsValidCallbackResults =>
                                                             {
-                                                                container.ClearWidgets(false, widgetsClearedCallbackResults =>
+                                                                callbackResults.resultsCode = valueIsValidCallbackResults.resultsCode;
+
+                                                                if (callbackResults.Success())
                                                                 {
-                                                                    #region Filter Content 
-
-                                                                    if (widgetsClearedCallbackResults.Success())
+                                                                    container.ClearWidgets(false, widgetsClearedCallbackResults =>
                                                                     {
-                                                                        #region Get System Files
+                                                                        #region Filter Content 
 
-                                                                        List<string> validProjectsfound = new List<string>();
-
-                                                                        List<string> projectsDataBlackList = new List<string>();
-
-                                                                        bool projectsFound = false;
-
-                                                                        foreach (var validData in filteredProjectFiles)
+                                                                        if (widgetsClearedCallbackResults.Success())
                                                                         {
-                                                                            if (GetFolderStructureData().GetExcludedSystemFileData() != null)
+                                                                            #region Get System Files
+
+                                                                            List<string> validProjectsfound = new List<string>();
+
+                                                                            List<string> projectsDataBlackList = new List<string>();
+
+                                                                            bool projectsFound = false;
+
+                                                                            foreach (var validData in filteredProjectFiles)
                                                                             {
-                                                                                foreach (var excludedFile in AppManager.Instance.GetInitialStructureData().GetExcludedSystemFileData())
+                                                                                if (GetFolderStructureData().GetExcludedSystemFileData() != null)
                                                                                 {
-                                                                                    if (!validData.Contains(excludedFile) && !projectsDataBlackList.Contains(validData))
+                                                                                    foreach (var excludedFile in rootProjectStructureData.GetProjectStructureData().GetExcludedSystemFileData())
                                                                                     {
-                                                                                        if (!validProjectsfound.Contains(validData))
-                                                                                            validProjectsfound.Add(validData);
-                                                                                        else
+                                                                                        if (!validData.Contains(excludedFile) && !projectsDataBlackList.Contains(validData))
                                                                                         {
-                                                                                            callbackResults.results = $"Found Valid Project Data Contains Excluded File : {excludedFile} Or Project Data Contains Already Contains Project : {validData}";
-                                                                                            callbackResults.data = default;
-                                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-
-                                                                                            break;
-                                                                                        }
-                                                                                    }
-                                                                                    else
-                                                                                        projectsDataBlackList.Add(validData);
-                                                                                }
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                callbackResults.results = "Couldn't Get Excluded File Data.";
-                                                                                callbackResults.data = default;
-                                                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                                            }
-                                                                        }
-
-                                                                        AppData.Helpers.StringListValueValid(validProjectsfound, hasValidDataCallbackResults =>
-                                                                        {
-                                                                            callbackResults.resultsCode = hasValidDataCallbackResults.resultsCode;
-
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                List<AppData.ProjectStructureData> validProjectsfoundDirectories = new List<AppData.ProjectStructureData>();
-                                                                                List<AppData.ProjectStructureData> projectsFilteredResults = new List<AppData.ProjectStructureData>();
-
-                                                                                foreach (var validProject in validProjectsfound)
-                                                                                {
-                                                                                    var fileName = Path.GetFileName(validProject);
-
-                                                                                    AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
-                                                                                    {
-                                                                                        name = fileName,
-                                                                                        path = validProject,
-                                                                                        projectDirectory = filterDirectory.projectDirectory,
-                                                                                        type = filterDirectory.type
-                                                                                    };
-
-                                                                                    LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
-                                                                                    {
-                                                                                        if (loadedProjectCallbackResults.Success())
-                                                                                            validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
-                                                                                        else
-                                                                                            LogError($"Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
-                                                                                    });
-                                                                                }
-
-                                                                                AppData.Helpers.SerializableComponentValid(validProjectsfoundDirectories, hasComponentsCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        #region Project Search Filter
-
-                                                                                        foreach (var validDirectory in validProjectsfoundDirectories)
-                                                                                        {
-                                                                                            if (validDirectory.GetProjectInfo().GetCategoryType() == filterType)
+                                                                                            if (!validProjectsfound.Contains(validData))
+                                                                                                validProjectsfound.Add(validData);
+                                                                                            else
                                                                                             {
-                                                                                                if (!projectsFilteredResults.Contains(validDirectory))
-                                                                                                    projectsFilteredResults.Add(validDirectory);
+                                                                                                callbackResults.results = $"Found Valid Project Data Contains Excluded File : {excludedFile} Or Project Data Contains Already Contains Project : {validData}";
+                                                                                                callbackResults.data = default;
+                                                                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+
+                                                                                                break;
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                            projectsDataBlackList.Add(validData);
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    callbackResults.results = "Couldn't Get Excluded File Data.";
+                                                                                    callbackResults.data = default;
+                                                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                }
+                                                                            }
+
+                                                                            AppData.Helpers.StringListValueValid(validProjectsfound, hasValidDataCallbackResults =>
+                                                                            {
+                                                                                callbackResults.resultsCode = hasValidDataCallbackResults.resultsCode;
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    List<AppData.ProjectStructureData> validProjectsfoundDirectories = new List<AppData.ProjectStructureData>();
+                                                                                    List<AppData.ProjectStructureData> projectsFilteredResults = new List<AppData.ProjectStructureData>();
+
+                                                                                    foreach (var validProject in validProjectsfound)
+                                                                                    {
+                                                                                        var fileName = Path.GetFileName(validProject);
+
+                                                                                        AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData
+                                                                                        {
+                                                                                            name = fileName,
+                                                                                            path = validProject,
+                                                                                            projectDirectory = filterDirectory.projectDirectory,
+                                                                                            type = filterDirectory.type
+                                                                                        };
+
+                                                                                        LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
+                                                                                        {
+                                                                                            if (loadedProjectCallbackResults.Success())
+                                                                                                validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
+                                                                                            else
+                                                                                                LogError($"Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
+                                                                                        });
+                                                                                    }
+
+                                                                                    AppData.Helpers.SerializableComponentValid(validProjectsfoundDirectories, hasComponentsCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            #region Project Search Filter
+
+                                                                                            foreach (var validDirectory in validProjectsfoundDirectories)
+                                                                                            {
+                                                                                                if (validDirectory.GetProjectInfo().GetCategoryType() == filterType)
+                                                                                                {
+                                                                                                    if (!projectsFilteredResults.Contains(validDirectory))
+                                                                                                        projectsFilteredResults.Add(validDirectory);
+                                                                                                    else
+                                                                                                    {
+                                                                                                        callbackResults.results = $"Projects Filtered Results Already Contains Valid File Data Directory : {validDirectory}.";
+                                                                                                        callbackResults.data = default;
+                                                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+
+                                                                                                        break;
+                                                                                                    }
+                                                                                                }
                                                                                                 else
                                                                                                 {
-                                                                                                    callbackResults.results = $"Projects Filtered Results Already Contains Valid File Data Directory : {validDirectory}.";
-                                                                                                    callbackResults.data = default;
-                                                                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                                    if (projectsFilteredResults.Contains(validDirectory))
+                                                                                                        projectsFilteredResults.Remove(validDirectory);
 
-                                                                                                    break;
-                                                                                                }
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                if (projectsFilteredResults.Contains(validDirectory))
-                                                                                                    projectsFilteredResults.Remove(validDirectory);
-
-                                                                                                if (projectsFilteredResults.Contains(validDirectory))
-                                                                                                {
-                                                                                                    callbackResults.results = $"Failed To Remove Valid Directory Data : {validDirectory} From Projects Filtered Results.";
-                                                                                                    callbackResults.data = default;
-                                                                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                                                                }
-                                                                                            }
-                                                                                        }
-
-                                                                                        AppData.Helpers.SerializableComponentValid(projectsFilteredResults, hasComponentsCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsFilteredResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
-                                                                                                {
-                                                                                                    callbackResults.results = widgetsCreated.results;
-                                                                                                    callbackResults.resultsCode = widgetsCreated.resultsCode;
-
-                                                                                                    if (callbackResults.Success())
+                                                                                                    if (projectsFilteredResults.Contains(validDirectory))
                                                                                                     {
-                                                                                                        callbackResults.data = filterType;
-                                                                                                        projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                                                                        callbackResults.results = $"Failed To Remove Valid Directory Data : {validDirectory} From Projects Filtered Results.";
+                                                                                                        callbackResults.data = default;
+                                                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                                                                                                     }
-                                                                                                });
+                                                                                                }
                                                                                             }
-                                                                                            else
-                                                                                            {
-                                                                                                callbackResults.results = $"Couldn't Find Widgets For Filter Type : {filterType}";
-                                                                                                callbackResults.data = default;
-                                                                                            }
-                                                                                        });
 
-                                                                                        #endregion
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        callbackResults.results = "Couldn't Get Valid Projects File Data.";
-                                                                                        callbackResults.data = default;
-                                                                                    }
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                callbackResults.results = $"Couldn't Find Any Valid Project Files In Directory : {filterDirectory.projectDirectory}";
-                                                                                callbackResults.data = default;
-                                                                            }
-                                                                        });
+                                                                                            AppData.Helpers.SerializableComponentValid(projectsFilteredResults, hasComponentsCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+
+                                                                                                if (callbackResults.Success())
+                                                                                                {
+                                                                                                    CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsFilteredResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
+                                                                                                    {
+                                                                                                        callbackResults.results = widgetsCreated.results;
+                                                                                                        callbackResults.resultsCode = widgetsCreated.resultsCode;
+
+                                                                                                        if (callbackResults.Success())
+                                                                                                        {
+                                                                                                            callbackResults.data = filterType;
+                                                                                                            projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                                                                        }
+                                                                                                    });
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    callbackResults.results = $"Couldn't Find Widgets For Filter Type : {filterType}";
+                                                                                                    callbackResults.data = default;
+                                                                                                }
+                                                                                            });
+
+                                                                                            #endregion
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            callbackResults.results = "Couldn't Get Valid Projects File Data.";
+                                                                                            callbackResults.data = default;
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    callbackResults.results = $"Couldn't Find Any Valid Project Files In Directory : {filterDirectory.projectDirectory}";
+                                                                                    callbackResults.data = default;
+                                                                                }
+                                                                            });
+
+                                                                            #endregion
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            callbackResults.results = widgetsClearedCallbackResults.results;
+                                                                            callbackResults.data = default;
+                                                                            callbackResults.resultsCode = widgetsClearedCallbackResults.resultsCode;
+                                                                        }
 
                                                                         #endregion
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        callbackResults.results = widgetsClearedCallbackResults.results;
-                                                                        callbackResults.data = default;
-                                                                        callbackResults.resultsCode = widgetsClearedCallbackResults.resultsCode;
-                                                                    }
-
-                                                                    #endregion
-                                                                });
-                                                            }
-                                                            else
-                                                            {
-                                                                callbackResults.results = $"Couldn't Find Project Directory Data From Directory : {filterDirectory.projectDirectory}.";
-                                                                callbackResults.data = default;
-                                                            }
-                                                        });
+                                                                    });
+                                                                }
+                                                                else
+                                                                {
+                                                                    callbackResults.results = $"Couldn't Find Project Directory Data From Directory : {filterDirectory.projectDirectory}.";
+                                                                    callbackResults.data = default;
+                                                                }
+                                                            });
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                        }
                                                     }
                                                     else
-                                                    {
-                                                        callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
-                                                        callbackResults.data = default;
-                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                    }
+                                                        Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).results, this);
                                                 }
                                                 else
                                                     ScreenUIManager.Instance.Refresh();
@@ -6393,18 +6445,23 @@ namespace Com.RedicalGames.Filar
 
                                                 if (filterType != AppData.AssetCategoryType.None)
                                                 {
-                                                    var filterDirectory = GetAppDirectoryData(AppManager.Instance.GetInitialStructureData().rootFolder.directoryType);
-
-                                                    if (DirectoryFound(filterDirectory))
+                                                    if (GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).Success())
                                                     {
-                                                        var filteredAssetFiles = Directory.GetFileSystemEntries(filterDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
+                                                        var filterDirectory = GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).data;
+
+                                                        if (DirectoryFound(filterDirectory))
+                                                        {
+                                                            var filteredAssetFiles = Directory.GetFileSystemEntries(filterDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                        }
                                                     }
                                                     else
-                                                    {
-                                                        callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
-                                                        callbackResults.data = default;
-                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                    }
+                                                        Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).results, this);
                                                 }
                                                 else
                                                     ScreenUIManager.Instance.Refresh();
@@ -6550,6 +6607,27 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.resultsCode, $"===========================>> Get Filter Content Failed.", this);
 
             callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Root Project Structure
+
+        public AppData.CallbackData<AppData.ProjectRootStructureData> GetProjectRootStructureData()
+        {
+            AppData.CallbackData<AppData.ProjectRootStructureData> callbackResults = new AppData.CallbackData<AppData.ProjectRootStructureData>(); 
+
+            LoadRootStructureData(loadedRootStructureCallbackResults => 
+            {
+                callbackResults.results = loadedRootStructureCallbackResults.results;
+                callbackResults.data = default;
+                callbackResults.resultsCode = loadedRootStructureCallbackResults.resultsCode;
+
+                if (loadedRootStructureCallbackResults.Success())
+                    callbackResults.data = loadedRootStructureCallbackResults.data;
+            });
+
+            return callbackResults;
         }
 
         #endregion
@@ -7282,7 +7360,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Data Initialization
+        #region Data Serialization
+
+        #region Save Data
 
         public void CreateData<T>(T data, AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData
         {
@@ -7349,58 +7429,117 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void SaveData<T>(T data, AppData.StorageDirectoryData storageData, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData
+        public void SaveData<T>(T data, Action<AppData.Callback> callback = null) where T : AppData.SerializableData
         {
-            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
+            AppData.Callback callbackResults = new AppData.Callback();
 
-            FileFound(storageData.path, checkFileFoundCallback =>
+            if (File.Exists(data.storageData.path))
             {
-                if (AppData.Helpers.IsSuccessCode(checkFileFoundCallback.resultsCode))
+                data.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+
+                string JSONString = JsonUtility.ToJson(data);
+
+                if (!string.IsNullOrEmpty(JSONString))
                 {
-                    Debug.LogError($"==> File : {data.name} Found At Directory : {storageData.path}");
-
-                    File.Delete(storageData.path);
-
-                    FileFound(storageData.path, checkFileFoundCallback =>
+                    if (!File.Exists(data.storageData.path))
                     {
-                        if (!AppData.Helpers.IsSuccessCode(checkFileFoundCallback.resultsCode))
-                        {
-                            data.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+                        File.WriteAllText(data.storageData.path, JSONString);
 
-                            string JSONString = JsonUtility.ToJson(data);
-                            File.WriteAllText(storageData.path, JSONString);
+                        callbackResults.results = $"-->  Save Data Success : : {data.name} As : {data.storageData}";
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        File.Delete(data.storageData.path);
 
-                            FileFound(storageData.path, checkFileFoundCallback =>
-                            {
-                                if (AppData.Helpers.IsSuccessCode(checkFileFoundCallback.resultsCode))
-                                {
-                                    Debug.Log($"--> Replaced File : {data.name} At Directory : {storageData.path}");
-                                    callbackResults.data = data;
-                                }
-                                else
-                                {
-                                    callbackResults.results = $"Couldn't Replace File : {data.name} At Directory : {storageData.path} - Check Here Please.";
-                                    callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                }
-                            });
-                        }
+                        if (!File.Exists(data.storageData.path))
+                            File.WriteAllText(data.storageData.path, JSONString);
+
+                        callbackResults.results = $"--> Create New Data Success : Replaced Asset : {data.name} At Path : {data.storageData}";
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"--> Failed To Create A JSON File.";
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+
+                callbackResults.results = $"Sucees - File Saved in Directory : {data.storageData}";
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = $"Save data Failed : File Not found In Directory : {data.storageData}";
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Load Data
+
+        public void LoadRootStructureData(Action<AppData.CallbackData<AppData.ProjectRootStructureData>> callback)
+        {
+            AppData.CallbackData<AppData.ProjectRootStructureData> callbackResults = new AppData.CallbackData<AppData.ProjectRootStructureData>();
+
+            if (GetAppDirectoryData(rootStructureStorageData.type).Success())
+            {
+                var appStorageData = GetAppDirectoryData(rootStructureStorageData.type).data;
+
+                if (DirectoryFound(appStorageData))
+                {
+                    LogSuccess($"=========>>>>>>> Directory Found", this);
+
+                    LoadData<AppData.ProjectRootStructureData>(rootProjectStructureData.name, appStorageData, (rootStructureLoadedCallbackResults) =>
+                    {
+                        callbackResults.results = rootStructureLoadedCallbackResults.results;
+                        callbackResults.resultsCode = rootStructureLoadedCallbackResults.resultsCode;
+
+                        if (callbackResults.Success())
+                            callbackResults.data = rootStructureLoadedCallbackResults.data;
                         else
                         {
-                            Debug.LogError($"==> File : {data.name} Couldn't Delete From Directory : {storageData.path}");
+                            var projectInfo = new AppData.ProjectInfo
+                            {
+                                name = rootProjectStructureData.name,
+                                sortType = AppData.SortType.Ascending,
+                                categoryType = AppData.ProjectCategoryType.Project_All
+                            };
 
-                            callbackResults.results = $"Couldn't Delete File : {data.name} From Directory : {storageData.path} - Check Here Please.";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            rootProjectStructureData.GetProjectStructureData().projectInfo = projectInfo;
+                            rootProjectStructureData.storageData.name = projectInfo.name;
+                            string storageName = projectInfo.name + "_RootStructureData";
+                            appStorageData.name = storageName;
+
+                            CreateData(rootProjectStructureData, appStorageData, (rootStructureCreatedCallbackResults) =>
+                            {
+                                callbackResults.results = rootStructureCreatedCallbackResults.results;
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = rootStructureCreatedCallbackResults.resultsCode;
+
+                                if (callbackResults.Success())
+                                    callbackResults.data = rootStructureCreatedCallbackResults.data;
+                            });
                         }
                     });
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Save File : {data.name} At Directory : {storageData.path} - File Doesn't Exist, Create File First Before Attempting To Save.";
+                    callbackResults.results = "Root Project Storage Data Directory Not Found.";
                     callbackResults.data = default;
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+
+                    LogError($"=========>>>>>>> Directory Not Found For {rootStructureStorageData.type}", this);
                 }
-            });
+            }
+            else
+            {
+                callbackResults.results = GetAppDirectoryData(rootStructureStorageData.type).results;
+                callbackResults.resultsCode = GetAppDirectoryData(rootStructureStorageData.type).resultsCode;
+            }
 
             callback.Invoke(callbackResults);
         }
@@ -7478,53 +7617,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void SaveData<T>(T data, Action<AppData.Callback> callback = null) where T : AppData.SerializableData
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            if (File.Exists(data.storageData.path))
-            {
-                data.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
-
-                string JSONString = JsonUtility.ToJson(data);
-
-                if (!string.IsNullOrEmpty(JSONString))
-                {
-                    if (!File.Exists(data.storageData.path))
-                    {
-                        File.WriteAllText(data.storageData.path, JSONString);
-
-                        callbackResults.results = $"-->  Save Data Success : : {data.name} As : {data.storageData}";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        File.Delete(data.storageData.path);
-
-                        if (!File.Exists(data.storageData.path))
-                            File.WriteAllText(data.storageData.path, JSONString);
-
-                        callbackResults.results = $"--> Create New Data Success : Replaced Asset : {data.name} At Path : {data.storageData}";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.results = $"--> Failed To Create A JSON File.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                }
-
-                callbackResults.results = $"Sucees - File Saved in Directory : {data.storageData}";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.results = $"Save data Failed : File Not found In Directory : {data.storageData}";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
-
-            callback.Invoke(callbackResults);
-        }
+        #endregion
 
         #endregion
     }
