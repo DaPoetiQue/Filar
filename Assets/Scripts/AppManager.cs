@@ -26,10 +26,6 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
-        [Space(5)]
-        [SerializeField]
-        AppData.ProjectStructureData initialStructureData = new AppData.ProjectStructureData();
-
         [SerializeField]
         AppData.SceneDataPackets initialLoadDataPackets = new AppData.SceneDataPackets();
 
@@ -71,41 +67,46 @@ namespace Com.RedicalGames.Filar
             Debug.Log("--> Back Button Pressed.");
 
             //if (SceneAssetsManager.Instance != null)
-            //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
+            //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);;
 
-            LogInfo($"===> Getting Dynamic Widget Container For Screen Type : {initialLoadDataPackets.screenType} ", this);
-
-            SceneAssetsManager.Instance.SetCurrentProjectStructureData(initialStructureData);
-
-            var projectInfo = new AppData.ProjectInfo
+            AppData.Helpers.ComponentValid(SceneAssetsManager.Instance, hasComponentCallbackResults => 
             {
-                name = initialStructureData.name,
-                sortType = AppData.SortType.Ascending,
-                categoryType = AppData.ProjectCategoryType.Project_All
-            };
-
-            initialStructureData.projectInfo = projectInfo;
-
-            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
-            {
-                if (containerResults.Success())
+                if(hasComponentCallbackResults.Success())
                 {
-                    LogSuccess($"===> Found Dynamic Widget Container For Screen Type : {initialLoadDataPackets.screenType} Named : {containerResults.data.name} ", this);
+                    SceneAssetsManager.Instance.InitializeStorage(storageInitializedCallbackResults => 
+                    {
+                        if (storageInitializedCallbackResults.Success())
+                        {
+                            SceneAssetsManager.Instance.LoadRootStructureData(loadedProjectDataResultsCallback =>
+                            {
+                                if (loadedProjectDataResultsCallback.Success())
+                                {
+                                    var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
 
-                    var rootFolder = initialStructureData.rootFolder;
-                    var container = containerResults.data;
+                                    SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure);
 
-                    SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                                    SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+                                    {
+                                        if (containerResults.Success())
+                                        {
+                                            var rootFolder = rootProjectStructure.rootFolder;
+                                            var container = containerResults.data;
 
-                    //ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
+                                            SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                                        }
+                                        else
+                                            Log(containerResults.resultsCode, containerResults.results, this);
+                                    });
+                                }
+                                else
+                                    Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
+                            });
+                        }
+                        else
+                            Log(storageInitializedCallbackResults.resultsCode, storageInitializedCallbackResults.results, this);
+                    });
                 }
-                else
-                    Log(containerResults.resultsCode, containerResults.results, this);
             });
-
-
-
-            //StartCoroutine(OnLoadScreen());
         }
 
         void OnSubscribeToActionEvents(bool subscribe)
@@ -125,11 +126,6 @@ namespace Com.RedicalGames.Filar
                 ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
             else
                 Debug.LogWarning("--> Screen Manager Missing.");
-        }
-
-        public AppData.ProjectStructureData GetInitialStructureData()
-        {
-            return initialStructureData;
         }
 
         public void StoragePermissionRequest()
