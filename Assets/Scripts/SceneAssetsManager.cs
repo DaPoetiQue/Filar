@@ -5789,7 +5789,25 @@ namespace Com.RedicalGames.Filar
                                                 });
 
                                                 if (callbackResults.Success())
+                                                {
                                                     callbackResults.data = sortType;
+
+                                                    if (GetProjectRootStructureData().Success())
+                                                    {
+                                                        var rootStructureData = GetProjectRootStructureData().data;
+                                                        rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(sortType);
+
+                                                        SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                                        {
+                                                            callbackResults.results = dataSavedCallbackResults.results;
+                                                            callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+
+                                                            Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                }
                                                 else
                                                 {
                                                     callbackResults.data = default;
@@ -6371,6 +6389,22 @@ namespace Com.RedicalGames.Filar
                                                                                                         {
                                                                                                             callbackResults.data = filterType;
                                                                                                             projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+
+                                                                                                            if (GetProjectRootStructureData().Success())
+                                                                                                            {
+                                                                                                                var rootStructureData = GetProjectRootStructureData().data;
+                                                                                                                rootStructureData.rootProjectStructure.GetProjectInfo().SetCategoryType(filterType);
+
+                                                                                                                SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                                                                                                {
+                                                                                                                    callbackResults.results = dataSavedCallbackResults.results;
+                                                                                                                    callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+
+                                                                                                                    Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                                                                                });
+                                                                                                            }
+                                                                                                            else
+                                                                                                                Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
                                                                                                         }
                                                                                                     });
                                                                                                 }
@@ -6427,7 +6461,25 @@ namespace Com.RedicalGames.Filar
                                                         Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).results, this);
                                                 }
                                                 else
+                                                {
+                                                    if (GetProjectRootStructureData().Success())
+                                                    {
+                                                        var rootStructureData = GetProjectRootStructureData().data;
+                                                        rootStructureData.rootProjectStructure.GetProjectInfo().SetCategoryType(filterType);
+
+                                                        SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                                        {
+                                                            callbackResults.results = dataSavedCallbackResults.results;
+                                                            callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+
+                                                            Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+
                                                     ScreenUIManager.Instance.Refresh();
+                                                }
                                             }
                                             else
                                                 Log(enumCallbackResults.resultsCode, enumCallbackResults.results, this);
@@ -6486,6 +6538,19 @@ namespace Com.RedicalGames.Filar
                 LogError(exception.Message, this);
                 throw exception;
             }
+        }
+
+        void SaveModifiedData<T>(T data, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData
+        {
+            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
+
+            SaveData(data, dataSavedCallbackResults => 
+            {
+                callbackResults.results = dataSavedCallbackResults.results;
+                callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;       
+            });
+
+            callback.Invoke(callbackResults);
         }
 
         void GetFilterTypesFromContent(List<AppData.ProjectStructureData> contents, Action<AppData.CallbackDataList<string>> callback = null, params string[] args)
