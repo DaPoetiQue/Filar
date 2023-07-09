@@ -13373,26 +13373,19 @@ namespace Com.RedicalGames.Filar
                             case InputDropDownActionType.FilterList:
 
                                 string filterPlaceholderText = "Filter";
-                                string defaultValue = "All";
                                 string previousSelection = string.Empty;
 
                                 Helpers.StringListValueValid(contents, hasContentsCallbackResults => 
                                 {
                                     if (hasContentsCallbackResults.Success())
                                     {
-                                        SceneAssetsManager.Instance.GetDropdownContentTypeFromIndex<ProjectCategoryType>(dropdown.value.value, dropdownTypeCallbackResults => 
-                                        {
-                                            if (dropdownTypeCallbackResults.Success())
-                                                previousSelection = dropdownTypeCallbackResults.data.ToString().Replace("Project_", "");
-                                        });
-
                                         dropdown.value.ClearOptions();
                                         dropdown.SetUIInputState(InputUIState.Enabled);
 
                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
                                         foreach (var filter in contents)
-                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? defaultValue : filter });
+                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
                                         dropdown.value.AddOptions(dropdownOption);
 
@@ -13409,19 +13402,38 @@ namespace Com.RedicalGames.Filar
                                             });
                                         });
 
-                                        Helpers.StringValueValid(previousSelection, hasSelectionCallbackResults => 
+                                        if (ScreenUIManager.Instance.HasCurrentScreen())
                                         {
-                                            if (hasSelectionCallbackResults.Success())
+                                            switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                             {
-                                                SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(previousSelection, contentIndexCallbackResults =>
-                                                {
-                                                    if (contentIndexCallbackResults.Success())
-                                                        dropdown.value.value = contentIndexCallbackResults.data;
+                                                case UIScreenType.ProjectSelectionScreen:
+
+                                                    if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                                    {
+                                                        dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                    }
                                                     else
-                                                        Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                                                });
+                                                        Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+
+                                                    break;
                                             }
-                                        });
+                                        }
+                                        else
+                                            LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
+
+                                        //Helpers.StringValueValid(previousSelection, hasSelectionCallbackResults => 
+                                        //{
+                                        //    if (hasSelectionCallbackResults.Success())
+                                        //    {
+                                        //        SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(previousSelection, contentIndexCallbackResults =>
+                                        //        {
+                                        //            if (contentIndexCallbackResults.Success())
+                                        //                dropdown.value.value = contentIndexCallbackResults.data;
+                                        //            else
+                                        //                Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                        //        });
+                                        //    }
+                                        //});
                                     }
                                     else
                                     {
