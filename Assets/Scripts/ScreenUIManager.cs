@@ -696,10 +696,18 @@ namespace Com.RedicalGames.Filar
 
         public void Refresh()
         {
-            if (pageRefreshRoutine != null)
-                StopCoroutine(pageRefreshRoutine);
+            AppData.Helpers.ComponentValid(SceneAssetsManager.Instance, hasComponentCallbackResults =>
+            {
+                if (hasComponentCallbackResults.Success())
+                {
+                    if (pageRefreshRoutine != null)
+                        StopCoroutine(pageRefreshRoutine);
 
-            pageRefreshRoutine = StartCoroutine(OnScreenRefresh(currentScreen.value.GetScreenData()));
+                    pageRefreshRoutine = StartCoroutine(OnScreenRefresh(currentScreen.value.GetScreenData()));
+                }
+                else
+                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
+            });
         }
 
         public void ScreenRefresh()
@@ -738,48 +746,50 @@ namespace Com.RedicalGames.Filar
 
         IEnumerator OnScreenRefresh(AppData.SceneDataPackets dataPackets)
         {
-            if (SceneAssetsManager.Instance)
+            if (dataPackets.blurScreen)
+                currentScreen.value.Blur(dataPackets);
+
+            if (currentScreen.value != null)
+                currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
+
+            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(GetCurrentUIScreenType()), containerCallbackResults =>
             {
-                if(dataPackets.blurScreen)
-                    currentScreen.value.Blur(dataPackets);
-
-                if (currentScreen.value != null)
-                    currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
-
-                SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(GetCurrentUIScreenType()), containerResults => 
+                if (containerCallbackResults.Success())
                 {
-                    if(containerResults.Success())
+                    if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                     {
-                        var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen)? AppManager.Instance.GetInitialStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
-                        var container = containerResults.data;
+                        var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
+                        var container = containerCallbackResults.data;
 
-                        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults => 
+                        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
                         {
                             if (dataSetupCallbackResults.Success())
                             {
-                                SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback => 
+                                SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
                                 {
                                     Log(assetsInitializedCallback.resultsCode, assetsInitializedCallback.results, this);
                                 });
                             }
                         });
                     }
-                });
-
-                if (currentScreen.value.GetScreenData().refreshSceneAssets)
-                    yield return new WaitUntil(() => SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer, dataPackets)); // Wait For Assets To Be Refreshed.
+                    else
+                        Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                }
                 else
-                    yield return AppData.Helpers.GetWaitForSeconds(dataPackets.refreshDuration);
+                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+            });
 
-                if (currentScreen.value != null)
-                    currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
-
-                currentScreen.value.Focus();
-
-                AppData.ActionEvents.OnScreenRefreshed(currentScreen);
-            }
+            if (currentScreen.value.GetScreenData().refreshSceneAssets)
+                yield return new WaitUntil(() => SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer, dataPackets)); // Wait For Assets To Be Refreshed.
             else
-                LogError("On Screen Refresh Failed : Scene Assets Manager Not Initialized.", this);
+                yield return AppData.Helpers.GetWaitForSeconds(dataPackets.refreshDuration);
+
+            if (currentScreen.value != null)
+                currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
+
+            currentScreen.value.Focus();
+
+            AppData.ActionEvents.OnScreenRefreshed(currentScreen);
         }
 
         public void UpdateInfoDisplayer(AppData.UIScreenViewComponent screen)
