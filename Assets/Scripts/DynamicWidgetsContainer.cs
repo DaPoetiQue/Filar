@@ -1294,6 +1294,7 @@ namespace Com.RedicalGames.Filar
                     if (GetContentCount() > 0)
                     {
                         for (int i = 0; i < GetContentCount(); i++)
+                        {
                             if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
                             {
                                 if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
@@ -1303,13 +1304,16 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                        }
 
-                         await AppData.Helpers.GetWaitForSecondsAsync(AppData.Helpers.GetDeltaTime(500));
+                        await AppData.Helpers.GetWaitForSecondsAsync(10);
 
                         if (container.childCount == 0)
                         {
                             if (showSpinner)
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+
+                            SceneAssetsManager.Instance.UnloadUnusedAssets();
 
                             callbackResults.results = "All Widgets Cleared.";
                             callbackResults.resultsCode = AppData.Helpers.SuccessCode;

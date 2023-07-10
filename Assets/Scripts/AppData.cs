@@ -1469,6 +1469,11 @@ namespace Com.RedicalGames.Filar
                 return templateType;
             }
 
+            public SortType GetSortType()
+            {
+                return sortType;
+            }
+
             public void GetSortType(Action<CallbackData<SortType>> callback)
             {
                 CallbackData<SortType> callbackResults = new CallbackData<SortType>();
@@ -6431,23 +6436,24 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class UIDropDown<T> : UIInputComponent<TMP_Dropdown, T, UIDropDown<T>> where T : DataPackets
+        public class UIDropDown<T> : UIInputComponent<TMP_Dropdown, T, UIDropDown<T>> where T : SceneDataPackets
         {
             #region Components
 
-            [Space(5)]
-            public InputDropDownActionType actionType;
+            public InputDropDownActionType action = InputDropDownActionType.None;
 
             #endregion
 
             #region Main
 
-            public void Initialize()
+            public void Initialize(DropdownDataPackets dataPackets)
             {
                 if (IsInitialized())
                 {
                     if (selectableInput)
                     {
+                        Debug.Log("================>>>>> Initializing Dropdown");
+
                         if (value.gameObject.GetComponent<SelectableInputDropdownHandler>() == null)
                         {
                             SelectableInputDropdownHandler handler = value.gameObject.AddComponent<SelectableInputDropdownHandler>();
@@ -6457,6 +6463,8 @@ namespace Com.RedicalGames.Filar
                             else
                                 Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
                         }
+
+                        //action = dataPackets.action;
                     }
                 }
             }
@@ -6636,6 +6644,7 @@ namespace Com.RedicalGames.Filar
 
             public override void OnInputSelected()
             {
+                Debug.Log("--> Selected.");
 
                 if (inputState == InputUIState.Selected)
                 {
@@ -6663,7 +6672,7 @@ namespace Com.RedicalGames.Filar
                     SetUIInputState(state);
             }
 
-            public override void OnInputPointerDownEvent() => TriggerEvent(actionType);
+            public override void OnInputPointerDownEvent() => TriggerEvent(action);
 
             public override void SetFieldColor(Color color)
             {
@@ -12772,15 +12781,14 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (screenActionDropDownList.Count > 0)
                                 {
-                                    //List<string> categoriesList = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.ProjectCategory).data) : SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.AssetCategory).data);
-                                    //List<string> sortList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.Sorting).data);
-                                    //List<string> renderModeList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(DropDownContentType.RenderingModes).data);
-
-                                    foreach (var dropDown in screenActionDropDownList)
+                                    foreach (var dropdown in screenActionDropDownList)
                                     {
-                                        if (dropDown.value != null)
+                                        if (dropdown.value != null)
                                         {
-                                            switch (dropDown.actionType)
+                                            dropdown.Initialize(dropdown.dataPackets);
+                                            dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
+
+                                            switch (dropdown.dataPackets.action)
                                             {
                                                 case InputDropDownActionType.FilterList:
 
@@ -12793,16 +12801,16 @@ namespace Com.RedicalGames.Filar
 
                                                     if (filterContent.data != null)
                                                     {
-                                                        dropDown.value.ClearOptions();
+                                                        dropdown.value.ClearOptions();
 
                                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
                                                         foreach (var filter in filterContent.data)
                                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
-                                                        dropDown.value.AddOptions(dropdownOption);
+                                                        dropdown.value.AddOptions(dropdownOption);
 
-                                                        dropDown.value.onValueChanged.AddListener((value) => OnDropDownFilterOptions(value));
+                                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownFilterOptions(value));
                                                     }
                                                     else
                                                         Debug.LogWarning($"--> Filter List For Asset Screen : {gameObject.name} Value Is Null.");
@@ -12815,16 +12823,16 @@ namespace Com.RedicalGames.Filar
 
                                                     if (rendererContent.data != null)
                                                     {
-                                                        dropDown.value.ClearOptions();
+                                                        dropdown.value.ClearOptions();
 
                                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
                                                         foreach (var renderMode in rendererContent.data)
                                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = renderMode });
 
-                                                        dropDown.value.AddOptions(dropdownOption);
+                                                        dropdown.value.AddOptions(dropdownOption);
 
-                                                        dropDown.value.onValueChanged.AddListener((value) => OnDropDownSceneAssetRenderModeOptions(value));
+                                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownSceneAssetRenderModeOptions(value));
                                                     }
                                                     else
                                                         Debug.LogWarning($"--> Filter List For Asset Screen : {gameObject.name} Value Is Null.");
@@ -12837,16 +12845,16 @@ namespace Com.RedicalGames.Filar
 
                                                     if (sortingContent.data != null)
                                                     {
-                                                        dropDown.value.ClearOptions();
+                                                        dropdown.value.ClearOptions();
 
                                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
                                                         foreach (var sort in sortingContent.data)
                                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
 
-                                                        dropDown.value.AddOptions(dropdownOption);
+                                                        dropdown.value.AddOptions(dropdownOption);
 
-                                                        dropDown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
+                                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
                                                     }
                                                     else
                                                         Debug.LogWarning($"--> Sort List For Asset Screen : {gameObject.name} Value Is Null.");
@@ -13409,9 +13417,7 @@ namespace Com.RedicalGames.Filar
                                                 case UIScreenType.ProjectSelectionScreen:
 
                                                     if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                                                    {
-                                                        dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                                                    }
+                                                    dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
                                                     else
                                                         Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
@@ -13420,20 +13426,6 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                             LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
-
-                                        //Helpers.StringValueValid(previousSelection, hasSelectionCallbackResults => 
-                                        //{
-                                        //    if (hasSelectionCallbackResults.Success())
-                                        //    {
-                                        //        SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(previousSelection, contentIndexCallbackResults =>
-                                        //        {
-                                        //            if (contentIndexCallbackResults.Success())
-                                        //                dropdown.value.value = contentIndexCallbackResults.data;
-                                        //            else
-                                        //                Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                                        //        });
-                                        //    }
-                                        //});
                                     }
                                     else
                                     {
@@ -13462,6 +13454,23 @@ namespace Com.RedicalGames.Filar
 
                                         dropdown.value.AddOptions(dropdownOption);
                                         dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
+
+                                        //if (ScreenUIManager.Instance.HasCurrentScreen())
+                                        //{
+                                        //    switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
+                                        //    {
+                                        //        case UIScreenType.ProjectSelectionScreen:
+
+                                        //            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                        //                dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetSortType();
+                                        //            else
+                                        //                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+
+                                        //            break;
+                                        //    }
+                                        //}
+                                        //else
+                                        //    LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
                                     }
                                     else
                                     {
@@ -13522,7 +13531,7 @@ namespace Com.RedicalGames.Filar
                         if (dropdown.value != null)
                             dropdown.SetUIInputState(state);
                         else
-                            LogWarning($"Dropdown Of Type : {dropdown.actionType}'s Value Missing.", this, () => SetActionDropdownState(state));
+                            LogWarning($"Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this, () => SetActionDropdownState(state));
                     }
                 }
             }
@@ -13537,7 +13546,7 @@ namespace Com.RedicalGames.Filar
                         dropdown.SetUIInputState(state);
                     }
                     else
-                        LogWarning($"Dropdown Of Type : {dropdown.actionType}'s Value Missing.", this, () => SetActionDropdownState(state, content));
+                        LogWarning($"Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this, () => SetActionDropdownState(state, content));
                 }
             }
 
@@ -14332,24 +14341,60 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region UI Events
+
+            protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
+            {
+                var selected = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectableInput);
+                var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectableInput);
+
+                //LogInfo($"==================> Selected Action Type : {actionType} - State : {selected.GetUIInputState()}", this);
+
+                Helpers.UIActionDropdownComponentsValid(dropdowns, hasComponentsCallbackResults => 
+                {
+                    if (hasComponentsCallbackResults.Success())
+                    {
+                        if (dropdowns != null && dropdowns.Count > 0)
+                        {
+                            foreach (var dropdown in dropdowns)
+                            {
+                                if (dropdown != null)
+                                    dropdown.value.Hide();
+                                else
+                                {
+                                    LogError("Dropdown Component Not Found.", this);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                        Log(hasComponentsCallbackResults.resultsCode, "On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
+                });
+            }
+
+            #endregion
+
             void OnDropDownFilterOptions(int dropdownIndex)
             {
-                if (SceneAssetsManager.Instance != null)
+                Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults =>
                 {
-                    SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
-                }
-                else
-                    LogWarning("Assets Manager Not Yet Initialized.", this, () => OnDropDownFilterOptions(dropdownIndex));
+                    if (validComponentCallbackResults.Success())
+                        SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
+                    else
+                        LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
+                });
             }
 
             void OnDropDownSortingOptions(int dropdownIndex)
             {
-                if (SceneAssetsManager.Instance != null)
+                Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults => 
                 {
-                    SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
-                }
-                else
-                    LogWarning("Assets Manager Not Yet Initialized.", this, () => OnDropDownSortingOptions(dropdownIndex));
+                    if (validComponentCallbackResults.Success())
+                        SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
+                    else
+                        LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
+                });
             }
 
             void OnDropDownSceneAssetRenderModeOptions(int dropdownIndex)
@@ -17911,7 +17956,7 @@ namespace Com.RedicalGames.Filar
                     if (dropdown.value != null)
                         dropdown.SetUIInputState(state);
                     else
-                        Debug.LogWarning($"--> Failed : Dropdown Of Type : {dropdown.actionType}'s Value Missing.");
+                        Debug.LogWarning($"--> Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.");
                 }
             }
 
@@ -17925,7 +17970,7 @@ namespace Com.RedicalGames.Filar
                         dropdown.SetUIInputState(state);
                     }
                     else
-                        Debug.LogWarning($"--> Failed : Dropdown Of Type : {dropdown.actionType}'s Value Missing.");
+                        Debug.LogWarning($"--> Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.");
                 }
             }
 
@@ -18518,7 +18563,7 @@ namespace Com.RedicalGames.Filar
                             continue;
                     }
                     else
-                        LogError($"Action Dropdown : {dropdown.actionType} Not Found", this, () => SetActionDropdownState(dropdownType, dropdownState));
+                        LogError($"Action Dropdown : {dropdown.dataPackets.action} Not Found", this, () => SetActionDropdownState(dropdownType, dropdownState));
             }
 
             protected void SetActionButtons(InputUIState buttonState)
@@ -18691,7 +18736,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropdown.value != null)
                         {
-                            dropdown.Initialize();
+                            dropdown.Initialize(dropdown.dataPackets);
                             dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
 
                             callbackResults.results = "OnActionDropdownInitialized Initialized Sucess : actionDropdownList Buttons Initialized.";
@@ -21237,7 +21282,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropDown.value)
                         {
-                            switch (dropDown.actionType)
+                            switch (dropDown.dataPackets.action)
                             {
                                 case InputDropDownActionType.RenderingProfileType:
 
@@ -22730,6 +22775,64 @@ namespace Com.RedicalGames.Filar
 
                 callback.Invoke(callbackResults);
             }
+
+            public static void UIActionComponentValid<T, U, V>(T component, Action<Callback> callback) where T : UIInputComponent<UnityEngine.Object, U, V>
+            {
+                Callback callbackResults = new Callback();
+
+                if (component != null)
+                {
+                    callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #region Action Components
+
+            public static void UIActionButtonComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<Button, ButtonDataPackets, UIButton<ButtonDataPackets>>
+            {
+                Callback callbackResults = new Callback();
+
+                if (components != null && components.Count > 0)
+                {
+                    callbackResults.results = $"Found {components.Count} Valid Components.";
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Components Are Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void UIActionDropdownComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownDataPackets, UIDropDown<DropdownDataPackets>>
+            {
+                Callback callbackResults = new Callback();
+
+                if (components != null && components.Count > 0)
+                {
+                    callbackResults.results = $"Found {components.Count} Valid Components.";
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Components Are Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
 
             public static void UnityComponentValid<T>(T component, string componentInfo, Action<CallbackData<T>> callback) where T : UnityEngine.Object
             {
