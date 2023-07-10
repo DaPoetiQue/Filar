@@ -3778,7 +3778,7 @@ namespace Com.RedicalGames.Filar
                                                                         sortedFilterList.Insert(0, "All");
 
                                                                         ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, sortedFilterList);
-                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, GetDropdownContent<AppData.SortType>().data);
+                                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, GetDropdownContent<AppData.SortType>().data);
                                                                     }
                                                                     else
                                                                         Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
@@ -3805,8 +3805,6 @@ namespace Com.RedicalGames.Filar
                                     break;
 
                                 case AppData.UIScreenType.ProjectViewScreen:
-
-                                    LogError($"=========> Project Container : {widgetsContainer.name}");
 
                                     widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
                                     {
@@ -4060,7 +4058,7 @@ namespace Com.RedicalGames.Filar
                 case AppData.UIScreenType.ProjectSelectionScreen:
 
                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, null);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, null);
+                    //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, null);
 
                     break;
             }
@@ -5792,21 +5790,21 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     callbackResults.data = sortType;
 
-                                                    if (GetProjectRootStructureData().Success())
-                                                    {
-                                                        var rootStructureData = GetProjectRootStructureData().data;
-                                                        rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(sortType);
+                                                    //if (GetProjectRootStructureData().Success())
+                                                    //{
+                                                    //    var rootStructureData = GetProjectRootStructureData().data;
+                                                    //    rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(sortType);
 
-                                                        SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
-                                                        {
-                                                            callbackResults.results = dataSavedCallbackResults.results;
-                                                            callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+                                                    //    SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                                    //    {
+                                                    //        callbackResults.results = dataSavedCallbackResults.results;
+                                                    //        callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
 
-                                                            Log(callbackResults.resultsCode, callbackResults.results, this);
-                                                        });
-                                                    }
-                                                    else
-                                                        Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                    //        Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                    //    });
+                                                    //}
+                                                    //else
+                                                    //    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
                                                 }
                                                 else
                                                 {
@@ -5851,9 +5849,7 @@ namespace Com.RedicalGames.Filar
 
                                 OnFilterScreenWidgets(dropDownIndex, widgetContainerCallbackResults.data, filteredProjectCallbackResults =>
                                 {
-                                    //GetCurrentProjectStructureData().SetFilterType(filteredProjectCallbackResults.data);
-
-                                    //Log(filteredProjectCallbackResults.resultsCode, filteredProjectCallbackResults.results, this);
+                                    Log(filteredProjectCallbackResults.resultsCode, filteredProjectCallbackResults.results, this);
                                 });
 
                                 break;
@@ -5864,8 +5860,23 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (assetSortedCallbackResults.Success())
                                     {
-                                        GetCurrentProjectStructureData().GetProjectInfo().SetSortType(assetSortedCallbackResults.data);
                                         ScreenUIManager.Instance.Refresh();
+
+                                        //if (GetProjectRootStructureData().Success())
+                                        //{
+                                        //    var rootStructureData = GetProjectRootStructureData().data;
+                                        //    rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(assetSortedCallbackResults.data);
+
+                                        //    SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                        //    {
+                                        //        if (dataSavedCallbackResults.Success())
+                                        //            ScreenUIManager.Instance.Refresh();
+                                        //        else
+                                        //            Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                        //    });
+                                        //}
+                                        //else
+                                        //    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
                                     }
                                     else
                                         Log(assetSortedCallbackResults.resultsCode, assetSortedCallbackResults.results, this);
@@ -6472,13 +6483,14 @@ namespace Com.RedicalGames.Filar
                                                             callbackResults.results = dataSavedCallbackResults.results;
                                                             callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
 
+                                                            if(callbackResults.Success())
+                                                                ScreenUIManager.Instance.Refresh();
+
                                                             Log(callbackResults.resultsCode, callbackResults.results, this);
                                                         });
                                                     }
                                                     else
                                                         Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
-
-                                                    ScreenUIManager.Instance.Refresh();
                                                 }
                                             }
                                             else
