@@ -19,7 +19,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.UIDropDown<AppData.SceneDataPackets> exportExtensionDropDown = new AppData.UIDropDown<AppData.SceneDataPackets>();
+        AppData.UIDropDown<AppData.DropdownDataPackets> exportExtensionDropDown = new AppData.UIDropDown<AppData.DropdownDataPackets>();
 
         AppData.AssetExportData assetExportData = new AppData.AssetExportData();
 
