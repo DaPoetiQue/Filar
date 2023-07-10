@@ -3778,11 +3778,31 @@ namespace Com.RedicalGames.Filar
                                                                         sortedFilterList.Insert(0, "All");
 
                                                                         ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, sortedFilterList);
-                                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, GetDropdownContent<AppData.SortType>().data);
                                                                     }
                                                                     else
                                                                         Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
                                                                 }, "Project_");
+
+                                                                if (GetProjectRootStructureData().Success())
+                                                                {
+                                                                    var filterType = GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                                    var sortingContents = GetDropdownContent<AppData.SortType>().data;
+
+                                                                    if (filterType != AppData.ProjectCategoryType.Project_All)
+                                                                    {
+                                                                        AppData.Helpers.StringListValueValid(sortingContents, isValidCallbackResults =>
+                                                                        {
+                                                                            if (isValidCallbackResults.Success())
+                                                                                sortingContents.Remove(sortingContents.Find(content => content.Contains("Category")));
+                                                                            else
+                                                                                Log(isValidCallbackResults.resultsCode, isValidCallbackResults.results, this);
+                                                                        });
+                                                                    }
+
+                                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
+                                                                }
+                                                                else
+                                                                    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
                                                             }
                                                             else
                                                                 Log(createProjectWidgetCallback.resultsCode, createProjectWidgetCallback.results, this);
@@ -4058,7 +4078,7 @@ namespace Com.RedicalGames.Filar
                 case AppData.UIScreenType.ProjectSelectionScreen:
 
                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, null);
-                    //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, null);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, null);
 
                     break;
             }
@@ -5691,6 +5711,59 @@ namespace Com.RedicalGames.Filar
 
         #region Sort Functions
 
+        public void OnSetFilterAndSortActionEvent(AppData.InputDropDownActionType actionType, int dropDownIndex)
+        {
+            if (ScreenUIManager.Instance != null)
+            {
+                GetContentContainer(widgetContainerCallbackResults =>
+                {
+                    if (widgetContainerCallbackResults.Success())
+                    {
+                        switch (actionType)
+                        {
+                            case AppData.InputDropDownActionType.FilterList:
+
+                                OnFilterScreenWidgets(dropDownIndex, widgetContainerCallbackResults.data, filteredProjectCallbackResults =>
+                                {
+                                    Log(filteredProjectCallbackResults.resultsCode, filteredProjectCallbackResults.results, this);
+                                });
+
+                                break;
+
+                            case AppData.InputDropDownActionType.SortingList:
+
+                                OnSortScreenWidgets(dropDownIndex, assetSortedCallbackResults =>
+                                {
+                                    if (assetSortedCallbackResults.Success())
+                                    {
+                                        if (GetProjectRootStructureData().Success())
+                                        {
+                                            var rootStructureData = GetProjectRootStructureData().data;
+                                            rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(assetSortedCallbackResults.data);
+
+                                            SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                            {
+                                                Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                            });
+                                        }
+                                        else
+                                            Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                    }
+                                    else
+                                        Log(assetSortedCallbackResults.resultsCode, assetSortedCallbackResults.results, this);
+                                });
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(widgetContainerCallbackResults.resultsCode, widgetContainerCallbackResults.results, this);
+                });
+            }
+            else
+                LogError("Screen UI Manager Instance Is Not Yet Initialized.");
+        }
+
         public void OnSortScreenWidgets(int sortIndex, Action<AppData.CallbackData<AppData.SortType>> callback)
         {
             try
@@ -5787,31 +5860,16 @@ namespace Com.RedicalGames.Filar
                                                 });
 
                                                 if (callbackResults.Success())
-                                                {
                                                     callbackResults.data = sortType;
-
-                                                    //if (GetProjectRootStructureData().Success())
-                                                    //{
-                                                    //    var rootStructureData = GetProjectRootStructureData().data;
-                                                    //    rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(sortType);
-
-                                                    //    SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
-                                                    //    {
-                                                    //        callbackResults.results = dataSavedCallbackResults.results;
-                                                    //        callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
-
-                                                    //        Log(callbackResults.resultsCode, callbackResults.results, this);
-                                                    //    });
-                                                    //}
-                                                    //else
-                                                    //    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
-                                                }
                                                 else
                                                 {
                                                     callbackResults.data = default;
                                                     break;
                                                 }
                                             }
+
+                                            if(callbackResults.Success())
+                                                callbackResults.results = $"{contentCallbackResults.data.Count } : Assets Sorted To : {sortType}.";
                                         }
                                         else
                                         {
@@ -5833,64 +5891,6 @@ namespace Com.RedicalGames.Filar
                 LogError(exception.Message, this);
                 throw exception;
             }
-        }
-
-        public void OnSetFilterAndSortActionEvent(AppData.InputDropDownActionType actionType, int dropDownIndex)
-        {
-            if (ScreenUIManager.Instance != null)
-            {
-                GetContentContainer(widgetContainerCallbackResults =>
-                {
-                    if (widgetContainerCallbackResults.Success())
-                    {
-                        switch (actionType)
-                        {
-                            case AppData.InputDropDownActionType.FilterList:
-
-                                OnFilterScreenWidgets(dropDownIndex, widgetContainerCallbackResults.data, filteredProjectCallbackResults =>
-                                {
-                                    Log(filteredProjectCallbackResults.resultsCode, filteredProjectCallbackResults.results, this);
-                                });
-
-                                break;
-
-                            case AppData.InputDropDownActionType.SortingList:
-
-                                OnSortScreenWidgets(dropDownIndex, assetSortedCallbackResults =>
-                                {
-                                    if (assetSortedCallbackResults.Success())
-                                    {
-                                        ScreenUIManager.Instance.Refresh();
-
-                                        //if (GetProjectRootStructureData().Success())
-                                        //{
-                                        //    var rootStructureData = GetProjectRootStructureData().data;
-                                        //    rootStructureData.rootProjectStructure.GetProjectInfo().SetSortType(assetSortedCallbackResults.data);
-
-                                        //    SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
-                                        //    {
-                                        //        if (dataSavedCallbackResults.Success())
-                                        //            ScreenUIManager.Instance.Refresh();
-                                        //        else
-                                        //            Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
-                                        //    });
-                                        //}
-                                        //else
-                                        //    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
-                                    }
-                                    else
-                                        Log(assetSortedCallbackResults.resultsCode, assetSortedCallbackResults.results, this);
-                                });
-
-                                break;
-                        }
-                    }
-                    else
-                        Log(widgetContainerCallbackResults.resultsCode, widgetContainerCallbackResults.results, this);
-                });
-            }
-            else
-                LogError("Screen UI Manager Instance Is Not Yet Initialized.");
         }
 
         public void GetSortedWidgetList<T>(List<T> serializableDataList, List<T> pinnedList, Action<AppData.CallbackDataList<T>> callback) where T : AppData.SerializableData
@@ -6410,6 +6410,21 @@ namespace Com.RedicalGames.Filar
                                                                                                                 {
                                                                                                                     callbackResults.results = dataSavedCallbackResults.results;
                                                                                                                     callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+
+                                                                                                                    if(callbackResults.Success())
+                                                                                                                    {
+                                                                                                                        var sortingContents = GetDropdownContent<AppData.SortType>().data;
+
+                                                                                                                        AppData.Helpers.StringListValueValid(sortingContents, isValidCallbackResults =>
+                                                                                                                        {
+                                                                                                                            if (isValidCallbackResults.Success())
+                                                                                                                                sortingContents.Remove(sortingContents.Find(content => content.Contains("Category")));
+                                                                                                                            else
+                                                                                                                                Log(isValidCallbackResults.resultsCode, isValidCallbackResults.results, this);
+                                                                                                                        });
+
+                                                                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
+                                                                                                                    }
 
                                                                                                                     Log(callbackResults.resultsCode, callbackResults.results, this);
                                                                                                                 });
@@ -7568,8 +7583,6 @@ namespace Com.RedicalGames.Filar
 
                 if (DirectoryFound(appStorageData))
                 {
-                    LogSuccess($"=========>>>>>>> Directory Found", this);
-
                     LoadData<AppData.ProjectRootStructureData>(rootProjectStructureData.name, appStorageData, (rootStructureLoadedCallbackResults) =>
                     {
                         callbackResults.results = rootStructureLoadedCallbackResults.results;

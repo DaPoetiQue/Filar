@@ -1412,7 +1412,7 @@ namespace Com.RedicalGames.Filar
 
             if (widget)
             {
-                widget.SetContentSiblingIndexValue(index);
+                widget.SetContentSiblingIndex(index);
 
                 callbackResults.results = $"Asset : {widget.name} Has Been Set To index : {index}.";
                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
