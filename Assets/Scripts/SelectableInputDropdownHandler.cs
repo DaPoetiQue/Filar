@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 
 namespace Com.RedicalGames.Filar
@@ -11,10 +12,10 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void Init<T>(AppData.UIDropDown<T> input) where T : AppData.DataPackets
+        public void Init<T>(AppData.UIDropDown<T> input) where T : AppData.SceneDataPackets
         {
             this.input = input as AppData.UIDropDown<AppData.DropdownDataPackets>;
-            base.Init(this.input);
+            Init(this.input);
         }
 
         protected override void OnInputSelected()
