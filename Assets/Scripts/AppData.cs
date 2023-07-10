@@ -6440,7 +6440,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public InputDropDownActionType action = InputDropDownActionType.None;
+            InputDropDownActionType action = InputDropDownActionType.None;
 
             #endregion
 
@@ -6452,19 +6452,28 @@ namespace Com.RedicalGames.Filar
                 {
                     if (selectableInput)
                     {
-                        Debug.Log("================>>>>> Initializing Dropdown");
-
                         if (value.gameObject.GetComponent<SelectableInputDropdownHandler>() == null)
                         {
                             SelectableInputDropdownHandler handler = value.gameObject.AddComponent<SelectableInputDropdownHandler>();
 
                             if (handler)
-                                handler.Init(this);
+                            {
+                                handler.Init(this, initializedCallbackResults => 
+                                {
+                                    if (initializedCallbackResults.Success())
+                                    {
+                                        if (selectionFrame)
+                                            selectionFrame.SetActive(false);
+                                    }
+                                    else
+                                        Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                });
+                            }
                             else
                                 Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
                         }
 
-                        //action = dataPackets.action;
+                        action = dataPackets.action;
                     }
                 }
             }
@@ -6604,16 +6613,18 @@ namespace Com.RedicalGames.Filar
 
                         if (selectableInput)
                         {
-                            if (inputState == InputUIState.Hidden)
-                                SetUIInputVisibilityState(true);
+                            if (selectionFrame)
+                                selectionFrame.SetActive(true);
+                        }
 
-                            if (inputState == InputUIState.Shown)
-                            {
-                                Debug.LogError("--> Set UI Input Selection State");
+                        break;
 
-                                if (selectionFrame)
-                                    selectionFrame.SetActive(true);
-                            }
+                    case InputUIState.Deselected:
+
+                        if (selectableInput)
+                        {
+                            if (selectionFrame)
+                                selectionFrame.SetActive(false);
                         }
 
                         break;
@@ -6630,6 +6641,13 @@ namespace Com.RedicalGames.Filar
 
                         break;
                 }
+
+                inputState = state;
+            }
+
+            public InputUIState GetInputUIState()
+            {
+                return inputState;
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -12792,28 +12810,28 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 case InputDropDownActionType.FilterList:
 
-                                                    var filterContent = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_") : SceneAssetsManager.Instance.GetDropdownContent<AssetCategoryType>();
+                                                    //var filterContent = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_") : SceneAssetsManager.Instance.GetDropdownContent<AssetCategoryType>();
 
-                                                    LogSuccess($"===============> Found : {filterContent.data.Count}", this);
+                                                    //LogSuccess($"===============> Found : {filterContent.data.Count}", this);
 
-                                                    foreach (var item in filterContent.data)
-                                                        LogSuccess($"===============> Found Item : {item}", this);
+                                                    //foreach (var item in filterContent.data)
+                                                    //    LogSuccess($"===============> Found Item : {item}", this);
 
-                                                    if (filterContent.data != null)
-                                                    {
-                                                        dropdown.value.ClearOptions();
+                                                    //if (filterContent.data != null)
+                                                    //{
+                                                    //    dropdown.value.ClearOptions();
 
-                                                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                                                    //    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                                        foreach (var filter in filterContent.data)
-                                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
+                                                    //    foreach (var filter in filterContent.data)
+                                                    //        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
-                                                        dropdown.value.AddOptions(dropdownOption);
+                                                    //    dropdown.value.AddOptions(dropdownOption);
 
-                                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownFilterOptions(value));
-                                                    }
-                                                    else
-                                                        Debug.LogWarning($"--> Filter List For Asset Screen : {gameObject.name} Value Is Null.");
+                                                    //    dropdown.value.onValueChanged.AddListener((value) => OnDropDownFilterOptions(value));
+                                                    //}
+                                                    //else
+                                                    //    Debug.LogWarning($"--> Filter List For Asset Screen : {gameObject.name} Value Is Null.");
 
                                                     break;
 
@@ -12841,23 +12859,23 @@ namespace Com.RedicalGames.Filar
 
                                                 case InputDropDownActionType.SortingList:
 
-                                                    var sortingContent = SceneAssetsManager.Instance.GetDropdownContent<SortType>();
+                                                    //var sortingContent = SceneAssetsManager.Instance.GetDropdownContent<SortType>();
 
-                                                    if (sortingContent.data != null)
-                                                    {
-                                                        dropdown.value.ClearOptions();
+                                                    //if (sortingContent.data != null)
+                                                    //{
+                                                    //    dropdown.value.ClearOptions();
 
-                                                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                                                    //    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                                        foreach (var sort in sortingContent.data)
-                                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
+                                                    //    foreach (var sort in sortingContent.data)
+                                                    //        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
 
-                                                        dropdown.value.AddOptions(dropdownOption);
+                                                    //    dropdown.value.AddOptions(dropdownOption);
 
-                                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
-                                                    }
-                                                    else
-                                                        Debug.LogWarning($"--> Sort List For Asset Screen : {gameObject.name} Value Is Null.");
+                                                    //    dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
+                                                    //}
+                                                    //else
+                                                    //    Debug.LogWarning($"--> Sort List For Asset Screen : {gameObject.name} Value Is Null.");
 
                                                     break;
                                             }
@@ -13455,22 +13473,22 @@ namespace Com.RedicalGames.Filar
                                         dropdown.value.AddOptions(dropdownOption);
                                         dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
 
-                                        //if (ScreenUIManager.Instance.HasCurrentScreen())
-                                        //{
-                                        //    switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
-                                        //    {
-                                        //        case UIScreenType.ProjectSelectionScreen:
+                                        if (ScreenUIManager.Instance.HasCurrentScreen())
+                                        {
+                                            switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
+                                            {
+                                                case UIScreenType.ProjectSelectionScreen:
 
-                                        //            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                                        //                dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetSortType();
-                                        //            else
-                                        //                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                                                    if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                                        dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetSortType();
+                                                    else
+                                                        Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
-                                        //            break;
-                                        //    }
-                                        //}
-                                        //else
-                                        //    LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                            LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
                                     }
                                     else
                                     {
@@ -14345,12 +14363,18 @@ namespace Com.RedicalGames.Filar
 
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
-                var selected = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectableInput);
+                var dropdown = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectableInput);
                 var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectableInput);
 
-                //LogInfo($"==================> Selected Action Type : {actionType} - State : {selected.GetUIInputState()}", this);
+                Helpers.UIActionDropdownComponentValid(dropdown, hasComponentCallbackResults => 
+                {
+                    if (hasComponentCallbackResults.Success())
+                        dropdown.SetUIInputState(InputUIState.Selected);
+                    else
+                        Log(hasComponentCallbackResults.resultsCode, "Dropdown Component Not Found.", this);
+                });
 
-                Helpers.UIActionDropdownComponentsValid(dropdowns, hasComponentsCallbackResults => 
+               Helpers.UIActionDropdownComponentsValid(dropdowns, hasComponentsCallbackResults => 
                 {
                     if (hasComponentsCallbackResults.Success())
                     {
@@ -14359,10 +14383,16 @@ namespace Com.RedicalGames.Filar
                             foreach (var dropdown in dropdowns)
                             {
                                 if (dropdown != null)
-                                    dropdown.value.Hide();
+                                {
+                                    if (dropdown.GetUIInputState() == InputUIState.Selected)
+                                    {
+                                        dropdown.SetUIInputState(InputUIState.Deselected);
+                                        dropdown.value.Hide();
+                                    }
+                                }
                                 else
                                 {
-                                    LogError("Dropdown Component Not Found.", this);
+                                    LogError("Dropdown Components Were Not Found.", this);
                                     break;
                                 }
                             }
@@ -14371,6 +14401,9 @@ namespace Com.RedicalGames.Filar
                     else
                         Log(hasComponentsCallbackResults.resultsCode, "On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
                 });
+
+
+                
             }
 
             #endregion
@@ -22808,6 +22841,24 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.results = "Components Are Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void UIActionDropdownComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownDataPackets, UIDropDown<DropdownDataPackets>>
+            {
+                Callback callbackResults = new Callback();
+
+                if (component != null)
+                {
+                    callbackResults.results = $"Components : {component.name} Is Valid.";
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
                     callbackResults.resultsCode = ErrorCode;
                 }
 

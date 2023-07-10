@@ -12,10 +12,26 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void Init<T>(AppData.UIDropDown<T> input) where T : AppData.SceneDataPackets
+        public void Init<T>(AppData.UIDropDown<T> input, Action<AppData.Callback> callback = null) where T : AppData.SceneDataPackets
         {
+            AppData.Callback callbackResults = new AppData.Callback();
+            
             this.input = input as AppData.UIDropDown<AppData.DropdownDataPackets>;
-            Init(this.input);
+
+            if(this.input != null)
+            {
+                Init(this.input);
+
+                callbackResults.results = "Input Initialized";
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "Input Missing.";
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
         }
 
         protected override void OnInputSelected()
