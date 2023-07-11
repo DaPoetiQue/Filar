@@ -3798,6 +3798,22 @@ namespace Com.RedicalGames.Filar
 
                                             LoadProjectStructureData((structureLoader) =>
                                             {
+                                                #region Screen UI Params
+
+                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button);
+                                                paginationButtonParam.buttonActionType = AppData.InputActionButtonType.PaginationButton;
+
+                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField);
+                                                searchFieldParam.inputFieldActionType = AppData.InputFieldActionType.AssetSearchField;
+
+                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown);
+                                                filterListParam.dropDownActionType = AppData.InputDropDownActionType.FilterList;
+
+                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown);
+                                                sortingListParam.dropDownActionType = AppData.InputDropDownActionType.SortingList;
+
+                                                #endregion
+
                                                 if (structureLoader.Success())
                                                 {
                                                     if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen)
@@ -3808,9 +3824,6 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 loadedProjectData = createProjectWidgetCallback.data;
 
-                                                                var filteredList = new List<string>();
-                                                                var sortedList = new List<string>();
-
                                                                 GetFilterTypesFromContent(structureLoader.data, filterContentCallbackResults =>
                                                                 {
                                                                     if (filterContentCallbackResults.Success())
@@ -3818,8 +3831,7 @@ namespace Com.RedicalGames.Filar
                                                                         var sortedFilterList = filterContentCallbackResults.data;
                                                                         sortedFilterList.Sort((x, y) => x.CompareTo(y));
                                                                         sortedFilterList.Insert(0, "All");
-                                                                        filteredList = sortedFilterList;
-                                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, sortedFilterList);
+                                                                        filterListParam.contents = sortedFilterList;
                                                                     }
                                                                     else
                                                                         Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
@@ -3841,13 +3853,21 @@ namespace Com.RedicalGames.Filar
                                                                         });
                                                                     }
 
-                                                                    sortedList = sortingContents;
-                                                                    //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
+                                                                    sortingListParam.contents = sortingContents;
                                                                 }
                                                                 else
                                                                     Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
 
-                                                                SetContentScreenUIStatesEvent(dataPackets.screenType, sortList: sortedList, filterList: filteredList, state: AppData.InputUIState.Enabled);
+                                                                #region Enable UI Screen Group COntent
+
+                                                                paginationButtonParam.state = (createProjectWidgetCallback.data.Count > 3) ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
+                                                                searchFieldParam.state = AppData.InputUIState.Enabled;
+                                                                filterListParam.state = AppData.InputUIState.Enabled;
+                                                                sortingListParam.state = AppData.InputUIState.Enabled;
+
+                                                                #endregion
+
+                                                                SetContentScreenUIStatesEvent(paginationButtonParam, searchFieldParam, filterListParam, sortingListParam);
                                                             }
                                                             else
                                                                 Log(createProjectWidgetCallback.resultsCode, createProjectWidgetCallback.results, this);
@@ -3857,7 +3877,7 @@ namespace Com.RedicalGames.Filar
                                                         LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
                                                 }
                                                 else
-                                                    SetContentScreenUIStatesEvent(dataPackets.screenType, state: AppData.InputUIState.Disabled);
+                                                    SetContentScreenUIStatesEvent(paginationButtonParam, searchFieldParam, filterListParam, sortingListParam);
                                             });
 
 
@@ -4116,18 +4136,79 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public void SetContentScreenUIStatesEvent(AppData.UIScreenType screenType, List<string> filterList = null, List<string> sortList = null, AppData.InputUIState state = AppData.InputUIState.Normal)
+        public AppData.UIScreenGroupContent GetUIScreenGroupContentTemplate(string name, AppData.InputType inputType)
         {
-            switch(screenType)
-            {
-                case AppData.UIScreenType.ProjectSelectionScreen:
+            var groupContent = new AppData.UIScreenGroupContent();
 
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, filterList);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortList);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, state);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, state);
+            switch (inputType)
+            {
+                case AppData.InputType.Button:
+
+                    groupContent = new AppData.UIScreenGroupContent
+                    {
+                        name = name,
+                        state = AppData.InputUIState.Disabled,
+                        inputType = inputType
+                    };
 
                     break;
+
+                case AppData.InputType.InputField:
+
+                    groupContent = new AppData.UIScreenGroupContent
+                    {
+                        name = name,
+                        content = string.Empty,
+                        placeHolder = string.Empty,
+                        state = AppData.InputUIState.Disabled,
+                        inputType = inputType
+                    };
+
+                    break;
+
+                case AppData.InputType.DropDown:
+
+                    groupContent = new AppData.UIScreenGroupContent
+                    {
+                        name = name,
+                        contents = null,
+                        state = AppData.InputUIState.Disabled,
+                        inputType = inputType
+                    };
+
+                    break;
+            }
+
+            return groupContent;
+        }
+
+        public void SetContentScreenUIStatesEvent(params AppData.UIScreenGroupContent[] actions)
+        {
+            if (actions != null && actions.Length > 0)
+            {
+                foreach (var action in actions)
+                {
+                    switch (action.inputType)
+                    {
+                        case AppData.InputType.Button:
+
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(action.buttonActionType, action.state);
+
+                            break;
+
+                        case AppData.InputType.InputField:
+
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(action.inputFieldActionType, action.state);
+
+                            break;
+
+                        case AppData.InputType.DropDown:
+
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(action.dropDownActionType, action.contents);
+
+                            break;
+                    }
+                }
             }
         }
 
