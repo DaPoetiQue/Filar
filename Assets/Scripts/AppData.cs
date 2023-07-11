@@ -1409,6 +1409,45 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ProjectCategoryInfo : ProjectData
+        {
+            #region Components
+
+            [Space(5)]
+            public Color color;
+
+            [Space(5)]
+            public ProjectCategoryType type;
+
+            #endregion
+
+            #region Main
+
+            public ProjectCategoryInfo()
+            {
+
+            }
+
+            public ProjectCategoryInfo(Color color, ProjectCategoryType type)
+            {
+                this.color = color;
+                this.type = type;
+            }
+
+            public Color GetColor()
+            {
+                return color;
+            }
+
+            public ProjectCategoryType GetType()
+            {
+                return type;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
         public class ProjectInfo
         {
             #region Components
@@ -6429,7 +6468,10 @@ namespace Com.RedicalGames.Filar
 
             public override void SetFieldColor(Color color)
             {
-                throw new NotImplementedException();
+                if (value != null)
+                    value.image.color = color;
+                else
+                    Debug.LogError("Button Value Missing.");
             }
 
             #endregion
@@ -10601,6 +10643,52 @@ namespace Com.RedicalGames.Filar
                 Debug.LogError($"--> Button : {buttonType} State - : {state}");
             }
 
+
+            protected void SetActionButtonColor(InputActionButtonType buttonType, Color color)
+            {
+                if (GetActive())
+                {
+                    if (actionGroup != null && actionGroup.Count > 0)
+                    {
+                        var initialized = actionGroup.FindAll(input => input.initialize);
+
+                        if (initialized != null && initialized.Count > 0)
+                        {
+                            foreach (var item in initialized)
+                            {
+                                foreach (var widget in item.screenActionGroup)
+                                {
+                                    if (widget.inputType == InputType.Button)
+                                    {
+                                        widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var button = widget.GetButtonComponent();
+
+                                                if (button != null)
+                                                {
+                                                    if (button.value)
+                                                        button.SetFieldColor(color);
+                                                    else
+                                                        LogError($"Set Action Button Event Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
+                                                }
+                                                else
+                                                    LogError("Action Group Button Component Not Found", this);
+                                            }
+                                            else
+                                                Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
             protected void SetActionButtonState(UIButton<ButtonDataPackets> button, InputUIState state)
             {
                 var actionButtons = actionGroup.FindAll(inputs => inputs.screenActionGroup.Find(input => input.inputType == InputType.Button));
@@ -13480,7 +13568,13 @@ namespace Com.RedicalGames.Filar
                                                 case UIScreenType.ProjectSelectionScreen:
 
                                                     if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                                                        dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetSortType();
+                                                    {
+                                                        var filterType = SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                        var sortType = SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetSortType();
+
+                                                        int index = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
+                                                        dropdown.value.value = index;
+                                                    }
                                                     else
                                                         Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
@@ -14363,8 +14457,8 @@ namespace Com.RedicalGames.Filar
 
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
-                var dropdown = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectableInput);
-                var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectableInput);
+                var dropdown = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectableInput && x.GetInteractableState());
+                var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectableInput && x.GetInteractableState());
 
                 Helpers.UIActionDropdownComponentValid(dropdown, hasComponentCallbackResults => 
                 {
@@ -19519,7 +19613,12 @@ namespace Com.RedicalGames.Filar
 
             public DateTime GetModifiedDateTime()
             {
-                return creationDateTime.dateTimeComponent;
+                return creationDateTime.GetDateTime();
+            }
+
+            public DateTimeComponent GetCreationDateTime()
+            {
+                return creationDateTime;
             }
 
             #endregion
@@ -19544,8 +19643,6 @@ namespace Com.RedicalGames.Filar
 
             public long dateTimeTick;
 
-            public DateTime dateTimeComponent;
-
             #endregion
 
             #region Main
@@ -19557,8 +19654,6 @@ namespace Com.RedicalGames.Filar
 
             public DateTimeComponent(DateTime dateTime)
             {
-                this.dateTimeComponent = dateTime;
-
                 time = dateTime.ToString("t");
                 date = dateTime.ToString("d");
                 this.dateTime = dateTime.ToString("g");
@@ -19574,18 +19669,10 @@ namespace Com.RedicalGames.Filar
                 monthDay = dateTime.ToString("M");
 
                 dateTimeTick = dateTime.Ticks;
-
-            }
-
-            public DateTime ToDateTime()
-            {
-                return new DateTime(dateTimeTick);
             }
 
             public void UpdateDateTime(DateTime dateTime)
             {
-                this.dateTimeComponent = dateTime;
-
                 time = dateTime.ToString("t");
                 date = dateTime.ToString("d");
                 this.dateTime = dateTime.ToString("g");
@@ -19605,7 +19692,7 @@ namespace Com.RedicalGames.Filar
 
             public DateTime GetDateTime()
             {
-                return dateTimeComponent;
+                return new DateTime(dateTimeTick);
             }
 
             #endregion

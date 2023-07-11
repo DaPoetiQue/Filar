@@ -100,6 +100,10 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.ColorSwatchData colorSwatchData = new AppData.ColorSwatchData();
 
+        [Space(5)]
+        [SerializeField]
+        List<AppData.ProjectCategoryInfo> projectCategoryInfoList = new List<AppData.ProjectCategoryInfo>();
+
         #region Remove
 
         List<AppData.ColorSwatch> colorSwatchLibrary = new List<AppData.ColorSwatch>();
@@ -1591,6 +1595,41 @@ namespace Com.RedicalGames.Filar
         public string GetDefaultAssetName()
         {
             return defaultAssetName;
+        }
+
+        public void GetProjectCategoryInfo(AppData.ProjectCategoryType categoryType, Action<AppData.CallbackData<AppData.ProjectCategoryInfo>> callback)
+        {
+            AppData.CallbackData<AppData.ProjectCategoryInfo> callbackResults = new AppData.CallbackData<AppData.ProjectCategoryInfo>();
+
+            AppData.Helpers.ProjectDataComponentValid(projectCategoryInfoList, hasDataCallbackResults => 
+            {
+                callbackResults.resultsCode = hasDataCallbackResults.resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    var projectInfo = projectCategoryInfoList.Find(info => info.GetType() == categoryType);
+
+                    if(projectInfo != null)
+                    {
+                        callbackResults.results = $"Project Info : {projectInfo.name} For Category : {categoryType} Found / Initialized.";
+                        callbackResults.data = projectInfo;
+                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Project Info For Category : {categoryType} Not Found / Initialized.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "Project Category List Has Not Been Initialized.";
+                    callbackResults.data = default;
+                }
+            });
+
+            callback.Invoke(callbackResults);
         }
 
         public AppData.CallbackData<AppData.StorageDirectoryData>  GetAppDirectoryData(AppData.DirectoryType directoryType)
@@ -3769,6 +3808,9 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 loadedProjectData = createProjectWidgetCallback.data;
 
+                                                                var filteredList = new List<string>();
+                                                                var sortedList = new List<string>();
+
                                                                 GetFilterTypesFromContent(structureLoader.data, filterContentCallbackResults =>
                                                                 {
                                                                     if (filterContentCallbackResults.Success())
@@ -3776,8 +3818,8 @@ namespace Com.RedicalGames.Filar
                                                                         var sortedFilterList = filterContentCallbackResults.data;
                                                                         sortedFilterList.Sort((x, y) => x.CompareTo(y));
                                                                         sortedFilterList.Insert(0, "All");
-
-                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, sortedFilterList);
+                                                                        filteredList = sortedFilterList;
+                                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, sortedFilterList);
                                                                     }
                                                                     else
                                                                         Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
@@ -3799,10 +3841,13 @@ namespace Com.RedicalGames.Filar
                                                                         });
                                                                     }
 
-                                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
+                                                                    sortedList = sortingContents;
+                                                                    //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
                                                                 }
                                                                 else
                                                                     Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+
+                                                                SetContentScreenUIStatesEvent(dataPackets.screenType, sortList: sortedList, filterList: filteredList, state: AppData.InputUIState.Enabled);
                                                             }
                                                             else
                                                                 Log(createProjectWidgetCallback.resultsCode, createProjectWidgetCallback.results, this);
@@ -3812,7 +3857,7 @@ namespace Com.RedicalGames.Filar
                                                         LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
                                                 }
                                                 else
-                                                    DisableScreenUIOnEmptyContent(dataPackets.screenType);
+                                                    SetContentScreenUIStatesEvent(dataPackets.screenType, state: AppData.InputUIState.Disabled);
                                             });
 
 
@@ -4071,14 +4116,16 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        void DisableScreenUIOnEmptyContent(AppData.UIScreenType screenType)
+        public void SetContentScreenUIStatesEvent(AppData.UIScreenType screenType, List<string> filterList = null, List<string> sortList = null, AppData.InputUIState state = AppData.InputUIState.Normal)
         {
             switch(screenType)
             {
                 case AppData.UIScreenType.ProjectSelectionScreen:
 
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, null);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, null);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.FilterList, filterList);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortList);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, state);
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, state);
 
                     break;
             }
@@ -5843,7 +5890,7 @@ namespace Com.RedicalGames.Filar
 
                                             case AppData.SortType.DateModified:
 
-                                                contentCallbackResults.data.Sort((firstWidget, secondWidget) => secondWidget.GetData<AppData.SerializableData>(secondWidget.GetSelectableWidgetType()).GetModifiedDateTime().CompareTo(firstWidget.GetData<AppData.SerializableData>(secondWidget.GetSelectableWidgetType()).GetModifiedDateTime()));
+                                                contentCallbackResults.data.Sort((firstWidget, secondWidget) => secondWidget.GetData<AppData.SerializableData>(secondWidget.GetSelectableWidgetType()).GetModifiedDateTime().CompareTo(firstWidget.GetData<AppData.SerializableData>(firstWidget.GetSelectableWidgetType()).GetModifiedDateTime()));
 
                                                 break;
                                         }
@@ -6016,7 +6063,7 @@ namespace Com.RedicalGames.Filar
 
                                                     case AppData.SortType.DateModified:
 
-                                                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.creationDateTime.ToDateTime().CompareTo(firstWidget.creationDateTime.ToDateTime()));
+                                                        serializableDataList.Sort((firstWidget, secondWidget) => secondWidget.GetCreationDateTime().GetDateTime().CompareTo(firstWidget.GetCreationDateTime().GetDateTime()));
 
                                                         break;
                                                 }
@@ -7537,7 +7584,7 @@ namespace Com.RedicalGames.Filar
                     {
                         File.WriteAllText(data.storageData.path, JSONString);
 
-                        callbackResults.results = $"-->  Save Data Success : : {data.name} As : {data.storageData}";
+                        callbackResults.results = $"-->  Save Data Success : : {data.name} As : {data.storageData.path}";
                         callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                     }
                     else
@@ -7547,7 +7594,7 @@ namespace Com.RedicalGames.Filar
                         if (!File.Exists(data.storageData.path))
                             File.WriteAllText(data.storageData.path, JSONString);
 
-                        callbackResults.results = $"--> Create New Data Success : Replaced Asset : {data.name} At Path : {data.storageData}";
+                        callbackResults.results = $"--> Create New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
                         callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                     }
                 }
@@ -7557,12 +7604,12 @@ namespace Com.RedicalGames.Filar
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
 
-                callbackResults.results = $"Sucees - File Saved in Directory : {data.storageData}";
+                callbackResults.results = $"Success - File Saved in Directory : {data.storageData.path}";
                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = $"Save data Failed : File Not found In Directory : {data.storageData}";
+                callbackResults.results = $"Save data Failed : File Not found In Directory : {data.storageData.path}";
                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
             }
 
