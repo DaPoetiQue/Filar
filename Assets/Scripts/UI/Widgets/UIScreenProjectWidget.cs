@@ -120,6 +120,14 @@ namespace Com.RedicalGames.Filar
 
                 string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
                 SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
+
+                SceneAssetsManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
+                {
+                    if (projectInfoCallbackResults.Success())
+                        SetActionButtonColor(AppData.InputActionButtonType.OpenProject, projectInfoCallbackResults.data.color);
+                    else
+                        Log(projectInfoCallbackResults.resultsCode, projectInfoCallbackResults.results, this);
+                });
             }
         }
 
