@@ -15091,6 +15091,60 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [Serializable]
+        public class UIScreenData
+        {
+            #region Components
+
+            public string name;
+
+            #endregion
+        }
+
+        public class UIScreenGroupContent : UIScreenData
+        {
+            #region Components
+
+            public InputUIState state;
+            public List<string> contents = new List<string>();
+
+            public InputActionButtonType buttonActionType;
+            public InputDropDownActionType dropDownActionType;
+            public InputFieldActionType inputFieldActionType;
+            public CheckboxInputActionType checkboxActionType;
+
+            public InputType inputType;
+
+            public string content;
+            public string placeHolder;
+
+            public bool value;
+
+            #endregion
+
+            #region Main
+
+            public UIScreenGroupContent()
+            {
+
+            }
+
+            public UIScreenGroupContent(InputUIState state = InputUIState.Normal, string content = null, List<string> contents = null, string placeHolder = null, bool value = false, InputActionButtonType buttonActionType = InputActionButtonType.None, InputDropDownActionType dropDownActionType = InputDropDownActionType.None, InputFieldActionType inputFieldActionType = InputFieldActionType.None, CheckboxInputActionType checkboxActionType = CheckboxInputActionType.None)
+            {
+                this.state = state;
+                this.content = content;
+                this.contents = contents;
+                this.placeHolder = placeHolder;
+                this.buttonActionType = buttonActionType;
+                this.dropDownActionType = dropDownActionType;
+                this.inputFieldActionType = inputFieldActionType;
+                this.checkboxActionType = checkboxActionType;
+                this.value = value;
+            }
+
+            #endregion
+        }
+
         public class Interactable : AppMonoBaseClass
         {
 
