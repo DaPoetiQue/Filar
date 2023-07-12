@@ -955,9 +955,8 @@ namespace Com.RedicalGames.Filar
 
         public enum ProjectTamplateType
         {
-            DefaultSample,
-            ARRendering,
-            PhysicalBasedRendering
+            Default,
+            Filar_FBR
         }
 
 
@@ -1394,6 +1393,11 @@ namespace Com.RedicalGames.Filar
                 return rootProjectStructure;
             }
 
+            public ProjectCreationTemplateData GetProjectCreationTemplateData()
+            {
+                return projectCreationTemplateData;
+            }
+
             #endregion
         }
 
@@ -1500,7 +1504,7 @@ namespace Com.RedicalGames.Filar
                 this.categoryType = categoryType;
             }
 
-            public ProjectInfo(string name, ProjectCategoryType categoryType, ProjectTamplateType templateType, SortType sortType)
+            public ProjectInfo(string name, ProjectCategoryType categoryType = ProjectCategoryType.Project_3D, ProjectTamplateType templateType = ProjectTamplateType.Default, SortType sortType = SortType.Ascending)
             {
                 this.name = name;
                 this.categoryType = categoryType;
@@ -13526,9 +13530,7 @@ namespace Com.RedicalGames.Filar
                                                 SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
                                                 {
                                                     if (contentIndexCallbackResults.Success())
-                                                    {
                                                         OnDropDownFilterOptions(contentIndexCallbackResults.data);
-                                                    }
                                                     else
                                                         Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
                                                 });
@@ -13578,7 +13580,22 @@ namespace Com.RedicalGames.Filar
                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
 
                                         dropdown.value.AddOptions(dropdownOption);
-                                        dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
+
+                                        dropdown.value.onValueChanged.AddListener((value) =>
+                                        {
+                                            if (value <= dropdown.value.options.Count - 1)
+                                            {
+                                                SceneAssetsManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                                                {
+                                                    if (contentIndexCallbackResults.Success())
+                                                        OnDropDownSortingOptions(contentIndexCallbackResults.data);
+                                                    else
+                                                        Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                });
+                                            }
+                                            else
+                                                LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
+                                        });
 
                                         if (ScreenUIManager.Instance.HasCurrentScreen())
                                         {
@@ -13588,11 +13605,31 @@ namespace Com.RedicalGames.Filar
 
                                                     if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                                     {
-                                                        var filterType = SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                                                        var sortType = SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetSortType();
+                                                        var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
+                                                        var filterType = rootData.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                        var sortType = rootData.GetProjectStructureData().GetProjectInfo().GetSortType();
+                                                        var index = SceneAssetsManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
 
-                                                        int index = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
-                                                        dropdown.value.value = index;
+                                                        if (filterType != ProjectCategoryType.Project_All)
+                                                        {
+                                                            if(sortType == SortType.Category)
+                                                            {
+                                                                sortType = SortType.Ascending;
+                                                                rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
+
+                                                                SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults => 
+                                                                {
+                                                                    if (dataSavedCallbackResults.Success())
+                                                                        dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
+                                                                    else
+                                                                        Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                                                });
+                                                            }
+                                                            else
+                                                                dropdown.value.value = index;
+                                                        }
+                                                        else
+                                                            dropdown.value.value = index;
                                                     }
                                                     else
                                                         Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
@@ -14536,16 +14573,13 @@ namespace Com.RedicalGames.Filar
             {
                 Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults => 
                 {
+
+                    LogInfo($"=========================>>>>>>>>>>>> Sort Type : {(SortType)dropdownIndex} - Index : {dropdownIndex}");
+
                     if (validComponentCallbackResults.Success())
-                    {
-                        var type = (SortType)dropdownIndex;
-
-                        LogInfo($"========================>>>>>>>>>>> Sorting Index : {dropdownIndex} - Type : {type}", this);
-
-                        //SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
-                    }
+                        SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
                     else
-                        LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
+                                LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                 });
             }
 

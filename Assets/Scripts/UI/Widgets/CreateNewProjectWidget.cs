@@ -103,7 +103,7 @@ namespace Com.RedicalGames.Filar
             {
                 var project = new AppData.ProjectStructureData
                 {
-                    projectInfo = new AppData.ProjectInfo(string.Empty, SceneAssetsManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().categoryType),
+                    projectInfo = new AppData.ProjectInfo(string.Empty, SceneAssetsManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().GetCategoryType(), SceneAssetsManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().GetTamplateType()),
                     rootFolder = folderStructureDataTemplate.rootFolder,
                     excludedSystemFiles = folderStructureDataTemplate.excludedSystemFiles,
                     excludedSystemFolders = folderStructureDataTemplate.excludedSystemFolders,
