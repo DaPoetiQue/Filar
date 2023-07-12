@@ -161,7 +161,7 @@ namespace Com.RedicalGames.Filar
                 {
                     newProjectStructureData = newProjectCallbackResults.data;
 
-                    var projectType = (newProjectStructureData.GetProjectInfo().GetCategoryType() == 0) ? 1 : (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
+                    var projectType = (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
 
                     SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
                     SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
