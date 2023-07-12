@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -159,17 +160,53 @@ namespace Com.RedicalGames.Filar
             {
                 if (newProjectCallbackResults.Success())
                 {
-                    newProjectStructureData = newProjectCallbackResults.data;
+                    AppManager.Instance.GetAppRestriction(AppData.AppRestrictionType.ProjectSupport, restrictionCallbackResults => 
+                    {
+                        if (restrictionCallbackResults.Success())
+                        {
+                            newProjectStructureData = newProjectCallbackResults.data;
 
-                    var projectType = (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
+                            var projectType = (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
 
-                    SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
-                    SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
+                            SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
+                            SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
+                            SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name");
 
-                    SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name");
+                            OnClearInputFieldValue(AppData.InputFieldActionType.AssetNameField);
+                            OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
 
-                    OnClearInputFieldValue(AppData.InputFieldActionType.AssetNameField);
-                    OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
+                            var projectTypeContentParam = SceneAssetsManager.Instance.GetUIScreenGroupContentTemplate("Project Type Content", AppData.InputType.DropDown, state: AppData.InputUIState.Disabled,  dropdownActionType: AppData.InputDropDownActionType.ProjectType, placeHolder: "Project Type");
+                            var projectTemplateContentParam = SceneAssetsManager.Instance.GetUIScreenGroupContentTemplate("Project Template Content", AppData.InputType.DropDown, state: AppData.InputUIState.Enabled, dropdownActionType: AppData.InputDropDownActionType.ProjectTamplate, placeHolder: "Templates", contents: SceneAssetsManager.Instance.GetDropdownContent<AppData.ProjectTamplateType>().data);
+
+                            switch (restrictionCallbackResults.data.GetProjectSupportType())
+                            {
+                                case AppData.AppProjectSupportType.Supports_3D:
+
+                                    projectTypeContentParam.contents = new List<string> { "3D" };
+                                    projectTypeContentParam.SetUIInputState(AppData.InputUIState.Disabled);
+
+                                    break;
+
+                                case AppData.AppProjectSupportType.Supports_AR:
+
+                                    projectTypeContentParam.contents = new List<string> { "3D", "AR" };
+                                    projectTypeContentParam.SetUIInputState(AppData.InputUIState.Enabled);
+
+                                    break;
+
+                                case AppData.AppProjectSupportType.Supports_VR:
+
+                                    projectTypeContentParam.contents = new List<string> { "3D", "AR", "VR" };
+                                    projectTypeContentParam.SetUIInputState(AppData.InputUIState.Enabled);
+
+                                    break;
+                            }
+
+                            SetActionDropdownContent(projectTypeContentParam, projectTemplateContentParam);
+                        }
+                        else
+                            Log(restrictionCallbackResults.resultsCode, restrictionCallbackResults.results, this);
+                    });
                 }
                 else
                     Log(newProjectCallbackResults.resultsCode, newProjectCallbackResults.results, this);
