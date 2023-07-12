@@ -49,15 +49,31 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (createNewProjectCallbackResults.Success())
                                         {
-                                            if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                                                ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+                                            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                            {
+                                                var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
+                                                rootData.projectCreationTemplateData.SetProjectInfo(createNewProjectCallbackResults.data.GetProjectInfo());
 
-                                            dataPackets.notification.message = createNewProjectCallbackResults.results;
+                                                SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults => 
+                                                {
+                                                    if (dataSavedCallbackResults.Success())
+                                                    {
+                                                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                                            if (dataPackets.notification.showNotifications)
-                                                NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+                                                        dataPackets.notification.message = createNewProjectCallbackResults.results;
 
-                                            ScreenUIManager.Instance.Refresh();
+                                                        if (dataPackets.notification.showNotifications)
+                                                            NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+
+                                                        ScreenUIManager.Instance.Refresh();
+                                                    }
+                                                    else
+                                                        Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                                });
+                                            }
+                                            else
+                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
                                         }
                                         else
                                             Log(createNewProjectCallbackResults.resultsCode, createNewProjectCallbackResults.results, this);
@@ -79,18 +95,35 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        AppData.ProjectStructureData CreateNewFolderStructureData()
+        void CreateNewFolderStructureData(Action<AppData.CallbackData<AppData.ProjectStructureData>> callback)
         {
-            return new AppData.ProjectStructureData
+            AppData.CallbackData<AppData.ProjectStructureData> callbackResults = new AppData.CallbackData<AppData.ProjectStructureData>();
+
+            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
             {
-                projectInfo = new AppData.ProjectInfo(string.Empty, AppData.ProjectCategoryType.Project_3D), 
-                rootFolder = folderStructureDataTemplate.rootFolder,
-                excludedSystemFiles = folderStructureDataTemplate.excludedSystemFiles,
-                excludedSystemFolders = folderStructureDataTemplate.excludedSystemFolders,
-                layoutViewType = folderStructureDataTemplate.layoutViewType,
-                paginationViewType = folderStructureDataTemplate.paginationViewType,
-                layouts = folderStructureDataTemplate.layouts,
-            };
+                var project = new AppData.ProjectStructureData
+                {
+                    projectInfo = new AppData.ProjectInfo(string.Empty, SceneAssetsManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().categoryType),
+                    rootFolder = folderStructureDataTemplate.rootFolder,
+                    excludedSystemFiles = folderStructureDataTemplate.excludedSystemFiles,
+                    excludedSystemFolders = folderStructureDataTemplate.excludedSystemFolders,
+                    layoutViewType = folderStructureDataTemplate.layoutViewType,
+                    paginationViewType = folderStructureDataTemplate.paginationViewType,
+                    layouts = folderStructureDataTemplate.layouts,
+                };
+
+                callbackResults.results = "New Project Data Created.";
+                callbackResults.data = project;
+                callbackResults.resultsCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode;
+            }
+            else
+            {
+                callbackResults.results = SceneAssetsManager.Instance.GetProjectRootStructureData().results;
+                callbackResults.data = default;
+                callbackResults.resultsCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode;
+            }
+
+            callback.Invoke(callbackResults);
         }
 
         protected override void OnHideScreenWidget()
@@ -122,8 +155,21 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-            newProjectStructureData = CreateNewFolderStructureData();
-            OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
+            CreateNewFolderStructureData(newProjectCallbackResults => 
+            {
+                if (newProjectCallbackResults.Success())
+                {
+                    newProjectStructureData = newProjectCallbackResults.data;
+
+                    var projectType = (newProjectStructureData.projectInfo.GetCategoryType() == 0) ? 1 : (int)newProjectStructureData.projectInfo.GetCategoryType() - 1;
+
+                    SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
+
+                    OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
+                }
+                else
+                    Log(newProjectCallbackResults.resultsCode, newProjectCallbackResults.results, this);
+            });
         }
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
