@@ -3800,16 +3800,16 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 #region Screen UI Params
 
-                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button);
+                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, state: AppData.InputUIState.Disabled);
                                                 paginationButtonParam.buttonActionType = AppData.InputActionButtonType.PaginationButton;
 
-                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField);
+                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
                                                 searchFieldParam.inputFieldActionType = AppData.InputFieldActionType.AssetSearchField;
 
-                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown);
+                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
                                                 filterListParam.dropDownActionType = AppData.InputDropDownActionType.FilterList;
 
-                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown);
+                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
                                                 sortingListParam.dropDownActionType = AppData.InputDropDownActionType.SortingList;
 
                                                 #endregion
@@ -3860,7 +3860,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 #region Enable UI Screen Group COntent
 
-                                                                paginationButtonParam.state = (createProjectWidgetCallback.data.Count > 3) ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
+                                                                paginationButtonParam.state = widgetsContainer.CanPaginate()? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
                                                                 searchFieldParam.state = AppData.InputUIState.Enabled;
                                                                 filterListParam.state = AppData.InputUIState.Enabled;
                                                                 sortingListParam.state = AppData.InputUIState.Enabled;
@@ -4136,48 +4136,18 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public AppData.UIScreenGroupContent GetUIScreenGroupContentTemplate(string name, AppData.InputType inputType)
+        public AppData.UIScreenGroupContent GetUIScreenGroupContentTemplate(string name, AppData.InputType inputType, AppData.InputUIState state = AppData.InputUIState.Normal,  string placeHolder = null, string content = null, List<string> contents = null, bool value = false)
         {
-            var groupContent = new AppData.UIScreenGroupContent();
-
-            switch (inputType)
+            var groupContent = new AppData.UIScreenGroupContent
             {
-                case AppData.InputType.Button:
-
-                    groupContent = new AppData.UIScreenGroupContent
-                    {
-                        name = name,
-                        state = AppData.InputUIState.Disabled,
-                        inputType = inputType
-                    };
-
-                    break;
-
-                case AppData.InputType.InputField:
-
-                    groupContent = new AppData.UIScreenGroupContent
-                    {
-                        name = name,
-                        content = string.Empty,
-                        placeHolder = string.Empty,
-                        state = AppData.InputUIState.Disabled,
-                        inputType = inputType
-                    };
-
-                    break;
-
-                case AppData.InputType.DropDown:
-
-                    groupContent = new AppData.UIScreenGroupContent
-                    {
-                        name = name,
-                        contents = null,
-                        state = AppData.InputUIState.Disabled,
-                        inputType = inputType
-                    };
-
-                    break;
-            }
+                name = name,
+                inputType = inputType,
+                state = state,
+                placeHolder = placeHolder,
+                content = content,
+                contents = contents,
+                value = value
+            };
 
             return groupContent;
         }
@@ -4199,12 +4169,13 @@ namespace Com.RedicalGames.Filar
                         case AppData.InputType.InputField:
 
                             ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(action.inputFieldActionType, action.state);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(action.inputFieldActionType, action.placeHolder);
 
                             break;
 
                         case AppData.InputType.DropDown:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(action.dropDownActionType, action.contents);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(action.dropDownActionType, action);
 
                             break;
                     }
@@ -6551,7 +6522,10 @@ namespace Com.RedicalGames.Filar
                                                                                                                                 Log(isValidCallbackResults.resultsCode, isValidCallbackResults.results, this);
                                                                                                                         });
 
-                                                                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
+                                                                                                                        var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Contents", AppData.InputType.DropDown, placeHolder: "Sort", contents: sortingContents);
+                                                                                                                        SetContentScreenUIStatesEvent(sortingListParam);
+
+                                                                                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
                                                                                                                     }
 
                                                                                                                     Log(callbackResults.resultsCode, callbackResults.results, this);

@@ -875,6 +875,11 @@ namespace Com.RedicalGames.Filar
             });
         }
 
+        public bool CanPaginate()
+        {
+            return GetContentCount() >= Pagination_GetItemPerPageCount();
+        }
+
         void UpdatedContainerSize(Action<AppData.CallbackData<Vector2>> callback = null)
         {
             AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>();
@@ -887,12 +892,10 @@ namespace Com.RedicalGames.Filar
 
                 #region Pager
 
-                if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                    if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
                     {
-                        int itemsPerPage = (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
-
                         paginationComponent.Initialize();
-                        paginationComponent.Paginate(contentFound.data, itemsPerPage);
+                        paginationComponent.Paginate(contentFound.data, Pagination_GetItemPerPageCount());
                         paginationComponent.GoToPage(paginationComponent.CurrentPageIndex);
                         var currentPage = paginationComponent.GetCurrentPage();
 
@@ -2113,6 +2116,8 @@ namespace Com.RedicalGames.Filar
             return layout;
         }
 
+        #region Pagination Functions
+
         public void SetPaginationView(AppData.PaginationViewType paginationView)
         {
             switch (paginationView)
@@ -2367,6 +2372,13 @@ namespace Com.RedicalGames.Filar
         {
             return paginationComponent.GetPageCount();
         }
+
+        public int Pagination_GetItemPerPageCount()
+        {
+            return (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
+        }
+
+        #endregion
 
         public void OnLayoutViewChangeSelection(string selectionName) => StartCoroutine(OnLayoutViewChangeSelectionAsync(selectionName));
 
