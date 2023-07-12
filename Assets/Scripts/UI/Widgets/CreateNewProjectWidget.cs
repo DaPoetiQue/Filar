@@ -161,10 +161,14 @@ namespace Com.RedicalGames.Filar
                 {
                     newProjectStructureData = newProjectCallbackResults.data;
 
-                    var projectType = (newProjectStructureData.projectInfo.GetCategoryType() == 0) ? 1 : (int)newProjectStructureData.projectInfo.GetCategoryType() - 1;
+                    var projectType = (newProjectStructureData.GetProjectInfo().GetCategoryType() == 0) ? 1 : (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
 
                     SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
+                    SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
 
+                    SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name");
+
+                    OnClearInputFieldValue(AppData.InputFieldActionType.AssetNameField);
                     OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
                 }
                 else
