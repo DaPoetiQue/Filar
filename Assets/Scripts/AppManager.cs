@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Android;
 
@@ -26,6 +26,13 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
+        [SerializeField]
+        AppData.AppInfoData appInfo = new AppData.AppInfoData();
+
+        [SerializeField]
+        AppData.AppProjectSupportType testProjectSupport;
+
+        [Space(5)]
         [SerializeField]
         AppData.SceneDataPackets initialLoadDataPackets = new AppData.SceneDataPackets();
 
@@ -63,50 +70,88 @@ namespace Com.RedicalGames.Filar
 
         void Init()
         {
-
-            Debug.Log("--> Back Button Pressed.");
-
             //if (SceneAssetsManager.Instance != null)
             //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);;
 
-            AppData.Helpers.ComponentValid(SceneAssetsManager.Instance, hasComponentCallbackResults => 
+            OnProjectSupport(projectSupportCallbackResults => 
             {
-                if(hasComponentCallbackResults.Success())
+                if (projectSupportCallbackResults.Success())
                 {
-                    SceneAssetsManager.Instance.InitializeStorage(storageInitializedCallbackResults => 
+                    AppData.Helpers.ComponentValid(SceneAssetsManager.Instance, hasComponentCallbackResults =>
                     {
-                        if (storageInitializedCallbackResults.Success())
+                        if (hasComponentCallbackResults.Success())
                         {
-                            SceneAssetsManager.Instance.LoadRootStructureData(loadedProjectDataResultsCallback =>
+                            SceneAssetsManager.Instance.InitializeStorage(storageInitializedCallbackResults =>
                             {
-                                if (loadedProjectDataResultsCallback.Success())
+                                if (storageInitializedCallbackResults.Success())
                                 {
-                                    var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
-
-                                    SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure);
-
-                                    SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+                                    SceneAssetsManager.Instance.LoadRootStructureData(loadedProjectDataResultsCallback =>
                                     {
-                                        if (containerResults.Success())
+                                        if (loadedProjectDataResultsCallback.Success())
                                         {
-                                            var rootFolder = rootProjectStructure.rootFolder;
-                                            var container = containerResults.data;
+                                            var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
 
-                                            SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                                            SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure);
+
+                                            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+                                            {
+                                                if (containerResults.Success())
+                                                {
+                                                    var rootFolder = rootProjectStructure.rootFolder;
+                                                    var container = containerResults.data;
+
+                                                    SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+                                                }
+                                                else
+                                                    Log(containerResults.resultsCode, containerResults.results, this);
+                                            });
                                         }
                                         else
-                                            Log(containerResults.resultsCode, containerResults.results, this);
+                                            Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
                                     });
                                 }
                                 else
-                                    Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
+                                    Log(storageInitializedCallbackResults.resultsCode, storageInitializedCallbackResults.results, this);
                             });
                         }
-                        else
-                            Log(storageInitializedCallbackResults.resultsCode, storageInitializedCallbackResults.results, this);
                     });
                 }
+                else
+                    Log(projectSupportCallbackResults.resultsCode, projectSupportCallbackResults.results, this);
             });
+        }
+
+        void OnProjectSupport(Action<AppData.CallbackData<AppData.ProjectRestriction>> callback)
+        {
+            AppData.CallbackData<AppData.ProjectRestriction> callbackResults = new AppData.CallbackData<AppData.ProjectRestriction>();
+
+            var supportRestriction = new AppData.ProjectRestriction();
+
+            supportRestriction.name = "Project Support Restriction";
+            supportRestriction.SetRestrictionType(AppData.AppRestrictionType.ProjectSupport);
+            supportRestriction.SetProjectSupportType(GetProjectSupportType());
+
+            if(!appInfo.appRestrictions.Contains(supportRestriction))
+            {
+                appInfo.appRestrictions.Add(supportRestriction);
+
+                callbackResults.results = $"Added Project Restriction With Support Type : {GetProjectSupportType()}.";
+                callbackResults.data = supportRestriction;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = $"Project Restriction Of Type : {GetProjectSupportType()} Already Exists In App Restrictions.";
+                callbackResults.data = supportRestriction;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        AppData.AppProjectSupportType GetProjectSupportType()
+        {
+            return testProjectSupport;
         }
 
         void OnSubscribeToActionEvents(bool subscribe)
@@ -201,6 +246,37 @@ namespace Com.RedicalGames.Filar
         public bool IsRuntime()
         {
             return Application.platform == RuntimePlatform.Android;
+        }
+
+        public void GetAppRestriction(AppData.AppRestrictionType restrictionType, Action<AppData.CallbackData<AppData.ProjectRestriction>> callback)
+        {
+            AppData.CallbackData<AppData.ProjectRestriction> callbackResults = new AppData.CallbackData<AppData.ProjectRestriction>();
+
+            if(appInfo.GetAppRestriction() != null)
+            {
+                var restriction = appInfo.GetAppRestriction().Find(x => x.GetAppRestrictionType() == restrictionType);
+
+                if(restriction != null)
+                {
+                    callbackResults.results = $"App Info Restriction Found.";
+                    callbackResults.data = restriction;
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Get App Restriction Failed : App Info Restriction Of Type : {restrictionType} Not Found / Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            }
+            else
+            {
+                callbackResults.results = "Get App Restriction Failed : App Info Restrictions Are Not Yet Initialized.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
         }
 
         #endregion
