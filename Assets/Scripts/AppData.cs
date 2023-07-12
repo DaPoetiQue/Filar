@@ -1376,6 +1376,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             public ProjectStructureData rootProjectStructure;
+            public ProjectCreationTemplateData projectCreationTemplateData;
 
             #endregion
 
@@ -1391,6 +1392,27 @@ namespace Com.RedicalGames.Filar
             public ProjectStructureData GetProjectStructureData()
             {
                 return rootProjectStructure;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public struct ProjectCreationTemplateData
+        {
+            #region Components
+
+            public ProjectInfo projectInfo;
+
+            #endregion
+
+            #region Main
+
+            public void SetProjectInfo(ProjectInfo projectInfo) => this.projectInfo = projectInfo;
+
+            public ProjectInfo GetProjectInfo()
+            {
+                return projectInfo;
             }
 
             #endregion
@@ -15144,6 +15166,14 @@ namespace Com.RedicalGames.Filar
                 this.value = value;
             }
 
+            public void SetUIInputState(InputUIState state) => this.state = state;
+
+            public void SetValue(bool value) => this.value = value;
+
+            public void SetPlaceHolder(string placeHolder) => this.placeHolder = placeHolder;
+            public void SetContent(string content) => this.content = content;
+            public void SetContent(List<string> contents) => this.contents = contents;
+
             #endregion
         }
 
@@ -18129,7 +18159,7 @@ namespace Com.RedicalGames.Filar
                         Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns");
                 }
                 else
-                    Debug.LogWarning("--> SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.");
+                    LogWarning("SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.", this);
             }
 
             public void SetActionDropdownState(InputUIState state)
@@ -18139,7 +18169,7 @@ namespace Com.RedicalGames.Filar
                     if (dropdown.value != null)
                         dropdown.SetUIInputState(state);
                     else
-                        Debug.LogWarning($"--> Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.");
+                        LogWarning($"Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this);
                 }
             }
 
@@ -18153,9 +18183,40 @@ namespace Com.RedicalGames.Filar
                         dropdown.SetUIInputState(state);
                     }
                     else
-                        Debug.LogWarning($"--> Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.");
+                        LogWarning($"Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this);
                 }
             }
+
+            public void SetActionDropdownSelection(InputDropDownActionType actionType, int index)
+            {
+                var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType);
+
+                if (dropdown != null)
+                {
+                    if (dropdown.value != null)
+                        dropdown.value.value = index;
+                    else
+                        LogError($"Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this);
+                }
+                else
+                    LogError($"Dropdown Of Type : {actionType} Not Found.", this);
+            }
+
+            public void SetActionDropdownSelectionWithoutNotify(InputDropDownActionType actionType, int index)
+            {
+                var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType);
+
+                if (dropdown != null)
+                {
+                    if (dropdown.value != null)
+                        dropdown.value.SetValueWithoutNotify(index);
+                    else
+                        LogError($"Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this);
+                }
+                else
+                    LogError($"Dropdown Of Type : {actionType} Not Found.", this);
+            }
+
 
             #endregion
 
