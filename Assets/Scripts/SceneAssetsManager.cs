@@ -3800,18 +3800,11 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 #region Screen UI Params
 
-                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, state: AppData.InputUIState.Disabled);
-                                                paginationButtonParam.buttonActionType = AppData.InputActionButtonType.PaginationButton;
-
-                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
-                                                searchFieldParam.inputFieldActionType = AppData.InputFieldActionType.AssetSearchField;
-
-                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
-                                                filterListParam.dropDownActionType = AppData.InputDropDownActionType.FilterList;
-
-                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
-                                                sortingListParam.dropDownActionType = AppData.InputDropDownActionType.SortingList;
-
+                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
+                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
+                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
+                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
+                                     
                                                 #endregion
 
                                                 if (structureLoader.Success())
@@ -3831,7 +3824,7 @@ namespace Com.RedicalGames.Filar
                                                                         var sortedFilterList = filterContentCallbackResults.data;
                                                                         sortedFilterList.Sort((x, y) => x.CompareTo(y));
                                                                         sortedFilterList.Insert(0, "All");
-                                                                        filterListParam.contents = sortedFilterList;
+                                                                        filterListParam.SetContent(sortedFilterList);
                                                                     }
                                                                     else
                                                                         Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
@@ -3853,17 +3846,17 @@ namespace Com.RedicalGames.Filar
                                                                         });
                                                                     }
 
-                                                                    sortingListParam.contents = sortingContents;
+                                                                    sortingListParam.SetContent(sortingContents);
                                                                 }
                                                                 else
                                                                     Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
 
                                                                 #region Enable UI Screen Group COntent
 
-                                                                paginationButtonParam.state = widgetsContainer.CanPaginate()? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
-                                                                searchFieldParam.state = AppData.InputUIState.Enabled;
-                                                                filterListParam.state = AppData.InputUIState.Enabled;
-                                                                sortingListParam.state = AppData.InputUIState.Enabled;
+                                                                paginationButtonParam.SetUIInputState(widgetsContainer.CanPaginate()? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled);
+                                                                searchFieldParam.SetUIInputState(AppData.InputUIState.Enabled);
+                                                                filterListParam.SetUIInputState(AppData.InputUIState.Enabled);
+                                                                sortingListParam.SetUIInputState(AppData.InputUIState.Enabled);
 
                                                                 #endregion
 
@@ -4136,7 +4129,10 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public AppData.UIScreenGroupContent GetUIScreenGroupContentTemplate(string name, AppData.InputType inputType, AppData.InputUIState state = AppData.InputUIState.Normal,  string placeHolder = null, string content = null, List<string> contents = null, bool value = false)
+        public AppData.UIScreenGroupContent GetUIScreenGroupContentTemplate(string name, AppData.InputType inputType, AppData.InputUIState state = AppData.InputUIState.Normal,  
+            string placeHolder = null, string content = null, List<string> contents = null, bool value = false, AppData.InputActionButtonType buttonActionType = AppData.InputActionButtonType.None, 
+            AppData.InputFieldActionType inputFieldActionType = AppData.InputFieldActionType.None, AppData.InputDropDownActionType dropdownActionType = AppData.InputDropDownActionType.None, 
+            AppData.CheckboxInputActionType checkboxActionType = AppData.CheckboxInputActionType.None)
         {
             var groupContent = new AppData.UIScreenGroupContent
             {
@@ -4146,7 +4142,12 @@ namespace Com.RedicalGames.Filar
                 placeHolder = placeHolder,
                 content = content,
                 contents = contents,
-                value = value
+                value = value,
+
+                buttonActionType = buttonActionType,
+                inputFieldActionType = inputFieldActionType,
+                dropDownActionType = dropdownActionType,
+                checkboxActionType = checkboxActionType
             };
 
             return groupContent;
@@ -6522,7 +6523,7 @@ namespace Com.RedicalGames.Filar
                                                                                                                                 Log(isValidCallbackResults.resultsCode, isValidCallbackResults.results, this);
                                                                                                                         });
 
-                                                                                                                        var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Contents", AppData.InputType.DropDown, placeHolder: "Sort", contents: sortingContents);
+                                                                                                                        var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Contents", AppData.InputType.DropDown, placeHolder: "Sort", contents: sortingContents, dropdownActionType: AppData.InputDropDownActionType.SortingList);
                                                                                                                         SetContentScreenUIStatesEvent(sortingListParam);
 
                                                                                                                         //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
@@ -6667,19 +6668,6 @@ namespace Com.RedicalGames.Filar
                 LogError(exception.Message, this);
                 throw exception;
             }
-        }
-
-        void SaveModifiedData<T>(T data, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData
-        {
-            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
-
-            SaveData(data, dataSavedCallbackResults => 
-            {
-                callbackResults.results = dataSavedCallbackResults.results;
-                callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;       
-            });
-
-            callback.Invoke(callbackResults);
         }
 
         void GetFilterTypesFromContent(List<AppData.ProjectStructureData> contents, Action<AppData.CallbackDataList<string>> callback = null, params string[] args)
@@ -7556,7 +7544,7 @@ namespace Com.RedicalGames.Filar
 
         #region Data Serialization
 
-        #region Save Data
+        #region Create Data
 
         public void CreateData<T>(T data, AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData
         {
@@ -7623,6 +7611,10 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        #endregion
+
+        #region Save Data
+
         public void SaveData<T>(T data, Action<AppData.Callback> callback = null) where T : AppData.SerializableData
         {
             AppData.Callback callbackResults = new AppData.Callback();
@@ -7667,6 +7659,19 @@ namespace Com.RedicalGames.Filar
                 callbackResults.results = $"Save data Failed : File Not found In Directory : {data.storageData.path}";
                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
             }
+
+            callback.Invoke(callbackResults);
+        }
+
+        public void SaveModifiedData<T>(T data, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData
+        {
+            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
+
+            SaveData(data, dataSavedCallbackResults =>
+            {
+                callbackResults.results = dataSavedCallbackResults.results;
+                callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+            });
 
             callback.Invoke(callbackResults);
         }
