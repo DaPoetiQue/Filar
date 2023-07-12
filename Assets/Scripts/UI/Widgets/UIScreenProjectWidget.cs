@@ -59,6 +59,8 @@ namespace Com.RedicalGames.Filar
                                     selectionState = AppData.InputUIState.Highlighted
                                 };
 
+                                Selected();
+
                                 OnGoToProfile_ActionEvent(actionButton.dataPackets);
                             }
                             else

@@ -20,7 +20,7 @@ namespace Com.RedicalGames.Filar
             return File.Exists(appDataMetaStoragePath);
         }
 
-        [MenuItem("Filar/App/Clear Data #%R")]
+        [MenuItem("Filar/App/Clear Data #R")]
         private static void CreateContentLoadManager()
         {
             Directory.Delete(appDataStorageDirectory, true);
