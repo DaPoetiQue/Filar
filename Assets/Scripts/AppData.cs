@@ -959,6 +959,19 @@ namespace Com.RedicalGames.Filar
             Filar_FBR
         }
 
+        public enum AppProjectSupportType
+        {
+            Supports_3D,
+            Supports_AR,
+            Supports_VR
+        }
+
+        public enum AppRestrictionType
+        {
+            None,
+            ProjectSupport
+        }
+
 
         #region Debugging
 
@@ -1350,6 +1363,72 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region File Data
+
+        [Serializable]
+        public class AppRestriction : IRestrictionData
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public AppRestrictionType restrictionType;
+
+            #endregion
+
+            #region Main
+
+            public AppRestrictionType GetAppRestrictionType()
+            {
+                return restrictionType;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ProjectRestriction : AppRestriction
+        {
+            #region Components
+
+            public AppProjectSupportType projectSupportType;
+
+            #endregion
+
+            #region Main
+
+            public void SetRestrictionType(AppRestrictionType restrictionType) => this.restrictionType = restrictionType;
+
+            public void SetProjectSupportType(AppProjectSupportType supportType) => projectSupportType = supportType;
+
+            public AppProjectSupportType GetProjectSupportType()
+            {
+                return projectSupportType;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class AppInfoData
+        {
+            #region Components
+
+            [Header("App Restrictions")]
+            [Space(5)]
+            public List<ProjectRestriction> appRestrictions = new List<ProjectRestriction>();
+
+            #endregion
+
+            #region Main
+
+            public List<ProjectRestriction> GetAppRestriction()
+            {
+                return appRestrictions;
+            }
+
+            #endregion
+        }
 
         [Serializable]
         public class FileData : ProjectData
@@ -6508,6 +6587,9 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Space(5)]
+            public RectTransform arrowIcon;
+
             InputDropDownActionType action = InputDropDownActionType.None;
 
             #endregion
@@ -6668,12 +6750,14 @@ namespace Com.RedicalGames.Filar
                     case InputUIState.Enabled:
 
                         SetInteractableState(true);
+                        SetArrowIconState(true);
 
                         break;
 
                     case InputUIState.Disabled:
 
                         SetInteractableState(false);
+                        SetArrowIconState(false);
 
                         break;
 
@@ -6764,6 +6848,8 @@ namespace Com.RedicalGames.Filar
             {
                 throw new NotImplementedException();
             }
+
+            public void SetArrowIconState(bool state) => arrowIcon?.gameObject?.SetActive(state);
 
             #endregion
         }
@@ -15953,32 +16039,35 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropdown.value != null)
                         {
-                            dropdown.value.ClearOptions();
+                            dropdown.Initialize(dropdown.dataPackets);
+                            dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
 
-                            List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                            //dropdown.value.ClearOptions();
 
-                            DropDownContentData dropDownContent = new DropDownContentData();
+                            //List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                            switch (dropdown.dataPackets.action)
-                            {
-                                case InputDropDownActionType.ProjectType:
+                            //DropDownContentData dropDownContent = new DropDownContentData();
 
-                                    dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_", "Project", "All");
+                            //switch (dropdown.dataPackets.action)
+                            //{
+                            //    case InputDropDownActionType.ProjectType:
 
-                                    break;
+                            //        dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_", "Project", "All");
 
-                                case InputDropDownActionType.ProjectTamplate:
+                            //        break;
 
-                                    dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectTamplateType>();
+                            //    case InputDropDownActionType.ProjectTamplate:
 
-                                    break;
-                            }
+                            //        dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectTamplateType>();
 
-                            foreach (var filter in dropDownContent.data)
-                                dropdownOption.Add(new TMP_Dropdown.OptionData() { text = filter });
+                            //        break;
+                            //}
 
-                            dropdown.value.AddOptions(dropdownOption);
-                            dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value, dropdown.dataPackets));
+                            //foreach (var filter in dropDownContent.data)
+                            //    dropdownOption.Add(new TMP_Dropdown.OptionData() { text = filter });
+
+                            //dropdown.value.AddOptions(dropdownOption);
+                            //dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value, dropdown.dataPackets));
 
                         }
                         else
@@ -18257,6 +18346,46 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
+            public void SetActionDropdownContent(params UIScreenGroupContent[] groupContentParams)
+            {
+                if (groupContentParams != null && groupContentParams.Length > 0)
+                {
+                    foreach (var groupContent in groupContentParams)
+                    {
+                        var dropdown = dropdowns.Find(x => x.dataPackets.action == groupContent.dropDownActionType);
+
+                        if (dropdown != null)
+                        {
+                            if (dropdown.value != null)
+                            {
+                                dropdown.SetUIInputState(groupContent.state);
+
+                                if (groupContent.contents != null && groupContent.contents.Count > 0)
+                                {
+                                    dropdown.value.ClearOptions();
+
+                                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+                                    foreach (var content in groupContent.contents)
+                                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = content });
+
+                                    dropdown.value.AddOptions(dropdownOption);
+                                    dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value, dropdown.dataPackets));
+                                }
+                                else
+                                    dropdown.SetContent(new List<string> { groupContent.placeHolder });
+                            }
+                            else
+                                LogError($"Failed : Dropdown Of Type : {dropdown.dataPackets.action}'s Value Missing.", this);
+                        }
+                        else
+                            LogError($"Dropdown Of Type : {groupContent.dropDownActionType} Not Found.", this);
+                    }
+                }
+                else
+                    LogError("Group Content Params Not Assigned", this);
+            }
+
             public void SetActionDropdownSelection(InputDropDownActionType actionType, int index)
             {
                 var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType);
@@ -18287,6 +18416,48 @@ namespace Com.RedicalGames.Filar
                     LogError($"Dropdown Of Type : {actionType} Not Found.", this);
             }
 
+
+            protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
+            {
+                var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType && x.selectableInput && x.GetInteractableState());
+                var dropdonwContent = dropdowns.FindAll(x => x.dataPackets.action != actionType && x.selectableInput && x.GetInteractableState());
+
+                Helpers.UIActionDropdownComponentValid(dropdown, hasComponentCallbackResults =>
+                {
+                    if (hasComponentCallbackResults.Success())
+                        dropdown.SetUIInputState(InputUIState.Selected);
+                    else
+                        Log(hasComponentCallbackResults.resultsCode, "Dropdown Component Not Found.", this);
+                });
+
+                Helpers.UIActionDropdownComponentsValid(dropdonwContent, hasComponentsCallbackResults =>
+                {
+                    if (hasComponentsCallbackResults.Success())
+                    {
+                        if (dropdonwContent != null && dropdowns.Count > 0)
+                        {
+                            foreach (var dropdown in dropdonwContent)
+                            {
+                                if (dropdown != null)
+                                {
+                                    if (dropdown.GetUIInputState() == InputUIState.Selected)
+                                    {
+                                        dropdown.SetUIInputState(InputUIState.Deselected);
+                                        dropdown.value.Hide();
+                                    }
+                                }
+                                else
+                                {
+                                    LogError("Dropdown Components Were Not Found.", this);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                        Log(hasComponentsCallbackResults.resultsCode, "On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
+                });
+            }
 
             #endregion
 
@@ -23943,6 +24114,15 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Interfaces
+
+        public interface IRestrictionData
+        {
+            #region Main
+
+            AppRestrictionType GetAppRestrictionType();
+
+            #endregion
+        }
 
         public interface IUIScreenData
         {
