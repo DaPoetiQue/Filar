@@ -6819,9 +6819,6 @@ namespace Com.RedicalGames.Filar
             public int characterLimit;
 
             [Space(5)]
-            public InputFieldActionType actionType;
-
-            [Space(5)]
             public InputFieldValueType valueType;
 
             string clearTextPlaceHolder;
@@ -13455,7 +13452,7 @@ namespace Com.RedicalGames.Filar
                         if (inputField.value != null)
                             inputField.SetUIInputState(state);
                         else
-                            LogWarning($"Input Field Of Type : {inputField.actionType}'s Value Missing.", this, () => SetActionInputFieldState(state));
+                            LogWarning($"Input Field Of Type : {inputField.dataPackets.action}'s Value Missing.", this, () => SetActionInputFieldState(state));
                     }
                 }
                 else
@@ -14607,7 +14604,7 @@ namespace Com.RedicalGames.Filar
 
             void OnInputFieldAction(UIInputField<InputFieldDataPackets> inputField, string inputValue)
             {
-                switch (inputField.actionType)
+                switch (inputField.dataPackets.action)
                 {
                     case InputFieldActionType.AssetSearchField:
 
@@ -14625,10 +14622,10 @@ namespace Com.RedicalGames.Filar
                 if (screenActionInputFieldList.Count > 0)
                 {
                     foreach (var input in screenActionInputFieldList)
-                        if (input.actionType == inputField.actionType)
+                        if (input.dataPackets.action == inputField.dataPackets.action)
                             input.value.text = string.Empty;
 
-                    switch (inputField.actionType)
+                    switch (inputField.dataPackets.action)
                     {
                         case InputFieldActionType.AssetSearchField:
 
@@ -17663,7 +17660,7 @@ namespace Com.RedicalGames.Filar
 
             #region Input
 
-            protected void SetInputFieldValue(string value, InputFieldActionType actionType)
+            protected void SetInputFieldValue(InputFieldActionType actionType, string value)
             {
                 if (inputs.Count > 0)
                 {
@@ -17677,10 +17674,30 @@ namespace Com.RedicalGames.Filar
                             input.OnClearField();
                     }
                     else
-                        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this, () => SetInputFieldValue(value, actionType));
+                        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
                 }
                 else
-                    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this, () => SetInputFieldValue(value, actionType));
+                    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+            }
+
+            protected void SetInputFieldPlaceHolder(InputFieldActionType actionType, string placeHolder)
+            {
+                if (inputs.Count > 0)
+                {
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
+
+                    if (input.value != null)
+                    {
+                        if (!string.IsNullOrEmpty(placeHolder))
+                            input.SetPlaceHolderText(placeHolder);
+                        else
+                            input.OnClearField();
+                    }
+                    else
+                        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
+                }
+                else
+                    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
             }
 
             protected void OnInputFieldValidation(ValidationResultsType results, InputFieldActionType actionType)
@@ -17691,6 +17708,21 @@ namespace Com.RedicalGames.Filar
 
                     if (input != null)
                         input.OnValidation(results);
+                    else
+                        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
+                }
+                else
+                    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+            }
+
+            protected void OnClearInputFieldValue(InputFieldActionType actionType)
+            {
+                if (inputs.Count > 0)
+                {
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
+
+                    if (input != null)
+                        input.OnClearField();
                     else
                         LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
                 }
@@ -18043,41 +18075,41 @@ namespace Com.RedicalGames.Filar
                         if (inputField.value != null)
                             inputField.SetUIInputState(state);
                         else
-                            Debug.LogWarning($"--> Failed : Input Field Of Type : {inputField.actionType}'s Value Missing.");
+                            LogWarning($"Failed : Input Field Of Type : {inputField.dataPackets.action}'s Value Missing.", this);
                     }
                 }
                 else
-                    Debug.LogWarning("--> SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.");
+                    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
             }
 
             public void SetActionInputFieldState(InputFieldActionType actionType, InputUIState state)
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetUIInputState(state);
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
                 }
                 else
-                    Debug.LogWarning("--> SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.");
+                    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
             }
 
             public void SetActionInputFieldValueText(InputFieldActionType actionType, string value)
             {
                 if (inputs.Count > 0)
                 {
-                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.actionType == actionType);
+                    UIInputField<InputFieldDataPackets> inputField = inputs.Find(inputField => inputField.dataPackets.action == actionType);
 
                     if (inputField != null)
                         inputField.SetValue(value);
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this);
                 }
                 else
-                    Debug.LogWarning("--> SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.");
+                    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
             }
 
             public void SetActionInputFieldValueText(InputFieldActionType actionType, int value)
@@ -18089,10 +18121,10 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetValue(value.ToString());
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this);
                 }
                 else
-                    Debug.LogWarning("--> SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.");
+                    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
             }
 
             public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, string placeholder)
@@ -18104,10 +18136,10 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this);
                 }
                 else
-                    Debug.LogWarning("--> SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.");
+                    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
             }
 
             public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, int placeholder)
@@ -18119,10 +18151,10 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this) ;
                 }
                 else
-                    Debug.LogWarning("--> SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.");
+                    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
             }
 
             #endregion
@@ -18138,10 +18170,10 @@ namespace Com.RedicalGames.Filar
                     if (dropdown.value != null)
                         dropdown.SetUIInputState(state);
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns", this);
                 }
                 else
-                    Debug.LogWarning("--> SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.");
+                    LogWarning("SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.", this);
             }
 
             public void SetActionDropdownState(InputDropDownActionType actionType, InputUIState state, List<string> content)
@@ -18156,7 +18188,7 @@ namespace Com.RedicalGames.Filar
                         dropdown.SetUIInputState(state);
                     }
                     else
-                        Debug.LogWarning($"--> Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns", this);
                 }
                 else
                     LogWarning("SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.", this);
@@ -23052,6 +23084,24 @@ namespace Com.RedicalGames.Filar
             }
 
             public static void UIActionDropdownComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownDataPackets, UIDropDown<DropdownDataPackets>>
+            {
+                Callback callbackResults = new Callback();
+
+                if (component != null)
+                {
+                    callbackResults.results = $"Components : {component.name} Is Valid.";
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void UIActionInputFieldComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<InputField, InputFieldDataPackets, UIDropDown<InputFieldDataPackets>>
             {
                 Callback callbackResults = new Callback();
 
