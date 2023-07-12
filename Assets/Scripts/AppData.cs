@@ -13521,15 +13521,20 @@ namespace Com.RedicalGames.Filar
 
                                         dropdown.value.onValueChanged.AddListener((value) =>
                                         {
-                                            SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(contentGroup.contents[value], contentIndexCallbackResults =>
+                                            if (value <= dropdown.value.options.Count - 1)
                                             {
-                                                if (contentIndexCallbackResults.Success())
+                                                SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
                                                 {
-                                                    OnDropDownFilterOptions(contentIndexCallbackResults.data);
-                                                }
-                                                else
-                                                    Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                                            });
+                                                    if (contentIndexCallbackResults.Success())
+                                                    {
+                                                        OnDropDownFilterOptions(contentIndexCallbackResults.data);
+                                                    }
+                                                    else
+                                                        Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                });
+                                            }
+                                            else
+                                                LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
                                         });
 
                                         if (ScreenUIManager.Instance.HasCurrentScreen())
@@ -14521,11 +14526,7 @@ namespace Com.RedicalGames.Filar
                 Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults =>
                 {
                     if (validComponentCallbackResults.Success())
-                    {
-                        LogInfo($"========================>>>>>>>>>>> Filter Index : {dropdownIndex}", this);
-
                         SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
-                    }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                 });
@@ -14537,8 +14538,11 @@ namespace Com.RedicalGames.Filar
                 {
                     if (validComponentCallbackResults.Success())
                     {
-                        LogInfo($"========================>>>>>>>>>>> Sorting Index : {dropdownIndex}", this);
-                        SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
+                        var type = (SortType)dropdownIndex;
+
+                        LogInfo($"========================>>>>>>>>>>> Sorting Index : {dropdownIndex} - Type : {type}", this);
+
+                        //SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
                     }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
