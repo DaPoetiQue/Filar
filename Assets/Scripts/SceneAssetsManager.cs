@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Linq;
+using static TMPro.TMP_Dropdown;
 
 namespace Com.RedicalGames.Filar
 {
@@ -777,6 +778,31 @@ namespace Com.RedicalGames.Filar
             });
 
             callback.Invoke(callbackResults);
+        }
+
+        public int GetDropdownContentOptionRelativeIndex(Enum option, List<OptionData> options)
+        {
+            int index = 0;
+
+            if (options != null && options.Count > 0)
+            {
+                var optionString = option.ToString();
+
+                foreach (var optn in options)
+                {
+                    if (optionString.Contains(optn.text))
+                    {
+                        index = options.IndexOf(optn);
+                        break;
+                    }
+                    else
+                        continue;
+                }
+            }
+            else
+                LogError("Get Dropdown Content Option Relative Index Failed : Options Are Not Initialized / Null.", this);
+
+            return index;
         }
 
         #endregion
