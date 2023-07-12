@@ -66,7 +66,7 @@ namespace Com.RedicalGames.Filar
             });
 
             SceneAssetsManager.Instance.CreateNewFolderName = SceneAssetsManager.Instance.GetCreateNewFolderTempName();
-            SetInputFieldValue(SceneAssetsManager.Instance.CreateNewFolderName, AppData.InputFieldActionType.AssetNameField);
+            SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, SceneAssetsManager.Instance.CreateNewFolderName);
 
             HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
 

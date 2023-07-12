@@ -8,7 +8,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.UIInputField<AppData.SceneDataPackets> xRotationInputField,
+        AppData.UIInputField<AppData.InputFieldDataPackets> xRotationInputField,
                                                   yRotationInputField,
                                                   zRotationInputField;
 
@@ -27,17 +27,17 @@ namespace Com.RedicalGames.Filar
         new void Init()
         {
             if (xRotationInputField.value)
-                xRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, xRotationInputField.actionType));
+                xRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, xRotationInputField.dataPackets.action));
             else
                 Debug.LogWarning("--> X Rotation Input Field Value Is Null.");
 
             if (yRotationInputField.value)
-                yRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, yRotationInputField.actionType));
+                yRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, yRotationInputField.dataPackets.action));
             else
                 Debug.LogWarning("--> Y Rotation Input Field Value Is Null.");
 
             if (zRotationInputField.value)
-                zRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, zRotationInputField.actionType));
+                zRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, zRotationInputField.dataPackets.action));
             else
                 Debug.LogWarning("--> Z Rotation Input Field Value Is Null.");
 
