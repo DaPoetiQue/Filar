@@ -13474,7 +13474,7 @@ namespace Com.RedicalGames.Filar
 
             #region UI Action Dropdown States
 
-            public void SetActionDropdownOptions(InputDropDownActionType actionType, List<string> contents)
+            public void SetActionDropdownOptions(InputDropDownActionType actionType, UIScreenGroupContent contentGroup)
             {
                 if (screenActionDropDownList.Count > 0)
                 {
@@ -13482,14 +13482,11 @@ namespace Com.RedicalGames.Filar
 
                     if (dropdown.value != null)
                     {
-                        switch(actionType)
+                        switch (actionType)
                         {
                             case InputDropDownActionType.FilterList:
 
-                                string filterPlaceholderText = "Filter";
-                                string previousSelection = string.Empty;
-
-                                Helpers.StringListValueValid(contents, hasContentsCallbackResults => 
+                                Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
                                 {
                                     if (hasContentsCallbackResults.Success())
                                     {
@@ -13498,14 +13495,14 @@ namespace Com.RedicalGames.Filar
 
                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                        foreach (var filter in contents)
+                                        foreach (var filter in contentGroup.contents)
                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
                                         dropdown.value.AddOptions(dropdownOption);
 
                                         dropdown.value.onValueChanged.AddListener((value) =>
                                         {
-                                            SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(contents[value], contentIndexCallbackResults =>
+                                            SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(contentGroup.contents[value], contentIndexCallbackResults =>
                                             {
                                                 if (contentIndexCallbackResults.Success())
                                                 {
@@ -13523,7 +13520,7 @@ namespace Com.RedicalGames.Filar
                                                 case UIScreenType.ProjectSelectionScreen:
 
                                                     if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                                                    dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                        dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
                                                     else
                                                         Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
@@ -13535,8 +13532,8 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        dropdown.SetContent(new List<string> { filterPlaceholderText });
-                                        dropdown.SetUIInputState(InputUIState.Disabled);
+                                        dropdown.SetContent(new List<string> { contentGroup.placeHolder });
+                                        dropdown.SetUIInputState(contentGroup.state);
                                     }
                                 });
 
@@ -13544,10 +13541,8 @@ namespace Com.RedicalGames.Filar
 
                             case InputDropDownActionType.SortingList:
 
-                                Helpers.StringListValueValid(contents, hasContentsCallbackResults => 
+                                Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
                                 {
-                                    string sortPlaceholderText = "Sort";
-
                                     if (hasContentsCallbackResults.Success())
                                     {
                                         dropdown.value.ClearOptions();
@@ -13555,7 +13550,7 @@ namespace Com.RedicalGames.Filar
 
                                         List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                        foreach (var sort in contents)
+                                        foreach (var sort in contentGroup.contents)
                                             dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
 
                                         dropdown.value.AddOptions(dropdownOption);
@@ -13586,8 +13581,8 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        dropdown.SetContent(new List<string> { sortPlaceholderText });
-                                        dropdown.SetUIInputState(InputUIState.Disabled);
+                                        dropdown.SetContent(new List<string> { contentGroup.placeHolder });
+                                        dropdown.SetUIInputState(contentGroup.state);
                                     }
                                 });
 
@@ -14507,7 +14502,11 @@ namespace Com.RedicalGames.Filar
                 Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults =>
                 {
                     if (validComponentCallbackResults.Success())
+                    {
+                        LogInfo($"========================>>>>>>>>>>> Filter Index : {dropdownIndex}", this);
+
                         SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
+                    }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                 });
@@ -14518,7 +14517,10 @@ namespace Com.RedicalGames.Filar
                 Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults => 
                 {
                     if (validComponentCallbackResults.Success())
+                    {
+                        LogInfo($"========================>>>>>>>>>>> Sorting Index : {dropdownIndex}", this);
                         SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
+                    }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                 });
