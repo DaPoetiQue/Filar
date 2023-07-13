@@ -3732,6 +3732,84 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class UISelectableGroup
+        {
+            #region Components
+
+            public Enum groupID;
+            public List<UISelectable> selectables = new List<UISelectable>();
+
+            #endregion
+
+            #region Main
+
+            public UISelectableGroup()
+            {
+
+            }
+
+            public UISelectableGroup(Enum groupID, List<UISelectable> selectables)
+            {
+                this.groupID = groupID;
+                this.selectables = selectables;
+            }
+
+            public Enum GetGroupID()
+            {
+                return groupID;
+            }
+
+            public List<UISelectable> GetSelectables()
+            {
+                return selectables;
+            }
+
+            public void AddSelectable(UISelectable selectable, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (!selectables.Contains(selectable))
+                {
+                    selectable.Initialize();
+
+                    selectables.Add(selectable);
+
+                    callbackResults.results = $"Selectable : {selectable.name} Added.";
+                    callbackResults.resultsCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Selectable ALready Exists";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void Select(UISelectable selectable)
+            {
+               if(selectables.Contains(selectable))
+                {
+                    foreach (var item in selectables)
+                    {
+                        if (item == selectable)
+                            item.Select();
+                        else
+                            item.Deselect();
+                    }
+                }
+            }
+
+            public void DeselectAll()
+            {
+                foreach (var selectable in selectables)
+                    selectable.Deselect();
+            }
+
+            #endregion
+        }
+
+        [Serializable]
         public class ProjectStructureSelectionSystem : ProjectData
         {
             #region Components
@@ -3745,6 +3823,10 @@ namespace Com.RedicalGames.Filar
             //[HideInInspector]
             [Space(5)]
             public FocusedSelectionData cachedSelectionData = new FocusedSelectionData();
+
+            //[HideInInspector]
+            [Space(5)]
+            public Dictionary<Enum, UISelectableGroup> selectableUIGroups = new Dictionary<Enum, UISelectableGroup>();
 
             //[Space(5)]
             //public List<string> cachedSelectables = new List<string>();
@@ -4855,9 +4937,120 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public List<AppData.FocusedSelectionStateInfo> GetSelectionStates()
+            public List<FocusedSelectionStateInfo> GetSelectionStates()
             {
                 return selectionStates;
+            }
+
+            public void AddSelectableScreenUI(Enum groupID, UISelectable selectable, Action<CallbackData<UISelectableGroup>> callback)
+            {
+                CallbackData<UISelectableGroup> callbackResults = new CallbackData<UISelectableGroup>();
+
+                if (selectable != null)
+                {
+                    if(!selectableUIGroups.ContainsKey(groupID))
+                    {
+                        UISelectableGroup group = new UISelectableGroup{ groupID = groupID };
+
+                        group.AddSelectable(selectable, selectableAddedCallbackResults => 
+                        {
+                            callbackResults.results = selectableAddedCallbackResults.results;
+                            callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
+
+                            if (callbackResults.Success())
+                            {
+                                selectableUIGroups.Add(groupID, group);
+                                callbackResults.data = group;
+                            }
+                        });
+                    }
+                    else
+                    {
+                        if (selectableUIGroups.TryGetValue(groupID, out UISelectableGroup group))
+                        { 
+                            if (!group.selectables.Contains(selectable))
+                            {
+                                group.AddSelectable(selectable, selectableAddedCallbackResults => 
+                                {
+                                    callbackResults.results = selectableAddedCallbackResults.results;
+                                    callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
+
+                                    if(callbackResults.Success())
+                                        callbackResults.data = group;
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Selectable : {selectable.name} Already Exists In UI Group ID : {groupID}.";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Failed To Get Selectable UI Group ID : {groupID}.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "Selectable Component Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+
+
+            //public List<ISelectableUIComponent<SceneDataPackets>> GetSelectableScreenUIList()
+            //{
+            //    return selectableScreenUIList;
+            //}
+
+            public void SelectScreenUI(IUIComponent<SceneDataPackets> selectable, Action<CallbackData<IUIComponent<SceneDataPackets>>> callback)
+            {
+                CallbackData<IUIComponent<SceneDataPackets>> callbackResults = new CallbackData<IUIComponent<SceneDataPackets>>();
+
+                if(selectableUIGroups != null && selectableUIGroups.Count > 0)
+                {
+                    bool selected = false;
+
+                    //foreach (var selectableUI in selectableScreenUIList)
+                    //{
+                    //    if (selectableUI == selectable)
+                    //    {
+                    //        selectableUI.Select();
+                    //        selected = true;
+                    //    }
+                    //    else
+                    //        selectableUI.Deselect();
+                    //}
+
+                    if (selected)
+                    {
+                        callbackResults.results = $"Selected Screen UI.";
+                        callbackResults.data = selectable;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = "Couldn't Find Selectable UI.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Selectable Screen List Data.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
             }
 
             #endregion
@@ -6089,20 +6282,11 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public abstract class UIInputComponent<T, U, V> : IUIInputComponent<V> where T : UnityEngine.Object
+        public abstract class UISelectable: ISelectable
         {
             #region Components
 
             public string name;
-
-            [Space(5)]
-            public TMP_Text fieldName;
-
-            [Space(5)]
-            public List<UIImageDisplayer> fieldUIImageList;
-
-            [Space(5)]
-            public T value;
 
             [Space(5)]
             public List<SelectionState> selectionStates = new List<SelectionState>
@@ -6137,19 +6321,93 @@ namespace Com.RedicalGames.Filar
             };
 
             [Space(5)]
-            public U dataPackets;
+            public bool selectable;
 
             [Space(5)]
-            public StatelessChildWidgets widgets;
-
-            [Space(5)]
-            public bool selectableInput;
+            public GameObject selectionFrame;
 
             [Space(5)]
             public InputUIState inputState;
 
+            #endregion
+
+            #region Main
+
+            public (bool success, bool selectable, bool hasValue) Selectable()
+            {
+                return (success: (selectable && selectionFrame != null), selectable: selectable,  hasValue: selectionFrame != null);
+            }
+
+            #region Events
+
+            public delegate void EventsListeners(InputDropDownActionType actionType);
+
+            public event EventsListeners _AddInputEventListener;
+
+            protected void TriggerEvent(InputDropDownActionType actionType) => _AddInputEventListener?.Invoke(actionType);
+
+            public void Initialize() => InitializeSelectable();
+
+            public void Select()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Deselect()
+            {
+                throw new NotImplementedException();
+            }
+
+            public InputUIState GetSelectionState()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnInputSelected()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnInputDeselected()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnInputPointerDownEvent()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+
+            #region Abstracts
+
+            public abstract void InitializeSelectable();
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public abstract class UIInputComponent<T, U, D> : UISelectable, IUIComponent<D> where T : UnityEngine.Object
+        {
+            #region Components
+
             [Space(5)]
-            public GameObject selectionFrame;
+            public TMP_Text fieldName;
+
+            [Space(5)]
+            public List<UIImageDisplayer> fieldUIImageList;
+
+            [Space(5)]
+            public T value;
+
+            [Space(5)]
+            public U dataPackets;
+
+            [Space(5)]
+            public StatelessChildWidgets widgets;
 
             [Space(5)]
             public bool initialVisibilityState;
@@ -6239,7 +6497,7 @@ namespace Com.RedicalGames.Filar
             /// </summary>
             public abstract void OnInputDeselected();
 
-            public abstract void SetUIInputState(V input, InputUIState state);
+            public abstract void SetUIInputState(D input, InputUIState state);
 
             /// <summary>
             /// This Function Is Fired When A Ponter Is Down On A UI Input.
@@ -6292,17 +6550,8 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
-
-            #region Events
-
-            public delegate void EventsListeners(InputDropDownActionType actionType);
-
-            public event EventsListeners _AddInputEventListener;
-
-            protected void TriggerEvent(InputDropDownActionType actionType) => _AddInputEventListener?.Invoke(actionType);
-
-            #endregion
         }
+
 
         [Serializable]
         public abstract class SelectableUIInputComponent<T, U, V> : AppMonoBaseClass, IPointerDownHandler where T : Component
@@ -6456,7 +6705,7 @@ namespace Com.RedicalGames.Filar
                 {
                     case InputUIState.Deselect:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             Debug.LogError("---------------------> Set UI Input Selection State...........");
 
@@ -6480,7 +6729,7 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             Debug.LogError($"--> Set UI State : {state}");
                             SetUIInputVisibilityState(true);
@@ -6579,6 +6828,11 @@ namespace Com.RedicalGames.Filar
                     Debug.LogError("Button Value Missing.");
             }
 
+            public override void InitializeSelectable()
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion
         }
 
@@ -6600,7 +6854,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (IsInitialized())
                 {
-                    if (selectableInput)
+                    if (selectable)
                     {
                         if (value.gameObject.GetComponent<SelectableInputDropdownHandler>() == null)
                         {
@@ -6763,7 +7017,7 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             if (selectionFrame)
                                 selectionFrame.SetActive(true);
@@ -6773,7 +7027,7 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Deselected:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             if (selectionFrame)
                                 selectionFrame.SetActive(false);
@@ -6850,6 +7104,12 @@ namespace Com.RedicalGames.Filar
             }
 
             public void SetArrowIconState(bool state) => arrowIcon?.gameObject?.SetActive(state);
+
+            public override void InitializeSelectable()
+            {
+                throw new NotImplementedException();
+            }
+
 
             #endregion
         }
@@ -7084,7 +7344,7 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             if (inputState == InputUIState.Hidden)
                                 SetUIInputVisibilityState(true);
@@ -7161,6 +7421,11 @@ namespace Com.RedicalGames.Filar
             }
 
             public override void SetFieldColor(Color color)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void InitializeSelectable()
             {
                 throw new NotImplementedException();
             }
@@ -7287,7 +7552,7 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             if (inputState == InputUIState.Hidden)
                                 SetUIInputVisibilityState(true);
@@ -7361,6 +7626,11 @@ namespace Com.RedicalGames.Filar
             }
 
             public override void SetFieldColor(Color color)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void InitializeSelectable()
             {
                 throw new NotImplementedException();
             }
@@ -7459,6 +7729,11 @@ namespace Com.RedicalGames.Filar
                     this.value.text = value;
                 else
                     Debug.LogWarning("--> SetScreenUITextValue Failed - Value Is Missing / Null.");
+            }
+
+            public override void InitializeSelectable()
+            {
+                throw new NotImplementedException();
             }
 
             #endregion
@@ -7565,7 +7840,7 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectableInput)
+                        if (selectable)
                         {
                             if (inputState == InputUIState.Hidden)
                                 SetUIInputVisibilityState(true);
@@ -7639,6 +7914,11 @@ namespace Com.RedicalGames.Filar
             }
 
             public override void SetFieldColor(Color color)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void InitializeSelectable()
             {
                 throw new NotImplementedException();
             }
@@ -7805,6 +8085,11 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetFieldColor Failed : fieldUIImageList Values Are Null / Empty.");
             }
 
+            public override void InitializeSelectable()
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion
         }
 
@@ -7931,6 +8216,11 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
+            public override void InitializeSelectable()
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion
         }
 
@@ -7958,6 +8248,11 @@ namespace Com.RedicalGames.Filar
             }
 
             public override bool GetUIInputVisibilityState()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void InitializeSelectable()
             {
                 throw new NotImplementedException();
             }
@@ -9828,6 +10123,7 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
+
 
         [Serializable]
         public class FocusedSelectionInfoData
@@ -13000,38 +13296,35 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (dropdown.value != null)
                                         {
-                                            dropdown.Initialize(dropdown.dataPackets);
-                                            dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
+                                            if (dropdown.Selectable().success)
+                                            {
+                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                {
+                                                    structureCallbackResults.data.AddSelectableScreenUI(screenType, dropdown, selectableCallbackResults =>
+                                                    {
+                                                        Log(selectableCallbackResults.resultsCode, $"====================>>>>>>>>>>>>>>>>>>> Selectable Results : {selectableCallbackResults.results}", this);
+
+                                                        if (selectableCallbackResults.Success())
+                                                        {
+
+                                                        }
+                                                        else
+                                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                    });
+                                                });
+                                            }
+                                            else
+                                            {
+                                                string results = (dropdown.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                                if (dropdown.Selectable().selectable)
+                                                    LogError($"Dropdown : {dropdown.name} - {results}", this);
+                                                else
+                                                    LogInfo($"Dropdown : {dropdown.name} - {results}", this);
+                                            }
 
                                             switch (dropdown.dataPackets.action)
                                             {
-                                                case InputDropDownActionType.FilterList:
-
-                                                    //var filterContent = (screenType == UIScreenType.ProjectSelectionScreen)? SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_") : SceneAssetsManager.Instance.GetDropdownContent<AssetCategoryType>();
-
-                                                    //LogSuccess($"===============> Found : {filterContent.data.Count}", this);
-
-                                                    //foreach (var item in filterContent.data)
-                                                    //    LogSuccess($"===============> Found Item : {item}", this);
-
-                                                    //if (filterContent.data != null)
-                                                    //{
-                                                    //    dropdown.value.ClearOptions();
-
-                                                    //    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
-
-                                                    //    foreach (var filter in filterContent.data)
-                                                    //        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
-
-                                                    //    dropdown.value.AddOptions(dropdownOption);
-
-                                                    //    dropdown.value.onValueChanged.AddListener((value) => OnDropDownFilterOptions(value));
-                                                    //}
-                                                    //else
-                                                    //    Debug.LogWarning($"--> Filter List For Asset Screen : {gameObject.name} Value Is Null.");
-
-                                                    break;
-
                                                 case InputDropDownActionType.SceneAssetRenderMode:
 
                                                     var rendererContent = SceneAssetsManager.Instance.GetDropdownContent<SceneAssetRenderMode>();
@@ -13051,28 +13344,6 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                     else
                                                         Debug.LogWarning($"--> Filter List For Asset Screen : {gameObject.name} Value Is Null.");
-
-                                                    break;
-
-                                                case InputDropDownActionType.SortingList:
-
-                                                    //var sortingContent = SceneAssetsManager.Instance.GetDropdownContent<SortType>();
-
-                                                    //if (sortingContent.data != null)
-                                                    //{
-                                                    //    dropdown.value.ClearOptions();
-
-                                                    //    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
-
-                                                    //    foreach (var sort in sortingContent.data)
-                                                    //        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
-
-                                                    //    dropdown.value.AddOptions(dropdownOption);
-
-                                                    //    dropdown.value.onValueChanged.AddListener((value) => OnDropDownSortingOptions(value));
-                                                    //}
-                                                    //else
-                                                    //    Debug.LogWarning($"--> Sort List For Asset Screen : {gameObject.name} Value Is Null.");
 
                                                     break;
                                             }
@@ -14599,47 +14870,38 @@ namespace Com.RedicalGames.Filar
 
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
-                var dropdown = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectableInput && x.GetInteractableState());
-                var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectableInput && x.GetInteractableState());
+                var dropdown = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectable && x.GetInteractableState());
+                var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectable && x.GetInteractableState());
 
-                Helpers.UIActionDropdownComponentValid(dropdown, hasComponentCallbackResults => 
-                {
-                    if (hasComponentCallbackResults.Success())
-                        dropdown.SetUIInputState(InputUIState.Selected);
-                    else
-                        Log(hasComponentCallbackResults.resultsCode, "Dropdown Component Not Found.", this);
-                });
+                if (dropdown != null)
+                    dropdown.SetUIInputState(InputUIState.Selected);
+                else
+                    LogError("Dropdown Component Not Found.", this);
 
-               Helpers.UIActionDropdownComponentsValid(dropdowns, hasComponentsCallbackResults => 
+                if (dropdowns != null && dropdowns.Count > 0)
                 {
-                    if (hasComponentsCallbackResults.Success())
+                    if (dropdowns != null && dropdowns.Count > 0)
                     {
-                        if (dropdowns != null && dropdowns.Count > 0)
+                        foreach (var dropdownContent in dropdowns)
                         {
-                            foreach (var dropdown in dropdowns)
+                            if (dropdownContent != null)
                             {
-                                if (dropdown != null)
+                                if (dropdownContent.GetUIInputState() == InputUIState.Selected)
                                 {
-                                    if (dropdown.GetUIInputState() == InputUIState.Selected)
-                                    {
-                                        dropdown.SetUIInputState(InputUIState.Deselected);
-                                        dropdown.value.Hide();
-                                    }
+                                    dropdownContent.SetUIInputState(InputUIState.Deselected);
+                                    dropdownContent.value.Hide();
                                 }
-                                else
-                                {
-                                    LogError("Dropdown Components Were Not Found.", this);
-                                    break;
-                                }
+                            }
+                            else
+                            {
+                                LogError("Dropdown Components Were Not Found.", this);
+                                break;
                             }
                         }
                     }
-                    else
-                        Log(hasComponentsCallbackResults.resultsCode, "On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
-                });
-
-
-                
+                }
+                else
+                    LogError("On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
             }
 
             #endregion
@@ -16033,46 +16295,49 @@ namespace Com.RedicalGames.Filar
 
                 #region Initialize Dropdowns
 
-                if(dropdowns != null && dropdowns.Count > 0)
+                if (dropdowns != null && dropdowns.Count > 0)
                 {
                     foreach (var dropdown in dropdowns)
                     {
                         if (dropdown.value != null)
                         {
-                            dropdown.Initialize(dropdown.dataPackets);
-                            dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
+                            if (dropdown.Selectable().success)
+                            {
+                                //dropdown.Initialize(dropdown.dataPackets);
+                                //dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
 
-                            //dropdown.value.ClearOptions();
+                                LogInfo($"====================>>>>>>>>>>>>>>>>>>> Selectable : {dropdown.name}", this);
 
-                            //List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    Log(structureCallbackResults.resultsCode, $"====================>>>>>>>>>>>>>>>>>>> Selectable Results : {structureCallbackResults.results}", this);
 
-                            //DropDownContentData dropDownContent = new DropDownContentData();
+                                    structureCallbackResults.data.AddSelectableScreenUI(type, dropdown, selectableCallbackResults =>
+                                    {
+                                        Log(selectableCallbackResults.resultsCode, $"====================>>>>>>>>>>>>>>>>>>> Selectable Results : {selectableCallbackResults.results}", this);
 
-                            //switch (dropdown.dataPackets.action)
-                            //{
-                            //    case InputDropDownActionType.ProjectType:
+                                        if (selectableCallbackResults.Success())
+                                        {
 
-                            //        dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectCategoryType>("Project_", "Project", "All");
+                                        }
+                                        else
+                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (dropdown.Selectable().selectable)? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector."  : "Is Not Set To Selectable Input";
 
-                            //        break;
-
-                            //    case InputDropDownActionType.ProjectTamplate:
-
-                            //        dropDownContent = SceneAssetsManager.Instance.GetDropdownContent<ProjectTamplateType>();
-
-                            //        break;
-                            //}
-
-                            //foreach (var filter in dropDownContent.data)
-                            //    dropdownOption.Add(new TMP_Dropdown.OptionData() { text = filter });
-
-                            //dropdown.value.AddOptions(dropdownOption);
-                            //dropdown.value.onValueChanged.AddListener((value) => OnDropDownOptionValueChange(value, dropdown.dataPackets));
-
+                                if (dropdown.Selectable().selectable)
+                                    LogError($"Dropdown : {dropdown.name} - {results}", this);
+                                else
+                                    LogInfo($"Dropdown : {dropdown.name} - {results}", this);
+                            }
                         }
                         else
                         {
-                            LogError($"Checkbox : {dropdown.name} Value Is Null.", this, () => Init());
+                            LogError($"Dropdown : {dropdown.name} Value Is Null.", this);
                             break;
                         }
                     }
@@ -18419,44 +18684,38 @@ namespace Com.RedicalGames.Filar
 
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
-                var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType && x.selectableInput && x.GetInteractableState());
-                var dropdonwContent = dropdowns.FindAll(x => x.dataPackets.action != actionType && x.selectableInput && x.GetInteractableState());
+                var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType && x.selectable && x.GetInteractableState());
+                var dropdownContent = dropdowns.FindAll(x => x.dataPackets.action != actionType && x.selectable && x.GetInteractableState());
 
-                Helpers.UIActionDropdownComponentValid(dropdown, hasComponentCallbackResults =>
-                {
-                    if (hasComponentCallbackResults.Success())
-                        dropdown.SetUIInputState(InputUIState.Selected);
-                    else
-                        Log(hasComponentCallbackResults.resultsCode, "Dropdown Component Not Found.", this);
-                });
+                if (dropdown != null)
+                    dropdown.SetUIInputState(InputUIState.Selected);
+                else
+                    LogError("Dropdown Component Not Found.", this);
 
-                Helpers.UIActionDropdownComponentsValid(dropdonwContent, hasComponentsCallbackResults =>
+                if (dropdownContent != null && dropdownContent.Count > 0)
                 {
-                    if (hasComponentsCallbackResults.Success())
+                    if (dropdownContent != null && dropdowns.Count > 0)
                     {
-                        if (dropdonwContent != null && dropdowns.Count > 0)
+                        foreach (var content in dropdownContent)
                         {
-                            foreach (var dropdown in dropdonwContent)
+                            if (content != null)
                             {
-                                if (dropdown != null)
+                                if (content.GetUIInputState() == InputUIState.Selected)
                                 {
-                                    if (dropdown.GetUIInputState() == InputUIState.Selected)
-                                    {
-                                        dropdown.SetUIInputState(InputUIState.Deselected);
-                                        dropdown.value.Hide();
-                                    }
+                                    content.SetUIInputState(InputUIState.Deselected);
+                                    content.value.Hide();
                                 }
-                                else
-                                {
-                                    LogError("Dropdown Components Were Not Found.", this);
-                                    break;
-                                }
+                            }
+                            else
+                            {
+                                LogError("Dropdown Components Were Not Found.", this);
+                                break;
                             }
                         }
                     }
-                    else
-                        Log(hasComponentsCallbackResults.resultsCode, "On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
-                });
+                }
+                else
+                    LogError("On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
             }
 
             #endregion
@@ -19249,7 +19508,7 @@ namespace Com.RedicalGames.Filar
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
                 foreach (var dropdown in actionDropdownList)
-                    if (dropdown.dataPackets.action != actionType && dropdown.selectableInput)
+                    if (dropdown.dataPackets.action != actionType && dropdown.selectable)
                         dropdown.value.Hide();
             }
 
@@ -23310,23 +23569,23 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void UIActionInputFieldComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<InputField, InputFieldDataPackets, UIDropDown<InputFieldDataPackets>>
-            {
-                Callback callbackResults = new Callback();
+            //public static void UIActionInputFieldComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<InputField, InputFieldDataPackets, UIDropDown<InputFieldDataPackets>>
+            //{
+            //    Callback callbackResults = new Callback();
 
-                if (component != null)
-                {
-                    callbackResults.results = $"Components : {component.name} Is Valid.";
-                    callbackResults.resultsCode = SuccessCode;
-                }
-                else
-                {
-                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
-                }
+            //    if (component != null)
+            //    {
+            //        callbackResults.results = $"Components : {component.name} Is Valid.";
+            //        callbackResults.resultsCode = SuccessCode;
+            //    }
+            //    else
+            //    {
+            //        callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
+            //        callbackResults.resultsCode = ErrorCode;
+            //    }
 
-                callback.Invoke(callbackResults);
-            }
+            //    callback.Invoke(callbackResults);
+            //}
 
             public static void UIActionDropdownComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownDataPackets, UIDropDown<DropdownDataPackets>>
             {
@@ -24124,6 +24383,26 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        public interface ISelectable
+        {
+            #region Selections
+
+            void OnInputSelected();
+
+            void OnInputDeselected();
+
+            void OnInputPointerDownEvent();
+
+            void Initialize();
+
+            void Select();
+            void Deselect();
+
+            InputUIState GetSelectionState();
+
+            #endregion
+        }
+
         public interface IUIScreenData
         {
             void Init(Action<CallbackData<ScreenUIData>> callBack = null);
@@ -24141,7 +24420,7 @@ namespace Com.RedicalGames.Filar
             UIScreenType GetUIScreenType();
         }
 
-        public interface IUIInputComponent<V>
+        public interface IUIComponent<V>
         {
             void SetTitle(string title);
 
@@ -24162,12 +24441,6 @@ namespace Com.RedicalGames.Filar
             InputUIState GetUIInputState();
 
             void SetChildWidgetsState(bool interactable, bool isSelected);
-
-            void OnInputSelected();
-
-            void OnInputDeselected();
-
-            void OnInputPointerDownEvent();
         }
 
         public interface ISettingsWidget
