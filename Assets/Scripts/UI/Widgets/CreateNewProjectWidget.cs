@@ -165,11 +165,7 @@ namespace Com.RedicalGames.Filar
                         if (restrictionCallbackResults.Success())
                         {
                             newProjectStructureData = newProjectCallbackResults.data;
-
-                            var projectType = (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
-
-                            SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
-                            SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
+         
                             SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name");
 
                             OnClearInputFieldValue(AppData.InputFieldActionType.AssetNameField);
@@ -203,6 +199,11 @@ namespace Com.RedicalGames.Filar
                             }
 
                             SetActionDropdownContent(projectTypeContentParam, projectTemplateContentParam);
+
+                            var projectType = (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
+
+                            SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectType, projectType);
+                            SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
                         }
                         else
                             Log(restrictionCallbackResults.resultsCode, restrictionCallbackResults.results, this);
