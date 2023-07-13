@@ -3771,6 +3771,7 @@ namespace Com.RedicalGames.Filar
                 if (!selectables.Contains(selectable))
                 {
                     selectable.Initialize();
+                    selectable._OnSelectableActionEvent += Select;
 
                     selectables.Add(selectable);
 
@@ -3790,12 +3791,28 @@ namespace Com.RedicalGames.Filar
             {
                if(selectables.Contains(selectable))
                 {
-                    foreach (var item in selectables)
+                    var selected = selectables.FindAll(x => x.GetSelectionState() != InputUIState.Normal);
+
+                    if(selected != null && selected.Count > 0)
                     {
-                        if (item == selectable)
-                            item.Select();
+                        foreach (var item in selected)
+                        {
+                            if (item.GetSelectionState() != InputUIState.Disabled)
+                            {
+                                if (item.inputType == InputType.DropDown)
+                                    item.Collapse();
+                                else
+                                    item.Deselect();
+                            }
+                        }
+                    }
+
+                    if (selectable.GetSelectionState() != InputUIState.Disabled)
+                    {
+                        if (selectable.inputType == InputType.DropDown)
+                            selectable.Expand();
                         else
-                            item.Deselect();
+                            selectable.Select();
                     }
                 }
             }
@@ -3827,12 +3844,6 @@ namespace Com.RedicalGames.Filar
             //[HideInInspector]
             [Space(5)]
             public Dictionary<Enum, UISelectableGroup> selectableUIGroups = new Dictionary<Enum, UISelectableGroup>();
-
-            //[Space(5)]
-            //public List<string> cachedSelectables = new List<string>();
-
-            //[Space(5)]
-            //public List<UIScreenWidget<SceneDataPackets>> currentSelections = new List<UIScreenWidget<SceneDataPackets>>();
 
             public Action<SceneDataPackets> OnSelection { get; set; }
             public Action OnDeselection { get; set; }
@@ -6327,6 +6338,9 @@ namespace Com.RedicalGames.Filar
             public GameObject selectionFrame;
 
             [Space(5)]
+            public InputType inputType;
+
+            [HideInInspector]
             public InputUIState inputState;
 
             #endregion
@@ -6340,27 +6354,38 @@ namespace Com.RedicalGames.Filar
 
             #region Events
 
-            public delegate void EventsListeners(InputDropDownActionType actionType);
+            public delegate void EventsListeners(UISelectable selectable);
 
-            public event EventsListeners _AddInputEventListener;
+            public event EventsListeners _OnSelectableActionEvent;
 
-            protected void TriggerEvent(InputDropDownActionType actionType) => _AddInputEventListener?.Invoke(actionType);
+            protected void InvokeSelection(UISelectable selectable) => _OnSelectableActionEvent?.Invoke(selectable);
 
-            public void Initialize() => InitializeSelectable();
+            public void Initialize() => SelectableInit();
 
             public void Select()
             {
-                throw new NotImplementedException();
+                if (selectionFrame)
+                    selectionFrame.SetActive(true);
+
+                inputState = InputUIState.Selected;
             }
 
             public void Deselect()
             {
-                throw new NotImplementedException();
+                if (selectionFrame)
+                    selectionFrame.SetActive(false);
+
+                inputState = InputUIState.Normal;
+            }
+
+            public void SetSelectionState(InputUIState state)
+            {
+
             }
 
             public InputUIState GetSelectionState()
             {
-                throw new NotImplementedException();
+                return inputState;
             }
 
             public void OnInputSelected()
@@ -6378,11 +6403,21 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
+            public void Expand() => Select();
+
+            public void Collapse()
+            {
+                Deselect();
+                OnCollapse();
+            }
+
             #endregion
 
             #region Abstracts
 
-            public abstract void InitializeSelectable();
+            public abstract void SelectableInit();
+
+            public abstract void OnCollapse();
 
             #endregion
 
@@ -6828,7 +6863,12 @@ namespace Com.RedicalGames.Filar
                     Debug.LogError("Button Value Missing.");
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
             {
                 throw new NotImplementedException();
             }
@@ -6849,38 +6889,6 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Main
-
-            public void Initialize(DropdownDataPackets dataPackets)
-            {
-                if (IsInitialized())
-                {
-                    if (selectable)
-                    {
-                        if (value.gameObject.GetComponent<SelectableInputDropdownHandler>() == null)
-                        {
-                            SelectableInputDropdownHandler handler = value.gameObject.AddComponent<SelectableInputDropdownHandler>();
-
-                            if (handler)
-                            {
-                                handler.Init(this, initializedCallbackResults => 
-                                {
-                                    if (initializedCallbackResults.Success())
-                                    {
-                                        if (selectionFrame)
-                                            selectionFrame.SetActive(false);
-                                    }
-                                    else
-                                        Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
-                                });
-                            }
-                            else
-                                Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
-                        }
-
-                        action = dataPackets.action;
-                    }
-                }
-            }
 
             bool IsInitialized()
             {
@@ -7096,7 +7104,7 @@ namespace Com.RedicalGames.Filar
                     SetUIInputState(state);
             }
 
-            public override void OnInputPointerDownEvent() => TriggerEvent(action);
+            public override void OnInputPointerDownEvent() => InvokeSelection(this);
 
             public override void SetFieldColor(Color color)
             {
@@ -7105,11 +7113,32 @@ namespace Com.RedicalGames.Filar
 
             public void SetArrowIconState(bool state) => arrowIcon?.gameObject?.SetActive(state);
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
-                throw new NotImplementedException();
+                if (value.gameObject.GetComponent<SelectableInputDropdownHandler>() == null)
+                {
+                    SelectableInputDropdownHandler handler = value.gameObject.AddComponent<SelectableInputDropdownHandler>();
+
+                    if (handler)
+                    {
+                        handler.Init(this, initializedCallbackResults =>
+                        {
+                            if (initializedCallbackResults.Success())
+                                Deselect();
+                            else
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                        });
+                    }
+                    else
+                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                }
             }
 
+            public override void OnCollapse()
+            {
+                Debug.Log($"==============>>>>>>>>>>>> Collapsing Dropdown : {name}");
+                value.Hide();
+            }
 
             #endregion
         }
@@ -7425,9 +7454,14 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
+            {
+
             }
 
             #endregion
@@ -7630,9 +7664,14 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
+            {
+
             }
 
             #endregion
@@ -7731,9 +7770,14 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetScreenUITextValue Failed - Value Is Missing / Null.");
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
+            {
+
             }
 
             #endregion
@@ -7918,9 +7962,14 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
+            {
+
             }
 
             #endregion
@@ -7956,7 +8005,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initialize()
+            new public void Initialize()
             {
                 if (IsInitialized())
                 {
@@ -8085,9 +8134,14 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetFieldColor Failed : fieldUIImageList Values Are Null / Empty.");
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
+            {
+
             }
 
             #endregion
@@ -8216,9 +8270,14 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
+            }
+
+            public override void OnCollapse()
+            {
+
             }
 
             #endregion
@@ -8237,6 +8296,12 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+
+
+            #endregion
+
+            #region Main
+
             public override bool GetInteractableState()
             {
                 throw new NotImplementedException();
@@ -8252,14 +8317,15 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public override void InitializeSelectable()
+            public override void SelectableInit()
             {
                 throw new NotImplementedException();
             }
 
-            #endregion
+            public override void OnCollapse()
+            {
 
-            #region Main
+            }
 
             public override void OnInputDeselected()
             {
@@ -19480,8 +19546,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropdown.value != null)
                         {
-                            dropdown.Initialize(dropdown.dataPackets);
-                            dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
+                            //dropdown.Initialize(dropdown.dataPackets);
+                            //dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
 
                             callbackResults.results = "OnActionDropdownInitialized Initialized Sucess : actionDropdownList Buttons Initialized.";
                             callbackResults.resultsCode = Helpers.SuccessCode;
@@ -24397,6 +24463,11 @@ namespace Com.RedicalGames.Filar
 
             void Select();
             void Deselect();
+
+            void Expand();
+            void Collapse();
+
+            void SetSelectionState(InputUIState state);
 
             InputUIState GetSelectionState();
 
