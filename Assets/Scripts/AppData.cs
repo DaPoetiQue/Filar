@@ -18824,6 +18824,37 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
             }
 
+            protected void GetInputField(InputFieldActionType actionType, Action<CallbackData<UISelectable>> callback)
+            {
+                CallbackData<UISelectable> callbackResults = new CallbackData<UISelectable>();
+
+                if(inputs != null && inputs.Count > 0)
+                {
+                    UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
+
+                    if (input.value != null)
+                    {
+                        callbackResults.results = $"Found Input Field : {input.name} Of Type : {actionType}";
+                        callbackResults.data = input;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Find Input Field Of Type : {actionType}";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Inputs Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
             protected void OnInputFieldValidation(ValidationResultsType results, InputFieldActionType actionType)
             {
                 if (inputs.Count > 0)
