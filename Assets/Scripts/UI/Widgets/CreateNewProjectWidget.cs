@@ -139,7 +139,22 @@ namespace Com.RedicalGames.Filar
                 case AppData.InputFieldActionType.AssetNameField:
 
                     if (newProjectStructureData != null)
+                    {
                         newProjectStructureData.name = value;
+
+                        OnDataValidation(newProjectStructureData, dataValidCallbackResults => 
+                        {
+                            if (dataValidCallbackResults.Success())
+                            {
+                                if(!string.IsNullOrEmpty(value))
+                                    OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+                                else
+                                    OnInputFieldValidation(AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
+                            }
+                            else
+                                Log(dataValidCallbackResults.resultsCode, dataValidCallbackResults.results, this);
+                        });
+                    }
                     else
                         LogError("New Folder Structure Data Is Null.", this);
 

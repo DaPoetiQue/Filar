@@ -272,6 +272,14 @@ namespace Com.RedicalGames.Filar
                         AppData.ActionEvents.OnScreenChangedEvent(currentScreen.value.GetUIScreenType());
                         HideScreens(currentScreen.value.GetUIScreenType());
                         canTransitionScreen = false;
+
+                        SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallback => 
+                        {
+                            if (selectionSystemCallback.Success())
+                                selectionSystemCallback.data.OnClearInputSelection();
+                            else
+                                Log(selectionSystemCallback.resultsCode, selectionSystemCallback.results, this);
+                        });
                     }
                 }
             }
