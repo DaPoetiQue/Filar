@@ -594,9 +594,6 @@ MonoBehaviour:
   imagenView: 12
   buttonComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -614,6 +611,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -657,20 +662,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -712,15 +730,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -738,6 +750,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -781,20 +801,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -833,21 +866,14 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
     uiValidationList: []
     characterLimit: 0
-    actionType: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -865,6 +891,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -908,20 +942,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -960,9 +1007,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
@@ -972,9 +1016,6 @@ MonoBehaviour:
     valueType: 0
   sliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -992,6 +1033,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -1035,20 +1084,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -1089,17 +1151,11 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -1117,6 +1173,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -1160,20 +1224,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -1212,18 +1289,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -1241,6 +1312,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -1284,20 +1363,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -1336,16 +1428,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
-    actionType: 0
+    arrowIcon: {fileID: 0}
   textComponentConfig:
     name: Date Displayer
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198097778112910}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -1363,6 +1449,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 5373198097778112910}
     dataPackets:
       selectionOption: 0
       screenType: 4
@@ -1406,20 +1500,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -1458,15 +1565,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 1
   imageComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -1484,6 +1585,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -1527,20 +1636,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -1582,9 +1704,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     imageType: 0
 --- !u!1 &5373198097988771764
@@ -1900,368 +2019,6 @@ MonoBehaviour:
     - {fileID: 2758972583201516121}
     - {fileID: 2537755326200273441}
     initialize: 1
-  actionInputFieldList: []
-  textDisplayerList:
-  - name: Project Name Displayer
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198098692927745}
-    selectionStates:
-    - name: Normal State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 0
-    - name: Selected State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 3
-    - name: Enabled State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 1
-    - name: Disabled State
-      value: {fileID: 0}
-      color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
-      state: 2
-    dataPackets:
-      selectionOption: 0
-      screenType: 0
-      layoutViewType: 2
-      containerType: 0
-      stateType: 0
-      notification:
-        title: 
-        message: 
-        notificationType: 0
-        screenType: 0
-        screenPosition: 0
-        blurScreen: 0
-        blurLayer: 0
-        delay: 0
-        duration: 0
-        showNotifications: 0
-        proccessed: 0
-      screenWidgetPrefab: {fileID: 0}
-      dynamicWidgetsContainer: {fileID: 0}
-      clearContentContainer: 0
-      resetContentContainerPose: 0
-      scaleSceneAsset: 0
-      keepAssetWorldPose: 0
-      keepAssetCentered: 0
-      sceneAsset:
-        name: 
-        modelAsset: {fileID: 0}
-        info:
-          fields: []
-        sceneObject:
-          info:
-            fields: []
-          value: {fileID: 0}
-        materialProperties:
-          mainTexturePath: 
-          normalMapTexturePath: 
-          aoMapTexturePath: 
-          glossiness: 0
-          bumpScale: 0
-          aoStrength: 0
-        sceneScale: 0
-        description: 
-        currentAssetMode: 0
-        creationDateTime: 
-        hasMLTFile: 0
-        storageData:
-          name: 
-          type: 0
-          path: 
-          directory: 
-        assetFields: []
-        dontShowMetadataWidget: 0
-        categoryType: 0
-        defaultWidgetActionState: 0
-        assetImportPosition: {x: 0, y: 0, z: 0}
-        assetImportRotation: {x: 0, y: 0, z: 0}
-      sceneAssetScaleValueType: 0
-      dynamicWidgetsContainerOrientation: 0
-      widgetType: 0
-      widgetScreenPosition: {x: 0, y: 0}
-      assetFieldConfiguration: 0
-      storageDirectoryType: 0
-      folderStructureType: 0
-      requiredPermission: 0
-      screenRefreshLoadingItemType: 0
-      sceneMode: 0
-      sceneAssetMode: 0
-      blurScreen: 0
-      blurContainerLayerType: 0
-      screenViewState: 0
-      refreshScreenOnLoad: 0
-      refreshSceneAssets: 0
-      refreshDuration: 0
-      widgetTitle: 
-      widgetTitleCharacterLimit: 0
-      popUpMessage: 
-      canTransitionScreen: 0
-      screenTransitionSpeed: 0
-      canTransitionSceneAsset: 0
-      overrideSceneAssetTargetPosition: 0
-      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-      overrideSceneAssetTransitionSpeed: 0
-      sceneAssetTransitionSpeed: 0
-      isRootFolder: 0
-      referencedActionButtonDataList: []
-      textType: 0
-      tabID: 0
-      visibilityState: 0
-    widgets:
-      objectWidget: []
-      buttonWidgets: []
-      toggleWidgets: []
-      textWidgets: []
-      imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
-    initialVisibilityState: 1
-  - name: Project Modified Date Displayer
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198097778112910}
-    selectionStates:
-    - name: Normal State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 0
-    - name: Selected State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 3
-    - name: Enabled State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 1
-    - name: Disabled State
-      value: {fileID: 0}
-      color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
-      state: 2
-    dataPackets:
-      selectionOption: 0
-      screenType: 0
-      layoutViewType: 2
-      containerType: 0
-      stateType: 0
-      notification:
-        title: 
-        message: 
-        notificationType: 0
-        screenType: 0
-        screenPosition: 0
-        blurScreen: 0
-        blurLayer: 0
-        delay: 0
-        duration: 0
-        showNotifications: 0
-        proccessed: 0
-      screenWidgetPrefab: {fileID: 0}
-      dynamicWidgetsContainer: {fileID: 0}
-      clearContentContainer: 0
-      resetContentContainerPose: 0
-      scaleSceneAsset: 0
-      keepAssetWorldPose: 0
-      keepAssetCentered: 0
-      sceneAsset:
-        name: 
-        modelAsset: {fileID: 0}
-        info:
-          fields: []
-        sceneObject:
-          info:
-            fields: []
-          value: {fileID: 0}
-        materialProperties:
-          mainTexturePath: 
-          normalMapTexturePath: 
-          aoMapTexturePath: 
-          glossiness: 0
-          bumpScale: 0
-          aoStrength: 0
-        sceneScale: 0
-        description: 
-        currentAssetMode: 0
-        creationDateTime: 
-        hasMLTFile: 0
-        storageData:
-          name: 
-          type: 0
-          path: 
-          directory: 
-        assetFields: []
-        dontShowMetadataWidget: 0
-        categoryType: 0
-        defaultWidgetActionState: 0
-        assetImportPosition: {x: 0, y: 0, z: 0}
-        assetImportRotation: {x: 0, y: 0, z: 0}
-      sceneAssetScaleValueType: 0
-      dynamicWidgetsContainerOrientation: 0
-      widgetType: 0
-      widgetScreenPosition: {x: 0, y: 0}
-      assetFieldConfiguration: 0
-      storageDirectoryType: 0
-      folderStructureType: 0
-      requiredPermission: 0
-      screenRefreshLoadingItemType: 0
-      sceneMode: 0
-      sceneAssetMode: 0
-      blurScreen: 0
-      blurContainerLayerType: 0
-      screenViewState: 0
-      refreshScreenOnLoad: 0
-      refreshSceneAssets: 0
-      refreshDuration: 0
-      widgetTitle: 
-      widgetTitleCharacterLimit: 0
-      popUpMessage: 
-      canTransitionScreen: 0
-      screenTransitionSpeed: 0
-      canTransitionSceneAsset: 0
-      overrideSceneAssetTargetPosition: 0
-      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-      overrideSceneAssetTransitionSpeed: 0
-      sceneAssetTransitionSpeed: 0
-      isRootFolder: 0
-      referencedActionButtonDataList: []
-      textType: 0
-      tabID: 0
-      visibilityState: 0
-    widgets:
-      objectWidget: []
-      buttonWidgets: []
-      toggleWidgets: []
-      textWidgets: []
-      imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
-    initialVisibilityState: 1
-  - name: Project Type Displayer
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198098184839210}
-    selectionStates:
-    - name: Normal State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 0
-    - name: Selected State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 3
-    - name: Enabled State
-      value: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-      state: 1
-    - name: Disabled State
-      value: {fileID: 0}
-      color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
-      state: 2
-    dataPackets:
-      selectionOption: 0
-      screenType: 0
-      layoutViewType: 2
-      containerType: 0
-      stateType: 0
-      notification:
-        title: 
-        message: 
-        notificationType: 0
-        screenType: 0
-        screenPosition: 0
-        blurScreen: 0
-        blurLayer: 0
-        delay: 0
-        duration: 0
-        showNotifications: 0
-        proccessed: 0
-      screenWidgetPrefab: {fileID: 0}
-      dynamicWidgetsContainer: {fileID: 0}
-      clearContentContainer: 0
-      resetContentContainerPose: 0
-      scaleSceneAsset: 0
-      keepAssetWorldPose: 0
-      keepAssetCentered: 0
-      sceneAsset:
-        name: 
-        modelAsset: {fileID: 0}
-        info:
-          fields: []
-        sceneObject:
-          info:
-            fields: []
-          value: {fileID: 0}
-        materialProperties:
-          mainTexturePath: 
-          normalMapTexturePath: 
-          aoMapTexturePath: 
-          glossiness: 0
-          bumpScale: 0
-          aoStrength: 0
-        sceneScale: 0
-        description: 
-        currentAssetMode: 0
-        creationDateTime: 
-        hasMLTFile: 0
-        storageData:
-          name: 
-          type: 0
-          path: 
-          directory: 
-        assetFields: []
-        dontShowMetadataWidget: 0
-        categoryType: 0
-        defaultWidgetActionState: 0
-        assetImportPosition: {x: 0, y: 0, z: 0}
-        assetImportRotation: {x: 0, y: 0, z: 0}
-      sceneAssetScaleValueType: 0
-      dynamicWidgetsContainerOrientation: 0
-      widgetType: 0
-      widgetScreenPosition: {x: 0, y: 0}
-      assetFieldConfiguration: 0
-      storageDirectoryType: 0
-      folderStructureType: 0
-      requiredPermission: 0
-      screenRefreshLoadingItemType: 0
-      sceneMode: 0
-      sceneAssetMode: 0
-      blurScreen: 0
-      blurContainerLayerType: 0
-      screenViewState: 0
-      refreshScreenOnLoad: 0
-      refreshSceneAssets: 0
-      refreshDuration: 0
-      widgetTitle: 
-      widgetTitleCharacterLimit: 0
-      popUpMessage: 
-      canTransitionScreen: 0
-      screenTransitionSpeed: 0
-      canTransitionSceneAsset: 0
-      overrideSceneAssetTargetPosition: 0
-      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-      overrideSceneAssetTransitionSpeed: 0
-      sceneAssetTransitionSpeed: 0
-      isRootFolder: 0
-      referencedActionButtonDataList: []
-      textType: 0
-      tabID: 0
-      visibilityState: 0
-    widgets:
-      objectWidget: []
-      buttonWidgets: []
-      toggleWidgets: []
-      textWidgets: []
-      imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
-    initialVisibilityState: 1
   imageDisplayerList: []
   selectableComponent:
     selectionInfo:
@@ -2345,20 +2102,33 @@ MonoBehaviour:
         aoStrength: 0
       sceneScale: 0
       description: 
-      currentAssetMode: 0
-      creationDateTime: 
+      categoryType: 0
+      assetMode: 0
+      creationDateTime:
+        time: 
+        date: 
+        dateTime: 
+        second: 0
+        minute: 0
+        hour: 0
+        day: 
+        month: 
+        year: 
+        monthDay: 
+        dateTimeTick: 0
       hasMLTFile: 0
       storageData:
         name: 
         type: 0
         path: 
-        directory: 
+        projectDirectory: 
+        rootDirectory: 
       assetFields: []
       dontShowMetadataWidget: 0
-      categoryType: 0
       defaultWidgetActionState: 0
       assetImportPosition: {x: 0, y: 0, z: 0}
       assetImportRotation: {x: 0, y: 0, z: 0}
+    selectableAssetType: 0
     sceneAssetScaleValueType: 0
     dynamicWidgetsContainerOrientation: 0
     widgetType: 0
@@ -2424,9 +2194,6 @@ MonoBehaviour:
   imagenView: 12
   buttonComponentConfig:
     name: Action Button
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198097505893065}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -2444,6 +2211,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 1
+    visualizationType: 3
+    selectionFrame: {fileID: 5373198097524180253}
+    inputType: 1
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 5373198097505893065}
     dataPackets:
       selectionOption: 0
       screenType: 1
@@ -2487,20 +2262,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -2542,15 +2330,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -2568,6 +2350,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -2611,20 +2401,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -2663,21 +2466,14 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
     uiValidationList: []
     characterLimit: 0
-    actionType: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -2695,6 +2491,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -2738,20 +2542,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -2790,9 +2607,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
@@ -2802,9 +2616,6 @@ MonoBehaviour:
     valueType: 0
   sliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -2822,6 +2633,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -2865,20 +2684,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -2919,17 +2751,11 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -2947,6 +2773,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -2990,20 +2824,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3042,18 +2889,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3071,6 +2912,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -3114,20 +2963,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3166,16 +3028,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
-    actionType: 0
+    arrowIcon: {fileID: 0}
   textComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3193,6 +3049,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -3236,20 +3100,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3288,15 +3165,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
   imageComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3314,6 +3185,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -3357,20 +3236,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3412,9 +3304,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     imageType: 0
 --- !u!1 &5373198098184839208
@@ -3577,9 +3466,6 @@ MonoBehaviour:
   imagenView: 12
   buttonComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3597,6 +3483,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -3640,20 +3534,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3695,15 +3602,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3721,6 +3622,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -3764,20 +3673,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3816,21 +3738,14 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
     uiValidationList: []
     characterLimit: 0
-    actionType: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3848,6 +3763,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -3891,20 +3814,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -3943,9 +3879,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
@@ -3955,9 +3888,6 @@ MonoBehaviour:
     valueType: 0
   sliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -3975,6 +3905,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -4018,20 +3956,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4072,17 +4023,11 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -4100,6 +4045,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -4143,20 +4096,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4195,18 +4161,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -4224,6 +4184,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -4267,20 +4235,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4319,16 +4300,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
-    actionType: 0
+    arrowIcon: {fileID: 0}
   textComponentConfig:
     name: Project Type
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198098184839210}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -4346,6 +4321,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 5373198098184839210}
     dataPackets:
       selectionOption: 0
       screenType: 4
@@ -4389,20 +4372,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4441,15 +4437,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
   imageComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -4467,6 +4457,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -4510,20 +4508,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4565,9 +4576,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     imageType: 0
 --- !u!1 &5373198098692927751
@@ -4730,9 +4738,6 @@ MonoBehaviour:
   imagenView: 12
   buttonComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -4750,6 +4755,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -4793,20 +4806,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4848,15 +4874,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -4874,6 +4894,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -4917,20 +4945,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -4969,21 +5010,14 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeholderDisplayer: {fileID: 0}
     uiValidationList: []
     characterLimit: 0
-    actionType: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -5001,6 +5035,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -5044,20 +5086,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -5096,9 +5151,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
@@ -5108,9 +5160,6 @@ MonoBehaviour:
     valueType: 0
   sliderComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -5128,6 +5177,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -5171,20 +5228,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -5225,17 +5295,11 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -5253,6 +5317,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -5296,20 +5368,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -5348,18 +5433,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -5377,6 +5456,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -5420,20 +5507,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -5472,16 +5572,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
-    actionType: 0
+    arrowIcon: {fileID: 0}
   textComponentConfig:
     name: Name Displayer
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 5373198098692927745}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -5499,6 +5593,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 5373198098692927745}
     dataPackets:
       selectionOption: 0
       screenType: 4
@@ -5542,20 +5644,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -5594,15 +5709,9 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 1
   imageComponentConfig:
     name: 
-    fieldName: {fileID: 0}
-    fieldUIImageList: []
-    value: {fileID: 0}
     selectionStates:
     - name: Normal
       value: {fileID: 0}
@@ -5620,6 +5729,14 @@ MonoBehaviour:
       value: {fileID: 0}
       color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
       state: 2
+    selectable: 0
+    visualizationType: 0
+    selectionFrame: {fileID: 0}
+    inputType: 0
+    inputState: 0
+    fieldName: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
     dataPackets:
       selectionOption: 0
       screenType: 0
@@ -5663,20 +5780,33 @@ MonoBehaviour:
           aoStrength: 0
         sceneScale: 0
         description: 
-        currentAssetMode: 0
-        creationDateTime: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
         hasMLTFile: 0
         storageData:
           name: 
           type: 0
           path: 
-          directory: 
+          projectDirectory: 
+          rootDirectory: 
         assetFields: []
         dontShowMetadataWidget: 0
-        categoryType: 0
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
@@ -5718,9 +5848,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    selectableInput: 0
-    inputState: 0
-    selectionFrame: {fileID: 0}
     initialVisibilityState: 0
     imageType: 0
 --- !u!1 &5373198098800030044
