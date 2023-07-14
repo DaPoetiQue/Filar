@@ -146,13 +146,30 @@ namespace Com.RedicalGames.Filar
                         {
                             if (dataValidCallbackResults.Success())
                             {
-                                if(!string.IsNullOrEmpty(value))
-                                    OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
-                                else
-                                    OnInputFieldValidation(AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
+                                GetInputField(AppData.InputFieldActionType.AssetNameField, inputFieldCallbackResults =>
+                                {
+                                    if (inputFieldCallbackResults.Success())
+                                    {
+                                        if (inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Warning || inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Error)
+                                            OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+                                    }
+                                    else
+                                        Log(inputFieldCallbackResults.resultsCode, inputFieldCallbackResults.results, this);
+                                });
                             }
                             else
-                                Log(dataValidCallbackResults.resultsCode, dataValidCallbackResults.results, this);
+                            {
+                                GetInputField(AppData.InputFieldActionType.AssetNameField, inputFieldCallbackResults =>
+                                {
+                                    if (inputFieldCallbackResults.Success())
+                                    {
+                                        if (inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Success)
+                                            OnInputFieldValidation(AppData.ValidationResultsType.Warning, dataValidCallbackResults.data);
+                                    }
+                                    else
+                                        Log(inputFieldCallbackResults.resultsCode, inputFieldCallbackResults.results, this);
+                                });
+                            }
                         });
                     }
                     else
