@@ -195,6 +195,12 @@ namespace Com.RedicalGames.Filar
         bool onNewAssetCreated = false;
         string newAssetName;
 
+        #region Filter And Sort Data
+
+        bool canFilterContents = false;
+
+        #endregion
+
         #region Rnder Profile Data Components
 
         List<RenderProfileUIHandler> renderProfileUIHandlerComponentsList = new List<RenderProfileUIHandler>();
@@ -6350,6 +6356,21 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        public bool CanSortContents()
+        {
+            bool canSort = false;
+
+            GetContentContainer(containerCallbackResults =>
+            {
+                if (containerCallbackResults.Success())
+                    canSort = containerCallbackResults.data.GetContentCount() > 1;
+                else
+                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+            });
+
+            return canSort;
+        }
+
         #endregion
 
         #region Filtering
@@ -6815,6 +6836,13 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.resultsCode, $"===========================>> Get Filter Content Failed.", this);
 
             callback?.Invoke(callbackResults);
+        }
+
+        public void SetCanFilterContent(bool canFilterContents) => this.canFilterContents = canFilterContents;
+
+        public bool CanFilterContents()
+        {
+            return canFilterContents;
         }
 
         #endregion
