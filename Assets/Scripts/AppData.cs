@@ -6479,6 +6479,11 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
+            public bool InputValueAssigned()
+            {
+                return value != null;
+            }
+
             public U GetDataPackets()
             {
                 return dataPackets;
@@ -6815,10 +6820,35 @@ namespace Com.RedicalGames.Filar
                     Debug.LogError("Button Value Missing.");
             }
 
+            #region Selections
+
+            bool HasSelectableComponent()
+            {
+                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+            }
+
             public override void SelectableInit()
             {
-                throw new NotImplementedException();
+                if (!HasSelectableComponent())
+                {
+                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                    if (selectable)
+                    {
+                        selectable.Init(this, initializedCallbackResults =>
+                        {
+                            if (initializedCallbackResults.Success())
+                                Deselect();
+                            else
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                        });
+                    }
+                    else
+                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                }
             }
+
+            #endregion
 
             public override void OnCollapse()
             {
@@ -7039,6 +7069,9 @@ namespace Com.RedicalGames.Filar
 
             public void SetArrowIconState(bool state) => arrowIcon?.gameObject?.SetActive(state);
 
+
+            #region Selections
+
             bool HasSelectableComponent()
             {
                 return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
@@ -7064,6 +7097,8 @@ namespace Com.RedicalGames.Filar
                         Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
                 }
             }
+
+            #endregion
 
             public override void OnCollapse() => value.Hide();
 
@@ -7353,10 +7388,36 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
+
+            #region Selections
+
+            bool HasSelectableComponent()
+            {
+                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+            }
+
             public override void SelectableInit()
             {
-                throw new NotImplementedException();
+                if (!HasSelectableComponent())
+                {
+                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                    if (selectable)
+                    {
+                        selectable.Init(this, initializedCallbackResults =>
+                        {
+                            if (initializedCallbackResults.Success())
+                                Deselect();
+                            else
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                        });
+                    }
+                    else
+                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                }
             }
+
+            #endregion
 
             public override void OnCollapse()
             {
@@ -7535,10 +7596,36 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
+
+            #region Selections
+
+            bool HasSelectableComponent()
+            {
+                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+            }
+
             public override void SelectableInit()
             {
-                throw new NotImplementedException();
+                if (!HasSelectableComponent())
+                {
+                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                    if (selectable)
+                    {
+                        selectable.Init(this, initializedCallbackResults =>
+                        {
+                            if (initializedCallbackResults.Success())
+                                Deselect();
+                            else
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                        });
+                    }
+                    else
+                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                }
             }
+
+            #endregion
 
             public override void OnCollapse()
             {
@@ -7656,9 +7743,9 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initialize()
+            new public void Initialize()
             {
-                if (IsInitialized())
+                if (InputValueAssigned())
                 {
                     value.minValue = 0;
                     value.maxValue = (initialMaxValue > 0) ? initialMaxValue : 1;
@@ -7667,14 +7754,9 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> Slider Value Component Not Assigned");
             }
 
-            bool IsInitialized()
-            {
-                return value;
-            }
-
             public override bool GetInteractableState()
             {
-                if (IsInitialized())
+                if (InputValueAssigned())
                     return value.interactable;
                 else
                 {
@@ -7685,7 +7767,7 @@ namespace Com.RedicalGames.Filar
 
             public override void SetInteractableState(bool interactable)
             {
-                if (IsInitialized())
+                if (InputValueAssigned())
                 {
                     value.interactable = interactable;
 
@@ -7700,7 +7782,7 @@ namespace Com.RedicalGames.Filar
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-                if (IsInitialized())
+                if (InputValueAssigned())
                 {
                     value.gameObject.SetActive(visible);
 
@@ -7715,7 +7797,7 @@ namespace Com.RedicalGames.Filar
 
             public override bool GetUIInputVisibilityState()
             {
-                if (IsInitialized())
+                if (InputValueAssigned())
                     return value.isActiveAndEnabled;
                 else
                 {
@@ -7792,10 +7874,36 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
+
+            #region Selections
+
+            bool HasSelectableComponent()
+            {
+                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+            }
+
             public override void SelectableInit()
             {
-                throw new NotImplementedException();
+                if (!HasSelectableComponent())
+                {
+                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                    if (selectable)
+                    {
+                        selectable.Init(this, initializedCallbackResults =>
+                        {
+                            if (initializedCallbackResults.Success())
+                                Deselect();
+                            else
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                        });
+                    }
+                    else
+                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                }
             }
+
+            #endregion
 
             public override void OnCollapse()
             {
@@ -7951,10 +8059,36 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetFieldColor Failed : fieldUIImageList Values Are Null / Empty.");
             }
 
+
+            #region Selections
+
+            bool HasSelectableComponent()
+            {
+                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+            }
+
             public override void SelectableInit()
             {
-                throw new NotImplementedException();
+                if (!HasSelectableComponent())
+                {
+                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                    if (selectable)
+                    {
+                        selectable.Init(this, initializedCallbackResults =>
+                        {
+                            if (initializedCallbackResults.Success())
+                                Deselect();
+                            else
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                        });
+                    }
+                    else
+                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                }
             }
+
+            #endregion
 
             public override void OnCollapse()
             {
@@ -13079,8 +13213,28 @@ namespace Com.RedicalGames.Filar
                             {
                                 foreach (var button in screenActionButtonList)
                                 {
-                                    if (button.value != null)
+                                    if (button.InputValueAssigned())
                                     {
+                                        if (button.Selectable().success)
+                                        {
+                                            SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                            {
+                                                structureCallbackResults.data.AddSelectableScreenUI(screenType, button, selectableCallbackResults =>
+                                                {
+                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                });
+                                            });
+                                        }
+                                        else
+                                        {
+                                            string results = (button.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                            if (button.Selectable().selectable)
+                                                LogError($"Button : {button.name} - {results}", this);
+                                            else
+                                                LogInfo($"Button : {button.name} - {results}", this);
+                                        }
+
                                         button.value.onClick.AddListener(() => ScreenButtonInputs(button));
                                     }
                                     else
@@ -13095,8 +13249,28 @@ namespace Com.RedicalGames.Filar
                             {
                                 foreach (var slider in screenActionSliderList)
                                 {
-                                    if (slider.value != null)
+                                    if (slider.InputValueAssigned())
                                     {
+                                        if (slider.Selectable().success)
+                                        {
+                                            SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                            {
+                                                structureCallbackResults.data.AddSelectableScreenUI(screenType, slider, selectableCallbackResults =>
+                                                {
+                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                });
+                                            });
+                                        }
+                                        else
+                                        {
+                                            string results = (slider.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                            if (slider.Selectable().selectable)
+                                                LogError($"Slider : {slider.name} - {results}", this);
+                                            else
+                                                LogInfo($"Slider : {slider.name} - {results}", this);
+                                        }
+
                                         slider.value.onValueChanged.AddListener((value) => OnInputSliderValueChangedAction(slider, value));
                                     }
                                     else
@@ -13111,8 +13285,28 @@ namespace Com.RedicalGames.Filar
                             {
                                 foreach (var checkbox in screenActionCheckboxList)
                                 {
-                                    if (checkbox.value != null)
+                                    if (checkbox.InputValueAssigned())
                                     {
+                                        if (checkbox.Selectable().success)
+                                        {
+                                            SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                            {
+                                                structureCallbackResults.data.AddSelectableScreenUI(screenType, checkbox, selectableCallbackResults =>
+                                                {
+                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                });
+                                            });
+                                        }
+                                        else
+                                        {
+                                            string results = (checkbox.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                            if (checkbox.Selectable().selectable)
+                                                LogError($"Checkbox : {checkbox.name} - {results}", this);
+                                            else
+                                                LogInfo($"Checkbox : {checkbox.name} - {results}", this);
+                                        }
+
                                         checkbox.value.onValueChanged.AddListener((value) => OnInputCheckboxValueChangedAction(checkbox, value));
                                         checkbox.SetInteractableState(checkbox.initialInteractabilityState, checkbox.initialVisibilityState);
                                         ActionEvents._OnActionCheckboxStateEvent += checkbox.SetInteractableState;
@@ -13147,7 +13341,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     foreach (var dropdown in screenActionDropDownList)
                                     {
-                                        if (dropdown.value != null)
+                                        if (dropdown.InputValueAssigned())
                                         {
                                             if (dropdown.Selectable().success)
                                             {
@@ -13155,14 +13349,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     structureCallbackResults.data.AddSelectableScreenUI(screenType, dropdown, selectableCallbackResults =>
                                                     {
-                                                        Log(selectableCallbackResults.resultsCode, $"====================>>>>>>>>>>>>>>>>>>> Selectable Results : {selectableCallbackResults.results}", this);
-
-                                                        if (selectableCallbackResults.Success())
-                                                        {
-
-                                                        }
-                                                        else
-                                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                         Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                     });
                                                 });
                                             }
@@ -13213,8 +13400,28 @@ namespace Com.RedicalGames.Filar
                                 {
                                     foreach (var inputField in screenActionInputFieldList)
                                     {
-                                        if (inputField.value != null)
+                                        if (inputField.InputValueAssigned())
                                         {
+                                            if (inputField.Selectable().success)
+                                            {
+                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                {
+                                                    structureCallbackResults.data.AddSelectableScreenUI(screenType, inputField, selectableCallbackResults =>
+                                                    {
+                                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                    });
+                                                });
+                                            }
+                                            else
+                                            {
+                                                string results = (inputField.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                                if (inputField.Selectable().selectable)
+                                                    LogError($"Input Field : {inputField.name} - {results}", this);
+                                                else
+                                                    LogInfo($"Input Field : {inputField.name} - {results}", this);
+                                            }
+
                                             inputField.value.onValueChanged.AddListener((value) => OnInputFieldAction(inputField, value));
 
                                             if (inputField.clearButton)
@@ -16146,29 +16353,140 @@ namespace Com.RedicalGames.Filar
                 if (dontShowAgainToggleField != null)
                     dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
 
+                #region Initialize Buttons
+
+                if (buttons != null && buttons.Count > 0)
+                {
+                    foreach (var button in buttons)
+                    {
+                        if (button.InputValueAssigned())
+                        {
+                            if (button.Selectable().success)
+                            {
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    structureCallbackResults.data.AddSelectableScreenUI(type, button, selectableCallbackResults =>
+                                    {
+                                        if (selectableCallbackResults.Success())
+                                        {
+
+                                        }
+                                        else
+                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (button.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (button.Selectable().selectable)
+                                    LogError($"Button : {button.name} - {results}", this);
+                                else
+                                    LogInfo($"Button : {button.name} - {results}", this);
+                            }
+                        }
+                        else
+                        {
+                            LogError($"Button : {button.name} Value Is Null.", this);
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Initialize Inputs
+
+                if (inputs != null && inputs.Count > 0)
+                {
+                    foreach (var inputField in inputs)
+                    {
+                        if (inputField.InputValueAssigned())
+                        {
+                            if (inputField.Selectable().success)
+                            {
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    structureCallbackResults.data.AddSelectableScreenUI(type, inputField, selectableCallbackResults =>
+                                    {
+                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (inputField.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (inputField.Selectable().selectable)
+                                    LogError($"Input Field : {inputField.name} - {results}", this);
+                                else
+                                    LogInfo($"Input Field : {inputField.name} - {results}", this);
+                            }
+                        }
+                        else
+                        {
+                            LogError($"Button : {inputField.name} Value Is Null.", this);
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
+
+                #region Initialize Input Sliders
+
+                if (sliders != null && sliders.Count > 0)
+                {
+                    foreach (var inputSlider in sliders)
+                    {
+                        if (inputSlider.InputValueAssigned())
+                        {
+                            if (inputSlider.Selectable().success)
+                            {
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    structureCallbackResults.data.AddSelectableScreenUI(type, inputSlider, selectableCallbackResults =>
+                                    {
+                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (inputSlider.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (inputSlider.Selectable().selectable)
+                                    LogError($"Input Slider : {inputSlider.name} - {results}", this);
+                                else
+                                    LogInfo($"Input Slider : {inputSlider.name} - {results}", this);
+                            }
+                        }
+                        else
+                        {
+                            LogError($"Button : {inputSlider.name} Value Is Null.", this);
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
                 #region Initialize Dropdowns
 
                 if (dropdowns != null && dropdowns.Count > 0)
                 {
                     foreach (var dropdown in dropdowns)
                     {
-                        if (dropdown.value != null)
+                        if (dropdown.InputValueAssigned())
                         {
                             if (dropdown.Selectable().success)
                             {
-                                //dropdown.Initialize(dropdown.dataPackets);
-                                //dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
-
-                                LogInfo($"====================>>>>>>>>>>>>>>>>>>> Selectable : {dropdown.name}", this);
-
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    Log(structureCallbackResults.resultsCode, $"====================>>>>>>>>>>>>>>>>>>> Selectable Results : {structureCallbackResults.results}", this);
-
                                     structureCallbackResults.data.AddSelectableScreenUI(type, dropdown, selectableCallbackResults =>
                                     {
-                                        Log(selectableCallbackResults.resultsCode, $"====================>>>>>>>>>>>>>>>>>>> Selectable Results : {selectableCallbackResults.results}", this);
-
                                         if (selectableCallbackResults.Success())
                                         {
 
@@ -16204,8 +16522,35 @@ namespace Com.RedicalGames.Filar
                 {
                     foreach (var checkbox in checkboxes)
                     {
-                        if(checkbox.value != null)
+                        if (checkbox.value != null)
+                        {
+                            if (checkbox.Selectable().success)
+                            {
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    structureCallbackResults.data.AddSelectableScreenUI(type, checkbox, selectableCallbackResults =>
+                                    {
+                                        if (selectableCallbackResults.Success())
+                                        {
+
+                                        }
+                                        else
+                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (checkbox.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (checkbox.Selectable().selectable)
+                                    LogError($"Checkbox : {checkbox.name} - {results}", this);
+                                else
+                                    LogInfo($"Checkbox : {checkbox.name} - {results}", this);
+                            }
+
                             checkbox.value.onValueChanged.AddListener((value) => SetOnCheckboxValueChanged(checkbox.actionType, value, checkbox.dataPackets));
+                        }
                         else
                         {
                             LogError($"Checkbox : {checkbox.name} Value Is Null.", this, () => Init());
