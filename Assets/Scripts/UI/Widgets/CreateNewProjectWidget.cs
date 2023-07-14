@@ -138,8 +138,6 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputFieldActionType.AssetNameField:
 
-                    OnInputFieldValidation(AppData.ValidationResultsType.Default, AppData.InputFieldActionType.AssetNameField);
-
                     if (newProjectStructureData != null)
                         newProjectStructureData.name = value;
                     else
