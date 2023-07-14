@@ -3,7 +3,7 @@ using TMPro;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SelectableInputDropdownHandler : AppData.SelectableUIInputComponent<TMP_Dropdown, AppData.DropdownDataPackets, AppData.UIDropDown<AppData.DropdownDataPackets>>
+    public class SelectableInputComponentHandler : AppData.SelectableUIInputComponent<TMP_Dropdown, AppData.DropdownDataPackets, AppData.UIDropDown<AppData.DropdownDataPackets>>
     {
 
         #region Components
@@ -12,15 +12,15 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void Init<T>(AppData.UIDropDown<T> input, Action<AppData.Callback> callback = null) where T : AppData.SceneDataPackets
+        public void Init(AppData.UISelectable selectable, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
             
-            this.input = input as AppData.UIDropDown<AppData.DropdownDataPackets>;
+            this.selectable = selectable;
 
-            if(this.input != null)
+            if(this.selectable != null)
             {
-                Init(this.input);
+                base.Init(this.selectable);
 
                 callbackResults.results = "Input Initialized";
                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
@@ -34,11 +34,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        protected override void OnInputSelected()
-        {
-            if (input.value)
-                input.OnInputPointerDownEvent();
-        }
+        protected override void OnInputSelected() => selectable.OnInputPointerDownEvent();
 
         protected override void OnInputSelected(AppData.UIInputComponent<TMP_Dropdown, AppData.DropdownDataPackets, AppData.UIDropDown<AppData.DropdownDataPackets>> input)
         {
