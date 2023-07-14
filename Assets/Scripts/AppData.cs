@@ -225,7 +225,7 @@ namespace Com.RedicalGames.Filar
             OpenProjectButton,
             OpenProjectFolderButton,
             GoToScreenButton,
-            OpenScreenSsettingsButton,
+            OpenScreenSettingsButton,
             None
         }
 
@@ -6306,9 +6306,6 @@ namespace Com.RedicalGames.Filar
             public string name;
 
             [Space(5)]
-            public SelectionVisualizationType visualizationType;
-
-            [Space(5)]
             public List<SelectionState> selectionStates = new List<SelectionState>
             {
                 new SelectionState
@@ -6344,6 +6341,9 @@ namespace Com.RedicalGames.Filar
             public bool selectable;
 
             [Space(5)]
+            public SelectionVisualizationType visualizationType;
+
+            [Space(5)]
             public GameObject selectionFrame;
 
             [Space(5)]
@@ -6356,9 +6356,14 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public (bool success, bool selectable, bool hasValue) Selectable()
+            public (bool success, bool selectable, bool hasValue, string results) Selectable()
             {
-                return (success: (selectable && selectionFrame != null), selectable: selectable,  hasValue: selectionFrame != null);
+                bool success = (visualizationType == SelectionVisualizationType.SelectionFrame)? selectable && selectionFrame != null : selectionStates.Count > 0;
+                bool hasValue = (visualizationType == SelectionVisualizationType.SelectionFrame) ? selectionFrame != null : selectionStates.Count > 0;
+
+                string results = (success) ? $"Input : {name}'s Value Is Assigned" : $"Input : {name}'s Value Or Selection States Not Assigned";
+
+                return (success: success, selectable: selectable,  hasValue: hasValue, results: results);
             }
 
             #region Events
@@ -6391,6 +6396,14 @@ namespace Com.RedicalGames.Filar
                 }
 
                 inputState = InputUIState.Selected;
+
+                GetSelectionState(inputState, selectionStateCallbackResults => 
+                {
+                    if (selectionStateCallbackResults.Success())
+                        SetSelectionState(visualizationType, selectionStateCallbackResults.data);
+                    else
+                        Debug.LogError(selectionStateCallbackResults.results);
+                });
             }
 
             public void Deselect()
@@ -6413,6 +6426,14 @@ namespace Com.RedicalGames.Filar
                 }
 
                 inputState = InputUIState.Normal;
+
+                GetSelectionState(inputState, selectionStateCallbackResults =>
+                {
+                    if (selectionStateCallbackResults.Success())
+                        SetSelectionState(visualizationType, selectionStateCallbackResults.data);
+                    else
+                        Debug.LogError(selectionStateCallbackResults.results);
+                });
             }
 
             public void SetInputState(InputUIState state) => inputState = state;
