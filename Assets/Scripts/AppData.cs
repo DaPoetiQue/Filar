@@ -6464,14 +6464,14 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"Failed : Selection State : {state} Not Found.";
+                        callbackResults.results = $"Failed : Selection State : {state} For Input : {name} Of Type : {inputType} Not Found.";
                         callbackResults.data = default;
                         callbackResults.resultsCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Failed : There Are No Selection States Found.";
+                    callbackResults.results = $"Failed : There Are No Selection States Found For Input : {name} Of Type : {inputType}.";
                     callbackResults.data = default;
                     callbackResults.resultsCode = Helpers.ErrorCode;
                 }
