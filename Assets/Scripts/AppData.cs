@@ -3791,13 +3791,13 @@ namespace Com.RedicalGames.Filar
             {
                if(selectables.Contains(selectable))
                 {
-                    var selected = selectables.FindAll(x => x.GetSelectionState() != InputUIState.Normal);
+                    var selected = selectables.FindAll(x => x.GetInputSelectionState() != InputUIState.Normal);
 
                     if(selected != null && selected.Count > 0)
                     {
                         foreach (var item in selected)
                         {
-                            if (item.GetSelectionState() != InputUIState.Disabled)
+                            if (item.GetInputSelectionState() != InputUIState.Disabled)
                             {
                                 if (item.inputType == InputType.DropDown)
                                     item.Collapse();
@@ -3807,7 +3807,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
 
-                    if (selectable.GetSelectionState() != InputUIState.Disabled)
+                    if (selectable.GetInputSelectionState() != InputUIState.Disabled)
                     {
                         if (selectable.inputType == InputType.DropDown)
                             selectable.Expand();
@@ -6383,9 +6383,40 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public InputUIState GetSelectionState()
+            public InputUIState GetInputSelectionState()
             {
                 return inputState;
+            }
+
+            public void GetSelectionState(InputUIState state, Action<CallbackData<SelectionState>> callback)
+            {
+                CallbackData<SelectionState> callbackResults = new CallbackData<SelectionState>();
+
+                if (selectionStates.Count > 0)
+                {
+                    SelectionState selectionState = selectionStates.Find(selectionState => selectionState.state == state);
+
+                    if (selectionStates.Contains(selectionState))
+                    {
+                        callbackResults.results = "Success : Selection State Found.";
+                        callbackResults.data = selectionState;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Failed : Selection State : {state} Not Found.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "Failed : There Are No Selection States Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             public void OnInputSelected()
@@ -6398,10 +6429,7 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public void OnInputPointerDownEvent()
-            {
-                throw new NotImplementedException();
-            }
+            public void OnInputPointerDownEvent() => InvokeSelection(this);
 
             public void Expand() => Select();
 
@@ -6522,22 +6550,7 @@ namespace Com.RedicalGames.Filar
             /// <param name="isSelected">The Selection State Of The Child Widget.</param>
             public abstract void SetChildWidgetsState(bool interactable, bool isSelected);
 
-            /// <summary>
-            /// Sets Input To Selected State.
-            /// </summary>
-            public abstract void OnInputSelected();
-
-            /// <summary>
-            /// Sets Input To Deselected State.
-            /// </summary>
-            public abstract void OnInputDeselected();
-
             public abstract void SetUIInputState(D input, InputUIState state);
-
-            /// <summary>
-            /// This Function Is Fired When A Ponter Is Down On A UI Input.
-            /// </summary>
-            public abstract void OnInputPointerDownEvent();
 
             /// <summary>
             /// This Function Sets UI Image Value.
@@ -6551,37 +6564,6 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Debug.LogWarning($"--> Set UI Image Value Failed - Image IS Null.");
-            }
-
-            public void GetSelectionState(InputUIState state, Action<CallbackData<SelectionState>> callback)
-            {
-                CallbackData<SelectionState> callbackResults = new CallbackData<SelectionState>();
-
-                if (selectionStates.Count > 0)
-                {
-                    SelectionState selectionState = selectionStates.Find(selectionState => selectionState.state == state);
-
-                    if (selectionStates.Contains(selectionState))
-                    {
-                        callbackResults.results = "Success : Selection State Found.";
-                        callbackResults.data = selectionState;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.results = $"Failed : Selection State : {state} Not Found.";
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.results = "Failed : There Are No Selection States Found.";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
-                }
-
-                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -6598,16 +6580,13 @@ namespace Com.RedicalGames.Filar
 
             RectTransform uiInputTransform;
 
-            protected UIInputComponent<T, U, V> input;
+            protected UISelectable selectable;
 
             #endregion
 
             #region Main
 
-            public void Init(UIInputComponent<T, U, V> input)
-            {
-                this.input = input;
-            }
+            public void Init(UISelectable selectable) => this.selectable = selectable;
 
             public void OnPointerDown(PointerEventData eventData)
             {
@@ -6809,28 +6788,6 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Selected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
-            public override void OnInputDeselected()
-            {
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Deselected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
 
             public override void SetUIInputState(UIButton<T> input, InputUIState state)
             {
@@ -6843,11 +6800,6 @@ namespace Com.RedicalGames.Filar
                 {
                     Debug.LogError($"-------> Deselection Called On : {this.name}.");
                 }
-            }
-
-            public override void OnInputPointerDownEvent()
-            {
-
             }
 
             bool IsInitialized()
@@ -7074,37 +7026,11 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-                Debug.Log("--> Selected.");
-
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Selected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
-            public override void OnInputDeselected()
-            {
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Deselected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
             public override void SetUIInputState(UIDropDown<T> input, InputUIState state)
             {
                 if (input == this)
                     SetUIInputState(state);
             }
-
-            public override void OnInputPointerDownEvent() => InvokeSelection(this);
 
             public override void SetFieldColor(Color color)
             {
@@ -7113,15 +7039,20 @@ namespace Com.RedicalGames.Filar
 
             public void SetArrowIconState(bool state) => arrowIcon?.gameObject?.SetActive(state);
 
+            bool HasSelectableComponent()
+            {
+                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+            }
+
             public override void SelectableInit()
             {
-                if (value.gameObject.GetComponent<SelectableInputDropdownHandler>() == null)
+                if (!HasSelectableComponent())
                 {
-                    SelectableInputDropdownHandler handler = value.gameObject.AddComponent<SelectableInputDropdownHandler>();
+                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
 
-                    if (handler)
+                    if (selectable)
                     {
-                        handler.Init(this, initializedCallbackResults =>
+                        selectable.Init(this, initializedCallbackResults =>
                         {
                             if (initializedCallbackResults.Success())
                                 Deselect();
@@ -7134,11 +7065,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public override void OnCollapse()
-            {
-                Debug.Log($"==============>>>>>>>>>>>> Collapsing Dropdown : {name}");
-                value.Hide();
-            }
+            public override void OnCollapse() => value.Hide();
 
             #endregion
         }
@@ -7413,40 +7340,12 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Selected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
-            public override void OnInputDeselected()
-            {
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Deselected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
             public override void SetUIInputState(UIInputField<T> input, InputUIState state)
             {
                 if (input == this)
                 {
 
                 }
-            }
-
-            public override void OnInputPointerDownEvent()
-            {
-
             }
 
             public override void SetFieldColor(Color color)
@@ -7485,7 +7384,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initialize()
+            new public void Initialize()
             {
                 if (IsInitialized())
                 {
@@ -7626,35 +7525,7 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Selected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
-            public override void OnInputDeselected()
-            {
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Deselected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
             public override void SetUIInputState(UICheckbox<T> input, InputUIState state)
-            {
-
-            }
-
-            public override void OnInputPointerDownEvent()
             {
 
             }
@@ -7739,20 +7610,7 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-            }
-
-            public override void OnInputDeselected()
-            {
-            }
-
             public override void SetUIInputState(UIText<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputPointerDownEvent()
             {
                 throw new NotImplementedException();
             }
@@ -7924,35 +7782,7 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Selected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
-            public override void OnInputDeselected()
-            {
-                if (inputState == InputUIState.Selected)
-                {
-                    Debug.LogError($"--> Deselected : {name}");
-
-                    if (selectionFrame)
-                        selectionFrame.SetActive(false);
-                }
-            }
-
             public override void SetUIInputState(UISlider<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputPointerDownEvent()
             {
                 throw new NotImplementedException();
             }
@@ -8100,20 +7930,7 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-            }
-
-            public override void OnInputDeselected()
-            {
-            }
-
             public override void SetUIInputState(UIInputSlider<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputPointerDownEvent()
             {
                 throw new NotImplementedException();
             }
@@ -8245,22 +8062,7 @@ namespace Com.RedicalGames.Filar
                 return inputState;
             }
 
-            public override void OnInputSelected()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputDeselected()
-            {
-                throw new NotImplementedException();
-            }
-
             public override void SetUIInputState(UIInputSlider<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputPointerDownEvent()
             {
                 throw new NotImplementedException();
             }
@@ -8325,21 +8127,6 @@ namespace Com.RedicalGames.Filar
             public override void OnCollapse()
             {
 
-            }
-
-            public override void OnInputDeselected()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputPointerDownEvent()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void OnInputSelected()
-            {
-                throw new NotImplementedException();
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -24469,7 +24256,7 @@ namespace Com.RedicalGames.Filar
 
             void SetSelectionState(InputUIState state);
 
-            InputUIState GetSelectionState();
+            InputUIState GetInputSelectionState();
 
             #endregion
         }
