@@ -5051,6 +5051,34 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
+            public void OnSelectUIInput(Enum groupID, UISelectable selectable, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if(selectable != null)
+                {
+                    if (selectableUIGroups.TryGetValue(groupID, out UISelectableGroup group))
+                    {
+                        group.Select(selectable);
+
+                        callbackResults.results = $"Selected Input : {selectable.name} From : {groupID} Group.";
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"No Selectable Group Found - Failed To Select : {selectable.name} From : {groupID} Group";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "Selectable Is Null / Not Found. Failed To Select UI Input";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
             public void OnClearInputSelection(Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
@@ -6343,6 +6371,25 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public struct ValidationState
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public Sprite value;
+
+            [Space(5)]
+            public Color color;
+
+            [Space(5)]
+            public ValidationResultsType resultsType;
+
+            #endregion
+        }
+
+        [Serializable]
         public class UIScreenInputComponent : AppMonoBaseClass
         {
             #region Components
@@ -6407,10 +6454,13 @@ namespace Com.RedicalGames.Filar
             public SelectionVisualizationType visualizationType;
 
             [Space(5)]
-            public GameObject selectionFrame;
+            public Image selectionFrame;
 
             [Space(5)]
             public InputType inputType;
+
+            [Space(5)]
+            public InputValidation validationStatesInfo = new InputValidation();
 
             [HideInInspector]
             public InputUIState inputState;
@@ -6451,8 +6501,28 @@ namespace Com.RedicalGames.Filar
 
                         case SelectionVisualizationType.SelectionFrame:
 
-                            if (selectionFrame)
-                                selectionFrame.SetActive(true);
+                            if (selectionFrame != null)
+                            {
+                                if (validationStatesInfo.validate)
+                                {
+                                    validationStatesInfo.GetValidationState(validationCallbackResults =>
+                                    {
+                                        if (validationCallbackResults.Success())
+                                        {
+                                            selectionFrame.color = validationCallbackResults.data.color;
+
+                                            if (validationCallbackResults.data.value != null)
+                                                selectionFrame.sprite = validationCallbackResults.data.value;
+                                        }
+                                        else
+                                            Debug.LogError(validationCallbackResults.results);
+                                    });
+                                }
+
+                                selectionFrame.gameObject.SetActive(true);
+                            }
+                            else
+                                Debug.LogError($"Selection Frame For : {name} Of Type : {inputType} Missing / Not Found.");
 
                             break;
                     }
@@ -6481,8 +6551,26 @@ namespace Com.RedicalGames.Filar
 
                         case SelectionVisualizationType.SelectionFrame:
 
-                            if (selectionFrame)
-                                selectionFrame.SetActive(false);
+                            if (selectionFrame != null)
+                            {
+                                if (validationStatesInfo.validate)
+                                {
+                                    validationStatesInfo.GetValidationState(ValidationResultsType.Default, validationCallbackResults =>
+                                    {
+                                        if (validationCallbackResults.Success())
+                                        {
+                                            selectionFrame.color = validationCallbackResults.data.color;
+
+                                            if (validationCallbackResults.data.value != null)
+                                                selectionFrame.sprite = validationCallbackResults.data.value;
+                                        }
+                                        else
+                                            Debug.LogError(validationCallbackResults.results);
+                                    });
+                                }
+
+                                selectionFrame.gameObject.SetActive(false);
+                            }
 
                             break;
                     }
@@ -6500,6 +6588,38 @@ namespace Com.RedicalGames.Filar
             }
 
             public void SetInputState(InputUIState state) => inputState = state;
+
+            public InputValidation GetValidationStateInfo()
+            {
+                return validationStatesInfo;
+            }
+
+            #region Validations
+
+            public void SetValidationResults(ValidationResultsType results) => validationStatesInfo.Results = results;
+
+            public void OnClearValidation()
+            {
+                if (validationStatesInfo.validate)
+                {
+                    SetValidationResults(ValidationResultsType.Default);
+
+                    validationStatesInfo.GetValidationState(ValidationResultsType.Default, validationCallbackResults =>
+                    {
+                        if (validationCallbackResults.Success())
+                        {
+                            selectionFrame.color = validationCallbackResults.data.color;
+
+                            if (validationCallbackResults.data.value != null)
+                                selectionFrame.sprite = validationCallbackResults.data.value;
+                        }
+                        else
+                            Debug.LogError(validationCallbackResults.results);
+                    });
+                }
+            }
+
+            #endregion
 
             public InputUIState GetInputState()
             {
@@ -6842,13 +6962,13 @@ namespace Com.RedicalGames.Filar
                 {
                     case InputUIState.Deselect:
 
-                        if (selectable)
-                        {
-                            Debug.LogError("---------------------> Set UI Input Selection State...........");
+                        //if (selectable)
+                        //{
+                        //    Debug.LogError("---------------------> Set UI Input Selection State...........");
 
-                            if (selectionFrame)
-                                selectionFrame.SetActive(false);
-                        }
+                        //    if (selectionFrame)
+                        //        selectionFrame.SetActive(false);
+                        //}
 
                         break;
 
@@ -6866,14 +6986,14 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectable)
-                        {
-                            Debug.LogError($"--> Set UI State : {state}");
-                            SetUIInputVisibilityState(true);
+                        //if (selectable)
+                        //{
+                        //    Debug.LogError($"--> Set UI State : {state}");
+                        //    SetUIInputVisibilityState(true);
 
-                            if (selectionFrame)
-                                selectionFrame.SetActive(true);
-                        }
+                        //    if (selectionFrame)
+                        //        selectionFrame.SetActive(true);
+                        //}
 
                         break;
 
@@ -7149,21 +7269,21 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectable)
-                        {
-                            if (selectionFrame)
-                                selectionFrame.SetActive(true);
-                        }
+                        //if (selectable)
+                        //{
+                        //    if (selectionFrame)
+                        //        selectionFrame.SetActive(true);
+                        //}
 
                         break;
 
                     case InputUIState.Deselected:
 
-                        if (selectable)
-                        {
-                            if (selectionFrame)
-                                selectionFrame.SetActive(false);
-                        }
+                        //if (selectable)
+                        //{
+                        //    if (selectionFrame)
+                        //        selectionFrame.SetActive(false);
+                        //}
 
                         break;
 
@@ -7288,9 +7408,6 @@ namespace Com.RedicalGames.Filar
             public TMP_Text placeholderDisplayer;
 
             [Space(5)]
-            public List<ValidationUI> uiValidationList;
-
-            [Space(5)]
             public int characterLimit;
 
             [Space(5)]
@@ -7309,10 +7426,6 @@ namespace Com.RedicalGames.Filar
 
                 if (value != null)
                     value.characterLimit = characterLimit;
-
-                if (uiValidationList.Count > 0)
-                    foreach (var item in uiValidationList)
-                        item.Init();
             }
 
             public void SetPlaceHolderText(string placeholder)
@@ -7362,33 +7475,6 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Debug.LogWarning("--> On Select Failed : Value Missing / Null.");
-            }
-
-            public void OnValidation(ValidationResultsType results, bool show = true)
-            {
-                if (results != ValidationResultsType.None)
-                {
-                    var validationUI = uiValidationList.Find(validation => validation.resultsType == results);
-
-                    if (validationUI != null)
-                    {
-                        if (show)
-                            validationUI.Show();
-                        else
-                            validationUI.Hide();
-                    }
-                }
-                else
-                {
-                    foreach (var validation in uiValidationList)
-                        validation.Hide();
-                }
-            }
-
-            public void OnClearValidation()
-            {
-                foreach (var validation in uiValidationList)
-                    validation.Hide();
             }
 
             bool IsInitialized()
@@ -7469,19 +7555,19 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectable)
-                        {
-                            if (inputState == InputUIState.Hidden)
-                                SetUIInputVisibilityState(true);
+                        //if (selectable)
+                        //{
+                        //    if (inputState == InputUIState.Hidden)
+                        //        SetUIInputVisibilityState(true);
 
-                            if (inputState == InputUIState.Shown)
-                            {
-                                Debug.LogError("--> Set UI Input Selection State");
+                        //    if (inputState == InputUIState.Shown)
+                        //    {
+                        //        Debug.LogError("--> Set UI Input Selection State");
 
-                                if (selectionFrame)
-                                    selectionFrame.SetActive(true);
-                            }
-                        }
+                        //        if (selectionFrame)
+                        //            selectionFrame.SetActive(true);
+                        //    }
+                        //}
 
                         break;
 
@@ -7709,19 +7795,19 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectable)
-                        {
-                            if (inputState == InputUIState.Hidden)
-                                SetUIInputVisibilityState(true);
+                        //if (selectable)
+                        //{
+                        //    if (inputState == InputUIState.Hidden)
+                        //        SetUIInputVisibilityState(true);
 
-                            if (inputState == InputUIState.Shown)
-                            {
-                                Debug.LogError("--> Set UI Input Selection State");
+                        //    if (inputState == InputUIState.Shown)
+                        //    {
+                        //        Debug.LogError("--> Set UI Input Selection State");
 
-                                if (selectionFrame)
-                                    selectionFrame.SetActive(true);
-                            }
-                        }
+                        //        if (selectionFrame)
+                        //            selectionFrame.SetActive(true);
+                        //    }
+                        //}
 
                         break;
 
@@ -7923,19 +8009,19 @@ namespace Com.RedicalGames.Filar
 
                     case InputUIState.Selected:
 
-                        if (selectable)
-                        {
-                            if (inputState == InputUIState.Hidden)
-                                SetUIInputVisibilityState(true);
+                        //if (selectable)
+                        //{
+                        //    if (inputState == InputUIState.Hidden)
+                        //        SetUIInputVisibilityState(true);
 
-                            if (inputState == InputUIState.Shown)
-                            {
-                                Debug.LogError("--> Set UI Input Selection State");
+                        //    if (inputState == InputUIState.Shown)
+                        //    {
+                        //        Debug.LogError("--> Set UI Input Selection State");
 
-                                if (selectionFrame)
-                                    selectionFrame.SetActive(true);
-                            }
-                        }
+                        //        if (selectionFrame)
+                        //            selectionFrame.SetActive(true);
+                        //    }
+                        //}
 
                         break;
 
@@ -8484,38 +8570,112 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ValidationUI
+        public class InputValidation
         {
             #region Components
 
-            public string name;
+            [Space(5)]
+            public bool validate;
 
             [Space(5)]
-            public Image value;
+            public List<ValidationState> validationStates = new List<ValidationState>
+            {
+                new ValidationState
+                {
+                    name = "Default",
+                    color = Color.white,
+                    resultsType = ValidationResultsType.Default
+                },
 
-            [Space(5)]
-            public ValidationResultsType resultsType;
+                new ValidationState
+                {
+                    name = "Success",
+                    color = Color.white,
+                   resultsType =  ValidationResultsType.Success
+                },
 
-            [Space(5)]
-            public bool initialVisibilityState;
+                new ValidationState
+                {
+                    name = "Warning",
+                    color = Color.white,
+                    resultsType = ValidationResultsType.Warning
+                },
+
+                new ValidationState
+                {
+                    name = "Error",
+                    color = Color.grey,
+                    resultsType = ValidationResultsType.Error
+                }
+            };
+
+            public ValidationResultsType Results { get; set; }
 
             #endregion
 
             #region Main
 
-            public void Init()
+            public void GetValidationState(Action<CallbackData<ValidationState>> callback)
             {
-                if (initialVisibilityState)
-                    Show();
+                CallbackData<ValidationState> callbackResults = new CallbackData<ValidationState>();
+
+                if(validationStates != null && validationStates.Count > 0)
+                {
+                    var state = validationStates.Find(x => x.resultsType == Results);
+
+                    if(!string.IsNullOrEmpty(state.name))
+                    {
+                        callbackResults.results = $"Found Validation State : {state.name} Of Type : {Results}.";
+                        callbackResults.data = state;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Validation State Of Type : {Results} Not Assigned.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
                 else
-                    Hide();
+                {
+                    callbackResults.results = "There Are No Validation States Assigned.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
             }
 
-            public void SetImageValue(Sprite value) => this.value.sprite = value;
+            public void GetValidationState(ValidationResultsType resultsType, Action<CallbackData<ValidationState>> callback)
+            {
+                CallbackData<ValidationState> callbackResults = new CallbackData<ValidationState>();
 
-            public void Show() => value?.gameObject.SetActive(true);
+                if (validationStates != null && validationStates.Count > 0)
+                {
+                    var state = validationStates.Find(x => x.resultsType == resultsType);
 
-            public void Hide() => value?.gameObject.SetActive(false);
+                    if (!string.IsNullOrEmpty(state.name))
+                    {
+                        callbackResults.results = $"Found Validation State : {state.name} Of Type : {Results}.";
+                        callbackResults.data = state;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Validation State Of Type : {Results} Not Assigned.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Validation States Assigned.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
 
             #endregion
         }
@@ -11024,10 +11184,35 @@ namespace Com.RedicalGames.Filar
 
                                                 if (button.value != null)
                                                 {
-                                                    button.value.onClick.AddListener(() => OnActionButtonInputs(button));
+                                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                    {
+                                                        callbackResults.results = structureCallbackResults.results;
+                                                        callbackResults.resultsCode = structureCallbackResults.resultsCode;
 
-                                                    callbackResults.results = "Action Group Initialized";
-                                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                                        if (structureCallbackResults.Success())
+                                                        {
+                                                            if (button.Selectable().success)
+                                                            {
+                                                                structureCallbackResults.data.OnRegisterInputToSelectableEventListener(selectableComponent.selectableAssetType, button, selectableCallbackResults =>
+                                                                {
+                                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                                });
+                                                            }
+
+                                                            button.value.onClick.AddListener(() =>
+                                                            {
+                                                                structureCallbackResults.data.OnClearInputSelection(ScreenUIManager.Instance.GetCurrentUIScreenType(), clearCallbackResults => 
+                                                                {
+                                                                    Log(clearCallbackResults.resultsCode, clearCallbackResults.results, this);
+                                                                });
+
+                                                                OnActionButtonInputs(button);
+                                                            });
+
+                                                            callbackResults.results = "Action Group Initialized";
+                                                            callbackResults.resultsCode = Helpers.SuccessCode;
+                                                        }
+                                                    });
                                                 }
                                                 else
                                                 {
@@ -18646,7 +18831,22 @@ namespace Com.RedicalGames.Filar
                     UIInputField<InputFieldDataPackets> input = inputs.Find((input) => input.dataPackets.action == actionType);
 
                     if (input != null)
-                        input.OnValidation(results);
+                    {
+                        input.SetValidationResults(results);
+
+                        SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults => 
+                        {
+                            if (selectionSystemCallbackResults.Success())
+                            {
+                                selectionSystemCallbackResults.data.OnSelectUIInput(type, input, selectionCallbackResults => 
+                                {
+                                    Log(selectionCallbackResults.resultsCode, selectionCallbackResults.results, this);
+                                });
+                            }
+                            else
+                                Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                        });
+                    }
                     else
                         LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
                 }
