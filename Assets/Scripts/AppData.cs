@@ -3768,7 +3768,7 @@ namespace Com.RedicalGames.Filar
                 return selectables;
             }
 
-            public void AddSelectable(UISelectable selectable, Action<Callback> callback = null)
+            public void OnRegisterSelectableToEventListener(UISelectable selectable, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -3821,10 +3821,44 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void DeselectAll()
+            public void Clear(Action<Callback> callback = null)
             {
-                foreach (var selectable in selectables)
-                    selectable.Deselect();
+                Callback callbackResults = new Callback();
+
+                if(selectables != null && selectables.Count > 0)
+                {
+                    foreach (var selectable in selectables)
+                        selectable.Deselect();
+
+                    bool deselected = true;
+
+                    foreach (var selectable in selectables)
+                    {
+                        if (selectable.GetInputState() == InputUIState.Selected)
+                        {
+                            deselected = false;
+                            break;
+                        }
+                    }
+
+                    if(deselected)
+                    {
+                        callbackResults.results = $"Deselected All Selections For : {groupID} Group.";
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Failed To Clear Selections For : {groupID} Group - PleaseCheck Here.";
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = $"There Are No Selectables To Clear Selections For : {groupID} Group";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -3845,8 +3879,6 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public FocusedSelectionData cachedSelectionData = new FocusedSelectionData();
 
-            //[HideInInspector]
-            [Space(5)]
             public Dictionary<Enum, UISelectableGroup> selectableUIGroups = new Dictionary<Enum, UISelectableGroup>();
 
             public Action<SceneDataPackets> OnSelection { get; set; }
@@ -4957,7 +4989,7 @@ namespace Com.RedicalGames.Filar
                 return selectionStates;
             }
 
-            public void AddSelectableScreenUI(Enum groupID, UISelectable selectable, Action<CallbackData<UISelectableGroup>> callback)
+            public void OnRegisterInputToSelectableEventListener(Enum groupID, UISelectable selectable, Action<CallbackData<UISelectableGroup>> callback)
             {
                 CallbackData<UISelectableGroup> callbackResults = new CallbackData<UISelectableGroup>();
 
@@ -4967,7 +4999,7 @@ namespace Com.RedicalGames.Filar
                     {
                         UISelectableGroup group = new UISelectableGroup{ groupID = groupID };
 
-                        group.AddSelectable(selectable, selectableAddedCallbackResults => 
+                        group.OnRegisterSelectableToEventListener(selectable, selectableAddedCallbackResults => 
                         {
                             callbackResults.results = selectableAddedCallbackResults.results;
                             callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
@@ -4985,7 +5017,7 @@ namespace Com.RedicalGames.Filar
                         { 
                             if (!group.selectables.Contains(selectable))
                             {
-                                group.AddSelectable(selectable, selectableAddedCallbackResults => 
+                                group.OnRegisterSelectableToEventListener(selectable, selectableAddedCallbackResults => 
                                 {
                                     callbackResults.results = selectableAddedCallbackResults.results;
                                     callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
@@ -5019,12 +5051,43 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
+            public void OnClearInputSelection(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
 
+                if(selectableUIGroups != null && selectableUIGroups.Count > 0)
+                {
+                    foreach (var group in selectableUIGroups)
+                        group.Value.Clear();
+                }
+                else
+                {
+                    callbackResults.results = $"No Selectable UI Groups Found To Clear.";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
 
-            //public List<ISelectableUIComponent<SceneDataPackets>> GetSelectableScreenUIList()
-            //{
-            //    return selectableScreenUIList;
-            //}
+                callback?.Invoke(callbackResults);
+            }
+
+            public void OnClearInputSelection(Enum groupID, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (selectableUIGroups.TryGetValue(groupID, out UISelectableGroup group))
+                {
+                    group.Clear(clearCallbackResults =>
+                    {
+                        callbackResults = clearCallbackResults;
+                    });
+                }
+                else
+                {
+                    callbackResults.results = $"No Selectable Found To Clear For : {groupID} Group";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
 
             public void SelectScreenUI(IUIComponent<SceneDataPackets> selectable, Action<CallbackData<IUIComponent<SceneDataPackets>>> callback)
             {
@@ -13464,7 +13527,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                             {
-                                                structureCallbackResults.data.AddSelectableScreenUI(screenType, button, selectableCallbackResults =>
+                                                structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, button, selectableCallbackResults =>
                                                 {
                                                     Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                 });
@@ -13500,7 +13563,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                             {
-                                                structureCallbackResults.data.AddSelectableScreenUI(screenType, slider, selectableCallbackResults =>
+                                                structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, slider, selectableCallbackResults =>
                                                 {
                                                     Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                 });
@@ -13536,7 +13599,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                             {
-                                                structureCallbackResults.data.AddSelectableScreenUI(screenType, checkbox, selectableCallbackResults =>
+                                                structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, checkbox, selectableCallbackResults =>
                                                 {
                                                     Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                 });
@@ -13592,7 +13655,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                                 {
-                                                    structureCallbackResults.data.AddSelectableScreenUI(screenType, dropdown, selectableCallbackResults =>
+                                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, dropdown, selectableCallbackResults =>
                                                     {
                                                          Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                     });
@@ -13651,7 +13714,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                                 {
-                                                    structureCallbackResults.data.AddSelectableScreenUI(screenType, inputField, selectableCallbackResults =>
+                                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, inputField, selectableCallbackResults =>
                                                     {
                                                         Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                     });
@@ -15565,14 +15628,30 @@ namespace Com.RedicalGames.Filar
 
                 if (widget != null)
                 {
-                    widget.Hide(canTransition, hideCallback =>
+                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                     {
-                        if (hideCallback.Success())
+                        if (selectionSystemCallbackResults.Success())
                         {
-                            Focus();
+                            selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
+                            {
+                                if(selectionsClearedCallbackResults.Success())
+                                {
+                                    widget.Hide(canTransition, hideCallback =>
+                                    {
+                                        if (hideCallback.Success())
+                                        {
+                                            Focus();
+                                        }
+                                        else
+                                            Log(hideCallback.resultsCode, hideCallback.results, this);
+                                    });
+                                }
+                                else
+                                    Log(selectionsClearedCallbackResults.resultsCode, selectionsClearedCallbackResults.results, this);
+                            });
                         }
                         else
-                            Log(hideCallback.resultsCode, hideCallback.results, this);
+                            Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
                     });
                 }
                 else
@@ -15598,27 +15677,44 @@ namespace Com.RedicalGames.Filar
 
                 if(widget != null)
                 {
-                    widget.Hide();
-
-                    if (widgetType == WidgetType.ConfirmationPopWidget)
+                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                     {
-                        if (SelectableManager.Instance)
+                        if (selectionSystemCallbackResults.Success())
                         {
-                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
-                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
-                            else
-                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                            selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
+                            {
+                                if (selectionsClearedCallbackResults.Success())
+                                {
+                                    widget.Hide();
+
+                                    if (widgetType == WidgetType.ConfirmationPopWidget)
+                                    {
+                                        if (SelectableManager.Instance)
+                                        {
+                                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
+                                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
+                                            else
+                                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                        }
+                                        else
+                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                    }
+
+                                    if (widget.type == WidgetType.SceneAssetPreviewWidget)
+                                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                                            ActionEvents.OnResetCameraToDefaultPoseEvent();
+                                    Focus();
+                                }
+                                else
+                                    Log(selectionsClearedCallbackResults.resultsCode, selectionsClearedCallbackResults.results, this);
+                            });
                         }
                         else
-                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
-                    }
+                            Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                    });
 
-                    if (widget.type == WidgetType.SceneAssetPreviewWidget)
-                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
-                            ActionEvents.OnResetCameraToDefaultPoseEvent();
+
                 }
-
-                Focus();
             }
 
             public void HideScreenWidgets()
@@ -16618,7 +16714,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.AddSelectableScreenUI(type, button, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, button, selectableCallbackResults =>
                                     {
                                         if (selectableCallbackResults.Success())
                                         {
@@ -16661,7 +16757,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.AddSelectableScreenUI(type, inputField, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, inputField, selectableCallbackResults =>
                                     {
                                         Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                     });
@@ -16700,7 +16796,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.AddSelectableScreenUI(type, inputSlider, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, inputSlider, selectableCallbackResults =>
                                     {
                                         Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                     });
@@ -16738,7 +16834,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.AddSelectableScreenUI(type, dropdown, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, dropdown, selectableCallbackResults =>
                                     {
                                         if (selectableCallbackResults.Success())
                                         {
@@ -16781,7 +16877,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.AddSelectableScreenUI(type, checkbox, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, checkbox, selectableCallbackResults =>
                                     {
                                         if (selectableCallbackResults.Success())
                                         {
