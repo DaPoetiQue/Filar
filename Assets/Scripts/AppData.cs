@@ -14171,7 +14171,7 @@ namespace Com.RedicalGames.Filar
                         {
                             case InputDropDownActionType.FilterList:
 
-                                Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
+                                Helpers.StringListValueValid(contentGroup.contents, 3, hasContentsCallbackResults =>
                                 {
                                     if (hasContentsCallbackResults.Success())
                                     {
@@ -14217,11 +14217,15 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                             LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
+
+                                        SceneAssetsManager.Instance.SetCanFilterContent(true);
                                     }
                                     else
                                     {
                                         dropdown.SetContent(new List<string> { contentGroup.placeHolder });
-                                        dropdown.SetUIInputState(contentGroup.state);
+                                        dropdown.SetUIInputState(InputUIState.Disabled);
+
+                                        SceneAssetsManager.Instance.SetCanFilterContent(false);
                                     }
                                 });
 
@@ -14231,8 +14235,12 @@ namespace Com.RedicalGames.Filar
 
                                 Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
                                 {
-                                    if (hasContentsCallbackResults.Success())
+                                    if (hasContentsCallbackResults.Success() && SceneAssetsManager.Instance.CanSortContents())
                                     {
+                                        if (!SceneAssetsManager.Instance.CanFilterContents())
+                                            if (contentGroup.contents.Contains("Category"))
+                                                contentGroup.contents.Remove("Category");
+
                                         dropdown.value.ClearOptions();
                                         dropdown.SetUIInputState(InputUIState.Enabled);
 
@@ -14274,12 +14282,12 @@ namespace Com.RedicalGames.Filar
 
                                                         if (filterType != ProjectCategoryType.Project_All)
                                                         {
-                                                            if(sortType == SortType.Category)
+                                                            if (sortType == SortType.Category)
                                                             {
                                                                 sortType = SortType.Ascending;
                                                                 rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
 
-                                                                SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults => 
+                                                                SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
                                                                 {
                                                                     if (dataSavedCallbackResults.Success())
                                                                         dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
@@ -14305,7 +14313,7 @@ namespace Com.RedicalGames.Filar
                                     else
                                     {
                                         dropdown.SetContent(new List<string> { contentGroup.placeHolder });
-                                        dropdown.SetUIInputState(contentGroup.state);
+                                        dropdown.SetUIInputState(InputUIState.Disabled);
                                     }
                                 });
 
@@ -24239,6 +24247,26 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.results = "Component Is Not Valid - Could Be Null Or Empty.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void StringListValueValid(List<string> values, int hasRequiredAmount, Action<CallbackDataList<string>> callback)
+            {
+                CallbackDataList<string> callbackResults = new CallbackDataList<string>();
+
+                if (values != null && values.Count >= hasRequiredAmount)
+                {
+                    callbackResults.results = $"Component Is Valid - And Has Required Amount Pf {values.Count} Contents.";
+                    callbackResults.data = values;
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Component Is Not Valid - Not Assigned Or Doesn't Have Required Amount Of Contents.";
                     callbackResults.data = default;
                     callbackResults.resultsCode = ErrorCode;
                 }
