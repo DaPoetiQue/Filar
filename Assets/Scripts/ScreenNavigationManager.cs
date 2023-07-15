@@ -119,7 +119,11 @@ namespace Com.RedicalGames.Filar
                         {
                             //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FolderNavigationWidget);
                             UpdateNavigationRootTitleDisplayer();
-                            folderNavigationDataPackets.widgetTitle = SceneAssetsManager.Instance.GetFolderStructureData().GetRootFolder().name;
+
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                                folderNavigationDataPackets.widgetTitle = SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name;
+                            else
+                                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
                         }
                     }
                     else
@@ -147,42 +151,47 @@ namespace Com.RedicalGames.Filar
 
         public void UpdateNavigationRootTitleDisplayer()
         {
-            string rootFolderName = SceneAssetsManager.Instance.GetFolderStructureData().GetRootFolder().name + "/";
-            string formattedTitle = string.Empty;
-
-            if (folderNavigationNameList.Count == 1)
-                formattedTitle = rootFolderName + folderNavigationNameList[0];
-            else if (folderNavigationNameList.Count > 1)
+            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
             {
-                string folderDirectoryIndexedWidgetName = rootFolderName + folderNavigationNameList[0];
+                string rootFolderName = SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name + "/";
+                string formattedTitle = string.Empty;
 
-                for (int i = 0; i < folderNavigationNameList.Count; i++)
-                    if (i != 0)
-                        folderDirectoryIndexedWidgetName += "/" + folderNavigationNameList[i];
+                if (folderNavigationNameList.Count == 1)
+                    formattedTitle = rootFolderName + folderNavigationNameList[0];
+                else if (folderNavigationNameList.Count > 1)
+                {
+                    string folderDirectoryIndexedWidgetName = rootFolderName + folderNavigationNameList[0];
 
-                formattedTitle = folderDirectoryIndexedWidgetName;
-            }
-            else
-                formattedTitle = SceneAssetsManager.Instance.GetFolderStructureData().GetRootFolder().name;
+                    for (int i = 0; i < folderNavigationNameList.Count; i++)
+                        if (i != 0)
+                            folderDirectoryIndexedWidgetName += "/" + folderNavigationNameList[i];
 
-            if (formattedTitle.Length > folderNavigationDataPackets.widgetTitleCharacterLimit)
-            {
-                string trimmedWidgetTitle = formattedTitle.Substring(formattedTitle.Length - folderNavigationDataPackets.widgetTitleCharacterLimit, folderNavigationDataPackets.widgetTitleCharacterLimit);
-                string output = rootFolderName + ".../" + trimmedWidgetTitle.Substring(trimmedWidgetTitle.IndexOf("/") + 1);
-                formattedTitle = output;
-            }
-
-            if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-            {
-                ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, formattedTitle);
-
-                if (folderNavigationNameList.Count == 0)
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
+                    formattedTitle = folderDirectoryIndexedWidgetName;
+                }
                 else
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Shown);
+                    formattedTitle = SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name;
+
+                if (formattedTitle.Length > folderNavigationDataPackets.widgetTitleCharacterLimit)
+                {
+                    string trimmedWidgetTitle = formattedTitle.Substring(formattedTitle.Length - folderNavigationDataPackets.widgetTitleCharacterLimit, folderNavigationDataPackets.widgetTitleCharacterLimit);
+                    string output = rootFolderName + ".../" + trimmedWidgetTitle.Substring(trimmedWidgetTitle.IndexOf("/") + 1);
+                    formattedTitle = output;
+                }
+
+                if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                {
+                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, formattedTitle);
+
+                    if (folderNavigationNameList.Count == 0)
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
+                    else
+                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Shown);
+                }
+                else
+                    LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
             }
             else
-                Debug.LogWarning("--> UpdateNavigationRootTitleDisplayer Failed : ScreenUIManager.Instance.GetCurrentScreenData().value Is Missing / Not Found.");
+                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
         }
 
         public AppData.SceneDataPackets GetEmptyFolderDataPackets()
