@@ -42,6 +42,7 @@ namespace Com.RedicalGames.Filar
         float screenTransitionSpeed = 0.0f;
 
         bool canTransitionScreen = false;
+        bool clearInputsOnTransition;
         bool screensInitialized = false;
 
         Vector2 targetScreenPoint = Vector2.zero;
@@ -273,13 +274,16 @@ namespace Com.RedicalGames.Filar
                         HideScreens(currentScreen.value.GetUIScreenType());
                         canTransitionScreen = false;
 
-                        SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallback => 
+                        if (clearInputsOnTransition)
                         {
-                            if (selectionSystemCallback.Success())
-                                selectionSystemCallback.data.OnClearInputSelection();
-                            else
-                                Log(selectionSystemCallback.resultsCode, selectionSystemCallback.results, this);
-                        });
+                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallback =>
+                            {
+                                if (selectionSystemCallback.Success())
+                                    selectionSystemCallback.data.OnClearInputSelection();
+                                else
+                                    Log(selectionSystemCallback.resultsCode, selectionSystemCallback.results, this);
+                            });
+                        }
                     }
                 }
             }

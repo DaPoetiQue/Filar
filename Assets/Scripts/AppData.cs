@@ -3736,7 +3736,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class UISelectableGroup
+        public class UISelectableGroup : DataDebugger
         {
             #region Components
 
@@ -3795,24 +3795,24 @@ namespace Com.RedicalGames.Filar
             {
                if(selectables.Contains(selectable))
                 {
-                    var selected = selectables.FindAll(x => x.GetInputState() != InputUIState.Normal);
-
-                    if(selected != null && selected.Count > 0)
+                    if (selectable.GetSelectionStateInfo().GetInputUIState() != InputUIState.Disabled)
                     {
-                        foreach (var item in selected)
+                        var selected = selectables.FindAll(x => x.GetInputUIState() != InputUIState.Normal);
+
+                        if (selected != null && selected.Count > 0)
                         {
-                            if (item.GetSelectionStateInfo().InputState != InputUIState.Disabled)
+                            foreach (var item in selected)
                             {
-                                if (item.inputType == InputType.DropDown)
-                                    item.Collapse();
-                                else
-                                    item.Deselect();
+                                if (item.GetInputUIState() != InputUIState.Disabled)
+                                {
+                                    if (item.inputType == InputType.DropDown)
+                                        item.Collapse();
+                                    else
+                                        item.Deselect();
+                                }
                             }
                         }
-                    }
 
-                    if (selectable.GetSelectionStateInfo().InputState != InputUIState.Disabled)
-                    {
                         if (selectable.inputType == InputType.DropDown)
                             selectable.Expand();
                         else
@@ -3834,7 +3834,7 @@ namespace Com.RedicalGames.Filar
 
                     foreach (var selectable in selectables)
                     {
-                        if (selectable.GetInputState() == InputUIState.Selected)
+                        if (selectable.GetInputUIState() == InputUIState.Selected)
                         {
                             deselected = false;
                             break;
@@ -5022,8 +5022,11 @@ namespace Com.RedicalGames.Filar
                                     callbackResults.results = selectableAddedCallbackResults.results;
                                     callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
 
-                                    if(callbackResults.Success())
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.results = $"Register : {selectable.name} - Of Type {selectable.inputType} - State : {selectable.GetInputUIState()} To Group : {groupID}";
                                         callbackResults.data = group;
+                                    }
                                 });
                             }
                             else
@@ -6406,17 +6409,15 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-
+        #region Base Selectable Data
 
         [Serializable]
-        public abstract class UISelectable: ISelectable
+        public abstract class UISelectable: DataDebugger, ISelectable
         {
             #region Components
 
-            public string name;
-
             [Space(5)]
-            public InputSelectionData selectionStatesInfo = new InputSelectionData();
+            public InputSelectionStateInfoGroup selectionStatesInfo = new InputSelectionStateInfoGroup();
 
             [Space(5)]
             public bool selectable;
@@ -6431,7 +6432,7 @@ namespace Com.RedicalGames.Filar
             public InputType inputType;
 
             [Space(5)]
-            public InputValidation validationStatesInfo = new InputValidation();
+            public InputValidationStateInfoGroup validationStatesInfo = new InputValidationStateInfoGroup();
 
             #endregion
 
@@ -6459,115 +6460,137 @@ namespace Com.RedicalGames.Filar
 
             public void Select()
             {
-                if (visualizationType != SelectionVisualizationType.None)
+                if (selectable)
                 {
-                    switch (visualizationType)
+                    if (visualizationType != SelectionVisualizationType.None)
                     {
-                        case SelectionVisualizationType.ColorTint:
+                        switch (visualizationType)
+                        {
+                            case SelectionVisualizationType.ColorTint:
 
-                            break;
+                                break;
 
-                        case SelectionVisualizationType.SelectionFrame:
+                            case SelectionVisualizationType.SelectionFrame:
 
-                            if (selectionFrame != null)
-                            {
-                                if (validationStatesInfo.validate)
+                                if (selectionFrame != null)
                                 {
-                                    validationStatesInfo.GetValidationState(validationCallbackResults =>
+                                    if (validationStatesInfo.validate)
                                     {
-                                        if (validationCallbackResults.Success())
+                                        validationStatesInfo.GetValidationState(validationCallbackResults =>
                                         {
-                                            selectionFrame.color = validationCallbackResults.data.color;
+                                            if (validationCallbackResults.Success())
+                                            {
+                                                selectionFrame.color = validationCallbackResults.data.color;
 
-                                            if (validationCallbackResults.data.value != null)
-                                                selectionFrame.sprite = validationCallbackResults.data.value;
-                                        }
-                                        else
-                                            Debug.LogError(validationCallbackResults.results);
-                                    });
+                                                if (validationCallbackResults.data.value != null)
+                                                    selectionFrame.sprite = validationCallbackResults.data.value;
+                                            }
+                                            else
+                                                Debug.LogError(validationCallbackResults.results);
+                                        });
+                                    }
+
+                                    selectionFrame.gameObject.SetActive(true);
                                 }
+                                else
+                                    Debug.LogError($"Selection Frame For : {name} Of Type : {inputType} Missing / Not Found.");
 
-                                selectionFrame.gameObject.SetActive(true);
-                            }
+                                break;
+                        }
+
+                        SetSelectableInputUIState(InputUIState.Selected);
+
+                        GetSelectionState(selectionStateCallbackResults =>
+                        {
+                            if (selectionStateCallbackResults.Success())
+                                SetSelectionState(visualizationType, selectionStateCallbackResults.data);
                             else
-                                Debug.LogError($"Selection Frame For : {name} Of Type : {inputType} Missing / Not Found.");
-
-                            break;
+                                Debug.LogError(selectionStateCallbackResults.results);
+                        });
                     }
+                    else
+                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
 
-                GetSelectionStateInfo().InputState = InputUIState.Selected;
-
-                GetSelectionState(selectionStateCallbackResults => 
-                {
-                    if (selectionStateCallbackResults.Success())
-                        SetSelectionState(visualizationType, selectionStateCallbackResults.data);
-                    else
-                        Debug.LogError(selectionStateCallbackResults.results);
-                });
             }
 
             public void Deselect()
             {
-                if (visualizationType != SelectionVisualizationType.None)
+                if (selectable)
                 {
-                    switch (visualizationType)
+                    if (visualizationType != SelectionVisualizationType.None)
                     {
-                        case SelectionVisualizationType.ColorTint:
+                        switch (visualizationType)
+                        {
+                            case SelectionVisualizationType.ColorTint:
 
-                            break;
+                                break;
 
-                        case SelectionVisualizationType.SelectionFrame:
+                            case SelectionVisualizationType.SelectionFrame:
 
-                            if (selectionFrame != null)
-                            {
-                                if (validationStatesInfo.validate)
+                                if (selectionFrame != null)
                                 {
-                                    validationStatesInfo.GetValidationState(ValidationResultsType.Default, validationCallbackResults =>
+                                    if (validationStatesInfo.validate)
                                     {
-                                        if (validationCallbackResults.Success())
+                                        validationStatesInfo.GetValidationState(ValidationResultsType.Default, validationCallbackResults =>
                                         {
-                                            selectionFrame.color = validationCallbackResults.data.color;
+                                            if (validationCallbackResults.Success())
+                                            {
+                                                selectionFrame.color = validationCallbackResults.data.color;
 
-                                            if (validationCallbackResults.data.value != null)
-                                                selectionFrame.sprite = validationCallbackResults.data.value;
-                                        }
-                                        else
-                                            Debug.LogError(validationCallbackResults.results);
-                                    });
+                                                if (validationCallbackResults.data.value != null)
+                                                    selectionFrame.sprite = validationCallbackResults.data.value;
+                                            }
+                                            else
+                                                Debug.LogError(validationCallbackResults.results);
+                                        });
+                                    }
+
+                                    selectionFrame.gameObject.SetActive(false);
                                 }
 
-                                selectionFrame.gameObject.SetActive(false);
-                            }
-
-                            break;
+                                break;
+                        }
                     }
+
+                    SetSelectableInputUIState(InputUIState.Normal);
+
+                    GetSelectionState(selectionStateCallbackResults =>
+                    {
+                        if (selectionStateCallbackResults.Success())
+                            SetSelectionState(visualizationType, selectionStateCallbackResults.data);
+                        else
+                            Debug.LogError(selectionStateCallbackResults.results);
+                    });
                 }
-
-                GetSelectionStateInfo().InputState = InputUIState.Normal;
-
-                GetSelectionState(selectionStateCallbackResults =>
-                {
-                    if (selectionStateCallbackResults.Success())
-                        SetSelectionState(visualizationType, selectionStateCallbackResults.data);
-                    else
-                        Debug.LogError(selectionStateCallbackResults.results);
-                });
             }
 
-            public InputSelectionData GetSelectionStateInfo()
+            public InputSelectionStateInfoGroup GetSelectionStateInfo()
             {
                 return selectionStatesInfo;
             }
 
-            public void SetInputState(InputUIState state) => selectionStatesInfo.InputState = state;
+            #region UI States
 
-            public InputValidation GetValidationStateInfo()
+            public void SetSelectableInputUIState(InputUIState state)
+            {
+                LogInfo($"================>>>>>>>>>>>>>>>>> Setting : {name} Of Input Type : {inputType} To Selection State : {state}", this);
+                GetSelectionStateInfo().SetInputState(state);
+            }
+
+            public InputUIState GetInputUIState()
+            {
+                return GetSelectionStateInfo().GetInputUIState();
+            }
+
+            #endregion
+
+            #region Validations
+
+            public InputValidationStateInfoGroup GetValidationStateInfo()
             {
                 return validationStatesInfo;
             }
-
-            #region Validations
 
             public void SetValidationResults(ValidationResultsType results) => validationStatesInfo.Results = results;
 
@@ -6593,11 +6616,6 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
-
-            public InputUIState GetInputState()
-            {
-                return selectionStatesInfo.InputState;
-            }
 
             public SelectionVisualizationType GetSelectionVisualizationType()
             {
@@ -6652,6 +6670,49 @@ namespace Com.RedicalGames.Filar
 
             #endregion
         }
+
+        [Serializable]
+        public abstract class SelectableUIInputComponent<T, U, V> : AppMonoBaseClass, IPointerDownHandler where T : Component
+        {
+
+            #region Components
+
+            public string inputName;
+
+            RectTransform uiInputTransform;
+
+            protected UISelectable selectable;
+
+            #endregion
+
+            #region Main
+
+            public void Init(UISelectable selectable) => this.selectable = selectable;
+
+            public void OnPointerDown(PointerEventData eventData)
+            {
+                if (uiInputTransform == null)
+                    uiInputTransform = this.GetComponent<RectTransform>();
+
+                if (uiInputTransform)
+                {
+                    Vector2 pos;
+
+                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(uiInputTransform, eventData.position, eventData.enterEventCamera, out pos))
+                        OnInputSelected();
+                }
+            }
+
+            protected abstract void OnInputSelected();
+            protected abstract void OnInputSelected(UIInputComponent<T, U, V> input);
+
+            #endregion
+
+        }
+
+        #endregion
+
+        #region Action Inputs Components
 
         [Serializable]
         public abstract class UIInputComponent<T, U, D> : UISelectable, IUIComponent<D> where T : UnityEngine.Object
@@ -6712,7 +6773,7 @@ namespace Com.RedicalGames.Filar
             /// Sets The Color Of The UI Input Field.
             /// </summary>
             /// <param name="color">The Color To Use.</param>
-            public abstract void SetFieldColor(Color color);
+            public abstract void SetUIColor(Color color);
 
             /// <summary>
             /// Returns The Current UI Input Interactable State.
@@ -6745,19 +6806,11 @@ namespace Com.RedicalGames.Filar
             public abstract void SetUIInputState(InputUIState state);
 
             /// <summary>
-            /// Returns The Current UI State.
-            /// </summary>
-            /// <returns></returns>
-            public abstract InputUIState GetUIInputState();
-
-            /// <summary>
             /// Sets The States For The Child Widgets On This UI Input.
             /// </summary>
             /// <param name="interactable">The Interactable State Of The Child Widget.</param>
             /// <param name="isSelected">The Selection State Of The Child Widget.</param>
             public abstract void SetChildWidgetsState(bool interactable, bool isSelected);
-
-            public abstract void SetUIInputState(D input, InputUIState state);
 
             /// <summary>
             /// This Function Sets UI Image Value.
@@ -6776,54 +6829,10 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-
-        [Serializable]
-        public abstract class SelectableUIInputComponent<T, U, V> : AppMonoBaseClass, IPointerDownHandler where T : Component
-        {
-
-            #region Components
-
-            public string inputName;
-
-            RectTransform uiInputTransform;
-
-            protected UISelectable selectable;
-
-            #endregion
-
-            #region Main
-
-            public void Init(UISelectable selectable) => this.selectable = selectable;
-
-            public void OnPointerDown(PointerEventData eventData)
-            {
-                if (uiInputTransform == null)
-                    uiInputTransform = this.GetComponent<RectTransform>();
-
-                if (uiInputTransform)
-                {
-                    Vector2 pos;
-
-                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(uiInputTransform, eventData.position, eventData.enterEventCamera, out pos))
-                        OnInputSelected();
-                }
-            }
-
-            protected abstract void OnInputSelected();
-            protected abstract void OnInputSelected(UIInputComponent<T, U, V> input);
-
-            #endregion
-
-        }
-
-        #region Action Inputs Components
-
         [Serializable]
         public class UIButton<T> : UIInputComponent<Button, T, UIButton<T>>
         {
             #region Components
-
-            private SelectionState selectionState = new SelectionState();
 
             #endregion
 
@@ -6856,57 +6865,38 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public (InputUIState inputState, SelectionState selectionState) GetUIState()
-            {
-                return (GetSelectionStateInfo().InputState, selectionState);
-            }
-
             public override void SetInteractableState(bool interactable)
             {
                 if (InputValueAssigned().success)
-                {
                     value.interactable = interactable;
-
-                    if (interactable)
-                        GetSelectionStateInfo().InputState = InputUIState.Enabled;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Disabled;
-                }
                 else
                     Debug.LogWarning(InputValueAssigned().results);
             }
 
-            void SetUIInputSelectionState(SelectionState state)
-            {
-                if(fieldUIImageList != null && fieldUIImageList.Count > 0)
-                {
-                    var buttonIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.ButtonIcon);
+            //void SetUIInputSelectionState(SelectionState state)
+            //{
+            //    if(fieldUIImageList != null && fieldUIImageList.Count > 0)
+            //    {
+            //        var buttonIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.ButtonIcon);
 
-                    if (buttonIcon.value != null)
-                    {
-                        buttonIcon.value.color = state.color;
+            //        if (buttonIcon.value != null)
+            //        {
+            //            buttonIcon.value.color = state.color;
 
-                        if (state.value != null)
-                            buttonIcon.value.sprite = state.value;
-                    }
-                    else
-                        Debug.LogError("Button Icon Value Missing / Not Found.");
-                }
+            //            if (state.value != null)
+            //                buttonIcon.value.sprite = state.value;
+            //        }
+            //        else
+            //            Debug.LogError("Button Icon Value Missing / Not Found.");
+            //    }
 
-                selectionState = state;
-            }
+            //    selectionState = state;
+            //}
 
             public override void SetUIInputVisibilityState(bool visible)
             {
                 if (InputValueAssigned().success)
-                {
                     value.gameObject.SetActive(visible);
-
-                    if (visible)
-                        GetSelectionStateInfo().InputState = InputUIState.Shown;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Hidden;
-                }
                 else
                     Debug.LogWarning(InputValueAssigned().results);
             }
@@ -6952,7 +6942,9 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
 
-                GetSelectionStateInfo().InputState = state;
+                LogInfo($"================>>>>>>>>>>>>>>>>> Set : {name} Of Input Type : {inputType} To State : {state}", this);
+
+                SetSelectableInputUIState(state);
 
                 //if (selectionStates != null && selectionStates.Count > 0)
                 //{
@@ -6968,26 +6960,7 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
-            {
-                return GetSelectionStateInfo().InputState;
-            }
-
-
-            public override void SetUIInputState(UIButton<T> input, InputUIState state)
-            {
-                if (input == this)
-                {
-                    SetUIInputState(state);
-                    Debug.LogError($"--> Setting UI Button : {this.name} To State : {state}");
-                }
-                else
-                {
-                    Debug.LogError($"-------> Deselection Called On : {this.name}.");
-                }
-            }
-
-            public override void SetFieldColor(Color color)
+            public override void SetUIColor(Color color)
             {
                 if (value != null)
                     value.image.color = color;
@@ -7029,7 +7002,6 @@ namespace Com.RedicalGames.Filar
                 {
                     if (visualizationType != SelectionVisualizationType.None)
                     {
-
                         switch (visualizationType)
                         {
                             case SelectionVisualizationType.ColorTint:
@@ -7046,7 +7018,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogWarning("Input Selection Visualization Type Is Set To None.");
+                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
                 else
                     Debug.LogError(InputValueAssigned().results);
@@ -7142,7 +7114,7 @@ namespace Com.RedicalGames.Filar
 
             public override void SetInteractableState(bool interactable)
             {
-                if (IsInitialized())
+                if (InputValueAssigned().success)
                 {
                     value.interactable = interactable;
 
@@ -7155,29 +7127,17 @@ namespace Com.RedicalGames.Filar
                         else
                             Debug.LogWarning($"--> SetInteractableState Failed With Results : {selectionState.results}");
                     });
-
-                    if (interactable)
-                        GetSelectionStateInfo().InputState = InputUIState.Enabled;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Disabled;
                 }
                 else
-                    Debug.LogWarning("--> Set UI Input Interactable State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-                if (IsInitialized())
-                {
+                if (InputValueAssigned().success)
                     value.gameObject.SetActive(visible);
-
-                    if (visible)
-                        GetSelectionStateInfo().InputState = InputUIState.Shown;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Hidden;
-                }
                 else
-                    Debug.LogWarning("--> Set UI Input Visibility State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override bool GetUIInputVisibilityState()
@@ -7222,12 +7182,9 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
 
-                GetSelectionStateInfo().InputState = state;
-            }
+                LogInfo($"================>>>>>>>>>>>>>>>>> Set : {name} Of Input Type : {inputType} To State : {state}", this);
 
-            public InputUIState GetInputUIState()
-            {
-                return GetSelectionStateInfo().InputState;
+                SetSelectableInputUIState(state);
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -7235,18 +7192,7 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
-            {
-                return GetSelectionStateInfo().InputState;
-            }
-
-            public override void SetUIInputState(UIDropDown<T> input, InputUIState state)
-            {
-                if (input == this)
-                    SetUIInputState(state);
-            }
-
-            public override void SetFieldColor(Color color)
+            public override void SetUIColor(Color color)
             {
                 throw new NotImplementedException();
             }
@@ -7288,7 +7234,6 @@ namespace Com.RedicalGames.Filar
                 {
                     if (visualizationType != SelectionVisualizationType.None)
                     {
-
                         switch (visualizationType)
                         {
                             case SelectionVisualizationType.ColorTint:
@@ -7305,7 +7250,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogWarning("Input Selection Visualization Type Is Set To None.");
+                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
                 else
                     Debug.LogError(InputValueAssigned().results);
@@ -7327,7 +7272,10 @@ namespace Com.RedicalGames.Filar
             public Button clearButton;
 
             [Space(5)]
-            public TMP_Text placeholderDisplayer;
+            public string placeHolderText;
+
+            [Space(5)]
+            public TMP_Text placeholderTextDisplayer;
 
             [Space(5)]
             public int characterLimit;
@@ -7347,7 +7295,7 @@ namespace Com.RedicalGames.Filar
                     clearButton.onClick.AddListener(OnClearField);
 
                 if (value != null)
-                    value.characterLimit = characterLimit;
+                    value.characterLimit = characterLimit;    
             }
 
             public void SetPlaceHolderText(string placeholder)
@@ -7356,8 +7304,8 @@ namespace Com.RedicalGames.Filar
 
                 value.text = string.Empty;
 
-                if (placeholderDisplayer)
-                    placeholderDisplayer.text = placeholder;
+                if (placeholderTextDisplayer)
+                    placeholderTextDisplayer.text = placeholder;
             }
 
             public void SetPlaceHolderText(int placeholder)
@@ -7369,8 +7317,8 @@ namespace Com.RedicalGames.Filar
                 else
                     Debug.LogWarning("--> SetPlaceHolderText Failed : Value Missing / Null.");
 
-                if (placeholderDisplayer)
-                    placeholderDisplayer.text = placeholder.ToString();
+                if (placeholderTextDisplayer)
+                    placeholderTextDisplayer.text = placeholder.ToString();
             }
 
             public void SetValue(string value) => this.value.text = value;
@@ -7381,8 +7329,13 @@ namespace Com.RedicalGames.Filar
                 {
                     value.text = string.Empty;
 
-                    if (placeholderDisplayer)
-                        placeholderDisplayer.text = clearTextPlaceHolder;
+                    if (placeholderTextDisplayer)
+                    {
+                        if (string.IsNullOrEmpty(clearTextPlaceHolder) && !string.IsNullOrEmpty(placeHolderText))
+                            clearTextPlaceHolder = placeHolderText;
+
+                        placeholderTextDisplayer.text = clearTextPlaceHolder;
+                    }
 
                     value.Select();
                 }
@@ -7417,35 +7370,18 @@ namespace Com.RedicalGames.Filar
 
             public override void SetInteractableState(bool interactable)
             {
-                if (IsInitialized())
-                {
+                if (InputValueAssigned().success)
                     value.interactable = interactable;
-
-                    if (clearButton != null)
-                        clearButton.interactable = interactable;
-
-                    if (interactable)
-                        GetSelectionStateInfo().InputState = InputUIState.Enabled;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Disabled;
-                }
                 else
-                    Debug.LogWarning("--> Set UI Input Interactable State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-                if (IsInitialized())
-                {
+                if (InputValueAssigned().success)
                     value.gameObject.SetActive(visible);
-
-                    if (visible)
-                        GetSelectionStateInfo().InputState = InputUIState.Shown;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Hidden;
-                }
                 else
-                    Debug.LogWarning("--> Set UI Input Visibility State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override bool GetUIInputVisibilityState()
@@ -7488,7 +7424,7 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
 
-                GetSelectionStateInfo().InputState = state;
+                SetSelectableInputUIState(state);
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -7496,24 +7432,10 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
-            {
-                return GetSelectionStateInfo().InputState;
-            }
-
-            public override void SetUIInputState(UIInputField<T> input, InputUIState state)
-            {
-                if (input == this)
-                {
-
-                }
-            }
-
-            public override void SetFieldColor(Color color)
+            public override void SetUIColor(Color color)
             {
                 throw new NotImplementedException();
             }
-
 
             #region Selections
 
@@ -7549,7 +7471,6 @@ namespace Com.RedicalGames.Filar
                 {
                     if (visualizationType != SelectionVisualizationType.None)
                     {
-
                         switch (visualizationType)
                         {
                             case SelectionVisualizationType.ColorTint:
@@ -7644,32 +7565,18 @@ namespace Com.RedicalGames.Filar
 
             public override void SetInteractableState(bool interactable)
             {
-                if (IsInitialized())
-                {
+                if (InputValueAssigned().success)
                     value.interactable = interactable;
-
-                    if (interactable)
-                        GetSelectionStateInfo().InputState = InputUIState.Enabled;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Disabled;
-                }
                 else
-                    Debug.LogWarning("--> Set UI Input Interactable State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-                if (IsInitialized())
-                {
+                if (InputValueAssigned().success)
                     value.gameObject.SetActive(visible);
-
-                    if (visible)
-                        GetSelectionStateInfo().InputState = InputUIState.Shown;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Hidden;
-                }
                 else
-                    Debug.LogWarning("--> Set UI Input Visibility State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override bool GetUIInputVisibilityState()
@@ -7718,21 +7625,10 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
+            public override void SetUIColor(Color color)
             {
-                return GetSelectionStateInfo().InputState;
+              
             }
-
-            public override void SetUIInputState(UICheckbox<T> input, InputUIState state)
-            {
-
-            }
-
-            public override void SetFieldColor(Color color)
-            {
-                throw new NotImplementedException();
-            }
-
 
             #region Selections
 
@@ -7768,7 +7664,6 @@ namespace Com.RedicalGames.Filar
                 {
                     if (visualizationType != SelectionVisualizationType.None)
                     {
-
                         switch (visualizationType)
                         {
                             case SelectionVisualizationType.ColorTint:
@@ -7785,7 +7680,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogWarning("Input Selection Visualization Type Is Set To None.");
+                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
                 else
                     Debug.LogError(InputValueAssigned().results);
@@ -7841,14 +7736,7 @@ namespace Com.RedicalGames.Filar
             public override void SetInteractableState(bool interactable)
             {
                 if (InputValueAssigned().success)
-                {
                     value.interactable = interactable;
-
-                    if (interactable)
-                        GetSelectionStateInfo().InputState = InputUIState.Enabled;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Disabled;
-                }
                 else
                     Debug.LogWarning(InputValueAssigned().results);
             }
@@ -7856,14 +7744,7 @@ namespace Com.RedicalGames.Filar
             public override void SetUIInputVisibilityState(bool visible)
             {
                 if (InputValueAssigned().success)
-                {
                     value.gameObject.SetActive(visible);
-
-                    if (visible)
-                        GetSelectionStateInfo().InputState = InputUIState.Shown;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Hidden;
-                }
                 else
                     Debug.LogWarning(InputValueAssigned().results);
             }
@@ -7908,7 +7789,7 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
 
-                GetSelectionStateInfo().InputState = state;
+                SetSelectableInputUIState(state);
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -7916,21 +7797,10 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
+            public override void SetUIColor(Color color)
             {
-                return GetSelectionStateInfo().InputState;
-            }
 
-            public override void SetUIInputState(UISlider<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
             }
-
-            public override void SetFieldColor(Color color)
-            {
-                throw new NotImplementedException();
-            }
-
 
             #region Selections
 
@@ -7966,7 +7836,6 @@ namespace Com.RedicalGames.Filar
                 {
                     if (visualizationType != SelectionVisualizationType.None)
                     {
-
                         switch (visualizationType)
                         {
                             case SelectionVisualizationType.ColorTint:
@@ -7983,7 +7852,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogWarning("Input Selection Visualization Type Is Set To None.");
+                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
                 else
                     Debug.LogError(InputValueAssigned().results);
@@ -8073,21 +7942,21 @@ namespace Com.RedicalGames.Filar
 
             public override void SetInteractableState(bool interactable)
             {
-                slider.interactable = interactable;
-                inputField.interactable = interactable;
+                if (InputValueAssigned().success)
+                {
+                    slider.interactable = interactable;
+                    inputField.interactable = interactable;
+                }
+                else
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-                if (IsInitialized())
-                {
-                    if (visible)
-                        selectionStatesInfo.InputState = InputUIState.Shown;
-                    else
-                        selectionStatesInfo.InputState = InputUIState.Hidden;
-                }
+                if (InputValueAssigned().success)
+                    value.gameObject.SetActive(visible);
                 else
-                    Debug.LogWarning("--> Set UI Input Visibility State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override bool GetUIInputVisibilityState()
@@ -8119,17 +7988,7 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
-            {
-                return GetSelectionStateInfo().InputState;
-            }
-
-            public override void SetUIInputState(UIInputSlider<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void SetFieldColor(Color color)
+            public override void SetUIColor(Color color)
             {
                 if (fieldUIImageList.Count > 0)
                 {
@@ -8144,7 +8003,6 @@ namespace Com.RedicalGames.Filar
                 else
                     Debug.LogWarning("--> SetFieldColor Failed : fieldUIImageList Values Are Null / Empty.");
             }
-
 
             #region Selections
 
@@ -8180,7 +8038,6 @@ namespace Com.RedicalGames.Filar
                 {
                     if (visualizationType != SelectionVisualizationType.None)
                     {
-
                         switch (visualizationType)
                         {
                             case SelectionVisualizationType.ColorTint:
@@ -8197,7 +8054,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogWarning("Input Selection Visualization Type Is Set To None.");
+                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
                 else
                     Debug.LogError(InputValueAssigned().results);
@@ -8240,17 +8097,10 @@ namespace Com.RedicalGames.Filar
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-                if (IsInitialized())
-                {
+                if (InputValueAssigned().success)
                     value.gameObject.SetActive(visible);
-
-                    if (visible)
-                        GetSelectionStateInfo().InputState = InputUIState.Shown;
-                    else
-                        GetSelectionStateInfo().InputState = InputUIState.Hidden;
-                }
                 else
-                    Debug.LogWarning("--> Set UI Input Visibility State Failed : Value Is Missing / Null.");
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override bool GetUIInputVisibilityState()
@@ -8274,19 +8124,12 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
+            public override void SetUIColor(Color color)
             {
-                return GetSelectionStateInfo().InputState;
-            }
-
-            public override void SetUIInputState(UIText<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void SetFieldColor(Color color)
-            {
-                throw new NotImplementedException();
+                if (InputValueAssigned().success)
+                    value.color = color;
+                else
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public void SetScreenUITextValue(string value)
@@ -8353,7 +8196,7 @@ namespace Com.RedicalGames.Filar
                 if (value != null)
                     value.sprite = image;
                 else
-                    Debug.LogWarning("--> SetImageData Failed - Displayer Value Missing.");
+                    Debug.LogWarning("SetImageData Failed - Displayer Value Missing.");
             }
 
             public void SetImageData(Texture2D image)
@@ -8376,7 +8219,10 @@ namespace Com.RedicalGames.Filar
 
             public override void SetUIInputVisibilityState(bool visible)
             {
-
+                if (InputValueAssigned().success)
+                    value.gameObject.SetActive(visible);
+                else
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override bool GetUIInputVisibilityState()
@@ -8408,19 +8254,12 @@ namespace Com.RedicalGames.Filar
                 widgets.SetWidgetsInteractableState(interactable, isSelected);
             }
 
-            public override InputUIState GetUIInputState()
+            public override void SetUIColor(Color color)
             {
-                return GetSelectionStateInfo().InputState;
-            }
-
-            public override void SetUIInputState(UIInputSlider<T> input, InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void SetFieldColor(Color color)
-            {
-                throw new NotImplementedException();
+                if (InputValueAssigned().success)
+                    value.color = color;
+                else
+                    Debug.LogWarning(InputValueAssigned().results);
             }
 
             public override void SelectableInit()
@@ -8441,8 +8280,10 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        #region States Info Groups
+
         [Serializable]
-        public class InputSelectionData
+        public class InputSelectionStateInfoGroup
         {
             #region Components
 
@@ -8478,11 +8319,19 @@ namespace Com.RedicalGames.Filar
                 }
             };
 
-            public InputUIState InputState { get; set; }
+            //[HideInInspector]
+            public InputUIState inputState;
 
             #endregion
 
             #region Main
+
+            public void SetInputState(InputUIState inputState) => this.inputState = inputState;
+
+            public InputUIState GetInputUIState()
+            {
+                return inputState;
+            }
 
             public void GetSelectionState(Action<CallbackData<SelectionState>> callback)
             {
@@ -8490,17 +8339,17 @@ namespace Com.RedicalGames.Filar
 
                 if (states != null && states.Count > 0)
                 {
-                    var state = states.Find(x => x.state == InputState);
+                    var state = states.Find(x => x.state == inputState);
 
                     if (!string.IsNullOrEmpty(state.name))
                     {
-                        callbackResults.results = $"Found Selection State : {state.name} Of Type : {InputState}.";
+                        callbackResults.results = $"Found Selection State : {state.name} Of Type : {inputState}.";
                         callbackResults.data = state;
                         callbackResults.resultsCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Selection State Of Type : {InputState} Not Assigned.";
+                        callbackResults.results = $"Selection State Of Type : {inputState} Not Assigned.";
                         callbackResults.data = default;
                         callbackResults.resultsCode = Helpers.ErrorCode;
                     }
@@ -8550,7 +8399,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class InputValidation
+        public class InputValidationStateInfoGroup
         {
             #region Components
 
@@ -8664,7 +8513,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region UI Initializable Component Groups
+        #endregion
+
+        #region UI State Component Groups
 
         #region Action Groups
 
@@ -8675,18 +8526,11 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-
-
             #endregion
 
             #region Main
 
             public override bool GetInteractableState()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override InputUIState GetUIInputState()
             {
                 throw new NotImplementedException();
             }
@@ -8716,7 +8560,7 @@ namespace Com.RedicalGames.Filar
                 throw new NotImplementedException();
             }
 
-            public override void SetFieldColor(Color color)
+            public override void SetUIColor(Color color)
             {
                 throw new NotImplementedException();
             }
@@ -8727,11 +8571,6 @@ namespace Com.RedicalGames.Filar
             }
 
             public override void SetUIInputState(InputUIState state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void SetUIInputState(UIScreenActionComponent<T, U> input, InputUIState state)
             {
                 throw new NotImplementedException();
             }
@@ -11534,7 +11373,7 @@ namespace Com.RedicalGames.Filar
                                                 if (button != null)
                                                 {
                                                     if (button.value)
-                                                        button.SetFieldColor(color);
+                                                        button.SetUIColor(color);
                                                     else
                                                         LogError($"Set Action Button Event Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
                                                 }
@@ -15408,42 +15247,6 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region UI Events
-
-            protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
-            {
-                var dropdown = screenActionDropDownList.Find(x => x.dataPackets.action == actionType && x.selectable && x.GetInteractableState());
-                var dropdowns = screenActionDropDownList.FindAll(x => x.dataPackets.action != actionType && x.selectable && x.GetInteractableState());
-
-                if (dropdown != null)
-                    dropdown.SetUIInputState(InputUIState.Selected);
-                else
-                    LogError("Dropdown Component Not Found.", this);
-
-                if (dropdowns != null && dropdowns.Count > 0)
-                {
-                    if (dropdowns != null && dropdowns.Count > 0)
-                    {
-                        foreach (var dropdownContent in dropdowns)
-                        {
-                            if (dropdownContent != null)
-                            {
-                                if (dropdownContent.GetUIInputState() == InputUIState.Selected)
-                                {
-                                    dropdownContent.SetUIInputState(InputUIState.Deselected);
-                                    dropdownContent.value.Hide();
-                                }
-                            }
-                            else
-                            {
-                                LogError("Dropdown Components Were Not Found.", this);
-                                break;
-                            }
-                        }
-                    }
-                }
-                else
-                    LogError("On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
-            }
 
             #endregion
 
@@ -19440,41 +19243,41 @@ namespace Com.RedicalGames.Filar
             }
 
 
-            protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
-            {
-                var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType && x.selectable && x.GetInteractableState());
-                var dropdownContent = dropdowns.FindAll(x => x.dataPackets.action != actionType && x.selectable && x.GetInteractableState());
+            //protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
+            //{
+            //    var dropdown = dropdowns.Find(x => x.dataPackets.action == actionType && x.selectable && x.GetInteractableState());
+            //    var dropdownContent = dropdowns.FindAll(x => x.dataPackets.action != actionType && x.selectable && x.GetInteractableState());
 
-                if (dropdown != null)
-                    dropdown.SetUIInputState(InputUIState.Selected);
-                else
-                    LogError("Dropdown Component Not Found.", this);
+            //    if (dropdown != null)
+            //        dropdown.SetUIInputState(InputUIState.Selected);
+            //    else
+            //        LogError("Dropdown Component Not Found.", this);
 
-                if (dropdownContent != null && dropdownContent.Count > 0)
-                {
-                    if (dropdownContent != null && dropdowns.Count > 0)
-                    {
-                        foreach (var content in dropdownContent)
-                        {
-                            if (content != null)
-                            {
-                                if (content.GetUIInputState() == InputUIState.Selected)
-                                {
-                                    content.SetUIInputState(InputUIState.Deselected);
-                                    content.value.Hide();
-                                }
-                            }
-                            else
-                            {
-                                LogError("Dropdown Components Were Not Found.", this);
-                                break;
-                            }
-                        }
-                    }
-                }
-                else
-                    LogError("On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
-            }
+            //    if (dropdownContent != null && dropdownContent.Count > 0)
+            //    {
+            //        if (dropdownContent != null && dropdowns.Count > 0)
+            //        {
+            //            foreach (var content in dropdownContent)
+            //            {
+            //                if (content != null)
+            //                {
+            //                    if (content.GetUIInputState() == InputUIState.Selected)
+            //                    {
+            //                        content.SetUIInputState(InputUIState.Deselected);
+            //                        content.value.Hide();
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    LogError("Dropdown Components Were Not Found.", this);
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    else
+            //        LogError("On Input Dropdown Selected Event Failed - There Are No Drodown Components Found", this);
+            //}
 
             #endregion
 
@@ -20588,7 +20391,7 @@ namespace Com.RedicalGames.Filar
                             if (inputSlider.dataPackets.action == actionType)
                             {
                                 inputSlider.SetTitle(fieldName);
-                                inputSlider.SetFieldColor(fieldColor);
+                                inputSlider.SetUIColor(fieldColor);
                                 break;
                             }
                             else
@@ -23788,6 +23591,43 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Debugger
+
+        [Serializable]
+        public class DataDebugger: IDebugger
+        {
+            #region Components
+
+            public string name;
+
+            #endregion
+
+            #region Main
+
+            public DataDebugger()
+            {
+
+            }
+
+            #region Logs
+
+            public void Log<T>(LogInfoType infoType, string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.Log(infoType, logMessage, fromClass);
+
+            public void LogInfo<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogInfo(logMessage, fromClass);
+
+            public void LogSuccess<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogSuccess(logMessage, fromClass);
+
+            public void LogWarning<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogWarning(logMessage, fromClass);
+
+            public void LogError<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogError(logMessage, fromClass);
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
         #region Static Classess
 
         public static class Helpers
@@ -25152,6 +24992,23 @@ namespace Com.RedicalGames.Filar
 
         #region Interfaces
 
+        public interface IDebugger
+        {
+            #region Main
+
+            void Log<T>(LogInfoType infoType, string logMessage, T fromClass) where T : DataDebugger;
+
+            void LogInfo<T>(string logMessage, T fromClass) where T : DataDebugger;
+
+            void LogSuccess<T>(string logMessage, T fromClass) where T : DataDebugger;
+
+            void LogWarning<T>(string logMessage, T fromClass) where T : DataDebugger;
+
+            void LogError<T>(string logMessage, T fromClass) where T : DataDebugger;
+
+            #endregion
+        }
+
         public interface IRestrictionData
         {
             #region Main
@@ -25175,9 +25032,9 @@ namespace Com.RedicalGames.Filar
             void Expand();
             void Collapse();
 
-            void SetInputState(InputUIState state);
+            void SetSelectableInputUIState(InputUIState state);
 
-            InputUIState GetInputState();
+            InputUIState GetInputUIState();
 
             #endregion
         }
@@ -25203,7 +25060,7 @@ namespace Com.RedicalGames.Filar
         {
             void SetTitle(string title);
 
-            void SetFieldColor(Color color);
+            void SetUIColor(Color color);
 
             void SetInteractableState(bool interactable);
 
@@ -25214,10 +25071,6 @@ namespace Com.RedicalGames.Filar
             bool GetUIInputVisibilityState();
 
             void SetUIInputState(InputUIState state);
-
-            void SetUIInputState(V input, InputUIState state);
-
-            InputUIState GetUIInputState();
 
             void SetChildWidgetsState(bool interactable, bool isSelected);
         }
