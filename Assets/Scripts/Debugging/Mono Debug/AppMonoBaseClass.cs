@@ -56,9 +56,15 @@ namespace Com.RedicalGames.Filar
 
         public void Log(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, System.Action logFunc = null) => AppMonoDebugManager.Instance?.Log(logInfoType, logMessage, fromClass, logFunc);
 
+        public void Logger(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, System.Action logFunc = null) => AppMonoDebugManager.Instance?.Log(logInfoType, logMessage, fromClass, logFunc);
+
         public void Log<T>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, System.Action logFunc = null) where T : Object => AppMonoDebugManager.Instance?.Log(logInfoType, logMessage, fromClass, logFunc);
 
+        public void DebugLog<T>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger => AppMonoDebugManager.Instance?.Logger(logInfoType, logMessage, fromClass, logFunc);
+
         public void Log<T, U>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, System.Action<U> logFunc = null) where T : Object where U : AppData.Callback => AppMonoDebugManager.Instance?.Log(logInfoType, logMessage, fromClass, logFunc);
+
+        public void Logger<T, U>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, System.Action<U> logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => AppMonoDebugManager.Instance?.Logger(logInfoType, logMessage, fromClass, logFunc);
 
         #endregion
 
@@ -72,6 +78,10 @@ namespace Com.RedicalGames.Filar
 
         public void LogInfo<T, U>(string logMessage, T fromClass = null, System.Action<U> logFunc = null) where T : Object where U : AppData.Callback => AppMonoDebugManager.Instance?.Log(AppData.LogInfoType.Info, logMessage, fromClass, logFunc);
 
+        public void DebugLogInfo<T>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Info, logMessage, fromClass, logFunc);
+
+        public void LoggerInfo<T, U>(string logMessage, T fromClass = null, System.Action<U> logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Info, logMessage, fromClass, logFunc);
+
         #endregion
 
         #region Success Log
@@ -81,6 +91,10 @@ namespace Com.RedicalGames.Filar
         public void LogSuccess<T>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : Object => AppMonoDebugManager.Instance?.Log(AppData.LogInfoType.Success, logMessage, fromClass, logFunc);
 
         public void LogSuccess<T, U>(string logMessage, T fromClass = null, System.Action<U> logFunc = null) where T : Object where U : AppData.Callback => AppMonoDebugManager.Instance?.Log(AppData.LogInfoType.Success, logMessage, fromClass, logFunc);
+
+        public void DebugLogSuccess<T>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Success, logMessage, fromClass, logFunc);
+
+        public void LoggerSuccess<T, U>(string logMessage, T fromClass = null, System.Action<U> logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Success, logMessage, fromClass, logFunc);
 
         #endregion
 
@@ -92,6 +106,10 @@ namespace Com.RedicalGames.Filar
 
         public void LogWarning<T, U>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : Object where U : AppData.Callback => AppMonoDebugManager.Instance?.Log(AppData.LogInfoType.Warning, logMessage, fromClass, logFunc);
 
+        public void DebugLogWarning<T>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Warning, logMessage, fromClass, logFunc);
+
+        public void LoggerWarning<T, U>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Warning, logMessage, fromClass, logFunc);
+
         #endregion
 
         #region Error Log
@@ -101,6 +119,10 @@ namespace Com.RedicalGames.Filar
         public void LogError<T>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : Object => AppMonoDebugManager.Instance?.Log(AppData.LogInfoType.Error, logMessage, fromClass, logFunc);
 
         public void LogError<T, U>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : Object where U : AppData.Callback => AppMonoDebugManager.Instance?.Log(AppData.LogInfoType.Error, logMessage, fromClass, logFunc);
+
+        public void DebugLogError<T>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Error, logMessage, fromClass, logFunc);
+
+        public void LoggerError<T, U>(string logMessage, T fromClass = null, System.Action logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => AppMonoDebugManager.Instance?.Logger(AppData.LogInfoType.Error, logMessage, fromClass, logFunc);
 
         #endregion
 
