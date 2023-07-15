@@ -568,7 +568,7 @@ namespace Com.RedicalGames.Filar
 
                             if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                             {
-                                screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
+                                screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
                                 {
                                     callbackResults.results = setUIStateCallback.results;
                                     callbackResults.resultsCode = setUIStateCallback.resultsCode;
@@ -577,7 +577,7 @@ namespace Com.RedicalGames.Filar
 
                             if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == AppData.LayoutViewType.ListView)
                             {
-                                screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
+                                screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
                                 {
                                     callbackResults.results = setUIStateCallback.results;
                                     callbackResults.resultsCode = setUIStateCallback.resultsCode;
