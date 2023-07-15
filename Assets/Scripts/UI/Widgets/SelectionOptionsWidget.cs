@@ -40,7 +40,10 @@ namespace Com.RedicalGames.Filar
         {
             if (SceneAssetsManager.Instance != null)
             {
-                SetCheckboxValue(SceneAssetsManager.Instance.GetFolderStructureData().InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
+                if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                    SetCheckboxValue(SceneAssetsManager.Instance.GetFolderStructureData().data.InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
+                else
+                    Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
 
                 var widgetsContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
 
@@ -94,7 +97,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (enableSelectionButton)
                                             {
-                                                LogWarning($"Not All Widgets Selected - Enabled : {enableSelectionButton}.", this, () => OnScreenWidget());
+                                                LogWarning($"Not All Widgets Selected - Enabled : {enableSelectionButton}.");
 
                                                 button.SetUIInputState(AppData.InputUIState.Enabled);
                                             }
@@ -110,10 +113,10 @@ namespace Com.RedicalGames.Filar
                     });
                 }
                 else
-                    LogError("Widget Container Missing / Null.", this, () => OnScreenWidget());
+                    LogError("Widget Container Missing / Null.", this);
             }
             else
-                LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this, () => OnScreenWidget());
+                LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
         }
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
@@ -134,11 +137,13 @@ namespace Com.RedicalGames.Filar
             {
                 if (SceneAssetsManager.Instance != null)
                 {
-                    SceneAssetsManager.Instance.GetFolderStructureData().SetInverseSelect(value);
-
+                    if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                        SceneAssetsManager.Instance.GetFolderStructureData().data.SetInverseSelect(value);
+                    else
+                        Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
                 }
                 else
-                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this, () => OnCheckboxValueChanged(actionType, value, dataPackets));
+                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
             }
         }
 

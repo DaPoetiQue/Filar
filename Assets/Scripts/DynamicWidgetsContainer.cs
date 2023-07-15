@@ -1745,26 +1745,31 @@ namespace Com.RedicalGames.Filar
 
                             if(newSelectionNameList.Count > 0)
                             {
-                                if(SceneAssetsManager.Instance.GetFolderStructureData().InverseSelect())
+                                if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
                                 {
-                                    if(SelectableManager.Instance.HasCachedSelectionInfo())
+                                    if (SceneAssetsManager.Instance.GetFolderStructureData().data.InverseSelect())
                                     {
-                                        SelectableManager.Instance.GetCachedSelectionInfoNameList(cachedSelectionInfoCallback => 
+                                        if (SelectableManager.Instance.HasCachedSelectionInfo())
                                         {
-                                            if(AppData.Helpers.IsSuccessCode(cachedSelectionInfoCallback.resultsCode))
+                                            SelectableManager.Instance.GetCachedSelectionInfoNameList(cachedSelectionInfoCallback =>
                                             {
-                                                foreach (var selection in cachedSelectionInfoCallback.data)
-                                                    if (newSelectionNameList.Contains(selection))
-                                                        newSelectionNameList.Remove(selection);
-                                            }
-                                            else
-                                            {
-                                                callbackResults.results = cachedSelectionInfoCallback.results;
-                                                callbackResults.resultsCode = cachedSelectionInfoCallback.resultsCode;
-                                            }
-                                        });
+                                                if (AppData.Helpers.IsSuccessCode(cachedSelectionInfoCallback.resultsCode))
+                                                {
+                                                    foreach (var selection in cachedSelectionInfoCallback.data)
+                                                        if (newSelectionNameList.Contains(selection))
+                                                            newSelectionNameList.Remove(selection);
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.results = cachedSelectionInfoCallback.results;
+                                                    callbackResults.resultsCode = cachedSelectionInfoCallback.resultsCode;
+                                                }
+                                            });
+                                        }
                                     }
                                 }
+                                else
+                                    Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
 
                                 SelectableManager.Instance.Select(newSelectionNameList, AppData.FocusedSelectionType.SelectedItem, selectionCallback =>
                                 {
@@ -2520,37 +2525,42 @@ namespace Com.RedicalGames.Filar
 
         public void SetScreenBounds(RectTransform bounds)
         {
-            #region Width
+            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+            {
+                #region Width
 
-            int width = (int)bounds.rect.width / 2;
-            int widthSpacing = (int)layoutComponent.spacing.x / 2;
-            int horizontalSpacing = (widthSpacing - (widthSpacing / 2));
+                int width = (int)bounds.rect.width / 2;
+                int widthSpacing = (int)layoutComponent.spacing.x / 2;
+                int horizontalSpacing = (widthSpacing - (widthSpacing / 2));
 
-            int left = (width + (widthSpacing / 2));
-            int right = ((width + (widthSpacing / 2)) * 3) + (horizontalSpacing * 3);
+                int left = (width + (widthSpacing / 2));
+                int right = ((width + (widthSpacing / 2)) * 3) + (horizontalSpacing * 3);
 
-            screenBounds.left = left;
-            screenBounds.right = right;
+                screenBounds.left = left;
+                screenBounds.right = right;
 
-            #endregion
+                #endregion
 
-            #region Height
+                #region Height
 
-            int height = (int)bounds.rect.height / 2;
-            int heightSpacingDevided = (int)layoutComponent.spacing.y / 2;
-            int heightSpacingMultiplied = (int)layoutComponent.spacing.y * 4;
-            int heightSpacing = (int)layoutComponent.spacing.y;
-            int verticalSpacingTop = (heightSpacingDevided - (heightSpacingDevided / 2));
-            int verticalSpacingBottom = heightSpacingMultiplied + heightSpacing;
+                int height = (int)bounds.rect.height / 2;
+                int heightSpacingDevided = (int)layoutComponent.spacing.y / 2;
+                int heightSpacingMultiplied = (int)layoutComponent.spacing.y * 4;
+                int heightSpacing = (int)layoutComponent.spacing.y;
+                int verticalSpacingTop = (heightSpacingDevided - (heightSpacingDevided / 2));
+                int verticalSpacingBottom = heightSpacingMultiplied + heightSpacing;
 
-            int top = -(height + (verticalSpacingTop / 2));
-            int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType()).containerDimensions.height;
-            int bottom = (-layoutHeight) - (-(height + verticalSpacingBottom));
+                int top = -(height + (verticalSpacingTop / 2));
+                int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType()).containerDimensions.height;
+                int bottom = (-layoutHeight) - (-(height + verticalSpacingBottom));
 
-            screenBounds.top = top;
-            screenBounds.bottom = bottom;
+                screenBounds.top = top;
+                screenBounds.bottom = bottom;
 
-            #endregion
+                #endregion
+            }
+            else
+                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
         }
 
         public AppData.UILayoutDimensions GetUILayoutDimension(AppData.LayoutViewType layoutView)
