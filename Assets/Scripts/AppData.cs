@@ -818,7 +818,7 @@ namespace Com.RedicalGames.Filar
 
         public enum UIImageDisplayerType
         {
-            ButtonIcon,
+            InputIcon,
             ItemThumbnail,
             SelectionFrame,
             ActionIcon,
@@ -6868,9 +6868,36 @@ namespace Com.RedicalGames.Filar
             public override void SetInteractableState(bool interactable)
             {
                 if (InputValueAssigned().success)
+                {
                     value.interactable = interactable;
+
+                    InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
+
+                    GetSelectionState(state, selectionStateCallbackResults =>
+                    {
+                        if (selectionStateCallbackResults.Success())
+                        {
+                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            {
+                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                if (inputIcon.value != null)
+                                {
+                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                    if (selectionStateCallbackResults.data.value != null)
+                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                }
+                                else
+                                    LogError("Input Icon Value Missing / Not Found.", this);
+                            }
+                        }
+                        else
+                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                    });
+                }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             //void SetUIInputSelectionState(SelectionState state)
@@ -6942,17 +6969,7 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
 
-                LogInfo($"================>>>>>>>>>>>>>>>>> Set : {name} Of Input Type : {inputType} To State : {state}", this);
-
                 SetSelectableInputUIState(state);
-
-                //if (selectionStates != null && selectionStates.Count > 0)
-                //{
-                //    SelectionState selectionState = selectionStates.Find(selectionState => selectionState.state == state);
-
-                //    if (!string.IsNullOrEmpty(selectionState.name) && selectionState.state == state)
-                //        SetUIInputSelectionState(selectionState);
-                //}
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -7018,10 +7035,10 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
+                        LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.", this);
                 }
                 else
-                    Debug.LogError(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             #endregion
@@ -7117,19 +7134,37 @@ namespace Com.RedicalGames.Filar
                 if (InputValueAssigned().success)
                 {
                     value.interactable = interactable;
+                    SetArrowIconState(interactable);
 
                     InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
 
-                    GetSelectionState(state, selectionState =>
+                    GetSelectionState(state, selectionStateCallbackResults =>
                     {
-                        if (Helpers.IsSuccessCode(selectionState.resultsCode))
-                            value.captionText.color = selectionState.data.color;
+                        if (selectionStateCallbackResults.Success())
+                        {
+                            value.captionText.color = selectionStateCallbackResults.data.color;
+
+                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            {
+                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                if (inputIcon.value != null)
+                                {
+                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                    if (selectionStateCallbackResults.data.value != null)
+                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                }
+                                else
+                                    LogError("Input Icon Value Missing / Not Found.", this);
+                            }
+                        }
                         else
-                            Debug.LogWarning($"--> SetInteractableState Failed With Results : {selectionState.results}");
+                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
                     });
                 }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
@@ -7158,14 +7193,12 @@ namespace Com.RedicalGames.Filar
                     case InputUIState.Enabled:
 
                         SetInteractableState(true);
-                        SetArrowIconState(true);
 
                         break;
 
                     case InputUIState.Disabled:
 
                         SetInteractableState(false);
-                        SetArrowIconState(false);
 
                         break;
 
@@ -7181,8 +7214,6 @@ namespace Com.RedicalGames.Filar
 
                         break;
                 }
-
-                LogInfo($"================>>>>>>>>>>>>>>>>> Set : {name} Of Input Type : {inputType} To State : {state}", this);
 
                 SetSelectableInputUIState(state);
             }
@@ -7289,7 +7320,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initialize()
+            new public void Initialize()
             {
                 if (clearButton != null)
                     clearButton.onClick.AddListener(OnClearField);
@@ -7378,9 +7409,39 @@ namespace Com.RedicalGames.Filar
             public override void SetInteractableState(bool interactable)
             {
                 if (InputValueAssigned().success)
+                {
                     value.interactable = interactable;
+
+                    if(clearButton)
+                        clearButton.interactable = interactable;
+
+                    InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
+
+                    GetSelectionState(state, selectionStateCallbackResults =>
+                    {
+                        if (selectionStateCallbackResults.Success())
+                        {
+                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            {
+                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                if (inputIcon.value != null)
+                                {
+                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                    if (selectionStateCallbackResults.data.value != null)
+                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                }
+                                else
+                                    LogError("Input Icon Value Missing / Not Found.", this);
+                            }
+                        }
+                        else
+                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                    });
+                }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
@@ -7573,9 +7634,36 @@ namespace Com.RedicalGames.Filar
             public override void SetInteractableState(bool interactable)
             {
                 if (InputValueAssigned().success)
+                {
                     value.interactable = interactable;
+
+                    InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
+
+                    GetSelectionState(state, selectionStateCallbackResults =>
+                    {
+                        if (selectionStateCallbackResults.Success())
+                        {
+                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            {
+                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                if (inputIcon.value != null)
+                                {
+                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                    if (selectionStateCallbackResults.data.value != null)
+                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                }
+                                else
+                                    LogError("Input Icon Value Missing / Not Found.", this);
+                            }
+                        }
+                        else
+                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                    });
+                }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
@@ -7743,9 +7831,36 @@ namespace Com.RedicalGames.Filar
             public override void SetInteractableState(bool interactable)
             {
                 if (InputValueAssigned().success)
+                {
                     value.interactable = interactable;
+
+                    InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
+
+                    GetSelectionState(state, selectionStateCallbackResults =>
+                    {
+                        if (selectionStateCallbackResults.Success())
+                        {
+                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            {
+                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                if (inputIcon.value != null)
+                                {
+                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                    if (selectionStateCallbackResults.data.value != null)
+                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                }
+                                else
+                                    LogError("Input Icon Value Missing / Not Found.", this);
+                            }
+                        }
+                        else
+                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                    });
+                }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
@@ -7951,11 +8066,35 @@ namespace Com.RedicalGames.Filar
             {
                 if (InputValueAssigned().success)
                 {
-                    slider.interactable = interactable;
-                    inputField.interactable = interactable;
+                    value.interactable = interactable;
+
+                    InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
+
+                    GetSelectionState(state, selectionStateCallbackResults =>
+                    {
+                        if (selectionStateCallbackResults.Success())
+                        {
+                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            {
+                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                if (inputIcon.value != null)
+                                {
+                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                    if (selectionStateCallbackResults.data.value != null)
+                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                }
+                                else
+                                    LogError("Input Icon Value Missing / Not Found.", this);
+                            }
+                        }
+                        else
+                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                    });
                 }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    LogError(InputValueAssigned().results, this);
             }
 
             public override void SetUIInputVisibilityState(bool visible)
@@ -17158,13 +17297,13 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         case LayoutViewType.ItemView:
 
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ItemViewDeselectionIcon);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
 
                                                             break;
 
                                                         case LayoutViewType.ListView:
 
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ListViewDeselectionIcon);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
 
                                                             break;
                                                     }
@@ -17372,7 +17511,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (Helpers.IsSuccessCode(assetsPinnedCallback.resultsCode))
                                     {
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.ButtonIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.InputIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
 
                                         if (dataPackets.notification.showNotifications)
                                         {
@@ -18306,13 +18445,13 @@ namespace Com.RedicalGames.Filar
                         {
                             case LayoutViewType.ItemView:
 
-                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ItemViewDeselectionIcon);
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
 
                                 break;
 
                             case LayoutViewType.ListView:
 
-                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.ButtonIcon, UIImageType.ListViewDeselectionIcon);
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
 
                                 break;
                         }
