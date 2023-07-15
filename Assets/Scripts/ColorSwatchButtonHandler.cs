@@ -106,13 +106,10 @@ namespace Com.RedicalGames.Filar
         public void SetInputUIButtonState(AppData.InputActionButtonType type, AppData.InputUIState state)
         {
             var buttonList = GetActionInputUIButtonList();
-
             var button = buttonList.Find((x) => x.dataPackets.action == type);
 
             if (button != null)
-            {
-                button.SetUIInputState(button, state);
-            }
+                button.SetUIInputState(state);
         }
 
         public void SetColorInfo(AppData.ColorInfo info) => colorInfo = info;
