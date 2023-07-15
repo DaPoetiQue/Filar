@@ -150,13 +150,13 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.LayoutViewType.ItemView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
 
                             break;
 
                         case AppData.LayoutViewType.ListView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
 
                             break;
                     }
@@ -179,9 +179,9 @@ namespace Com.RedicalGames.Filar
                             SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
                             {
                                 if (selectionCallback.Success())
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewDeselectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewDeselectionIcon);
                                 else
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
                             });
 
                             break;
@@ -191,9 +191,9 @@ namespace Com.RedicalGames.Filar
                             SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
                             {
                                 if (selectionCallback.Success())
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewDeselectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewDeselectionIcon);
                                 else
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
                             });
 
 
@@ -215,13 +215,13 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.LayoutViewType.ItemView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
 
                             break;
 
                         case AppData.LayoutViewType.ListView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
 
                             break;
                     }
@@ -1286,12 +1286,12 @@ namespace Com.RedicalGames.Filar
                         if (pinData.pinned)
                         {
                             ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.PinDisabledIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PinDisabledIcon);
                         }
                         else
                         {
                             ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.PinEnabledIcon);
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PinEnabledIcon);
                         }
                     }
 
