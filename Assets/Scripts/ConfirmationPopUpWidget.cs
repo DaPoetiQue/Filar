@@ -181,24 +181,29 @@ namespace Com.RedicalGames.Filar
 
         void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)
         {
-            if (SceneAssetsManager.Instance.GetFolderStructureData().GetPaginationViewType() == AppData.PaginationViewType.Pager)
+            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
             {
-                if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_ItemExistInCurrentPage(selectedWidget))
+                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                {
+                    if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_ItemExistInCurrentPage(selectedWidget))
+                    {
+                        Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
+                        SetWidgetPosition(widgetPosition);
+                        SetWidgetSizeDelta(selectedWidget.GetWidgetSizeDelta());
+                    }
+                }
+
+                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
                 {
                     Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
                     SetWidgetPosition(widgetPosition);
                     SetWidgetSizeDelta(selectedWidget.GetWidgetSizeDelta());
                 }
-            }
 
-            if (SceneAssetsManager.Instance.GetFolderStructureData().GetPaginationViewType() == AppData.PaginationViewType.Scroller)
-            {
-                Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
-                SetWidgetPosition(widgetPosition);
-                SetWidgetSizeDelta(selectedWidget.GetWidgetSizeDelta());
+                SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
             }
-
-            SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
+            else
+                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
         }
 
         void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
