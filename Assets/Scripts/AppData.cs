@@ -12427,15 +12427,22 @@ namespace Com.RedicalGames.Filar
 
                     if (SceneAssetsManager.Instance != null)
                     {
-                        if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == LayoutViewType.ListView)
+                        if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
                         {
-                            dragPosition.x = widgetRect.anchoredPosition.x;
-                            dragPosition.y = dragPos.y;
-                        }
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
+                            {
+                                dragPosition.x = widgetRect.anchoredPosition.x;
+                                dragPosition.y = dragPos.y;
+                            }
 
-                        if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == LayoutViewType.ItemView)
-                            dragPosition = dragPos;
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
+                                dragPosition = dragPos;
+                        }
+                        else
+                            Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
                     }
+                    else
+                        LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
 
                     dragPosition.x = Mathf.Clamp(dragPosition.x, GetWidgetContainer().GetScreenBounds().left, GetWidgetContainer().GetScreenBounds().right);
                     dragPosition.y = Mathf.Clamp(dragPosition.y, GetWidgetContainer().GetScreenBounds().bottom, GetWidgetContainer().GetScreenBounds().top);
@@ -12586,40 +12593,48 @@ namespace Com.RedicalGames.Filar
                 else
                     directionAxis = DirectionAxisType.Vertical;
 
-                if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == LayoutViewType.ItemView)
+                if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
                 {
-                    if (directionAxis == DirectionAxisType.Horizontal)
-                    {
-                        distance = Mathf.Abs(dragDirectionValue.x);
-                        targetDistance = widgetRect.sizeDelta.x / 2;
 
-                        if (distance > targetDistance)
-                            draggedWidgetTriggered = true;
+                    if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
+                    {
+                        if (directionAxis == DirectionAxisType.Horizontal)
+                        {
+                            distance = Mathf.Abs(dragDirectionValue.x);
+                            targetDistance = widgetRect.sizeDelta.x / 2;
+
+                            if (distance > targetDistance)
+                                draggedWidgetTriggered = true;
+                        }
+
+                        else if (directionAxis == DirectionAxisType.Vertical)
+                        {
+                            distance = Mathf.Abs(dragDirectionValue.y);
+                            targetDistance = widgetRect.sizeDelta.y / 2;
+
+                            if (distance > targetDistance)
+                                draggedWidgetTriggered = true;
+                        }
                     }
 
-                    else if (directionAxis == DirectionAxisType.Vertical)
+                    if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
                     {
-                        distance = Mathf.Abs(dragDirectionValue.y);
-                        targetDistance = widgetRect.sizeDelta.y / 2;
+                        if (directionAxis == DirectionAxisType.Vertical)
+                        {
+                            distance = Mathf.Abs(dragDirectionValue.y);
+                            targetDistance = widgetRect.sizeDelta.y / 2;
 
-                        if (distance > targetDistance)
-                            draggedWidgetTriggered = true;
+                            if (distance > targetDistance)
+                                draggedWidgetTriggered = true;
+                        }
                     }
+
                 }
+                else
+                    Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
 
-                if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == LayoutViewType.ListView)
-                {
-                    if (directionAxis == DirectionAxisType.Vertical)
-                    {
-                        distance = Mathf.Abs(dragDirectionValue.y);
-                        targetDistance = widgetRect.sizeDelta.y / 2;
+               #endregion 
 
-                        if (distance > targetDistance)
-                            draggedWidgetTriggered = true;
-                    }
-                }
-
-                #endregion
 
                 var onHighlightHoveredFolder = OnHighlightHoveredFolder(eventData, comparedWidgetIndex);
 
@@ -15314,22 +15329,28 @@ namespace Com.RedicalGames.Filar
                     {
                         if (Helpers.IsSuccessCode(contentContainer.resultsCode))
                         {
-                            LogInfo($"Pagination View Changed : {SceneAssetsManager.Instance.GetPaginationViewType()}", this, () => OnPagination_ActionEvent(dataPackets));
-
-                            switch (SceneAssetsManager.Instance.GetPaginationViewType())
+                            SceneAssetsManager.Instance.GetPaginationViewType(paginationViewCallbackResults => 
                             {
-                                case PaginationViewType.Pager:
+                                if (paginationViewCallbackResults.Success())
+                                {
+                                    switch (paginationViewCallbackResults.data)
+                                    {
+                                        case PaginationViewType.Pager:
 
-                                    SceneAssetsManager.Instance.ChangePaginationView(PaginationViewType.Scroller, dataPackets);
+                                            SceneAssetsManager.Instance.ChangePaginationView(PaginationViewType.Scroller, dataPackets);
 
-                                    break;
+                                            break;
 
-                                case PaginationViewType.Scroller:
+                                        case PaginationViewType.Scroller:
 
-                                    SceneAssetsManager.Instance.ChangePaginationView(PaginationViewType.Pager, dataPackets); ;
+                                            SceneAssetsManager.Instance.ChangePaginationView(PaginationViewType.Pager, dataPackets); ;
 
-                                    break;
-                            }
+                                            break;
+                                    }
+                                }
+                                else
+                                    Log(paginationViewCallbackResults.resultsCode, paginationViewCallbackResults.results, this);
+                            });
                         }
                         else
                             LogWarning(contentContainer.results, this, () => OnPagination_ActionEvent(dataPackets));
@@ -17536,29 +17557,26 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 if (widgetsSortedCallbackResults.Success())
                                                                 {
-                                                                    SceneAssetsManager.Instance.GetProjectStructure(folderStructureCallbackResults =>
+                                                                    if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
                                                                     {
-                                                                        if (folderStructureCallbackResults.Success())
-                                                                        {
-                                                                            var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
+                                                                        var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
 
-                                                                            if (lastSelectionWidget != null)
-                                                                                SelectableManager.Instance.Select(lastSelectionWidget.name, FocusedSelectionType.SelectedItem);
-                                                                            else
-                                                                                LogError("Last Selected Widget Missing / Not Found", this);
-
-                                                                            ScreenUIManager.Instance.Refresh();
-
-                                                                            if (folderStructureCallbackResults.data.GetPaginationViewType() == PaginationViewType.Pager)
-                                                                                StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
-                                                                            else if (folderStructureCallbackResults.data.GetPaginationViewType() == PaginationViewType.Scroller)
-                                                                                StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
-
-                                                                            NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
-                                                                        }
+                                                                        if (lastSelectionWidget != null)
+                                                                            SelectableManager.Instance.Select(lastSelectionWidget.name, FocusedSelectionType.SelectedItem);
                                                                         else
-                                                                            Log(folderStructureCallbackResults.resultsCode, folderStructureCallbackResults.results, this);
-                                                                    });
+                                                                            LogError("Last Selected Widget Missing / Not Found", this);
+
+                                                                        ScreenUIManager.Instance.Refresh();
+
+                                                                        if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
+                                                                            StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
+                                                                        else if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
+                                                                            StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
+
+                                                                        NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+                                                                    }
+                                                                    else
+                                                                        Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
                                                                 }
                                                                 else
                                                                     Log(widgetsSortedCallbackResults.resultsCode, widgetsSortedCallbackResults.results, this);
