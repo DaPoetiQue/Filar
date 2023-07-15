@@ -69,7 +69,11 @@ namespace Com.RedicalGames.Filar
 
         new public void Log<T>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(logInfoType, logMessage, fromClass?.name, logFunc);
 
+        new public void Logger<T>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action logFunc = null) where T : AppData.DataDebugger => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+
         new public void Log<T, U>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action<U> logFunc = null) where T : UnityEngine.Object where U : AppData.Callback => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+
+        new public void Logger<T, U>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action<U> logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => Log(logInfoType, logMessage, fromClass?.name, logFunc);
 
         new public void Log(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action logFunc = null)
         {
