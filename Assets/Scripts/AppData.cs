@@ -7289,23 +7289,30 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initialize(string clearTextPlaceHolder = null)
+            public void Initialize()
             {
                 if (clearButton != null)
                     clearButton.onClick.AddListener(OnClearField);
 
                 if (value != null)
-                    value.characterLimit = characterLimit;    
+                    value.characterLimit = characterLimit;
+
+                SetPlaceHolderText(placeHolderText);
             }
 
             public void SetPlaceHolderText(string placeholder)
             {
-                this.clearTextPlaceHolder = placeholder;
+                if (!string.IsNullOrEmpty(placeholder))
+                {
+                    clearTextPlaceHolder = placeholder;
 
-                value.text = string.Empty;
+                    value.text = string.Empty;
 
-                if (placeholderTextDisplayer)
-                    placeholderTextDisplayer.text = placeholder;
+                    if (placeholderTextDisplayer)
+                        placeholderTextDisplayer.text = placeholder;
+                }
+                else
+                    LogError($"Placeholder Text For : {name} Of Type : {inputType} Is Not Set / Empty / Null.", this);
             }
 
             public void SetPlaceHolderText(int placeholder)
@@ -13734,6 +13741,8 @@ namespace Com.RedicalGames.Filar
                                                     LogInfo($"Input Field : {inputField.name} - {results}", this);
                                             }
 
+                                            inputField.Initialize();
+
                                             inputField.value.onValueChanged.AddListener((value) => OnInputFieldAction(inputField, value));
 
                                             if (inputField.clearButton)
@@ -16740,6 +16749,8 @@ namespace Com.RedicalGames.Filar
                                 else
                                     LogInfo($"Input Field : {inputField.name} - {results}", this);
                             }
+
+                            inputField.Initialize();
                         }
                         else
                         {
@@ -16750,7 +16761,6 @@ namespace Com.RedicalGames.Filar
                 }
 
                 #endregion
-
 
                 #region Initialize Input Sliders
 
