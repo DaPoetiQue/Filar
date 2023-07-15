@@ -566,25 +566,34 @@ namespace Com.RedicalGames.Filar
                                     SceneAssetsManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
                             });
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == AppData.LayoutViewType.ItemView)
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
                             {
-                                screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
+                                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                                 {
-                                    callbackResults.results = setUIStateCallback.results;
-                                    callbackResults.resultsCode = setUIStateCallback.resultsCode;
-                                });
-                            }
+                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
+                                    {
+                                        callbackResults.results = setUIStateCallback.results;
+                                        callbackResults.resultsCode = setUIStateCallback.resultsCode;
+                                    });
+                                }
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().GetLayoutViewType() == AppData.LayoutViewType.ListView)
-                            {
-                                screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
+                                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
                                 {
-                                    callbackResults.results = setUIStateCallback.results;
-                                    callbackResults.resultsCode = setUIStateCallback.resultsCode;
-                                });
+                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
+                                    {
+                                        callbackResults.results = setUIStateCallback.results;
+                                        callbackResults.resultsCode = setUIStateCallback.resultsCode;
+                                    });
+                                }
                             }
+                            else
+                                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
 
-                            screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, SceneAssetsManager.Instance.GetFolderStructureData().GetRootFolder().name);
+                            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name);
+                            else
+                                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+
                             screen.value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
 
                             SceneAssetsManager.Instance.GetFolderContentCount(SceneAssetsManager.Instance.GetCurrentFolder(), folderFound =>
@@ -770,19 +779,24 @@ namespace Com.RedicalGames.Filar
                 {
                     if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                     {
-                        var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().rootFolder;
-                        var container = containerCallbackResults.data;
-
-                        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
+                        if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
                         {
-                            if (dataSetupCallbackResults.Success())
+                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().data.rootFolder;
+                            var container = containerCallbackResults.data;
+
+                            SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
                             {
-                                SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                if (dataSetupCallbackResults.Success())
                                 {
-                                    Log(assetsInitializedCallback.resultsCode, assetsInitializedCallback.results, this);
-                                });
-                            }
-                        });
+                                    SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                    {
+                                        Log(assetsInitializedCallback.resultsCode, assetsInitializedCallback.results, this);
+                                    });
+                                }
+                            });
+                        }
+                        else
+                            Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
                     }
                     else
                         Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
