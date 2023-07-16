@@ -181,9 +181,9 @@ namespace Com.RedicalGames.Filar
 
         void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)
         {
-            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
             {
-                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Pager)
                 {
                     if (SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_ItemExistInCurrentPage(selectedWidget))
                     {
@@ -193,7 +193,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
-                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
+                if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
                 {
                     Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
                     SetWidgetPosition(widgetPosition);
@@ -203,7 +203,7 @@ namespace Com.RedicalGames.Filar
                 SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
             }
             else
-                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
         }
 
         void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
