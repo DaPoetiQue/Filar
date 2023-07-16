@@ -1292,7 +1292,7 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.Callback callbackResults = new AppData.Callback();
 
-                if (ScreenUIManager.Instance.HasCurrentScreen())
+                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                 {
                     if (GetContentCount() > 0)
                     {
@@ -1313,13 +1313,38 @@ namespace Com.RedicalGames.Filar
 
                         if (container.childCount == 0)
                         {
-                            if (showSpinner)
-                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+                            SceneAssetsManager.Instance.HasContentToLoadForSelectedScreen(hasContentCallbackResults =>
+                            {
+                                callbackResults.results = hasContentCallbackResults.results;
+                                callbackResults.resultsCode = hasContentCallbackResults.resultsCode;
 
-                            SceneAssetsManager.Instance.UnloadUnusedAssets();
+                                if (callbackResults.Success())
+                                {
+                                    switch(hasContentCallbackResults.data)
+                                    {
+                                        case AppData.UIScreenType.ProjectSelectionScreen:
 
-                            callbackResults.results = "All Widgets Cleared.";
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            break;
+
+                                        case AppData.UIScreenType.ProjectViewScreen:
+
+                                            //if (showSpinner)
+                                            //    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+
+                                            break;
+                                    }
+
+                                    SceneAssetsManager.Instance.UnloadUnusedAssets();
+
+                                    callbackResults.results = "All Widgets Cleared.";
+                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.results = "All Widgets Cleared - No Content To Load.";
+                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                }
+                            });
                         }
                         else
                         {

@@ -1639,7 +1639,7 @@ namespace Com.RedicalGames.Filar
 
                 if (ScreenUIManager.Instance != null)
                 {
-                    if (ScreenUIManager.Instance.HasCurrentScreen())
+                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                     {
                         switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                         {
@@ -1662,9 +1662,9 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = "Current Screen Is Not Yet Initialized / Not Found - Missing.";
+                        callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
                     }
                 }
                 else
@@ -1800,7 +1800,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        if (ScreenUIManager.Instance.HasCurrentScreen())
+                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                         {
                             if (ScreenUIManager.Instance.GetCurrentUIScreenType() == UIScreenType.ProjectSelectionScreen)
                             {
@@ -1812,9 +1812,9 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"Couldn't Set Project Category Type - Current Screen Is Not Project Selection Screen";
+                                callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
                             }
                         }
                         else
@@ -14433,7 +14433,7 @@ namespace Com.RedicalGames.Filar
                                                 LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
                                         });
 
-                                        if (ScreenUIManager.Instance.HasCurrentScreen())
+                                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                                         {
                                             switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                             {
@@ -14448,7 +14448,7 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
+                                            Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
 
                                         SceneAssetsManager.Instance.SetCanFilterContent(true);
                                     }
@@ -14499,7 +14499,7 @@ namespace Com.RedicalGames.Filar
                                                 LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
                                         });
 
-                                        if (ScreenUIManager.Instance.HasCurrentScreen())
+                                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                                         {
                                             switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                             {
@@ -14540,7 +14540,7 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            LogError("Set Action Dropdown Options Failed - Current Screen Data Is Not Yet Initialized.", this);
+                                            Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
                                     }
                                     else
                                     {
@@ -18013,7 +18013,7 @@ namespace Com.RedicalGames.Filar
                 {
                     ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                    SceneAssetsManager.Instance.CreateNewProjectStructureData((folderCreated) =>
+                    SceneAssetsManager.Instance.CreateNewProjectFolder((folderCreated) =>
                     {
                         if (Helpers.IsSuccessCode(folderCreated.resultsCode))
                         {
