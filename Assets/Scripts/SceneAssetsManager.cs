@@ -841,8 +841,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if(widgetsClearedCallbackResults.Success())
                         {
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(ScreenNavigationManager.Instance.GetEmptyFolderDataPackets().widgetType);
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
+                            //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(ScreenNavigationManager.Instance.GetEmptyFolderDataPackets().widgetType);
+                            //ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
                         }
                     });
                 }
@@ -1853,11 +1853,11 @@ namespace Com.RedicalGames.Filar
             string tempName = string.Empty;
             AppData.Folder currentFolder = GetCurrentFolder();
 
-            DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
+            DirectoryFound(currentFolder.storageData.rootDirectory, directoryFoundCallback =>
             {
                 if (AppData.Helpers.IsSuccessCode(directoryFoundCallback.resultsCode))
                 {
-                    string[] folderDataPathList = Directory.GetFiles(currentFolder.storageData.projectDirectory, "*_FolderData.json", SearchOption.TopDirectoryOnly);
+                    string[] folderDataPathList = Directory.GetFiles(currentFolder.storageData.rootDirectory, "*_FolderData.json", SearchOption.TopDirectoryOnly);
                     string newTempName = "New Folder";
 
                     if (folderDataPathList.Length > 0)
@@ -1899,13 +1899,6 @@ namespace Com.RedicalGames.Filar
             });
 
             return tempName;
-        }
-
-        public bool AssetNameExist(string assetName)
-        {
-            bool exist = false;
-
-            return exist;
         }
 
         public void SetCurrentFolder(AppData.Folder folder) => currentFolder = folder;
@@ -2508,7 +2501,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void CreateNewProjectStructureData(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
+        public void CreateNewProjectFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
         {
             try
             {
@@ -2516,14 +2509,14 @@ namespace Com.RedicalGames.Filar
 
                 string newFolderDataFileName = !string.IsNullOrEmpty(CreateNewFolderName) ? CreateNewFolderName : GetCreateNewFolderTempName();
 
-                DirectoryFound(GetCurrentFolder().storageData.projectDirectory, currentDirectoryFoundCallback =>
+                DirectoryFound(GetCurrentFolder().storageData.rootDirectory, currentDirectoryFoundCallback =>
                 {
                     if (AppData.Helpers.IsSuccessCode(currentDirectoryFoundCallback.resultsCode))
                     {
                         #region Get Folder File Storage Data
 
                         // Folder Storage Info
-                        string newFolderDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.projectDirectory, newFolderDataFileName);
+                        string newFolderDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.rootDirectory, newFolderDataFileName);
                         string newFolderDirectory = newFolderDirectoryInfo.Replace("\\", "/");
 
                         // Folder Storage File Path
@@ -2539,7 +2532,7 @@ namespace Com.RedicalGames.Filar
 
                             if(callbackResults.Success())
                             {
-                                string newFolderFileDataDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.projectDirectory, dataFoundCallbackResults.data);
+                                string newFolderFileDataDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.rootDirectory, dataFoundCallbackResults.data);
                                 string newFolderFileDataDirectory = newFolderFileDataDirectoryInfo.Replace("\\", "/");
 
                                 AppData.StorageDirectoryData newFolderFileDataStorageData = new AppData.StorageDirectoryData
@@ -2641,149 +2634,6 @@ namespace Com.RedicalGames.Filar
                         callbackResults.resultsCode = currentDirectoryFoundCallback.resultsCode;
                     }
                 });
-
-                callback?.Invoke(callbackResults);
-            }
-            catch (Exception exception)
-            {
-                LogError(exception.Message, this);
-                throw exception;
-            }
-        }
-
-        public void CreateUIScreenFolderWidgets(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
-        {
-            try
-            {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>();
-
-                if (contentContainer != null && contentContainer.IsContainerActive())
-                {
-                    contentContainer.InitializeContainer();
-
-                    switch (screenType)
-                    {
-                        case AppData.UIScreenType.ProjectViewScreen:
-
-                            LoadFolderData(folder, (foldersLoaded) =>
-                            {
-                                List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
-
-                                if (AppData.Helpers.IsSuccessCode(foldersLoaded.resultsCode))
-                                {
-                                    List<AppData.Folder> pinnedFolders = new List<AppData.Folder>();
-
-                                    foreach (var folder in foldersLoaded.data)
-                                        if (folder.defaultWidgetActionState == AppData.DefaultUIWidgetActionState.Pinned)
-                                            pinnedFolders.Add(folder);
-
-                                    GetSortedWidgetList(foldersLoaded.data, pinnedFolders, sortedList =>
-                                    {
-                                        callbackResults.results = sortedList.results;
-                                        callbackResults.resultsCode = sortedList.resultsCode;
-
-                                        if (AppData.Helpers.IsSuccessCode(sortedList.resultsCode))
-                                        {
-                                            GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
-                                            {
-                                                callbackResults.results = widgetsCallback.results;
-                                                callbackResults.resultsCode = widgetsCallback.resultsCode;
-
-                                                if (widgetsCallback.Success())
-                                                {
-                                                    var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
-
-                                                    if (widgetPrefabData != null)
-                                                    {
-                                                        if (GetProjectStructureData().Success())
-                                                        {
-                                                            widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Folder, GetCurrentProjectStructureData().data.GetLayoutViewType(), prefabCallbackResults =>
-                                                            {
-                                                                callbackResults.results = prefabCallbackResults.results;
-                                                                callbackResults.resultsCode = prefabCallbackResults.resultsCode;
-
-                                                                if (prefabCallbackResults.Success())
-                                                                {
-                                                                    pinnedFolders = sortedList.data;
-
-                                                                    foreach (var folder in pinnedFolders)
-                                                                    {
-                                                                        GameObject folderWidget = Instantiate(prefabCallbackResults.data.gameObject);
-
-                                                                        if (folderWidget != null)
-                                                                        {
-                                                                            AppData.UIScreenWidget widgetComponent = folderWidget.GetComponent<AppData.UIScreenWidget>();
-
-                                                                            if (widgetComponent != null)
-                                                                            {
-                                                                                widgetComponent.SetDefaultUIWidgetActionState(folder.defaultWidgetActionState);
-
-                                                                                if (GetCurrentProjectStructureData().data.paginationViewType == AppData.PaginationViewType.Pager)
-                                                                                    widgetComponent.Hide();
-
-                                                                                folderWidget.name = folder.name;
-                                                                                widgetComponent.SetFolderData(folder);
-                                                                                contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
-
-                                                                                if (!loadedWidgetsList.Contains(widgetComponent))
-                                                                                    loadedWidgetsList.Add(widgetComponent);
-
-                                                                                callbackResults.results = "Folder Widget Loaded.";
-                                                                                callbackResults.data = loadedWidgetsList;
-                                                                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                callbackResults.results = "Folder Widget Component Missing.";
-                                                                                callbackResults.data = default;
-                                                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                                            }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            callbackResults.results = "Folder Widget Failed To Instantiate.";
-                                                                            callbackResults.data = default;
-                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                                        }
-                                                                    }
-                                                                }
-                                                                else
-                                                                    Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
-                                                            });
-                                                        }
-                                                        else
-                                                            Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
-                                                    }
-                                                    else
-                                                        LogError("Widget Prefab Data Missing.", this);
-                                                }
-                                            });
-                                        }
-                                        else
-                                            LogWarning(sortedList.results, this);
-                                    });
-                                }
-                                else
-                                    LogWarning(foldersLoaded.results, this);
-
-                                if (loadedWidgetsList.Count > 0)
-                                    callbackResults.data = loadedWidgetsList;
-                                else
-                                    callbackResults.data = default;
-
-                                callbackResults.results = foldersLoaded.results;
-                                callbackResults.resultsCode = foldersLoaded.resultsCode;
-                            });
-
-                            break;
-                    }
-                }
-                else
-                {
-                    callbackResults.results = "Dynamic Widgets Content Container Missing / Null.";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                }
 
                 callback?.Invoke(callbackResults);
             }
@@ -3827,6 +3677,34 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        public void HasContentToLoadForSelectedScreen(Action<AppData.CallbackData<AppData.UIScreenType>> callback)
+        {
+            AppData.CallbackData<AppData.UIScreenType> callbackResults = new AppData.CallbackData<AppData.UIScreenType>();
+
+            if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+            {
+                FolderHasContentToLoad(GetCurrentFolder(), hasContentCallbackResults =>
+                {
+                    callbackResults.results = hasContentCallbackResults.results;
+                    callbackResults.resultsCode = hasContentCallbackResults.resultsCode;
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.results = $"Folder : {GetCurrentFolder().name} Has Content To Load For Screen Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                        callbackResults.data = ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType();
+                    }
+                });
+            }
+            else
+            {
+                callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+                callbackResults.data = default;
+                callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
         #region On Refresh Functions
 
         public bool Refreshed(AppData.Folder folder, DynamicWidgetsContainer widgetsContainer, AppData.SceneDataPackets dataPackets)
@@ -3970,8 +3848,6 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     if (hasContentCallbackResults.Success())
                                                     {
-
-                                                        LogSuccess($"====================>>>>>>>>>> Project Structure : {GetProjectStructureData().data.name} Has Content To Load.");
                                                         isRefreshed = true;
 
                                                         //#region Pegination
@@ -4098,29 +3974,9 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                     else
                                                     {
-                                                        SetContentScreenUIStatesEvent(clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam);
-
-
-                                                        LogError($"====================>>>>>>>>>> Project Structure : {GetProjectStructureData().data.name} Has No Content To Load.");
+                                                        StartCoroutine(RefreshAssetsAsync(refreshedCallbackResults => {}, clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam));
                                                         isRefreshed = true;
-
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.InputUIState.Disabled);
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.ClipboardButton, AppData.InputUIState.Disabled);
-
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
-                                                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(AppData.InputFieldActionType.AssetSearchField, string.Empty);
-
-                                                        //isRefreshed = true;
-
-                                                        //StartCoroutine(RefreshAssetsAsync());
-
-                                                        //Log(hasContentCallbackResults.resultsCode, hasContentCallbackResults.results, this);
                                                     }
-
                                                 });
                                             }
                                             else
@@ -4149,38 +4005,48 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        IEnumerator RefreshAssetsAsync()
+        IEnumerator RefreshAssetsAsync(Action<AppData.Callback> callback = null, params AppData.UIScreenGroupContent[] actions)
         {
             yield return new WaitForEndOfFrame();
 
-            AppData.SceneDataPackets dataPackets = ScreenNavigationManager.Instance.GetEmptyFolderDataPackets();
-            dataPackets.isRootFolder = GetCurrentFolder().IsRootFolder();
-            dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
-
-            dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>()
-        {
-            new AppData.ReferencedActionButtonData
+            try
             {
-                title = (dataPackets.isRootFolder)? "Create New" : "Delete",
-                type = AppData.InputActionButtonType.FolderActionButton,
-                state = AppData.InputUIState.Enabled
+                AppData.Callback callbackResults = new AppData.Callback();
+
+                AppData.SceneDataPackets dataPackets = ScreenNavigationManager.Instance.GetEmptyFolderDataPackets();
+                dataPackets.isRootFolder = GetCurrentFolder().IsRootFolder();
+                dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
+
+                dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>()
+                {
+                    new AppData.ReferencedActionButtonData
+                    {
+                        title = (dataPackets.isRootFolder)? "Create New" : "Delete",
+                        type = AppData.InputActionButtonType.FolderActionButton,
+                        state = AppData.InputUIState.Enabled
+                    }
+                };
+
+                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+
+                #region Disable UI
+
+                SetContentScreenUIStatesEvent(actions);
+
+                callbackResults.results = "Content Refreshed.";
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+
+                #endregion
+
+                //ScreenUIManager.Instance.ScreenRefresh();
+
+                callback?.Invoke(callbackResults);
             }
-        };
-
-
-            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
-
-            #region Disable UI
-
-            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Disabled);
-            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-
-            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputUIState.Disabled);
-            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
-
-            #endregion
-
-            ScreenUIManager.Instance.ScreenRefresh();
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
         }
 
         #endregion
@@ -4327,7 +4193,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            if (DirectoryFound(folder.storageData.projectDirectory))
+            if (DirectoryFound(folder.storageData.rootDirectory))
             {
                 var folders = Directory.GetFiles(folder.storageData.projectDirectory, "*_FolderData.json", SearchOption.TopDirectoryOnly).ToList();
                 var files = Directory.GetFiles(folder.storageData.projectDirectory, "*_FileData.json", SearchOption.TopDirectoryOnly).ToList();
