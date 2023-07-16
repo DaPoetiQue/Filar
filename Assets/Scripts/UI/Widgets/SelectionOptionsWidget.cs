@@ -40,10 +40,10 @@ namespace Com.RedicalGames.Filar
         {
             if (SceneAssetsManager.Instance != null)
             {
-                if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
-                    SetCheckboxValue(SceneAssetsManager.Instance.GetFolderStructureData().data.InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
+                if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                    SetCheckboxValue(SceneAssetsManager.Instance.GetProjectStructureData().data.InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
                 else
-                    Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
 
                 var widgetsContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
 
@@ -137,10 +137,10 @@ namespace Com.RedicalGames.Filar
             {
                 if (SceneAssetsManager.Instance != null)
                 {
-                    if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
-                        SceneAssetsManager.Instance.GetFolderStructureData().data.SetInverseSelect(value);
+                    if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                        SceneAssetsManager.Instance.GetProjectStructureData().data.SetInverseSelect(value);
                     else
-                        Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                        Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
                 }
                 else
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);

@@ -566,20 +566,20 @@ namespace Com.RedicalGames.Filar
                                     SceneAssetsManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
                             });
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                             {
-                                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
+                                if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                                 {
-                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
+                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
                                     {
                                         callbackResults.results = setUIStateCallback.results;
                                         callbackResults.resultsCode = setUIStateCallback.resultsCode;
                                     });
                                 }
 
-                                if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
+                                if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
                                 {
-                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.ChangeLayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
+                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
                                     {
                                         callbackResults.results = setUIStateCallback.results;
                                         callbackResults.resultsCode = setUIStateCallback.resultsCode;
@@ -587,12 +587,12 @@ namespace Com.RedicalGames.Filar
                                 }
                             }
                             else
-                                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
-                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name);
+                            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
                             else
-                                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
 
                             screen.value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
 
@@ -779,9 +779,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                     {
-                        if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                        if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                         {
-                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetFolderStructureData().data.rootFolder;
+                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
                             var container = containerCallbackResults.data;
 
                             SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
@@ -796,7 +796,7 @@ namespace Com.RedicalGames.Filar
                             });
                         }
                         else
-                            Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                            Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
                     }
                     else
                         Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);

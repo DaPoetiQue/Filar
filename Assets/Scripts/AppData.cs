@@ -199,7 +199,7 @@ namespace Com.RedicalGames.Filar
             CreateSkyboxButton,
             OpenFilePicker_HDRI,
             CreateNewFolderButton,
-            ChangeLayoutViewButton,
+            LayoutViewButton,
             OpenFolderButton,
             FolderReturnButton,
             Copy_PasteButton,
@@ -12427,19 +12427,19 @@ namespace Com.RedicalGames.Filar
 
                     if (SceneAssetsManager.Instance != null)
                     {
-                        if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                        if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                         {
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
+                            if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
                             {
                                 dragPosition.x = widgetRect.anchoredPosition.x;
                                 dragPosition.y = dragPos.y;
                             }
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
+                            if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
                                 dragPosition = dragPos;
                         }
                         else
-                            Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                            Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
                     }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
@@ -12593,10 +12593,10 @@ namespace Com.RedicalGames.Filar
                 else
                     directionAxis = DirectionAxisType.Vertical;
 
-                if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                 {
 
-                    if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
+                    if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
                     {
                         if (directionAxis == DirectionAxisType.Horizontal)
                         {
@@ -12617,7 +12617,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
 
-                    if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
+                    if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
                     {
                         if (directionAxis == DirectionAxisType.Vertical)
                         {
@@ -12631,7 +12631,7 @@ namespace Com.RedicalGames.Filar
 
                 }
                 else
-                    Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
 
                #endregion 
 
@@ -14393,6 +14393,8 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionDropDownList.Count > 0)
                 {
+                    LogInfo($"========================>>>>>>>>>>>>>>>> Set Drop Pown Of Type : {actionType} - Content Group : {contentGroup.name} - Content Count : {contentGroup.contents.Count}", this);
+
                     UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
 
                     if (dropdown.value != null)
@@ -14888,7 +14890,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case InputActionButtonType.ChangeLayoutViewButton:
+                    case InputActionButtonType.LayoutViewButton:
 
                         OnChangeLayoutView_ActionEvent(actionButton.dataPackets);
 
@@ -17557,7 +17559,7 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 if (widgetsSortedCallbackResults.Success())
                                                                 {
-                                                                    if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                                                                    if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                                                                     {
                                                                         var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
 
@@ -17568,15 +17570,15 @@ namespace Com.RedicalGames.Filar
 
                                                                         ScreenUIManager.Instance.Refresh();
 
-                                                                        if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
+                                                                        if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
                                                                             StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
-                                                                        else if (SceneAssetsManager.Instance.GetFolderStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
+                                                                        else if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
                                                                             StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
 
                                                                         NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                                                                     }
                                                                     else
-                                                                        Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                                                                        Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
                                                                 }
                                                                 else
                                                                     Log(widgetsSortedCallbackResults.resultsCode, widgetsSortedCallbackResults.results, this);

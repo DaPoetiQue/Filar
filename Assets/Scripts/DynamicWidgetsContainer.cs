@@ -1745,9 +1745,9 @@ namespace Com.RedicalGames.Filar
 
                             if(newSelectionNameList.Count > 0)
                             {
-                                if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+                                if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                                 {
-                                    if (SceneAssetsManager.Instance.GetFolderStructureData().data.InverseSelect())
+                                    if (SceneAssetsManager.Instance.GetProjectStructureData().data.InverseSelect())
                                     {
                                         if (SelectableManager.Instance.HasCachedSelectionInfo())
                                         {
@@ -1769,7 +1769,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
 
                                 SelectableManager.Instance.Select(newSelectionNameList, AppData.FocusedSelectionType.SelectedItem, selectionCallback =>
                                 {
@@ -2525,7 +2525,7 @@ namespace Com.RedicalGames.Filar
 
         public void SetScreenBounds(RectTransform bounds)
         {
-            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
             {
                 #region Width
 
@@ -2551,7 +2551,7 @@ namespace Com.RedicalGames.Filar
                 int verticalSpacingBottom = heightSpacingMultiplied + heightSpacing;
 
                 int top = -(height + (verticalSpacingTop / 2));
-                int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetFolderStructureData().data.GetLayoutViewType()).containerDimensions.height;
+                int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType()).containerDimensions.height;
                 int bottom = (-layoutHeight) - (-(height + verticalSpacingBottom));
 
                 screenBounds.top = top;
@@ -2560,7 +2560,7 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
             else
-                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
         }
 
         public AppData.UILayoutDimensions GetUILayoutDimension(AppData.LayoutViewType layoutView)
