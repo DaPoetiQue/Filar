@@ -120,10 +120,10 @@ namespace Com.RedicalGames.Filar
                             //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FolderNavigationWidget);
                             UpdateNavigationRootTitleDisplayer();
 
-                            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
-                                folderNavigationDataPackets.widgetTitle = SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name;
+                            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                                folderNavigationDataPackets.widgetTitle = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
                             else
-                                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
                         }
                     }
                     else
@@ -151,9 +151,9 @@ namespace Com.RedicalGames.Filar
 
         public void UpdateNavigationRootTitleDisplayer()
         {
-            if (SceneAssetsManager.Instance.GetFolderStructureData().Success())
+            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
             {
-                string rootFolderName = SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name + "/";
+                string rootFolderName = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name + "/";
                 string formattedTitle = string.Empty;
 
                 if (folderNavigationNameList.Count == 1)
@@ -169,7 +169,7 @@ namespace Com.RedicalGames.Filar
                     formattedTitle = folderDirectoryIndexedWidgetName;
                 }
                 else
-                    formattedTitle = SceneAssetsManager.Instance.GetFolderStructureData().data.GetRootFolder().name;
+                    formattedTitle = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
 
                 if (formattedTitle.Length > folderNavigationDataPackets.widgetTitleCharacterLimit)
                 {
@@ -191,7 +191,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
             }
             else
-                Log(SceneAssetsManager.Instance.GetFolderStructureData().resultsCode, SceneAssetsManager.Instance.GetFolderStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
         }
 
         public AppData.SceneDataPackets GetEmptyFolderDataPackets()
