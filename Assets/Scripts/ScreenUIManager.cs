@@ -733,36 +733,55 @@ namespace Com.RedicalGames.Filar
 
         public void ScreenRefresh()
         {
-            if (SelectableManager.Instance != null)
+            if (SceneAssetsManager.Instance != null)
             {
-                if (SelectableManager.Instance.HasFocusedWidgetInfo())
-                    SelectableManager.Instance.OnClearFocusedSelectionsInfo();
-
-                if (SceneAssetsManager.Instance != null)
+                if (SelectableManager.Instance != null)
                 {
-                    SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
+                    if (SelectableManager.Instance.HasFocusedWidgetInfo())
+                        SelectableManager.Instance.OnClearFocusedSelectionsInfo();
+
+                    SceneAssetsManager.Instance.HasContentToLoadForSelectedScreen(hasContentCallbackResults =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultsCode))
+                        if (hasContentCallbackResults.Success())
                         {
-                            Debug.LogError("==> Check Heere -Has Something To Do Regarding Ambushed Selection Data.");
+                            switch (hasContentCallbackResults.data)
+                            {
+                                case AppData.UIScreenType.ProjectSelectionScreen:
 
-                            //widgetsContentContainer.data.DeselectAllContentWidgets();
+                                    break;
 
-                            //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
+                                case AppData.UIScreenType.ProjectViewScreen:
+
+                                    SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
+                                    {
+                                        if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultsCode))
+                                        {
+                                            LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
+
+                                            //widgetsContentContainer.data.DeselectAllContentWidgets();
+
+                                            //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
+                                        }
+                                        else
+                                            LogError(widgetsContentContainer.results, this, () => ScreenRefresh());
+                                    });
+
+                                    break;
+                            }
                         }
                         else
-                            LogError(widgetsContentContainer.results, this, () => ScreenRefresh());
+                            Log(hasContentCallbackResults.resultsCode, hasContentCallbackResults.results, this);
                     });
                 }
                 else
-                    LogError("Refresh Button Failed : SelectableManager.Instance Is Not Yet Initialized", this, () => ScreenRefresh());
+                    LogWarning("Refresh Button Failed : SelectableManager.Instance Is Not Yet Initialized", this);
+
+                AppData.ActionEvents.OnScreenUIRefreshed();
+
+                Canvas.ForceUpdateCanvases();
             }
             else
-                LogWarning("Refresh Button Failed : SelectableManager.Instance Is Not Yet Initialized", this, () => ScreenRefresh());
-
-            AppData.ActionEvents.OnScreenUIRefreshed();
-
-            Canvas.ForceUpdateCanvases();
+                LogError("Refresh Button Failed : Scene Assets Manager Instance Is Not Yet Initialized", this);
         }
 
         IEnumerator OnScreenRefresh(AppData.SceneDataPackets dataPackets)
@@ -805,17 +824,35 @@ namespace Com.RedicalGames.Filar
                     Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
             });
 
-            if (currentScreen.value.GetScreenData().refreshSceneAssets)
-                yield return new WaitUntil(() => SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer, dataPackets)); // Wait For Assets To Be Refreshed.
+            var container = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+
+            if (container == null)
+            {
+                SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults =>
+                {
+                    if (containerCallbackResults.Success())
+                        container = containerCallbackResults.data;
+                    else
+                        Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                });
+            }
+
+            if (container != null)
+            {
+                if (currentScreen.value.GetScreenData().refreshSceneAssets)
+                    yield return new WaitUntil(() => SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), container, dataPackets)); // Wait For Assets To Be Refreshed.
+                else
+                    yield return AppData.Helpers.GetWaitForSeconds(dataPackets.refreshDuration);
+
+                if (currentScreen.value != null)
+                    currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
+
+                currentScreen.value.Focus();
+
+                AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+            }
             else
-                yield return AppData.Helpers.GetWaitForSeconds(dataPackets.refreshDuration);
-
-            if (currentScreen.value != null)
-                currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
-
-            currentScreen.value.Focus();
-
-            AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+                LogError("Failed To Refresh Screen - Content Container Null / Missing.", this);
         }
 
         public void UpdateInfoDisplayer(AppData.UIScreenViewComponent screen)
@@ -902,9 +939,24 @@ namespace Com.RedicalGames.Filar
             return screen?.value != null;
         }
 
-        public bool HasCurrentScreen()
+        public AppData.CallbackData<AppData.UIScreenViewComponent> HasCurrentScreen()
         {
-            return currentScreen != null && currentScreen?.value != null;
+            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+
+            if(currentScreen != null && currentScreen?.value != null)
+            {
+                callbackResults.results = $"Current Screen : {currentScreen.name} Of Type : {currentScreen.value.GetUIScreenType()} Found.";
+                callbackResults.data = currentScreen;
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = "Current Screen Not Yet Initialized / Missing / Not Found.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            return callbackResults;
         }
 
         public void HasCurrentScreen(Action<AppData.Callback> callback)
