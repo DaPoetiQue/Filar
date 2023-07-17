@@ -1313,38 +1313,10 @@ namespace Com.RedicalGames.Filar
 
                         if (container.childCount == 0)
                         {
-                            SceneAssetsManager.Instance.HasContentToLoadForSelectedScreen(hasContentCallbackResults =>
-                            {
-                                callbackResults.results = hasContentCallbackResults.results;
-                                callbackResults.resultsCode = hasContentCallbackResults.resultsCode;
+                            SceneAssetsManager.Instance.UnloadUnusedAssets();
 
-                                if (callbackResults.Success())
-                                {
-                                    switch(hasContentCallbackResults.data)
-                                    {
-                                        case AppData.UIScreenType.ProjectSelectionScreen:
-
-                                            break;
-
-                                        case AppData.UIScreenType.ProjectViewScreen:
-
-                                            //if (showSpinner)
-                                            //    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(AppData.WidgetType.LoadingWidget);
-
-                                            break;
-                                    }
-
-                                    SceneAssetsManager.Instance.UnloadUnusedAssets();
-
-                                    callbackResults.results = "All Widgets Cleared.";
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                                }
-                                else
-                                {
-                                    callbackResults.results = "All Widgets Cleared - No Content To Load.";
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                                }
-                            });
+                            callbackResults.results = "All Widgets Cleared.";
+                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                         }
                         else
                         {
