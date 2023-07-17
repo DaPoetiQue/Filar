@@ -15865,7 +15865,31 @@ namespace Com.RedicalGames.Filar
                     widget.ResetScrollPosition(scrollerResetCallback => 
                     {
                         if (scrollerResetCallback.Success())
-                            widget.ShowScreenWidget(dataPackets);
+                        {
+                            Helpers.ComponentValid(SelectableManager.Instance, validComponentCallbackResults => 
+                            {
+                                if (validComponentCallbackResults.Success())
+                                {
+                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults => 
+                                    {
+                                        if (selectionSystemCallbackResults.Success())
+                                        {
+                                            selectionSystemCallbackResults.data.OnClearInputSelection(dataPackets.screenType, inputsClearedCallbackResults => 
+                                            {
+                                                if (inputsClearedCallbackResults.Success())
+                                                    widget.ShowScreenWidget(dataPackets);
+                                                else
+                                                    Log(inputsClearedCallbackResults.resultsCode, inputsClearedCallbackResults.results, this);
+                                            });
+                                        }
+                                        else
+                                            Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                                    });
+                                }
+                                else
+                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                            });
+                        }
                         else
                             Log(scrollerResetCallback.resultsCode, scrollerResetCallback.results, this);
                     });
