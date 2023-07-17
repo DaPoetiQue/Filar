@@ -740,38 +740,48 @@ namespace Com.RedicalGames.Filar
                     if (SelectableManager.Instance.HasFocusedWidgetInfo())
                         SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                    SceneAssetsManager.Instance.HasContentToLoadForSelectedScreen(hasContentCallbackResults =>
+                    if (HasCurrentScreen().Success())
                     {
-                        if (hasContentCallbackResults.Success())
+                        if (SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
                         {
-                            switch (hasContentCallbackResults.data)
+                            SceneAssetsManager.Instance.HasContentToLoadForSelectedScreen(SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
                             {
-                                case AppData.UIScreenType.ProjectSelectionScreen:
-
-                                    break;
-
-                                case AppData.UIScreenType.ProjectViewScreen:
-
-                                    SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
+                                if (hasContentCallbackResults.Success())
+                                {
+                                    switch (hasContentCallbackResults.data)
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultsCode))
-                                        {
-                                            LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
+                                        case AppData.UIScreenType.ProjectSelectionScreen:
 
-                                            //widgetsContentContainer.data.DeselectAllContentWidgets();
+                                            break;
 
-                                            //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
-                                        }
-                                        else
-                                            LogError(widgetsContentContainer.results, this, () => ScreenRefresh());
-                                    });
+                                        case AppData.UIScreenType.ProjectViewScreen:
 
-                                    break;
-                            }
+                                            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
+                                            {
+                                                if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultsCode))
+                                                {
+                                                    LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
+
+                                                    //widgetsContentContainer.data.DeselectAllContentWidgets();
+
+                                                    //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
+                                                }
+                                                else
+                                                    LogError(widgetsContentContainer.results, this, () => ScreenRefresh());
+                                            });
+
+                                            break;
+                                    }
+                                }
+                                else
+                                    Log(hasContentCallbackResults.resultsCode, hasContentCallbackResults.results, this);
+                            });
                         }
                         else
-                            Log(hasContentCallbackResults.resultsCode, hasContentCallbackResults.results, this);
-                    });
+                            Log(SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultsCode, SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).results, this);
+                    }
+                    else
+                        Log(HasCurrentScreen().resultsCode, HasCurrentScreen().results, this);
                 }
                 else
                     LogWarning("Refresh Button Failed : SelectableManager.Instance Is Not Yet Initialized", this);
