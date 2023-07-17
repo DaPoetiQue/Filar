@@ -3901,8 +3901,8 @@ namespace Com.RedicalGames.Filar
                                                 var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
                                                 var layoutViewButtonParam = GetUIScreenGroupContentTemplate("Layout View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.LayoutViewButton, state: AppData.InputUIState.Disabled);
                                                 var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
-                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
-                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
+                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled, contents: new List<string>());
+                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled, contents: new List<string>());
 
                                                 #endregion
 
@@ -4115,21 +4115,22 @@ namespace Com.RedicalGames.Filar
                                     callbackResults.resultsCode = dataPacketsCallbackResults.resultsCode;
 
                                     if(callbackResults.Success())
-                                    {
                                         ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPacketsCallbackResults.data);
-
-                                        #region UI States
-
-                                        //SetContentScreenUIStatesEvent(actions);
-                                        callbackResults.results = "Content Refreshed.";
-
-                                        #endregion
-                                    }
                                 });
                             } 
                         }
                     }
                 });
+
+                if(callbackResults.Success())
+                {
+                    #region UI States
+
+                    SetContentScreenUIStatesEvent(actions);
+                    callbackResults.results = "Content Refreshed.";
+
+                    #endregion
+                }
 
                 //ScreenUIManager.Instance.ScreenRefresh();
 

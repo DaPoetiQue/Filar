@@ -14487,167 +14487,212 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenActionDropDownList.Count > 0)
                 {
-                    LogInfo($"========================>>>>>>>>>>>>>>>> Set Drop Pown Of Type : {actionType} - Content Group : {contentGroup.name} - Content Count : {contentGroup.contents.Count}", this);
+                    #region Setting Contents
 
-                    //UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
+                    if (contentGroup != null)
+                    {
+                        UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
 
-                    //if (dropdown.value != null)
-                    //{
-                    //    switch (actionType)
-                    //    {
-                    //        case InputDropDownActionType.FilterList:
+                        if (dropdown.value != null)
+                        {
 
-                    //            Helpers.StringListValueValid(contentGroup.contents, 3, hasContentsCallbackResults =>
-                    //            {
-                    //                if (hasContentsCallbackResults.Success())
-                    //                {
-                    //                    dropdown.value.ClearOptions();
-                    //                    dropdown.SetUIInputState(InputUIState.Enabled);
+                            Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults =>
+                            {
+                                if (validComponentCallbackResults.Success())
+                                {
+                                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                                    {
+                                        switch (ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
+                                        {
+                                            case UIScreenType.ProjectSelectionScreen:
 
-                    //                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                                                switch (actionType)
+                                                {
+                                                    case InputDropDownActionType.FilterList:
 
-                    //                    foreach (var filter in contentGroup.contents)
-                    //                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
+                                                        Helpers.StringListValueValid(contentGroup?.contents, 3, hasContentsCallbackResults =>
+                                                        {
+                                                            if (hasContentsCallbackResults.Success())
+                                                            {
+                                                                dropdown.value.ClearOptions();
+                                                                dropdown.SetUIInputState(InputUIState.Enabled);
 
-                    //                    dropdown.value.AddOptions(dropdownOption);
+                                                                List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                    //                    dropdown.value.onValueChanged.AddListener((value) =>
-                    //                    {
-                    //                        if (value <= dropdown.value.options.Count - 1)
-                    //                        {
-                    //                            SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
-                    //                            {
-                    //                                if (contentIndexCallbackResults.Success())
-                    //                                    OnDropDownFilterOptions(contentIndexCallbackResults.data);
-                    //                                else
-                    //                                    Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                    //                            });
-                    //                        }
-                    //                        else
-                    //                            LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
-                    //                    });
+                                                                foreach (var filter in contentGroup?.contents)
+                                                                    dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
-                    //                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
-                    //                    {
-                    //                        switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
-                    //                        {
-                    //                            case UIScreenType.ProjectSelectionScreen:
+                                                                dropdown.value.AddOptions(dropdownOption);
 
-                    //                                if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                    //                                    dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                    //                                else
-                    //                                    Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                                                                dropdown.value.onValueChanged.AddListener((value) =>
+                                                                {
+                                                                    if (value <= dropdown.value.options.Count - 1)
+                                                                    {
+                                                                        SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                                                                        {
+                                                                            if (contentIndexCallbackResults.Success())
+                                                                                OnDropDownFilterOptions(contentIndexCallbackResults.data);
+                                                                            else
+                                                                                Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup?.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
+                                                                });
 
-                    //                                break;
-                    //                        }
-                    //                    }
-                    //                    else
-                    //                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                                                                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                                                                {
+                                                                    switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
+                                                                    {
+                                                                        case UIScreenType.ProjectSelectionScreen:
 
-                    //                    SceneAssetsManager.Instance.SetCanFilterContent(true);
-                    //                }
-                    //                else
-                    //                {
-                    //                    dropdown.SetContent(new List<string> { contentGroup.placeHolder });
-                    //                    dropdown.SetUIInputState(InputUIState.Disabled);
+                                                                            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                                                                dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                                            else
+                                                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
-                    //                    SceneAssetsManager.Instance.SetCanFilterContent(false);
-                    //                }
-                    //            });
+                                                                            break;
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
 
-                    //            break;
+                                                                SceneAssetsManager.Instance.SetCanFilterContent(true);
+                                                            }
+                                                            else
+                                                            {
+                                                                dropdown.SetContent(new List<string> { contentGroup?.placeHolder });
+                                                                dropdown.SetUIInputState(InputUIState.Disabled);
 
-                    //        case InputDropDownActionType.SortingList:
+                                                                SceneAssetsManager.Instance.SetCanFilterContent(false);
+                                                            }
+                                                        });
 
-                    //            Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
-                    //            {
-                    //                if (hasContentsCallbackResults.Success() && SceneAssetsManager.Instance.CanSortContents())
-                    //                {
-                    //                    if (!SceneAssetsManager.Instance.CanFilterContents())
-                    //                        if (contentGroup.contents.Contains("Category"))
-                    //                            contentGroup.contents.Remove("Category");
+                                                        break;
 
-                    //                    dropdown.value.ClearOptions();
-                    //                    dropdown.SetUIInputState(InputUIState.Enabled);
+                                                    case InputDropDownActionType.SortingList:
 
-                    //                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                                                        Helpers.StringListValueValid(contentGroup?.contents, hasContentsCallbackResults =>
+                                                        {
+                                                            if (hasContentsCallbackResults.Success() && SceneAssetsManager.Instance.CanSortContents())
+                                                            {
+                                                                if (!SceneAssetsManager.Instance.CanFilterContents())
+                                                                    if (contentGroup.contents.Contains("Category"))
+                                                                        contentGroup?.contents.Remove("Category");
 
-                    //                    foreach (var sort in contentGroup.contents)
-                    //                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
+                                                                dropdown.value.ClearOptions();
+                                                                dropdown.SetUIInputState(InputUIState.Enabled);
 
-                    //                    dropdown.value.AddOptions(dropdownOption);
+                                                                List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                    //                    dropdown.value.onValueChanged.AddListener((value) =>
-                    //                    {
-                    //                        if (value <= dropdown.value.options.Count - 1)
-                    //                        {
-                    //                            SceneAssetsManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
-                    //                            {
-                    //                                if (contentIndexCallbackResults.Success())
-                    //                                    OnDropDownSortingOptions(contentIndexCallbackResults.data);
-                    //                                else
-                    //                                    Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                    //                            });
-                    //                        }
-                    //                        else
-                    //                            LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
-                    //                    });
+                                                                foreach (var sort in contentGroup?.contents)
+                                                                    dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
 
-                    //                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
-                    //                    {
-                    //                        switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
-                    //                        {
-                    //                            case UIScreenType.ProjectSelectionScreen:
+                                                                dropdown.value.AddOptions(dropdownOption);
 
-                    //                                if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                    //                                {
-                    //                                    var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
-                    //                                    var filterType = rootData.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                    //                                    var sortType = rootData.GetProjectStructureData().GetProjectInfo().GetSortType();
-                    //                                    var index = SceneAssetsManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
+                                                                dropdown.value.onValueChanged.AddListener((value) =>
+                                                                {
+                                                                    if (value <= dropdown.value.options.Count - 1)
+                                                                    {
+                                                                        SceneAssetsManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                                                                        {
+                                                                            if (contentIndexCallbackResults.Success())
+                                                                                OnDropDownSortingOptions(contentIndexCallbackResults.data);
+                                                                            else
+                                                                                Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup?.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
+                                                                });
 
-                    //                                    if (filterType != ProjectCategoryType.Project_All)
-                    //                                    {
-                    //                                        if (sortType == SortType.Category)
-                    //                                        {
-                    //                                            sortType = SortType.Ascending;
-                    //                                            rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
+                                                                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                                                                {
+                                                                    switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
+                                                                    {
+                                                                        case UIScreenType.ProjectSelectionScreen:
 
-                    //                                            SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
-                    //                                            {
-                    //                                                if (dataSavedCallbackResults.Success())
-                    //                                                    dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
-                    //                                                else
-                    //                                                    Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
-                    //                                            });
-                    //                                        }
-                    //                                        else
-                    //                                            dropdown.value.value = index;
-                    //                                    }
-                    //                                    else
-                    //                                        dropdown.value.value = index;
-                    //                                }
-                    //                                else
-                    //                                    Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                                                                            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                                                            {
+                                                                                var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
+                                                                                var filterType = rootData.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                                                var sortType = rootData.GetProjectStructureData().GetProjectInfo().GetSortType();
+                                                                                var index = SceneAssetsManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
 
-                    //                                break;
-                    //                        }
-                    //                    }
-                    //                    else
-                    //                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
-                    //                }
-                    //                else
-                    //                {
-                    //                    dropdown.SetContent(new List<string> { contentGroup.placeHolder });
-                    //                    dropdown.SetUIInputState(InputUIState.Disabled);
-                    //                }
-                    //            });
+                                                                                if (filterType != ProjectCategoryType.Project_All)
+                                                                                {
+                                                                                    if (sortType == SortType.Category)
+                                                                                    {
+                                                                                        sortType = SortType.Ascending;
+                                                                                        rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
 
-                    //            break;
-                    //    }
-                    //}
-                    //else
-                    //    LogWarning($"Input Field Of Type : {actionType} Not Found In Screen Type : {screenType} With Input Field List With : {screenActionDropDownList.Count} Dropdowns");
+                                                                                        SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
+                                                                                        {
+                                                                                            if (dataSavedCallbackResults.Success())
+                                                                                                dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
+                                                                                            else
+                                                                                                Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        dropdown.value.value = index;
+                                                                                }
+                                                                                else
+                                                                                    dropdown.value.value = index;
+                                                                            }
+                                                                            else
+                                                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+
+                                                                            break;
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                                                            }
+                                                            else
+                                                            {
+                                                                dropdown.SetContent(new List<string> { contentGroup?.placeHolder });
+                                                                dropdown.SetUIInputState(InputUIState.Disabled);
+                                                            }
+                                                        });
+
+                                                        break;
+                                                }
+
+                                                break;
+
+                                            case UIScreenType.ProjectViewScreen:
+
+                                                LogInfo($"===========>>>>>>>>>>> Setup : {actionType} Dropdown With : {contentGroup.contents.Count} Content(s).", this);
+
+                                                switch (actionType)
+                                                {
+                                                    case InputDropDownActionType.FilterList:
+
+                                                        break;
+
+                                                    case InputDropDownActionType.SortingList:
+
+                                                        break;
+                                                }
+
+                                                break;
+                                        }
+                                    }
+                                    else
+                                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                                }
+                                else
+                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                            });
+                        }
+                        else
+                            LogWarning($"Input Field Of Type : {actionType} Not Found In Screen Type : {screenType} With Input Field List With : {screenActionDropDownList.Count} Dropdowns");
+                    }
+                    else
+                        LogError("Group Content Is Null.", this);
+
+                    #endregion
                 }
                 else
                     LogWarning("ScreenActionDropDownList Is Null / Empty.", this);
