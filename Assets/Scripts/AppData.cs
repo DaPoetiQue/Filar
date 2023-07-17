@@ -557,7 +557,7 @@ namespace Com.RedicalGames.Filar
             Image_Asset_Storage,
             Meta_File_Storage,
             Settings_Storage,
-            Folder_Structure,
+            Project_Structure,
             Sub_Folder_Structure
         }
 
@@ -793,7 +793,7 @@ namespace Com.RedicalGames.Filar
 
         public enum FolderStructureType
         {
-            MainFolder,
+            RootFolder,
             SubFolder
         }
 
@@ -1900,9 +1900,6 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            [Space(5)]
-            public bool isRootFolder;
-
             public DirectoryType directoryType;
 
             [HideInInspector]
@@ -1918,6 +1915,9 @@ namespace Com.RedicalGames.Filar
 
             [HideInInspector]
             public AssetCategoryType categoryType;
+
+            [HideInInspector]
+            public bool isRootFolder;
 
             #endregion
 
@@ -1936,7 +1936,7 @@ namespace Com.RedicalGames.Filar
 
             public bool IsRootFolder()
             {
-                if (storageData.type == DirectoryType.Folder_Structure)
+                if (directoryType == DirectoryType.Project_Structure || directoryType == DirectoryType.Default_App_Storage)
                     isRootFolder = true;
                 else
                     isRootFolder = false;
@@ -10060,6 +10060,100 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class DataPacket
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public SceneDataPackets dataPackets;
+
+            #endregion;
+        }
+
+        [Serializable]
+        public class DataPacketsLibrary
+        {
+            #region Components
+
+            public List<DataPacket> dataPacketsCollection = new List<DataPacket>();
+
+            #endregion
+
+            #region Main
+
+            public DataPacketsLibrary()
+            {
+
+            }
+
+            public void GetDataPacket(WidgetType widgetType, Action<CallbackData<DataPacket>> callback)
+            {
+                CallbackData<DataPacket> callbackResults = new CallbackData<DataPacket>();
+
+                if (dataPacketsCollection != null && dataPacketsCollection.Count > 0)
+                {
+                    var dataPacket = dataPacketsCollection.Find(x => x.dataPackets.widgetType == widgetType);
+
+                    if(dataPacket != null)
+                    {
+                        callbackResults.results = $"Found Data Packet For : {widgetType} In Data Packets Collection.";
+                        callbackResults.data = dataPacket;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Find Data Packet For : {widgetType} In Data Packets Collection.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void AddDataPacket(DataPacket dataPacket, Action<CallbackData<DataPacket>> callback = null)
+            {
+                CallbackData<DataPacket> callbackResults = new CallbackData<DataPacket>();
+
+                if (dataPacketsCollection != null && dataPacketsCollection.Count > 0)
+                {
+                    if (!dataPacketsCollection.Contains(dataPacket))
+                    {
+                        dataPacketsCollection.Add(dataPacket);
+
+                        callbackResults.results = $"Data Packet : {dataPacket.name} Added To Data Packets Collection.";
+                        callbackResults.data = dataPacket;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Data Packet : {dataPacket.name} Already Exists In Data Packets Collection.";
+                        callbackResults.data = dataPacket;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+        }
+
+        [Serializable]
         public class SceneAssetLibrary 
         {
             #region Components
@@ -14395,165 +14489,165 @@ namespace Com.RedicalGames.Filar
                 {
                     LogInfo($"========================>>>>>>>>>>>>>>>> Set Drop Pown Of Type : {actionType} - Content Group : {contentGroup.name} - Content Count : {contentGroup.contents.Count}", this);
 
-                    UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
+                    //UIDropDown<DropdownDataPackets> dropdown = screenActionDropDownList.Find(dropdown => dropdown.dataPackets.action == actionType);
 
-                    if (dropdown.value != null)
-                    {
-                        switch (actionType)
-                        {
-                            case InputDropDownActionType.FilterList:
+                    //if (dropdown.value != null)
+                    //{
+                    //    switch (actionType)
+                    //    {
+                    //        case InputDropDownActionType.FilterList:
 
-                                Helpers.StringListValueValid(contentGroup.contents, 3, hasContentsCallbackResults =>
-                                {
-                                    if (hasContentsCallbackResults.Success())
-                                    {
-                                        dropdown.value.ClearOptions();
-                                        dropdown.SetUIInputState(InputUIState.Enabled);
+                    //            Helpers.StringListValueValid(contentGroup.contents, 3, hasContentsCallbackResults =>
+                    //            {
+                    //                if (hasContentsCallbackResults.Success())
+                    //                {
+                    //                    dropdown.value.ClearOptions();
+                    //                    dropdown.SetUIInputState(InputUIState.Enabled);
 
-                                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                    //                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                        foreach (var filter in contentGroup.contents)
-                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
+                    //                    foreach (var filter in contentGroup.contents)
+                    //                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = (filter.Contains("None")) ? "All" : filter });
 
-                                        dropdown.value.AddOptions(dropdownOption);
+                    //                    dropdown.value.AddOptions(dropdownOption);
 
-                                        dropdown.value.onValueChanged.AddListener((value) =>
-                                        {
-                                            if (value <= dropdown.value.options.Count - 1)
-                                            {
-                                                SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
-                                                {
-                                                    if (contentIndexCallbackResults.Success())
-                                                        OnDropDownFilterOptions(contentIndexCallbackResults.data);
-                                                    else
-                                                        Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                                                });
-                                            }
-                                            else
-                                                LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
-                                        });
+                    //                    dropdown.value.onValueChanged.AddListener((value) =>
+                    //                    {
+                    //                        if (value <= dropdown.value.options.Count - 1)
+                    //                        {
+                    //                            SceneAssetsManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                    //                            {
+                    //                                if (contentIndexCallbackResults.Success())
+                    //                                    OnDropDownFilterOptions(contentIndexCallbackResults.data);
+                    //                                else
+                    //                                    Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                    //                            });
+                    //                        }
+                    //                        else
+                    //                            LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
+                    //                    });
 
-                                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
-                                        {
-                                            switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
-                                            {
-                                                case UIScreenType.ProjectSelectionScreen:
+                    //                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                    //                    {
+                    //                        switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
+                    //                        {
+                    //                            case UIScreenType.ProjectSelectionScreen:
 
-                                                    if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                                                        dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                                                    else
-                                                        Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                    //                                if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                    //                                    dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                    //                                else
+                    //                                    Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
-                                                    break;
-                                            }
-                                        }
-                                        else
-                                            Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                    //                                break;
+                    //                        }
+                    //                    }
+                    //                    else
+                    //                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
 
-                                        SceneAssetsManager.Instance.SetCanFilterContent(true);
-                                    }
-                                    else
-                                    {
-                                        dropdown.SetContent(new List<string> { contentGroup.placeHolder });
-                                        dropdown.SetUIInputState(InputUIState.Disabled);
+                    //                    SceneAssetsManager.Instance.SetCanFilterContent(true);
+                    //                }
+                    //                else
+                    //                {
+                    //                    dropdown.SetContent(new List<string> { contentGroup.placeHolder });
+                    //                    dropdown.SetUIInputState(InputUIState.Disabled);
 
-                                        SceneAssetsManager.Instance.SetCanFilterContent(false);
-                                    }
-                                });
+                    //                    SceneAssetsManager.Instance.SetCanFilterContent(false);
+                    //                }
+                    //            });
 
-                                break;
+                    //            break;
 
-                            case InputDropDownActionType.SortingList:
+                    //        case InputDropDownActionType.SortingList:
 
-                                Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
-                                {
-                                    if (hasContentsCallbackResults.Success() && SceneAssetsManager.Instance.CanSortContents())
-                                    {
-                                        if (!SceneAssetsManager.Instance.CanFilterContents())
-                                            if (contentGroup.contents.Contains("Category"))
-                                                contentGroup.contents.Remove("Category");
+                    //            Helpers.StringListValueValid(contentGroup.contents, hasContentsCallbackResults =>
+                    //            {
+                    //                if (hasContentsCallbackResults.Success() && SceneAssetsManager.Instance.CanSortContents())
+                    //                {
+                    //                    if (!SceneAssetsManager.Instance.CanFilterContents())
+                    //                        if (contentGroup.contents.Contains("Category"))
+                    //                            contentGroup.contents.Remove("Category");
 
-                                        dropdown.value.ClearOptions();
-                                        dropdown.SetUIInputState(InputUIState.Enabled);
+                    //                    dropdown.value.ClearOptions();
+                    //                    dropdown.SetUIInputState(InputUIState.Enabled);
 
-                                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                    //                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
 
-                                        foreach (var sort in contentGroup.contents)
-                                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
+                    //                    foreach (var sort in contentGroup.contents)
+                    //                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = sort });
 
-                                        dropdown.value.AddOptions(dropdownOption);
+                    //                    dropdown.value.AddOptions(dropdownOption);
 
-                                        dropdown.value.onValueChanged.AddListener((value) =>
-                                        {
-                                            if (value <= dropdown.value.options.Count - 1)
-                                            {
-                                                SceneAssetsManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
-                                                {
-                                                    if (contentIndexCallbackResults.Success())
-                                                        OnDropDownSortingOptions(contentIndexCallbackResults.data);
-                                                    else
-                                                        Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
-                                                });
-                                            }
-                                            else
-                                                LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
-                                        });
+                    //                    dropdown.value.onValueChanged.AddListener((value) =>
+                    //                    {
+                    //                        if (value <= dropdown.value.options.Count - 1)
+                    //                        {
+                    //                            SceneAssetsManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                    //                            {
+                    //                                if (contentIndexCallbackResults.Success())
+                    //                                    OnDropDownSortingOptions(contentIndexCallbackResults.data);
+                    //                                else
+                    //                                    Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                    //                            });
+                    //                        }
+                    //                        else
+                    //                            LogError($"Set Action Dropdown Options Failed : Index :{value} Is Out Of Range. Content Count Found : {contentGroup.contents.Count} - Assigned : {dropdown.value.options.Count}", this);
+                    //                    });
 
-                                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
-                                        {
-                                            switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
-                                            {
-                                                case UIScreenType.ProjectSelectionScreen:
+                    //                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                    //                    {
+                    //                        switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
+                    //                        {
+                    //                            case UIScreenType.ProjectSelectionScreen:
 
-                                                    if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
-                                                    {
-                                                        var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
-                                                        var filterType = rootData.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                                                        var sortType = rootData.GetProjectStructureData().GetProjectInfo().GetSortType();
-                                                        var index = SceneAssetsManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
+                    //                                if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                    //                                {
+                    //                                    var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
+                    //                                    var filterType = rootData.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                    //                                    var sortType = rootData.GetProjectStructureData().GetProjectInfo().GetSortType();
+                    //                                    var index = SceneAssetsManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
 
-                                                        if (filterType != ProjectCategoryType.Project_All)
-                                                        {
-                                                            if (sortType == SortType.Category)
-                                                            {
-                                                                sortType = SortType.Ascending;
-                                                                rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
+                    //                                    if (filterType != ProjectCategoryType.Project_All)
+                    //                                    {
+                    //                                        if (sortType == SortType.Category)
+                    //                                        {
+                    //                                            sortType = SortType.Ascending;
+                    //                                            rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
 
-                                                                SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
-                                                                {
-                                                                    if (dataSavedCallbackResults.Success())
-                                                                        dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
-                                                                    else
-                                                                        Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
-                                                                });
-                                                            }
-                                                            else
-                                                                dropdown.value.value = index;
-                                                        }
-                                                        else
-                                                            dropdown.value.value = index;
-                                                    }
-                                                    else
-                                                        Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                    //                                            SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
+                    //                                            {
+                    //                                                if (dataSavedCallbackResults.Success())
+                    //                                                    dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
+                    //                                                else
+                    //                                                    Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                    //                                            });
+                    //                                        }
+                    //                                        else
+                    //                                            dropdown.value.value = index;
+                    //                                    }
+                    //                                    else
+                    //                                        dropdown.value.value = index;
+                    //                                }
+                    //                                else
+                    //                                    Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
 
-                                                    break;
-                                            }
-                                        }
-                                        else
-                                            Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
-                                    }
-                                    else
-                                    {
-                                        dropdown.SetContent(new List<string> { contentGroup.placeHolder });
-                                        dropdown.SetUIInputState(InputUIState.Disabled);
-                                    }
-                                });
+                    //                                break;
+                    //                        }
+                    //                    }
+                    //                    else
+                    //                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                    //                }
+                    //                else
+                    //                {
+                    //                    dropdown.SetContent(new List<string> { contentGroup.placeHolder });
+                    //                    dropdown.SetUIInputState(InputUIState.Disabled);
+                    //                }
+                    //            });
 
-                                break;
-                        }
-                    }
-                    else
-                        LogWarning($"Input Field Of Type : {actionType} Not Found In Screen Type : {screenType} With Input Field List With : {screenActionDropDownList.Count} Dropdowns");
+                    //            break;
+                    //    }
+                    //}
+                    //else
+                    //    LogWarning($"Input Field Of Type : {actionType} Not Found In Screen Type : {screenType} With Input Field List With : {screenActionDropDownList.Count} Dropdowns");
                 }
                 else
                     LogWarning("ScreenActionDropDownList Is Null / Empty.", this);
@@ -17057,173 +17151,184 @@ namespace Com.RedicalGames.Filar
 
             public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
-                if (SceneAssetsManager.Instance != null && ScreenUIManager.Instance != null)
+                Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults => 
                 {
-                    switch (actionType)
+                    if (validComponentCallbackResults.Success())
                     {
-                        case InputActionButtonType.OpenPopUp:
+                        Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults =>
+                        {
+                            if (validComponentCallbackResults.Success())
+                            {
+                                switch (actionType)
+                                {
+                                    case InputActionButtonType.OpenPopUp:
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.SelectionOptionsButton:
+                                    case InputActionButtonType.SelectionOptionsButton:
 
-                            OnSelectionOptions_ActionEvents(dataPackets);
+                                        OnSelectionOptions_ActionEvents(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.SelectionButton:
+                                    case InputActionButtonType.SelectionButton:
 
-                            OnSelection_ActionEvents(dataPackets);
+                                        OnSelection_ActionEvents(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Undo:
+                                    case InputActionButtonType.Undo:
 
-                            UndoChanges();
+                                        UndoChanges();
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Delete:
+                                    case InputActionButtonType.Delete:
 
-                            OnDelete_ActionEvent(dataPackets);
+                                        OnDelete_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Info:
+                                    case InputActionButtonType.Info:
 
-                            OnInfo_ActionEvent(dataPackets);
+                                        OnInfo_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.PinButton:
+                                    case InputActionButtonType.PinButton:
 
-                            OnPinItem_ActionEvent(dataPackets);
+                                        OnPinItem_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.BuildNewAsset:
+                                    case InputActionButtonType.BuildNewAsset:
 
-                            OnBuildNewAsset_ActionEvent(popUpType, dataPackets);
+                                        OnBuildNewAsset_ActionEvent(popUpType, dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.HideScreenWidget:
+                                    case InputActionButtonType.HideScreenWidget:
 
-                            OnHideScreenWidget_ActionEvent(popUpType, dataPackets);
+                                        OnHideScreenWidget_ActionEvent(popUpType, dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.OpenFilePicker_OBJ:
+                                    case InputActionButtonType.OpenFilePicker_OBJ:
 
-                            OnOpenFilePicker_ActionEvent(popUpType, dataPackets);
+                                        OnOpenFilePicker_ActionEvent(popUpType, dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.OpenARView:
+                                    case InputActionButtonType.OpenARView:
 
-                            OnOpenARView_ActionEvent(dataPackets);
+                                        OnOpenARView_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Confirm:
+                                    case InputActionButtonType.Confirm:
 
-                            OnConfirm_ActionEvent(popUpType, dataPackets);
+                                        OnConfirm_ActionEvent(popUpType, dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Cancel:
+                                    case InputActionButtonType.Cancel:
 
-                            OnCancel_ActionEvent(dataPackets);
+                                        OnCancel_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.ResetAssetPreviewPose:
+                                    case InputActionButtonType.ResetAssetPreviewPose:
 
-                            OnResetAssetPreviewPose_ActionEvent(AssetModeType.PreviewMode);
+                                        OnResetAssetPreviewPose_ActionEvent(AssetModeType.PreviewMode);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.ExportAsset:
+                                    case InputActionButtonType.ExportAsset:
 
-                            OnExportAsset_ActionEvent(dataPackets);
+                                        OnExportAsset_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.OpenRenderSettings:
+                                    case InputActionButtonType.OpenRenderSettings:
 
-                            OnOpenRendererSettings_ActionEvent(dataPackets);
+                                        OnOpenRendererSettings_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.PublishAsset:
+                                    case InputActionButtonType.PublishAsset:
 
-                            OnPublishAsset_ActionEvent(dataPackets);
+                                        OnPublishAsset_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.CaptureSnapShot:
+                                    case InputActionButtonType.CaptureSnapShot:
 
-                            OnCaptureSnapShot_ActionEvent(dataPackets);
+                                        OnCaptureSnapShot_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.ScrollToTopButton:
+                                    case InputActionButtonType.ScrollToTopButton:
 
-                            OnScrollToTop_ActionEvent();
+                                        OnScrollToTop_ActionEvent();
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.ScrollToBottomButton:
+                                    case InputActionButtonType.ScrollToBottomButton:
 
-                            OnScrollToBottom_ActionEvent();
+                                        OnScrollToBottom_ActionEvent();
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.NextNavigationButton:
+                                    case InputActionButtonType.NextNavigationButton:
 
-                            OnPaginationNavigation_ActionEvent(PaginationNavigationActionType.GoToNextPage);
+                                        OnPaginationNavigation_ActionEvent(PaginationNavigationActionType.GoToNextPage);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.PreviousNavigationButton:
+                                    case InputActionButtonType.PreviousNavigationButton:
 
-                            OnPaginationNavigation_ActionEvent(PaginationNavigationActionType.GoToPreviousPage);
+                                        OnPaginationNavigation_ActionEvent(PaginationNavigationActionType.GoToPreviousPage);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.FolderActionButton:
+                                    case InputActionButtonType.FolderActionButton:
 
-                            OnFolderActions_ActionEvent(dataPackets);
+                                        OnProject_FolderActions_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.DeselectButton:
+                                    case InputActionButtonType.DeselectButton:
 
-                            OnDeselect_ActionEvent(dataPackets);
+                                        OnDeselect_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Copy_PasteButton:
+                                    case InputActionButtonType.Copy_PasteButton:
 
-                            OnCopyPasteOptions_ActionEvent(dataPackets);
+                                        OnCopyPasteOptions_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.Edit:
+                                    case InputActionButtonType.Edit:
 
-                            OnEdit_ActionEvent(dataPackets);
+                                        OnEdit_ActionEvent(dataPackets);
 
-                            break;
+                                        break;
 
-                        case InputActionButtonType.HelpButton:
+                                    case InputActionButtonType.HelpButton:
 
-                            OnHelp_ActionEvent(popUpType, dataPackets);
+                                        OnHelp_ActionEvent(popUpType, dataPackets);
 
-                            break;
+                                        break;
+                                }
+                            }
+                            else
+                                Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                        });
                     }
-                }
-                else
-                    LogWarning("Scene Assets Manager / Screen UI Manager Instance Not Found.", this, () => OnWidgetActionEvent(popUpType, actionType, dataPackets));
+                    else
+                        Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                });
 
                 ActionEvents.OnPopUpActionEvent(popUpType, actionType, dataPackets);
                 ActionEvents.OnActionButtonClicked(actionType);
@@ -17708,17 +17813,17 @@ namespace Com.RedicalGames.Filar
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(ScreenNavigationManager.Instance.GetEmptyFolderDataPackets());
                     }
 
-                    if(widgetType == WidgetType.UserHelpScreenWidget)
+                    if (widgetType == WidgetType.UserHelpScreenWidget)
                     {
                         var widget = ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(widgetType).GetComponent<UserHelpInfoScreenWidget>();
 
                         if (widget != null)
                         {
-                            widget.GetTutorialView(viewCallback => 
+                            widget.GetTutorialView(viewCallback =>
                             {
                                 if (viewCallback.Success())
                                 {
-                                    if(viewCallback.data.dataPackets.refreshScreenOnLoad)
+                                    if (viewCallback.data.dataPackets.refreshScreenOnLoad)
                                         ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(viewCallback.data.dataPackets);
                                 }
                                 else
@@ -17729,6 +17834,8 @@ namespace Com.RedicalGames.Filar
                             LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
                     }
 
+                    if (widgetType == WidgetType.CreateNewProjectWidget)
+                        ScreenUIManager.Instance.Refresh();
                 }
                 catch (Exception exception)
                 {
@@ -17851,6 +17958,8 @@ namespace Com.RedicalGames.Filar
                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.CreateNewProjectWidget, dataPackets);
                         else
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+
+                        ScreenUIManager.Instance.Refresh();
 
                         break;
                 }
@@ -18229,57 +18338,85 @@ namespace Com.RedicalGames.Filar
 
             void OnPaginationNavigation_ActionEvent(PaginationNavigationActionType actionType) => SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnPaginationActionButtonPressed(actionType);
 
-            void OnFolderActions_ActionEvent(SceneDataPackets dataPackets)
+            void OnProject_FolderActions_ActionEvent(SceneDataPackets dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    if (dataPackets.folderStructureType == FolderStructureType.MainFolder)
+                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                     {
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
-
-                        SceneDataPackets packets = dataPackets;
-                        packets.widgetType = WidgetType.FolderCreationWidget;
-
-                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                        switch(ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
                         {
-                            if (SceneAssetsManager.Instance)
-                            {
-                                var widgetContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                            case UIScreenType.ProjectSelectionScreen:
 
-                                if (widgetContainer != null)
+                                if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
                                 {
-                                    widgetContainer.GetPlaceHolder(placeholder =>
+                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(WidgetType.CreateNewProjectWidget, dataPacketCallbackResults => 
                                     {
-                                        if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                        if (dataPacketCallbackResults.Success())
                                         {
-                                            if (!placeholder.data.IsActive())
-                                            {
-                                                placeholder.data.ShowPlaceHolder(widgetContainer.GetContentContainer(), widgetContainer.GetCurrentLayoutWidgetDimensions(), widgetContainer.GetLastContentIndex(), true);
-
-                                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(packets);
-                                                //StartCoroutine(OnShowWidgetAsync(WidgetType.UITextDisplayerWidget, actionButton.dataPackets));
-                                            }
+                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
+                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPacketCallbackResults.data.dataPackets);
                                         }
                                         else
-                                            LogWarning(placeholder.results, this, () => OnFolderActions_ActionEvent(dataPackets));
+                                            Log(dataPacketCallbackResults.resultsCode, dataPacketCallbackResults.results, this);
                                     });
                                 }
+
+                                break;
+
+                            case UIScreenType.ProjectViewScreen:
+
+                                if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
+                                {
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
+
+                                    SceneDataPackets packets = dataPackets;
+                                    packets.widgetType = WidgetType.FolderCreationWidget;
+
+                                    if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                                    {
+                                        if (SceneAssetsManager.Instance)
+                                        {
+                                            var widgetContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+
+                                            if (widgetContainer != null)
+                                            {
+                                                widgetContainer.GetPlaceHolder(placeholder =>
+                                                {
+                                                    if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                    {
+                                                        if (!placeholder.data.IsActive())
+                                                        {
+                                                            placeholder.data.ShowPlaceHolder(widgetContainer.GetContentContainer(), widgetContainer.GetCurrentLayoutWidgetDimensions(), widgetContainer.GetLastContentIndex(), true);
+
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(packets);
+                                                            //StartCoroutine(OnShowWidgetAsync(WidgetType.UITextDisplayerWidget, actionButton.dataPackets));
+                                                        }
+                                                    }
+                                                    else
+                                                        LogWarning(placeholder.results, this, () => OnProject_FolderActions_ActionEvent(dataPackets));
+                                                });
+                                            }
+                                            else
+                                                LogWarning("Get Place Holder Failed : Widgets Container Is Missing / Null.", this, () => OnProject_FolderActions_ActionEvent(dataPackets));
+                                        }
+                                        else
+                                            LogWarning("Get Place holder Failed : Scene Assets Manager Instance Is Not Yet Initialized", this, () => OnProject_FolderActions_ActionEvent(dataPackets));
+                                    }
+                                    else
+                                        LogWarning("Screen UI Manager Instance Get Current Screen Data Failed : Value Is Missing / Null.", this, () => OnProject_FolderActions_ActionEvent(dataPackets));
+                                }
                                 else
-                                    LogWarning("Get Place Holder Failed : Widgets Container Is Missing / Null.", this, () => OnFolderActions_ActionEvent(dataPackets));
-                            }
-                            else
-                                LogWarning("Get Place holder Failed : Scene Assets Manager Instance Is Not Yet Initialized", this, () => OnFolderActions_ActionEvent(dataPackets));
+                                    LogError("Delete Folder Action - Delete Folder Widget", this);
+
+                                break;
                         }
-                        else
-                            LogWarning("Screen UI Manager Instance Get Current Screen Data Failed : Value Is Missing / Null.", this, () => OnFolderActions_ActionEvent(dataPackets));
                     }
                     else
-                    {
-                        LogError("Delete Folder Action - Delete Folder Widget", this, () => OnFolderActions_ActionEvent(dataPackets));
-                    }
+                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
                 }
                 else
-                    LogError("Screen UI Manager Instance Is Not Yet Initialized", this, () => OnFolderActions_ActionEvent(dataPackets));
+                    LogError("Screen UI Manager Instance Is Not Yet Initialized", this, () => OnProject_FolderActions_ActionEvent(dataPackets));
             }
 
             void OnDeselect_ActionEvent(SceneDataPackets dataPackets)

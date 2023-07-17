@@ -148,6 +148,10 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         List<AppData.FileData> fileDatas = new List<AppData.FileData>();
 
+        [Space(5)]
+        [SerializeField]
+        AppData.DataPacketsLibrary dataPacketsLibrary = new AppData.DataPacketsLibrary();
+
         AppData.SceneAsset currentSceneAsset;
 
         AppData.SceneAssetLibrary sceneAssetLibrary = new AppData.SceneAssetLibrary();
@@ -194,6 +198,8 @@ namespace Com.RedicalGames.Filar
         AppData.FocusedWidgetOrderType currentFocusedWidgetOrderType;
         bool onNewAssetCreated = false;
         string newAssetName;
+
+        Coroutine refreshAsyncRoutine;
 
         #region Filter And Sort Data
 
@@ -809,6 +815,11 @@ namespace Com.RedicalGames.Filar
                 LogError("Get Dropdown Content Option Relative Index Failed : Options Are Not Initialized / Null.", this);
 
             return index;
+        }
+
+        public AppData.DataPacketsLibrary GetDataPacketsLibrary()
+        {
+            return dataPacketsLibrary;
         }
 
         #endregion
@@ -3677,20 +3688,25 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void HasContentToLoadForSelectedScreen(Action<AppData.CallbackData<AppData.UIScreenType>> callback)
+        public void HasContentToLoadForSelectedScreen(AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.UIScreenType>> callback)
         {
             AppData.CallbackData<AppData.UIScreenType> callbackResults = new AppData.CallbackData<AppData.UIScreenType>();
 
             if (ScreenUIManager.Instance.HasCurrentScreen().Success())
             {
-                FolderHasContentToLoad(GetCurrentFolder(), hasContentCallbackResults =>
+                FolderHasContentToLoad(contentFolder, hasContentCallbackResults =>
                 {
                     callbackResults.results = hasContentCallbackResults.results;
                     callbackResults.resultsCode = hasContentCallbackResults.resultsCode;
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.results = $"Folder : {GetCurrentFolder().name} Has Content To Load For Screen Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                        callbackResults.results = $"Folder : {contentFolder.name} Has Content To Load For Screen Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                        callbackResults.data = ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType();
+                    }
+                    else
+                    {
+                        callbackResults.results = $"No Contents Found In Folder : {contentFolder.name}";
                         callbackResults.data = ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType();
                     }
                 });
@@ -3703,6 +3719,42 @@ namespace Com.RedicalGames.Filar
             }
 
             callback.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.Folder> GetRootFolder(AppData.UIScreenType screenType)
+        {
+            AppData.CallbackData<AppData.Folder> callbackResults = new AppData.CallbackData<AppData.Folder>();
+
+            callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+            callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+
+            if (callbackResults.Success())
+            {
+                switch (screenType)
+                {
+                    case AppData.UIScreenType.ProjectSelectionScreen:
+
+                        callbackResults.results = GetProjectRootStructureData().results;
+                        callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.results = $"Found Root Folder : {GetProjectRootStructureData().data.GetProjectStructureData().GetRootFolder().name} For Screen : {screenType}";
+                            callbackResults.data = GetProjectRootStructureData().data.GetProjectStructureData().GetRootFolder();
+                        }
+
+                        break;
+
+                    case AppData.UIScreenType.ProjectViewScreen:
+
+                        callbackResults.results = $"Found Root Folder : {GetCurrentFolder().name} For Screen : {screenType}";
+                        callbackResults.data = GetCurrentFolder();
+
+                        break;
+                }
+            }
+
+            return callbackResults;
         }
 
         #region On Refresh Functions
@@ -3733,6 +3785,8 @@ namespace Com.RedicalGames.Filar
 
                                             LoadProjectStructureData((structureLoader) =>
                                             {
+                                                 SetCurrentFolder(folder);
+
                                                 #region Screen UI Params
 
                                                 var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
@@ -3803,10 +3857,22 @@ namespace Com.RedicalGames.Filar
                                                         LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
                                                 }
 
-                                                //SetContentScreenUIStatesEvent(paginationButtonParam, searchFieldParam, filterListParam, sortingListParam);
+                                                if (refreshAsyncRoutine != null)
+                                                {
+                                                    StopCoroutine(refreshAsyncRoutine);
+                                                    refreshAsyncRoutine = null;
+                                                }
 
-                                                StartCoroutine(RefreshAssetsAsync(refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                isRefreshed = true;
+                                                if (refreshAsyncRoutine == null)
+                                                {
+                                                    if (GetProjectRootStructureData().Success())
+                                                    {
+                                                        StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                        isRefreshed = true;
+                                                    }
+                                                    else
+                                                        Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                }
                                             });
                                         }
                                         else
@@ -3971,8 +4037,17 @@ namespace Com.RedicalGames.Filar
                                                         //}
                                                     }
 
-                                                    StartCoroutine(RefreshAssetsAsync(refreshedCallbackResults => { }, clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                    isRefreshed = true;
+                                                    if (refreshAsyncRoutine != null)
+                                                    {
+                                                        StopCoroutine(refreshAsyncRoutine);
+                                                        refreshAsyncRoutine = null;
+                                                    }
+
+                                                    if (refreshAsyncRoutine == null)
+                                                    {
+                                                        refreshAsyncRoutine = StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetCurrentFolder(), refreshedCallbackResults => { }, clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                        isRefreshed = true;
+                                                    }
                                                 });
                                             }
                                             else
@@ -4001,7 +4076,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        IEnumerator RefreshAssetsAsync(Action<AppData.Callback> callback = null, params AppData.UIScreenGroupContent[] actions)
+        IEnumerator RefreshAssetsAsync(AppData.UIScreenType screenType, AppData.Folder refreshFolder, Action<AppData.Callback> callback = null, params AppData.UIScreenGroupContent[] actions)
         {
             yield return new WaitForEndOfFrame();
 
@@ -4018,6 +4093,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if(containerCallbackResults.data.HasContent())
                         {
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.UITextDisplayerWidget);
+
                             #region UI States
 
                             SetContentScreenUIStatesEvent(actions);
@@ -4027,28 +4104,29 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            AppData.SceneDataPackets dataPackets = ScreenNavigationManager.Instance.GetEmptyFolderDataPackets();
-                            dataPackets.isRootFolder = GetCurrentFolder().IsRootFolder();
-                            dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
+                            callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+                            callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
 
-                            dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>()
+                            if (callbackResults.Success())
                             {
-                                new AppData.ReferencedActionButtonData
+                                ScreenNavigationManager.Instance.GetEmptyContentDataPacketsForScreen(screenType, refreshFolder, dataPacketsCallbackResults => 
                                 {
-                                    title = (dataPackets.isRootFolder)? "Create New" : "Delete",
-                                    type = AppData.InputActionButtonType.FolderActionButton,
-                                    state = AppData.InputUIState.Enabled
-                                }
-                            };
+                                    callbackResults.results = dataPacketsCallbackResults.results;
+                                    callbackResults.resultsCode = dataPacketsCallbackResults.resultsCode;
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                    if(callbackResults.Success())
+                                    {
+                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPacketsCallbackResults.data);
 
-                            #region UI States
+                                        #region UI States
 
-                            SetContentScreenUIStatesEvent(actions);
-                            callbackResults.results = "Content Refreshed.";
+                                        //SetContentScreenUIStatesEvent(actions);
+                                        callbackResults.results = "Content Refreshed.";
 
-                            #endregion
+                                        #endregion
+                                    }
+                                });
+                            } 
                         }
                     }
                 });
@@ -4092,33 +4170,44 @@ namespace Com.RedicalGames.Filar
 
         public void SetContentScreenUIStatesEvent(params AppData.UIScreenGroupContent[] actions)
         {
-            if (actions != null && actions.Length > 0)
+            if (ScreenUIManager.Instance.HasCurrentScreen().Success())
             {
-                foreach (var action in actions)
+                if (actions != null && actions.Length > 0)
                 {
-                    switch (action.inputType)
+                    foreach (var action in actions)
                     {
-                        case AppData.InputType.Button:
+                        if (action != null)
+                        {
+                            switch (action.inputType)
+                            {
+                                case AppData.InputType.Button:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(action.buttonActionType, action.state);
+                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionButtonState(action.buttonActionType, action.state);
 
-                            break;
+                                    break;
 
-                        case AppData.InputType.InputField:
+                                case AppData.InputType.InputField:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldState(action.inputFieldActionType, action.state);
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionInputFieldPlaceHolderText(action.inputFieldActionType, action.placeHolder);
+                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionInputFieldState(action.inputFieldActionType, action.state);
+                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionInputFieldPlaceHolderText(action.inputFieldActionType, action.placeHolder);
 
-                            break;
+                                    break;
 
-                        case AppData.InputType.DropDown:
+                                case AppData.InputType.DropDown:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(action.dropDownActionType, action);
 
-                            break;
+                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionDropdownOptions(action.dropDownActionType, action);
+
+                                    break;
+                            }
+                        }
+                        else
+                            LogError("Action Is Null", this);
                     }
                 }
             }
+            else
+                Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
         }
 
         public AppData.ContentContainerType GetContainerType(AppData.UIScreenType screenType)
