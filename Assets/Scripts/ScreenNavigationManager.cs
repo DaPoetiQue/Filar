@@ -210,6 +210,80 @@ namespace Com.RedicalGames.Filar
             return scrollerNavigationWidgetDataPackets;
         }
 
+        public void GetEmptyContentDataPacketsForScreen(AppData.UIScreenType screenType, AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback)
+        {
+            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+
+            AppData.Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults => 
+            {
+                callbackResults.results = validComponentCallbackResults.results;
+                callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
+            
+                if(callbackResults.Success())
+                {
+                    callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+                    callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+
+                    if (callbackResults.Success())
+                    {
+                        if (screenType == ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
+                        {
+                            AppData.SceneDataPackets dataPackets = GetEmptyFolderDataPackets();
+
+                            dataPackets.screenType = screenType;
+                            dataPackets.isRootFolder = contentFolder.IsRootFolder();
+
+                            switch (screenType)
+                            {
+                                case AppData.UIScreenType.ProjectSelectionScreen:
+
+                                    dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There Are No Projects Found" : "Project Is Empty";
+
+                                    dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>
+                                    {
+                                            new AppData.ReferencedActionButtonData
+                                            {
+                                                title = (dataPackets.isRootFolder)? "Create New" : "Delete",
+                                                type = AppData.InputActionButtonType.FolderActionButton,
+                                                state = AppData.InputUIState.Enabled
+                                            }
+                                    };
+
+                                    break;
+
+                                case AppData.UIScreenType.ProjectViewScreen:
+
+                                    dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
+
+                                    dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>
+                                    {
+                                            new AppData.ReferencedActionButtonData
+                                            {
+                                                title = (dataPackets.isRootFolder)? "Create New" : "Delete",
+                                                type = AppData.InputActionButtonType.FolderActionButton,
+                                                state = AppData.InputUIState.Enabled
+                                            }
+                                    };
+
+                                    break;
+                            }
+
+                            callbackResults.results = $"Empty Content Data Packets For Screen Type : {screenType} Found.";
+                            callbackResults.data = dataPackets;
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+                }
+            });
+
+            callback.Invoke(callbackResults);
+        }
+
         #endregion
     }
 }
