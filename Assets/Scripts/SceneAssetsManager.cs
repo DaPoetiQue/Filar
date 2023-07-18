@@ -277,7 +277,7 @@ namespace Com.RedicalGames.Filar
                     AppData.StorageDirectoryData appDirectory = new AppData.StorageDirectoryData
                     {
                         name = directory.name,
-                        projectDirectory = formattedDirectory,
+                        directory = formattedDirectory,
                         type = directory.type
                     };
 
@@ -3140,49 +3140,55 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        if (GetAppDirectoryData(newProject.rootFolder.directoryType).Success())
-                        {
-                            AppData.StorageDirectoryData directoryData = GetAppDirectoryData(newProject.rootFolder.directoryType).data;
+                        callbackResults.results = GetProjectRootStructureData().results;
+                        callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
 
-                            if (DirectoryFound(directoryData))
+                        if (callbackResults.Success())
+                        {
+                            string projectDirectory = GetProjectRootStructureData().data.GetProjectStructureData().storageData.projectDirectory;
+
+                            if (DirectoryFound(projectDirectory))
                             {
-                                GetDataNameWithExtension(newProject.name, AppData.SelectableWidgetType.Project, fileNameCallbackResults =>
+                                GetDataNameWithExtension(newProject.name, AppData.SelectableWidgetType.Project, fileNameCallbackResults => 
                                 {
                                     callbackResults.results = fileNameCallbackResults.results;
                                     callbackResults.resultsCode = fileNameCallbackResults.resultsCode;
 
-                                    if (callbackResults.Success())
+                                    if(callbackResults.Success())
                                     {
-                                        string fileNameWithoutExtension = GetDataNameWithoutExtension(fileNameCallbackResults.data, AppData.SelectableWidgetType.Project);
-
-                                        var storageData = GetAppDirectoryData(newProject.rootFolder.directoryType).data;
-
-                                        string path = Path.Combine(storageData.projectDirectory, fileNameCallbackResults.data);
+                                        string path = Path.Combine(projectDirectory, fileNameCallbackResults.data);
                                         string validPath = path.Replace("\\", "/");
 
-                                        //string directory = Path.Combine(storageData.directory, mainFolder.name);
-                                        string projectDirectory = storageData.projectDirectory.Replace("\\", "/");
-                                        string folderDirectory = Path.Combine(projectDirectory, newProject.name);
-                                        string rootDirectory = folderDirectory.Replace("\\", "/");
+                                        string rootDirectory = projectDirectory.Replace("\\", "/");
 
-                                        storageData.name = fileNameWithoutExtension;
-                                        storageData.path = validPath;
-                                        storageData.projectDirectory = projectDirectory;
-                                        storageData.rootDirectory = rootDirectory;
+                                        string projectDirectoryData = Path.Combine(rootDirectory, newProject.name);
+                                        string projectDir = projectDirectoryData.Replace("\\", "/");
+
+                                        var storageData = new AppData.StorageDirectoryData
+                                        {
+                                            name = newProject.name,
+                                            path = validPath,
+                                            projectDirectory = projectDir,
+                                            rootDirectory = rootDirectory,
+                                            directory = rootDirectory
+                                        };
 
                                         newProject.projectInfo.name = newProject.name;
-                                        newProject.storageData = storageData;
                                         newProject.rootFolder.name = newProject.name;
                                         newProject.rootFolder.isRootFolder = true;
+
+                                        newProject.storageData = storageData;
                                         newProject.rootFolder.storageData = storageData;
 
-                                        CreateData(newProject, directoryData, (folderStructureCreated) =>
+                                        CreateData(newProject, storageData, (folderStructureCreated) =>
                                         {
                                             callbackResults = folderStructureCreated;
 
                                             if (folderStructureCreated.Success())
                                             {
-                                                CreateDirectory(rootDirectory, directoryCreatedCallback =>
+                                                LogInfo($" <<<<<<<<< Create New Directory At : {rootDirectory}", this);
+
+                                                CreateDirectory(projectDir, directoryCreatedCallback =>
                                                 {
                                                     callbackResults.resultsCode = directoryCreatedCallback.resultsCode;
 
@@ -3201,13 +3207,13 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"Directory : {directoryData.projectDirectory} Not Found.";
+                                callbackResults.results = $"Root Project Structure Directory Not Found.";
                                 callbackResults.data = default;
                                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+
+                                LogInfo($"Root Project Data Directory : {projectDirectory} Not Found", this);
                             }
                         }
-                        else
-                            Log(GetAppDirectoryData(newProject.rootFolder.directoryType).resultsCode, GetAppDirectoryData(newProject.rootFolder.directoryType).results, this);
                     }
                 });
 
@@ -3232,7 +3238,7 @@ namespace Com.RedicalGames.Filar
                     AndroidJavaObject overrideActivity = jc.GetStatic<AndroidJavaObject>("instance");
 
                     if (overrideActivity != null)
-                        directoryData.projectDirectory = overrideActivity.Call<string>("GetAppDataDirectory", directoryData.projectDirectory);
+                        directoryData.directory = overrideActivity.Call<string>("GetAppDataDirectory", directoryData.directory);
                     else
                         Debug.LogWarning("--> RG_Unity - Asset Import Content Manager Referenced Plugin Instance Is Null.");
 
@@ -3241,7 +3247,7 @@ namespace Com.RedicalGames.Filar
                     //else
                     //    Debug.LogWarning("--> RG_Unity - Asset Import Content Manager Referenced Plugin Instance Is Null.");
 
-                    if (Directory.Exists(directoryData.projectDirectory))
+                    if (Directory.Exists(directoryData.directory))
                     {
                         if (!appDirectories.Contains(directoryData))
                             appDirectories.Add(directoryData);
@@ -3252,16 +3258,16 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.projectDirectory}";
+                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
                         callbackResults.data = default;
                         callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    Directory.CreateDirectory(directoryData.projectDirectory);
+                    Directory.CreateDirectory(directoryData.directory);
 
-                    if (Directory.Exists(directoryData.projectDirectory))
+                    if (Directory.Exists(directoryData.directory))
                     {
                         if (!appDirectories.Contains(directoryData))
                             appDirectories.Add(directoryData);
@@ -3272,7 +3278,7 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.projectDirectory}";
+                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
                         callbackResults.data = default;
                         callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                     }
@@ -3423,7 +3429,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (appDirectory.type == directoryData.type)
                         {
-                            if (Directory.Exists(appDirectory.projectDirectory))
+                            if (Directory.Exists(appDirectory.directory))
                             {
                                 directoryExists = true;
                             }
@@ -3524,51 +3530,59 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
 
-                if (!string.IsNullOrEmpty(folder.storageData.projectDirectory))
+                if (folder != null)
                 {
-                    if (DirectoryFound(folder.storageData.projectDirectory))
+                    if (!string.IsNullOrEmpty(folder.storageData.directory))
                     {
-                        string[] files = Directory.GetFiles(folder.storageData.projectDirectory);
-
-                        if (files.Length > 0)
+                        if (DirectoryFound(folder.storageData.directory))
                         {
-                            List<string> validFiles = new List<string>();
+                            string[] files = Directory.GetFiles(folder.storageData.directory);
 
-                            for (int i = 0; i < files.Length; i++)
-                                if (files[i].Contains(".json") && !files[i].Contains(".meta"))
-                                    validFiles.Add(files[i]);
-
-                            if (validFiles.Count > 0)
+                            if (files.Length > 0)
                             {
-                                callbackResults.results = $"GetFolderContentCount Success - Directory : {folder.storageData.projectDirectory} Found.";
-                                callbackResults.data = validFiles.Count;
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                List<string> validFiles = new List<string>();
+
+                                for (int i = 0; i < files.Length; i++)
+                                    if (files[i].Contains(".json") && !files[i].Contains(".meta"))
+                                        validFiles.Add(files[i]);
+
+                                if (validFiles.Count > 0)
+                                {
+                                    callbackResults.results = $"GetFolderContentCount Success - Directory : {folder.storageData.directory} Found.";
+                                    callbackResults.data = validFiles.Count;
+                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.results = $"GetFolderContentCount Failed - There Were No Valid Files Found In Directory : {folder.storageData.directory}.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                }
                             }
                             else
                             {
-                                callbackResults.results = $"GetFolderContentCount Failed - There Were No Valid Files Found In Directory : {folder.storageData.projectDirectory}.";
+                                callbackResults.results = $"GetFolderContentCount Failed - There Were No Files Found In Directory : {folder.storageData.directory}.";
                                 callbackResults.data = default;
                                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"GetFolderContentCount Failed - There Were No Files Found In Directory : {folder.storageData.projectDirectory}.";
+                            callbackResults.results = $"GetFolderContentCount Failed - Directory : {folder.storageData.directory} Not Found.";
                             callbackResults.data = default;
                             callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"GetFolderContentCount Failed - Directory : {folder.storageData.projectDirectory} Not Found.";
+                        callbackResults.results = $"GetFolderContentCount Failed - Directory Is Null / Empty..";
                         callbackResults.data = default;
                         callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"GetFolderContentCount Failed - Directory Is Null / Empty..";
-                    callbackResults.data = default;
+                    callbackResults.results = "Folder Is Null.";
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
 
@@ -3777,36 +3791,38 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.UIScreenType.ProjectSelectionScreen:
 
-                                    widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
+                                    LoadProjectStructureData(structureLoadedCallbackResults =>
                                     {
-                                        if (widgetsClearedCallback.Success())
+                                        #region Setup Project Structure
+
+                                        #region Screen UI Params
+
+                                        var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
+                                        var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
+                                        var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
+                                        var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
+
+                                        #endregion
+
+                                        if (structureLoadedCallbackResults.Success())
                                         {
-                                            loadedProjectData = new List<AppData.Project>();
+                                            SetCurrentFolder(folder);
 
-                                            LoadProjectStructureData((structureLoader) =>
+                                            widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
                                             {
-                                                 SetCurrentFolder(folder);
-
-                                                #region Screen UI Params
-
-                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
-                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
-                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
-                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
-
-                                                #endregion
-
-                                                if (structureLoader.Success())
+                                                if (widgetsClearedCallback.Success())
                                                 {
+                                                    loadedProjectData = new List<AppData.Project>();
+
                                                     if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen)
                                                     {
-                                                        CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), structureLoader.data, widgetsContainer, createProjectWidgetCallback =>
+                                                        CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), structureLoadedCallbackResults.data, widgetsContainer, createProjectWidgetCallback =>
                                                         {
                                                             if (createProjectWidgetCallback.Success())
                                                             {
                                                                 loadedProjectData = createProjectWidgetCallback.data;
 
-                                                                GetFilterTypesFromContent(structureLoader.data, filterContentCallbackResults =>
+                                                                GetFilterTypesFromContent(structureLoadedCallbackResults.data, filterContentCallbackResults =>
                                                                 {
                                                                     if (filterContentCallbackResults.Success())
                                                                     {
@@ -3855,28 +3871,44 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                     else
                                                         LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
-                                                }
 
-                                                if (refreshAsyncRoutine != null)
-                                                {
-                                                    StopCoroutine(refreshAsyncRoutine);
-                                                    refreshAsyncRoutine = null;
-                                                }
-
-                                                if (refreshAsyncRoutine == null)
-                                                {
-                                                    if (GetProjectRootStructureData().Success())
+                                                    if (refreshAsyncRoutine != null)
                                                     {
-                                                        StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                        isRefreshed = true;
+                                                        StopCoroutine(refreshAsyncRoutine);
+                                                        refreshAsyncRoutine = null;
                                                     }
-                                                    else
-                                                        Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+
+                                                    if (refreshAsyncRoutine == null)
+                                                    {
+                                                        if (GetProjectRootStructureData().Success())
+                                                        {
+                                                            StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                            isRefreshed = true;
+                                                        }
+                                                        else
+                                                            Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                    }
                                                 }
+                                                else
+                                                    Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
                                             });
                                         }
                                         else
-                                            Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
+                                        {
+                                            if (refreshAsyncRoutine != null)
+                                            {
+                                                StopCoroutine(refreshAsyncRoutine);
+                                                refreshAsyncRoutine = null;
+                                            }
+
+                                            if (refreshAsyncRoutine == null)
+                                            {
+                                                StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                isRefreshed = true;
+                                            }
+                                        }
+
+                                        #endregion
                                     });
 
                                     break;
@@ -4611,7 +4643,7 @@ namespace Com.RedicalGames.Filar
 
                             if (DirectoryFound(directoryData))
                             {
-                                var projectFiles = Directory.GetFileSystemEntries(directoryData.projectDirectory);
+                                var projectFiles = Directory.GetFileSystemEntries(directoryData.directory);
 
                                 if (projectFiles != null && projectFiles.Length > 0)
                                 {
@@ -4655,35 +4687,35 @@ namespace Com.RedicalGames.Filar
 
                                         if (loadedEntries.Count > 0)
                                         {
-                                            callbackResults.results = $"Directory : {directoryData.projectDirectory} Found.";
+                                            callbackResults.results = $"Directory : {directoryData.directory} Found.";
                                             callbackResults.data = loadedEntries;
                                             callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                                         }
                                         else
                                         {
 
-                                            callbackResults.results = $" Failed To Load Project Structure From Directory : {directoryData.projectDirectory} - Please Check Here For Details.";
+                                            callbackResults.results = $" Failed To Load Project Structure From Directory : {directoryData.directory} - Please Check Here For Details.";
                                             callbackResults.data = default;
                                             callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                     else
                                     {
-                                        callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.projectDirectory}.";
+                                        callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.directory}.";
                                         callbackResults.data = default;
                                         callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                                     }
                                 }
                                 else
                                 {
-                                    callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.projectDirectory}.";
+                                    callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.directory}.";
                                     callbackResults.data = default;
                                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"Directory : {directoryData.projectDirectory} Of Type : {rootStructureStorageData.type} Not Found.";
+                                callbackResults.results = $"Directory : {directoryData.directory} Of Type : {rootStructureStorageData.type} Not Found.";
                                 callbackResults.data = default;
                                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                             }
@@ -6417,13 +6449,16 @@ namespace Com.RedicalGames.Filar
 
                                                 if (filterType != AppData.ProjectCategoryType.Project_All)
                                                 {
-                                                    if (GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).Success())
+                                                    callbackResults.results = GetProjectRootStructureData().results;
+                                                    callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
+
+                                                    if (callbackResults.Success())
                                                     {
-                                                        var filterDirectory = GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).data;
+                                                        var filterDirectory = GetProjectRootStructureData().data.GetProjectStructureData().storageData.projectDirectory;
 
                                                         if (DirectoryFound(filterDirectory))
                                                         {
-                                                            var filteredProjectFiles = Directory.GetFileSystemEntries(filterDirectory.projectDirectory, "*.json", SearchOption.TopDirectoryOnly);
+                                                            var filteredProjectFiles = Directory.GetFileSystemEntries(filterDirectory, "*.json", SearchOption.TopDirectoryOnly);
 
                                                             AppData.Helpers.StringArrayValueValid(filteredProjectFiles, valueIsValidCallbackResults =>
                                                             {
@@ -6451,7 +6486,7 @@ namespace Com.RedicalGames.Filar
                                                                                 {
                                                                                     if (GetProjectStructureData().data.GetExcludedSystemFileData() != null)
                                                                                     {
-                                                                                        foreach (var excludedFile in rootProjectStructureData.GetProjectStructureData().GetExcludedSystemFileData())
+                                                                                        foreach (var excludedFile in GetProjectRootStructureData().data.GetProjectStructureData().GetExcludedSystemFileData())
                                                                                         {
                                                                                             if (!validData.Contains(excludedFile) && !projectsDataBlackList.Contains(validData))
                                                                                             {
@@ -6498,8 +6533,8 @@ namespace Com.RedicalGames.Filar
                                                                                         {
                                                                                             name = fileName,
                                                                                             path = validProject,
-                                                                                            projectDirectory = filterDirectory.projectDirectory,
-                                                                                            type = filterDirectory.type
+                                                                                            projectDirectory = filterDirectory,
+                                                                                            type = AppData.DirectoryType.Project_Structure
                                                                                         };
 
                                                                                         LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
@@ -6574,7 +6609,7 @@ namespace Com.RedicalGames.Filar
                                                                                                                     callbackResults.results = dataSavedCallbackResults.results;
                                                                                                                     callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
 
-                                                                                                                    if(callbackResults.Success())
+                                                                                                                    if (callbackResults.Success())
                                                                                                                     {
                                                                                                                         var sortingContents = GetDropdownContent<AppData.SortType>().data;
 
@@ -6618,7 +6653,7 @@ namespace Com.RedicalGames.Filar
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    callbackResults.results = $"Couldn't Find Any Valid Project Files In Directory : {filterDirectory.projectDirectory}";
+                                                                                    callbackResults.results = $"Couldn't Find Any Valid Project Files In Directory : {filterDirectory}";
                                                                                     callbackResults.data = default;
                                                                                 }
                                                                             });
@@ -6637,20 +6672,18 @@ namespace Com.RedicalGames.Filar
                                                                 }
                                                                 else
                                                                 {
-                                                                    callbackResults.results = $"Couldn't Find Project Directory Data From Directory : {filterDirectory.projectDirectory}.";
+                                                                    callbackResults.results = $"Couldn't Find Project Directory Data From Directory : {filterDirectory}.";
                                                                     callbackResults.data = default;
                                                                 }
                                                             });
                                                         }
                                                         else
                                                         {
-                                                            callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
+                                                            callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory} Not Found.";
                                                             callbackResults.data = default;
                                                             callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                                                         }
                                                     }
-                                                    else
-                                                        Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).results, this);
                                                 }
                                                 else
                                                 {
@@ -7625,56 +7658,60 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
-            DirectoryFound(directoryData.projectDirectory, directoryCheckCallback =>
+            DirectoryFound(directoryData.rootDirectory, directoryCheckCallback =>
             {
-                if (directoryCheckCallback.Success())
-                {
-                    callbackResults.results = directoryCheckCallback.results;
-                    callbackResults.resultsCode = directoryCheckCallback.resultsCode;
+                callbackResults.results = directoryCheckCallback.results;
+                callbackResults.resultsCode = directoryCheckCallback.resultsCode;
 
+                if (callbackResults.Success())
+                {
                     if (string.IsNullOrEmpty(data.name))
                         data.name = data.GetType().ToString();
 
                     data.SetCreationDateTime(DateTime.Now);
 
-                    string storageDirectory = data.storageData.projectDirectory;
-
-                    string fileNameWithJSONExtension = data.storageData.name + ".json";
-                    string filePath = Path.Combine(directoryData.projectDirectory, fileNameWithJSONExtension);
-                    string formattedFilePath = filePath.Replace("\\", "/");
-
-                    data.storageData.path = formattedFilePath;
-                    data.storageData.projectDirectory = storageDirectory;
-
-                    string JSONString = JsonUtility.ToJson(data);
-
-                    if (!string.IsNullOrEmpty(JSONString))
+                    AppData.Helpers.StringValueValid(directoryData.path, hasPathCalllbackResults => 
                     {
-                        if (!File.Exists(formattedFilePath))
+                        callbackResults.results = hasPathCalllbackResults.results;
+                        callbackResults.resultsCode = hasPathCalllbackResults.resultsCode;
+
+                        if (callbackResults.Success())
                         {
-                            File.WriteAllText(formattedFilePath, JSONString);
+                            data.storageData = directoryData;
 
-                            callbackResults.results = $"Created New Data Success : : {data.name} As : {formattedFilePath}";
-                            callbackResults.data = data;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            string JSONString = JsonUtility.ToJson(data);
+
+                            if (!string.IsNullOrEmpty(JSONString))
+                            {
+                                if (!File.Exists(data.storageData.path))
+                                {
+                                    File.WriteAllText(data.storageData.path, JSONString);
+
+                                    callbackResults.results = $"Created New Data Success : : {data.name} As : {data.storageData.path}";
+                                    callbackResults.data = data;
+                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    LogWarning($" <<<<< Deleting Data From : {data.storageData.path}", this);
+
+                                    File.Delete(data.storageData.path);
+
+                                    if (!File.Exists(data.storageData.path))
+                                        File.WriteAllText(data.storageData.path, JSONString);
+
+                                    callbackResults.results = $"Created New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
+                                    callbackResults.data = data;
+                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.results = "Failed To Create A JSON File.";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
                         }
-                        else
-                        {
-                            File.Delete(formattedFilePath);
-
-                            if (!File.Exists(formattedFilePath))
-                                File.WriteAllText(formattedFilePath, JSONString);
-
-                            callbackResults.results = $"Created New Data Success : Replaced Asset : {data.name} At Path : {formattedFilePath}";
-                            callbackResults.data = data;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.results = "Failed To Create A JSON File.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                    }
+                    });
                 }
                 else
                 {
@@ -7771,7 +7808,10 @@ namespace Com.RedicalGames.Filar
                         callbackResults.resultsCode = rootStructureLoadedCallbackResults.resultsCode;
 
                         if (callbackResults.Success())
+                        {
                             callbackResults.data = rootStructureLoadedCallbackResults.data;
+                            LogInfo($"Loaded Root Project Data : {rootProjectStructureData.name} - Storage Info : {appStorageData.ToString()} ", this);
+                        }
                         else
                         {
                             var projectInfo = new AppData.ProjectInfo
@@ -7784,16 +7824,34 @@ namespace Com.RedicalGames.Filar
                             rootProjectStructureData.GetProjectStructureData().projectInfo = projectInfo;
                             rootProjectStructureData.storageData.name = projectInfo.name;
                             string storageName = projectInfo.name + "_RootStructureData";
-                            appStorageData.name = storageName;
 
-                            CreateData(rootProjectStructureData, appStorageData, (rootStructureCreatedCallbackResults) =>
+                            string fileNameWithJSONExtension = storageName + ".json";
+                            string filePath = Path.Combine(appStorageData.directory, fileNameWithJSONExtension);
+                            string formattedFilePath = filePath.Replace("\\", "/");
+
+                            var storageData = new AppData.StorageDirectoryData
+                            {
+                                name = storageName,
+                                path = formattedFilePath,
+                                projectDirectory = GetAppDirectoryData(AppData.DirectoryType.Project_Structure).data.directory,
+                                rootDirectory = appStorageData.directory,
+                                directory = GetAppDirectoryData(AppData.DirectoryType.Project_Structure).data.directory
+                            };
+
+                            rootProjectStructureData.GetProjectStructureData().rootFolder.storageData = storageData;
+                            rootProjectStructureData.GetProjectStructureData().storageData = storageData;
+
+                            CreateData(rootProjectStructureData, storageData, (rootStructureCreatedCallbackResults) =>
                             {
                                 callbackResults.results = rootStructureCreatedCallbackResults.results;
                                 callbackResults.data = default;
                                 callbackResults.resultsCode = rootStructureCreatedCallbackResults.resultsCode;
 
                                 if (callbackResults.Success())
+                                {
                                     callbackResults.data = rootStructureCreatedCallbackResults.data;
+                                    LogInfo($"Created New Root Data : {storageData.ToString()}", this);
+                                }
                             });
                         }
                     });
@@ -7803,8 +7861,6 @@ namespace Com.RedicalGames.Filar
                     callbackResults.results = "Root Project Storage Data Directory Not Found.";
                     callbackResults.data = default;
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-
-                    LogError($"=========>>>>>>> Directory Not Found For {rootStructureStorageData.type}", this);
                 }
             }
             else
@@ -7848,7 +7904,7 @@ namespace Com.RedicalGames.Filar
 
             if (DirectoryFound(directoryData))
             {
-                string[] files = Directory.GetFiles(directoryData.projectDirectory, "*.json");
+                string[] files = Directory.GetFiles(directoryData.directory, "*.json");
 
                 if (files.Length > 0)
                 {
@@ -7866,7 +7922,7 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = $"--> File : {fileName} Not Loaded From Directory : {directoryData.projectDirectory} - Loaded Data Is Null / Empty.";
+                            callbackResults.results = $"--> File : {fileName} Not Loaded From Directory : {directoryData.directory} - Loaded Data Is Null / Empty.";
                             callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                             callbackResults.data = default;
                         }
@@ -7874,14 +7930,14 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"--> No Files Found In Directory : {directoryData.projectDirectory}";
+                    callbackResults.results = $"--> No Files Found In Directory : {directoryData.directory}";
                     callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                     callbackResults.data = default;
                 }
             }
             else
             {
-                callbackResults.results = $"Load Data Failed : Directory : {directoryData.projectDirectory} Not Found.";
+                callbackResults.results = $"Load Data Failed : Directory : {directoryData.directory} Not Found.";
                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 callbackResults.data = default;
             }

@@ -5789,6 +5789,8 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public class StorageDirectoryData : ProjectData
         {
+            #region Components
+
             [Space(5)]
             public DirectoryType type;
 
@@ -5800,6 +5802,20 @@ namespace Com.RedicalGames.Filar
 
             [HideInInspector]
             public string rootDirectory;
+
+            [HideInInspector]
+            public string directory;
+
+            #endregion
+
+            #region Main
+
+            new public string ToString()
+            {
+                return $"Name : {name} - Type : {type} - Path : {path} - Project Directory : {projectDirectory} - Root Directory : {rootDirectory} - Directory : {directory}";
+            }
+
+            #endregion
         }
 
         [Serializable]
