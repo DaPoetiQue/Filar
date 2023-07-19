@@ -1928,11 +1928,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public Folder(string name, StorageDirectoryData directoryData)
-            {
-                this.name = name;
-                this.storageData = directoryData;
-            }
+            public Folder(string name) => this.name = name;
 
             public bool IsRootFolder()
             {
@@ -15340,45 +15336,46 @@ namespace Com.RedicalGames.Filar
                     {
                         if (SceneAssetsManager.Instance)
                         {
-                            var widgetContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
-
-                            if (widgetContainer != null)
+                            SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults => 
                             {
-                                widgetContainer.GetPlaceHolder(placeholder =>
+                                if (containerCallbackResults.Success())
                                 {
-                                    if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                    containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
                                     {
-                                        widgetContainer.OnCreateNewPageWidget(onCreateNew =>
+                                        if (placeholderCallbackResults.Success())
                                         {
-                                            if (Helpers.IsSuccessCode(onCreateNew.resultsCode))
+                                            containerCallbackResults.data.OnCreateNewPageWidget(onCreateNewCallbackResults =>
                                             {
-                                                if (!placeholder.data.IsActive())
+                                                if (onCreateNewCallbackResults.Success())
                                                 {
-                                                    placeholder.data.ShowPlaceHolder(widgetContainer.GetContentContainer(), widgetContainer.GetCurrentLayoutWidgetDimensions(), widgetContainer.GetLastContentIndex(), true);
+                                                    if (!placeholderCallbackResults.data.IsActive())
+                                                    {
+                                                        placeholderCallbackResults.data.ShowPlaceHolder(containerCallbackResults.data.GetContentContainer(), containerCallbackResults.data.GetCurrentLayoutWidgetDimensions(), containerCallbackResults.data.GetLastContentIndex(), true);
 
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
+                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                                    }
                                                 }
-                                            }
-                                            else
-                                                LogWarning(onCreateNew.results, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
-                                        });
-                                    }
-                                    else
-                                        LogWarning(placeholder.results, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
-                                });
-                            }
-                            else
-                                LogWarning("Widgets Container Is Missing / Null.", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                                                else
+                                                    Log(onCreateNewCallbackResults.resultsCode, onCreateNewCallbackResults.results, this);
+                                            });
+                                        }
+                                        else
+                                            Log(placeholderCallbackResults.resultsCode, placeholderCallbackResults.results, this);
+                                    });
+                                }
+                                else
+                                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                            });
                         }
                         else
-                            LogWarning("SceneAssetsManager.Instance Is Not Yet Initialized", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                            LogWarning("SceneAssetsManager.Instance Is Not Yet Initialized", this);
                     }
                     else
-                        LogWarning("Value Is Missing / Null.", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                        LogWarning("Value Is Missing / Null.", this);
                 }
                 else
-                    LogWarning("ScreenUIManager.Instance Is Not Yet Initialized", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                    LogWarning("ScreenUIManager.Instance Is Not Yet Initialized", this);
             }
 
             void OnChangeLayoutView_ActionEvent(SceneDataPackets dataPackets)

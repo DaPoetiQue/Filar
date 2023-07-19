@@ -2512,149 +2512,6 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void CreateNewProjectFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
-        {
-            try
-            {
-                AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
-
-                string newFolderDataFileName = !string.IsNullOrEmpty(CreateNewFolderName) ? CreateNewFolderName : GetCreateNewFolderTempName();
-
-                DirectoryFound(GetCurrentFolder().storageData.rootDirectory, currentDirectoryFoundCallback =>
-                {
-                    if (AppData.Helpers.IsSuccessCode(currentDirectoryFoundCallback.resultsCode))
-                    {
-                        #region Get Folder File Storage Data
-
-                        // Folder Storage Info
-                        string newFolderDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.rootDirectory, newFolderDataFileName);
-                        string newFolderDirectory = newFolderDirectoryInfo.Replace("\\", "/");
-
-                        // Folder Storage File Path
-
-                        // Folder File Storage Data
-                        string newFolderFileDataName = GetDataNameWithoutExtension(newFolderDataFileName, AppData.SelectableWidgetType.Folder);
-                        string newStorageDataName = GetFormattedName(newFolderFileDataName, AppData.SelectableWidgetType.Folder, true);
-
-                        GetDataNameWithExtension(newFolderDataFileName, AppData.SelectableWidgetType.Folder, dataFoundCallbackResults => 
-                        {
-                            callbackResults.results = dataFoundCallbackResults.results;
-                            callbackResults.resultsCode = dataFoundCallbackResults.resultsCode;
-
-                            if(callbackResults.Success())
-                            {
-                                string newFolderFileDataDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.rootDirectory, dataFoundCallbackResults.data);
-                                string newFolderFileDataDirectory = newFolderFileDataDirectoryInfo.Replace("\\", "/");
-
-                                AppData.StorageDirectoryData newFolderFileDataStorageData = new AppData.StorageDirectoryData
-                                {
-                                    name = newFolderFileDataName,
-                                    projectDirectory = newFolderDirectory
-                                };
-
-                                #endregion
-
-                                #region Create New Folder File Data
-
-                                AppData.Folder newFolderFileData = new AppData.Folder()
-                                {
-                                    name = newStorageDataName,
-                                    storageData = newFolderFileDataStorageData
-                                };
-
-                                CreateData(newFolderFileData, currentFolder.storageData, (folderDataCreated) =>
-                                {
-                                    callbackResults.results = folderDataCreated.results;
-                                    callbackResults.resultsCode = folderDataCreated.resultsCode;
-
-                                    if (AppData.Helpers.IsSuccessCode(folderDataCreated.resultsCode))
-                                    {
-                                        CreateDirectory(newFolderDirectory, (folderCreated) =>
-                                        {
-                                            if (AppData.Helpers.IsSuccessCode(folderCreated.resultsCode))
-                                            {
-                                                if (SelectableManager.Instance != null)
-                                                {
-                                                    if (SelectableManager.Instance.HasActiveSelection())
-                                                    {
-                                                        SelectableManager.Instance.OnClearFocusedSelectionsInfo(selectionInfoCleared =>
-                                                        {
-                                                            if (AppData.Helpers.IsSuccessCode(selectionInfoCleared.resultsCode))
-                                                            {
-                                                                AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneDataPackets>
-                                                                {
-                                                                    name = newFolderDataFileName,
-                                                                    selectionInfoType = AppData.FocusedSelectionType.NewItem
-                                                                };
-
-                                                                callbackResults.results = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
-                                                                callbackResults.data = selectionInfo;
-                                                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                                                            }
-                                                            else
-                                                            {
-                                                                callbackResults.results = selectionInfoCleared.results;
-                                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                                callbackResults.data = default;
-                                                            }
-                                                        });
-                                                    }
-                                                    else
-                                                    {
-                                                        AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneDataPackets>
-                                                        {
-                                                            name = newFolderDataFileName,
-                                                            selectionInfoType = AppData.FocusedSelectionType.NewItem
-                                                        };
-
-                                                        callbackResults.results = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
-                                                        callbackResults.data = selectionInfo;
-                                                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.results = "Selectable Manager Instance Not Yet Initialized.";
-                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                    callbackResults.data = default;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                callbackResults.results = $"Failed To Create DIrectory With Results : {folderCreated.results}";
-                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                                                callbackResults.data = default;
-                                            }
-                                        });
-                                    }
-                                    else
-                                    {
-                                        callbackResults.data = default;
-                                        Debug.LogWarning($"--> Create Folder Data Failed With Results : {folderDataCreated.results}");
-                                    }
-                                });
-
-                                #endregion
-                            }
-                        });                         
-                    }
-                    else
-                    {
-                        callbackResults.results = currentDirectoryFoundCallback.results;
-                        callbackResults.data = default;
-                        callbackResults.resultsCode = currentDirectoryFoundCallback.resultsCode;
-                    }
-                });
-
-                callback?.Invoke(callbackResults);
-            }
-            catch (Exception exception)
-            {
-                LogError(exception.Message, this);
-                throw exception;
-            }
-        }
-
         public void CreateUIScreenFolderWidgets(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
         {
             try
@@ -3225,6 +3082,158 @@ namespace Com.RedicalGames.Filar
                 throw exception;
             }
         }
+
+        public void CreateNewProjectFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
+        {
+            try
+            {
+                AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+
+                string newFolderDataFileName = !string.IsNullOrEmpty(CreateNewFolderName) ? CreateNewFolderName : GetCreateNewFolderTempName();
+
+                DirectoryFound(GetCurrentFolder().storageData.rootDirectory, currentDirectoryFoundCallback =>
+                {
+                    if (AppData.Helpers.IsSuccessCode(currentDirectoryFoundCallback.resultsCode))
+                    {
+                        #region Get Folder File Storage Data
+
+                        //// Folder Storage Info
+                        //string newFolderDirectoryInfo = Path.Combine(GetCurrentFolder().storageData.rootDirectory, newFolderDataFileName);
+                        //string newFolderDirectory = newFolderDirectoryInfo.Replace("\\", "/");
+
+                        // Folder Storage File Path
+
+                        // Folder File Storage Data
+                        string newFolderFileDataName = GetDataNameWithoutExtension(newFolderDataFileName, AppData.SelectableWidgetType.Folder);
+                        string newStorageDataName = GetFormattedName(newFolderFileDataName, AppData.SelectableWidgetType.Folder, true);
+
+                        #endregion
+
+                        GetDataNameWithExtension(newFolderDataFileName, AppData.SelectableWidgetType.Folder, dataFoundCallbackResults =>
+                        {
+                            callbackResults.results = dataFoundCallbackResults.results;
+                            callbackResults.resultsCode = dataFoundCallbackResults.resultsCode;
+
+                            if (callbackResults.Success())
+                            {
+                                #region Get Directory Info
+
+                                string pathInfo = Path.Combine(GetCurrentFolder().storageData.projectDirectory, dataFoundCallbackResults.data);
+                                string path = pathInfo.Replace("\\", "/");
+
+                                string directoryInfo = Path.Combine(GetCurrentFolder().storageData.projectDirectory, newFolderDataFileName);
+                                string directory = directoryInfo.Replace("\\", "/");
+
+                                #endregion
+
+                                #region Create New Folder File Data
+
+                                var storageData = new AppData.StorageDirectoryData
+                                {
+                                    name = dataFoundCallbackResults.data,
+                                    path = path,
+                                    projectDirectory = directory,
+                                    rootDirectory = GetCurrentFolder().storageData.projectDirectory,
+                                    directory = GetCurrentFolder().storageData.projectDirectory,
+                                    type = AppData.DirectoryType.Sub_Folder_Structure
+                                };
+
+                                AppData.Folder rootFoolder = new AppData.Folder();
+                                rootFoolder.storageData = storageData;
+
+                                AppData.Folder newFolderData = new AppData.Folder
+                                {
+                                    name = newFolderDataFileName,
+                                    rootFolder = rootFoolder
+                                };
+
+                                CreateData(newFolderData, storageData, (folderDataCreatedCallbackResults) =>
+                                {
+                                    callbackResults.results = folderDataCreatedCallbackResults.results;
+                                    callbackResults.resultsCode = folderDataCreatedCallbackResults.resultsCode;
+
+                                    if (callbackResults.Success())
+                                    {
+                                        CreateDirectory(folderDataCreatedCallbackResults.data.storageData.projectDirectory, folderCreatedCallbackResults =>
+                                        {
+                                            callbackResults.results = folderCreatedCallbackResults.results;
+                                            callbackResults.resultsCode = folderCreatedCallbackResults.resultsCode;
+
+                                            if (callbackResults.Success())
+                                            {
+                                                if (SelectableManager.Instance != null)
+                                                {
+                                                    if (SelectableManager.Instance.HasActiveSelection())
+                                                    {
+                                                        SelectableManager.Instance.OnClearFocusedSelectionsInfo(selectionInfoClearedCallbackResults =>
+                                                        {
+                                                            callbackResults.results = selectionInfoClearedCallbackResults.results;
+                                                            callbackResults.resultsCode = selectionInfoClearedCallbackResults.resultsCode;
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneDataPackets>
+                                                                {
+                                                                    name = newFolderDataFileName,
+                                                                    selectionInfoType = AppData.FocusedSelectionType.NewItem
+                                                                };
+
+                                                                callbackResults.results = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
+                                                                callbackResults.data = selectionInfo;
+                                                            }
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneDataPackets>
+                                                        {
+                                                            name = newFolderDataFileName,
+                                                            selectionInfoType = AppData.FocusedSelectionType.NewItem
+                                                        };
+
+                                                        callbackResults.results = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
+                                                        callbackResults.data = selectionInfo;
+                                                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.results = "Selectable Manager Instance Not Yet Initialized.";
+                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                    callbackResults.data = default;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                callbackResults.results = $"Failed To Create DIrectory With Results : {folderCreatedCallbackResults.results}";
+                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                callbackResults.data = default;
+                                            }
+                                        });
+                                    }
+                                });
+
+                                #endregion
+                            }
+                        });
+                    }
+                    else
+                    {
+                        callbackResults.results = currentDirectoryFoundCallback.results;
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = currentDirectoryFoundCallback.resultsCode;
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
 
         public void CreateDirectory(AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
         {
