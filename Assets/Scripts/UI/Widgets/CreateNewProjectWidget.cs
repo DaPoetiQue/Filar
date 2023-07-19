@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,16 +53,13 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                             {
-                                                var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
-                                                rootData.projectCreationTemplateData.SetProjectInfo(createNewProjectCallbackResults.data.GetProjectInfo());
+                                                if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                                                SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults => 
+                                                StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), createdCallbackResults => 
                                                 {
-                                                    if (dataSavedCallbackResults.Success())
+                                                    if (createdCallbackResults.Success())
                                                     {
-                                                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
-
                                                         dataPackets.notification.message = createNewProjectCallbackResults.results;
 
                                                         if (dataPackets.notification.showNotifications)
@@ -70,8 +68,8 @@ namespace Com.RedicalGames.Filar
                                                         ScreenUIManager.Instance.Refresh();
                                                     }
                                                     else
-                                                        Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
-                                                });
+                                                        Log(createdCallbackResults.resultsCode, createdCallbackResults.results, this);
+                                                }));
                                             }
                                             else
                                                 Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
@@ -94,6 +92,26 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
             }
+        }
+
+        IEnumerator OnCreatedAsync(AppData.ProjectInfo projectInfo, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            yield return new WaitForEndOfFrame();
+
+            var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
+            rootData.GetProjectCreationTemplateData().SetProjectInfo(projectInfo);
+
+            SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
+            {
+                callbackResults.results = dataSavedCallbackResults.results;
+                callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+            });
+
+            yield return new WaitForEndOfFrame();
+
+            callback?.Invoke(callbackResults);
         }
 
         void CreateNewFolderStructureData(Action<AppData.CallbackData<AppData.ProjectStructureData>> callback)

@@ -45,32 +45,38 @@ namespace Com.RedicalGames.Filar
         {
             yield return new WaitForEndOfFrame();
 
-            var containerData = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
-
-            containerData.GetPlaceHolder(placeHolder =>
+            SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults => 
             {
-                if (AppData.Helpers.IsSuccessCode(placeHolder.resultsCode))
+                if (containerCallbackResults.Success())
                 {
-                    var placeHolderInfo = placeHolder.data.GetInfo();
-
-                    if (placeHolderInfo.isActive)
+                    containerCallbackResults.data.GetPlaceHolder(placeHolderCallbackResults =>
                     {
-                        SetWidgetPosition(placeHolderInfo.worldPosition);
-                        SetWidgetSizeDelta(placeHolderInfo.dimensions);
-                    }
-                    else
-                        Debug.LogWarning($"--> GetPlaceHolder Failed - Placeholder Is Not Active In The Scene.");
+                        if (placeHolderCallbackResults.Success())
+                        {
+                            var placeHolderInfo = placeHolderCallbackResults.data.GetInfo();
+
+                            if (placeHolderInfo.isActive)
+                            {
+                                SetWidgetPosition(placeHolderInfo.worldPosition);
+                                SetWidgetSizeDelta(placeHolderInfo.dimensions);
+                            }
+                            else
+                                LogWarning($"GetPlaceHolder Failed - Placeholder Is Not Active In The Scene.", this);
+                        }
+                        else
+                            Log(placeHolderCallbackResults.resultsCode, placeHolderCallbackResults.results, this);
+                    });
+
+                    SceneAssetsManager.Instance.CreateNewFolderName = SceneAssetsManager.Instance.GetCreateNewFolderTempName();
+                    SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, SceneAssetsManager.Instance.CreateNewFolderName);
+
+                    HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
+
+                    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
                 }
                 else
-                    Debug.LogWarning($"--> GetPlaceHolder Failed With Results : {placeHolder.results}");
+                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
             });
-
-            SceneAssetsManager.Instance.CreateNewFolderName = SceneAssetsManager.Instance.GetCreateNewFolderTempName();
-            SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, SceneAssetsManager.Instance.CreateNewFolderName);
-
-            HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
-
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
         protected override void OnHideScreenWidget()
@@ -81,25 +87,26 @@ namespace Com.RedicalGames.Filar
                 {
                     if (SceneAssetsManager.Instance)
                     {
-                        var widgetContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
-
-                        if (widgetContainer != null)
+                        SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults => 
                         {
-                            widgetContainer.GetPlaceHolder(placeholder =>
+                            if (containerCallbackResults.Success())
                             {
-                                if (AppData.Helpers.IsSuccessCode(placeholder.resultsCode))
+                                containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
                                 {
-                                    if (placeholder.data.IsActive())
-                                        placeholder.data.ResetPlaceHolder();
+                                    if (AppData.Helpers.IsSuccessCode(placeholderCallbackResults.resultsCode))
+                                    {
+                                        if (placeholderCallbackResults.data.IsActive())
+                                            placeholderCallbackResults.data.ResetPlaceHolder();
+                                        else
+                                            LogWarning("Reset Place Holder Failed - Plave Holder Is Not Active In The Scene.", this);
+                                    }
                                     else
-                                        Debug.LogWarning("--> Reset Place Holder Failed - Plave Holder Is Not Active In The Scene.");
-                                }
-                                else
-                                    Debug.LogWarning($"--> Failed With Results : {placeholder.results}");
-                            });
-                        }
-                        else
-                            Debug.LogWarning("--> Get Placeholder Failed : Widgets Container Is Missing / Null.");
+                                        Log(placeholderCallbackResults.resultsCode, placeholderCallbackResults.results, this);
+                                });
+                            }
+                            else
+                                Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                        });
                     }
                     else
                         Debug.LogWarning("--> Get Placeholder Failed : SceneAssetsManager.Instance Is Not Yet Initialized");
@@ -140,7 +147,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
