@@ -258,7 +258,7 @@ namespace Com.RedicalGames.Filar
 
         void OnScreenTransition()
         {
-            if (transitionType == AppData.ScreenLoadTransitionType.Transition)
+            if (transitionType == AppData.ScreenLoadTransitionType.Translate)
             {
                 if (HasRequiredComponentsAssigned())
                 {
@@ -474,7 +474,7 @@ namespace Com.RedicalGames.Filar
 
                                                         AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
 
-                                                        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Transition)
+                                                        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
                                                         {
                                                             if (screenWidgetsContainer != null)
                                                             {
@@ -517,7 +517,7 @@ namespace Com.RedicalGames.Filar
                                                     });
                                                 }
 
-                                                if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Transition)
+                                                if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
                                                 {
                                                     if (screenWidgetsContainer != null)
                                                     {
