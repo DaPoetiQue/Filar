@@ -604,10 +604,10 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        OnShowSelectedScreenView(screenFoundCallbackResults.data, showScreenViewCallback =>
+                                        OnShowSelectedScreenView(screenFoundCallbackResults.data, showScreenViewCallbackResults =>
                                         {
-                                            callbackResults.results = showScreenViewCallback.results;
-                                            callbackResults.resultsCode = showScreenViewCallback.resultsCode;
+                                            callbackResults.results = showScreenViewCallbackResults.results;
+                                            callbackResults.resultsCode = showScreenViewCallbackResults.resultsCode;
 
                                             if (callbackResults.Success())
                                             {
@@ -630,6 +630,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                SetCurrentScreenData(screenFoundCallbackResults.data);
                                                                 ContentLoadingManager.Instance.LoadScreen(dataPackets);
                                                                 callbackResults.results = $" Triggered Loading Screen For : {dataPackets.screenType}";
                                                             }
