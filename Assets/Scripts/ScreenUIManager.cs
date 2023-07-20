@@ -571,7 +571,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        async Task ShowLoadingScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
+        Task ShowLoadingScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -674,6 +674,7 @@ namespace Com.RedicalGames.Filar
             }
 
             callback?.Invoke(callbackResults);
+            return Task.CompletedTask;
         }
 
         void OnUpdateUIScreenOnEnter(AppData.UIScreenViewComponent screen, Action<AppData.Callback> callback = null)
