@@ -669,7 +669,8 @@ namespace Com.RedicalGames.Filar
             ScrollbarFadeOutSpeed,
             ScrollBarFadeDelayDuration,
             HighlightHoveredFolderDistance,
-            SnapDraggedWidgetToHoveredFolderDistance
+            SnapDraggedWidgetToHoveredFolderDistance,
+            ScreenFaderDuration,
         }
 
 
@@ -13608,6 +13609,9 @@ namespace Com.RedicalGames.Filar
                     {
                         view.SetActive(ShowView());
 
+                        if (fader.active)
+                            fader.FadeOut();
+
                         await Helpers.GetWaitUntilAsync(GetActive());
 
                         if(!GetActive())
@@ -13645,6 +13649,9 @@ namespace Com.RedicalGames.Filar
                     if (GetActive())
                     {
                         view.SetActive(HideView());
+
+                        if (fader.active)
+                            fader.FadeIn();
 
                         await Helpers.GetWaitUntilAsync(!GetActive());
 
@@ -23633,32 +23640,60 @@ namespace Com.RedicalGames.Filar
 
             private void ActionEvents__OnFrameUpdatedEvent()
             {
-                if (ScreenUIManager.Instance.GetCurrentUIScreenType() == screenType)
+                if (ScreenUIManager.Instance.GetCurrentUIScreenType() != screenType || !CanFadeUI())
+                    return;
+
+                if (fadeDirection == fadeIn)
                 {
-                    LogInfo($" <<<<<< Update Fader State For Screen : {screenType}", this);
+                    if (!IsVisible())
+                        value.alpha += SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenFaderDuration).value * Time.smoothDeltaTime;
+                    else
+                    {
+                        TriggerFadeState(false);
+                        return;
+                    }
                 }
+                else if (fadeDirection == fadeOut)
+                {
+                    if (IsVisible())
+                        value.alpha -= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenFaderDuration).value * Time.smoothDeltaTime;
+                    else
+                    {
+                        TriggerFadeState(false);
+                        return;
+                    }
+                }
+                else
+                    return;
             }
 
             public void FadeIn()
             {
                 fadeDirection = fadeIn;
-                canFade = true;
+                TriggerFadeState(true);
             }
 
             public void FadeOut()
             {
                 fadeDirection = fadeOut;
-                canFade = true;
+                TriggerFadeState(true);
             }
 
             public bool IsVisible()
             {
-                return value.alpha == visible;
+                return value.alpha > 0;
             }
 
             public ScreenFadeModeType GetModeType()
             {
                 return mode;
+            }
+
+            public void TriggerFadeState(bool state) => canFade = state;
+
+            bool CanFadeUI()
+            {
+                return canFade;
             }
 
             public void ResetDefaultState() =>  value.alpha = (initialVisibiltyState == UIWidgetVisibilityState.Visible)? visible : hidden;
