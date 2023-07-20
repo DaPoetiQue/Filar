@@ -315,6 +315,13 @@ namespace Com.RedicalGames.Filar
             Ambient_Occlusion
         }
 
+        public enum ScreenFadeModeType
+        {
+            Default,
+            OnShowScreen,
+            OnHideScreen
+        }
+
         public enum InputDropDownActionType
         {
             FilterList,
@@ -13504,6 +13511,10 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private GameObject view;
 
+            [Space(5)]
+            [SerializeField]
+            private ScreenFaderComponent fader = new ScreenFaderComponent();
+
             bool isInitialized = false;
 
            // UIScreenViewComponent screen;
@@ -13524,22 +13535,13 @@ namespace Com.RedicalGames.Filar
 
                     this.screenType = screenType;
 
-                    callbackResults.results = $"UI Screen View Component Has Been Initialized.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
-
-                    //if(initialVisibilityState)
-                    //{
-                    //    ShowScreenView(showScreenCallback => 
-                    //    {
-                    //        callbackResults.results = showScreenCallback.results;
-                    //        callbackResults.resultsCode = showScreenCallback.resultsCode;
-                    //    });
-                    //}
-                    //else
-                    //{
-                    //    callbackResults.results = $"UI Screen View Component Of Type : {GetScreenType()} Has Been Initialized.";
-                    //    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                    //}
+                    if (fader.active)
+                        fader.Init(screenType, initializationCallbackResults => { callbackResults = initializationCallbackResults; });
+                    else
+                    {
+                        callbackResults.results = $"UI Screen View Component Has Been Initialized.";
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
                 }
                 else
                 {
@@ -23542,6 +23544,116 @@ namespace Com.RedicalGames.Filar
         #region Struct Data
 
         [Serializable]
+        public class ScreenFaderComponent : DataDebugger
+        {
+            #region Components
+
+            public CanvasGroup value;
+
+            [Space(5)]
+            public bool active;
+
+            [Space(5)]
+            public ScreenFadeModeType mode;
+
+            [Space(5)]
+            public UIWidgetVisibilityState initialVisibiltyState;
+
+            UIScreenType screenType;
+
+            float visible = 1, hidden = 0;
+            int fadeIn = 1, fadeOut = -1;
+
+            int fadeDirection = 1;
+            bool canFade = false;
+
+            #endregion
+
+            #region Main
+
+            public void Init(UIScreenType screenType, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (active)
+                {
+                    callbackResults = HasValueAssigned();
+
+                    if (callbackResults.Success())
+                    {
+                        if (initialVisibiltyState == UIWidgetVisibilityState.Hidden)
+                            value.alpha = hidden;
+                        else
+                            value.alpha = visible;
+
+                        this.screenType = screenType;
+
+                        ActionEvents._LateUpdate += ActionEvents__OnFrameUpdatedEvent;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "Screen Fader Is Not Active";
+                    callbackResults.resultsCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void ActionEvents__OnFrameUpdatedEvent()
+            {
+                if (ScreenUIManager.Instance.GetCurrentUIScreenType() == screenType)
+                {
+                    LogInfo($" <<<<<< Update Fader State For Screen : {screenType}", this);
+                }
+            }
+
+            public void FadeIn()
+            {
+                fadeDirection = fadeIn;
+                canFade = true;
+            }
+
+            public void FadeOut()
+            {
+                fadeDirection = fadeOut;
+                canFade = true;
+            }
+
+            public bool IsVisible()
+            {
+                return value.alpha == visible;
+            }
+
+            public ScreenFadeModeType GetModeType()
+            {
+                return mode;
+            }
+
+            public void ResetDefaultState() =>  value.alpha = (initialVisibiltyState == UIWidgetVisibilityState.Visible)? visible : hidden;
+
+            Callback HasValueAssigned()
+            {
+                Callback callbackResults = new Callback();
+
+                if(value != null && value.isActiveAndEnabled && value.gameObject.activeInHierarchy && value.gameObject.activeSelf)
+                {
+                    callbackResults.results = $"Screen Fader Value : {value.name} Is Assigned.";
+                    callbackResults.resultsCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Screen Fader Value Is Missing / Not Active In The Scene Hierachy.";
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
         public class UIScreenViewComponent
         {
             public string name;
@@ -25516,6 +25628,18 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnWidgetDeselectionEvent;
             public static event Void _OnWidgetSelectionRemoved;
 
+            #region Unity Events
+
+            public static event Void _Enabled;
+            public static event Void _Disabled;
+            public static event Void _Awake;
+            public static event Void _Start;
+            public static event Void _Update;
+            public static event Void _LateUpdate;
+            public static event Void _FixedUpdate;
+
+            #endregion
+
             public static event ParamVoid<ButtonDataPackets> _OnNavigationTabWidgetEvent;
             public static event ParamVoid<ScreenViewState> _OnScreenViewStateChangedEvent;
             public static event ParamVoid<NavigationTabID, NavigationRenderSettingsProfileID> _OnNavigationSubTabChangedEvent;
@@ -25569,6 +25693,18 @@ namespace Com.RedicalGames.Filar
             public static void OnWidgetSelectionAdded() => _OnWidgetSelectionAdded?.Invoke();
             public static void OnWidgetDeselectionEvent() => _OnWidgetDeselectionEvent?.Invoke();
             public static void OnWidgetSelectionRemoved() => _OnWidgetSelectionRemoved?.Invoke();
+
+            #region Unity Event Callbacks
+
+            public static void Enabled() => _Enabled?.Invoke();
+            public static void Disabled() => _Disabled?.Invoke();
+            public static void Awake() => _Awake?.Invoke();
+            public static void Start() => _Start?.Invoke();
+            public static void Update() => _Update?.Invoke();
+            public static void LateUpdate() => _LateUpdate?.Invoke();
+            public static void FixedUpdate() => _FixedUpdate?.Invoke();
+
+            #endregion
 
             public static void OnNavigationTabWidgetEvent(ButtonDataPackets dataPackets) => _OnNavigationTabWidgetEvent?.Invoke(dataPackets);
             public static void OnNavigationSubTabChangedEvent(NavigationTabID navigationTab, NavigationRenderSettingsProfileID selectionTypedID) => _OnNavigationSubTabChangedEvent?.Invoke(navigationTab, selectionTypedID);
