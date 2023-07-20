@@ -234,6 +234,7 @@ namespace Com.RedicalGames.Filar
         {
             None,
             Default,
+            Transition,
             LoadingScreen
         }
 
@@ -15704,21 +15705,7 @@ namespace Com.RedicalGames.Filar
                 Callback callbackResults = new Callback();
 
                 if(GetScreenView().HasView())
-                {
-                    GetScreenView().ShowScreenView(showScreenCallback => 
-                    {
-                        if(showScreenCallback.Success())
-                        {
-                            callbackResults.results = showScreenCallback.results;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
-                        }
-                        else
-                        {
-                            callbackResults.results = showScreenCallback.results;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
-                        }
-                    });
-                }
+                    GetScreenView().ShowScreenView(showScreenCallback => { callbackResults = showScreenCallback; });
                 else
                 {
                     callbackResults.results = "Screen Component View Missing.";
