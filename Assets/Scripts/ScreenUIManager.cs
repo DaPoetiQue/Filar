@@ -579,81 +579,85 @@ namespace Com.RedicalGames.Filar
             {
                 if (SceneAssetsManager.Instance)
                 {
-                    var screenDataPackets = new AppData.SceneDataPackets
+                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, async dataPacketsCallbackResults => 
                     {
-                        screenType = AppData.UIScreenType.LoadingScreen
-                    };
+                        callbackResults.results = dataPacketsCallbackResults.results;
+                        callbackResults.resultsCode = dataPacketsCallbackResults.resultsCode;
 
-                    await OnCheckIfScreenLoadedAsync(screenDataPackets, async screenLoadedCallbackResults =>
-                    {
-                        callbackResults.results = screenLoadedCallbackResults.results;
-                        callbackResults.resultsCode = screenLoadedCallbackResults.resultsCode;
-
-                        if (callbackResults.Success())
+                        if(callbackResults.Success())
                         {
-                            await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
-
-                            AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
-
-                            if (HasRequiredComponentsAssigned())
+                            await OnCheckIfScreenLoadedAsync(dataPacketsCallbackResults.data.dataPackets, async screenLoadedCallbackResults =>
                             {
-                                GetScreenData(screenDataPackets, screenFoundCallbackResults =>
-                                {
-                                    callbackResults.results = screenFoundCallbackResults.results;
-                                    callbackResults.resultsCode = screenFoundCallbackResults.resultsCode;
+                                callbackResults.results = screenLoadedCallbackResults.results;
+                                callbackResults.resultsCode = screenLoadedCallbackResults.resultsCode;
 
-                                    if (callbackResults.Success())
+                                if (callbackResults.Success())
+                                {
+                                    await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
+
+                                    AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
+
+                                    if (HasRequiredComponentsAssigned())
                                     {
-                                        OnShowSelectedScreenView(screenFoundCallbackResults.data, showScreenViewCallbackResults =>
+                                        GetScreenData(dataPacketsCallbackResults.data.dataPackets, screenFoundCallbackResults =>
                                         {
-                                            callbackResults.results = showScreenViewCallbackResults.results;
-                                            callbackResults.resultsCode = showScreenViewCallbackResults.resultsCode;
+                                            callbackResults.results = screenFoundCallbackResults.results;
+                                            callbackResults.resultsCode = screenFoundCallbackResults.resultsCode;
 
                                             if (callbackResults.Success())
                                             {
-                                                screenFoundCallbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, screenFoundCallbackResults.data.value.GetScreenTitle());
-
-                                                #region Show Loading Screen
-
-                                                screenFoundCallbackResults.data.value.Show(screenShowingCallbackResults => 
+                                                OnShowSelectedScreenView(screenFoundCallbackResults.data, showScreenViewCallbackResults =>
                                                 {
-                                                    callbackResults.results = screenShowingCallbackResults.results;
-                                                    callbackResults.resultsCode = screenShowingCallbackResults.resultsCode;
+                                                    callbackResults.results = showScreenViewCallbackResults.results;
+                                                    callbackResults.resultsCode = showScreenViewCallbackResults.resultsCode;
 
-                                                    LogInfo($"Showing Loading Screen Code : {callbackResults.resultsCode} - Results : {callbackResults.results}.", this);
-
-                                                    if (callbackResults.resultsCode != AppData.Helpers.ErrorCode)
+                                                    if (callbackResults.Success())
                                                     {
-                                                        AppData.Helpers.ComponentValid(ContentLoadingManager.Instance, validComponentCallback => 
-                                                        {
-                                                            callbackResults.resultsCode = validComponentCallback.resultsCode;
+                                                        screenFoundCallbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, screenFoundCallbackResults.data.value.GetScreenTitle());
 
-                                                            if (callbackResults.Success())
+                                                        #region Show Loading Screen
+
+                                                        screenFoundCallbackResults.data.value.Show(screenShowingCallbackResults =>
+                                                        {
+                                                            callbackResults.results = screenShowingCallbackResults.results;
+                                                            callbackResults.resultsCode = screenShowingCallbackResults.resultsCode;
+
+                                                            LogInfo($"Showing Loading Screen Code : {callbackResults.resultsCode} - Results : {callbackResults.results}.", this);
+
+                                                            if (callbackResults.resultsCode != AppData.Helpers.ErrorCode)
                                                             {
-                                                                SetCurrentScreenData(screenFoundCallbackResults.data);
-                                                                ContentLoadingManager.Instance.LoadScreen(dataPackets);
-                                                                callbackResults.results = $" Triggered Loading Screen For : {dataPackets.screenType}";
+                                                                AppData.Helpers.ComponentValid(ContentLoadingManager.Instance, validComponentCallback =>
+                                                                {
+                                                                    callbackResults.resultsCode = validComponentCallback.resultsCode;
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        SetCurrentScreenData(screenFoundCallbackResults.data);
+                                                                        ContentLoadingManager.Instance.LoadScreen(dataPackets);
+                                                                        callbackResults.results = $" Triggered Loading Screen For : {dataPackets.screenType}";
+                                                                    }
+                                                                    else
+                                                                        callbackResults.results = "Content Loading Manager Is Not Yet Initialized.";
+                                                                });
                                                             }
-                                                            else
-                                                                callbackResults.results = "Content Loading Manager Is Not Yet Initialized.";
                                                         });
+
+                                                        #endregion
                                                     }
                                                 });
-
-                                                #endregion
                                             }
                                         });
                                     }
-                                });
-                            }
-                            else
-                            {
-                                callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                            }
+                                    else
+                                    {
+                                        callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
+                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    }
 
-                            callbackResults.results = $"Screen Of Type : {dataPackets.screenType} Has Been Loaded Successfully";
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.results = $"Screen Of Type : {dataPackets.screenType} Has Been Loaded Successfully";
+                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                }
+                            });
                         }
                     });
                 }

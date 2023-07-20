@@ -42,8 +42,16 @@ namespace Com.RedicalGames.Filar
                     {
                         if (validComponentCallback.Success())
                         {
-                            dataPackets.screenTransition = AppData.ScreenLoadTransitionType.Default;
-                            ScreenUIManager.Instance.ShowScreen(dataPackets);
+                            SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, dataPacketsCallbackResults => 
+                            {
+                                if (dataPacketsCallbackResults.Success())
+                                {
+                                    dataPackets.screenTransition = dataPacketsCallbackResults.data.dataPackets.screenTransition;
+                                    ScreenUIManager.Instance.ShowScreen(dataPackets);
+                                }
+                                else
+                                    Log(dataPacketsCallbackResults.resultsCode, dataPacketsCallbackResults.results, this);
+                            });
                         }
                         else
                             Log(validComponentCallback.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
