@@ -48,13 +48,6 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        string folderStructureSearchFieldPlaceHolderTextValue = "Search";
-
-        //[SerializeField]
-        //AppData.Folder mainFolder = new AppData.Folder();
-
-        [Space(5)]
-        [SerializeField]
         bool strictValidateAssetSearch = false;
 
         [Space(5)]
@@ -121,9 +114,9 @@ namespace Com.RedicalGames.Filar
 
         List<AppData.UIScreenWidget> loadedWidgets = new List<AppData.UIScreenWidget>();
 
-        [Space(5)]
-        [SerializeField]
-        string profileWidgetPrefabDirectory = "UI Prefabs/Profile";
+        //[Space(5)]
+        //[SerializeField]
+        //string profileWidgetPrefabDirectory = "UI Prefabs/Profile";
 
         [Space(5)]
         [SerializeField]
@@ -1650,7 +1643,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var projectInfo = projectCategoryInfoList.Find(info => info.GetType() == categoryType);
+                    var projectInfo = projectCategoryInfoList.Find(info => info.GetProjectCategoryType() == categoryType);
 
                     if(projectInfo != null)
                     {
