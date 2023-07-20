@@ -10115,6 +10115,37 @@ namespace Com.RedicalGames.Filar
 
             }
 
+            public void GetDataPacket(UIScreenType screenType, Action<CallbackData<DataPacket>> callback)
+            {
+                CallbackData<DataPacket> callbackResults = new CallbackData<DataPacket>();
+
+                if (dataPacketsCollection != null && dataPacketsCollection.Count > 0)
+                {
+                    var dataPacket = dataPacketsCollection.Find(x => x.dataPackets.screenType == screenType);
+
+                    if(dataPacket != null)
+                    {
+                        callbackResults.results = $"Found Data Packet For : {screenType} In Data Packets Collection.";
+                        callbackResults.data = dataPacket;
+                        callbackResults.resultsCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Couldn't Find Data Packet For : {screenType} In Data Packets Collection.";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.results = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
             public void GetDataPacket(WidgetType widgetType, Action<CallbackData<DataPacket>> callback)
             {
                 CallbackData<DataPacket> callbackResults = new CallbackData<DataPacket>();
@@ -10123,7 +10154,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var dataPacket = dataPacketsCollection.Find(x => x.dataPackets.widgetType == widgetType);
 
-                    if(dataPacket != null)
+                    if (dataPacket != null)
                     {
                         callbackResults.results = $"Found Data Packet For : {widgetType} In Data Packets Collection.";
                         callbackResults.data = dataPacket;
