@@ -162,16 +162,7 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents._OnAppScreensInitializedEvent -= ActionEvents__OnAppScreensInitializedEvent;
         }
 
-        private void ActionEvents__OnAppScreensInitializedEvent()
-        {
-            if (SceneAssetsManager.Instance != null && SceneAssetsManager.Instance.GetSceneAssets().Count > 0)
-                SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
-
-            if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
-            else
-                Debug.LogWarning("--> Screen Manager Missing.");
-        }
+        private void ActionEvents__OnAppScreensInitializedEvent() => LoadInitialScreen();
 
         public void StoragePermissionRequest()
         {
@@ -226,21 +217,13 @@ namespace Com.RedicalGames.Filar
 
         void LoadInitialScreen()
         {
-            if (SceneAssetsManager.Instance != null)
-                SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
-
-            if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
-            else
-                Debug.LogWarning("--> Screen Manager Missing.");
-
-        }
-
-        IEnumerator OnLoadScreen()
-        {
-            yield return new WaitForEndOfFrame();
-
-            LoadInitialScreen();
+            AppData.Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults => 
+            {
+                if (validComponentCallbackResults.Success())
+                    ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
+                else
+                    Log(validComponentCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+            });
         }
 
         public bool IsRuntime()

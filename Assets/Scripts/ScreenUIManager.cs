@@ -41,7 +41,7 @@ namespace Com.RedicalGames.Filar
 
         float screenTransitionSpeed = 0.0f;
 
-        bool canTransitionScreen = false;
+        AppData.ScreenLoadTransitionType transitionType = AppData.ScreenLoadTransitionType.None;
         bool clearInputsOnTransition;
         bool screensInitialized = false;
 
@@ -258,9 +258,9 @@ namespace Com.RedicalGames.Filar
 
         void OnScreenTransition()
         {
-            if (HasRequiredComponentsAssigned())
+            if (transitionType == AppData.ScreenLoadTransitionType.Default)
             {
-                if (canTransitionScreen)
+                if (HasRequiredComponentsAssigned())
                 {
                     Vector2 screenPoint = screenWidgetsContainer.anchoredPosition;
                     screenPoint = Vector2.Lerp(screenPoint, targetScreenPoint, screenTransitionSpeed * Time.smoothDeltaTime);
@@ -272,7 +272,7 @@ namespace Com.RedicalGames.Filar
                     {
                         AppData.ActionEvents.OnScreenChangedEvent(currentScreen.value.GetUIScreenType());
                         HideScreens(currentScreen.value.GetUIScreenType());
-                        canTransitionScreen = false;
+                        transitionType = AppData.ScreenLoadTransitionType.None;
 
                         if (clearInputsOnTransition)
                         {
@@ -286,9 +286,9 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                 }
+                else
+                    LogWarning($"Couldn't Transition Screen : {currentScreen?.name} Of Type : {currentScreen?.value?.GetUIScreenType()} - Possible Issue - Screens Are Missing / Not Found.", this, () => OnScreenTransition());
             }
-            else
-                LogWarning($"Couldn't Transition Screen : {currentScreen?.name} Of Type : {currentScreen?.value?.GetUIScreenType()} - Possible Issue - Screens Are Missing / Not Found.", this, () => OnScreenTransition());
         }
 
         public void ShowNewAssetScreen(AppData.SceneDataPackets dataPackets)
@@ -360,12 +360,12 @@ namespace Com.RedicalGames.Filar
 
                                 AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
 
-                                if (dataPackets.canTransitionScreen)
+                                if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Default)
                                 {
                                     if (screenWidgetsContainer != null)
                                     {
                                         targetScreenPoint = screen.value.GetScreenPosition();
-                                        canTransitionScreen = dataPackets.canTransitionScreen;
+                                        transitionType = dataPackets.screenTransition;
                                         screenTransitionSpeed = dataPackets.screenTransitionSpeed;
                                     }
                                     else
@@ -397,10 +397,26 @@ namespace Com.RedicalGames.Filar
 
         async void OnTriggerShowScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
         {
-            await ShowScreenAsync(dataPackets, showScreenCallback => 
+            if (dataPackets.screenTransition != AppData.ScreenLoadTransitionType.None)
             {
-                callback?.Invoke(showScreenCallback);
-            });
+                if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Default)
+                {
+                    await ShowScreenAsync(dataPackets, showScreenCallback =>
+                    {
+                        callback?.Invoke(showScreenCallback);
+                    });
+                }
+
+                if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
+                {
+                    await ShowLoadingScreenAsync(dataPackets, showLoadingScreenCallbackResults => 
+                    {
+                        callback?.Invoke(showLoadingScreenCallbackResults);
+                    });
+                }
+            }
+            else
+                LogWarning($"Screen : {dataPackets.screenType}'s Transition Is Set To None", this);
         }
 
         async Task OnCheckIfScreenLoadedAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
@@ -430,13 +446,6 @@ namespace Com.RedicalGames.Filar
                     {
                         if (screenLoadedCallback.Success())
                         {
-                            //if (currentScreen.value != null)
-                            //    if (currentScreen.value.GetUIScreenType() == dataPackets.screenType)
-                            //    {
-                            //        LogWarning($"Current Screen Type : {currentScreen.value.GetUIScreenType()} Is Equals To Requested Screen Type : {dataPackets.screenType}. On Screen Exit Event Called.", this, () => ShowScreenAsync(dataPackets, callback = null));
-                            //        AppData.ActionEvents.OnScreenExitEvent();
-                            //    }
-
                             await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
 
                             AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
@@ -465,12 +474,12 @@ namespace Com.RedicalGames.Filar
 
                                                         AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
 
-                                                        if (dataPackets.canTransitionScreen)
+                                                        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Default)
                                                         {
                                                             if (screenWidgetsContainer != null)
                                                             {
                                                                 targetScreenPoint = screenFoundCallback.data.value.GetScreenPosition();
-                                                                canTransitionScreen = dataPackets.canTransitionScreen;
+                                                                transitionType = dataPackets.screenTransition;
                                                                 screenTransitionSpeed = dataPackets.screenTransitionSpeed;
                                                             }
                                                             else
@@ -491,17 +500,103 @@ namespace Com.RedicalGames.Filar
 
                                                 AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
 
-                                                if (dataPackets.canTransitionScreen)
+                                                if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Default)
                                                 {
                                                     if (screenWidgetsContainer != null)
                                                     {
                                                         targetScreenPoint = screenFoundCallback.data.value.GetScreenPosition();
-                                                        canTransitionScreen = dataPackets.canTransitionScreen;
+                                                        transitionType = dataPackets.screenTransition;
                                                         screenTransitionSpeed = dataPackets.screenTransitionSpeed;
                                                     }
                                                     else
                                                         LogWarning("Screen Widgets Container Required.", this, () => { ShowScreen(dataPackets); });
                                                 }
+                                            }
+                                            else
+                                            {
+                                                callbackResults.results = showScreenViewCallback.results;
+                                                callbackResults.resultsCode = showScreenViewCallback.resultsCode;
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        callbackResults.results = screenFoundCallback.results;
+                                        callbackResults.resultsCode = screenFoundCallback.resultsCode;
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
+
+                            callbackResults.results = $"Screen Of Type : {dataPackets.screenType} Has Been Loaded Successfully";
+                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                            callbackResults = screenLoadedCallback;
+                    });
+                }
+                else
+                {
+                    callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            }
+            catch (Exception exception)
+            {
+                ThrowException(AppData.LogExceptionType.NullReference, exception, this, "ShowScreen(AppData.SceneDataPackets dataPackets)");
+                //throw new Exception($"--> RG_Unity - Unity - Failed To Show Screen Type : {dataPackets.ToString()} - With Exception Results : {exception}");
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+
+        async Task ShowLoadingScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            try
+            {
+                if (SceneAssetsManager.Instance)
+                {
+                    var screenDataPackets = new AppData.SceneDataPackets
+                    {
+                        screenType = AppData.UIScreenType.LoadingScreen
+                    };
+
+                    await OnCheckIfScreenLoadedAsync(screenDataPackets, async screenLoadedCallback =>
+                    {
+                        if (screenLoadedCallback.Success())
+                        {
+                            await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
+
+                            AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
+
+                            if (HasRequiredComponentsAssigned())
+                            {
+                                GetScreenData(screenDataPackets, screenFoundCallback =>
+                                {
+                                    if (AppData.Helpers.IsSuccessCode(screenFoundCallback.resultsCode))
+                                    {
+                                        OnShowSelectedScreenView(screenFoundCallback.data, showScreenViewCallback =>
+                                        {
+                                            if (showScreenViewCallback.Success())
+                                            {
+                                                screenFoundCallback.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, screenFoundCallback.data.value.GetScreenTitle());
+
+                                                #region Show Loading Screen
+
+                                                screenFoundCallback.data.value.Show(screenShowingCallbackResults => 
+                                                {
+                                                    LogInfo($" <<<<<<<<<<<<< Show Loading Screen Code : {screenShowingCallbackResults.resultsCode} - Results {screenShowingCallbackResults.results}", this);
+                                                    Log(screenShowingCallbackResults.resultsCode, screenShowingCallbackResults.results, this);
+                                                });
+
+                                                #endregion
                                             }
                                             else
                                             {
