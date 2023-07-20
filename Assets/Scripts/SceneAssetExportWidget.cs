@@ -121,7 +121,7 @@ namespace Com.RedicalGames.Filar
 
             switch (transitionType)
             {
-                case AppData.ScreenWidgetTransitionType.PopUp:
+                case AppData.TransitionType.Default:
 
                     if (GetLayoutView(defaultLayoutType).layout)
                     {
@@ -152,7 +152,7 @@ namespace Com.RedicalGames.Filar
 
                     break;
 
-                case AppData.ScreenWidgetTransitionType.Slide:
+                case AppData.TransitionType.Translate:
 
                     break;
             }
