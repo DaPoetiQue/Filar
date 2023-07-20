@@ -129,7 +129,8 @@ namespace Com.RedicalGames.Filar
             UserHelpScreenWidget,
             AssetInfoWidget,
             CreateNewProjectWidget,
-            ProjectCreationWarningWidget
+            ProjectCreationWarningWidget,
+            HomeMenuWidget
         }
 
         public enum SubWidgetType
@@ -227,6 +228,8 @@ namespace Com.RedicalGames.Filar
             GoToScreenButton,
             OpenScreenSettingsButton,
             GoToHomeButton,
+            OpenProfileButton,
+            OpenInboxButton,
             None
         }
 
@@ -234,7 +237,7 @@ namespace Com.RedicalGames.Filar
         {
             None,
             Default,
-            Transition,
+            Translate,
             LoadingScreen
         }
 
@@ -630,10 +633,10 @@ namespace Com.RedicalGames.Filar
             AssetPreviewCamera
         }
 
-        public enum ScreenWidgetTransitionType
+        public enum TransitionType
         {
-            PopUp,
-            Slide
+            Default,
+            Translate
         }
 
         public enum BuildType
@@ -880,7 +883,8 @@ namespace Com.RedicalGames.Filar
             Asset,
             Folder,
             Project,
-            PlaceHolder
+            PlaceHolder,
+            None
         }
 
         public enum SelectionOption
@@ -16948,7 +16952,7 @@ namespace Com.RedicalGames.Filar
             protected bool subscribeToActionEvents = false;
 
             [Space(5)]
-            public ScreenWidgetTransitionType transitionType;
+            public TransitionType transitionType;
 
             [Space(5)]
             public bool initialVisibilityState;
@@ -17014,6 +17018,7 @@ namespace Com.RedicalGames.Filar
             protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
             protected CreateNewProjectWidget createNewProjectWidget;
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
+            protected HomeMenuWidget homeMenuWidget;
 
             #endregion
 
@@ -18911,13 +18916,13 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            protected void ShowWidget(ScreenWidgetTransitionType transitionType, SceneDataPackets dataPackets)
+            protected void ShowWidget(TransitionType transitionType, SceneDataPackets dataPackets)
             {
                 if (transitionType == this.transitionType)
                 {
                     switch (transitionType)
                     {
-                        case ScreenWidgetTransitionType.PopUp:
+                        case TransitionType.Default:
 
                             if (dataPackets.widgetScreenPosition != Vector2.zero)
                                 if (widgetRect != null)
@@ -18929,7 +18934,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case ScreenWidgetTransitionType.Slide:
+                        case TransitionType.Translate:
 
                             if (widgetRect)
                             {
@@ -19160,7 +19165,7 @@ namespace Com.RedicalGames.Filar
 
                 switch (transitionType)
                 {
-                    case ScreenWidgetTransitionType.PopUp:
+                    case TransitionType.Default:
 
                         OnHideScreenWidget();
 
@@ -19169,7 +19174,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case ScreenWidgetTransitionType.Slide:
+                    case TransitionType.Translate:
 
                         if (widgetRect)
                         {
