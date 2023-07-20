@@ -345,6 +345,5 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
-
     }
 }
