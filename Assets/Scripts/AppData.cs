@@ -207,7 +207,7 @@ namespace Com.RedicalGames.Filar
             ScrollToTopButton,
             RefreshButton,
             PaginationButton,
-            HomeButton,
+            GoToProjectSelectionButton,
             ScrollToBottomButton,
             NextNavigationButton,
             PreviousNavigationButton,
@@ -226,7 +226,15 @@ namespace Com.RedicalGames.Filar
             OpenProjectFolderButton,
             GoToScreenButton,
             OpenScreenSettingsButton,
+            GoToHomeButton,
             None
+        }
+
+        public enum ScreenLoadTransitionType
+        {
+            None,
+            Default,
+            LoadingScreen
         }
 
         public enum SelectionVisualizationType
@@ -487,7 +495,8 @@ namespace Com.RedicalGames.Filar
             AssetCreationScreen,
             ARViewScreen,
             ProjectSelectionScreen,
-            LandingPageScreen
+            LandingPageScreen,
+            LoadingScreen
         }
 
         public enum ContentContainerType
@@ -1548,7 +1557,7 @@ namespace Com.RedicalGames.Filar
                 return color;
             }
 
-            public ProjectCategoryType GetType()
+            public ProjectCategoryType GetProjectCategoryType()
             {
                 return type;
             }
@@ -7070,8 +7079,6 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public RectTransform arrowIcon;
-
-            InputDropDownActionType action = InputDropDownActionType.None;
 
             #endregion
 
@@ -15011,7 +15018,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case InputActionButtonType.HomeButton:
+                    case InputActionButtonType.GoToProjectSelectionButton:
 
                         OnGoToHomeScreen_ActionEvent(actionButton.dataPackets);
 
@@ -15388,7 +15395,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if(SelectableManager.Instance != null)
                             {
-                                UIImageType selectionOptionImageViewType = UIImageType.Null_TransparentIcon;
+                                //UIImageType selectionOptionImageViewType = UIImageType.Null_TransparentIcon;
 
                                 if (SelectableManager.Instance.HasActiveSelection())
                                 {
@@ -23758,7 +23765,7 @@ namespace Com.RedicalGames.Filar
             public string popUpMessage;
 
             [Space(5)]
-            public bool canTransitionScreen;
+            public ScreenLoadTransitionType screenTransition;
 
             [Space(5)]
             public float screenTransitionSpeed;
