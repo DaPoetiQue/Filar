@@ -115,7 +115,7 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[contentCount - 1];
 
-                                                            AppData.Helpers.ComponentValid(widget, validComponentCallbackResults =>
+                                                            AppData.Helpers.GetComponent(widget, validComponentCallbackResults =>
                                                             {
                                                                 if (validComponentCallbackResults.Success())
                                                                 {
@@ -137,7 +137,7 @@ namespace Com.RedicalGames.Filar
                                                             int focusedIndex = Mathf.RoundToInt(contentCount / 2);
                                                             AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[focusedIndex];
 
-                                                            AppData.Helpers.ComponentValid(widget, validComponentCallbackResults =>
+                                                            AppData.Helpers.GetComponent(widget, validComponentCallbackResults =>
                                                             {
                                                                 if (validComponentCallbackResults.Success())
                                                                 {

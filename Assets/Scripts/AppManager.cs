@@ -76,7 +76,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (projectSupportCallbackResults.Success())
                 {
-                    AppData.Helpers.ComponentValid(SceneAssetsManager.Instance, hasComponentCallbackResults =>
+                    AppData.Helpers.GetComponent(SceneAssetsManager.Instance, hasComponentCallbackResults =>
                     {
                         if (hasComponentCallbackResults.Success())
                         {
@@ -216,7 +216,7 @@ namespace Com.RedicalGames.Filar
 
         void LoadInitialScreen()
         {
-            AppData.Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults => 
+            AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
             {
                 if (validComponentCallbackResults.Success())
                     ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
