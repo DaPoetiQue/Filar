@@ -214,7 +214,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
 
-            AppData.Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults => 
+            AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
             {
                 callbackResults.results = validComponentCallbackResults.results;
                 callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
