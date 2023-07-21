@@ -38,7 +38,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (screenLoadedCallbackResults.Success())
                 {
-                    AppData.Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallback => 
+                    AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallback => 
                     {
                         if (validComponentCallback.Success())
                         {
