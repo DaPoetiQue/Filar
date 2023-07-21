@@ -208,7 +208,7 @@ namespace Com.RedicalGames.Filar
             ScrollToTopButton,
             RefreshButton,
             PaginationButton,
-            GoToProjectSelectionButton,
+            GoToSelectedScreen,
             ScrollToBottomButton,
             NextNavigationButton,
             PreviousNavigationButton,
@@ -1815,7 +1815,7 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<Enum> callbackResults = new CallbackData<Enum>();
 
-                Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults => 
+                Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
                 {
                     callbackResults.results = validComponentCallbackResults.results;
                     callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
@@ -13557,6 +13557,8 @@ namespace Com.RedicalGames.Filar
 
             UIScreenType screenType;
 
+            public bool isShown = false;
+
             #endregion
 
             #region Main
@@ -13644,7 +13646,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public async void HideScreenView(Action<Callback> callback = null)
+            public async Task<Callback> HideScreenView()
             {
                 Callback callbackResults = new Callback();
 
@@ -13652,28 +13654,53 @@ namespace Com.RedicalGames.Filar
                 {
                     if (GetActive())
                     {
-                        view.SetActive(HideView());
-
                         if (fader.active)
-                            fader.FadeIn();
-
-                        await Helpers.GetWaitUntilAsync(!GetActive());
-
-                        if (GetActive())
                         {
-                            callbackResults.results = $"Couldn't Hide UI Screen View Of Type : {screenType}. This Is An Unexpected Error. Please See Here.";
-                            callbackResults.resultsCode = LogInfoType.Error;
+                            if(fader.GetModeType() == ScreenFadeModeType.OnHideScreen || fader.GetModeType() == ScreenFadeModeType.Default)
+                            {
+                                fader.FadeIn();
+
+                                await Helpers.GetWaitUntilAsync(fader.IsVisible());
+                                view.SetActive(HideView());
+
+                                if (GetActive())
+                                {
+                                    callbackResults.results = $"Couldn't Hide UI Screen View Of Type : {screenType}. This Is An Unexpected Error. Please See Here.";
+                                    callbackResults.resultsCode = LogInfoType.Error;
+                                }
+                                else
+                                {
+                                    callbackResults.results = $"Hidding UI Screen View Of Type : {screenType}.";
+                                    callbackResults.resultsCode = LogInfoType.Success;
+                                }
+
+                                return callbackResults;
+                            }
                         }
                         else
                         {
-                            callbackResults.results = $"Hidding UI Screen View Of Type : {screenType}.";
-                            callbackResults.resultsCode = LogInfoType.Success;
+                            view.SetActive(HideView());
+
+                            await Helpers.GetWaitUntilAsync(!GetActive());
+
+                            if (GetActive())
+                            {
+                                callbackResults.results = $"Couldn't Hide UI Screen View Of Type : {screenType}. This Is An Unexpected Error. Please See Here.";
+                                callbackResults.resultsCode = LogInfoType.Error;
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Hidding UI Screen View Of Type : {screenType}.";
+                                callbackResults.resultsCode = LogInfoType.Success;
+                            }
+
+                            return callbackResults;
                         }
                     }
                     else
                     {
                         callbackResults.results = $"UI Screen View Of Type : {screenType} Is Already Hidden.";
-                        callbackResults.resultsCode = LogInfoType.Warning;
+                        callbackResults.resultsCode = LogInfoType.Success;
                     }
                 }
                 else
@@ -13682,12 +13709,14 @@ namespace Com.RedicalGames.Filar
                     callbackResults.resultsCode = LogInfoType.Error;
                 }
 
-                callback?.Invoke(callbackResults);
+                return callbackResults;
             }
 
             public bool GetActive()
             {
-                return view && view.activeSelf && view.activeInHierarchy && GetUIScreenType() != UIScreenType.None;
+                bool isActive = (fader.active)? view && view.activeSelf && view.activeInHierarchy && GetUIScreenType() != UIScreenType.None && fader.IsVisible() : view && view.activeSelf && view.activeInHierarchy && GetUIScreenType() != UIScreenType.None;
+
+                return isActive;
             }
 
             void SetInitializedState(bool initialized) => isInitialized = initialized;
@@ -13803,9 +13832,9 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<ScreenUIData> callbackResults = new CallbackData<ScreenUIData>();
 
-                GetScreenView().Init(screenType, initialVisibilityState, screenViewInitializationCallback => 
+                GetScreenView().Init(screenType, initialVisibilityState, async screenViewInitializationCallback =>
                 {
-                    if(Helpers.IsSuccessCode(screenViewInitializationCallback.resultsCode))
+                    if (Helpers.IsSuccessCode(screenViewInitializationCallback.resultsCode))
                     {
                         if (includesLoadingAssets)
                         {
@@ -13980,7 +14009,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, dropdown, selectableCallbackResults =>
                                                     {
-                                                         Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
                                                     });
                                                 });
                                             }
@@ -14187,27 +14216,10 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    GetScreenView().HideScreenView(hideScreenCallback => 
-                                    {
-                                        if (hideScreenCallback.Success())
-                                        {
-                                            if (screenBlur.HasBlurObject())
-                                            {
-                                                screenBlur.Hide();
+                                    var results = await GetScreenView().HideScreenView();
 
-                                                callbackResults.results = "All Screens Are Initialized";
-                                                callbackResults.resultsCode = Helpers.SuccessCode;
-                                            }
-                                            else
-                                            {
-                                                callbackResults.results = $"Screen Blur Value Is Null For Screen : {screenTitle}.";
-                                                callbackResults.data = default;
-                                                callbackResults.resultsCode = Helpers.ErrorCode;
-                                            }
-                                        }
-                                        else
-                                            Log(hideScreenCallback.resultsCode, hideScreenCallback.results, this);
-                                    });
+                                    callbackResults.results = results.results;
+                                    callbackResults.resultsCode = results.resultsCode;
                                 }
                             }
                             else
@@ -14560,7 +14572,7 @@ namespace Com.RedicalGames.Filar
                         if (dropdown.value != null)
                         {
 
-                            Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults =>
+                            Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults =>
                             {
                                 if (validComponentCallbackResults.Success())
                                 {
@@ -15063,9 +15075,9 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case InputActionButtonType.GoToProjectSelectionButton:
+                    case InputActionButtonType.GoToSelectedScreen:
 
-                        OnGoToHomeScreen_ActionEvent(actionButton.dataPackets);
+                        OnGoToSelectedScreen_ActionEvent(actionButton.dataPackets);
 
                         break;
 
@@ -15078,12 +15090,6 @@ namespace Com.RedicalGames.Filar
                     case InputActionButtonType.ResetAssetPreviewPose:
 
                         OnResetAssetPreviewPose_ActionEvent(AssetModeType.CreateMode);
-
-                        break;
-
-                    case InputActionButtonType.OpenARView:
-
-                        OnOpenARView_ActionEvent(actionButton.dataPackets);
 
                         break;
 
@@ -15122,28 +15128,12 @@ namespace Com.RedicalGames.Filar
                         OnCreateNewProject_ActionEvent(actionButton.dataPackets);
 
                         break;
-
-                    case InputActionButtonType.GoToScreenButton:
-
-                        OnGoToScreen_ActionEvent(actionButton.dataPackets);
-
-                        break;
                 }
 
                 ActionEvents.OnActionButtonClicked(actionButton.dataPackets.action);
             }
 
             #region Action Events Callbacks
-
-            void OnGoToScreen_ActionEvent(SceneDataPackets dataPackets)
-            {
-                if (ScreenUIManager.Instance != null)
-                {
-                    ScreenUIManager.Instance.ShowScreen(dataPackets);
-                }
-                else
-                    LogWarning("Screen Manager Missing.", this);
-            }
 
             void OnOpenPopUp_ActionEvent(SceneDataPackets dataPackets)
             {
@@ -15314,12 +15304,15 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnGoToHomeScreen_ActionEvent(SceneDataPackets dataPackets)
+            void OnGoToSelectedScreen_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (ScreenUIManager.Instance != null)
-                    ScreenUIManager.Instance.ShowScreen(dataPackets);
-                else
-                    LogWarning("Screen Manager Missing.", this, () => OnGoToHomeScreen_ActionEvent(dataPackets));
+                Helpers.GetComponent(ScreenUIManager.Instance, hasComponentCallbackResults => 
+                {
+                    if (hasComponentCallbackResults.Success())
+                        hasComponentCallbackResults.data.ShowScreen(dataPackets);
+                    else
+                        Log(hasComponentCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
             }
 
             void OnReturn_ActionEvent()
@@ -15361,24 +15354,6 @@ namespace Com.RedicalGames.Filar
             }
 
             void OnResetAssetPreviewPose_ActionEvent(AssetModeType assetMode) => ActionEvents.OnResetSceneAssetPreviewPoseEvent(assetMode);
-
-            void OnOpenARView_ActionEvent(SceneDataPackets dataPackets)
-            {
-                if (ScreenUIManager.Instance != null)
-                {
-                    //assetData.currentAssetMode = SceneAssetModeType.EditMode;
-                    //assetsManager.OnSceneAssetEditMode(assetData);
-
-                    //if (assetData.assetFields != null)
-                    //    screenManager.ShowScreen(actionButton.dataPackets);
-                    //else
-                    //    Debug.LogWarning("--> Scene Asset Data Invalid.");
-
-                    ScreenUIManager.Instance.ShowScreen(dataPackets);
-                }
-                else
-                    LogWarning("Screen Manager Missing.", this);
-            }
 
             void OnCreateNewFolder_ActionEvent(SceneDataPackets dataPackets)
             {
@@ -15627,7 +15602,7 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownFilterOptions(int dropdownIndex)
             {
-                Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults =>
+                Helpers.GetComponent(SceneAssetsManager.Instance, validComponentCallbackResults =>
                 {
                     if (validComponentCallbackResults.Success())
                         SceneAssetsManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
@@ -15638,7 +15613,7 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownSortingOptions(int dropdownIndex)
             {
-                Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults => 
+                Helpers.GetComponent(SceneAssetsManager.Instance, validComponentCallbackResults => 
                 {
 
                     LogInfo($"=========================>>>>>>>>>>>> Sort Type : {(SortType)dropdownIndex} - Index : {dropdownIndex}");
@@ -15917,7 +15892,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (scrollerResetCallback.Success())
                         {
-                            Helpers.ComponentValid(SelectableManager.Instance, validComponentCallbackResults => 
+                            Helpers.GetComponent(SelectableManager.Instance, validComponentCallbackResults => 
                             {
                                 if (validComponentCallbackResults.Success())
                                 {
@@ -16104,7 +16079,10 @@ namespace Com.RedicalGames.Filar
                 return widget;
             }
 
-            public void Hide() => SetObjectVisibilityState(GetScreenView().GetView(), false);
+            public async Task<Callback> Hide()
+            {
+                return await GetScreenView().HideScreenView();
+            }
 
             public void HidePopUp(WidgetType popUpType)
             {
@@ -17272,11 +17250,11 @@ namespace Com.RedicalGames.Filar
 
             public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
-                Helpers.ComponentValid(SceneAssetsManager.Instance, validComponentCallbackResults => 
+                Helpers.GetComponent(SceneAssetsManager.Instance, validComponentCallbackResults => 
                 {
                     if (validComponentCallbackResults.Success())
                     {
-                        Helpers.ComponentValid(ScreenUIManager.Instance, validComponentCallbackResults =>
+                        Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults =>
                         {
                             if (validComponentCallbackResults.Success())
                             {
@@ -17439,6 +17417,30 @@ namespace Com.RedicalGames.Filar
                                     case InputActionButtonType.HelpButton:
 
                                         OnHelp_ActionEvent(popUpType, dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.GoToSelectedScreen:
+
+                                        OnGoToSelectedScreen_ActionEvents(dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.OpenProfileButton:
+
+                                        OnOpenProfile_ActionEvents(dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.OpenInboxButton:
+
+                                        OnOpenInbox_ActionEvents(dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.OpenScreenSettingsButton:
+
+                                        OnOpenSettings_ActionEvents(dataPackets);
 
                                         break;
                                 }
@@ -18707,6 +18709,56 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
+            }
+
+            void OnGoToSelectedScreen_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults => 
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                        screenManagerValidCallbackResults.data.ShowScreen(dataPackets);
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnOpenProfile_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnOpenInbox_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnOpenSettings_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
             }
 
             #endregion
@@ -23721,6 +23773,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+
             #endregion
         }
 
@@ -24658,13 +24711,14 @@ namespace Com.RedicalGames.Filar
                 return component != null;
             }
 
-            public static void ComponentValid<T>(T component, Action<Callback> callback) where T : AppMonoBaseClass
+            public static void GetComponent<T>(T component, Action<CallbackData<T>> callback) where T : AppMonoBaseClass
             {
-                Callback callbackResults = new Callback();
+                CallbackData<T> callbackResults = new CallbackData<T>();
 
                 if (component != null)
                 {
                     callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.data = component;
                     callbackResults.resultsCode = SuccessCode;
                 }
                 else
@@ -25610,7 +25664,7 @@ namespace Com.RedicalGames.Filar
 
             void Show(Action<Callback> callback = null);
 
-            void Hide();
+            Task<Callback> Hide();
 
             void Focus();
 

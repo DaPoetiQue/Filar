@@ -365,7 +365,7 @@ namespace Com.RedicalGames.Filar
                     {
                         foreach (var assetContainer in dynamicWidgetsContainersList)
                         {
-                            AppData.Helpers.ComponentValid(assetContainer, objectValidCallbackResults =>
+                            AppData.Helpers.GetComponent(assetContainer, objectValidCallbackResults =>
                             {
                                 callbackResults.results = objectValidCallbackResults.results;
                                 callbackResults.resultsCode = objectValidCallbackResults.resultsCode;
@@ -3633,7 +3633,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            AppData.Helpers.ComponentValid(widgetsContainer, componentValidCallbackResults => 
+            AppData.Helpers.GetComponent(widgetsContainer, componentValidCallbackResults => 
             {
                 callbackResults.results = componentValidCallbackResults.results;
                 callbackResults.resultsCode = componentValidCallbackResults.resultsCode;
@@ -6416,7 +6416,7 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.CallbackData<Enum> callbackResults = new AppData.CallbackData<Enum>();
 
-                AppData.Helpers.ComponentValid(ScreenUIManager.Instance, hasScreenManagerCallbackResults =>
+                AppData.Helpers.GetComponent(ScreenUIManager.Instance, hasScreenManagerCallbackResults =>
                 {
                     callbackResults.resultsCode = hasScreenManagerCallbackResults.resultsCode;
 
