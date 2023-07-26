@@ -167,7 +167,7 @@ namespace Com.RedicalGames.Filar
                 if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultsCode))
                 {
                     if (scroller.GetFadeUIScrollBar())
-                        scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIWidgetVisibilityState.Hidden);
+                        scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilitType.Hidden);
                 }
                 else
                     LogWarning(scrollerInitializedCallback.results, this, () => InitializeContainer());
@@ -747,44 +747,78 @@ namespace Com.RedicalGames.Filar
 
         public void AddDynamicWidget(AppData.UIScreenWidget screenWidget, AppData.OrientationType orientation, bool keepWorldPosition, Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            if (container != null)
+            try
             {
-                if (screenWidget != null)
+                AppData.Callback callbackResults = new AppData.Callback();
+
+                AppData.LogInfoType screenTypeResultsCode = (GetUIScreenType() != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                string screenTypeResults = (screenTypeResultsCode == AppData.LogInfoType.Success) ? $"Adding Screen Widget To Container : {name} For Screen : {GetUIScreenType()}" : $"Couldn't Add Screen Widget To Container : {name} - Containers Screen Reference Type Is Set To Default : {GetUIScreenType()}";
+
+                callbackResults.results = screenTypeResults;
+                callbackResults.resultsCode = screenTypeResultsCode;
+
+                if (callbackResults.Success())
                 {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
+                    callbackResults.results = GetActiveContainer().results;
+                    callbackResults.resultsCode = GetActiveContainer().resultsCode;
 
-                    screenWidget.gameObject.transform.SetParent(container, keepWorldPosition);
-
-                    if (IsContainerActive())
+                    if (callbackResults.Success())
                     {
-                        if (containerUpdateRoutine != null)
+                        AppData.Helpers.GetAppComponentValid(screenWidget, screenWidget?.name, hasScreenWidgetCallbackResults =>
                         {
-                            StopCoroutine(containerUpdateRoutine);
-                            containerUpdateRoutine = null;
-                        }
+                            callbackResults.results = hasScreenWidgetCallbackResults.results;
+                            callbackResults.resultsCode = hasScreenWidgetCallbackResults.resultsCode;
 
-                        if (containerUpdateRoutine == null)
-                            containerUpdateRoutine = StartCoroutine(UpdatedContainerSizeAsync());
+                            if (callbackResults.Success())
+                            {
+                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
+                                screenWidget.gameObject.transform.SetParent(container, keepWorldPosition);
+
+                                callbackResults.results = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
+
+                                if (containerUpdateRoutine != null)
+                                {
+                                    StopCoroutine(containerUpdateRoutine);
+                                    containerUpdateRoutine = null;
+                                }
+
+                                if (containerUpdateRoutine == null)
+                                    containerUpdateRoutine = StartCoroutine(UpdatedContainerSizeAsync());
+                            }
+                            else
+                            {
+                                callbackResults.results = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
+
+                        }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
                     }
+                }
 
-                    callbackResults.results = "AddDynamicWidget Success : Screen Widget Added Successfully.";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.results = "AddDynamicWidget Failed : Screen Widget Is Missing / Null.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                }
+                callback?.Invoke(callbackResults);
             }
-            else
+            catch(NullReferenceException exception)
             {
-                callbackResults.results = "AddDynamicWidget Failed : Content Container Is Missing / Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                LogError($"Adding Dynamic Widgets To Container : {name} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
+                return;
             }
+            catch(Exception exception)
+            {
+                throw exception;
+            }
+        }
 
-            callback?.Invoke(callbackResults);
+        public AppData.CallbackData<RectTransform> GetActiveContainer()
+        {
+            AppData.CallbackData<RectTransform> callbackResults = new AppData.CallbackData<RectTransform>();
+
+            AppData.LogInfoType getActiveResultsCode = (container.gameObject.activeSelf && container.gameObject.activeInHierarchy && container.gameObject.activeSelf && gameObject.activeSelf && gameObject.activeInHierarchy && gameObject.activeSelf)? AppData.LogInfoType.Success : AppData.LogInfoType.Error;
+            string getActiveResults = (getActiveResultsCode == AppData.LogInfoType.Success) ? $"Container : {name} Is Initialized And Active" : $"Container : {name} Is Not Initialized Yet / Not Active.";
+
+            callbackResults.results = getActiveResults;
+            callbackResults.resultsCode = getActiveResultsCode;
+
+            return callbackResults;
         }
 
         public bool IsContainerActive()
