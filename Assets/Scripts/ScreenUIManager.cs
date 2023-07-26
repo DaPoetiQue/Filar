@@ -49,8 +49,6 @@ namespace Com.RedicalGames.Filar
 
         Coroutine pageRefreshRoutine;
 
-        string screenInitializationResults;
-
         #endregion
 
         #region Unity Callbacks
@@ -122,9 +120,9 @@ namespace Com.RedicalGames.Filar
                                 callbackResults.data = compareDataCallback.tuple_A;
                                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
 
-                                foreach (var screenData in callbackResults.data)
+                                foreach (var screenView in callbackResults.data)
                                 {
-                                    screenData.value.Init(screenInitializationCallback =>
+                                    screenView.value.Init(screenInitializationCallback =>
                                     {
                                         callbackResults.results = screenInitializationCallback.results;
                                         callbackResults.resultsCode = screenInitializationCallback.resultsCode;
@@ -605,8 +603,6 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                LogInfo($" <<<<< Hidding Screen : {GetCurrentUIScreenType()} Sarted - State : {screenFoundCallbackResults.data.value.GetScreenView().GetActive()}.", this);
-
                                                 callbackResults = await HideScreen(GetCurrentUIScreenType());
 
                                                 LogInfo($" <<<< Hidding Screen Ended : Code {callbackResults.resultsCode} - .", this);
