@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Android;
 
@@ -28,12 +29,13 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.AppInfoData appInfo = new AppData.AppInfoData();
 
+        [Space(5)]
         [SerializeField]
-        AppData.AppProjectSupportType testProjectSupport;
+        AppData.UIScreenType appBootScreen = AppData.UIScreenType.LandingPageScreen;
 
         [Space(5)]
         [SerializeField]
-        AppData.UIScreenType appBootScreenType = AppData.UIScreenType.SplashScreen; 
+        AppData.AppProjectSupportType testProjectSupport;
 
         [Space(5)]
         [SerializeField]
@@ -200,43 +202,86 @@ namespace Com.RedicalGames.Filar
             return pluginInstance;
         }
 
-        public AppData.SceneDataPackets GetInitialLoadDataPackets()
-        {
-            return initialLoadDataPackets;
-        }
-
-        public void SetCurrentScreenType(AppData.UIScreenType screenType)
-        {
-            initialLoadDataPackets.screenType = screenType;
-        }
-
-        public AppData.UIScreenType GetCurrentScreenType()
-        {
-            return initialLoadDataPackets.screenType;
-        }
-
         void OnLoadAppInitializationBootScreen()
         {
-            AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, validSceneAssetsManagerComponentCallbackResults => 
             {
-                if (validComponentCallbackResults.Success())
+                if (validSceneAssetsManagerComponentCallbackResults.Success())
                 {
-                    ScreenUIManager.Instance.OnAppBootScreen(appBootScreenType, onAppBootCallbackResults => 
+                    AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, validScreenManagerComponentCallbackResults =>
                     {
-                        if(onAppBootCallbackResults.Success())
+                        if (validScreenManagerComponentCallbackResults.Success())
                         {
-                            ScreenUIManager.Instance.ShowScreen(onAppBootCallbackResults.data, onShowBootScreenCallbackResults => 
+                            ScreenUIManager.Instance.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
                             {
-                                LogInfo($" <--------------------------------------> Loaded App Boot Screen Results : {onShowBootScreenCallbackResults.results}", this);
+                                if (onAppBootCallbackResults.Success())
+                                {
+                                    await ScreenUIManager.Instance.ShowScreenAsync(onAppBootCallbackResults.data);
+
+                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.SplashScreenDuration).value);
+                                    await Task.Delay(splashScreenDuration);
+
+                                    await ScreenUIManager.Instance.HideScreenAsync(onAppBootCallbackResults.data);
+
+                                    int appLoadDelayedDuration = splashScreenDuration / 2;
+                                    await Task.Delay(appLoadDelayedDuration);
+
+                                    #region Trigger Loading Manager
+
+                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, async loadingScreenDataPacketsCallbackResults =>
+                                    {
+                                        if (loadingScreenDataPacketsCallbackResults.Success())
+                                        {
+                                            await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data.dataPackets);
+
+                                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == AppData.UIScreenType.LandingPageScreen)
+                                            {
+                                                AppData.Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, validContentLoadingManagerComponentCallback =>
+                                                {
+                                                    if (validContentLoadingManagerComponentCallback.Success())
+                                                    {
+                                                        SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(appBootScreen, loadedInitialDataPacketsCallbackResults =>
+                                                        {
+                                                            if (loadedInitialDataPacketsCallbackResults.Success())
+                                                            {
+                                                                if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
+                                                                {
+
+                                                                }
+                                                                else
+                                                                    LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
+
+                                                                ContentLoadingManager.Instance.LoadScreen(loadedInitialDataPacketsCallbackResults.data.dataPackets);
+                                                            }
+                                                            else
+                                                                Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
+                                                        });
+
+                                                    //SetCurrentScreenData(screenFoundCallbackResults.data);
+                                                }
+                                                    else
+                                                        Log(validContentLoadingManagerComponentCallback.resultsCode, validContentLoadingManagerComponentCallback.results, this);
+                                                }, "Content Loading Manager Is Not Yet Initialized.");
+                                            }
+                                        }
+                                        else
+                                            Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);
+                                    });
+
+                                    #endregion
+                                }
+                                else
+                                    Log(onAppBootCallbackResults.resultsCode, onAppBootCallbackResults.results, this);
                             });
                         }
                         else
-                            Log(onAppBootCallbackResults.resultsCode, onAppBootCallbackResults.results, this);
-                    });
+                            Log(validScreenManagerComponentCallbackResults.resultsCode, validScreenManagerComponentCallbackResults.results, this);
+                    }, "Screen UI Manager Instance Is Not Yet Initialized.");
                 }
                 else
-                    Log(validComponentCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
-            });
+                    Log(validSceneAssetsManagerComponentCallbackResults.resultsCode, validSceneAssetsManagerComponentCallbackResults.results, this);
+            
+            }, "Scene Assets Manager Instance Is Not Yet Initialized.");
         }
 
         public bool IsRuntime()

@@ -23,7 +23,7 @@ namespace Com.RedicalGames.Filar
             Debug.Log("--> Unity_RG : Button Pressed.");
 
             if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.ShowScreen(dataPackets);
+                ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
             else
                 Debug.LogWarning("--> Screen Manager Missing.");
         }
