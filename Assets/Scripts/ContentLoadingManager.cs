@@ -29,12 +29,16 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         float tempLoadDuration = 3.0f;
 
+        float loadingDuration = 0.0f;
+
         #endregion
 
         #region Main
 
         public void LoadScreen(AppData.SceneDataPackets dataPackets)
         {
+            loadingDuration = tempLoadDuration;
+
             StartCoroutine(loadScreenAsync(screenLoadedCallbackResults => 
             {
                 if (screenLoadedCallbackResults.Success())
@@ -49,7 +53,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data.dataPackets);
 
-                                    int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.SplashScreenDuration).value) / 2;
+                                    int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
                                     await Task.Delay(loadingScreenExitDelay);
 
                                     await ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
@@ -73,15 +77,17 @@ namespace Com.RedicalGames.Filar
 
             yield return new WaitForEndOfFrame();
 
-            var duration = tempLoadDuration;
-
-            while (duration > 0)
+            while (loadingDuration > 0)
             {
-                duration -= 1.0f * Time.deltaTime;
+                loadingDuration -= 1.0f;
+
+                if (loadingDuration <= 0)
+                    break;
+
                 yield return null;
             }
 
-            if(duration <= 0)
+            if(loadingDuration <= 0)
             {
                 callbackResults.results = "Loading Completed.";
                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
@@ -91,8 +97,6 @@ namespace Com.RedicalGames.Filar
                 callbackResults.results = "Loading Failed.";
                 callbackResults.resultsCode = AppData.Helpers.ErrorCode;
             }
-
-            yield return new WaitForEndOfFrame();
 
             callback.Invoke(callbackResults);
 

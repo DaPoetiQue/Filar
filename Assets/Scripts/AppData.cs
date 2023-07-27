@@ -674,11 +674,24 @@ namespace Com.RedicalGames.Filar
             ScrollBarFadeDelayDuration,
             HighlightHoveredFolderDistance,
             SnapDraggedWidgetToHoveredFolderDistance,
-            ScreenFadeInDuration,
-            ScreenFadeOutDuration,
-            SplashScreenDuration
+            SplashScreenFadeInDuration,
+            SplashScreenFadeOutDuration,
+            OnSplashScreenExitDelay,
+            OnScreenChangedExitDelay,
+            LoadingScreenFadeInDuration,
+            LoadingScreenFadeOutDuration,
+            LandingPageScreenFadeInDuration,
+            LandingPageScreenFadeOutDuration,
+            ProjectSelectionScreenFadeInDuration,
+            ProjectSelectionScreenFadeOutDuration,
+            ProjectViewScreenFadeInDuration,
+            ProjectViewScreenFadeOutDuration,
+            ContentImportExportScreenFadeInDuration,
+            ContentImportExportScreenFadeOutDuration,
+            ARViewScreenFadeInDuration,
+            ARViewScreenFadeOutDuration,
+            None
         }
-
 
         public enum EventCameraState
         {
@@ -23710,6 +23723,8 @@ namespace Com.RedicalGames.Filar
             UIScreenType screenType;
             UIScreenWidgetVisibilityState initialVisibilityState;
 
+            UIScreenViewerComponent screenViewerComponent;
+
             float visible = 1, hidden = 0;
             int fadeIn = 1, fadeOut = -1;
 
@@ -23768,7 +23783,7 @@ namespace Com.RedicalGames.Filar
                 if (fadeDirection == fadeOut)
                 {
                     if (GetActiveFader().data.alpha > hidden)
-                        GetActiveFader().data.alpha -= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenFadeOutDuration).value * Time.deltaTime;
+                        GetActiveFader().data.alpha -= SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeOut).value * Time.deltaTime;
                     else
                         canFade = false;
                 }
@@ -23776,7 +23791,7 @@ namespace Com.RedicalGames.Filar
                 if (fadeDirection == fadeIn)
                 {
                     if (GetActiveFader().data.alpha < visible)
-                        GetActiveFader().data.alpha += SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenFadeInDuration).value * Time.deltaTime;
+                        GetActiveFader().data.alpha += SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeIn).value * Time.deltaTime;
                     else
                         canFade = false;
                 }
