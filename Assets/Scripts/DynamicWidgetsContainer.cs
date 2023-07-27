@@ -1326,48 +1326,51 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.Callback callbackResults = new AppData.Callback();
 
-                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                if (container != null)
                 {
-                    if (GetContentCount() > 0)
+                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                     {
-                        for (int i = 0; i < GetContentCount(); i++)
+                        if (GetContentCount() > 0)
                         {
-                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                            for (int i = 0; i < GetContentCount(); i++)
                             {
-                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
-                                    Destroy(container.GetChild(i).gameObject);
+                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                                {
+                                    if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                                        Destroy(container.GetChild(i).gameObject);
+                                    else
+                                        LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                                }
                                 else
-                                    LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                                    LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                            }
+
+                            await AppData.Helpers.GetWaitForSecondsAsync(10);
+
+                            if (container.childCount == 0)
+                            {
+                                SceneAssetsManager.Instance.UnloadUnusedAssets();
+
+                                callbackResults.results = "All Widgets Cleared.";
+                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                             }
                             else
-                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
-                        }
-
-                        await AppData.Helpers.GetWaitForSecondsAsync(10);
-
-                        if (container.childCount == 0)
-                        {
-                            SceneAssetsManager.Instance.UnloadUnusedAssets();
-
-                            callbackResults.results = "All Widgets Cleared.";
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            {
+                                callbackResults.results = $"{container.childCount} : Widgets Failed To Clear.";
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
                         }
                         else
                         {
-                            callbackResults.results = $"{container.childCount} : Widgets Failed To Clear.";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.results = $"No Widgets To Clear From Container : {gameObject.name}";
+                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"No Widgets To Clear From Container : {gameObject.name}";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.results = $"Curent Screen Is Not Yet Initialized.";
+                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                     }
-                }
-                else
-                {
-                    callbackResults.results = $"Curent Screen Is Not Yet Initialized.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
