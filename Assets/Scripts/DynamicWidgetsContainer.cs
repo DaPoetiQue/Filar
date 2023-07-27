@@ -167,7 +167,7 @@ namespace Com.RedicalGames.Filar
                 if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultsCode))
                 {
                     if (scroller.GetFadeUIScrollBar())
-                        scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilitType.Hidden);
+                        scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilityState.Hidden);
                 }
                 else
                     LogWarning(scrollerInitializedCallback.results, this, () => InitializeContainer());
