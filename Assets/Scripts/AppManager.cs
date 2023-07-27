@@ -244,12 +244,8 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             if (loadedInitialDataPacketsCallbackResults.Success())
                                                             {
-                                                                LogInfo($" <<<<<<<<<<<>>>>>>>>>>>>>>>><<<< Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} - Transition : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
-
                                                                 if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
-                                                                {
-
-                                                                }
+                                                                    ContentLoadingManager.Instance.LoadScreen(loadedInitialDataPacketsCallbackResults.data.dataPackets);
                                                                 else
                                                                     LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
 
