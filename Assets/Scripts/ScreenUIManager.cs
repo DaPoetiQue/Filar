@@ -482,7 +482,8 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
+                        if(GetCurrentUIScreenType() != AppData.UIScreenType.None && GetCurrentUIScreenType() != AppData.UIScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.UIScreenType.LoadingScreen)
+                             AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
 
                         callbackResults.data.value.SetScreenData(dataPackets);
                         SetCurrentScreenData(callbackResults.data);
@@ -505,7 +506,10 @@ namespace Com.RedicalGames.Filar
                             }
 
                             if (callbackResults.Success())
-                                callbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, callbackResults.data.value.GetScreenTitle());
+                            {
+                                if (GetCurrentUIScreenType() != AppData.UIScreenType.None && GetCurrentUIScreenType() != AppData.UIScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.UIScreenType.LoadingScreen)
+                                    callbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, callbackResults.data.value.GetScreenTitle());
+                            }
                             else
                                 Log(callbackResults.resultsCode, callbackResults.results, this);
                         });
