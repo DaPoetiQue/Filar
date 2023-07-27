@@ -13553,9 +13553,6 @@ namespace Com.RedicalGames.Filar
             private ScreenFaderComponent fader = new ScreenFaderComponent();
 
             UIScreenType screenType;
-
-            public bool isShown = false;
-
             UIScreenWidgetVisibilityState initialVisibility;
 
             #endregion
@@ -13575,8 +13572,12 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.results = GetScreenViewIsInitialized().results;
-                            callbackResults.resultsCode = GetScreenViewIsInitialized().resultsCode;
+                            bool onShowResults = GetVisibilityValueFromState(screenData.GetUIScreenInitialVisibility());
+
+                            LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> Screen Init : On Show Status : {onShowResults}", this);
+
+                            callbackResults.results = GetScreenViewIsInitialized(onShowResults).results;
+                            callbackResults.resultsCode = GetScreenViewIsInitialized(onShowResults).resultsCode;
 
                             if (callbackResults.Success())
                             {
@@ -13657,11 +13658,11 @@ namespace Com.RedicalGames.Filar
                 return view;
             }
 
-            public CallbackData<GameObject> GetScreenViewIsInitialized()
+            public CallbackData<GameObject> GetScreenViewIsInitialized(bool onShowScreen)
             {
                 CallbackData<GameObject> callbackResults = new CallbackData<GameObject>();
 
-                bool hasComponents = (view != null && view.activeInHierarchy && view.activeSelf);
+                bool hasComponents = (view != null && (onShowScreen)? !view.activeInHierarchy && !view.activeSelf : view.activeInHierarchy && view.activeSelf);
 
                 callbackResults.results = (hasComponents)? $"Screen View : {name} Has Been Loaded Successfully And Is Active." : $"Failed To Get Screen View : {name} - Screen View's Value Is Missing / Null / Not Assigned In The Unity Inspector Panel.";
                 callbackResults.data = (hasComponents) ? view : default;
@@ -13670,12 +13671,12 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public async void ShowScreenView(Action<Callback> callback = null)
+            public async Task<Callback> ShowScreenView()
             {
                 Callback callbackResults = new Callback();
 
-                callbackResults.results = GetScreenViewIsInitialized().results;
-                callbackResults.resultsCode = GetScreenViewIsInitialized().resultsCode;
+                callbackResults.results = GetScreenViewIsInitialized(true).results;
+                callbackResults.resultsCode = GetScreenViewIsInitialized(true).resultsCode;
 
                 if (callbackResults.Success())
                 {
@@ -13689,40 +13690,52 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            callbackResults = GetActiveViewFader().data.CanFadeOutViewCallbackResults();
+                            var faderComponent = GetActiveViewFader().data;
+                            callbackResults = faderComponent.CanFadeOutViewCallbackResults();
 
                             if (callbackResults.Success())
                             {
-                                OnScreenViewVisibility(true);
-                                callbackResults.results = $"On Show Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.results}.";
+                                var fadeModeType = faderComponent.GetScreenFadeMode();
+
+                                LogInfoType fadeViewResultsCode = (fadeModeType == ScreenFadeModeType.Default || fadeModeType == ScreenFadeModeType.OnShowScreen)? Helpers.SuccessCode : Helpers.ErrorCode;
+                                string fadeViewResults = (fadeViewResultsCode == Helpers.SuccessCode) ? $"Successfully Fading Out And Showing Screen : {GetUIScreenType()} With Fade Mode : {fadeModeType}" : $"Fade View Mode Is Disabled On Show : Current Mode Is Set To : {fadeModeType}";
+
+                                callbackResults.results = fadeViewResults;
+                                callbackResults.resultsCode = fadeViewResultsCode;
+
+                                if (callbackResults.Success())
+                                {
+                                    OnScreenViewVisibility(true);
+                                   return await faderComponent.FadeOut();
+                                }
+                                else
+                                {
+                                    OnScreenViewVisibility(true);
+                                    callbackResults.results = $"On Show Screen : {GetUIScreenType()} - With Fader Mode Results : {callbackResults.results}.";
+                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                }
                             }
                             else
                                 Log(callbackResults.resultsCode, callbackResults.results, this);
                         }
-                        else
-                        {
-                            OnScreenViewVisibility(true);
-                            callbackResults.results = $"On Show Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.results}.";
-                        }
                     }
                     else
                     {
+                        OnScreenViewVisibility(true);
                         callbackResults.results = $"On Show Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.results}.";
                         callbackResults.resultsCode = Helpers.SuccessCode;
                     }
                 }
 
-                Log(callbackResults.resultsCode, $" <<<<<<<<<===============>>>>>>>>>>> On Show Final Status : {callbackResults.results}", this);
-
-                callback?.Invoke(callbackResults);
+                return callbackResults;
             }
 
             public async Task<Callback> HideScreenView()
             {
                 Callback callbackResults = new Callback();
 
-                callbackResults.results = GetScreenViewIsInitialized().results;
-                callbackResults.resultsCode = GetScreenViewIsInitialized().resultsCode;
+                callbackResults.results = GetScreenViewIsInitialized(false).results;
+                callbackResults.resultsCode = GetScreenViewIsInitialized(false).resultsCode;
 
                 if (callbackResults.Success())
                 {
@@ -15742,16 +15755,9 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void Show(Action<Callback> callback = null)
+            public async Task<Callback> Show()
             {
-                Callback callbackResults = new Callback();
-
-                GetScreenView().ShowScreenView(showScreenCallback => 
-                {
-                    callbackResults = showScreenCallback;
-                });
-
-                callback?.Invoke(callbackResults);
+                return await GetScreenView().ShowScreenView();
             }
 
             public void ShowLoadingItem(LoadingItemType loaderType, bool status)
@@ -23700,6 +23706,10 @@ namespace Com.RedicalGames.Filar
                             OnInitializeScreenDataSetup(screenViewerComponent.GetUIScreenType(), screenViewerComponent.GetViewerInitialVisibilityState(), initializationSetupCallbackResults => 
                             {
                                 callbackResults = initializationSetupCallbackResults;
+
+                                if(callbackResults.Success())
+                                    ActionEvents._LateUpdate += ActionEvents__LateUpdate;
+
                             });
                         }
                     }
@@ -23718,6 +23728,28 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            private void ActionEvents__LateUpdate()
+            {
+                if (!canFade)
+                    return;
+
+                if (fadeDirection == fadeOut)
+                {
+                    if (GetActiveFader().data.alpha > hidden)
+                        GetActiveFader().data.alpha -= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenFaderDuration).value * Time.deltaTime;
+                    else
+                        canFade = false;
+                }
+                
+                if (fadeDirection == fadeIn)
+                {
+                    if (GetActiveFader().data.alpha < visible)
+                        GetActiveFader().data.alpha += SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenFaderDuration).value * Time.deltaTime;
+                    else
+                        canFade = false;
+                }
             }
 
             public void OnInitializeScreenDataSetup(UIScreenType screenType, UIScreenWidgetVisibilityState initialVisibilityState, Action<CallbackData<UIScreenType>> callback = null)
@@ -23746,25 +23778,17 @@ namespace Com.RedicalGames.Filar
                 return screenType;
             }
 
-            public void FadeIn()
+            public async Task FadeIn(Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
-                callbackResults.results = GetActiveFader().results;
-                callbackResults.resultsCode = GetActiveFader().resultsCode;
+                LogInfo($" ================<<<<<<<<< Fading In Screen : {GetUIScreenType()}", this);
+                SetFaderVisibilityValue(visible);
 
-                if (callbackResults.Success())
-                {
-                    LogInfo($" ================<<<<<<<<< Fading In Screen : {screenType}", this);
-                }
-                else
-                {
-                    Log(callbackResults.resultsCode, callbackResults.results, this);
-                    return;
-                }
+                callback?.Invoke(callbackResults);
             }
 
-            public void FadeOut()
+            public async Task<Callback> FadeOut()
             {
                 Callback callbackResults = new Callback();
 
@@ -23773,18 +23797,31 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    LogInfo($" ================<<<<<<<<< Fading Out Screen : {screenType}", this);
+                    canFade = true;
+                    fadeDirection = fadeOut;
+
+                    while (canFade)
+                        await Task.Yield();
+
+                    LogInfoType fadeOutResultsCode = (GetOpacity().data <= hidden) ? Helpers.SuccessCode : Helpers.ErrorCode;
+                    string fadeOutResults = (fadeOutResultsCode == Helpers.SuccessCode) ? $"View : {GetUIScreenType()} Has Been Faded Out Successfully" : $"Failed To Fade out View : {GetUIScreenType()} - Current Fader Opacity Is : {GetOpacity().data}";
+
+                    callbackResults.results = fadeOutResults;
+                    callbackResults.resultsCode = fadeOutResultsCode;
+
+                    if (callbackResults.Success())
+                    {
+                        SetFaderVisibilityValue(hidden);
+                        return callbackResults;
+                    }
                 }
-                else
-                {
-                    Log(callbackResults.resultsCode, callbackResults.results, this);
-                    return;
-                }
+
+                return callbackResults;
             }
 
             public void SetFaderVisibilityValue(float opacity)
             {
-                LogInfo($" <---------------------------------> Setting View Fader : {name} Opacity : {opacity} ", this);
+                //LogInfo($" <---------------------------------> Setting View Fader : {name} Opacity : {opacity} ", this);
 
                 if (OnViewFaderInitialized().Success())
                     value.alpha = opacity;
@@ -23930,6 +23967,11 @@ namespace Com.RedicalGames.Filar
                 callbackResults.resultsCode = resultsCode;
 
                 return callbackResults;
+            }
+
+            public ScreenFadeModeType GetScreenFadeMode()
+            {
+                return mode;
             }
 
             #endregion
@@ -24888,6 +24930,25 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
+            public static async Task GetComponentAsync<T>(T component, Action<CallbackData<T>> callback) where T : AppMonoBaseClass
+            {
+                CallbackData<T> callbackResults = new CallbackData<T>();
+
+                if (component != null)
+                {
+                    callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.data = component;
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
             public static void UIActionComponentValid<T, U, V>(T component, Action<Callback> callback) where T : UIInputComponent<UnityEngine.Object, U, V>
             {
                 Callback callbackResults = new Callback();
@@ -25780,7 +25841,7 @@ namespace Com.RedicalGames.Filar
         {
             void Init(Action<CallbackData<ScreenUIData>> callBack = null);
 
-            void Show(Action<Callback> callback = null);
+            Task<Callback> Show();
 
             Task<Callback> Hide();
 
@@ -25838,8 +25899,9 @@ namespace Com.RedicalGames.Filar
             CallbackData<bool> CanFadeInViewCallbackResults();
             CallbackData<bool> CanFadeOutViewCallbackResults();
 
-            void FadeIn();
-            void FadeOut();
+            Task FadeIn(Action<Callback> callback = null);
+
+            Task<Callback> FadeOut();
         }
 
 
