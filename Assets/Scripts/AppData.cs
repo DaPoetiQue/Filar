@@ -503,11 +503,12 @@ namespace Com.RedicalGames.Filar
         {
             None,
             ProjectViewScreen,
-            AssetCreationScreen,
+            ContentImportExportScreen,
             ARViewScreen,
             ProjectSelectionScreen,
             LandingPageScreen,
-            LoadingScreen
+            LoadingScreen,
+            SplashScreen
         }
 
         public enum ContentContainerType
@@ -13295,7 +13296,7 @@ namespace Com.RedicalGames.Filar
                 // Temp Fix. Do Proper Checks
 
 
-                if (previousScreenType == UIScreenType.AssetCreationScreen)
+                if (previousScreenType == UIScreenType.ContentImportExportScreen)
                 {
                     previousScreenType = UIScreenType.None;
                     return;
@@ -15259,7 +15260,7 @@ namespace Com.RedicalGames.Filar
                         {
                             SceneDataPackets packets = new SceneDataPackets();
                             packets.widgetType = WidgetType.WarningPromptWidget;
-                            packets.screenType = UIScreenType.AssetCreationScreen;
+                            packets.screenType = UIScreenType.ContentImportExportScreen;
                             packets.blurScreen = true;
 
                             ShowWidget(packets);
