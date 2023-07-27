@@ -77,7 +77,7 @@ namespace Com.RedicalGames.Filar
         void OnGoToProfile_ActionEvent(AppData.ButtonDataPackets dataPackets)
         {
             if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.ShowScreen(dataPackets);
+                ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
             else
                 LogWarning("Screen Manager Missing.", this, () => OnGoToProfile_ActionEvent(dataPackets));
         }

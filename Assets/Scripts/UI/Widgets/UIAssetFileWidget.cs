@@ -66,7 +66,7 @@ namespace Com.RedicalGames.Filar
                             Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
 
                         if (assetData.assetFields != null)
-                            screenManager.ShowScreen(actionButton.dataPackets);
+                            screenManager.ShowScreenAsync(actionButton.dataPackets);
                         else
                             Debug.LogWarning("--> Scene Asset Data Invalid.");
                     }
