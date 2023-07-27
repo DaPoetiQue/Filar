@@ -228,37 +228,30 @@ namespace Com.RedicalGames.Filar
 
                                     #region Trigger Loading Manager
 
-                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, async loadingScreenDataPacketsCallbackResults =>
+                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, loadingScreenDataPacketsCallbackResults =>
                                     {
                                         if (loadingScreenDataPacketsCallbackResults.Success())
                                         {
-                                            await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data.dataPackets);
-
-                                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == AppData.UIScreenType.LoadingScreen)
+                                            AppData.Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, validContentLoadingManagerComponentCallback =>
                                             {
-                                                AppData.Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, validContentLoadingManagerComponentCallback =>
+                                                if (validContentLoadingManagerComponentCallback.Success())
                                                 {
-                                                    if (validContentLoadingManagerComponentCallback.Success())
+                                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(appBootScreen, async loadedInitialDataPacketsCallbackResults =>
                                                     {
-                                                        SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(appBootScreen, loadedInitialDataPacketsCallbackResults =>
+                                                        if (loadedInitialDataPacketsCallbackResults.Success())
                                                         {
-                                                            if (loadedInitialDataPacketsCallbackResults.Success())
-                                                            {
-                                                                if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
-                                                                    ContentLoadingManager.Instance.LoadScreen(loadedInitialDataPacketsCallbackResults.data.dataPackets);
-                                                                else
-                                                                    LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
-
-                                                                ContentLoadingManager.Instance.LoadScreen(loadedInitialDataPacketsCallbackResults.data.dataPackets);
-                                                            }
+                                                            if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
+                                                                await ContentLoadingManager.Instance.LoadScreen(loadedInitialDataPacketsCallbackResults.data.dataPackets);
                                                             else
-                                                                Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
-                                                        });
-                                                    }
-                                                    else
-                                                        Log(validContentLoadingManagerComponentCallback.resultsCode, validContentLoadingManagerComponentCallback.results, this);
-                                                }, "Content Loading Manager Is Not Yet Initialized.");
-                                            }
+                                                                LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
+                                                        }
+                                                        else
+                                                            Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(validContentLoadingManagerComponentCallback.resultsCode, validContentLoadingManagerComponentCallback.results, this);
+                                            }, "Content Loading Manager Is Not Yet Initialized.");
                                         }
                                         else
                                             Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);

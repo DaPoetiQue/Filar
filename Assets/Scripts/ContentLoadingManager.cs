@@ -35,73 +35,56 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void LoadScreen(AppData.SceneDataPackets dataPackets)
+        public async Task LoadScreen(AppData.SceneDataPackets dataPackets)
         {
-            loadingDuration = tempLoadDuration;
+            var sceneAssetsManagerInstanceCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager instance Is Not Yet Initialized.");
 
-            StartCoroutine(loadScreenAsync(screenLoadedCallbackResults => 
+            if (sceneAssetsManagerInstanceCallbackResults.Success())
             {
-                if (screenLoadedCallbackResults.Success())
+                AppData.CallbackData<AppData.SceneDataPackets> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+
+                SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                 {
-                    AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallback => 
+                    loadingScreenDataPacketsCallbackResults.results = getLoadingScreenDataPacketsCallbackResults.results;
+                    loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.data.dataPackets;
+                    loadingScreenDataPacketsCallbackResults.resultsCode = getLoadingScreenDataPacketsCallbackResults.resultsCode;
+                });
+
+                if (loadingScreenDataPacketsCallbackResults.Success())
+                {
+                    var screenUIManagerInstanceCallbackResults = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager instance Is Not Yet Initialized.");
+
+                    if (screenUIManagerInstanceCallbackResults.Success())
                     {
-                        if (validComponentCallback.Success())
+                        await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+
+                        loadingDuration = tempLoadDuration;
+
+                        while (loadingDuration > 0.0f)
                         {
-                            SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, async loadingScreenDataPacketsCallbackResults => 
-                            {
-                                if (loadingScreenDataPacketsCallbackResults.Success())
-                                {
-                                    await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data.dataPackets);
-
-                                    int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
-                                    await Task.Delay(loadingScreenExitDelay);
-
-                                    await ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
-                                }
-                                else
-                                    Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);
-                            });
+                            loadingDuration -= 1.0f * 5 * Time.deltaTime;
+                            await Task.Yield();
                         }
-                        else
-                            Log(validComponentCallback.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
-                    });
+
+                        if (loadingDuration <= 0)
+                        {
+                            await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+
+                            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
+                            await Task.Delay(loadingScreenExitDelay);
+
+                            await ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
+                        }
+                    }
+                    else
+                        Log(screenUIManagerInstanceCallbackResults.resultsCode, screenUIManagerInstanceCallbackResults.results, this);
                 }
                 else
-                    Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this);
-            }));
-        }
-
-        IEnumerator loadScreenAsync(Action<AppData.Callback> callback)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            yield return new WaitForEndOfFrame();
-
-            while (loadingDuration > 0)
-            {
-                loadingDuration -= 1.0f;
-
-                if (loadingDuration <= 0)
-                    break;
-
-                yield return null;
-            }
-
-            if(loadingDuration <= 0)
-            {
-                callbackResults.results = "Loading Completed.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);
             }
             else
-            {
-                callbackResults.results = "Loading Failed.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            }
-
-            callback.Invoke(callbackResults);
-
+                Log(sceneAssetsManagerInstanceCallbackResults.resultsCode, sceneAssetsManagerInstanceCallbackResults.results, this);
         }
-
 
         #endregion
     }
