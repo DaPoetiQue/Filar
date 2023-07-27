@@ -24,7 +24,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         protected override void OnHideScreenWidget()

@@ -13706,6 +13706,10 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             var faderComponent = GetActiveViewFader().data;
+                            
+                            if(faderComponent.GetOpacity().data <= 0)
+                                faderComponent.SetFaderVisibilityValue(1.0f);
+
                             callbackResults = faderComponent.CanFadeOutViewCallbackResults();
 
                             if (callbackResults.Success())
@@ -13765,6 +13769,7 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             var faderComponent = GetActiveViewFader().data;
+
                             callbackResults = faderComponent.CanFadeInViewCallbackResults();
 
                             if (callbackResults.Success())
@@ -13838,10 +13843,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            void OnScreenViewVisibility(bool value)
-            {
-                view.SetActive(value);
-            }
+            void OnScreenViewVisibility(bool value)=> view.SetActive(value);
 
             #endregion
         }
@@ -18780,15 +18782,55 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
-            void OnGoToSelectedScreen_ActionEvents(SceneDataPackets dataPackets)
+            async void OnGoToSelectedScreen_ActionEvents(SceneDataPackets dataPackets)
             {
-                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults => 
+                var sceneAssetsManagerInstanceCallbackResults = Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized.");
+
+                if (sceneAssetsManagerInstanceCallbackResults.Success())
                 {
-                    if (screenManagerValidCallbackResults.Success())
-                        screenManagerValidCallbackResults.data.ShowScreenAsync(dataPackets);
+                    var screenUIManagerInstanceCallbackResults = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized.");
+
+                    if (screenUIManagerInstanceCallbackResults.Success())
+                    {
+                        AppData.CallbackData<AppData.SceneDataPackets> currentScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+
+                        sceneAssetsManagerInstanceCallbackResults.data.GetDataPacketsLibrary().GetDataPacket(screenUIManagerInstanceCallbackResults.data.GetCurrentUIScreenType(), getCurrentScreenDataPacketsCallbackResults => 
+                        {
+                            currentScreenDataPacketsCallbackResults.results = getCurrentScreenDataPacketsCallbackResults.results;
+                            currentScreenDataPacketsCallbackResults.data = getCurrentScreenDataPacketsCallbackResults.data.dataPackets;
+                            currentScreenDataPacketsCallbackResults.resultsCode = getCurrentScreenDataPacketsCallbackResults.resultsCode;
+                        });
+
+                        if (currentScreenDataPacketsCallbackResults.Success())
+                        {
+                            var contentLoadingManagerInstanceCallbackResults = Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, "Content Loading Manager Instance Is Not Yet Initialized.");
+
+                            if (contentLoadingManagerInstanceCallbackResults.Success())
+                            {
+                                if (dataPackets.screenTransition == ScreenLoadTransitionType.LoadingScreen)
+                                {
+                                    await screenUIManagerInstanceCallbackResults.data.HideScreenAsync(currentScreenDataPacketsCallbackResults.data);
+
+                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
+                                    await Task.Delay(appLoadDelayedDuration);
+
+                                    await contentLoadingManagerInstanceCallbackResults.data.LoadScreen(dataPackets);
+                                }
+
+                                if (dataPackets.screenTransition == ScreenLoadTransitionType.Translate)
+                                {
+
+                                }
+                            }
+                            else
+                                Log(contentLoadingManagerInstanceCallbackResults.resultsCode, contentLoadingManagerInstanceCallbackResults.results, this);
+                        }
+                    }
                     else
-                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
-                });
+                        Log(screenUIManagerInstanceCallbackResults.resultsCode, screenUIManagerInstanceCallbackResults.results, this);
+                }
+                else
+                    Log(sceneAssetsManagerInstanceCallbackResults.resultsCode, sceneAssetsManagerInstanceCallbackResults.results, this);
             }
 
             void OnOpenProfile_ActionEvents(SceneDataPackets dataPackets)
@@ -23720,9 +23762,6 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public ScreenFadeModeType mode;
 
-            [Space(5)]
-            public List<CanvasGroup> fadableComponentList = new List<CanvasGroup>();
-
             UIScreenType screenType;
             UIScreenWidgetVisibilityState initialVisibilityState;
 
@@ -23786,10 +23825,7 @@ namespace Com.RedicalGames.Filar
                 if (fadeDirection == fadeOut)
                 {
                     if (GetActiveFader().data.alpha > hidden)
-                    {
                         GetActiveFader().data.alpha -= SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeOut).value * Time.deltaTime;
-                        OnFadeComponents(GetActiveFader().data.alpha);
-                    }
                     else
                         canFade = false;
                 }
@@ -23797,10 +23833,7 @@ namespace Com.RedicalGames.Filar
                 if (fadeDirection == fadeIn)
                 {
                     if (GetActiveFader().data.alpha < visible)
-                    {
                         GetActiveFader().data.alpha += SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeIn).value * Time.deltaTime;
-                        OnFadeComponents(GetActiveFader().data.alpha);
-                    }
                     else
                         canFade = false;
                 }
@@ -23902,13 +23935,6 @@ namespace Com.RedicalGames.Filar
                     value.alpha = opacity;
                 else
                     Log(OnViewFaderInitialized().resultsCode, OnViewFaderInitialized().results, this);
-            }
-
-            void OnFadeComponents(float alpha)
-            {
-                if(fadableComponentList != null && fadableComponentList.Count > 0)
-                    for (int i = 0; i < fadableComponentList.Count; i++)
-                        fadableComponentList[i].alpha = alpha;
             }
 
             public CallbackData<float> GetOpacity()
@@ -25171,6 +25197,7 @@ namespace Com.RedicalGames.Filar
                 if (component != null)
                 {
                     callbackResults.results = $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = component;
                     callbackResults.resultsCode = SuccessCode;
                 }
                 else
@@ -25178,6 +25205,7 @@ namespace Com.RedicalGames.Filar
                     string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
+                    callbackResults.data = default;
                     callbackResults.resultsCode = ErrorCode;
                 }
 
@@ -25191,6 +25219,7 @@ namespace Com.RedicalGames.Filar
                 if (component != null)
                 {
                     callbackResults.results = $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = component;
                     callbackResults.resultsCode = SuccessCode;
                 }
                 else
@@ -25198,6 +25227,7 @@ namespace Com.RedicalGames.Filar
                     string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
+                    callbackResults.data = default;
                     callbackResults.resultsCode = ErrorCode;
                 }
 
