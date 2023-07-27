@@ -49,9 +49,6 @@ namespace Com.RedicalGames.Filar
 
         void Awake() => SetupInstance();
 
-        void OnEnable() => OnSubscribeToActionEvents(true);
-        void OnDisable() => OnSubscribeToActionEvents(false);
-
         void Start() => Init();
 
         #endregion
@@ -94,20 +91,30 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
 
-                                            SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure);
-
-                                            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+                                            SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure, projectStructureInitializedCallbackResults => 
                                             {
-                                                if (containerResults.Success())
-                                                {
-                                                    var rootFolder = rootProjectStructure.rootFolder;
-                                                    var container = containerResults.data;
-
-                                                    SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
-                                                }
+                                                if (projectStructureInitializedCallbackResults.Success())
+                                                    OnLoadAppInitializationBootScreen();
                                                 else
-                                                    Log(containerResults.resultsCode, containerResults.results, this);
+                                                    Log(projectStructureInitializedCallbackResults.resultsCode, projectStructureInitializedCallbackResults.results, this);
                                             });
+
+                                            // Check This Later On.......................................................................................................................................
+
+                                            //SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+                                            //{
+                                            //    if (containerResults.Success())
+                                            //    {
+                                            //        var rootFolder = rootProjectStructure.rootFolder;
+                                            //        var container = containerResults.data;
+
+                                            //        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+
+                                            //        LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> On Load App", this);
+                                            //    }
+                                            //    else
+                                            //        Log(containerResults.resultsCode, containerResults.results, this);
+                                            //});
                                         }
                                         else
                                             Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
@@ -156,16 +163,6 @@ namespace Com.RedicalGames.Filar
         {
             return testProjectSupport;
         }
-
-        void OnSubscribeToActionEvents(bool subscribe)
-        {
-            if (subscribe)
-                AppData.ActionEvents._OnAppScreensInitializedEvent += ActionEvents__OnAppScreensInitializedEvent;
-            else
-                AppData.ActionEvents._OnAppScreensInitializedEvent -= ActionEvents__OnAppScreensInitializedEvent;
-        }
-
-        private void ActionEvents__OnAppScreensInitializedEvent() => OnLoadAppInitializationBootScreen();
 
         public void StoragePermissionRequest()
         {
@@ -224,9 +221,14 @@ namespace Com.RedicalGames.Filar
             {
                 if (validComponentCallbackResults.Success())
                 {
-                    ScreenUIManager.Instance.OnAppBootScreen(initialLoadDataPackets, appBootScreenType, onAppBootCallbackResults => 
+                    ScreenUIManager.Instance.OnAppBootScreen(appBootScreenType, onAppBootCallbackResults => 
                     {
-                        Log(onAppBootCallbackResults.resultsCode, $" <-----------------------------------> Show Splash Screen On Startup - Results : {onAppBootCallbackResults.results}", this);
+                        if(onAppBootCallbackResults.Success())
+                        {
+                            LogInfo($" <--------------------------------------> Load App Boot Screen Results : {onAppBootCallbackResults.results}", this);
+                        }
+                        else
+                            Log(onAppBootCallbackResults.resultsCode, onAppBootCallbackResults.results, this);
                     });
                 }
                 else
