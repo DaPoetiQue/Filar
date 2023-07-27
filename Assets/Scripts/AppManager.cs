@@ -225,7 +225,10 @@ namespace Com.RedicalGames.Filar
                     {
                         if(onAppBootCallbackResults.Success())
                         {
-                            LogInfo($" <--------------------------------------> Load App Boot Screen Results : {onAppBootCallbackResults.results}", this);
+                            ScreenUIManager.Instance.ShowScreen(onAppBootCallbackResults.data, onShowBootScreenCallbackResults => 
+                            {
+                                LogInfo($" <--------------------------------------> Loaded App Boot Screen Results : {onShowBootScreenCallbackResults.results}", this);
+                            });
                         }
                         else
                             Log(onAppBootCallbackResults.resultsCode, onAppBootCallbackResults.results, this);
