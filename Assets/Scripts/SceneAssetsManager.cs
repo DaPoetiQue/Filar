@@ -885,7 +885,7 @@ namespace Com.RedicalGames.Filar
 
         void OnScreenRefreshedEvent(AppData.UIScreenViewComponent screenData)
         {
-            if (screenData.value.GetUIScreenType() == AppData.UIScreenType.AssetCreationScreen)
+            if (screenData.value.GetUIScreenType() == AppData.UIScreenType.ContentImportExportScreen)
             {
                 #region OBJ Field
 
@@ -1470,7 +1470,7 @@ namespace Com.RedicalGames.Filar
 
                     AppData.SceneAsset sceneAsset = assetData.ToSceneAsset();
 
-                    if (GetSceneAssetsContainer(AppData.ContentContainerType.AssetImport, AppData.UIScreenType.AssetCreationScreen) != null)
+                    if (GetSceneAssetsContainer(AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen) != null)
                     {
                         SetCurrentSceneMode(AppData.SceneMode.EditMode);
 
@@ -1481,7 +1481,7 @@ namespace Com.RedicalGames.Filar
                             {
 
                                 // Temp Solution For Enabling Import Asset Container On New Asset Import - Refreshes Screen Manually.
-                                AppData.ActionEvents.OnScreenChangeEvent(new AppData.SceneDataPackets { screenType = AppData.UIScreenType.AssetCreationScreen, containerType = AppData.ContentContainerType.AssetImport });
+                                AppData.ActionEvents.OnScreenChangeEvent(new AppData.SceneDataPackets { screenType = AppData.UIScreenType.ContentImportExportScreen, containerType = AppData.ContentContainerType.AssetImport });
 
                                 callback.Invoke(sceneAsset, true);
 
@@ -1532,7 +1532,7 @@ namespace Com.RedicalGames.Filar
                     }
 
                     if (SelectableManager.Instance)
-                        SelectableManager.Instance.AddToSelectableList(sceneObject.value, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.AssetCreationScreen);
+                        SelectableManager.Instance.AddToSelectableList(sceneObject.value, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen);
                     else
                         Debug.LogWarning("--> Selectable Manager Not Yet Initialized.");
                 }
@@ -1570,7 +1570,7 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
 
-                    AddAssetToContainer(sceneObject.value, false, true, true, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.AssetCreationScreen, AppData.RuntimeValueType.InspectorModeAsseScaleDeviderValue, true, false, true, true);
+                    AddAssetToContainer(sceneObject.value, false, true, true, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen, AppData.RuntimeValueType.InspectorModeAsseScaleDeviderValue, true, false, true, true);
 
                     sceneAssetLibrary.AddSceneAssetObjectToLibrary(sceneAsset);
 
@@ -4246,7 +4246,7 @@ namespace Com.RedicalGames.Filar
 
                     break;
 
-                case AppData.UIScreenType.AssetCreationScreen:
+                case AppData.UIScreenType.ContentImportExportScreen:
 
                     containerType = AppData.ContentContainerType.AssetImport;
 
