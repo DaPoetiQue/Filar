@@ -170,7 +170,7 @@ namespace Com.RedicalGames.Filar
                         scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilityState.Hidden);
                 }
                 else
-                    LogWarning(scrollerInitializedCallback.results, this, () => InitializeContainer());
+                    LogWarning(scrollerInitializedCallback.results, this);
             });
         }
 
