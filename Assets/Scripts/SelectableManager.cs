@@ -938,7 +938,7 @@ namespace Com.RedicalGames.Filar
         {
             switch (screenType)
             {
-                case AppData.UIScreenType.AssetCreationScreen:
+                case AppData.UIScreenType.ContentImportExportScreen:
 
                     sceneAssetInteractableMode = AppData.SceneAssetInteractableMode.Rotation;
 

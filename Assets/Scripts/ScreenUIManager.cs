@@ -55,16 +55,16 @@ namespace Com.RedicalGames.Filar
 
         void Awake() => SetupInstance();
 
-        void Start()
-        {
-            Init(initializationCallback => 
-            {
-                if (initializationCallback.Success())
-                    AppData.ActionEvents.OnAppScreensInitializedEvent();
-                else
-                    Log(initializationCallback.resultsCode, initializationCallback.results, this, () => Start());
-            });
-        }
+        //void Start()
+        //{
+        //    Init(initializationCallback => 
+        //    {
+        //        if (initializationCallback.Success())
+        //            AppData.ActionEvents.OnAppScreensInitializedEvent();
+        //        else
+        //            Log(initializationCallback.resultsCode, initializationCallback.results, this, () => Start());
+        //    });
+        //}
 
         void Update() => OnScreenTransition();
 
@@ -391,6 +391,47 @@ namespace Com.RedicalGames.Filar
             {
                 throw new Exception($"--> Unity - Failed To Show New Asset Screen  - With Exception : {exception}");
             }
+        }
+
+        public void OnAppBootScreen(AppData.SceneDataPackets initialDataPackets, AppData.UIScreenType bootScreenType, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            Init(initializationCallbackResults =>
+            {
+                callbackResults.results = initializationCallbackResults.results;
+                callbackResults.resultsCode = initializationCallbackResults.resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    AppData.LogInfoType bootScreenCallbackResultsCode = (bootScreenType != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
+                    string bootScreenCallbackResults = (bootScreenCallbackResultsCode == AppData.LogInfoType.Success) ? $"On App Boot State - Initial Boot Screen : {bootScreenType}" : $"On App Boot Failed : Boot Screen Type Is Not Yet Initialized / Set Tpo Default : {bootScreenType}.";
+
+                    callbackResults.results = bootScreenCallbackResults;
+                    callbackResults.resultsCode = bootScreenCallbackResultsCode;
+
+                    if (callbackResults.Success())
+                    {
+                        var bootScreen = initializationCallbackResults.data.Find(screen => screen.value.GetUIScreenType() == bootScreenType);
+
+                        AppData.Helpers.GetAppComponentValid(bootScreen, bootScreen.name, bootScreenValidCallbackResults => 
+                        {
+                            callbackResults.results = bootScreenValidCallbackResults.results;
+                            callbackResults.resultsCode = bootScreenValidCallbackResults.resultsCode;
+
+                            if (callbackResults.Success())
+                            {
+                                LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> Show Boot Screen : {bootScreen.name} - Screen Type : {bootScreenType}", this);
+                            }
+
+                        }, $"On App Boot Screen Failed - Boot Screen : {bootScreenType} Is Not Found / Missing / Null / Not Initialized In The Unity Inspector Panel.");
+
+                        AppData.ActionEvents.OnAppScreensInitializedEvent();
+                    }
+                }
+            });
+
+            callback?.Invoke(callbackResults);
         }
 
         public void ShowScreen(AppData.SceneDataPackets dataPackets) => OnTriggerShowScreenAsync(dataPackets, showScreenAsyncCallback => 
@@ -739,7 +780,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.UIScreenType.AssetCreationScreen:
+                        case AppData.UIScreenType.ContentImportExportScreen:
 
                             screen.value.DisplaySceneAssetInfo(screen, displaySeneAssetInfoCallback => 
                             {
