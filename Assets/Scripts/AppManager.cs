@@ -33,6 +33,10 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
+        AppData.UIScreenType appBootScreenType = AppData.UIScreenType.SplashScreen; 
+
+        [Space(5)]
+        [SerializeField]
         AppData.SceneDataPackets initialLoadDataPackets = new AppData.SceneDataPackets();
 
         [Space(5)]
@@ -161,7 +165,7 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents._OnAppScreensInitializedEvent -= ActionEvents__OnAppScreensInitializedEvent;
         }
 
-        private void ActionEvents__OnAppScreensInitializedEvent() => LoadInitialScreen();
+        private void ActionEvents__OnAppScreensInitializedEvent() => OnLoadAppInitializationBootScreen();
 
         public void StoragePermissionRequest()
         {
@@ -214,12 +218,17 @@ namespace Com.RedicalGames.Filar
             return initialLoadDataPackets.screenType;
         }
 
-        void LoadInitialScreen()
+        void OnLoadAppInitializationBootScreen()
         {
             AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
             {
                 if (validComponentCallbackResults.Success())
-                    ScreenUIManager.Instance.ShowScreen(initialLoadDataPackets);
+                {
+                    ScreenUIManager.Instance.OnAppBootScreen(initialLoadDataPackets, appBootScreenType, onAppBootCallbackResults => 
+                    {
+                        Log(onAppBootCallbackResults.resultsCode, $" <-----------------------------------> Show Splash Screen On Startup - Results : {onAppBootCallbackResults.results}", this);
+                    });
+                }
                 else
                     Log(validComponentCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
             });
