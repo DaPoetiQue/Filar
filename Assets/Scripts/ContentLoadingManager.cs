@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -42,15 +43,19 @@ namespace Com.RedicalGames.Filar
                     {
                         if (validComponentCallback.Success())
                         {
-                            SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, dataPacketsCallbackResults => 
+                            SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, async loadingScreenDataPacketsCallbackResults => 
                             {
-                                if (dataPacketsCallbackResults.Success())
+                                if (loadingScreenDataPacketsCallbackResults.Success())
                                 {
-                                    dataPackets.screenTransition = dataPacketsCallbackResults.data.dataPackets.screenTransition;
-                                    ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
+                                    await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data.dataPackets);
+
+                                    int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.SplashScreenDuration).value) / 2;
+                                    await Task.Delay(loadingScreenExitDelay);
+
+                                    await ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
                                 }
                                 else
-                                    Log(dataPacketsCallbackResults.resultsCode, dataPacketsCallbackResults.results, this);
+                                    Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);
                             });
                         }
                         else

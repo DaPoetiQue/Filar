@@ -13768,10 +13768,15 @@ namespace Com.RedicalGames.Filar
                                 {
                                     await faderComponent.FadeIn();
                                     OnScreenViewVisibility(false);
+
+                                    await Task.Yield();
+                                    faderComponent.SetFaderVisibilityValue(0.0f);
                                 }
                                 else
                                 {
-                                    OnScreenViewVisibility(true);
+                                    OnScreenViewVisibility(false);
+                                    faderComponent.SetFaderVisibilityValue(0.0f);
+
                                     callbackResults.results = $"On Hide Screen : {GetUIScreenType()} - With Fader Mode Results : {callbackResults.results}.";
                                     callbackResults.resultsCode = Helpers.SuccessCode;
                                 }
@@ -13782,7 +13787,7 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        OnScreenViewVisibility(true);
+                        OnScreenViewVisibility(false);
                         callbackResults.results = $"On Hide Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.results}.";
                         callbackResults.resultsCode = Helpers.SuccessCode;
                     }
