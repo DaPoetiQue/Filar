@@ -39,6 +39,8 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         RectTransform screenWidgetsContainer = null;
 
+        AppData.SceneDataPackets previousScreenData;
+
         float screenTransitionSpeed = 0.0f;
 
         AppData.ScreenLoadTransitionType transitionType = AppData.ScreenLoadTransitionType.None;
@@ -474,130 +476,79 @@ namespace Com.RedicalGames.Filar
 
             if (HasRequiredComponentsAssigned())
             {
-                GetScreenData(dataPackets, async screenFoundCallback =>
+                GetScreenData(dataPackets, screenFoundCallback =>
                 {
                     callbackResults = screenFoundCallback;
 
-                    await OnCheckIfScreenLoadedAsync(dataPackets, async screenLoadedCallbackResults =>
+                    if (callbackResults.Success())
                     {
-                        callbackResults.results = screenLoadedCallbackResults.results;
-                        callbackResults.resultsCode = screenLoadedCallbackResults.resultsCode;
+                        AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
 
-                        if (screenLoadedCallbackResults.Success())
+                        callbackResults.data.value.SetScreenData(dataPackets);
+                        SetCurrentScreenData(callbackResults.data);
+
+                        OnCheckIfScreenLoadedAsync(dataPackets, screenLoadedCallbackResults =>
                         {
-                            AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
-                        }
-                    });
+                            callbackResults.results = screenLoadedCallbackResults.results;
+                            callbackResults.resultsCode = screenLoadedCallbackResults.resultsCode;
 
+                            if (screenLoadedCallbackResults.data != null)
+                            {
+                                callbackResults.results = $"Screen : {dataPackets.screenType} Has Been Loaded Successfully.";
+                                callbackResults.data = screenLoadedCallbackResults.data;
+                            }
+                            else
+                            {
+                                callbackResults.results = $"Failed To Load Screen : {dataPackets.screenType}";
+                                callbackResults.data = default;
+                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            }
+
+                            if (callbackResults.Success())
+                                callbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, callbackResults.data.value.GetScreenTitle());
+                            else
+                                Log(callbackResults.resultsCode, callbackResults.results, this);
+                        });
+
+                        if (callbackResults.Success())
+                        {
+                            //OnUpdateUIScreenOnEnter(callbackResults.data, uiScreenUpdatedCallback =>
+                            //{
+                            //    callbackResults.results = uiScreenUpdatedCallback.results;
+                            //    callbackResults.resultsCode = uiScreenUpdatedCallback.resultsCode;
+
+                            //    if (callbackResults.Success())
+                            //    {
+                            //        screenFoundCallback.data.value.SetScreenData(dataPackets);
+                            //        SetCurrentScreenData(screenFoundCallback.data);
+
+                            //        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
+                            //        {
+                            //            if (screenWidgetsContainer != null)
+                            //            {
+                            //                targetScreenPoint = screenFoundCallback.data.value.GetScreenPosition();
+                            //                transitionType = dataPackets.screenTransition;
+                            //                screenTransitionSpeed = dataPackets.screenTransitionSpeed;
+                            //            }
+                            //            else
+                            //                LogWarning("Screen Widgets Container Required.", this);
+                            //        }
+                            //    }
+                            //});
+                        }
+                    }
                 });
 
                 await OnShowSelectedScreenViewAsync(callbackResults.data);
+
+                if (callbackResults.Success())
+                    AppData.ActionEvents.OnScreenChangeEvent(callbackResults.data.value.GetScreenData());
+                else
+                    Log(callbackResults.resultsCode, callbackResults.results, this);
             }
 
             return callbackResults;
 
-            //AppData.Callback callbackResults = new AppData.Callback();
-
-            //try
-            //{
-            //    if (SceneAssetsManager.Instance)
-            //    {
-            //        await OnCheckIfScreenLoadedAsync(dataPackets, async screenLoadedCallback =>
-            //        {
-            //            if (screenLoadedCallback.Success())
-            //            {
-            //                //await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
-
-            //                AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
-
-            //                if (HasRequiredComponentsAssigned())
-            //                {
-            //                    GetScreenData(dataPackets, async screenFoundCallback =>
-            //                    {
-            //                        if (screenFoundCallback.Success())
-            //                        {
-            //                            //return await OnShowSelectedScreenView(screenFoundCallback.data);
-
-            //                            //OnUpdateUIScreenOnEnter(screenFoundCallback.data, uiScreenUpdatedCallback =>
-            //                            //{
-            //                            //    if (AppData.Helpers.IsSuccessCode(uiScreenUpdatedCallback.resultsCode))
-            //                            //    {
-            //                            //        screenFoundCallback.data.value.SetScreenData(dataPackets);
-            //                            //        SetCurrentScreenData(screenFoundCallback.data);
-
-            //                            //        AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
-
-            //                            //        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
-            //                            //        {
-            //                            //            if (screenWidgetsContainer != null)
-            //                            //            {
-            //                            //                targetScreenPoint = screenFoundCallback.data.value.GetScreenPosition();
-            //                            //                transitionType = dataPackets.screenTransition;
-            //                            //                screenTransitionSpeed = dataPackets.screenTransitionSpeed;
-            //                            //            }
-            //                            //            else
-            //                            //                LogWarning("Screen Widgets Container Required.", this);
-            //                            //        }
-            //                            //    }
-            //                            //    else
-            //                            //    {
-            //                            //        callbackResults.results = uiScreenUpdatedCallback.results;
-            //                            //        callbackResults.resultsCode = uiScreenUpdatedCallback.resultsCode;
-            //                            //    }
-            //                            //});
-
-            //                            //screenFoundCallback.data.value.SetScreenData(dataPackets);
-            //                            //SetCurrentScreenData(screenFoundCallback.data);
-
-            //                            //screenFoundCallback.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "");
-
-            //                            //AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
-
-            //                            //callback?.Invoke(callbackResults);
-
-            //                            //if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Default)
-            //                            //    await HideScreen(AppData.UIScreenType.LoadingScreen);
-
-            //                            //if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
-            //                            //{
-            //                            //    if (screenWidgetsContainer != null)
-            //                            //    {
-            //                            //        targetScreenPoint = screenFoundCallback.data.value.GetScreenPosition();
-            //                            //        transitionType = dataPackets.screenTransition;
-            //                            //        screenTransitionSpeed = dataPackets.screenTransitionSpeed;
-            //                            //    }
-            //                            //    else
-            //                            //        LogWarning("Screen Widgets Container Required.", this);
-            //                            //}
-            //                        }
-            //                    });
-            //                }
-            //                else
-            //                {
-            //                    callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
-            //                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            //                }
-
-            //                callbackResults.results = $"Screen Of Type : {dataPackets.screenType} Has Been Loaded Successfully";
-            //                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            //            }
-            //            else
-            //                callbackResults = screenLoadedCallback;
-            //        });
-            //    }
-            //    else
-            //    {
-            //        callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
-            //        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-            //    }
-            //}
-            //catch (Exception exception)
-            //{
-            //    ThrowException(AppData.LogExceptionType.NullReference, exception, this, "ShowScreen(AppData.SceneDataPackets dataPackets)");
-            //    //throw new Exception($"--> RG_Unity - Unity - Failed To Show Screen Type : {dataPackets.ToString()} - With Exception Results : {exception}");
-            //}
-
-            //callback?.Invoke(callbackResults);
         }
 
         public async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnShowSelectedScreenViewAsync(AppData.UIScreenViewComponent screen)
@@ -637,17 +588,44 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        async Task OnCheckIfScreenLoadedAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
+        void CachePreviousScreenData(AppData.SceneDataPackets screenDataPackets) => previousScreenData = screenDataPackets;
 
-            if (GetScreenData(dataPackets) != null && GetScreenData(dataPackets).value != null)
+        AppData.CallbackData<AppData.SceneDataPackets> GetPreviousCachedScreenData()
+        {
+            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+
+            if(previousScreenData != null)
             {
-                callbackResults.results = $"Screen Of Type : {dataPackets.screenType} Found.";
+                callbackResults.results = "Previous Screen : Data Loaded Successfully.";
+                callbackResults.data = previousScreenData;
                 callbackResults.resultsCode = AppData.Helpers.SuccessCode;
             }
             else
-                await AppData.Helpers.GetWaitForSecondAsync(100);
+            {
+                callbackResults.results = "Previous Screen Data Not Initialized Yet - Get Previous Loaded Screen Data Failed.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
+
+            return callbackResults;
+        }
+
+        void OnCheckIfScreenLoadedAsync(AppData.SceneDataPackets dataPackets, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback = null)
+        {
+            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+
+            if (GetScreenData(dataPackets) != null && GetScreenData(dataPackets).value != null && dataPackets.screenType == GetCurrentUIScreenType())
+            {
+                callbackResults.results = $"Screen Of Type : {GetCurrentUIScreenType()} Loaded Successfully.";
+                callbackResults.data = GetScreenData(dataPackets);
+                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.results = $"Screen : {dataPackets.screenType} Failed To Load.";
+                callbackResults.data = default;
+                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+            }
 
             callback?.Invoke(callbackResults);
         }
@@ -1025,7 +1003,7 @@ namespace Com.RedicalGames.Filar
 
         public AppData.SceneDataPackets GetScreenData()
         {
-            return currentScreen.value.GetScreenData();
+            return currentScreen?.value?.GetScreenData();
         }
 
         public void SetCurrentScreenData(AppData.UIScreenViewComponent screenData)
