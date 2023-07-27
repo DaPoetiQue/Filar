@@ -234,7 +234,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data.dataPackets);
 
-                                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == AppData.UIScreenType.LandingPageScreen)
+                                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == AppData.UIScreenType.LoadingScreen)
                                             {
                                                 AppData.Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, validContentLoadingManagerComponentCallback =>
                                                 {
@@ -244,6 +244,8 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             if (loadedInitialDataPacketsCallbackResults.Success())
                                                             {
+                                                                LogInfo($" <<<<<<<<<<<>>>>>>>>>>>>>>>><<<< Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} - Transition : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
+
                                                                 if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
                                                                 {
 
@@ -256,9 +258,7 @@ namespace Com.RedicalGames.Filar
                                                             else
                                                                 Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
                                                         });
-
-                                                    //SetCurrentScreenData(screenFoundCallbackResults.data);
-                                                }
+                                                    }
                                                     else
                                                         Log(validContentLoadingManagerComponentCallback.resultsCode, validContentLoadingManagerComponentCallback.results, this);
                                                 }, "Content Loading Manager Is Not Yet Initialized.");
