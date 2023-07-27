@@ -47,7 +47,7 @@ namespace Com.RedicalGames.Filar
                                 if (dataPacketsCallbackResults.Success())
                                 {
                                     dataPackets.screenTransition = dataPacketsCallbackResults.data.dataPackets.screenTransition;
-                                    ScreenUIManager.Instance.ShowScreen(dataPackets);
+                                    ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
                                 }
                                 else
                                     Log(dataPacketsCallbackResults.resultsCode, dataPacketsCallbackResults.results, this);
