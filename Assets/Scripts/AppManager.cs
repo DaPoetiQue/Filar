@@ -218,12 +218,12 @@ namespace Com.RedicalGames.Filar
                                 {
                                     await ScreenUIManager.Instance.ShowScreenAsync(onAppBootCallbackResults.data);
 
-                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.SplashScreenDuration).value);
+                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnSplashScreenExitDelay).value);
                                     await Task.Delay(splashScreenDuration);
 
                                     await ScreenUIManager.Instance.HideScreenAsync(onAppBootCallbackResults.data);
 
-                                    int appLoadDelayedDuration = splashScreenDuration / 2;
+                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
                                     await Task.Delay(appLoadDelayedDuration);
 
                                     #region Trigger Loading Manager
