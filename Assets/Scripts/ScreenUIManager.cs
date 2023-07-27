@@ -82,7 +82,7 @@ namespace Com.RedicalGames.Filar
             _instance = this;
         }
 
-        void Init(Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
+        void OnAppInit(Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
         {
             AppData.CallbackDataList<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>();
 
@@ -393,11 +393,11 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void OnAppBootScreen(AppData.SceneDataPackets initialDataPackets, AppData.UIScreenType bootScreenType, Action<AppData.Callback> callback = null)
+        public void OnAppBootScreen(AppData.UIScreenType bootScreenType, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
 
-            Init(initializationCallbackResults =>
+            OnAppInit(initializationCallbackResults =>
             {
                 callbackResults.results = initializationCallbackResults.results;
                 callbackResults.resultsCode = initializationCallbackResults.resultsCode;
@@ -421,8 +421,33 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> Show Boot Screen : {bootScreen.name} - Screen Type : {bootScreenType}", this);
+                                AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, hasAssetsManagerCallbackResults =>
+                                {
+                                    callbackResults.results = hasAssetsManagerCallbackResults.results;
+                                    callbackResults.resultsCode = hasAssetsManagerCallbackResults.resultsCode;
+
+                                    if (callbackResults.Success())
+                                    {
+                                        SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(bootScreenType, bootScreenDataPacketsCallbackResults => 
+                                        {
+                                            callbackResults.results = bootScreenDataPacketsCallbackResults.results;
+                                            callbackResults.resultsCode = bootScreenDataPacketsCallbackResults.resultsCode;
+
+                                            if (callbackResults.Success())
+                                                callbackResults.results = $"App Initial Boot Screen : {bootScreenType} Data Packets Have Been Loaded Successfully - Show Boot Screen : {bootScreenType} Now.";
+                                            else
+                                                callbackResults.results = $"Failed To Load App Initial Boot Screen : {bootScreenType}'s Data Packets - Results : {callbackResults.results}";
+                                        });
+                                    }
+                                    else
+                                        callbackResults.results = $"On App Boot Screen Failed With Results : {callbackResults.results}.";
+
+                                }, $"On App Boot Screen Failed - Scene Assets Manager Instance Is Not Yet Initialized.");
+
+                                callbackResults.results = $" On App Boot Screen Success - Trigger On Show Boot Screen : {bootScreen.name} - Screen Type : {bootScreenType}";
                             }
+                            else
+                                callbackResults.results = $"On App Boot Screen Failed With Results : {callbackResults.results}.";
 
                         }, $"On App Boot Screen Failed - Boot Screen : {bootScreenType} Is Not Found / Missing / Null / Not Initialized In The Unity Inspector Panel.");
 
