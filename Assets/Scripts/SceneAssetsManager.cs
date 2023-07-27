@@ -5426,11 +5426,106 @@ namespace Com.RedicalGames.Filar
                 return null;
             }
         }
+        #region App Time Data
 
         public AppData.RuntimeValue<float> GetDefaultExecutionValue(AppData.RuntimeValueType valueType)
         {
             return defaultExecutionTimes.Find((x) => x.valueType == valueType);
         }
+
+        public AppData.RuntimeValue<float> GetDefaultScreenFadeExecutionValue(AppData.UIScreenType screenType, UIScreenFadeDirection direction)
+        {
+            AppData.RuntimeValueType valueType = AppData.RuntimeValueType.None;
+
+            if (screenType != AppData.UIScreenType.None && direction != UIScreenFadeDirection.None)
+            {
+                switch (screenType)
+                {
+                    case AppData.UIScreenType.SplashScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.SplashScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.SplashScreenFadeOutDuration;
+
+                        break;
+
+                    case AppData.UIScreenType.LoadingScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.LoadingScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.LoadingScreenFadeOutDuration;
+
+                        break;
+
+                    case AppData.UIScreenType.LandingPageScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.LandingPageScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.LandingPageScreenFadeOutDuration;
+
+                        break;
+
+                    case AppData.UIScreenType.ProjectSelectionScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.ProjectSelectionScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.ProjectSelectionScreenFadeOutDuration;
+
+                        break;
+
+                    case AppData.UIScreenType.ProjectViewScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.ProjectViewScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.ProjectViewScreenFadeOutDuration;
+
+                        break;
+
+                    case AppData.UIScreenType.ContentImportExportScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.ContentImportExportScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.ContentImportExportScreenFadeOutDuration;
+
+                        break;
+
+                    case AppData.UIScreenType.ARViewScreen:
+
+                        if (direction == UIScreenFadeDirection.FadeIn)
+                            valueType = AppData.RuntimeValueType.ARViewScreenFadeInDuration;
+
+                        if (direction == UIScreenFadeDirection.FadeOut)
+                            valueType = AppData.RuntimeValueType.ARViewScreenFadeOutDuration;
+
+                        break;
+                }
+            }
+            else
+                throw new Exception($"Get Default Screen Fade Execution Value Failed : Screen Type : {screenType} - Direction Type : {direction}");
+
+            return defaultExecutionTimes.Find((x) => x.valueType == valueType);
+        }
+
+        public enum UIScreenFadeDirection
+        {
+            None,
+            FadeIn,
+            FadeOut
+        }
+
+        #endregion
 
         #region Searching
 
