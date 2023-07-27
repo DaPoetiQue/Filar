@@ -238,79 +238,109 @@ namespace Com.RedicalGames.Filar
 
             #region Directories
 
-            if (defaultDirectories == null)
-            {
-                callbackResults.results = "App Default Directories Missing.";
-                callbackResults.resultsCode = AppData.Helpers.WarningCode;
+            AppData.LogInfoType storageResultsCode = (defaultDirectories != null && defaultDirectories.Count > 0) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
+            string storageResults = (storageResultsCode == AppData.Helpers.SuccessCode) ? $"Initializing App With : { defaultDirectories.Count } Storage Directories" : "App Directories Data Missing / Null / Not Yet Initialized In The Unity Inspector Panel.";
 
-                callback?.Invoke(callbackResults);
-            }
+            callbackResults.results = storageResults;
+            callbackResults.resultsCode = storageResultsCode;
 
-            foreach (var directory in defaultDirectories)
+            if (callbackResults.Success())
             {
-                if (directory.type != AppData.DirectoryType.None)
+                foreach (var directory in defaultDirectories)
                 {
-                    string path = defaultAppDirectoryFolderName + "/" + directory.type.ToString();
-
-                    string directoryPath = directoryPath = Application.productName;
-                    string defaultDirectory = String.Empty;
-
-                    if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+                    if (directory.type != AppData.DirectoryType.None)
                     {
-                        defaultDirectory = Path.Combine(directoryPath, path);
-                    }
-                    else
-                    {
-                        defaultDirectory = Path.Combine(Application.dataPath, path);
-                    }
+                        string path = defaultAppDirectoryFolderName + "/" + directory.type.ToString();
 
-                    string formattedDirectory = defaultDirectory.Replace("\\", "/");
+                        string directoryPath = directoryPath = Application.productName;
+                        string defaultDirectory = String.Empty;
 
-                    // Create a new default storage path
-                    AppData.StorageDirectoryData appDirectory = new AppData.StorageDirectoryData
-                    {
-                        name = directory.name,
-                        directory = formattedDirectory,
-                        type = directory.type
-                    };
-
-                    if (!Directory.Exists(formattedDirectory))
-                    {
-                        CreateDirectory(appDirectory, (directoryCreatedCallbackResults) =>
+                        if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
                         {
-                            callbackResults.results = directoryCreatedCallbackResults.results;
-                            callbackResults.resultsCode = directoryCreatedCallbackResults.resultsCode;
+                            defaultDirectory = Path.Combine(directoryPath, path);
+                        }
+                        else
+                        {
+                            defaultDirectory = Path.Combine(Application.dataPath, path);
+                        }
 
-                            if (callbackResults.Success())
+                        string formattedDirectory = defaultDirectory.Replace("\\", "/");
+
+                        // Create a new default storage path
+                        AppData.StorageDirectoryData appDirectory = new AppData.StorageDirectoryData
+                        {
+                            name = directory.name,
+                            directory = formattedDirectory,
+                            type = directory.type
+                        };
+
+                        AppData.LogInfoType storageDoesntExistsResultsCode = (!Directory.Exists(formattedDirectory)) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
+                        string storageDoesntExistsResults = (storageDoesntExistsResultsCode == AppData.LogInfoType.Success) ? $"Creating New App Storage Directory : {formattedDirectory}" : $"App Storage Directory { formattedDirectory } Already Exists";
+
+                        callbackResults.results = storageDoesntExistsResults;
+                        callbackResults.resultsCode = storageDoesntExistsResultsCode;
+
+                        if (callbackResults.Success())
+                        {
+                            CreateDirectory(appDirectory, (directoryCreatedCallbackResults) =>
                             {
-                                if (!appDirectories.Contains(appDirectory))
+                                callbackResults.results = directoryCreatedCallbackResults.results;
+                                callbackResults.resultsCode = directoryCreatedCallbackResults.resultsCode;
+
+                                if (callbackResults.Success())
                                 {
-                                    appDirectories.Add(appDirectory);
-                                    callbackResults.results = $"Created And Added Directory : {directory} To App Directories.";
+                                    if (!appDirectories.Contains(appDirectory))
+                                    {
+                                        appDirectories.Add(appDirectory);
+                                        callbackResults.results = $"Created And Added Directory : {directory} To App Directories.";
+                                    }
+                                    else
+                                        callbackResults.results = $"Directory : {directory} Already Exist In App Directories.";
                                 }
                                 else
-                                    callbackResults.results = $"Directory : {directory} Already Exist In App Directories.";
+                                {
+                                    callbackResults.results = $"Failed To Create Directory : {directory}";
+                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                }
+                            });
+                        }
+                        else
+                        {
+                            if (!appDirectories.Contains(appDirectory))
+                            {
+                                appDirectories.Add(appDirectory);
+
+                                callbackResults.results = $"App Storage Directory : {appDirectory} Exists But It's Info Is Not Added To App Directories - Added App Directory : {appDirectory} To App Directories.";
+                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = $"Failed To Create Directory : {directory}";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.results = $"App Storage Directory : {appDirectory} Already Exists And It's Info Has Been Added To App Directories.";
+                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
                             }
-                        });
+                        }
                     }
                     else
                     {
-                        if (!appDirectories.Contains(appDirectory))
-                        {
-                            appDirectories.Add(appDirectory);
-                            callbackResults.results = $"Added Existing Directory : {appDirectory} To App Directories.";
-                        }
+                        callbackResults.results = $"App Storage Directory Data Failed To Be Initialized - Storage Data At Index : {defaultDirectories.IndexOf(directory)} Is Set To default : {directory.type}.";
+                        callbackResults.resultsCode = AppData.Helpers.WarningCode;
+
+                        break;
                     }
                 }
-                else
+
+                if(callbackResults.Success())
                 {
-                    callbackResults.results = "App Data Path Set To None.";
-                    callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                    AppData.Helpers.ListComponentHasEqualDataSize<AppData.StorageDirectoryData, AppData.StorageDirectoryData>(appDirectories, defaultDirectories, hasEqualComponentsCallbackResults => 
+                    {
+                        callbackResults.results = hasEqualComponentsCallbackResults.results;
+                        callbackResults.resultsCode = hasEqualComponentsCallbackResults.resultsCode;
+
+                        if (callbackResults.Success())
+                            callbackResults.results = $" {appDirectories.Count} : App Directory Storage Data(s) Has Been Initialized Successfully";
+                        else
+                            callbackResults.results = $"Failed To Initialize App Storage Directory Data With Results : {callbackResults.results}";
+                    });
                 }
             }
 
@@ -1932,10 +1962,36 @@ namespace Com.RedicalGames.Filar
             this.newAssetName = newAssetName;
         }
 
-        public void SetCurrentProjectStructureData(AppData.ProjectStructureData structureData = null)
+        public void SetCurrentProjectStructureData(AppData.ProjectStructureData structureData = null, Action<AppData.Callback> callback = null)
         {
+            AppData.Callback callbackResults = new AppData.Callback();
+
             currentProjectStructureData = structureData;
             SetCurrentFolder(currentProjectStructureData.rootFolder);
+
+            AppData.Helpers.GetAppComponentValid(currentProjectStructureData, currentProjectStructureData.name, hasProjectStructureDataCallbackResults =>
+            {
+                callbackResults.results = hasProjectStructureDataCallbackResults.results;
+                callbackResults.resultsCode = hasProjectStructureDataCallbackResults.resultsCode;
+
+                if(callbackResults.Success())
+                {
+                    AppData.Helpers.GetAppComponentValid(currentFolder, currentFolder.name, hasCurrentFolderCallbackResults =>
+                    {
+                        callbackResults.results = hasCurrentFolderCallbackResults.results;
+                        callbackResults.resultsCode = hasCurrentFolderCallbackResults.resultsCode;
+
+                        if (callbackResults.Success())
+                            callbackResults.results = "App Project Structure Data Has Been Initialized Successfully On Load.";
+                        else
+                            callbackResults.results = $"App Project Structure Data Initialization Failed On Load With Results : {callbackResults.results}.";
+
+                    }, "On App Manager Initialization's Set Current Folder Failed - Current Folder Missing / Null / Not Yet Initialized On Load.");
+                }
+
+            }, "On App Manager Initialization's Set Current Project Structure Data Failed - Current Project Structure Data Missing / Null / Not Yet Initialized On Load.");
+
+            callback?.Invoke(callbackResults);
         }
 
         public AppData.CallbackData<AppData.ProjectStructureData> GetCurrentProjectStructureData()

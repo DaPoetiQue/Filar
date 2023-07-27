@@ -25515,66 +25515,6 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public static void ListComponentHasEqualDataSize<T, U>(List<T> valueA, List<U> valueB, Action<CallbackSizeDataTuple<T, U, int>> callback)
-            {
-                CallbackSizeDataTuple<T, U, int> callbackResults = new CallbackSizeDataTuple<T, U, int>();
- 
-                if (valueA != null && valueA.Count > 0)
-                {
-                    if (valueB != null && valueB.Count > 0)
-                    {
-                        string valueA_ID = valueA[0].GetType().ToString();
-                        string valueB_ID = valueB[0].GetType().ToString();
-
-                        if (valueA.Count.Equals(valueB.Count))
-                        {
-                            callbackResults.results = $"List Component Value_A Of ID Type : {valueA_ID} Is Equal To List Component Value_B Of ID Type : {valueB_ID} With : {valueA.Count} Item(s).";
-
-                            callbackResults.tuple_A = valueA;
-                            callbackResults.tuple_B = valueB;
-                            callbackResults.tuple_C = valueA.Count;
-
-                            callbackResults.resultsCode = SuccessCode;
-                        }
-                        else
-                        {
-                            string greaterValue = (valueA.Count > valueB.Count) ? $"Value_A : {valueA_ID} Is Greater Than Value_B" : $"Value_B : {valueB_ID} Is Greater Than Value_A";
-
-                            callbackResults.results = $"List Components Don't Have Equal Values : {greaterValue}. - Value_A : {valueA.Count} - Value B : {valueB.Count}";
-
-                            callbackResults.tuple_A = default;
-                            callbackResults.tuple_B = default;
-                            callbackResults.tuple_C = default;
-
-                            callbackResults.resultsCode = ErrorCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.results = "List Component Value_B Is Null / Empty.";
-
-                        callbackResults.tuple_A = default;
-                        callbackResults.tuple_B = default;
-                        callbackResults.tuple_C = default;
-
-                        callbackResults.resultsCode = ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.results = "List Component Value_A Is Null / Empty.";
-
-
-                    callbackResults.tuple_A = default;
-                    callbackResults.tuple_B = default;
-                    callbackResults.tuple_C = default;
-
-                    callbackResults.resultsCode = ErrorCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
             public static void ListComponentHasEqualDataSize<T>(List<T> valueA, List<T> valueB, Action<CallbackSizeDataTuple<T>> callback)
             {
                 CallbackSizeDataTuple<T> callbackResults = new CallbackSizeDataTuple<T>();
