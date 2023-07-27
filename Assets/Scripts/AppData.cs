@@ -23720,6 +23720,9 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public ScreenFadeModeType mode;
 
+            [Space(5)]
+            public List<CanvasGroup> fadableComponentList = new List<CanvasGroup>();
+
             UIScreenType screenType;
             UIScreenWidgetVisibilityState initialVisibilityState;
 
@@ -23783,7 +23786,10 @@ namespace Com.RedicalGames.Filar
                 if (fadeDirection == fadeOut)
                 {
                     if (GetActiveFader().data.alpha > hidden)
+                    {
                         GetActiveFader().data.alpha -= SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeOut).value * Time.deltaTime;
+                        OnFadeComponents(GetActiveFader().data.alpha);
+                    }
                     else
                         canFade = false;
                 }
@@ -23791,7 +23797,10 @@ namespace Com.RedicalGames.Filar
                 if (fadeDirection == fadeIn)
                 {
                     if (GetActiveFader().data.alpha < visible)
+                    {
                         GetActiveFader().data.alpha += SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeIn).value * Time.deltaTime;
+                        OnFadeComponents(GetActiveFader().data.alpha);
+                    }
                     else
                         canFade = false;
                 }
@@ -23893,6 +23902,13 @@ namespace Com.RedicalGames.Filar
                     value.alpha = opacity;
                 else
                     Log(OnViewFaderInitialized().resultsCode, OnViewFaderInitialized().results, this);
+            }
+
+            void OnFadeComponents(float alpha)
+            {
+                if(fadableComponentList != null && fadableComponentList.Count > 0)
+                    for (int i = 0; i < fadableComponentList.Count; i++)
+                        fadableComponentList[i].alpha = alpha;
             }
 
             public CallbackData<float> GetOpacity()
@@ -25148,7 +25164,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void GetAppComponentValid<T>(T component, string name = null, Action<CallbackData<T>> callback = null, string faileOperactionFallbackResults = null)
+            public static void GetAppComponentValid<T>(T component, string name = null, Action<CallbackData<T>> callback = null, string failedOperactionFallbackResults = null)
             {
                 CallbackData<T> callbackResults = new CallbackData<T>();
 
@@ -25159,13 +25175,33 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    string results = (faileOperactionFallbackResults != null) ? faileOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+                    string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
                     callbackResults.resultsCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
+            }
+
+            public static CallbackData<T> GetAppComponentValid<T>(T component, string name = null, string failedOperactionFallbackResults = null)
+            {
+                CallbackData<T> callbackResults = new CallbackData<T>();
+
+                if (component != null)
+                {
+                    callbackResults.results = $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.results = results;
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public static void ProjectDataComponentValid<T>(T component, Action<Callback> callback) where T : ProjectData
