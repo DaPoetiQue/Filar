@@ -749,7 +749,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch(screen.value.GetUIScreenType())
                     {
-                        case AppData.UIScreenType.ProjectViewScreen:
+                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                             if(SceneAssetsManager.Instance.GetWidgetsContentCount() == 0)
                                 screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
@@ -877,11 +877,11 @@ namespace Com.RedicalGames.Filar
                                 {
                                     switch (hasContentCallbackResults.data)
                                     {
-                                        case AppData.UIScreenType.ProjectDashboardScreen:
+                                        case AppData.UIScreenType.ProjectCreationScreen:
 
                                             break;
 
-                                        case AppData.UIScreenType.ProjectViewScreen:
+                                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                                             SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
                                             {
@@ -937,7 +937,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                         {
-                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectDashboardScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
+                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
                             var container = containerCallbackResults.data;
 
                             SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
