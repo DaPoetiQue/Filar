@@ -502,10 +502,10 @@ namespace Com.RedicalGames.Filar
         public enum UIScreenType
         {
             None,
-            ProjectViewScreen,
+            ProjectDashboardScreen,
             ContentImportExportScreen,
             ARViewScreen,
-            ProjectDashboardScreen,
+            ProjectCreationScreen,
             LandingPageScreen,
             LoadingScreen,
             SplashScreen
@@ -682,10 +682,10 @@ namespace Com.RedicalGames.Filar
             LoadingScreenFadeOutDuration,
             LandingPageScreenFadeInDuration,
             LandingPageScreenFadeOutDuration,
-            ProjectSelectionScreenFadeInDuration,
-            ProjectSelectionScreenFadeOutDuration,
-            ProjectViewScreenFadeInDuration,
-            ProjectViewScreenFadeOutDuration,
+            ProjectCreationScreenFadeInDuration,
+            ProjectCreationScreenFadeOutDuration,
+            ProjectDashboardScreenFadeInDuration,
+            ProjectDashboardScreenFadeOutDuration,
             ContentImportExportScreenFadeInDuration,
             ContentImportExportScreenFadeOutDuration,
             ARViewScreenFadeInDuration,
@@ -1681,7 +1681,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                         {
-                            case UIScreenType.ProjectDashboardScreen:
+                            case UIScreenType.ProjectCreationScreen:
 
                                 callbackResults.results = $"Found Filter Of Type : {categoryType}.";
                                 callbackResults.data = categoryType;
@@ -1689,7 +1689,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case UIScreenType.ProjectViewScreen:
+                            case UIScreenType.ProjectDashboardScreen:
 
                                 callbackResults.results = $"Found Filter Of Type : {categoryType}.";
                                 callbackResults.data = categoryType;
@@ -1840,7 +1840,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                         {
-                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == UIScreenType.ProjectDashboardScreen)
+                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == UIScreenType.ProjectCreationScreen)
                             {
                                 GetProjectInfo().SetCategoryType((ProjectCategoryType)filterType);
 
@@ -14653,7 +14653,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         switch (ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
                                         {
-                                            case UIScreenType.ProjectDashboardScreen:
+                                            case UIScreenType.ProjectCreationScreen:
 
                                                 switch (actionType)
                                                 {
@@ -14693,7 +14693,7 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                                                     {
-                                                                        case UIScreenType.ProjectDashboardScreen:
+                                                                        case UIScreenType.ProjectCreationScreen:
 
                                                                             if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                                                                 dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
@@ -14759,7 +14759,7 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                                                     {
-                                                                        case UIScreenType.ProjectDashboardScreen:
+                                                                        case UIScreenType.ProjectCreationScreen:
 
                                                                             if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                                                             {
@@ -14810,7 +14810,7 @@ namespace Com.RedicalGames.Filar
 
                                                 break;
 
-                                            case UIScreenType.ProjectViewScreen:
+                                            case UIScreenType.ProjectDashboardScreen:
 
                                                 LogInfo($"===========>>>>>>>>>>> Setup : {actionType} Dropdown With : {contentGroup.contents.Count} Content(s).", this);
 
@@ -17991,7 +17991,7 @@ namespace Com.RedicalGames.Filar
                         {
                             message = "Picture Discarded Successfully",
                             notificationType = NotificationType.Info,
-                            screenType = UIScreenType.ProjectViewScreen,
+                            screenType = UIScreenType.ProjectDashboardScreen,
                             screenPosition = SceneAssetPivot.TopCenter,
                             blurScreen = true,
                             delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.NotificationDelay).value,
@@ -18492,7 +18492,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectViewScreen)
+                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                     {
                         SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
                         {
@@ -18513,7 +18513,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectViewScreen)
+                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                     {
                         SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
                         {
@@ -18540,7 +18540,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch(ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
                         {
-                            case UIScreenType.ProjectDashboardScreen:
+                            case UIScreenType.ProjectCreationScreen:
 
                                 if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
                                 {
@@ -18558,7 +18558,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case UIScreenType.ProjectViewScreen:
+                            case UIScreenType.ProjectDashboardScreen:
 
                                 if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
                                 {

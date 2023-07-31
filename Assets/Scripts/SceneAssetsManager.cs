@@ -2022,7 +2022,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectViewScreen)
+                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectDashboardScreen)
                     {
                         SetCurrentFolder(folder);
 
@@ -2418,7 +2418,7 @@ namespace Com.RedicalGames.Filar
                 {
                     contentContainer.InitializeContainer();
 
-                    if (screenType == AppData.UIScreenType.ProjectDashboardScreen)
+                    if (screenType == AppData.UIScreenType.ProjectCreationScreen)
                     {
                         GetSortedProjectWidgetList(projectData, sortedListCallbackResults =>
                         {
@@ -2573,7 +2573,7 @@ namespace Com.RedicalGames.Filar
 
                     switch (screenType)
                     {
-                        case AppData.UIScreenType.ProjectViewScreen:
+                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                             LoadFolderData(foldersDirectoryList, (foldersLoaded) =>
                             {
@@ -2689,7 +2689,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (screenType)
                     {
-                        case AppData.UIScreenType.ProjectViewScreen:
+                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                             LoadSceneAssets(folder, (loadedAssetsResults) =>
                             {
@@ -2867,7 +2867,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (screenType)
                     {
-                        case AppData.UIScreenType.ProjectViewScreen:
+                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                             LoadSceneAssets(filesDirectoryList, (loadedAssetsResults) =>
                             {
@@ -3804,7 +3804,7 @@ namespace Com.RedicalGames.Filar
             {
                 switch (screenType)
                 {
-                    case AppData.UIScreenType.ProjectDashboardScreen:
+                    case AppData.UIScreenType.ProjectCreationScreen:
 
                         callbackResults.results = GetProjectRootStructureData().results;
                         callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
@@ -3817,7 +3817,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ProjectViewScreen:
+                    case AppData.UIScreenType.ProjectDashboardScreen:
 
                         callbackResults.results = $"Found Root Folder : {GetCurrentFolder().name} For Screen : {screenType}";
                         callbackResults.data = GetCurrentFolder();
@@ -3847,7 +3847,7 @@ namespace Com.RedicalGames.Filar
                         {
                             switch (dataPackets.screenType)
                             {
-                                case AppData.UIScreenType.ProjectDashboardScreen:
+                                case AppData.UIScreenType.ProjectCreationScreen:
 
                                     widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
                                     {
@@ -3872,7 +3872,7 @@ namespace Com.RedicalGames.Filar
 
                                                     SetCurrentFolder(folder);
 
-                                                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectDashboardScreen)
+                                                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectCreationScreen)
                                                     {
                                                         CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), structureLoadedCallbackResults.data, widgetsContainer, createProjectWidgetCallback =>
                                                         {
@@ -3972,7 +3972,7 @@ namespace Com.RedicalGames.Filar
 
                                     break;
 
-                                case AppData.UIScreenType.ProjectViewScreen:
+                                case AppData.UIScreenType.ProjectDashboardScreen:
 
                                     widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
                                     {
@@ -4290,13 +4290,13 @@ namespace Com.RedicalGames.Filar
 
             switch(screenType)
             {
-                case AppData.UIScreenType.ProjectDashboardScreen:
+                case AppData.UIScreenType.ProjectCreationScreen:
 
                     containerType = AppData.ContentContainerType.ProjectSelectionContent;
 
                     break;
 
-                case AppData.UIScreenType.ProjectViewScreen:
+                case AppData.UIScreenType.ProjectDashboardScreen:
 
                     containerType = AppData.ContentContainerType.FolderStuctureContent;
 
@@ -5471,23 +5471,23 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ProjectDashboardScreen:
+                    case AppData.UIScreenType.ProjectCreationScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.ProjectSelectionScreenFadeInDuration;
+                            valueType = AppData.RuntimeValueType.ProjectCreationScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.ProjectSelectionScreenFadeOutDuration;
+                            valueType = AppData.RuntimeValueType.ProjectCreationScreenFadeOutDuration;
 
                         break;
 
-                    case AppData.UIScreenType.ProjectViewScreen:
+                    case AppData.UIScreenType.ProjectDashboardScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.ProjectViewScreenFadeInDuration;
+                            valueType = AppData.RuntimeValueType.ProjectDashboardScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.ProjectViewScreenFadeOutDuration;
+                            valueType = AppData.RuntimeValueType.ProjectDashboardScreenFadeOutDuration;
 
                         break;
 
@@ -5550,7 +5550,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                     {
-                                        case AppData.UIScreenType.ProjectDashboardScreen:
+                                        case AppData.UIScreenType.ProjectCreationScreen:
 
                                             #region Serach For Projects Files
 
@@ -5707,7 +5707,7 @@ namespace Com.RedicalGames.Filar
 
                                             break;
 
-                                        case AppData.UIScreenType.ProjectViewScreen:
+                                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                                             #region Search For Files And Folders
 
@@ -5984,7 +5984,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                         {
-                            case AppData.UIScreenType.ProjectDashboardScreen:
+                            case AppData.UIScreenType.ProjectCreationScreen:
 
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Enabled);
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Enabled);
@@ -5992,7 +5992,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case AppData.UIScreenType.ProjectViewScreen:
+                            case AppData.UIScreenType.ProjectDashboardScreen:
 
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Enabled);
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
@@ -6582,7 +6582,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 switch (currentScreenCallbackResults.data.value.GetUIScreenType())
                                 {
-                                    case AppData.UIScreenType.ProjectDashboardScreen:
+                                    case AppData.UIScreenType.ProjectCreationScreen:
 
                                         GetDropdownContentTypeFromIndex<AppData.ProjectCategoryType>(filterIndex, enumCallbackResults =>
                                         {
@@ -6856,7 +6856,7 @@ namespace Com.RedicalGames.Filar
 
                                         break;
 
-                                    case AppData.UIScreenType.ProjectViewScreen:
+                                    case AppData.UIScreenType.ProjectDashboardScreen:
 
                                         GetDropdownContentTypeFromIndex<AppData.AssetCategoryType>(filterIndex, enumCallbackResults =>
                                         {
