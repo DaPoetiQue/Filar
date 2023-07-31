@@ -944,7 +944,7 @@ namespace Com.RedicalGames.Filar
 
                     break;
 
-                case AppData.UIScreenType.ProjectViewScreen:
+                case AppData.UIScreenType.ProjectDashboardScreen:
 
                     // Reset Preview Pose.
                     AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
@@ -1238,7 +1238,7 @@ namespace Com.RedicalGames.Filar
         {
             switch (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType())
             {
-                case AppData.UIScreenType.ProjectViewScreen:
+                case AppData.UIScreenType.ProjectDashboardScreen:
 
                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, state);
                     ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, state);

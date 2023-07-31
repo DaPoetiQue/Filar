@@ -290,7 +290,7 @@ namespace Com.RedicalGames.Filar
                 {
                     message = "Skybox Created Successfully.",
                     notificationType = AppData.NotificationType.Info,
-                    screenType = AppData.UIScreenType.ProjectViewScreen,
+                    screenType = AppData.UIScreenType.ProjectDashboardScreen,
                     screenPosition = AppData.SceneAssetPivot.TopCenter,
                     delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.NotificationDelay).value,
                     duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.NotificationDuration).value // Get From Value List In Scene Assets Manager.
