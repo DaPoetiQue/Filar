@@ -1014,6 +1014,16 @@ namespace Com.RedicalGames.Filar
             ProjectSupport
         }
 
+        public enum MessageIdentifierType
+        {
+            None,
+            General,
+            Hint,
+            Tip,
+            Help,
+            Objective
+        }
+
 
         #region Debugging
 
@@ -5339,6 +5349,220 @@ namespace Com.RedicalGames.Filar
 
             #endregion
         }
+
+        #region Messaging System
+
+        [Serializable]
+        public class Message
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public MessageIdentifierType messageID;
+
+            [Space(5)]
+            public string header;
+
+            [Space(5)]
+            public string body;
+
+            [Space(5)]
+            public string footer;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public Message()
+            {
+
+            }
+
+            public Message(string header, string body, string footer, MessageIdentifierType messageID)
+            {
+                this.header = header;
+                this.body = body;
+                this.footer = footer;
+                this.messageID = messageID;
+            }
+
+            #endregion
+
+            #region Getters And Accessors
+
+            public void SetHeader(string header) => this.header = header;
+
+            public void SetBody(string body) => this.body = body;
+
+            public void SetFooter(string footer) => this.footer = footer;
+
+            public void SetIdentifier(MessageIdentifierType messageID) => this.messageID = messageID;
+
+            public string GetHeader()
+            {
+                return header;
+            }
+
+            public string GetBody()
+            {
+                return body;
+            }
+
+            public string GetFooter()
+            {
+                return footer;
+            }
+
+            public MessageIdentifierType GetIdentifier()
+            {
+                return messageID;
+            }
+
+            #endregion
+
+            #endregion
+
+        }
+
+        public class MessageGroup
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public List<Message> messages = new List<Message>();
+
+            [Space(5)]
+            public UIScreenType screenType;
+
+            #endregion
+
+            #region Main
+
+            public Callback GroupInitialized()
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(messages, "Messages List", componentsCallbackResults => 
+                {
+                    callbackResults.resultsCode = componentsCallbackResults.resultsCode;
+
+                    if (callbackResults.Success())
+                        callbackResults.results = $"{componentsCallbackResults.data.Count} Messages Initialized Successfully.";
+                    else
+                        callbackResults.results = $"There Are No Messages Assigned To : {name}.";
+
+                }, "Messages Are Not Initialized In The Inspector Panel.");
+
+                return callbackResults;
+            }
+
+            public void GetMessages(Action<CallbackDataList<Message>> callback)
+            {
+                CallbackDataList<Message> callbackResults = new CallbackDataList<Message>();
+
+                callbackResults.results = GroupInitialized().results;
+                callbackResults.resultsCode = GroupInitialized().resultsCode;
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.results = $"Found : {messages.Count} Message(s)";
+                    callbackResults.data = messages;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetMessages(MessageIdentifierType messageIdentifier, Action<CallbackDataList<Message>> callback)
+            {
+                CallbackDataList<Message> callbackResults = new CallbackDataList<Message>();
+
+                callbackResults.results = GroupInitialized().results;
+                callbackResults.resultsCode = GroupInitialized().resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    var messageList = messages.FindAll(msg => msg.GetIdentifier() == messageIdentifier);
+
+                    if(messageList != null && messageList.Count > 0)
+                    {
+                        callbackResults.results = $"Found : {messages.Count} Message(s)";
+                        callbackResults.data = messageList;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Failed To Find Messages With ID : {messageIdentifier}";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetRandomMessage(Action<CallbackData<Message>> callback)
+            {
+                CallbackData<Message> callbackResults = new CallbackData<Message>();
+
+                callbackResults.results = GroupInitialized().results;
+                callbackResults.resultsCode = GroupInitialized().resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    int random = UnityEngine.Random.Range(0, messages.Count - 1);
+                    var randomMessage = messages[random];
+
+                    callbackResults.results = $"Found Random Message : {randomMessage.name}";
+                    callbackResults.data = randomMessage;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetRandomMessage(MessageIdentifierType messageIdentifier, Action<CallbackData<Message>> callback)
+            {
+                CallbackData<Message> callbackResults = new CallbackData<Message>();
+
+                callbackResults.results = GroupInitialized().results;
+                callbackResults.resultsCode = GroupInitialized().resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    var messageList = messages.FindAll(msg => msg.GetIdentifier() == messageIdentifier);
+
+                    if (messageList != null && messageList.Count > 0)
+                    {
+                        int random = UnityEngine.Random.Range(0, messageList.Count - 1);
+                        var randomMessage = messageList[random];
+
+                        callbackResults.results = $"Found Random Message : {randomMessage.name}";
+                        callbackResults.data = randomMessage;
+                    }
+                    else
+                    {
+                        callbackResults.results = $"Failed To Find Messages With ID : {messageIdentifier}";
+                        callbackResults.data = default;
+                        callbackResults.resultsCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public UIScreenType GetScreenIdentifier()
+            {
+                return screenType;
+            }
+
+            #endregion
+        }
+
+        #endregion
 
         #region Notification System
 
@@ -25247,6 +25471,29 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.results = results;
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+
+            public static void GetAppComponentsValid<T>(List<T> components, string listIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperactionFallbackResults = null)
+            {
+                CallbackDataList<T> callbackResults = new CallbackDataList<T>();
+
+                if (components != null && components.Count > 0)
+                {
+                    callbackResults.results = $"{components.Count} Components Are Assigned And Valid.";
+                    callbackResults.data = components;
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
                     callbackResults.data = default;
