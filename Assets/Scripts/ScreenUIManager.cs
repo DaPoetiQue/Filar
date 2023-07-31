@@ -877,7 +877,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     switch (hasContentCallbackResults.data)
                                     {
-                                        case AppData.UIScreenType.ProjectSelectionScreen:
+                                        case AppData.UIScreenType.ProjectDashboardScreen:
 
                                             break;
 
@@ -937,7 +937,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                         {
-                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectSelectionScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
+                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectDashboardScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
                             var container = containerCallbackResults.data;
 
                             SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
