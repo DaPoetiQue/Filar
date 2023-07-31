@@ -15377,15 +15377,19 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnGoToSelectedScreen_ActionEvent(SceneDataPackets dataPackets)
+            async void OnGoToSelectedScreen_ActionEvent(SceneDataPackets dataPackets)
             {
-                Helpers.GetComponent(ScreenUIManager.Instance, hasComponentCallbackResults => 
+                var screenManagerCallbackResults = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, $"Screen UI Manager Instance Is Not Yet Initialized.");
+
+                if (screenManagerCallbackResults.Success())
                 {
-                    if (hasComponentCallbackResults.Success())
-                        hasComponentCallbackResults.data.ShowScreenAsync(dataPackets);
-                    else
-                        Log(hasComponentCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
-                });
+                    await screenManagerCallbackResults.data.GoToSelectedScreenAsync(dataPackets, screenLoadedCallbackResults =>
+                    {
+                        Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this); ;
+                    });
+                }
+                else
+                    Log(screenManagerCallbackResults.resultsCode, screenManagerCallbackResults.results, this);
             }
 
             void OnReturn_ActionEvent()
@@ -18784,53 +18788,17 @@ namespace Com.RedicalGames.Filar
 
             async void OnGoToSelectedScreen_ActionEvents(SceneDataPackets dataPackets)
             {
-                var sceneAssetsManagerInstanceCallbackResults = Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized.");
+                var screenManagerCallbackResults = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, $"Screen UI Manager Instance Is Not Yet Initialized.");
 
-                if (sceneAssetsManagerInstanceCallbackResults.Success())
+                if (screenManagerCallbackResults.Success())
                 {
-                    var screenUIManagerInstanceCallbackResults = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized.");
-
-                    if (screenUIManagerInstanceCallbackResults.Success())
+                    await screenManagerCallbackResults.data.GoToSelectedScreenAsync(dataPackets, screenLoadedCallbackResults => 
                     {
-                        AppData.CallbackData<AppData.SceneDataPackets> currentScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
-
-                        sceneAssetsManagerInstanceCallbackResults.data.GetDataPacketsLibrary().GetDataPacket(screenUIManagerInstanceCallbackResults.data.GetCurrentUIScreenType(), getCurrentScreenDataPacketsCallbackResults => 
-                        {
-                            currentScreenDataPacketsCallbackResults.results = getCurrentScreenDataPacketsCallbackResults.results;
-                            currentScreenDataPacketsCallbackResults.data = getCurrentScreenDataPacketsCallbackResults.data.dataPackets;
-                            currentScreenDataPacketsCallbackResults.resultsCode = getCurrentScreenDataPacketsCallbackResults.resultsCode;
-                        });
-
-                        if (currentScreenDataPacketsCallbackResults.Success())
-                        {
-                            var contentLoadingManagerInstanceCallbackResults = Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, "Content Loading Manager Instance Is Not Yet Initialized.");
-
-                            if (contentLoadingManagerInstanceCallbackResults.Success())
-                            {
-                                if (dataPackets.screenTransition == ScreenLoadTransitionType.LoadingScreen)
-                                {
-                                    await screenUIManagerInstanceCallbackResults.data.HideScreenAsync(currentScreenDataPacketsCallbackResults.data);
-
-                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
-                                    await Task.Delay(appLoadDelayedDuration);
-
-                                    await contentLoadingManagerInstanceCallbackResults.data.LoadScreen(dataPackets);
-                                }
-
-                                if (dataPackets.screenTransition == ScreenLoadTransitionType.Translate)
-                                {
-
-                                }
-                            }
-                            else
-                                Log(contentLoadingManagerInstanceCallbackResults.resultsCode, contentLoadingManagerInstanceCallbackResults.results, this);
-                        }
-                    }
-                    else
-                        Log(screenUIManagerInstanceCallbackResults.resultsCode, screenUIManagerInstanceCallbackResults.results, this);
+                        Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this); ;
+                    });
                 }
                 else
-                    Log(sceneAssetsManagerInstanceCallbackResults.resultsCode, sceneAssetsManagerInstanceCallbackResults.results, this);
+                    Log(screenManagerCallbackResults.resultsCode, screenManagerCallbackResults.results, this);
             }
 
             void OnOpenProfile_ActionEvents(SceneDataPackets dataPackets)
