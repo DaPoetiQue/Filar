@@ -592,6 +592,69 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Go To Screen
+
+        public async Task GoToSelectedScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback = null)
+        {
+            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+
+            var sceneAssetsManagerInstanceCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized.");
+
+            callbackResults.results = sceneAssetsManagerInstanceCallbackResults.results;
+            callbackResults.resultsCode = sceneAssetsManagerInstanceCallbackResults.resultsCode;
+
+            if (callbackResults.Success())
+            {
+                AppData.CallbackData<AppData.SceneDataPackets> currentScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+
+                sceneAssetsManagerInstanceCallbackResults.data.GetDataPacketsLibrary().GetDataPacket(GetCurrentUIScreenType(), getCurrentScreenDataPacketsCallbackResults =>
+                {
+                    currentScreenDataPacketsCallbackResults.results = getCurrentScreenDataPacketsCallbackResults.results;
+                    currentScreenDataPacketsCallbackResults.data = getCurrentScreenDataPacketsCallbackResults.data.dataPackets;
+                    currentScreenDataPacketsCallbackResults.resultsCode = getCurrentScreenDataPacketsCallbackResults.resultsCode;
+                });
+
+                callbackResults.results = currentScreenDataPacketsCallbackResults.results;
+                callbackResults.resultsCode = currentScreenDataPacketsCallbackResults.resultsCode;
+
+                if (callbackResults.Success())
+                {
+                    var contentLoadingManagerInstanceCallbackResults = AppData.Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, "Content Loading Manager Instance Is Not Yet Initialized.");
+
+                    callbackResults.results = contentLoadingManagerInstanceCallbackResults.results;
+                    callbackResults.resultsCode = contentLoadingManagerInstanceCallbackResults.resultsCode;
+
+                    if (callbackResults.Success())
+                    {
+                        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
+                        {
+                            await HideScreenAsync(currentScreenDataPacketsCallbackResults.data);
+
+                            int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
+                            await Task.Delay(appLoadDelayedDuration);
+
+                            await contentLoadingManagerInstanceCallbackResults.data.LoadScreen(dataPackets);
+
+                            if(GetCurrentUIScreenType() == dataPackets.screenType)
+                            {
+                                callbackResults.results = $"Screen : {GetCurrentUIScreenType()} Has Been Loaded Successfully.";
+                                callbackResults.data = dataPackets;
+                            }
+                        }
+
+                        if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
+                        {
+
+                        }
+                    }
+                }
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
         void CachePreviousScreenData(AppData.SceneDataPackets screenDataPackets) => previousScreenData = screenDataPackets;
 
         AppData.CallbackData<AppData.SceneDataPackets> GetPreviousCachedScreenData()
