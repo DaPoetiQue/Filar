@@ -505,7 +505,7 @@ namespace Com.RedicalGames.Filar
             ProjectViewScreen,
             ContentImportExportScreen,
             ARViewScreen,
-            ProjectSelectionScreen,
+            ProjectDashboardScreen,
             LandingPageScreen,
             LoadingScreen,
             SplashScreen
@@ -1681,7 +1681,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                         {
-                            case UIScreenType.ProjectSelectionScreen:
+                            case UIScreenType.ProjectDashboardScreen:
 
                                 callbackResults.results = $"Found Filter Of Type : {categoryType}.";
                                 callbackResults.data = categoryType;
@@ -1840,7 +1840,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                         {
-                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == UIScreenType.ProjectSelectionScreen)
+                            if (ScreenUIManager.Instance.GetCurrentUIScreenType() == UIScreenType.ProjectDashboardScreen)
                             {
                                 GetProjectInfo().SetCategoryType((ProjectCategoryType)filterType);
 
@@ -14653,7 +14653,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         switch (ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
                                         {
-                                            case UIScreenType.ProjectSelectionScreen:
+                                            case UIScreenType.ProjectDashboardScreen:
 
                                                 switch (actionType)
                                                 {
@@ -14693,7 +14693,7 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                                                     {
-                                                                        case UIScreenType.ProjectSelectionScreen:
+                                                                        case UIScreenType.ProjectDashboardScreen:
 
                                                                             if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                                                                 dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
@@ -14759,7 +14759,7 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                                                                     {
-                                                                        case UIScreenType.ProjectSelectionScreen:
+                                                                        case UIScreenType.ProjectDashboardScreen:
 
                                                                             if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                                                             {
@@ -18540,7 +18540,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch(ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
                         {
-                            case UIScreenType.ProjectSelectionScreen:
+                            case UIScreenType.ProjectDashboardScreen:
 
                                 if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
                                 {
@@ -23795,7 +23795,7 @@ namespace Com.RedicalGames.Filar
                                 callbackResults = initializationSetupCallbackResults;
 
                                 if(callbackResults.Success())
-                                    ActionEvents._LateUpdate += ActionEvents__LateUpdate;
+                                    ActionEvents._Update += ActionEvents__Update;
 
                             });
                         }
@@ -23817,25 +23817,53 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void ActionEvents__LateUpdate()
+            private void ActionEvents__Update()
             {
                 if (!canFade)
                     return;
 
                 if (fadeDirection == fadeOut)
                 {
-                    if (GetActiveFader().data.alpha > hidden)
-                        GetActiveFader().data.alpha -= SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeOut).value * Time.deltaTime;
-                    else
-                        canFade = false;
+                    Helpers.GetValue(SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeOut).value, fadeOutDuractionCallbackResults =>
+                    {
+                        if (fadeOutDuractionCallbackResults.Success())
+                        {
+                            if (GetOpacity().data > hidden)
+                                GetActiveFader().data.alpha -= fadeOutDuractionCallbackResults.data * Time.deltaTime;
+                            else
+                                canFade = false;
+                        }
+                        else
+                        {
+                            canFade = false;
+                            Log(fadeOutDuractionCallbackResults.resultsCode, fadeOutDuractionCallbackResults.results, this);
+
+                            throw new ArgumentNullException("Fade Out Duration", fadeOutDuractionCallbackResults.results);   
+                        }
+
+                    }, $"Fade Out Duration Value Is Set To Default : 0 - Possible Action - Check If Default Execution Time For Screen : {GetUIScreenType()} Has Been Initialized From The Scene Assets Manager.");
                 }
                 
                 if (fadeDirection == fadeIn)
                 {
-                    if (GetActiveFader().data.alpha < visible)
-                        GetActiveFader().data.alpha += SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeIn).value * Time.deltaTime;
-                    else
-                        canFade = false;
+                    Helpers.GetValue(SceneAssetsManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), SceneAssetsManager.UIScreenFadeDirection.FadeIn).value, fadeInDuractionCallbackResults => 
+                    {
+                        if (fadeInDuractionCallbackResults.Success())
+                        {
+                            if (GetOpacity().data < visible)
+                                GetActiveFader().data.alpha += fadeInDuractionCallbackResults.data * Time.deltaTime;
+                            else
+                                canFade = false;
+                        }
+                        else
+                        {
+                            canFade = false;
+                            Log(fadeInDuractionCallbackResults.resultsCode, fadeInDuractionCallbackResults.results, this);
+
+                            throw new ArgumentNullException("Fade In Duration", fadeInDuractionCallbackResults.results);
+                        }
+
+                    }, $"Fade In Duration Value Is Set To Default : 0 - Possible Action - Check If Default Execution Time For Screen : {GetUIScreenType()} Has Been Initialized From The Scene Assets Manager.");
                 }
             }
 
@@ -23908,8 +23936,12 @@ namespace Com.RedicalGames.Filar
                     canFade = true;
                     fadeDirection = fadeOut;
 
+                    LogInfo($" <-------------------------------> [Fade Out - Start] Showing Screen : {GetUIScreenType()} - Code : {callbackResults.resultsCode} - Results : {callbackResults.results}", this);
+
                     while (canFade)
+                    {
                         await Task.Yield();
+                    }
 
                     LogInfoType fadeOutResultsCode = (GetOpacity().data <= hidden) ? Helpers.SuccessCode : Helpers.ErrorCode;
                     string fadeOutResults = (fadeOutResultsCode == Helpers.SuccessCode) ? $"View : {GetUIScreenType()} Has Been Faded Out Successfully" : $"Failed To Fade out View : {GetUIScreenType()} - Current Fader Opacity Is : {GetOpacity().data}";
@@ -23917,12 +23949,15 @@ namespace Com.RedicalGames.Filar
                     callbackResults.results = fadeOutResults;
                     callbackResults.resultsCode = fadeOutResultsCode;
 
+                    LogInfo($" <-------------------------------> [Fade Out - Complete] Shown Screen - : {GetUIScreenType()} - Code : {callbackResults.resultsCode} - Results : {callbackResults.results}", this);
+
                     if (callbackResults.Success())
                     {
                         SetFaderVisibilityValue(hidden);
                         return callbackResults;
                     }
                 }
+
 
                 return callbackResults;
             }
@@ -25031,6 +25066,47 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void GetValue(float value, Action<CallbackData<float>> callback, string callbackFailFallbackResults = null)
+            {
+                CallbackData<float> callbackResults = new CallbackData<float>();
+
+                if (value > 0)
+                {
+                    callbackResults.results = $"Value Is Valid - The Assigned Value Is : {value}.";
+                    callbackResults.data = value;
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = (callbackFailFallbackResults != null) ? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void GetValue(int value, Action<CallbackData<int>> callback, string callbackFailFallbackResults = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if(value > 0)
+                {
+                    callbackResults.results = $"Value Is Valid - The Assigned Value Is : {value}.";
+                    callbackResults.data = value;
+                    callbackResults.resultsCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = (callbackFailFallbackResults != null)? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
+                    callbackResults.data = default;
                     callbackResults.resultsCode = ErrorCode;
                 }
 

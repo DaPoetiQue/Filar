@@ -235,7 +235,7 @@ namespace Com.RedicalGames.Filar
 
                             switch (screenType)
                             {
-                                case AppData.UIScreenType.ProjectSelectionScreen:
+                                case AppData.UIScreenType.ProjectDashboardScreen:
 
                                     dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There Are No Projects Found" : "Project Is Empty";
 
