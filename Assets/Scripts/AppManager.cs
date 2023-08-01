@@ -233,7 +233,7 @@ namespace Com.RedicalGames.Filar
                                         if (loadedInitialDataPacketsCallbackResults.Success())
                                         {
                                             if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
-                                                await screenManagerComponentCallbackResults.data.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults => 
+                                                await screenManagerComponentCallbackResults.data.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults =>
                                                 {
                                                     Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this);
                                                 });
