@@ -25461,19 +25461,19 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void GetAppComponentValid<T>(T component, string name = null, Action<CallbackData<T>> callback = null, string failedOperactionFallbackResults = null)
+            public static void GetAppComponentValid<T>(T component, string name = null, Action<CallbackData<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 CallbackData<T> callbackResults = new CallbackData<T>();
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.results = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Valid.";
                     callbackResults.data = component;
                     callbackResults.resultsCode = SuccessCode;
                 }
                 else
                 {
-                    string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
                     callbackResults.data = default;
