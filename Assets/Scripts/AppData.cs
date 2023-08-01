@@ -130,7 +130,8 @@ namespace Com.RedicalGames.Filar
             AssetInfoWidget,
             CreateNewProjectWidget,
             ProjectCreationWarningWidget,
-            HomeMenuWidget
+            HomeMenuWidget,
+            MessageDisplayerWidget
         }
 
         public enum SubWidgetType
@@ -5428,6 +5429,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
+        [Serializable]
         public class MessageGroup
         {
             #region Components
@@ -17296,6 +17298,7 @@ namespace Com.RedicalGames.Filar
             protected CreateNewProjectWidget createNewProjectWidget;
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
             protected HomeMenuWidget homeMenuWidget;
+            protected UIMessageDisplayerWidget messageDisplayerWidget;
 
             #endregion
 
