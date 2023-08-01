@@ -204,57 +204,44 @@ namespace Com.RedicalGames.Filar
 
         void OnLoadAppInitializationBootScreen()
         {
-            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, validSceneAssetsManagerComponentCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults => 
             {
-                if (validSceneAssetsManagerComponentCallbackResults.Success())
+                if (sceneAssetsManagerCallbackResults.Success())
                 {
-                    AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, validScreenManagerComponentCallbackResults =>
+                    AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerComponentCallbackResults =>
                     {
-                        if (validScreenManagerComponentCallbackResults.Success())
+                        if (screenManagerComponentCallbackResults.Success())
                         {
-                            ScreenUIManager.Instance.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
+                            screenManagerComponentCallbackResults.data.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
                             {
                                 if (onAppBootCallbackResults.Success())
                                 {
-                                    await ScreenUIManager.Instance.ShowScreenAsync(onAppBootCallbackResults.data);
+                                    await screenManagerComponentCallbackResults.data.ShowScreenAsync(onAppBootCallbackResults.data);
 
-                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnSplashScreenExitDelay).value);
+                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.OnSplashScreenExitDelay).value);
                                     await Task.Delay(splashScreenDuration);
 
-                                    await ScreenUIManager.Instance.HideScreenAsync(onAppBootCallbackResults.data);
+                                    await screenManagerComponentCallbackResults.data.HideScreenAsync(onAppBootCallbackResults.data);
 
-                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
+                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
                                     await Task.Delay(appLoadDelayedDuration);
 
                                     #region Trigger Loading Manager
 
-                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, loadingScreenDataPacketsCallbackResults =>
+                                    sceneAssetsManagerCallbackResults.data.GetDataPacketsLibrary().GetDataPacket(appBootScreen, async loadedInitialDataPacketsCallbackResults =>
                                     {
-                                        if (loadingScreenDataPacketsCallbackResults.Success())
+                                        if (loadedInitialDataPacketsCallbackResults.Success())
                                         {
-                                            AppData.Helpers.GetAppComponentValid(ContentLoadingManager.Instance, ContentLoadingManager.Instance.name, validContentLoadingManagerComponentCallback =>
-                                            {
-                                                if (validContentLoadingManagerComponentCallback.Success())
+                                            if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
+                                                await screenManagerComponentCallbackResults.data.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults => 
                                                 {
-                                                    SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(appBootScreen, async loadedInitialDataPacketsCallbackResults =>
-                                                    {
-                                                        if (loadedInitialDataPacketsCallbackResults.Success())
-                                                        {
-                                                            if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
-                                                                await ContentLoadingManager.Instance.LoadScreen(loadedInitialDataPacketsCallbackResults.data.dataPackets);
-                                                            else
-                                                                LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
-                                                        }
-                                                        else
-                                                            Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
-                                                    });
-                                                }
-                                                else
-                                                    Log(validContentLoadingManagerComponentCallback.resultsCode, validContentLoadingManagerComponentCallback.results, this);
-                                            }, "Content Loading Manager Is Not Yet Initialized.");
+                                                    Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this);
+                                                });
+                                            else
+                                                LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
                                         }
                                         else
-                                            Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);
+                                            Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
                                     });
 
                                     #endregion
@@ -264,11 +251,11 @@ namespace Com.RedicalGames.Filar
                             });
                         }
                         else
-                            Log(validScreenManagerComponentCallbackResults.resultsCode, validScreenManagerComponentCallbackResults.results, this);
+                            Log(screenManagerComponentCallbackResults.resultsCode, screenManagerComponentCallbackResults.results, this);
                     }, "Screen UI Manager Instance Is Not Yet Initialized.");
                 }
                 else
-                    Log(validSceneAssetsManagerComponentCallbackResults.resultsCode, validSceneAssetsManagerComponentCallbackResults.results, this);
+                    Log(sceneAssetsManagerCallbackResults.resultsCode, sceneAssetsManagerCallbackResults.results, this);
             
             }, "Scene Assets Manager Instance Is Not Yet Initialized.");
         }
