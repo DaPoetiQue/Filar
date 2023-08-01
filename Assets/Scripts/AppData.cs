@@ -571,7 +571,7 @@ namespace Com.RedicalGames.Filar
             Default,
         }
 
-        public enum DirectoryType
+        public enum StorageType
         {
             None,
             Default_App_Storage,
@@ -580,7 +580,8 @@ namespace Com.RedicalGames.Filar
             Meta_File_Storage,
             Settings_Storage,
             Project_Structure,
-            Sub_Folder_Structure
+            Sub_Folder_Structure,
+            App_Information
         }
 
         public enum AssetModeType
@@ -1949,7 +1950,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public DirectoryType directoryType;
+            public StorageType directoryType;
 
             [HideInInspector]
             public DefaultUIWidgetActionState defaultWidgetActionState;
@@ -1981,7 +1982,7 @@ namespace Com.RedicalGames.Filar
 
             public bool IsRootFolder()
             {
-                if (directoryType == DirectoryType.Project_Structure || directoryType == DirectoryType.Default_App_Storage)
+                if (directoryType == StorageType.Project_Structure || directoryType == StorageType.Default_App_Storage)
                     isRootFolder = true;
                 else
                     isRootFolder = false;
@@ -5440,7 +5441,7 @@ namespace Com.RedicalGames.Filar
             public List<Message> messages = new List<Message>();
 
             [Space(5)]
-            public UIScreenType screenType;
+            public UIScreenType screenIdentifier;
 
             #endregion
 
@@ -5558,7 +5559,74 @@ namespace Com.RedicalGames.Filar
 
             public UIScreenType GetScreenIdentifier()
             {
-                return screenType;
+                return screenIdentifier;
+            }
+
+            #endregion
+        }
+
+        public class MessageGroupData : SerializableData
+        {
+            #region Components
+
+            public List<MessageGroup> messageGroups = new List<MessageGroup>();
+
+            #endregion
+
+            #region Main
+
+            public MessageGroupData()
+            {
+            }
+
+            public MessageGroupData(List<MessageGroup> messageGroups) => this.messageGroups = messageGroups;
+
+            public void GetMessageCroups(Action<CallbackDataList<MessageGroup>> callback)
+            {
+                CallbackDataList<MessageGroup> callbackResults = new CallbackDataList<MessageGroup>();
+
+                Helpers.GetAppComponentsValid(messageGroups, "Message Group List", messageGroupCallbackResults =>
+                {
+                    callbackResults.results = messageGroupCallbackResults.results;
+                    callbackResults.resultsCode = messageGroupCallbackResults.resultsCode;
+
+                    if (callbackResults.Success())
+                        callbackResults.data = messageGroupCallbackResults.data;
+
+                }, "There Were No Message Groups Found - Initialize Message Groups In Messaging System Manager Using The Editor Inspector Panel.", $"{messageGroups.Count} Message Group(s) Found.");
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetMessageGroup(UIScreenType screenIdentifier, Action<CallbackData<MessageGroup>> callback)
+            {
+                CallbackData<MessageGroup> callbackResults = new CallbackData<MessageGroup>();
+
+                Helpers.GetAppComponentsValid(messageGroups, "MessageGroup List", messageGroupCallbackResults =>
+                {
+                    callbackResults.results = messageGroupCallbackResults.results;
+                    callbackResults.resultsCode = messageGroupCallbackResults.resultsCode;
+
+                    if (callbackResults.Success())
+                    {
+                        var messageGroup = messageGroupCallbackResults.data.Find(group => group.GetScreenIdentifier() == screenIdentifier);
+
+                        if (messageGroup != null)
+                        {
+                            callbackResults.results = $"Message Group : {messageGroup.name} - For Screen ID : {screenIdentifier} Found.";
+                            callbackResults.data = messageGroup;
+                        }
+                        else
+                        {
+                            callbackResults.results = $"Couldn't Find Message Group For Screen ID : {screenIdentifier}.";
+                            callbackResults.data = default;
+                            callbackResults.resultsCode = Helpers.ErrorCode;
+                        }
+                    }
+
+                }, "There Were No Message Groups Found - Initialize Message Groups In Messaging System Manager Using The Editor Inspector Panel.");
+
+                callback.Invoke(callbackResults);
             }
 
             #endregion
@@ -6052,7 +6120,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public DirectoryType type;
+            public StorageType type;
 
             [HideInInspector]
             public string path;
@@ -6093,7 +6161,7 @@ namespace Com.RedicalGames.Filar
             public string path;
 
             [Space(5)]
-            public DirectoryType directoryType;
+            public StorageType directoryType;
         }
 
         [Serializable]
@@ -6358,7 +6426,7 @@ namespace Com.RedicalGames.Filar
                 return assetField;
             }
 
-            public AssetField GetAssetField(DirectoryType directoryType)
+            public AssetField GetAssetField(StorageType directoryType)
             {
                 AssetField assetField = new AssetField();
 
@@ -6543,7 +6611,7 @@ namespace Com.RedicalGames.Filar
                 return assetField;
             }
 
-            public AssetField GetAssetField(DirectoryType directoryType)
+            public AssetField GetAssetField(StorageType directoryType)
             {
                 AssetField assetField = new AssetField();
 
@@ -21800,9 +21868,9 @@ namespace Com.RedicalGames.Filar
 
                 if (SceneAssetsManager.Instance != null)
                 {
-                    if (SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).Success())
+                    if (SceneAssetsManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).Success())
                     {
-                        StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).data;
+                        StorageDirectoryData directoryData = SceneAssetsManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).data;
 
                         if (SceneAssetsManager.Instance.DirectoryFound(directoryData))
                         {
@@ -21962,7 +22030,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void CreateColorInCustomSwatch(string fileName, string swatchName, ColorInfo colorInfo, DirectoryType directoryType, Action<CallbackDataList<string>> callback = null)
+            public void CreateColorInCustomSwatch(string fileName, string swatchName, ColorInfo colorInfo, StorageType directoryType, Action<CallbackDataList<string>> callback = null)
             {
                 CallbackDataList<string> callbackResults = new CallbackDataList<string>();
 
@@ -22027,7 +22095,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    if (SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).Success())
+                                                                                    if (SceneAssetsManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).Success())
                                                                                     {
                                                                                         SwatchData swatchData = new SwatchData(fileName, swatches);
 
@@ -22060,7 +22128,7 @@ namespace Com.RedicalGames.Filar
                                                                                         });
                                                                                     }
                                                                                     else
-                                                                                        Debug.LogError($"{SceneAssetsManager.Instance.GetAppDirectoryData(DirectoryType.Settings_Storage).results}");
+                                                                                        Debug.LogError($"{SceneAssetsManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).results}");
                                                                                 }
                                                                                 else
                                                                                     Debug.LogError($"Create Color In Custom Swatch Failed With Results : {callbackResults.results}");
@@ -24480,7 +24548,7 @@ namespace Com.RedicalGames.Filar
             public AssetFieldSettingsType assetFieldConfiguration;
 
             [Space(5)]
-            public DirectoryType storageDirectoryType;
+            public StorageType storageDirectoryType;
 
             [Space(5)]
             public FolderStructureType folderStructureType;

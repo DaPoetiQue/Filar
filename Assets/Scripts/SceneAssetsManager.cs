@@ -248,7 +248,7 @@ namespace Com.RedicalGames.Filar
             {
                 foreach (var directory in defaultDirectories)
                 {
-                    if (directory.type != AppData.DirectoryType.None)
+                    if (directory.type != AppData.StorageType.None)
                     {
                         string path = defaultAppDirectoryFolderName + "/" + directory.type.ToString();
 
@@ -1698,7 +1698,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public AppData.CallbackData<AppData.StorageDirectoryData>  GetAppDirectoryData(AppData.DirectoryType directoryType)
+        public AppData.CallbackData<AppData.StorageDirectoryData>  GetAppDirectoryData(AppData.StorageType directoryType)
         {
             AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
 
@@ -1801,7 +1801,7 @@ namespace Com.RedicalGames.Filar
                         AppData.StorageDirectoryData storageDirectory = new AppData.StorageDirectoryData
                         {
                             name = validAssetName,
-                            type = AppData.DirectoryType.Sub_Folder_Structure,
+                            type = AppData.StorageType.Sub_Folder_Structure,
                             path = formattedFilePath,
                             projectDirectory = directoryData.projectDirectory
                         };
@@ -3184,7 +3184,7 @@ namespace Com.RedicalGames.Filar
                                     projectDirectory = directory,
                                     rootDirectory = GetCurrentFolder().storageData.projectDirectory,
                                     directory = GetCurrentFolder().storageData.projectDirectory,
-                                    type = AppData.DirectoryType.Sub_Folder_Structure
+                                    type = AppData.StorageType.Sub_Folder_Structure
                                 };
 
                                 AppData.Folder rootFoolder = new AppData.Folder();
@@ -3420,7 +3420,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public AppData.StorageDirectoryData GetAppDirectory(AppData.DirectoryType directoryType)
+        public AppData.StorageDirectoryData GetAppDirectory(AppData.StorageType directoryType)
         {
             try
             {
@@ -3450,7 +3450,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public bool DirectoryFound(AppData.DirectoryType directoryType)
+        public bool DirectoryFound(AppData.StorageType directoryType)
         {
             bool directoryExists = false;
 
@@ -5611,7 +5611,7 @@ namespace Com.RedicalGames.Filar
                                                                 name = fileName,
                                                                 path = validProject,
                                                                 projectDirectory = searchDirectory,
-                                                                type = AppData.DirectoryType.Project_Structure
+                                                                type = AppData.StorageType.Project_Structure
                                                             };
 
                                                             LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
@@ -6677,7 +6677,7 @@ namespace Com.RedicalGames.Filar
                                                                                             name = fileName,
                                                                                             path = validProject,
                                                                                             projectDirectory = filterDirectory,
-                                                                                            type = AppData.DirectoryType.Project_Structure
+                                                                                            type = AppData.StorageType.Project_Structure
                                                                                         };
 
                                                                                         LoadData<AppData.ProjectStructureData>(directoryData, loadedProjectCallbackResults =>
@@ -7791,6 +7791,46 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        public void GetStorageData(string name, AppData.StorageType storageType, Action<AppData.CallbackData<AppData.StorageDirectoryData>> callback)
+        {
+            AppData.CallbackData<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
+
+            if (GetAppDirectoryData(storageType).Success())
+            {
+                var storageData = GetAppDirectoryData(storageType).data;
+
+                if (DirectoryFound(storageData))
+                {
+                    string storageName = name + "_Data";
+
+                    string fileNameWithJSONExtension = storageName + ".json";
+                    string filePath = Path.Combine(storageData.directory, fileNameWithJSONExtension);
+                    string formattedFilePath = filePath.Replace("\\", "/");
+
+                    var storage = new AppData.StorageDirectoryData
+                    {
+                        name = storageName,
+                        path = formattedFilePath,
+                        projectDirectory = GetAppDirectoryData(storageType).data.directory,
+                        rootDirectory = storageData.directory,
+                        directory = GetAppDirectoryData(storageType).data.directory
+                    };
+
+                    callbackResults.results = $"Storage Data : {storage.name} Found.";
+                    callbackResults.data = storage;
+                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.results = $"Storage Data Of Type : {storageType} Not Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                }
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
         #endregion
 
         #region Data Serialization
@@ -7976,9 +8016,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 name = storageName,
                                 path = formattedFilePath,
-                                projectDirectory = GetAppDirectoryData(AppData.DirectoryType.Project_Structure).data.directory,
+                                projectDirectory = GetAppDirectoryData(AppData.StorageType.Project_Structure).data.directory,
                                 rootDirectory = appStorageData.directory,
-                                directory = GetAppDirectoryData(AppData.DirectoryType.Project_Structure).data.directory
+                                directory = GetAppDirectoryData(AppData.StorageType.Project_Structure).data.directory
                             };
 
                             rootProjectStructureData.GetProjectStructureData().rootFolder.storageData = storageData;
@@ -8172,7 +8212,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             name = entryName,
                                             projectDirectory = validEntry,
-                                            type = AppData.DirectoryType.Sub_Folder_Structure
+                                            type = AppData.StorageType.Sub_Folder_Structure
                                         };
 
                                         validFoldersfoundDirectories.Add(directoryData);
