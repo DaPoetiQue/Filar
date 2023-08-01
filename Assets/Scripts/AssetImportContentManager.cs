@@ -346,7 +346,7 @@ namespace Com.RedicalGames.Filar
                     mtlField.path = assetMTLPath;
                     mtlField.fieldType = AppData.AssetFieldType.MTLFile;
                     mtlField.extensionType = AppData.FileExtensionType.MTL;
-                    mtlField.directoryType = AppData.DirectoryType.Meta_File_Storage;
+                    mtlField.directoryType = AppData.StorageType.Meta_File_Storage;
 
                     if (assetPath.Contains(".obj"))
                         objectField.extensionType = AppData.FileExtensionType.OBJ;
@@ -360,7 +360,7 @@ namespace Com.RedicalGames.Filar
                             break;
                     }
 
-                    objectField.directoryType = AppData.DirectoryType.Object_Asset_Storage;
+                    objectField.directoryType = AppData.StorageType.Object_Asset_Storage;
 
                     if (!assetFieldList.Contains(objectField))
                         assetFieldList.Add(objectField);
@@ -398,7 +398,7 @@ namespace Com.RedicalGames.Filar
                             break;
                     }
 
-                    field.directoryType = AppData.DirectoryType.Object_Asset_Storage;
+                    field.directoryType = AppData.StorageType.Object_Asset_Storage;
 
                     if (!assetFieldList.Contains(field))
                         assetFieldList.Add(field);
@@ -460,7 +460,7 @@ namespace Com.RedicalGames.Filar
                     #endregion
 
                     field.name = "Thumbnail Field";
-                    field.directoryType = AppData.DirectoryType.Image_Asset_Storage;
+                    field.directoryType = AppData.StorageType.Image_Asset_Storage;
 
                     sceneAsset.AddAssetField(field);
 
@@ -514,7 +514,7 @@ namespace Com.RedicalGames.Filar
                     #endregion
 
                     field.name = "Main Texture Field";
-                    field.directoryType = AppData.DirectoryType.Image_Asset_Storage;
+                    field.directoryType = AppData.StorageType.Image_Asset_Storage;
 
                     sceneAsset.AddAssetField(field);
 
@@ -581,7 +581,7 @@ namespace Com.RedicalGames.Filar
                     #endregion
 
                     field.name = "Normal Map Field";
-                    field.directoryType = AppData.DirectoryType.Image_Asset_Storage;
+                    field.directoryType = AppData.StorageType.Image_Asset_Storage;
 
                     sceneAsset.AddAssetField(field);
 
@@ -647,7 +647,7 @@ namespace Com.RedicalGames.Filar
                     #endregion
 
                     field.name = "AO Map Field";
-                    field.directoryType = AppData.DirectoryType.Image_Asset_Storage;
+                    field.directoryType = AppData.StorageType.Image_Asset_Storage;
 
                     sceneAsset.AddAssetField(field);
 
@@ -692,7 +692,7 @@ namespace Com.RedicalGames.Filar
                 {
                     name = "Image Field",
                     projectDirectory = path,
-                    type = AppData.DirectoryType.Image_Asset_Storage
+                    type = AppData.StorageType.Image_Asset_Storage
                 };
 
                 AppData.ActionEvents.OnFilePickerDirectoryFieldSelectedEvent(AppData.AssetFieldType.Image, directoryData);
@@ -717,7 +717,7 @@ namespace Com.RedicalGames.Filar
                 {
                     name = "HDRI Field",
                     projectDirectory = path,
-                    type = AppData.DirectoryType.Image_Asset_Storage
+                    type = AppData.StorageType.Image_Asset_Storage
                 };
 
                 AppData.ActionEvents.OnFilePickerDirectoryFieldSelectedEvent(AppData.AssetFieldType.HDRI, directoryData);
