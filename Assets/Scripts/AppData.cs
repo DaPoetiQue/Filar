@@ -25484,19 +25484,19 @@ namespace Com.RedicalGames.Filar
             }
 
 
-            public static void GetAppComponentsValid<T>(List<T> components, string listIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperactionFallbackResults = null)
+            public static void GetAppComponentsValid<T>(List<T> components, string listIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 CallbackDataList<T> callbackResults = new CallbackDataList<T>();
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"{components.Count} Components Are Assigned And Valid.";
+                    callbackResults.results = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Count} Components Are Assigned And Valid.";
                     callbackResults.data = components;
                     callbackResults.resultsCode = SuccessCode;
                 }
                 else
                 {
-                    string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
                     callbackResults.data = default;
@@ -25506,19 +25506,19 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static CallbackData<T> GetAppComponentValid<T>(T component, string name = null, string failedOperactionFallbackResults = null)
+            public static CallbackData<T> GetAppComponentValid<T>(T component, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 CallbackData<T> callbackResults = new CallbackData<T>();
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.results = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Valid.";
                     callbackResults.data = component;
                     callbackResults.resultsCode = SuccessCode;
                 }
                 else
                 {
-                    string results = (failedOperactionFallbackResults != null) ? failedOperactionFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
                     callbackResults.results = results;
                     callbackResults.data = default;
