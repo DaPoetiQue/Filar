@@ -131,7 +131,8 @@ namespace Com.RedicalGames.Filar
             CreateNewProjectWidget,
             ProjectCreationWarningWidget,
             HomeMenuWidget,
-            MessageDisplayerWidget
+            MessageDisplayerWidget,
+            LoginViewWidget
         }
 
         public enum SubWidgetType
@@ -1026,6 +1027,127 @@ namespace Com.RedicalGames.Filar
             Objective
         }
 
+        public enum ProfileType
+        {
+            None,
+            Guest,
+            Curator
+        }
+
+        #region Profile
+
+        [Serializable]
+        public class Profile : SerializableData
+        {
+            #region Components
+
+            #region User Login Info
+
+            public string userName;
+            public string userEmail;
+            public string userPassword;
+
+            public string userProfilePictureURL;
+
+            #endregion
+
+            #region User App Info
+
+            public Telemetry telemetry = new Telemetry();
+
+            #endregion
+
+            #endregion
+
+            #region Main
+
+            public Profile()
+            {
+            }
+
+            public Profile(string userName, string userEmail, string userPassword, ProfileType userProfileType, string userProfilePictureURL = null)
+            {
+                this.userName = userName;
+                this.userEmail = userEmail;
+                this.userPassword = userPassword;
+                this.telemetry.SetProfileType(userProfileType);
+                this.userProfilePictureURL = userProfilePictureURL;
+            }
+
+            #region Info Setters
+
+            public void SetUserName(string userName) => this.userName = userName;
+            public void SetUserEmail(string userEmail) => this.userEmail = userEmail;
+            public void SetUserPassword(string userPassword) => this.userPassword = userPassword;
+            public void SetUserProfilePictureURL(string userProfilePictureURL) => this.userProfilePictureURL = userProfilePictureURL;
+            public void SetUserProfileType(ProfileType userProfileType) => telemetry.SetProfileType(userProfileType);
+
+            #endregion
+
+            #region Info Getters
+
+            public string GetUserName()
+            {
+                return userName;
+            }
+
+            public string GetUserEmail()
+            {
+                return userEmail;
+            }
+
+            public string GetUserPassword()
+            {
+                return userPassword;
+            }
+
+            public string GetUserProfilePictureURL()
+            {
+                return userProfilePictureURL;
+            }
+
+            public ProfileType GetUserProfileType()
+            {
+                return telemetry.GetProfileType();
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class Telemetry
+        {
+            #region Components
+
+            public ProfileType profileType;
+
+            #endregion
+
+            #region Main
+
+            public Telemetry()
+            {
+
+            }
+
+            public Telemetry(ProfileType profileType)
+            {
+                this.profileType = profileType;
+            }
+
+            public void SetProfileType(ProfileType profileType) => this.profileType = profileType;
+
+            public ProfileType GetProfileType()
+            {
+                return profileType;
+            }
+
+            #endregion
+        }
+
+        #endregion
 
         #region Debugging
 
@@ -17367,6 +17489,7 @@ namespace Com.RedicalGames.Filar
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
             protected HomeMenuWidget homeMenuWidget;
             protected UIMessageDisplayerWidget messageDisplayerWidget;
+            protected LoginViewWidget loginViewWidget;
 
             #endregion
 
