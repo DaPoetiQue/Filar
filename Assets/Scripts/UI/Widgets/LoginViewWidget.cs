@@ -43,6 +43,8 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
+            LogInfo(" <============================================> Show Widget Now!", this);
+
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 

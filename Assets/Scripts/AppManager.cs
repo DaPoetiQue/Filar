@@ -45,6 +45,8 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         bool requestStoragePermissions;
 
+        AppData.Profile userProfile = new AppData.Profile();
+
         #endregion
 
         #region Unity Callbacks
@@ -212,16 +214,18 @@ namespace Com.RedicalGames.Filar
                     {
                         if (screenManagerComponentCallbackResults.Success())
                         {
-                            screenManagerComponentCallbackResults.data.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
+                            var screenManager = screenManagerComponentCallbackResults.data;
+
+                            screenManager.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
                             {
                                 if (onAppBootCallbackResults.Success())
                                 {
-                                    await screenManagerComponentCallbackResults.data.ShowScreenAsync(onAppBootCallbackResults.data);
+                                    await screenManager.ShowScreenAsync(onAppBootCallbackResults.data);
 
                                     int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.OnSplashScreenExitDelay).value);
                                     await Task.Delay(splashScreenDuration);
 
-                                    await screenManagerComponentCallbackResults.data.HideScreenAsync(onAppBootCallbackResults.data);
+                                    await screenManager.HideScreenAsync(onAppBootCallbackResults.data);
 
                                     int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
                                     await Task.Delay(appLoadDelayedDuration);
@@ -233,10 +237,42 @@ namespace Com.RedicalGames.Filar
                                         if (loadedInitialDataPacketsCallbackResults.Success())
                                         {
                                             if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
-                                                await screenManagerComponentCallbackResults.data.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults =>
+                                                await screenManager.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults =>
                                                 {
+                                                    if(screenLoadedCallbackResults.Success())
+                                                    {
+                                                        AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, profileManagerCallbackResults => 
+                                                        {
+                                                            if (profileManagerCallbackResults.Success())
+                                                            {
+                                                                if(profileManagerCallbackResults.data.SignedIn == false)
+                                                                {
+                                                                    screenManager.GetScreen(screenLoadedCallbackResults.data.screenType, loadedScreenCallbacResults => 
+                                                                    {
+                                                                        if (loadedScreenCallbacResults.Success())
+                                                                        {
+                                                                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
+                                                                            {
+                                                                                screenType = AppData.UIScreenType.LandingPageScreen,
+                                                                                widgetType = AppData.WidgetType.LoginViewWidget,
+                                                                                blurScreen = true,
+                                                                                blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                                                                            };
+
+                                                                            loadedScreenCallbacResults.data.value.ShowWidget(dataPackets);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                            else
+                                                                Log(profileManagerCallbackResults.resultsCode, profileManagerCallbackResults.results, this);
+
+                                                        }, "Profile Manager Is Not Yet Initialized.");
+                                                    }
+
                                                     Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this);
                                                 });
+
                                             else
                                                 LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
                                         }

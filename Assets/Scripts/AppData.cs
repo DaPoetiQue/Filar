@@ -5282,7 +5282,7 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.results = $"No Selectable Found To Clear For : {groupID} Group";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultsCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -16383,6 +16383,8 @@ namespace Com.RedicalGames.Filar
                 {
                     if (dataPackets.blurScreen)
                         Blur(dataPackets);
+
+                    LogInfo($" <============================================> Show Widget : {dataPackets.widgetType} Now!", this);
 
                     widget.ResetScrollPosition(scrollerResetCallback => 
                     {
