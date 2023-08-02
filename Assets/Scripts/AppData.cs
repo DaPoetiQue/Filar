@@ -235,8 +235,7 @@ namespace Com.RedicalGames.Filar
             OpenInboxButton,
             SignInButton,
             SignUpButton,
-            SignInSelectionButton,
-            SignUpSelectionButton,
+            SignUp_SignIn_SelectionButton,
             SkipSignInSelectionButton,
             None
         }
@@ -10530,6 +10529,203 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class TransitionableUI : DataDebugger
+        {
+            #region Components
+
+            public RectTransform transitionable;
+            public Vector2 targetPosition;
+            public float transitionSpeed;
+
+            bool transitionUI = false;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public TransitionableUI()
+            {
+            }
+
+            public TransitionableUI(RectTransform transitionable) => this.transitionable = transitionable;
+
+            public TransitionableUI(RectTransform transitionable, Vector2 target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(RectTransform transitionable, RectTransform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target.anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(RectTransform transitionable, Transform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(RectTransform transitionable, GameObject target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(Transform transitionable, Vector2 target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(Transform transitionable, RectTransform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(Transform transitionable, Transform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, Vector2 target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, RectTransform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, Transform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, GameObject target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition; ;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            #endregion
+
+            #region Events
+
+            private void ActionEvents__Update()
+            {
+                if (!transitionUI)
+                    return;
+
+                if (!IsCompleted())
+                    transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, targetPosition, transitionSpeed * Time.smoothDeltaTime);
+                else
+                {
+                    transitionable.anchoredPosition = targetPosition;
+                    transitionUI = false;
+                    ActionEvents._Update -= ActionEvents__Update;
+                }
+            }
+
+            #endregion
+
+            #region Setters
+
+            public void SetTransitionable(RectTransform transitionable) => this.transitionable = transitionable;
+            public void SetTransitionable(Transform transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
+            public void SetTransitionable(GameObject transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
+
+            public void SetTarget(Vector2 target) => this.targetPosition = target;
+            public void SetTarget(RectTransform target) => this.targetPosition = target.anchoredPosition;
+            public void SetTarget(Transform target) => this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+            public void SetTarget(GameObject target) => this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+
+            public void SetSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
+
+            #endregion
+
+            #region Getters
+
+            public RectTransform GetTransitionable()
+            {
+                return transitionable;
+            }
+
+            public Vector2 GetTargetPosition()
+            {
+                return targetPosition;
+            }
+
+            public float GetTransitionSpeed()
+            {
+                return transitionSpeed;
+            }
+
+            public bool IsCompleted()
+            {
+                return (transitionable.anchoredPosition - targetPosition).magnitude <= 0.01f;
+            }
+
+            #endregion
+
+            #region Actions
+
+            public void Transition()
+            {
+                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f)
+                {
+                    ActionEvents._Update += ActionEvents__Update;
+                    transitionUI = true;
+                }
+                else
+                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+            }
+
+            public async Task<bool> TransitionAsync()
+            {
+                if(transitionable != null && !IsCompleted() && transitionSpeed > 0.0f)
+                {
+                    ActionEvents._Update += ActionEvents__Update;
+
+                    transitionUI = true;
+
+                    while (transitionUI && !IsCompleted())
+                        await Task.Yield();
+
+                    return IsCompleted();
+                }
+                else
+                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+
+                return false;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class DataPacket
         {
             #region Components
@@ -17497,7 +17693,7 @@ namespace Com.RedicalGames.Filar
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
             protected HomeMenuWidget homeMenuWidget;
             protected UIMessageDisplayerWidget messageDisplayerWidget;
-            protected LoginViewWidget loginViewWidget;
+            protected SignInWidget signInWidget;
 
             #endregion
 
@@ -17955,19 +18151,6 @@ namespace Com.RedicalGames.Filar
                                     case InputActionButtonType.SignInButton:
 
                                         OnSignIn_ActionEvents(dataPackets);
-
-                                        break;
-
-                                    case InputActionButtonType.SignUpSelectionButton:
-
-                                        OnSignUpSelection_ActionEvents(dataPackets);
-
-                                        break;
-
-
-                                    case InputActionButtonType.SignInSelectionButton:
-
-                                        OnSignInSelection_ActionEvents(dataPackets);
 
                                         break;
 
@@ -18892,6 +19075,26 @@ namespace Com.RedicalGames.Filar
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         break;
+
+                    case WidgetType.LoginWarningWidget:
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+
+                        SceneDataPackets loginViewDataPackets = new SceneDataPackets
+                        {
+                            screenType = dataPackets.screenType,
+                            widgetType = WidgetType.LoginViewWidget,
+                            blurScreen = true,
+                            blurContainerLayerType = ScreenBlurContainerLayerType.Background
+                        };
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(loginViewDataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
+
+                        break;
                 }
             }
 
@@ -19312,32 +19515,6 @@ namespace Com.RedicalGames.Filar
             }
 
             void OnSignIn_ActionEvents(SceneDataPackets dataPackets)
-            {
-                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
-                {
-                    if (screenManagerValidCallbackResults.Success())
-                    {
-
-                    }
-                    else
-                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
-                });
-            }
-
-            void OnSignUpSelection_ActionEvents(SceneDataPackets dataPackets)
-            {
-                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
-                {
-                    if (screenManagerValidCallbackResults.Success())
-                    {
-
-                    }
-                    else
-                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
-                });
-            }
-
-            void OnSignInSelection_ActionEvents(SceneDataPackets dataPackets)
             {
                 Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
                 {
