@@ -237,6 +237,7 @@ namespace Com.RedicalGames.Filar
             SignUpButton,
             SignUp_SignIn_SelectionButton,
             SkipSignInSelectionButton,
+            OfflineModeButton,
             None
         }
 

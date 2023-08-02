@@ -247,7 +247,7 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 if(profileManagerCallbackResults.data.SignedIn == false)
                                                                 {
-                                                                    screenManager.GetScreen(screenLoadedCallbackResults.data.screenType, loadedScreenCallbacResults => 
+                                                                    screenManager.GetScreen(screenLoadedCallbackResults.data.screenType, async loadedScreenCallbacResults => 
                                                                     {
                                                                         if (loadedScreenCallbacResults.Success())
                                                                         {
@@ -259,7 +259,23 @@ namespace Com.RedicalGames.Filar
                                                                                 blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Background
                                                                             };
 
-                                                                            loadedScreenCallbacResults.data.value.ShowWidget(dataPackets);
+                                                                            var success = await CheckConnectionStatus();
+
+                                                                            if(success)
+                                                                                loadedScreenCallbacResults.data.value.ShowWidget(dataPackets);
+                                                                            else
+                                                                            {
+                                                                                AppData.SceneDataPackets networkDataPackets = new AppData.SceneDataPackets
+                                                                                {
+                                                                                    screenType = AppData.UIScreenType.LandingPageScreen,
+                                                                                    widgetType = AppData.WidgetType.NetworkNotificationWidget,
+                                                                                    blurScreen = true,
+                                                                                    blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                                                                                };
+
+                                                                                loadedScreenCallbacResults.data.value.ShowWidget(networkDataPackets);
+                                                                                LogError(" <++++++++++++++++++++++++++> Show Network Error Pop-Up", this);
+                                                                            }
                                                                         }
                                                                     });
                                                                 }
@@ -331,6 +347,29 @@ namespace Com.RedicalGames.Filar
 
             callback.Invoke(callbackResults);
         }
+
+        #region Networking
+
+        public async Task<bool> CheckConnectionStatus()
+        {
+            float timeOut = 3.0f;
+
+            await Task.Delay(1000);
+
+           while(Application.internetReachability == NetworkReachability.NotReachable || timeOut > 0.0f)
+            {
+                timeOut -= 1 * Time.deltaTime;;
+
+                if (Application.internetReachability != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
+                    break;
+
+                await Task.Yield();
+            }
+
+            return Application.internetReachability != NetworkReachability.NotReachable;
+        }
+
+        #endregion
 
         #endregion
     }
