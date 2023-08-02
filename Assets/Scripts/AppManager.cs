@@ -256,7 +256,7 @@ namespace Com.RedicalGames.Filar
                                                                                 screenType = AppData.UIScreenType.LandingPageScreen,
                                                                                 widgetType = AppData.WidgetType.LoginViewWidget,
                                                                                 blurScreen = true,
-                                                                                blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                                                                                blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Background
                                                                             };
 
                                                                             loadedScreenCallbacResults.data.value.ShowWidget(dataPackets);

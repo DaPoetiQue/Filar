@@ -132,7 +132,8 @@ namespace Com.RedicalGames.Filar
             ProjectCreationWarningWidget,
             HomeMenuWidget,
             MessageDisplayerWidget,
-            LoginViewWidget
+            LoginViewWidget,
+            LoginWarningWidget
         }
 
         public enum SubWidgetType
@@ -232,6 +233,11 @@ namespace Com.RedicalGames.Filar
             GoToHomeButton,
             OpenProfileButton,
             OpenInboxButton,
+            SignInButton,
+            SignUpButton,
+            SignInSelectionButton,
+            SignUpSelectionButton,
+            SkipSignInSelectionButton,
             None
         }
 
@@ -17938,6 +17944,38 @@ namespace Com.RedicalGames.Filar
                                         OnOpenSettings_ActionEvents(dataPackets);
 
                                         break;
+
+                                    case InputActionButtonType.SignUpButton:
+
+                                        OnSignUp_ActionEvents(dataPackets);
+
+                                        break;
+
+
+                                    case InputActionButtonType.SignInButton:
+
+                                        OnSignIn_ActionEvents(dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.SignUpSelectionButton:
+
+                                        OnSignUpSelection_ActionEvents(dataPackets);
+
+                                        break;
+
+
+                                    case InputActionButtonType.SignInSelectionButton:
+
+                                        OnSignInSelection_ActionEvents(dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.SkipSignInSelectionButton:
+
+                                        OnSkipSignIn_ActionEvents(dataPackets);
+
+                                        break;
                                 }
                             }
                             else
@@ -19258,6 +19296,73 @@ namespace Com.RedicalGames.Filar
                     else
                         Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
                 });
+            }
+
+            void OnSignUp_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnSignIn_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnSignUpSelection_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnSignInSelection_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnSkipSignIn_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
+                    }
+
+                }, "Screen UI Manager Is Not Yet Initialized.");
             }
 
             #endregion
