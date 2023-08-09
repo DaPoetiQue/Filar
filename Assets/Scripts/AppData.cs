@@ -1665,7 +1665,9 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            LoadingSequenceID sequenceID;
+            [Space(5)]
+            public LoadingSequenceID sequenceID;
+
             SequenceData sequenceData;
             bool completed;
 
