@@ -22,11 +22,11 @@ namespace Com.RedicalGames.Filar
             // Initialize Assets.
             Init((callback) =>
             {
-                if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                     if (screenManager == null)
                         screenManager = ScreenUIManager.Instance;
                     else
-                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {callback.results}.");
+                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {callback.result}.");
                 else
                     Debug.LogWarning("--> Failed to Initialize Scene Asset UI.");
             });

@@ -59,7 +59,7 @@ namespace Com.RedicalGames.Filar
         {
             switch (dataPackets.action)
             {
-                case AppData.InputActionButtonType.HideScreenWidget:
+                case AppData.InputActionButtonType.CloseButton:
 
                     CloseWidget(this);
 
@@ -125,7 +125,7 @@ namespace Com.RedicalGames.Filar
             SetInputFieldValue(AppData.InputFieldActionType.ColorReferenceImageURLField, string.Empty, (setValueCallbackResults) =>
             {
                 if (!setValueCallbackResults.Success())
-                    Log(setValueCallbackResults.resultsCode, setValueCallbackResults.results, this);
+                    Log(setValueCallbackResults.resultCode, setValueCallbackResults.result, this);
             });
         }
 
@@ -173,7 +173,7 @@ namespace Com.RedicalGames.Filar
                     if (setValueCallbackResults.Success())
                         this.directoryData = directoryData;
                     else
-                        Log(setValueCallbackResults.resultsCode, setValueCallbackResults.results, this);
+                        Log(setValueCallbackResults.resultCode, setValueCallbackResults.result, this);
                 });
             }
         }
@@ -191,15 +191,15 @@ namespace Com.RedicalGames.Filar
                 loadingSpinner.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Enabled);
 
                 AppData.ScreenLoadingInitializationData loadingData = new AppData.ScreenLoadingInitializationData();
-                loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.DefaultScreenRefreshDuration).value;
+                loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultScreenRefreshDuration).value;
                 loadingData.isLargeFileSize = isLargeFileSize;
 
                 loadingSpinner.AddLoadingData(loadingData);
 
                 loadingSpinner.Show((spinnerCallbakResults) =>
                 {
-                    if (!AppData.Helpers.IsSuccessCode(spinnerCallbakResults.resultsCode))
-                        Debug.LogWarning($"--> GenerateColorData Failed With Results : {spinnerCallbakResults.results}");
+                    if (!AppData.Helpers.IsSuccessCode(spinnerCallbakResults.resultCode))
+                        Debug.LogWarning($"--> GenerateColorData Failed With Results : {spinnerCallbakResults.result}");
                 });
 
                 if (texture != null)
@@ -244,15 +244,15 @@ namespace Com.RedicalGames.Filar
             for (int i = 0; i < generatedColorInfoList.Count; i++)
                 SceneAssetsManager.Instance.GetHexidecimalFromColor(generatedColorInfoList[i].color, (getHexCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(getHexCallbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(getHexCallbackResults.resultCode))
                         generatedColorInfoList[i] = getHexCallbackResults.data;
                     else
-                        Debug.LogWarning($"--> OnCreateGeneratedColorInfo - SceneAssetsManager's GetHexidecimalFromColor Failed With Results : {getHexCallbackResults.results}");
+                        Debug.LogWarning($"--> OnCreateGeneratedColorInfo - SceneAssetsManager's GetHexidecimalFromColor Failed With Results : {getHexCallbackResults.result}");
                 });
 
             loadingSpinner.SetScreenTextContent("Please Wait - Populating Color Swatch...", AppData.ScreenTextType.MessageDisplayer);
             loadingSpinner.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Disabled);
-            loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.DefaultScreenRefreshDuration).value;
+            loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultScreenRefreshDuration).value;
             loadingData.isLargeFileSize = false;
 
             loadingSpinner.AddLoadingData(loadingData);
@@ -261,10 +261,10 @@ namespace Com.RedicalGames.Filar
             {
                 colorPalletWidget.OnGenerateNewColorSwatch(generatedColorInfoList, (generatedColorsCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(generatedColorsCallbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(generatedColorsCallbackResults.resultCode))
                         loadingSpinner.OnLoadingCompleted();
                     else
-                        Debug.LogWarning($"--> OnCreateGeneratedColorInfo's OnGenerateNewColorSwatch Failed With Results : {generatedColorsCallbackResults.results}");
+                        Debug.LogWarning($"--> OnCreateGeneratedColorInfo's OnGenerateNewColorSwatch Failed With Results : {generatedColorsCallbackResults.result}");
                 });
 
                 Debug.LogError("==> Populating Swatch.");
@@ -361,7 +361,7 @@ namespace Com.RedicalGames.Filar
                     if (setValueCallbackResults.Success())
                         parentWidget.HideChildWidget(AppData.SettingsWidgetType.ScreenWarningInfoWidget);
                     else
-                        Log(setValueCallbackResults.resultsCode, setValueCallbackResults.results, this);
+                        Log(setValueCallbackResults.resultCode, setValueCallbackResults.result, this);
                 });
             }
         }

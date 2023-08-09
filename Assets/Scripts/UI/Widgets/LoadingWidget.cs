@@ -96,7 +96,7 @@ namespace Com.RedicalGames.Filar
 
                         TriggerOnRefreshCompletedEvent();
 
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         callback?.Invoke(callbackResults);
                     }
                     else
@@ -119,7 +119,7 @@ namespace Com.RedicalGames.Filar
 
                             TriggerOnRefreshCompletedEvent();
 
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             callback?.Invoke(callbackResults);
                         }
                     }
@@ -163,6 +163,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new NotImplementedException();
         }

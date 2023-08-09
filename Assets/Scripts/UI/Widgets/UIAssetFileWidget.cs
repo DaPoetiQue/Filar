@@ -26,7 +26,7 @@ namespace Com.RedicalGames.Filar
                     if (screenManager == null)
                         screenManager = ScreenUIManager.Instance;
                     else
-                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {initializationCallbackResults.results}.");
+                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {initializationCallbackResults.result}.");
                 }
                 else
                     LogError("Failed to Initialize Scene Asset UI.", this);

@@ -64,7 +64,7 @@ namespace Com.RedicalGames.Filar
                                 LogWarning($"GetPlaceHolder Failed - Placeholder Is Not Active In The Scene.", this);
                         }
                         else
-                            Log(placeHolderCallbackResults.resultsCode, placeHolderCallbackResults.results, this);
+                            Log(placeHolderCallbackResults.resultCode, placeHolderCallbackResults.result, this);
                     });
 
                     SceneAssetsManager.Instance.CreateNewFolderName = SceneAssetsManager.Instance.GetCreateNewFolderTempName();
@@ -75,7 +75,7 @@ namespace Com.RedicalGames.Filar
                     ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
                 }
                 else
-                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
             });
         }
 
@@ -93,7 +93,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(placeholderCallbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(placeholderCallbackResults.resultCode))
                                     {
                                         if (placeholderCallbackResults.data.IsActive())
                                             placeholderCallbackResults.data.ResetPlaceHolder();
@@ -101,11 +101,11 @@ namespace Com.RedicalGames.Filar
                                             LogWarning("Reset Place Holder Failed - Plave Holder Is Not Active In The Scene.", this);
                                     }
                                     else
-                                        Log(placeholderCallbackResults.resultsCode, placeholderCallbackResults.results, this);
+                                        Log(placeholderCallbackResults.resultCode, placeholderCallbackResults.result, this);
                                 });
                             }
                             else
-                                Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                                Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                         });
                     }
                     else
@@ -151,6 +151,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
         }

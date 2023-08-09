@@ -67,20 +67,21 @@ namespace Com.RedicalGames.Filar
 
         #region Generic Log Info Functions
 
-        new public void Log<T>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+        new public void Log<T>(AppData.LogInfoChannel logInfoType, string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(logInfoType, logMessage, fromClass?.name, logFunc);
 
-        public void Logger<T>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action logFunc = null) where T : AppData.DataDebugger => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+        public void Logger<T>(AppData.LogInfoChannel logInfoType, string logMessage, T fromClass = null, Action logFunc = null) where T : AppData.DataDebugger => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+        public void Logger(AppData.LogInfoChannel logInfoType, string logMessage, string fromClassName = null, Action logFunc = null) => Log(logInfoType, logMessage, fromClassName, logFunc);
 
-        new public void Log<T, U>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action<U> logFunc = null) where T : UnityEngine.Object where U : AppData.Callback => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+        new public void Log<T, U>(AppData.LogInfoChannel logInfoType, string logMessage, T fromClass = null, Action<U> logFunc = null) where T : UnityEngine.Object where U : AppData.Callback => Log(logInfoType, logMessage, fromClass?.name, logFunc);
 
-        new public void Logger<T, U>(AppData.LogInfoType logInfoType, string logMessage, T fromClass = null, Action<U> logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => Log(logInfoType, logMessage, fromClass?.name, logFunc);
+        new public void Logger<T, U>(AppData.LogInfoChannel logInfoType, string logMessage, T fromClass = null, Action<U> logFunc = null) where T : AppData.DataDebugger where U : AppData.Callback => Log(logInfoType, logMessage, fromClass?.name, logFunc);
 
-        new public void Log(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action logFunc = null)
+        new public void Log(AppData.LogInfoChannel logInfoType, string logMessage, string fromClass = null, Action logFunc = null)
         {
-            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.None || logInfoType == AppData.LogInfoType.None)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoChannel.None || logInfoType == AppData.LogInfoChannel.None)
                 return;
 
-            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoChannel.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
             {
                 #region Symbols Info
 
@@ -122,12 +123,12 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void Log<U>(AppData.LogInfoType logInfoType, string logMessage, string fromClass = null, Action<U> logFunc = null) where U : AppData.Callback
+        public void Log<U>(AppData.LogInfoChannel logInfoType, string logMessage, string fromClass = null, Action<U> logFunc = null) where U : AppData.Callback
         {
-            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.None)
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoChannel.None)
                 return;
 
-            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoType.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
+            if (GetDebugMonoHeaderAttributes().GetEnabledLogInfoType() == AppData.LogInfoChannel.All || logInfoType == GetDebugMonoHeaderAttributes().GetEnabledLogInfoType())
             {
                 #region Symbols Info
 
@@ -206,33 +207,33 @@ namespace Com.RedicalGames.Filar
 
         #region Info
 
-        new public void LogInfo(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoType.Info, logMessage, fromClass, logFunc);
+        new public void LogInfo(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoChannel.Debug, logMessage, fromClass, logFunc);
 
-        new public void LogInfo<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoType.Info, logMessage, fromClass, logFunc);
+        new public void LogInfo<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoChannel.Debug, logMessage, fromClass, logFunc);
 
         #endregion
 
         #region Success
 
-        new public void LogSuccess(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoType.Success, logMessage, fromClass, logFunc);
+        new public void LogSuccess(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoChannel.Success, logMessage, fromClass, logFunc);
 
-        new public void LogSuccess<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoType.Success, logMessage, fromClass, logFunc);
+        new public void LogSuccess<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoChannel.Success, logMessage, fromClass, logFunc);
 
         #endregion
 
         #region Warnings
 
-        new public void LogWarning(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoType.Warning, logMessage, fromClass, logFunc);
+        new public void LogWarning(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoChannel.Warning, logMessage, fromClass, logFunc);
 
-        new public void LogWarning<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoType.Warning, logMessage, fromClass, logFunc);
+        new public void LogWarning<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoChannel.Warning, logMessage, fromClass, logFunc);
 
         #endregion
 
         #region Errors
 
-        new public void LogError(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoType.Error, logMessage, fromClass, logFunc);
+        new public void LogError(string logMessage, string fromClass = null, Action logFunc = null) => Log(AppData.LogInfoChannel.Error, logMessage, fromClass, logFunc);
 
-        new public void LogError<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoType.Error, logMessage, fromClass, logFunc);
+        new public void LogError<T>(string logMessage, T fromClass = null, Action logFunc = null) where T : UnityEngine.Object => Log(AppData.LogInfoChannel.Error, logMessage, fromClass, logFunc);
 
         #endregion
 
@@ -369,12 +370,12 @@ namespace Com.RedicalGames.Filar
 
         #region Log Info Data Accessors
 
-        public AppData.MonoLogInfo GetLogInfo(AppData.LogInfoType logAttribute)
+        public AppData.MonoLogInfo GetLogInfo(AppData.LogInfoChannel logAttribute)
         {
             AppData.MonoLogInfo logInfo = new AppData.MonoLogInfo
             {
                 attributeName = "Default",
-                logType = AppData.LogInfoType.None,
+                logType = AppData.LogInfoChannel.None,
                 logColorValue = "white"
             };
 
