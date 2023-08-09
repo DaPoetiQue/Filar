@@ -141,29 +141,17 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    #region Loading Sequence Initialization
-
                                     if(screenLoadInfoInstance.HasSequenceInstances())
                                     {
-                                        //AppData.SequenceInstance networkSequenceInstance = new AppData.SequenceInstance("Network Check Loading Sequence Data", AppData.LoadingSequenceID.CheckingNetworkConnection);
-                                        //AppData.SequenceInstance initializationSequenceInstance = new AppData.SequenceInstance("App Initialization Loading Sequence Data", AppData.LoadingSequenceID.AppInitialization);
-                                        //AppData.SequenceInstance compatibilitySequenceInstance = new AppData.SequenceInstance("App Compatibility Loading Sequence Data", AppData.LoadingSequenceID.CheckingAppCompatibility);
-                                        //AppData.SequenceInstance storageSequenceInstance = new AppData.SequenceInstance("Storage Loading Sequence Data", AppData.LoadingSequenceID.StorageInitialization);
-                                        //AppData.SequenceInstance profileSequenceInstance = new AppData.SequenceInstance("Profile", AppData.LoadingSequenceID.CheckingProfile);
-                                        //AppData.SequenceInstance fetchProfileSequenceInstance = new AppData.SequenceInstance("Profile", AppData.LoadingSequenceID.FetchProfile);
-                                        //AppData.SequenceInstance assetsSequenceInstance = new AppData.SequenceInstance("Assets Loading Sequence Data", AppData.LoadingSequenceID.InitializingUserAssets);
-
-                                        #endregion
-
                                         #region Staging Sequences
 
-                                        GetLoadingSequence().StageSequence(sequencesStagedCallbackResults =>
+                                        GetLoadingSequence().StageSequence(async sequencesStagedCallbackResults =>
                                         {
                                             callbackResults.SetResult(sequencesStagedCallbackResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                GetLoadingSequence().Process(loadingSequenceCallbackResults =>
+                                                await GetLoadingSequence().Process(loadingSequenceCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(loadingSequenceCallbackResults);
 
@@ -180,13 +168,9 @@ namespace Com.RedicalGames.Filar
 
                                         #region Processing Loading Sequence
 
-                                        LogInfo($" <++++++++++++++++++++++++++++++> Initial Load - Code : {callbackResults.resultCode} - Results : {callbackResults.result} - Complted : {GetLoadingSequence().Completed()}", this);
-
                                         if (callbackResults.Success())
                                         {
                                             await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
-
-                                            LogInfo($" <++++++++++++++++++++++++++++++> Initial Load Running : {GetLoadingSequence().IsRunning()} - Sequence List Count : {GetLoadingSequence().GetSequenceDataCount()}", this);
 
                                             while (GetLoadingSequence().IsRunning())
                                                 await Task.Yield();

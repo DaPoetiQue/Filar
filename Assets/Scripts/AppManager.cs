@@ -35,7 +35,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.AppProjectSupportType testProjectSupport;
+        AppData.Compatibility testProjectSupport;
 
         [Space(5)]
         [SerializeField]
@@ -246,7 +246,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        AppData.AppProjectSupportType GetProjectSupportType()
+        AppData.Compatibility GetProjectSupportType()
         {
             return testProjectSupport;
         }
@@ -451,13 +451,15 @@ namespace Com.RedicalGames.Filar
 
         #region Networking
 
-        public async Task<bool> CheckConnectionStatus()
+        public async Task<AppData.Callback> CheckConnectionStatus()
         {
-            float timeOut = 3.0f;
+            AppData.Callback callbackResults = new AppData.Callback();
 
-            await Task.Delay(1000);
+            float timeOut = DefaultTimeOut();
 
-           while(Application.internetReachability == NetworkReachability.NotReachable || timeOut > 0.0f)
+            await Task.Delay(NetworkConnectionDelay());
+
+            while(Application.internetReachability == NetworkReachability.NotReachable || timeOut > 0.0f)
             {
                 timeOut -= 1 * Time.deltaTime;;
 
@@ -467,7 +469,122 @@ namespace Com.RedicalGames.Filar
                 await Task.Yield();
             }
 
-            return Application.internetReachability != NetworkReachability.NotReachable;
+            string result = (Application.internetReachability != NetworkReachability.NotReachable)? "Network Connection Available." : "Network Connection Not Available.";
+            callbackResults.SetResults(result, (Application.internetReachability != NetworkReachability.NotReachable)? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+
+            return callbackResults;
+        }
+
+        int NetworkConnectionDelay()
+        {
+            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
+
+            if (sceneAssetsManagerCallbackResults.Success())
+            {
+                var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
+                return AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(AppData.RuntimeExecution.NetworkInitializationDefaultDuration).value);
+            }
+            else
+                Log(sceneAssetsManagerCallbackResults.ResultCode, sceneAssetsManagerCallbackResults.Result, this);
+
+            return 0;
+        }
+
+        #endregion
+
+        #region Time
+
+        float DefaultTimeOut()
+        {
+            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
+
+            if (sceneAssetsManagerCallbackResults.Success())
+            {
+                var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
+                return AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultAppTimeout).value);
+            }
+            else
+                Log(sceneAssetsManagerCallbackResults.ResultCode, sceneAssetsManagerCallbackResults.Result, this);
+
+            return 0;
+        }
+
+        #endregion
+
+        #region Permissions
+
+        public async Task<AppData.Callback> PermissionsGranted()
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            await Task.Delay(2000);
+
+            callbackResults.result = "Permissions Granted.";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            return callbackResults;
+        }
+
+        #endregion
+
+        #region Compatibility
+
+        public async Task<AppData.CallbackData<AppData.Compatibility>> CompatibilityStatus()
+        {
+            AppData.CallbackData<AppData.Compatibility> callbackResults = new AppData.CallbackData<AppData.Compatibility>();
+
+            await Task.Delay(2000);
+
+            callbackResults.result = "Permissions Granted.";
+            callbackResults.data = AppData.Compatibility.Supports_AR;
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            return callbackResults;
+        }
+
+        #endregion
+
+
+        #region Storage
+
+        public async Task<AppData.Callback> StorageInitialized()
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            await Task.Delay(2000);
+
+            callbackResults.result = "Storage Initialized.";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            return callbackResults;
+        }
+
+        #endregion
+
+        #region Profile
+
+        public async Task<AppData.Callback> ProfileInitialization()
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            await Task.Delay(2000);
+
+            callbackResults.result = "Profile Initialization.";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            return callbackResults;
+        }
+
+        public async Task<AppData.Callback> ProfileInitialized()
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            await Task.Delay(2000);
+
+            callbackResults.result = "Profile Initialized.";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            return callbackResults;
         }
 
         #endregion
