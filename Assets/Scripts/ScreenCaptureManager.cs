@@ -84,7 +84,7 @@ namespace Com.RedicalGames.Filar
 
             screenCaptureRoutine = StartCoroutine(OnScreenCaptureAsync((screenCapture) =>
             {
-                if (AppData.Helpers.IsSuccessCode(screenCapture.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(screenCapture.resultCode))
                     captureData = screenCapture.data;
 
                 callback?.Invoke(screenCapture);
@@ -150,15 +150,15 @@ namespace Com.RedicalGames.Filar
 
                 AppData.ActionEvents.OnPlayAudioEvent(AppData.AudioType.CameraShutter);
 
-                callbackResults.results = "Success : Screen Captured.";
+                callbackResults.result = "Success : Screen Captured.";
                 callbackResults.data = captureData;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Failed : Screen Captured Texture Is Null.";
+                callbackResults.result = "Failed : Screen Captured Texture Is Null.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);

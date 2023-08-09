@@ -127,8 +127,8 @@ namespace Com.RedicalGames.Filar
                     {
                         CreateSkyboxWidget(skyboxData, AppData.ContentContainerType.SkyboxContent, AppData.OrientationType.Horizontal, (created) =>
                         {
-                            if (!AppData.Helpers.IsSuccessCode(created.resultsCode))
-                                LogWarning(created.results, this, () => CreateUIWidgets());
+                            if (!AppData.Helpers.IsSuccessCode(created.resultCode))
+                                LogWarning(created.result, this, () => CreateUIWidgets());
                         });
                     }
                 }
@@ -736,22 +736,22 @@ namespace Com.RedicalGames.Filar
 
                 if (shader.value != null)
                 {
-                    callbackResults.results = "Success : Material Shader Loaded.";
+                    callbackResults.result = "Success : Material Shader Loaded.";
                     callbackResults.data = shader;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Failed : Material Shader Value Is Missing  / Null.";
+                    callbackResults.result = "Failed : Material Shader Value Is Missing  / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Failed : Material Shader List Is Empty / Null.";
+                callbackResults.result = "Failed : Material Shader List Is Empty / Null.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -776,7 +776,7 @@ namespace Com.RedicalGames.Filar
                 callbackResults = created;
             });
 
-            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
             callback?.Invoke(callbackResults);
         }
@@ -796,7 +796,7 @@ namespace Com.RedicalGames.Filar
 
             //renderingSettings.CurrentSkyboxSettings = settings;
 
-            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
             callback?.Invoke(callbackResults);
         }
@@ -827,25 +827,25 @@ namespace Com.RedicalGames.Filar
 
                         AddContentToDynamicWidgetContainer(skyboxAsset.GetComponent<AppData.UIScreenWidget>(), container, orientationType);
 
-                        callbackResults.results = "Skybox Handler Created Successfully.";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = "Skybox Handler Created Successfully.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Create Skybox Handler Failed : skyboxAsset Was Instantiated.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = "Create Skybox Handler Failed : skyboxAsset Was Instantiated.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Create Skybox Handler Failed : skyboxUIHandlerPrefab Is Null.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "Create Skybox Handler Failed : skyboxUIHandlerPrefab Is Null.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "AddContentToDynamicWidgetContainer Failed : DynamicWidgetsContainer Is Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "AddContentToDynamicWidgetContainer Failed : DynamicWidgetsContainer Is Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);

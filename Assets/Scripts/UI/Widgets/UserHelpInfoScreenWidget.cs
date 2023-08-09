@@ -70,15 +70,15 @@ namespace Com.RedicalGames.Filar
 
             if(view != null)
             {
-                callbackResults.results = "View Found.";
+                callbackResults.result = "View Found.";
                 callbackResults.data = view;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "View Is Not Assigned / Null.";
+                callbackResults.result = "View Is Not Assigned / Null.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -90,6 +90,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new NotImplementedException();
         }

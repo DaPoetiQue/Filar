@@ -25,7 +25,7 @@ namespace Com.RedicalGames.Filar
             // Initialize Assets.
             Init((callback) =>
             {
-                if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                 {
                     if (screenManager == null)
                         screenManager = ScreenUIManager.Instance;
@@ -33,7 +33,7 @@ namespace Com.RedicalGames.Filar
                         LogError($"Screen UI Manager Instance Is Not Yet Initialized.");
                 }
                 else
-                    Log(callback.resultsCode, callback.results, this);
+                    Log(callback.resultCode, callback.result, this);
             });
         }
 
@@ -55,10 +55,10 @@ namespace Com.RedicalGames.Filar
 
                     RenderingSettingsManager.Instance.ApplySkyboxSettings(skyboxData.lightingSettings, (applied) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(applied.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(applied.resultCode))
                             Debug.Log($"==> Selected Skybox : {skyboxData.name}");
                         else
-                            Debug.LogWarning($"--> Failed With Results : {applied.results}");
+                            Debug.LogWarning($"--> Failed With Results : {applied.result}");
                     });
 
                     break;

@@ -41,7 +41,7 @@ namespace Com.RedicalGames.Filar
                 SetInputFieldValue(AppData.InputFieldActionType.ColorPromptField, randomColor, (colorNameFieldCallbackResults) =>
                 {
                     if (!colorNameFieldCallbackResults.Success())
-                        Log(colorNameFieldCallbackResults.resultsCode, colorNameFieldCallbackResults.results, this);
+                        Log(colorNameFieldCallbackResults.resultCode, colorNameFieldCallbackResults.result, this);
                 });
             }
             else
@@ -82,7 +82,7 @@ namespace Com.RedicalGames.Filar
         {
             switch (dataPackets.action)
             {
-                case AppData.InputActionButtonType.HideScreenWidget:
+                case AppData.InputActionButtonType.CloseButton:
 
                     CloseWidget(this);
 
@@ -94,13 +94,13 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.GetHexidecimalFromColor(colorInfo.color, (newColorCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(newColorCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(newColorCallbackResults.resultCode))
                             {
                                 AppData.ActionEvents.OnSwatchColorPickedEvent(newColorCallbackResults.data, true, false);
                                 CloseWidget(this);
                             }
                             else
-                                Debug.LogWarning($"--> OnActionButtonClickedEvent's GetHexidecimalFromColor Failed With Results : {newColorCallbackResults.results}");
+                                Debug.LogWarning($"--> OnActionButtonClickedEvent's GetHexidecimalFromColor Failed With Results : {newColorCallbackResults.result}");
                         });
                     }
                     else
@@ -145,7 +145,7 @@ namespace Com.RedicalGames.Filar
                 {
                     AppData.Helpers.ConvertNameToColor(value, (converColorCallbackResults) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(converColorCallbackResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(converColorCallbackResults.resultCode))
                         {
                             colorResultsDisplayer.color = converColorCallbackResults.data;
                             SetColorPickerButtonState(AppData.InputUIState.Enabled);
@@ -200,11 +200,11 @@ namespace Com.RedicalGames.Filar
                         if (fieldSetCallbackResults.Success())
                             OnResetColorInfo();
                         else
-                            Log(fieldSetCallbackResults.resultsCode, fieldSetCallbackResults.results, this);
+                            Log(fieldSetCallbackResults.resultCode, fieldSetCallbackResults.result, this);
                     });
                 }
                 else
-                    Log(inputFieldInitializedCallbackResults.resultsCode, inputFieldInitializedCallbackResults.results, this);
+                    Log(inputFieldInitializedCallbackResults.resultCode, inputFieldInitializedCallbackResults.result, this);
             });
         }
 
@@ -216,10 +216,10 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionButtonInitialized((buttonsInitializedCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(buttonsInitializedCallbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(buttonsInitializedCallbackResults.resultCode))
                         SetActionButtonState(AppData.InputActionButtonType.ColorPickerButton, state);
                     else
-                        Debug.LogWarning($"--> OnWidgetOpened's OnActionButtonInitialized Failed With Results : {buttonsInitializedCallbackResults.results}");
+                        Debug.LogWarning($"--> OnWidgetOpened's OnActionButtonInitialized Failed With Results : {buttonsInitializedCallbackResults.result}");
                 });
             }
         }
@@ -260,7 +260,7 @@ namespace Com.RedicalGames.Filar
                     SetInputFieldValue(AppData.InputFieldActionType.ColorPromptField, executableCommandsList[0], (colorNameFieldCallbackResults) =>
                     {
                         if (!colorNameFieldCallbackResults.Success())
-                            Log(colorNameFieldCallbackResults.resultsCode, colorNameFieldCallbackResults.results, this);
+                            Log(colorNameFieldCallbackResults.resultCode, colorNameFieldCallbackResults.result, this);
                     });
                 }
 

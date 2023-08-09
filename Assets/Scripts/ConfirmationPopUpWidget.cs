@@ -80,7 +80,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 SceneAssetsManager.Instance.GetSortedWidgetsFromList(selectedWidgets, GetSelectableAssetType(), getFolderStructureSelectionData =>
                                                 {
-                                                    if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultsCode))
+                                                    if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                                     {
                                                         int contentCount = getFolderStructureSelectionData.data.Count;
 
@@ -90,15 +90,15 @@ namespace Com.RedicalGames.Filar
                                                             UpdateWidgetsSelection(getFolderStructureSelectionData.data);
                                                     }
                                                     else
-                                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.results}");
+                                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.result}");
                                                 });
                                             }
                                             else
-                                                Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                                                Log(valueAssignedCallbackResults.resultCode, valueAssignedCallbackResults.result, this);
                                         });
                                     }
                                     else
-                                        Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                                        Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                                 });
                             }
                             else
@@ -117,7 +117,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         SceneAssetsManager.Instance.GetSortedWidgetsFromList(currentSelections, GetSelectableAssetType(), getFolderStructureSelectionData =>
                                         {
-                                            if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultsCode))
+                                            if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                             {
                                                 int contentCount = getFolderStructureSelectionData.data.Count;
 
@@ -150,23 +150,23 @@ namespace Com.RedicalGames.Filar
                                                             Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed - Widget Is Null.");
                                                     }
                                                     else
-                                                        Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                                                        Log(valueAssignedCallbackResults.resultCode, valueAssignedCallbackResults.result, this);
                                                 });
                                             }
                                             else
-                                                Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.results}");
+                                                Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.result}");
                                         });
                                     }
                                     else
                                         Debug.LogWarning("--> OnScreenWidget's GetCurrentSelections Failed - No Selections Found.");
                                 }
                                 else
-                                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                             });
                         }
                     }
                     else
-                        Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                        Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                 });
             }
         }
@@ -203,7 +203,7 @@ namespace Com.RedicalGames.Filar
                 SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
             }
             else
-                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
         }
 
         void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
@@ -280,6 +280,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
         }

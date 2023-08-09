@@ -141,17 +141,43 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         List<AppData.FileData> fileDatas = new List<AppData.FileData>();
 
+
+        #region Library Data
+
+        [Space(15)]
+        [Header("Libraries")]
+
         [Space(5)]
         [SerializeField]
-        AppData.DataPacketsLibrary dataPacketsLibrary = new AppData.DataPacketsLibrary();
+        AppData.ScreenLoadInfoInstanceLibrary screenLoadInfoInstanceLibrary = new AppData.ScreenLoadInfoInstanceLibrary();
 
-        AppData.SceneAsset currentSceneAsset;
+        [Space(5)]
+        [SerializeField]
+        AppData.AppDataStorageSourceLibrary storageSourceLibrary = new AppData.AppDataStorageSourceLibrary();
 
         AppData.SceneAssetLibrary sceneAssetLibrary = new AppData.SceneAssetLibrary();
 
         [Space(5)]
         [SerializeField]
+        AppData.DataPacketsLibrary dataPacketsLibrary = new AppData.DataPacketsLibrary();
+
+
+        #endregion
+
+        #region Assets
+
+
+        [Space(15)]
+        [Header("Assets")]
+
+        [Space(5)]
+        [SerializeField]
         List<AppData.SceneAsset> sceneAssetList = new List<AppData.SceneAsset>();
+
+
+        #endregion
+
+        AppData.SceneAsset currentSceneAsset;
 
         List<AppData.SceneAssetWidget> screenWidgetList = new List<AppData.SceneAssetWidget>();
         AppData.AssetExportData currentAssetExportData = new AppData.AssetExportData();
@@ -238,11 +264,11 @@ namespace Com.RedicalGames.Filar
 
             #region Directories
 
-            AppData.LogInfoType storageResultsCode = (defaultDirectories != null && defaultDirectories.Count > 0) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
+            AppData.LogInfoChannel storageResultsCode = (defaultDirectories != null && defaultDirectories.Count > 0) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
             string storageResults = (storageResultsCode == AppData.Helpers.SuccessCode) ? $"Initializing App With : { defaultDirectories.Count } Storage Directories" : "App Directories Data Missing / Null / Not Yet Initialized In The Unity Inspector Panel.";
 
-            callbackResults.results = storageResults;
-            callbackResults.resultsCode = storageResultsCode;
+            callbackResults.result = storageResults;
+            callbackResults.resultCode = storageResultsCode;
 
             if (callbackResults.Success())
             {
@@ -274,33 +300,33 @@ namespace Com.RedicalGames.Filar
                             type = directory.type
                         };
 
-                        AppData.LogInfoType storageDoesntExistsResultsCode = (!Directory.Exists(formattedDirectory)) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
-                        string storageDoesntExistsResults = (storageDoesntExistsResultsCode == AppData.LogInfoType.Success) ? $"Creating New App Storage Directory : {formattedDirectory}" : $"App Storage Directory { formattedDirectory } Already Exists";
+                        AppData.LogInfoChannel storageDoesntExistsResultsCode = (!Directory.Exists(formattedDirectory)) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
+                        string storageDoesntExistsResults = (storageDoesntExistsResultsCode == AppData.LogInfoChannel.Success) ? $"Creating New App Storage Directory : {formattedDirectory}" : $"App Storage Directory { formattedDirectory } Already Exists";
 
-                        callbackResults.results = storageDoesntExistsResults;
-                        callbackResults.resultsCode = storageDoesntExistsResultsCode;
+                        callbackResults.result = storageDoesntExistsResults;
+                        callbackResults.resultCode = storageDoesntExistsResultsCode;
 
                         if (callbackResults.Success())
                         {
                             CreateDirectory(appDirectory, (directoryCreatedCallbackResults) =>
                             {
-                                callbackResults.results = directoryCreatedCallbackResults.results;
-                                callbackResults.resultsCode = directoryCreatedCallbackResults.resultsCode;
+                                callbackResults.result = directoryCreatedCallbackResults.result;
+                                callbackResults.resultCode = directoryCreatedCallbackResults.resultCode;
 
                                 if (callbackResults.Success())
                                 {
                                     if (!appDirectories.Contains(appDirectory))
                                     {
                                         appDirectories.Add(appDirectory);
-                                        callbackResults.results = $"Created And Added Directory : {directory} To App Directories.";
+                                        callbackResults.result = $"Created And Added Directory : {directory} To App Directories.";
                                     }
                                     else
-                                        callbackResults.results = $"Directory : {directory} Already Exist In App Directories.";
+                                        callbackResults.result = $"Directory : {directory} Already Exist In App Directories.";
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"Failed To Create Directory : {directory}";
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.result = $"Failed To Create Directory : {directory}";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             });
                         }
@@ -310,20 +336,20 @@ namespace Com.RedicalGames.Filar
                             {
                                 appDirectories.Add(appDirectory);
 
-                                callbackResults.results = $"App Storage Directory : {appDirectory} Exists But It's Info Is Not Added To App Directories - Added App Directory : {appDirectory} To App Directories.";
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.result = $"App Storage Directory : {appDirectory} Exists But It's Info Is Not Added To App Directories - Added App Directory : {appDirectory} To App Directories.";
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = $"App Storage Directory : {appDirectory} Already Exists And It's Info Has Been Added To App Directories.";
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.result = $"App Storage Directory : {appDirectory} Already Exists And It's Info Has Been Added To App Directories.";
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"App Storage Directory Data Failed To Be Initialized - Storage Data At Index : {defaultDirectories.IndexOf(directory)} Is Set To default : {directory.type}.";
-                        callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                        callbackResults.result = $"App Storage Directory Data Failed To Be Initialized - Storage Data At Index : {defaultDirectories.IndexOf(directory)} Is Set To default : {directory.type}.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
 
                         break;
                     }
@@ -333,13 +359,13 @@ namespace Com.RedicalGames.Filar
                 {
                     AppData.Helpers.ListComponentHasEqualDataSize<AppData.StorageDirectoryData, AppData.StorageDirectoryData>(appDirectories, defaultDirectories, hasEqualComponentsCallbackResults => 
                     {
-                        callbackResults.results = hasEqualComponentsCallbackResults.results;
-                        callbackResults.resultsCode = hasEqualComponentsCallbackResults.resultsCode;
+                        callbackResults.result = hasEqualComponentsCallbackResults.result;
+                        callbackResults.resultCode = hasEqualComponentsCallbackResults.resultCode;
 
                         if (callbackResults.Success())
-                            callbackResults.results = $" {appDirectories.Count} : App Directory Storage Data(s) Has Been Initialized Successfully";
+                            callbackResults.result = $" {appDirectories.Count} : App Directory Storage Data(s) Has Been Initialized Successfully";
                         else
-                            callbackResults.results = $"Failed To Initialize App Storage Directory Data With Results : {callbackResults.results}";
+                            callbackResults.result = $"Failed To Initialize App Storage Directory Data With Results : {callbackResults.result}";
                     });
                 }
             }
@@ -369,13 +395,13 @@ namespace Com.RedicalGames.Filar
                         {
                             AppData.Helpers.UnityComponentValid(assetContainer.value, "Asset Container Value", objectValidCallbackResults =>
                             {
-                                callbackResults.results = objectValidCallbackResults.results;
-                                callbackResults.resultsCode = objectValidCallbackResults.resultsCode;
+                                callbackResults.result = objectValidCallbackResults.result;
+                                callbackResults.resultCode = objectValidCallbackResults.resultCode;
 
                                 if (!callbackResults.Success())
                                 {
-                                    callbackResults.results = $"Value For Asset Container : {assetContainer.name} Is Null / Missing / Not Assigned In The Editor Inspector.";
-                                    callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                                    callbackResults.result = $"Value For Asset Container : {assetContainer.name} Is Null / Missing / Not Assigned In The Editor Inspector.";
+                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
                                 }
                             });
 
@@ -397,13 +423,13 @@ namespace Com.RedicalGames.Filar
                         {
                             AppData.Helpers.GetComponent(assetContainer, objectValidCallbackResults =>
                             {
-                                callbackResults.results = objectValidCallbackResults.results;
-                                callbackResults.resultsCode = objectValidCallbackResults.resultsCode;
+                                callbackResults.result = objectValidCallbackResults.result;
+                                callbackResults.resultCode = objectValidCallbackResults.resultCode;
 
                                 if (!callbackResults.Success())
                                 {
-                                    callbackResults.results = $"Container For Screen : {assetContainer.name} Missing / Null / Not Assigned In The Inspector Panel.";
-                                    callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                                    callbackResults.result = $"Container For Screen : {assetContainer.name} Missing / Null / Not Assigned In The Inspector Panel.";
+                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
                                 }
                             });
 
@@ -429,14 +455,14 @@ namespace Com.RedicalGames.Filar
 
                             GetLayoutViewType(layoutViewCallbackResults =>
                                 {
-                                    callbackResults.results = layoutViewCallbackResults.results;
-                                    callbackResults.resultsCode = layoutViewCallbackResults.resultsCode;
+                                    callbackResults.result = layoutViewCallbackResults.result;
+                                    callbackResults.resultCode = layoutViewCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                         InitializeFolderLayoutView(layoutViewCallbackResults.data);
                                     else
                                     {
-                                        Log(callbackResults.resultsCode, callbackResults.results, this);
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
                                         callback?.Invoke(callbackResults);
                                     }
                                 });
@@ -475,8 +501,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Scene Assets Manager Has Already Been Initialized.";
-                    callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                    callbackResults.result = "Scene Assets Manager Has Already Been Initialized.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -678,43 +704,43 @@ namespace Com.RedicalGames.Filar
 
             var datas = AppData.Helpers.GetEnumToStringList<T>();
 
-            AppData.Helpers.StringListValueValid(datas, hasComponentsCallbackResults => 
+            AppData.Helpers.StringValueValid(hasComponentsCallbackResults => 
             {
-                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+                callbackResults.resultCode = hasComponentsCallbackResults.resultCode;
             
                 if(callbackResults.Success())
                 {
                     var contentType = datas.Find(x => x.Contains(content));
 
-                    AppData.Helpers.StringValueValid(contentType, valueValidCallbackResults => 
+                    AppData.Helpers.StringValueValid(valueValidCallbackResults => 
                     {
-                        callbackResults.resultsCode = valueValidCallbackResults.resultsCode;
+                        callbackResults.resultCode = valueValidCallbackResults.resultCode;
 
                         if(callbackResults.Success())
                         {
                             int index = datas.IndexOf(contentType);
 
-                            callbackResults.results = $"Content : {content} Is Found At Index : {index}.";
+                            callbackResults.result = $"Content : {content} Is Found At Index : {index}.";
                             callbackResults.data = index;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
-                            LogSuccess($"========================>> Results: {callbackResults.results}", this);
+                            LogSuccess($"========================>> Results: {callbackResults.result}", this);
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Find Type That Matches / Contains Content {content}.";
+                            callbackResults.result = $"Couldn't Find Type That Matches / Contains Content {content}.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
-                    });
+                    }, contentType);
                 }
                 else
                 {
-                    callbackResults.results = $"Failed To Get Data For Enum : Couldn't Get Content : {content}'s Index.";
+                    callbackResults.result = $"Failed To Get Data For Enum : Couldn't Get Content : {content}'s Index.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
-            });
+            }, AppData.Helpers.GetArray(datas));
 
             callback.Invoke(callbackResults);
         }
@@ -736,15 +762,15 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.GetStringToEnumData<T>(type, convertedEnumDataCallbackResults => 
             {
-                callbackResults.results = convertedEnumDataCallbackResults.results;
-                callbackResults.resultsCode = convertedEnumDataCallbackResults.resultsCode;
+                callbackResults.result = convertedEnumDataCallbackResults.result;
+                callbackResults.resultCode = convertedEnumDataCallbackResults.resultCode;
 
                 if (convertedEnumDataCallbackResults.Success())
                 {
                     callbackResults.data = convertedEnumDataCallbackResults.data;
                 }
                 else
-                    Log(convertedEnumDataCallbackResults.resultsCode, convertedEnumDataCallbackResults.results, this);
+                    Log(convertedEnumDataCallbackResults.resultCode, convertedEnumDataCallbackResults.result, this);
             });
 
             callback.Invoke(callbackResults);
@@ -754,17 +780,17 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackDataList<string> callbackResults = new AppData.CallbackDataList<string>();
 
-            AppData.Helpers.StringListValueValid(contents, hasValueCallbackResults => 
+            AppData.Helpers.StringValueValid(hasValueCallbackResults => 
             {
-                callbackResults.resultsCode = hasValueCallbackResults.resultsCode;
+                callbackResults.resultCode = hasValueCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                 {
                     var datas = AppData.Helpers.GetEnumToStringList<T>();
 
-                    AppData.Helpers.StringListValueValid(contents, hasValueCallbackResults => 
+                    AppData.Helpers.StringValueValid(hasValueCallbackResults => 
                     {
-                        callbackResults.resultsCode = hasValueCallbackResults.resultsCode;
+                        callbackResults.resultCode = hasValueCallbackResults.resultCode;
 
                         if(callbackResults.Success())
                         {
@@ -782,35 +808,35 @@ namespace Com.RedicalGames.Filar
                                 }
                             }
 
-                            AppData.Helpers.StringListValueValid(sortedList, hasValueCallbackResults => 
+                            AppData.Helpers.StringValueValid(hasValueCallbackResults => 
                             {
-                                callbackResults.resultsCode = hasValueCallbackResults.resultsCode;
+                                callbackResults.resultCode = hasValueCallbackResults.resultCode;
 
                                 if(callbackResults.Success())
                                 {
-                                    callbackResults.results = $"{sortedList.Count} Content Sorted.";
+                                    callbackResults.result = $"{sortedList.Count} Content Sorted.";
                                     callbackResults.data = sortedList;
                                 }
                                 else
                                 {
-                                    callbackResults.results = "Couldn't Find Any Matching Contents To Sort.";
+                                    callbackResults.result = "Couldn't Find Any Matching Contents To Sort.";
                                     callbackResults.data = default;
                                 }
-                            });
+                            }, AppData.Helpers.GetArray(sortedList));
                         }
                         else
                         {
-                            callbackResults.results = "Couldn't Get Content From Type - Please Check Here.";
+                            callbackResults.result = "Couldn't Get Content From Type - Please Check Here.";
                             callbackResults.data = default;
                         }
-                    });
+                    }, AppData.Helpers.GetArray(contents));
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Content Assigned To Sort.";
+                    callbackResults.result = "There Are No Content Assigned To Sort.";
                     callbackResults.data = default;
                 }
-            });
+            }, AppData.Helpers.GetArray(contents));
 
             callback.Invoke(callbackResults);
         }
@@ -838,11 +864,6 @@ namespace Com.RedicalGames.Filar
                 LogError("Get Dropdown Content Option Relative Index Failed : Options Are Not Initialized / Null.", this);
 
             return index;
-        }
-
-        public AppData.DataPacketsLibrary GetDataPacketsLibrary()
-        {
-            return dataPacketsLibrary;
         }
 
         #endregion
@@ -881,7 +902,7 @@ namespace Com.RedicalGames.Filar
                     });
                 }
                 else
-                    Log(foundContainersCallbackResults.resultsCode, foundContainersCallbackResults.results, this);
+                    Log(foundContainersCallbackResults.resultCode, foundContainersCallbackResults.result, this);
             });
         }
 
@@ -1301,11 +1322,11 @@ namespace Com.RedicalGames.Filar
                 }
 
                 if (assetContainerList.Count == 0)
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 else
                 {
-                    callbackResults.results = "Assets Didn't Clear. Check Here Please.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "Assets Didn't Clear. Check Here Please.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
@@ -1314,7 +1335,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        void AddAssetToContainer(GameObject asset, bool keepWorldPos, bool fitInsideContainer, bool isEnabled, AppData.ContentContainerType containerType, AppData.UIScreenType screenType, AppData.RuntimeValueType sceneAssetScaleValueType, bool keepAssetCentered, bool scaleContent, bool clearContainer = false, bool isImport = false)
+        void AddAssetToContainer(GameObject asset, bool keepWorldPos, bool fitInsideContainer, bool isEnabled, AppData.ContentContainerType containerType, AppData.UIScreenType screenType, AppData.RuntimeExecution sceneAssetScaleValueType, bool keepAssetCentered, bool scaleContent, bool clearContainer = false, bool isImport = false)
         {
             if (assetContainerList.Count > 0)
             {
@@ -1600,7 +1621,7 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
 
-                    AddAssetToContainer(sceneObject.value, false, true, true, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen, AppData.RuntimeValueType.InspectorModeAsseScaleDeviderValue, true, false, true, true);
+                    AddAssetToContainer(sceneObject.value, false, true, true, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen, AppData.RuntimeExecution.InspectorModeAsseScaleDeviderValue, true, false, true, true);
 
                     sceneAssetLibrary.AddSceneAssetObjectToLibrary(sceneAsset);
 
@@ -1669,7 +1690,7 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.ProjectDataComponentValid(projectCategoryInfoList, hasDataCallbackResults => 
             {
-                callbackResults.resultsCode = hasDataCallbackResults.resultsCode;
+                callbackResults.resultCode = hasDataCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -1677,20 +1698,20 @@ namespace Com.RedicalGames.Filar
 
                     if(projectInfo != null)
                     {
-                        callbackResults.results = $"Project Info : {projectInfo.name} For Category : {categoryType} Found / Initialized.";
+                        callbackResults.result = $"Project Info : {projectInfo.name} For Category : {categoryType} Found / Initialized.";
                         callbackResults.data = projectInfo;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Project Info For Category : {categoryType} Not Found / Initialized.";
+                        callbackResults.result = $"Project Info For Category : {categoryType} Not Found / Initialized.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Project Category List Has Not Been Initialized.";
+                    callbackResults.result = "Project Category List Has Not Been Initialized.";
                     callbackResults.data = default;
                 }
             });
@@ -1710,22 +1731,22 @@ namespace Com.RedicalGames.Filar
 
                 if(directoryData != null)
                 {
-                    callbackResults.results = $"App Directory Data Of Type : {directoryType} Found.";
+                    callbackResults.result = $"App Directory Data Of Type : {directoryType} Found.";
                     callbackResults.data = directoryData;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"App Directory Data Of Type : {directoryType} Not Found.";
+                    callbackResults.result = $"App Directory Data Of Type : {directoryType} Not Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "There Are No App Directories Found.";
+                callbackResults.result = "There Are No App Directories Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             return callbackResults;
@@ -1739,7 +1760,7 @@ namespace Com.RedicalGames.Filar
             {
                 DirectoryFound(directoryData.projectDirectory, directoryFoundCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(directoryFoundCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(directoryFoundCallback.resultCode))
                     {
                         AppData.AssetData assetData = currentSceneAsset.ToSceneAssetData();
 
@@ -1818,9 +1839,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 File.WriteAllText(formattedFilePath, JSONString);
 
-                                callbackResults.results = $"Success - Building Asset : {assetData.name} As : {formattedFilePath}";
+                                callbackResults.result = $"Success - Building Asset : {assetData.name} As : {formattedFilePath}";
                                 callbackResults.data = directoryData;
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                             else
                             {
@@ -1829,32 +1850,32 @@ namespace Com.RedicalGames.Filar
                                 if (!File.Exists(formattedFilePath))
                                     File.WriteAllText(formattedFilePath, JSONString);
 
-                                callbackResults.results = $"Success - Replaced Asset : {assetData.name} At Path : {formattedFilePath}";
+                                callbackResults.result = $"Success - Replaced Asset : {assetData.name} At Path : {formattedFilePath}";
                                 callbackResults.data = directoryData;
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = "Asset Build Failed - Couldn't Create A New JSON File.";
+                            callbackResults.result = "Asset Build Failed - Couldn't Create A New JSON File.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                     }
                     else
                     {
-                        callbackResults.results = directoryFoundCallback.results;
+                        callbackResults.result = directoryFoundCallback.result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 });
             }
             else
             {
-                callbackResults.results = "Asset Build Failed, Current Scene Asset Missing / Not Found.";
+                callbackResults.result = "Asset Build Failed, Current Scene Asset Missing / Not Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1889,7 +1910,7 @@ namespace Com.RedicalGames.Filar
 
             DirectoryFound(currentFolder.storageData.rootDirectory, directoryFoundCallback =>
             {
-                if (AppData.Helpers.IsSuccessCode(directoryFoundCallback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(directoryFoundCallback.resultCode))
                 {
                     string[] folderDataPathList = Directory.GetFiles(currentFolder.storageData.rootDirectory, "*_FolderData.json", SearchOption.TopDirectoryOnly);
                     string newTempName = "New Folder";
@@ -1929,7 +1950,7 @@ namespace Com.RedicalGames.Filar
                         tempName = newTempName;
                 }
                 else
-                    Debug.LogWarning($"--> GetCreateNewFolderTempName's DirectoryFound Failed With Results : {directoryFoundCallback.results}");
+                    Debug.LogWarning($"--> GetCreateNewFolderTempName's DirectoryFound Failed With Results : {directoryFoundCallback.result}");
             });
 
             return tempName;
@@ -1971,20 +1992,20 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.GetAppComponentValid(currentProjectStructureData, currentProjectStructureData.name, hasProjectStructureDataCallbackResults =>
             {
-                callbackResults.results = hasProjectStructureDataCallbackResults.results;
-                callbackResults.resultsCode = hasProjectStructureDataCallbackResults.resultsCode;
+                callbackResults.result = hasProjectStructureDataCallbackResults.result;
+                callbackResults.resultCode = hasProjectStructureDataCallbackResults.resultCode;
 
                 if(callbackResults.Success())
                 {
                     AppData.Helpers.GetAppComponentValid(currentFolder, currentFolder.name, hasCurrentFolderCallbackResults =>
                     {
-                        callbackResults.results = hasCurrentFolderCallbackResults.results;
-                        callbackResults.resultsCode = hasCurrentFolderCallbackResults.resultsCode;
+                        callbackResults.result = hasCurrentFolderCallbackResults.result;
+                        callbackResults.resultCode = hasCurrentFolderCallbackResults.resultCode;
 
                         if (callbackResults.Success())
-                            callbackResults.results = "App Project Structure Data Has Been Initialized Successfully On Load.";
+                            callbackResults.result = "App Project Structure Data Has Been Initialized Successfully On Load.";
                         else
-                            callbackResults.results = $"App Project Structure Data Initialization Failed On Load With Results : {callbackResults.results}.";
+                            callbackResults.result = $"App Project Structure Data Initialization Failed On Load With Results : {callbackResults.result}.";
 
                     }, "On App Manager Initialization's Set Current Folder Failed - Current Folder Missing / Null / Not Yet Initialized On Load.");
                 }
@@ -2000,15 +2021,15 @@ namespace Com.RedicalGames.Filar
 
             if(currentProjectStructureData != null)
             {
-                callbackResuts.results = $"Current Project Structure Data : {currentProjectStructureData.name} Found.";
+                callbackResuts.result = $"Current Project Structure Data : {currentProjectStructureData.name} Found.";
                 callbackResuts.data = currentProjectStructureData;
-                callbackResuts.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResuts.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResuts.results = "Current Project Structure Data Not Found.";
+                callbackResuts.result = "Current Project Structure Data Not Found.";
                 callbackResuts.data = default;
-                callbackResuts.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResuts.resultCode = AppData.Helpers.ErrorCode;
             }
 
             return callbackResuts;
@@ -2061,8 +2082,8 @@ namespace Com.RedicalGames.Filar
 
             GetFileData(type, dataFoundCallbackResults => 
             {
-                callbackResults.results = dataFoundCallbackResults.results;
-                callbackResults.resultsCode = dataFoundCallbackResults.resultsCode;
+                callbackResults.result = dataFoundCallbackResults.result;
+                callbackResults.resultCode = dataFoundCallbackResults.resultCode;
 
                 if(callbackResults.Success())
                 {
@@ -2105,15 +2126,15 @@ namespace Com.RedicalGames.Filar
 
                         SaveFolderWidget(folder, folderSaved =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(folderSaved.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(folderSaved.resultCode))
                                 callbackResults = folderSaved;
                         });
 
-                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             widget.SetDefaultUIWidgetActionState(widgetActionState);
                     }
 
-                    if (!AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (!AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         break;
 
                     if (widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.Asset)
@@ -2126,18 +2147,18 @@ namespace Com.RedicalGames.Filar
                             callbackResults = assetSaved;
                         });
 
-                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             widget.SetDefaultUIWidgetActionState(widgetActionState);
                     }
 
-                    if (!AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (!AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         break;
                 }
             }
             else
             {
-                callbackResults.results = "Widgets Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Widgets Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2151,22 +2172,22 @@ namespace Com.RedicalGames.Filar
             {
                 CreateData(folder, currentFolder.storageData, (folderDataCreated) =>
                 {
-                    callbackResults.results = folderDataCreated.results;
-                    callbackResults.resultsCode = folderDataCreated.resultsCode;
+                    callbackResults.result = folderDataCreated.result;
+                    callbackResults.resultCode = folderDataCreated.resultCode;
 
-                    if (AppData.Helpers.IsSuccessCode(folderDataCreated.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(folderDataCreated.resultCode))
                     {
                         if (!DirectoryFound(folder.storageData.projectDirectory))
                             CreateDirectory(folder.storageData.projectDirectory, (folderCreated) => { });
                     }
                     else
-                        Debug.LogWarning($"--> Failed To Create DIrectory With Results : {folderDataCreated.results}");
+                        Debug.LogWarning($"--> Failed To Create DIrectory With Results : {folderDataCreated.result}");
                 });
             }
             else
             {
-                callbackResults.results = $"Directory : {currentFolder.storageData.projectDirectory} Doesn't Exist.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Directory : {currentFolder.storageData.projectDirectory} Doesn't Exist.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2202,7 +2223,7 @@ namespace Com.RedicalGames.Filar
 
             }
             else
-                Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
         }
 
         public void ChangePaginationView(AppData.PaginationViewType paginationView, AppData.SceneDataPackets dataPackets)
@@ -2213,7 +2234,7 @@ namespace Com.RedicalGames.Filar
 
                 SaveData(GetProjectStructureData().data, (folderStructureDataSaved) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(folderStructureDataSaved.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(folderStructureDataSaved.resultCode))
                     {
                         if (SelectableManager.Instance != null)
                             SelectableManager.Instance.SmoothTransitionToSelection = false;
@@ -2226,11 +2247,11 @@ namespace Com.RedicalGames.Filar
                             NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                     }
                     else
-                        Debug.LogWarning($"--> Save Data Failed With Results : {folderStructureDataSaved.results}");
+                        Debug.LogWarning($"--> Save Data Failed With Results : {folderStructureDataSaved.result}");
                 });
             }
             else
-                Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
         }
 
         public void InitializeFolderLayoutView(AppData.LayoutViewType viewType)
@@ -2251,15 +2272,15 @@ namespace Com.RedicalGames.Filar
 
             if(container != null)
             {
-                callbackResults.results = $"Content Container Found With Layout View Type : {container.GetLayout().viewType}.";
+                callbackResults.result = $"Content Container Found With Layout View Type : {container.GetLayout().viewType}.";
                 callbackResults.data = container.GetLayout().viewType; ;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "There Is No Content Container Found.";
+                callbackResults.result = "There Is No Content Container Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -2269,12 +2290,12 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.PaginationViewType> callbackResults = new AppData.CallbackData<AppData.PaginationViewType>();
 
-            callbackResults.results = GetProjectStructureData().results;
-            callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+            callbackResults.result = GetProjectStructureData().result;
+            callbackResults.resultCode = GetProjectStructureData().resultCode;
 
             if(callbackResults.Success())
             {
-                callbackResults.results = $"Found Pagination View Of Type : {GetProjectStructureData().data.GetPaginationViewType()}";
+                callbackResults.result = $"Found Pagination View Of Type : {GetProjectStructureData().data.GetPaginationViewType()}";
                 callbackResults.data = GetProjectStructureData().data.GetPaginationViewType();
             }
 
@@ -2291,22 +2312,22 @@ namespace Com.RedicalGames.Filar
 
                 if (container != null)
                 {
-                    callbackResults.results = "Success";
+                    callbackResults.result = "Success";
                     callbackResults.data = container;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Failed : Container Of Tye : {containerType} Not Found In dynamicWidgetsContainersList.";
+                    callbackResults.result = $"Failed : Container Of Tye : {containerType} Not Found In dynamicWidgetsContainersList.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2322,22 +2343,22 @@ namespace Com.RedicalGames.Filar
 
                 if (container != null)
                 {
-                    callbackResults.results = $"Container For Screen Type : {screenType} Found.";
+                    callbackResults.result = $"Container For Screen Type : {screenType} Found.";
                     callbackResults.data = container;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Container For Screen Type : {screenType} Doesn't Exist In The Dynamic Widgets Container List - Not Found.";
+                    callbackResults.result = $"Container For Screen Type : {screenType} Doesn't Exist In The Dynamic Widgets Container List - Not Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2349,15 +2370,15 @@ namespace Com.RedicalGames.Filar
 
             if (dynamicWidgetsContainersList.Count > 0)
             {
-                callbackResults.results = $"{dynamicWidgetsContainersList.Count} Containers Found.";
+                callbackResults.result = $"{dynamicWidgetsContainersList.Count} Containers Found.";
                 callbackResults.data = dynamicWidgetsContainersList;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2373,22 +2394,22 @@ namespace Com.RedicalGames.Filar
 
                 if (containers != null && containers.Count > 0)
                 {
-                    callbackResults.results = $"{containers.Count} Containers Found.";
+                    callbackResults.result = $"{containers.Count} Containers Found.";
                     callbackResults.data = containers;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Failed : There Are No Containers Found.";
+                    callbackResults.result = $"Failed : There Are No Containers Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
+                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2422,17 +2443,17 @@ namespace Com.RedicalGames.Filar
                     {
                         GetSortedProjectWidgetList(projectData, sortedListCallbackResults =>
                         {
-                            callbackResults.results = sortedListCallbackResults.results;
-                            callbackResults.resultsCode = sortedListCallbackResults.resultsCode;
+                            callbackResults.result = sortedListCallbackResults.result;
+                            callbackResults.resultCode = sortedListCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
                                 GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                 {
-                                    callbackResults.results = widgetsCallback.results;
-                                    callbackResults.resultsCode = widgetsCallback.resultsCode;
+                                    callbackResults.result = widgetsCallback.result;
+                                    callbackResults.resultCode = widgetsCallback.resultCode;
 
-                                    LogSuccess($"================> We Are Winning : {callbackResults.results}", this);
+                                    LogSuccess($"================> We Are Winning : {callbackResults.result}", this);
 
                                     if (callbackResults.Success())
                                     {
@@ -2442,15 +2463,15 @@ namespace Com.RedicalGames.Filar
                                         {
                                             widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Project, AppData.LayoutViewType.ListView, prefabCallbackResults =>
                                             {
-                                                callbackResults.results = prefabCallbackResults.results;
-                                                callbackResults.resultsCode = prefabCallbackResults.resultsCode;
+                                                callbackResults.result = prefabCallbackResults.result;
+                                                callbackResults.resultCode = prefabCallbackResults.resultCode;
 
                                                 if (prefabCallbackResults.Success())
                                                 {
                                                     AppData.Helpers.UnityComponentValid(prefabCallbackResults.data.gameObject, "Project Widget Prefab Value", hasComponentCallbackResults =>
                                                    {
-                                                       callbackResults.results = hasComponentCallbackResults.results;
-                                                       callbackResults.resultsCode = hasComponentCallbackResults.resultsCode;
+                                                       callbackResults.result = hasComponentCallbackResults.result;
+                                                       callbackResults.resultCode = hasComponentCallbackResults.resultCode;
 
                                                        if (callbackResults.Success())
                                                        {
@@ -2486,70 +2507,70 @@ namespace Com.RedicalGames.Filar
                                                                        //if(!loadedProjectData.ContainsKey(project))
                                                                        //    loadedProjectData.Add(project, widgetComponent);
 
-                                                                       callbackResults.results = $"Project Widget : { projectWidget.name} Created.";
-                                                                       callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                                       callbackResults.result = $"Project Widget : { projectWidget.name} Created.";
+                                                                       callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                                                    }
                                                                    else
                                                                    {
-                                                                       callbackResults.results = "Project Widget Component Is Null.";
+                                                                       callbackResults.result = "Project Widget Component Is Null.";
                                                                        callbackResults.data = default;
-                                                                       callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                       callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                    }
                                                                }
                                                                else
                                                                {
-                                                                   callbackResults.results = "Project Widget Prefab Data Is Null.";
+                                                                   callbackResults.result = "Project Widget Prefab Data Is Null.";
                                                                    callbackResults.data = default;
-                                                                   callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                   callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                }
                                                            }
 
                                                            if (callbackResults.Success())
                                                            {
-                                                               callbackResults.results = "Project Widgets Loaded.";
+                                                               callbackResults.result = "Project Widgets Loaded.";
                                                                callbackResults.data = projects;
-                                                               callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                               callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                                            }
                                                            else
                                                            {
-                                                               callbackResults.results = "Project Widgets Counldn't Load.";
+                                                               callbackResults.result = "Project Widgets Counldn't Load.";
                                                                callbackResults.data = default;
-                                                               callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                               callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                            }
                                                        }
                                                    });
                                                 }
                                                 else
-                                                    Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                    Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
                                             });
                                         }
                                         else
                                         {
-                                            callbackResults.results = $"DWidget Prefab For Screen Type : {screenType} Missing / Null.";
+                                            callbackResults.result = $"DWidget Prefab For Screen Type : {screenType} Missing / Null.";
                                             callbackResults.data = default;
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                     else
-                                        Log(callbackResults.resultsCode, callbackResults.results, this);
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
                                 });
                             }
                             else
-                                Log(sortedListCallbackResults.resultsCode, sortedListCallbackResults.results, this);
+                                Log(sortedListCallbackResults.resultCode, sortedListCallbackResults.result, this);
                         });
                     }
                     else
                     {
-                        callbackResults.results = "Current Screen Type Is Not Project Selection.";
+                        callbackResults.result = "Current Screen Type Is Not Project Selection.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Dynamic Widgets Content Container Missing / Null.";
+                    callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -2577,7 +2598,7 @@ namespace Com.RedicalGames.Filar
 
                             LoadFolderData(foldersDirectoryList, (foldersLoaded) =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(foldersLoaded.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(foldersLoaded.resultCode))
                                 {
                                     List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
 
@@ -2589,7 +2610,7 @@ namespace Com.RedicalGames.Filar
 
                                     GetSortedWidgetList(foldersLoaded.data, pinnedFolders, sortedList =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(sortedList.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(sortedList.resultCode))
                                         {
                                             GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                             {
@@ -2633,11 +2654,11 @@ namespace Com.RedicalGames.Filar
                                                                     }
                                                                 }
                                                                 else
-                                                                    Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                                    Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
                                                             });
                                                         }
                                                         else
-                                                            Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                                                            Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
                                                     }
                                                     else
                                                         LogError("Widget Prefab Data Missing.", this);
@@ -2645,7 +2666,7 @@ namespace Com.RedicalGames.Filar
                                             });
                                         }
                                         else
-                                            Debug.LogWarning($"--> GetSortedWidgetList Failed With Results : {sortedList.results}");
+                                            Debug.LogWarning($"--> GetSortedWidgetList Failed With Results : {sortedList.result}");
                                     });
 
                                     if (loadedWidgetsList.Count > 0)
@@ -2654,10 +2675,10 @@ namespace Com.RedicalGames.Filar
                                         callbackResults.data = default;
                                 }
                                 else
-                                    Debug.LogWarning($"--> LoadFolderData Failed With Results : {foldersLoaded.results}");
+                                    Debug.LogWarning($"--> LoadFolderData Failed With Results : {foldersLoaded.result}");
 
-                                callbackResults.results = foldersLoaded.results;
-                                callbackResults.resultsCode = foldersLoaded.resultsCode;
+                                callbackResults.result = foldersLoaded.result;
+                                callbackResults.resultCode = foldersLoaded.resultCode;
                             });
 
                             break;
@@ -2665,9 +2686,9 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Dynamic Widgets Content Container Missing / Null.";
+                    callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -2693,10 +2714,10 @@ namespace Com.RedicalGames.Filar
 
                             LoadSceneAssets(folder, (loadedAssetsResults) =>
                             {
-                                callbackResults.results = loadedAssetsResults.results;
-                                callbackResults.resultsCode = loadedAssetsResults.resultsCode;
+                                callbackResults.result = loadedAssetsResults.result;
+                                callbackResults.resultCode = loadedAssetsResults.resultCode;
 
-                                if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultCode))
                                 {
                                     sceneAssetList = new List<AppData.SceneAsset>();
 
@@ -2706,8 +2727,8 @@ namespace Com.RedicalGames.Filar
 
                                         GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                         {
-                                            callbackResults.results = widgetsCallback.results;
-                                            callbackResults.resultsCode = widgetsCallback.resultsCode;
+                                            callbackResults.result = widgetsCallback.result;
+                                            callbackResults.resultCode = widgetsCallback.resultCode;
 
                                             if (widgetsCallback.Success())
                                             {
@@ -2719,8 +2740,8 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Asset, GetProjectStructureData().data.GetLayoutViewType(), prefabCallbackResults =>
                                                         {
-                                                            callbackResults.results = prefabCallbackResults.results;
-                                                            callbackResults.resultsCode = prefabCallbackResults.resultsCode;
+                                                            callbackResults.result = prefabCallbackResults.result;
+                                                            callbackResults.resultCode = prefabCallbackResults.resultCode;
 
                                                             if (prefabCallbackResults.Success())
                                                             {
@@ -2766,28 +2787,28 @@ namespace Com.RedicalGames.Filar
                                                                                     if (!loadedWidgetsList.Contains(widgetComponent))
                                                                                         loadedWidgetsList.Add(widgetComponent);
 
-                                                                                    callbackResults.results = "Widget Prefab Loaded.";
+                                                                                    callbackResults.result = "Widget Prefab Loaded.";
                                                                                     callbackResults.data = loadedWidgetsList;
-                                                                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    callbackResults.results = GetProjectStructureData().results;
-                                                                                    callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                                                                                    callbackResults.result = GetProjectStructureData().result;
+                                                                                    callbackResults.resultCode = GetProjectStructureData().resultCode;
                                                                                 }
                                                                             }
                                                                             else
                                                                             {
-                                                                                callbackResults.results = "Widget Prefab Component Missing.";
+                                                                                callbackResults.result = "Widget Prefab Component Missing.";
                                                                                 callbackResults.data = default;
-                                                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                             }
                                                                         }
                                                                         else
                                                                         {
-                                                                            callbackResults.results = "Widget Prefab Failed To Instantiate.";
+                                                                            callbackResults.result = "Widget Prefab Failed To Instantiate.";
                                                                             callbackResults.data = default;
-                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                         }
                                                                     }
                                                                     else
@@ -2795,11 +2816,11 @@ namespace Com.RedicalGames.Filar
                                                                 }
                                                             }
                                                             else
-                                                                Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                                Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
                                                         });
                                                     }
                                                     else
-                                                        Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                                                        Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
                                                 }
                                                 else
                                                     LogError("Widget Prefab Data Missing.", this);
@@ -2808,32 +2829,32 @@ namespace Com.RedicalGames.Filar
 
                                         if (loadedWidgetsList.Count >= loadedAssetsResults.data.Count)
                                         {
-                                            callbackResults.results = "Created Screen Widgets";
+                                            callbackResults.result = "Created Screen Widgets";
                                             callbackResults.data = loadedWidgetsList;
-                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
                                         // Take A Look
                                         contentContainer.InitializeContainer();
                                         }
                                         else
                                         {
-                                            callbackResults.results = "Failed To Create Screen Widgets";
+                                            callbackResults.result = "Failed To Create Screen Widgets";
                                             callbackResults.data = default;
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                     else
                                     {
-                                        callbackResults.results = "Failed To Create Screen Widgets";
+                                        callbackResults.result = "Failed To Create Screen Widgets";
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                     }
                                 }
                                 else
                                 {
-                                    callbackResults.results = loadedAssetsResults.results;
+                                    callbackResults.result = loadedAssetsResults.result;
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
 
                             });
@@ -2843,9 +2864,9 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Dynamic Widgets Content Container Missing / Null.";
+                    callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2871,7 +2892,7 @@ namespace Com.RedicalGames.Filar
 
                             LoadSceneAssets(filesDirectoryList, (loadedAssetsResults) =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultCode))
                                 {
                                     sceneAssetList = new List<AppData.SceneAsset>();
 
@@ -2881,8 +2902,8 @@ namespace Com.RedicalGames.Filar
 
                                         GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                         {
-                                            callbackResults.results = widgetsCallback.results;
-                                            callbackResults.resultsCode = widgetsCallback.resultsCode;
+                                            callbackResults.result = widgetsCallback.result;
+                                            callbackResults.resultCode = widgetsCallback.resultCode;
 
                                             if (widgetsCallback.Success())
                                             {
@@ -2894,8 +2915,8 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Folder, GetProjectStructureData().data.GetLayoutViewType(), prefabCallbackResults =>
                                                         {
-                                                            callbackResults.results = prefabCallbackResults.results;
-                                                            callbackResults.resultsCode = prefabCallbackResults.resultsCode;
+                                                            callbackResults.result = prefabCallbackResults.result;
+                                                            callbackResults.resultCode = prefabCallbackResults.resultCode;
 
                                                             if (prefabCallbackResults.Success())
                                                             {
@@ -2937,40 +2958,40 @@ namespace Com.RedicalGames.Filar
                                                                                 if (!loadedWidgetsList.Contains(widgetComponent))
                                                                                     loadedWidgetsList.Add(widgetComponent);
 
-                                                                                callbackResults.results = "Widget Prefab Component Loaded.";
+                                                                                callbackResults.result = "Widget Prefab Component Loaded.";
                                                                                 callbackResults.data = loadedWidgetsList;
-                                                                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                                                             }
                                                                             else
                                                                             {
-                                                                                callbackResults.results = "Widget Prefab Component Missing.";
+                                                                                callbackResults.result = "Widget Prefab Component Missing.";
                                                                                 callbackResults.data = default;
-                                                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                             }
                                                                         }
                                                                         else
                                                                         {
-                                                                            callbackResults.results = $"Failed To Instantiate Prefab For Screen Widget : {asset.modelAsset.name}";
+                                                                            callbackResults.result = $"Failed To Instantiate Prefab For Screen Widget : {asset.modelAsset.name}";
                                                                             callbackResults.data = default;
-                                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                         }
                                                                     }
                                                                     else
                                                                     {
-                                                                        callbackResults.results = $"Widget : {asset.modelAsset.name} Already Exists.";
+                                                                        callbackResults.result = $"Widget : {asset.modelAsset.name} Already Exists.";
                                                                         callbackResults.data = default;
-                                                                        callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                                                                        callbackResults.resultCode = AppData.Helpers.WarningCode;
                                                                     }
                                                                 }
                                                             }
                                                             else
-                                                                Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                                                Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
                                                         });
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.results = GetProjectStructureData().results;
-                                                        callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                                                        callbackResults.result = GetProjectStructureData().result;
+                                                        callbackResults.resultCode = GetProjectStructureData().resultCode;
                                                     }
                                                 }
                                                 else
@@ -2980,32 +3001,32 @@ namespace Com.RedicalGames.Filar
 
                                         if (loadedWidgetsList.Count >= loadedAssetsResults.data.Count)
                                         {
-                                            callbackResults.results = "Created Screen Widgets";
+                                            callbackResults.result = "Created Screen Widgets";
                                             callbackResults.data = loadedWidgetsList;
-                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
                                         // Take A Look
                                         contentContainer.InitializeContainer();
                                         }
                                         else
                                         {
-                                            callbackResults.results = "Failed To Create Screen Widgets";
+                                            callbackResults.result = "Failed To Create Screen Widgets";
                                             callbackResults.data = default;
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                     else
                                     {
-                                        callbackResults.results = "Failed To Create Screen Widgets";
+                                        callbackResults.result = "Failed To Create Screen Widgets";
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                     }
                                 }
                                 else
                                 {
-                                    callbackResults.results = loadedAssetsResults.results;
+                                    callbackResults.result = loadedAssetsResults.result;
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
 
                             });
@@ -3015,9 +3036,9 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Dynamic Widgets Content Container Missing / Null.";
+                    callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3041,13 +3062,13 @@ namespace Com.RedicalGames.Filar
 
                 AppData.Helpers.SerializableComponentValid(newProject, componentIsValidCallbackResults => 
                 {
-                    callbackResults.results = componentIsValidCallbackResults.results;
-                    callbackResults.resultsCode = componentIsValidCallbackResults.resultsCode;
+                    callbackResults.result = componentIsValidCallbackResults.result;
+                    callbackResults.resultCode = componentIsValidCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.results = GetProjectRootStructureData().results;
-                        callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
+                        callbackResults.result = GetProjectRootStructureData().result;
+                        callbackResults.resultCode = GetProjectRootStructureData().resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -3057,8 +3078,8 @@ namespace Com.RedicalGames.Filar
                             {
                                 GetDataNameWithExtension(newProject.name, AppData.SelectableWidgetType.Project, fileNameCallbackResults => 
                                 {
-                                    callbackResults.results = fileNameCallbackResults.results;
-                                    callbackResults.resultsCode = fileNameCallbackResults.resultsCode;
+                                    callbackResults.result = fileNameCallbackResults.result;
+                                    callbackResults.resultCode = fileNameCallbackResults.resultCode;
 
                                     if(callbackResults.Success())
                                     {
@@ -3096,16 +3117,16 @@ namespace Com.RedicalGames.Filar
 
                                                 CreateDirectory(projectDir, directoryCreatedCallback =>
                                                 {
-                                                    callbackResults.resultsCode = directoryCreatedCallback.resultsCode;
+                                                    callbackResults.resultCode = directoryCreatedCallback.resultCode;
 
                                                     if (directoryCreatedCallback.Success())
-                                                        callbackResults.results = $"A New Project Titled : {newProject.name} Has Been Created.";
+                                                        callbackResults.result = $"A New Project Titled : {newProject.name} Has Been Created.";
                                                     else
-                                                        LogWarning(directoryCreatedCallback.results, this);
+                                                        LogWarning(directoryCreatedCallback.result, this);
                                                 });
                                             }
                                             else
-                                                Log(folderStructureCreated.resultsCode, folderStructureCreated.results, this);
+                                                Log(folderStructureCreated.resultCode, folderStructureCreated.result, this);
 
                                         });
                                     }
@@ -3113,9 +3134,9 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"Root Project Structure Directory Not Found.";
+                                callbackResults.result = $"Root Project Structure Directory Not Found.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                                 LogInfo($"Root Project Data Directory : {projectDirectory} Not Found", this);
                             }
@@ -3142,7 +3163,7 @@ namespace Com.RedicalGames.Filar
 
                 DirectoryFound(GetCurrentFolder().storageData.rootDirectory, currentDirectoryFoundCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(currentDirectoryFoundCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(currentDirectoryFoundCallback.resultCode))
                     {
                         #region Get Folder File Storage Data
 
@@ -3160,8 +3181,8 @@ namespace Com.RedicalGames.Filar
 
                         GetDataNameWithExtension(newFolderDataFileName, AppData.SelectableWidgetType.Folder, dataFoundCallbackResults =>
                         {
-                            callbackResults.results = dataFoundCallbackResults.results;
-                            callbackResults.resultsCode = dataFoundCallbackResults.resultsCode;
+                            callbackResults.result = dataFoundCallbackResults.result;
+                            callbackResults.resultCode = dataFoundCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
@@ -3198,15 +3219,15 @@ namespace Com.RedicalGames.Filar
 
                                 CreateData(newFolderData, storageData, (folderDataCreatedCallbackResults) =>
                                 {
-                                    callbackResults.results = folderDataCreatedCallbackResults.results;
-                                    callbackResults.resultsCode = folderDataCreatedCallbackResults.resultsCode;
+                                    callbackResults.result = folderDataCreatedCallbackResults.result;
+                                    callbackResults.resultCode = folderDataCreatedCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
                                         CreateDirectory(folderDataCreatedCallbackResults.data.storageData.projectDirectory, folderCreatedCallbackResults =>
                                         {
-                                            callbackResults.results = folderCreatedCallbackResults.results;
-                                            callbackResults.resultsCode = folderCreatedCallbackResults.resultsCode;
+                                            callbackResults.result = folderCreatedCallbackResults.result;
+                                            callbackResults.resultCode = folderCreatedCallbackResults.resultCode;
 
                                             if (callbackResults.Success())
                                             {
@@ -3216,8 +3237,8 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         SelectableManager.Instance.OnClearFocusedSelectionsInfo(selectionInfoClearedCallbackResults =>
                                                         {
-                                                            callbackResults.results = selectionInfoClearedCallbackResults.results;
-                                                            callbackResults.resultsCode = selectionInfoClearedCallbackResults.resultsCode;
+                                                            callbackResults.result = selectionInfoClearedCallbackResults.result;
+                                                            callbackResults.resultCode = selectionInfoClearedCallbackResults.resultCode;
 
                                                             if (callbackResults.Success())
                                                             {
@@ -3227,7 +3248,7 @@ namespace Com.RedicalGames.Filar
                                                                     selectionInfoType = AppData.FocusedSelectionType.NewItem
                                                                 };
 
-                                                                callbackResults.results = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
+                                                                callbackResults.result = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
                                                                 callbackResults.data = selectionInfo;
                                                             }
                                                         });
@@ -3240,22 +3261,22 @@ namespace Com.RedicalGames.Filar
                                                             selectionInfoType = AppData.FocusedSelectionType.NewItem
                                                         };
 
-                                                        callbackResults.results = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
+                                                        callbackResults.result = $"Set Highlighted Folder To Widget Named : {newFolderDataFileName} Success.";
                                                         callbackResults.data = selectionInfo;
-                                                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    callbackResults.results = "Selectable Manager Instance Not Yet Initialized.";
-                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                    callbackResults.result = "Selectable Manager Instance Not Yet Initialized.";
+                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                     callbackResults.data = default;
                                                 }
                                             }
                                             else
                                             {
-                                                callbackResults.results = $"Failed To Create DIrectory With Results : {folderCreatedCallbackResults.results}";
-                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                callbackResults.result = $"Failed To Create DIrectory With Results : {folderCreatedCallbackResults.result}";
+                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                 callbackResults.data = default;
                                             }
                                         });
@@ -3268,9 +3289,9 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = currentDirectoryFoundCallback.results;
+                        callbackResults.result = currentDirectoryFoundCallback.result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = currentDirectoryFoundCallback.resultsCode;
+                        callbackResults.resultCode = currentDirectoryFoundCallback.resultCode;
                     }
                 });
 
@@ -3310,15 +3331,15 @@ namespace Com.RedicalGames.Filar
                         if (!appDirectories.Contains(directoryData))
                             appDirectories.Add(directoryData);
 
-                        callbackResults.results = "Success : Directory Exists.";
+                        callbackResults.result = "Success : Directory Exists.";
                         callbackResults.data = directoryData;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
+                        callbackResults.result = $"--> Failed To Create Directory : {directoryData.directory}";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
@@ -3330,15 +3351,15 @@ namespace Com.RedicalGames.Filar
                         if (!appDirectories.Contains(directoryData))
                             appDirectories.Add(directoryData);
 
-                        callbackResults.results = "Success : Directory Exists.";
+                        callbackResults.result = "Success : Directory Exists.";
                         callbackResults.data = directoryData;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"--> Failed To Create Directory : {directoryData.directory}";
+                        callbackResults.result = $"--> Failed To Create Directory : {directoryData.directory}";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
 
@@ -3363,22 +3384,22 @@ namespace Com.RedicalGames.Filar
 
                     if (Directory.Exists(directory))
                     {
-                        callbackResults.results = $"Create Directory - Success : {directory}.";
+                        callbackResults.result = $"Create Directory - Success : {directory}.";
                         callbackResults.data = directory;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Create Directory - Failed To Create Directory : {directory}.";
+                        callbackResults.result = $"Create Directory - Failed To Create Directory : {directory}.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Create Directory Failed : Directory : {directory} Already Exists.";
+                    callbackResults.result = $"Create Directory Failed : Directory : {directory} Already Exists.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3538,13 +3559,13 @@ namespace Com.RedicalGames.Filar
 
                 if (Directory.Exists(directory))
                 {
-                    callbackResults.results = $"Directory Found At Path : {directory}.";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.result = $"Directory Found At Path : {directory}.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Directory : {directory} Not Found.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"Directory : {directory} Not Found.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3564,13 +3585,13 @@ namespace Com.RedicalGames.Filar
 
                 if (File.Exists(path))
                 {
-                    callbackResults.results = $"File Found At Path : {path}.";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.result = $"File Found At Path : {path}.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"File : {path} Not Found.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"File : {path} Not Found.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3606,42 +3627,42 @@ namespace Com.RedicalGames.Filar
 
                                 if (validFiles.Count > 0)
                                 {
-                                    callbackResults.results = $"GetFolderContentCount Success - Directory : {folder.storageData.directory} Found.";
+                                    callbackResults.result = $"GetFolderContentCount Success - Directory : {folder.storageData.directory} Found.";
                                     callbackResults.data = validFiles.Count;
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"GetFolderContentCount Failed - There Were No Valid Files Found In Directory : {folder.storageData.directory}.";
+                                    callbackResults.result = $"GetFolderContentCount Failed - There Were No Valid Files Found In Directory : {folder.storageData.directory}.";
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"GetFolderContentCount Failed - There Were No Files Found In Directory : {folder.storageData.directory}.";
+                                callbackResults.result = $"GetFolderContentCount Failed - There Were No Files Found In Directory : {folder.storageData.directory}.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"GetFolderContentCount Failed - Directory : {folder.storageData.directory} Not Found.";
+                            callbackResults.result = $"GetFolderContentCount Failed - Directory : {folder.storageData.directory} Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"GetFolderContentCount Failed - Directory Is Null / Empty..";
+                        callbackResults.result = $"GetFolderContentCount Failed - Directory Is Null / Empty..";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Folder Is Null.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "Folder Is Null.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3691,8 +3712,8 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.GetComponent(widgetsContainer, componentValidCallbackResults => 
             {
-                callbackResults.results = componentValidCallbackResults.results;
-                callbackResults.resultsCode = componentValidCallbackResults.resultsCode;
+                callbackResults.result = componentValidCallbackResults.result;
+                callbackResults.resultCode = componentValidCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                     widgetsRefreshDynamicContainer = widgetsContainer;
@@ -3746,15 +3767,15 @@ namespace Com.RedicalGames.Filar
 
             if(container != null && container.IsContainerActive())
             {
-                callbackResults.results = $"Widgets Container : {container.name} Found.";
+                callbackResults.result = $"Widgets Container : {container.name} Found.";
                 callbackResults.data = container;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Couldn't Get Widgets Container Or Container Is Inative.";
+                callbackResults.result = "Couldn't Get Widgets Container Or Container Is Inative.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -3768,26 +3789,26 @@ namespace Com.RedicalGames.Filar
             {
                 FolderHasContentToLoad(contentFolder, hasContentCallbackResults =>
                 {
-                    callbackResults.results = hasContentCallbackResults.results;
-                    callbackResults.resultsCode = hasContentCallbackResults.resultsCode;
+                    callbackResults.result = hasContentCallbackResults.result;
+                    callbackResults.resultCode = hasContentCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.results = $"Folder : {contentFolder.name} Has Content To Load For Screen Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                        callbackResults.result = $"Folder : {contentFolder.name} Has Content To Load For Screen Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
                         callbackResults.data = ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType();
                     }
                     else
                     {
-                        callbackResults.results = $"No Contents Found In Folder : {contentFolder.name}";
+                        callbackResults.result = $"No Contents Found In Folder : {contentFolder.name}";
                         callbackResults.data = ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType();
                     }
                 });
             }
             else
             {
-                callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+                callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
                 callbackResults.data = default;
-                callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+                callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
             }
 
             callback.Invoke(callbackResults);
@@ -3797,8 +3818,8 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.Folder> callbackResults = new AppData.CallbackData<AppData.Folder>();
 
-            callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
-            callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+            callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
+            callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
 
             if (callbackResults.Success())
             {
@@ -3806,12 +3827,12 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.UIScreenType.ProjectCreationScreen:
 
-                        callbackResults.results = GetProjectRootStructureData().results;
-                        callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
+                        callbackResults.result = GetProjectRootStructureData().result;
+                        callbackResults.resultCode = GetProjectRootStructureData().resultCode;
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.results = $"Found Root Folder : {GetProjectRootStructureData().data.GetProjectStructureData().GetRootFolder().name} For Screen : {screenType}";
+                            callbackResults.result = $"Found Root Folder : {GetProjectRootStructureData().data.GetProjectStructureData().GetRootFolder().name} For Screen : {screenType}";
                             callbackResults.data = GetProjectRootStructureData().data.GetProjectStructureData().GetRootFolder();
                         }
 
@@ -3819,7 +3840,7 @@ namespace Com.RedicalGames.Filar
 
                     case AppData.UIScreenType.ProjectDashboardScreen:
 
-                        callbackResults.results = $"Found Root Folder : {GetCurrentFolder().name} For Screen : {screenType}";
+                        callbackResults.result = $"Found Root Folder : {GetCurrentFolder().name} For Screen : {screenType}";
                         callbackResults.data = GetCurrentFolder();
 
                         break;
@@ -3890,7 +3911,7 @@ namespace Com.RedicalGames.Filar
                                                                         filterListParam.SetContent(sortedFilterList);
                                                                     }
                                                                     else
-                                                                        Log(filterContentCallbackResults.resultsCode, filterContentCallbackResults.results, this);
+                                                                        Log(filterContentCallbackResults.resultCode, filterContentCallbackResults.result, this);
                                                                 }, "Project_");
 
                                                                 if (GetProjectRootStructureData().Success())
@@ -3900,19 +3921,19 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (filterType != AppData.ProjectCategoryType.Project_All)
                                                                     {
-                                                                        AppData.Helpers.StringListValueValid(sortingContents, isValidCallbackResults =>
+                                                                        AppData.Helpers.StringValueValid(isValidCallbackResults =>
                                                                         {
                                                                             if (isValidCallbackResults.Success())
                                                                                 sortingContents.Remove(sortingContents.Find(content => content.Contains("Category")));
                                                                             else
-                                                                                Log(isValidCallbackResults.resultsCode, isValidCallbackResults.results, this);
-                                                                        });
+                                                                                Log(isValidCallbackResults.resultCode, isValidCallbackResults.result, this);
+                                                                        }, AppData.Helpers.GetArray(sortingContents));
                                                                     }
 
                                                                     sortingListParam.SetContent(sortingContents);
                                                                 }
                                                                 else
-                                                                    Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                                    Log(GetProjectRootStructureData().resultCode, GetProjectRootStructureData().result, this);
 
                                                                 #region Enable UI Screen Group COntent
 
@@ -3924,7 +3945,7 @@ namespace Com.RedicalGames.Filar
                                                                 #endregion
                                                             }
                                                             else
-                                                                Log(createProjectWidgetCallback.resultsCode, createProjectWidgetCallback.results, this);
+                                                                Log(createProjectWidgetCallback.resultCode, createProjectWidgetCallback.result, this);
                                                         });
                                                     }
                                                     else
@@ -3944,7 +3965,7 @@ namespace Com.RedicalGames.Filar
                                                             isRefreshed = true;
                                                         }
                                                         else
-                                                            Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                            Log(GetProjectRootStructureData().resultCode, GetProjectRootStructureData().result, this);
                                                     }
 
                                                 }
@@ -3967,7 +3988,7 @@ namespace Com.RedicalGames.Filar
                                             });
                                         }
                                         else
-                                            Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
+                                            Log(widgetsClearedCallback.resultCode, widgetsClearedCallback.result, this);
                                     });
 
                                     break;
@@ -4022,7 +4043,7 @@ namespace Com.RedicalGames.Filar
                                                                 CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), loadedDirectoriesCallbackResults.data, widgetsContainer, (widgetsCreated) =>
                                                                 {
                                                                     // Get Loaded Widgets
-                                                                    if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
+                                                                    if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultCode))
                                                                     {
                                                                         contentCount += widgetsCreated.data.Count;
 
@@ -4035,13 +4056,13 @@ namespace Com.RedicalGames.Filar
                                                                 });
                                                             }
                                                             else
-                                                                Log(loadedDirectoriesCallbackResults.resultsCode, loadedDirectoriesCallbackResults.results, this);
+                                                                Log(loadedDirectoriesCallbackResults.resultCode, loadedDirectoriesCallbackResults.result, this);
                                                         });
 
                                                         CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer, (widgetsCreated) =>
                                                         {
                                                             // Get Loaded Widgets
-                                                            if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultsCode))
+                                                            if (AppData.Helpers.IsSuccessCode(widgetsCreated.resultCode))
                                                             {
                                                                 contentCount += widgetsCreated.data.Count;
 
@@ -4103,7 +4124,7 @@ namespace Com.RedicalGames.Filar
                                                                     }
                                                                 }
                                                                 else
-                                                                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                                                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
                                                             });
 
                                                             ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, selectionOptionImageViewType);
@@ -4124,10 +4145,10 @@ namespace Com.RedicalGames.Filar
                                                 });
                                             }
                                             else
-                                                Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                                                Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
                                         }
                                         else
-                                            Log(widgetsClearedCallback.resultsCode, widgetsClearedCallback.results, this);
+                                            Log(widgetsClearedCallback.resultCode, widgetsClearedCallback.result, this);
                                     });
 
                                     break;
@@ -4159,8 +4180,8 @@ namespace Com.RedicalGames.Filar
 
                 GetContentContainer(containerCallbackResults => 
                 {
-                    callbackResults.results = containerCallbackResults.results;
-                    callbackResults.resultsCode = containerCallbackResults.resultsCode;
+                    callbackResults.result = containerCallbackResults.result;
+                    callbackResults.resultCode = containerCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
@@ -4171,21 +4192,21 @@ namespace Com.RedicalGames.Filar
                             #region UI States
 
                             SetContentScreenUIStatesEvent(actions);
-                            callbackResults.results = "Content Refreshed.";
+                            callbackResults.result = "Content Refreshed.";
 
                             #endregion
                         }
                         else
                         {
-                            callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
-                            callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+                            callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
+                            callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
 
                             if (callbackResults.Success())
                             {
                                 ScreenNavigationManager.Instance.GetEmptyContentDataPacketsForScreen(screenType, refreshFolder, dataPacketsCallbackResults => 
                                 {
-                                    callbackResults.results = dataPacketsCallbackResults.results;
-                                    callbackResults.resultsCode = dataPacketsCallbackResults.resultsCode;
+                                    callbackResults.result = dataPacketsCallbackResults.result;
+                                    callbackResults.resultCode = dataPacketsCallbackResults.resultCode;
 
                                     if(callbackResults.Success())
                                         ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPacketsCallbackResults.data);
@@ -4200,7 +4221,7 @@ namespace Com.RedicalGames.Filar
                     #region UI States
 
                     SetContentScreenUIStatesEvent(actions);
-                    callbackResults.results = "Content Refreshed.";
+                    callbackResults.result = "Content Refreshed.";
 
                     #endregion
                 }
@@ -4281,7 +4302,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
             else
-                Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
         }
 
         public AppData.ContentContainerType GetContainerType(AppData.UIScreenType screenType)
@@ -4362,7 +4383,7 @@ namespace Com.RedicalGames.Filar
                 widgetsContainer.SetPaginationView(GetProjectStructureData().data.GetPaginationViewType());
             }
             else
-                Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
         }
 
         #region Content Load
@@ -4378,19 +4399,19 @@ namespace Com.RedicalGames.Filar
 
                 if(folders.Count == 0 && files.Count == 0)
                 {
-                    callbackResults.results = $"Directory : {folder.storageData.projectDirectory} Has No Content.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"Directory : {folder.storageData.projectDirectory} Has No Content.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Directory : {folder.storageData.projectDirectory} Has Content.";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.result = $"Directory : {folder.storageData.projectDirectory} Has Content.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
             }
             else
             {
-                callbackResults.results = $"Directory : {folder.storageData.projectDirectory} Not Found.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Directory : {folder.storageData.projectDirectory} Not Found.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -4419,29 +4440,29 @@ namespace Com.RedicalGames.Filar
 
                     if (loadedFolders.Count > 0)
                     {
-                        callbackResults.results = "Success";
+                        callbackResults.result = "Success";
                         callbackResults.data = loadedFolders;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Failed - No Valid Files Loaded In Directory : {folder.storageData.projectDirectory} Not Found.";
+                        callbackResults.result = $"Failed - No Valid Files Loaded In Directory : {folder.storageData.projectDirectory} Not Found.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Failed - No Files Found In Directory : {folder.storageData.projectDirectory} Not Found.";
+                    callbackResults.result = $"Failed - No Files Found In Directory : {folder.storageData.projectDirectory} Not Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = $"Failed - Directory : {folder.storageData.projectDirectory} Not Found.";
+                callbackResults.result = $"Failed - Directory : {folder.storageData.projectDirectory} Not Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -4459,7 +4480,7 @@ namespace Com.RedicalGames.Filar
                 {
                     FileFound(folderDirectory.projectDirectory, folderFoundCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(folderFoundCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(folderFoundCallback.resultCode))
                         {
                             if (folderDirectory.projectDirectory.Contains("_FolderData.json"))
                             {
@@ -4467,7 +4488,7 @@ namespace Com.RedicalGames.Filar
 
                                 DirectoryFound(directory, directoryexistCallack =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(directoryexistCallack.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(directoryexistCallack.resultCode))
                                     {
                                         string JSONString = File.ReadAllText(folderDirectory.projectDirectory);
                                         AppData.Folder folderData = JsonUtility.FromJson<AppData.Folder>(JSONString);
@@ -4477,9 +4498,9 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        callbackResults.results = directoryexistCallack.results;
+                                        callbackResults.result = directoryexistCallack.result;
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = directoryexistCallack.resultsCode;
+                                        callbackResults.resultCode = directoryexistCallack.resultCode;
                                     }
 
                                 });
@@ -4487,31 +4508,31 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = folderFoundCallback.results;
+                            callbackResults.result = folderFoundCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     });
                 }
 
                 if (loadedFolders.Count > 0)
                 {
-                    callbackResults.results = "Success";
+                    callbackResults.result = "Success";
                     callbackResults.data = loadedFolders;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"No Valid Folders Loaded.";
+                    callbackResults.result = $"No Valid Folders Loaded.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Folder Directory Data List Is Null / Empty";
+                callbackResults.result = "Folder Directory Data List Is Null / Empty";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -4523,7 +4544,7 @@ namespace Com.RedicalGames.Filar
 
             DirectoryFound(folder.storageData.projectDirectory, foundDirectoryCallback =>
             {
-                if (AppData.Helpers.IsSuccessCode(foundDirectoryCallback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(foundDirectoryCallback.resultCode))
                 {
                     List<AppData.SceneAsset> loadedAssetsList = new List<AppData.SceneAsset>();
 
@@ -4572,39 +4593,39 @@ namespace Com.RedicalGames.Filar
 
                                 if (loadedAssetsList.Count > 0)
                                 {
-                                    callbackResults.results = $"Success - {loadedAssetsList.Count} : Files Found In Directory : {folder.storageData.projectDirectory}";
+                                    callbackResults.result = $"Success - {loadedAssetsList.Count} : Files Found In Directory : {folder.storageData.projectDirectory}";
                                     callbackResults.data = loadedAssetsList;
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"No Loaded Assets Files Found In Directory : {folder.storageData.projectDirectory}";
+                                    callbackResults.result = $"No Loaded Assets Files Found In Directory : {folder.storageData.projectDirectory}";
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"No Valid Files Found In Directory : {folder.storageData.projectDirectory}";
+                                callbackResults.result = $"No Valid Files Found In Directory : {folder.storageData.projectDirectory}";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
-                            Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                            Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
                     }
                     else
                     {
-                        callbackResults.results = $"Load Scene Assets's Directory.GetFiles Failed - FileDataList Is Null / Empty.";
+                        callbackResults.result = $"Load Scene Assets's Directory.GetFiles Failed - FileDataList Is Null / Empty.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = foundDirectoryCallback.results;
+                    callbackResults.result = foundDirectoryCallback.result;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             });
 
@@ -4623,7 +4644,7 @@ namespace Com.RedicalGames.Filar
                 {
                     FileFound(fileDirectory.projectDirectory, fileFoundCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(fileFoundCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(fileFoundCallback.resultCode))
                         {
                             string JSONString = File.ReadAllText(fileDirectory.projectDirectory);
                             AppData.AssetData fileData = JsonUtility.FromJson<AppData.AssetData>(JSONString);
@@ -4635,31 +4656,31 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = fileFoundCallback.results;
+                            callbackResults.result = fileFoundCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     });
                 }
 
                 if (loadedFiles.Count > 0)
                 {
-                    callbackResults.results = "Success";
+                    callbackResults.result = "Success";
                     callbackResults.data = loadedFiles;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"No Valid Folders Loaded.";
+                    callbackResults.result = $"No Valid Folders Loaded.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Folder Directory Data List Is Null / Empty";
+                callbackResults.result = "Folder Directory Data List Is Null / Empty";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -4673,8 +4694,8 @@ namespace Com.RedicalGames.Filar
 
                 LoadRootStructureData(rootProjectCallbackResults => 
                 {
-                    callbackResults.results = rootProjectCallbackResults.results;
-                    callbackResults.resultsCode = rootProjectCallbackResults.resultsCode;
+                    callbackResults.result = rootProjectCallbackResults.result;
+                    callbackResults.resultCode = rootProjectCallbackResults.resultCode;
 
                     if(callbackResults.Success())
                     {
@@ -4713,8 +4734,8 @@ namespace Com.RedicalGames.Filar
                                         {
                                             LoadData<AppData.ProjectStructureData>(entry, loadedResults =>
                                             {
-                                                callbackResults.results = loadedResults.results;
-                                                callbackResults.resultsCode = loadedResults.resultsCode;
+                                                callbackResults.result = loadedResults.result;
+                                                callbackResults.resultCode = loadedResults.resultCode;
 
                                                 if (callbackResults.Success())
                                                     loadedEntries.Add(loadedResults.data);
@@ -4728,41 +4749,41 @@ namespace Com.RedicalGames.Filar
 
                                         if (loadedEntries.Count > 0)
                                         {
-                                            callbackResults.results = $"Directory : {directoryData.directory} Found.";
+                                            callbackResults.result = $"Directory : {directoryData.directory} Found.";
                                             callbackResults.data = loadedEntries;
-                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
                                         else
                                         {
 
-                                            callbackResults.results = $" Failed To Load Project Structure From Directory : {directoryData.directory} - Please Check Here For Details.";
+                                            callbackResults.result = $" Failed To Load Project Structure From Directory : {directoryData.directory} - Please Check Here For Details.";
                                             callbackResults.data = default;
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                     else
                                     {
-                                        callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.directory}.";
+                                        callbackResults.result = $" There Are No Valid Project Data Files Found In Directory : {directoryData.directory}.";
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                     }
                                 }
                                 else
                                 {
-                                    callbackResults.results = $" There Are No Valid Project Data Files Found In Directory : {directoryData.directory}.";
+                                    callbackResults.result = $" There Are No Valid Project Data Files Found In Directory : {directoryData.directory}.";
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"Directory : {directoryData.directory} Of Type : {rootStructureStorageData.type} Not Found.";
+                                callbackResults.result = $"Directory : {directoryData.directory} Of Type : {rootStructureStorageData.type} Not Found.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
-                            Log(GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).results, this);
+                            Log(GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).resultCode, GetAppDirectoryData(rootProjectCallbackResults.data.GetProjectStructureData().rootFolder.directoryType).result, this);
                     }
                 });
 
@@ -4803,26 +4824,26 @@ namespace Com.RedicalGames.Filar
 
                     FileFound(sourceStorageData.path, fileCheckCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultCode))
                         {
                             if (!File.Exists(targetStorageData.path))
                             {
                                 MoveFile(sourceStorageData.path, targetStorageData.path, type, fileDataMoveCallback =>
                                 {
-                                    Debug.LogError($"==> File Moved : {fileDataMoveCallback.resultsCode}");
+                                    Debug.LogError($"==> File Moved : {fileDataMoveCallback.resultCode}");
 
-                                    callbackResults.results = fileDataMoveCallback.results;
+                                    callbackResults.result = fileDataMoveCallback.result;
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = fileDataMoveCallback.resultsCode;
+                                    callbackResults.resultCode = fileDataMoveCallback.resultCode;
 
-                                    if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultsCode))
+                                    if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultCode))
                                         callback.Invoke(callbackResults);
                                 });
                             }
                             else
                             {
-                                callbackResults.results = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                                 callbackResults.data = new AppData.DirectoryInfo
                                 {
@@ -4836,9 +4857,9 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = fileCheckCallback.results;
+                            callbackResults.result = fileCheckCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultsCode = fileCheckCallback.resultsCode;
+                            callbackResults.resultCode = fileCheckCallback.resultCode;
                         }
 
                         callback?.Invoke(callbackResults);
@@ -4854,24 +4875,24 @@ namespace Com.RedicalGames.Filar
 
                     FileFound(sourceStorageData.path, fileCheckCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(fileCheckCallback.resultCode))
                         {
                             if (!File.Exists(targetStorageData.path))
                             {
                                 MoveFile(sourceStorageData.path, targetStorageData.path, type, fileDataMoveCallback =>
                                 {
-                                    callbackResults.results = fileDataMoveCallback.results;
+                                    callbackResults.result = fileDataMoveCallback.result;
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = fileDataMoveCallback.resultsCode;
+                                    callbackResults.resultCode = fileDataMoveCallback.resultCode;
 
-                                    if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultsCode))
+                                    if (!AppData.Helpers.IsSuccessCode(fileDataMoveCallback.resultCode))
                                         callback.Invoke(callbackResults);
                                 });
                             }
                             else
                             {
-                                callbackResults.results = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = $"File : {sourceStorageData.name} Already Exists In : {targetStorageData.name}";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                                 callbackResults.data = new AppData.DirectoryInfo
                                 {
@@ -4885,9 +4906,9 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = fileCheckCallback.results;
+                            callbackResults.result = fileCheckCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultsCode = fileCheckCallback.resultsCode;
+                            callbackResults.resultCode = fileCheckCallback.resultCode;
                         }
                     });
 
@@ -4897,15 +4918,15 @@ namespace Com.RedicalGames.Filar
 
                     DirectoryFound(sourceStorageData.projectDirectory, checkDirectoryCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(checkDirectoryCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(checkDirectoryCallback.resultCode))
                         {
                             if (!Directory.Exists(targetStorageData.projectDirectory))
                             {
                                 MoveDirectory(sourceStorageData.projectDirectory, targetStorageData.projectDirectory, checkDirectoryMoveCallback =>
                                 {
-                                    callbackResults.resultsCode = checkDirectoryMoveCallback.resultsCode;
+                                    callbackResults.resultCode = checkDirectoryMoveCallback.resultCode;
 
-                                    if (AppData.Helpers.IsSuccessCode(checkDirectoryMoveCallback.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(checkDirectoryMoveCallback.resultCode))
                                     {
                                         string sourceDirectoryName = Path.GetFileNameWithoutExtension(sourceStorageData.path);
                                         string sourceDirectoryNameFormatted = GetAssetNameFormatted(sourceDirectoryName, type);
@@ -4913,7 +4934,7 @@ namespace Com.RedicalGames.Filar
                                         string targetDirectoryName = Path.GetFileNameWithoutExtension(targetStorageData.path);
                                         string targetDirectoryNameFormatted = GetAssetNameFormatted(targetDirectoryName, type);
 
-                                        callbackResults.results = $"<b>{sourceDirectoryNameFormatted}</b> Moved From <b>{currentFolder.name}</b> To <b>{GetFormattedName(targetStorageData.name, type, true)}</b>";
+                                        callbackResults.result = $"<b>{sourceDirectoryNameFormatted}</b> Moved From <b>{currentFolder.name}</b> To <b>{GetFormattedName(targetStorageData.name, type, true)}</b>";
 
                                         var storageData = new AppData.StorageDirectoryData
                                         {
@@ -4934,8 +4955,8 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"Directory : {sourceStorageData.projectDirectory} Already Exists In : {targetStorageData.name}";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = $"Directory : {sourceStorageData.projectDirectory} Already Exists In : {targetStorageData.name}";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                                 callbackResults.data = new AppData.DirectoryInfo
                                 {
@@ -4949,9 +4970,9 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = checkDirectoryCallback.results;
+                            callbackResults.result = checkDirectoryCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultsCode = checkDirectoryCallback.resultsCode;
+                            callbackResults.resultCode = checkDirectoryCallback.resultCode;
                         }
                     });
 
@@ -4981,10 +5002,10 @@ namespace Com.RedicalGames.Filar
 
                 FileFound(formattedDirectory, fileCheckCallback =>
                 {
-                    callbackResults.results = fileCheckCallback.results;
-                    callbackResults.resultsCode = fileCheckCallback.resultsCode;
+                    callbackResults.result = fileCheckCallback.result;
+                    callbackResults.resultCode = fileCheckCallback.resultCode;
 
-                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         callbackResults.data = new AppData.StorageDirectoryData
                         {
                             name = sourceStorageData.name,
@@ -5010,10 +5031,10 @@ namespace Com.RedicalGames.Filar
             // Check If File Moved Successfully.
             FileFound(targetDirectory, fileCheckCallback =>
             {
-                callbackResults.results = fileCheckCallback.results;
-                callbackResults.resultsCode = fileCheckCallback.resultsCode;
+                callbackResults.result = fileCheckCallback.result;
+                callbackResults.resultCode = fileCheckCallback.resultCode;
 
-                if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                 {
                     string fileDataPath = targetDirectory;
                     string fileName = Path.GetFileNameWithoutExtension(fileDataPath);
@@ -5032,26 +5053,26 @@ namespace Com.RedicalGames.Filar
                     {
                         LoadData<AppData.AssetData>(newStorageData, fileLoaderCallback =>
                         {
-                            callbackResults.results = fileLoaderCallback.results;
-                            callbackResults.resultsCode = fileLoaderCallback.resultsCode;
+                            callbackResults.result = fileLoaderCallback.result;
+                            callbackResults.resultCode = fileLoaderCallback.resultCode;
 
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
                                 AppData.AssetData loadedFileData = fileLoaderCallback.data;
                                 loadedFileData.storageData = newStorageData;
 
                                 SaveData(loadedFileData, checkFileSavedCallback =>
                                 {
-                                    callbackResults.resultsCode = checkFileSavedCallback.resultsCode;
+                                    callbackResults.resultCode = checkFileSavedCallback.resultCode;
 
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                     {
-                                        callbackResults.results = checkFileSavedCallback.results;
+                                        callbackResults.result = checkFileSavedCallback.result;
                                         callbackResults.data = newStorageData;
                                     }
                                     else
                                     {
-                                        callbackResults.results = $"Couldn't Save File Data : {fileLoaderCallback.data.name} At Directory : {newStorageData.projectDirectory}";
+                                        callbackResults.result = $"Couldn't Save File Data : {fileLoaderCallback.data.name} At Directory : {newStorageData.projectDirectory}";
                                         callbackResults.data = default;
                                     }
                                 });
@@ -5071,26 +5092,26 @@ namespace Com.RedicalGames.Filar
                     {
                         LoadData<AppData.Folder>(newStorageData, fileLoaderCallback =>
                         {
-                            callbackResults.results = fileLoaderCallback.results;
-                            callbackResults.resultsCode = fileLoaderCallback.resultsCode;
+                            callbackResults.result = fileLoaderCallback.result;
+                            callbackResults.resultCode = fileLoaderCallback.resultCode;
 
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
                                 AppData.Folder loadedFolderData = fileLoaderCallback.data;
                                 loadedFolderData.storageData = newStorageData;
 
                                 SaveData(loadedFolderData, checkFileSavedCallback =>
                                 {
-                                    callbackResults.resultsCode = checkFileSavedCallback.resultsCode;
+                                    callbackResults.resultCode = checkFileSavedCallback.resultCode;
 
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                     {
-                                        callbackResults.results = checkFileSavedCallback.results;
+                                        callbackResults.result = checkFileSavedCallback.result;
                                         callbackResults.data = newStorageData;
                                     }
                                     else
                                     {
-                                        callbackResults.results = $"Couldn't Save Folder Data : {fileLoaderCallback.data.name} At Directory : {newStorageData.projectDirectory}";
+                                        callbackResults.result = $"Couldn't Save Folder Data : {fileLoaderCallback.data.name} At Directory : {newStorageData.projectDirectory}";
                                         callbackResults.data = default;
                                     }
                                 });
@@ -5126,10 +5147,10 @@ namespace Com.RedicalGames.Filar
 
             DirectoryFound(targetDirectory, directoryCheckCallback =>
             {
-                callbackResults.results = directoryCheckCallback.results;
-                callbackResults.resultsCode = directoryCheckCallback.resultsCode;
+                callbackResults.result = directoryCheckCallback.result;
+                callbackResults.resultCode = directoryCheckCallback.resultCode;
 
-                if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                 {
                     string[] contentInDirectory = Directory.GetFiles(targetDirectory, "*Data.json", SearchOption.AllDirectories);
 
@@ -5179,10 +5200,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 LoadData<AppData.AssetData>(fileSorageData, (fileLoaderCallback) =>
                                 {
-                                    callbackResults.results = fileLoaderCallback.results;
-                                    callbackResults.resultsCode = fileLoaderCallback.resultsCode;
+                                    callbackResults.result = fileLoaderCallback.result;
+                                    callbackResults.resultCode = fileLoaderCallback.resultCode;
 
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                     {
                                         AppData.AssetData loadedFileData = fileLoaderCallback.data;
                                         loadedFileData.storageData.path = fileSorageData.path;
@@ -5190,16 +5211,16 @@ namespace Com.RedicalGames.Filar
 
                                         SaveData(loadedFileData, checkFileSavedCallback =>
                                         {
-                                            callbackResults.resultsCode = checkFileSavedCallback.resultsCode;
+                                            callbackResults.resultCode = checkFileSavedCallback.resultCode;
 
-                                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             {
-                                                callbackResults.results = checkFileSavedCallback.results;
+                                                callbackResults.result = checkFileSavedCallback.result;
                                                 callbackResults.data = fileSorageData;
                                             }
                                             else
                                             {
-                                                callbackResults.results = $"Couldn't Save Asset File Data : {fileLoaderCallback.data.name} At Directory : {fileSorageData.projectDirectory}";
+                                                callbackResults.result = $"Couldn't Save Asset File Data : {fileLoaderCallback.data.name} At Directory : {fileSorageData.projectDirectory}";
                                                 callbackResults.data = default;
                                             }
                                         });
@@ -5220,10 +5241,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 LoadData<AppData.Folder>(folderStorageData, (fileLoaderCallback) =>
                                 {
-                                    callbackResults.results = fileLoaderCallback.results;
-                                    callbackResults.resultsCode = fileLoaderCallback.resultsCode;
+                                    callbackResults.result = fileLoaderCallback.result;
+                                    callbackResults.resultCode = fileLoaderCallback.resultCode;
 
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                     {
                                         AppData.Folder loadedFoldereData = fileLoaderCallback.data;
                                         loadedFoldereData.storageData.path = folderStorageData.path;
@@ -5231,16 +5252,16 @@ namespace Com.RedicalGames.Filar
 
                                         SaveData(loadedFoldereData, checkFileSavedCallback =>
                                         {
-                                            callbackResults.resultsCode = checkFileSavedCallback.resultsCode;
+                                            callbackResults.resultCode = checkFileSavedCallback.resultCode;
 
-                                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             {
-                                                callbackResults.results = checkFileSavedCallback.results;
+                                                callbackResults.result = checkFileSavedCallback.result;
                                                 callbackResults.data = folderStorageData;
                                             }
                                             else
                                             {
-                                                callbackResults.results = $"Couldn't Save Folder Data : {fileLoaderCallback.data.name} At Directory : {folderStorageData.projectDirectory}";
+                                                callbackResults.result = $"Couldn't Save Folder Data : {fileLoaderCallback.data.name} At Directory : {folderStorageData.projectDirectory}";
                                                 callbackResults.data = default;
                                             }
                                         });
@@ -5279,10 +5300,10 @@ namespace Com.RedicalGames.Filar
 
                         Delete(assetToDelete, assetDeletedCallback =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(assetDeletedCallback.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(assetDeletedCallback.resultCode))
                                 assetsToDeleteCount--;
                             else
-                                Debug.LogWarning($"--> Delete Failed With Results : {assetDeletedCallback.results}");
+                                Debug.LogWarning($"--> Delete Failed With Results : {assetDeletedCallback.result}");
                         });
 
                         break;
@@ -5293,10 +5314,10 @@ namespace Com.RedicalGames.Filar
 
                         Delete(folderToDelete, folderDeletedCallback =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(folderDeletedCallback.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(folderDeletedCallback.resultCode))
                                 assetsToDeleteCount--;
                             else
-                                Debug.LogWarning($"--> DeleteAssetFolder Failed With Results : {folderDeletedCallback.results}");
+                                Debug.LogWarning($"--> DeleteAssetFolder Failed With Results : {folderDeletedCallback.result}");
                         });
 
                         break;
@@ -5305,13 +5326,13 @@ namespace Com.RedicalGames.Filar
 
             if (assetsToDeleteCount == 0)
             {
-                callbackResults.results = "Assets Deleted Successfully.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = "Assets Deleted Successfully.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Assets Failed To Delete For Unknown Reasons. Please Check Here.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Assets Failed To Delete For Unknown Reasons. Please Check Here.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -5331,13 +5352,13 @@ namespace Com.RedicalGames.Filar
 
             if (!File.Exists(folder.storageData.projectDirectory) && !Directory.Exists(folder.storageData.projectDirectory))
             {
-                callbackResults.results = "Folder Deleted Successfully.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = "Folder Deleted Successfully.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Folder Failed To Deleted For Unknown Reasons.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Folder Failed To Deleted For Unknown Reasons.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -5354,13 +5375,13 @@ namespace Com.RedicalGames.Filar
 
             if (!File.Exists(asset.storageData.projectDirectory))
             {
-                callbackResults.results = "Asset Deleted Successfully.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = "Asset Deleted Successfully.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Asset Failed To Deleted For Unknown Reasons.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Asset Failed To Deleted For Unknown Reasons.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -5428,14 +5449,14 @@ namespace Com.RedicalGames.Filar
         }
         #region App Time Data
 
-        public AppData.RuntimeValue<float> GetDefaultExecutionValue(AppData.RuntimeValueType valueType)
+        public AppData.RuntimeValue<float> GetDefaultExecutionValue(AppData.RuntimeExecution valueType)
         {
             return defaultExecutionTimes.Find((x) => x.valueType == valueType);
         }
 
         public AppData.RuntimeValue<float> GetDefaultScreenFadeExecutionValue(AppData.UIScreenType screenType, UIScreenFadeDirection direction)
         {
-            AppData.RuntimeValueType valueType = AppData.RuntimeValueType.None;
+            AppData.RuntimeExecution valueType = AppData.RuntimeExecution.None;
 
             if (screenType != AppData.UIScreenType.None && direction != UIScreenFadeDirection.None)
             {
@@ -5444,70 +5465,70 @@ namespace Com.RedicalGames.Filar
                     case AppData.UIScreenType.SplashScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.SplashScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.SplashScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.SplashScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.SplashScreenFadeOutDuration;
 
                         break;
 
                     case AppData.UIScreenType.LoadingScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.LoadingScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.LoadingScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.LoadingScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.LoadingScreenFadeOutDuration;
 
                         break;
 
                     case AppData.UIScreenType.LandingPageScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.LandingPageScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.LandingPageScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.LandingPageScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.LandingPageScreenFadeOutDuration;
 
                         break;
 
                     case AppData.UIScreenType.ProjectCreationScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.ProjectCreationScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.ProjectCreationScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.ProjectCreationScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.ProjectCreationScreenFadeOutDuration;
 
                         break;
 
                     case AppData.UIScreenType.ProjectDashboardScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.ProjectDashboardScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.ProjectDashboardScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.ProjectDashboardScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.ProjectDashboardScreenFadeOutDuration;
 
                         break;
 
                     case AppData.UIScreenType.ContentImportExportScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.ContentImportExportScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.ContentImportExportScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.ContentImportExportScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.ContentImportExportScreenFadeOutDuration;
 
                         break;
 
                     case AppData.UIScreenType.ARViewScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
-                            valueType = AppData.RuntimeValueType.ARViewScreenFadeInDuration;
+                            valueType = AppData.RuntimeExecution.ARViewScreenFadeInDuration;
 
                         if (direction == UIScreenFadeDirection.FadeOut)
-                            valueType = AppData.RuntimeValueType.ARViewScreenFadeOutDuration;
+                            valueType = AppData.RuntimeExecution.ARViewScreenFadeOutDuration;
 
                         break;
                 }
@@ -5541,8 +5562,8 @@ namespace Com.RedicalGames.Filar
                     {
                         GetContentContainer(containerCallbackResults =>
                         {
-                            callbackResults.results = containerCallbackResults.results;
-                            callbackResults.resultsCode = containerCallbackResults.resultsCode;
+                            callbackResults.result = containerCallbackResults.result;
+                            callbackResults.resultCode = containerCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
@@ -5554,8 +5575,8 @@ namespace Com.RedicalGames.Filar
 
                                             #region Serach For Projects Files
 
-                                            callbackResults.results = GetProjectRootStructureData().results;
-                                            callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
+                                            callbackResults.result = GetProjectRootStructureData().result;
+                                            callbackResults.resultCode = GetProjectRootStructureData().resultCode;
 
                                             if (callbackResults.Success())
                                             {
@@ -5619,7 +5640,7 @@ namespace Com.RedicalGames.Filar
                                                                 if (loadedProjectCallbackResults.Success())
                                                                     validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
                                                                 else
-                                                                    LogError($"====> Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
+                                                                    LogError($"====> Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.result}", this);
                                                             });
                                                         }
 
@@ -5667,7 +5688,7 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
                                                                 {
-                                                                    projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                                    projectsFound = widgetsCreated.resultCode == AppData.Helpers.SuccessCode;
                                                                 });
                                                             }
 
@@ -5839,7 +5860,7 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         CreateUIScreenFolderWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), foldersSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
                                                                         {
-                                                                            folderFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                                            folderFound = widgetsCreated.resultCode == AppData.Helpers.SuccessCode;
                                                                         });
                                                                     }
 
@@ -5925,7 +5946,7 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         CreateUIScreenFileWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), filesSearchResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
                                                                         {
-                                                                            folderFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                                            folderFound = widgetsCreated.resultCode == AppData.Helpers.SuccessCode;
                                                                         });
                                                                     }
 
@@ -5964,7 +5985,7 @@ namespace Com.RedicalGames.Filar
                                                         }
                                                     }
                                                     else
-                                                        Debug.LogWarning($"--> SearchScreenWidgetList Failed With Results : {foundDirectoriesCallback.results}.");
+                                                        Debug.LogWarning($"--> SearchScreenWidgetList Failed With Results : {foundDirectoriesCallback.result}.");
                                                 });
                                             }
                                             else
@@ -6012,8 +6033,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = GetProjectStructureData().results;
-                    callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                    callbackResults.result = GetProjectStructureData().result;
+                    callbackResults.resultCode = GetProjectStructureData().resultCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -6043,7 +6064,7 @@ namespace Com.RedicalGames.Filar
 
                                 OnFilterScreenWidgets(dropDownIndex, widgetContainerCallbackResults.data, filteredProjectCallbackResults =>
                                 {
-                                    Log(filteredProjectCallbackResults.resultsCode, filteredProjectCallbackResults.results, this);
+                                    Log(filteredProjectCallbackResults.resultCode, filteredProjectCallbackResults.result, this);
                                 });
 
                                 break;
@@ -6061,21 +6082,21 @@ namespace Com.RedicalGames.Filar
 
                                             SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
                                             {
-                                                Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                                Log(dataSavedCallbackResults.resultCode, dataSavedCallbackResults.result, this);
                                             });
                                         }
                                         else
-                                            Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                            Log(GetProjectRootStructureData().resultCode, GetProjectRootStructureData().result, this);
                                     }
                                     else
-                                        Log(assetSortedCallbackResults.resultsCode, assetSortedCallbackResults.results, this);
+                                        Log(assetSortedCallbackResults.resultCode, assetSortedCallbackResults.result, this);
                                 });
 
                                 break;
                         }
                     }
                     else
-                        Log(widgetContainerCallbackResults.resultsCode, widgetContainerCallbackResults.results, this);
+                        Log(widgetContainerCallbackResults.resultCode, widgetContainerCallbackResults.result, this);
                 });
             }
             else
@@ -6090,15 +6111,15 @@ namespace Com.RedicalGames.Filar
 
                 GetDropdownContentTypeFromIndex<AppData.SortType>(sortIndex, enumCallbackResults =>
                 {
-                    callbackResults.results = enumCallbackResults.results;
-                    callbackResults.resultsCode = enumCallbackResults.resultsCode;
+                    callbackResults.result = enumCallbackResults.result;
+                    callbackResults.resultCode = enumCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
                         GetContentContainer(containerCallbackResults => 
                         {
-                            callbackResults.results = containerCallbackResults.results;
-                            callbackResults.resultsCode = containerCallbackResults.resultsCode;
+                            callbackResults.result = containerCallbackResults.result;
+                            callbackResults.resultCode = containerCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
@@ -6106,8 +6127,8 @@ namespace Com.RedicalGames.Filar
 
                                 containerCallbackResults.data.GetContent(contentCallbackResults => 
                                 {
-                                    callbackResults.results = contentCallbackResults.results;
-                                    callbackResults.resultsCode = contentCallbackResults.resultsCode;
+                                    callbackResults.result = contentCallbackResults.result;
+                                    callbackResults.resultCode = contentCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
@@ -6123,8 +6144,8 @@ namespace Com.RedicalGames.Filar
 
                                                 containerCallbackResults.data.GetSelectableWidgetType(contentCallbackResults.data, selectableWidgetTypeCallbackResults => 
                                                 {
-                                                    callbackResults.results = selectableWidgetTypeCallbackResults.results;
-                                                    callbackResults.resultsCode = selectableWidgetTypeCallbackResults.resultsCode;
+                                                    callbackResults.result = selectableWidgetTypeCallbackResults.result;
+                                                    callbackResults.resultCode = selectableWidgetTypeCallbackResults.resultCode;
 
                                                     if(callbackResults.Success())
                                                     {
@@ -6172,8 +6193,8 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 containerCallbackResults.data.SetWidgetListIndex(contentCallbackResults.data[i], i, setIndexCallbackResults => 
                                                 {
-                                                    callbackResults.results = setIndexCallbackResults.results;
-                                                    callbackResults.resultsCode = setIndexCallbackResults.resultsCode;
+                                                    callbackResults.result = setIndexCallbackResults.result;
+                                                    callbackResults.resultCode = setIndexCallbackResults.resultCode;
 
                                                 });
 
@@ -6187,13 +6208,13 @@ namespace Com.RedicalGames.Filar
                                             }
 
                                             if(callbackResults.Success())
-                                                callbackResults.results = $"{contentCallbackResults.data.Count } : Assets Sorted To : {sortType}.";
+                                                callbackResults.result = $"{contentCallbackResults.data.Count } : Assets Sorted To : {sortType}.";
                                         }
                                         else
                                         {
-                                            callbackResults.results = "Screen Widget List Is Null / Not Initialized.";
+                                            callbackResults.result = "Screen Widget List Is Null / Not Initialized.";
                                             callbackResults.data = default;
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                 });
@@ -6221,8 +6242,8 @@ namespace Com.RedicalGames.Filar
                 {
                     GetCurrentProjectStructureData().data.GetProjectInfo().GetSortType(sortCallBackResults =>
                     {
-                        callbackResults.results = sortCallBackResults.results;
-                        callbackResults.resultsCode = sortCallBackResults.resultsCode;
+                        callbackResults.result = sortCallBackResults.result;
+                        callbackResults.resultCode = sortCallBackResults.resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -6263,24 +6284,24 @@ namespace Com.RedicalGames.Filar
                                 }
                             }
 
-                            callbackResults.results = "GetSortedWidgetList Success";
+                            callbackResults.result = "GetSortedWidgetList Success";
                             callbackResults.data = serializableDataList;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }
                     });
                 }
                 else
                 {
-                    callbackResults.results = GetProjectStructureData().results;
+                    callbackResults.result = GetProjectStructureData().result;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                    callbackResults.resultCode = GetProjectStructureData().resultCode;
                 }
             }
             else
             {
-                callbackResults.results = "GetSortedWidgetList Failed : serializableDataList Is Null / Empty.";
+                callbackResults.result = "GetSortedWidgetList Failed : serializableDataList Is Null / Empty.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -6294,27 +6315,27 @@ namespace Com.RedicalGames.Filar
 
                 AppData.Helpers.SerializableComponentValid<T>(serializableDataList, validDataCallbackResults =>
                 {
-                    callbackResults.results = validDataCallbackResults.results;
-                    callbackResults.resultsCode = validDataCallbackResults.resultsCode;
+                    callbackResults.result = validDataCallbackResults.result;
+                    callbackResults.resultCode = validDataCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.results = GetProjectStructureData().results;
-                        callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                        callbackResults.result = GetProjectStructureData().result;
+                        callbackResults.resultCode = GetProjectStructureData().resultCode;
 
                         if (callbackResults.Success())
                         {
                             GetProjectStructureData().data.GetProjectInfo(projectInfoCallbackResults =>
                             {
-                                callbackResults.results = projectInfoCallbackResults.results;
-                                callbackResults.resultsCode = projectInfoCallbackResults.resultsCode;
+                                callbackResults.result = projectInfoCallbackResults.result;
+                                callbackResults.resultCode = projectInfoCallbackResults.resultCode;
 
                                 if (callbackResults.Success())
                                 {
                                     GetProjectStructureData().data.GetProjectInfo().GetSortType(sortCallbackResults =>
                                     {
-                                        callbackResults.results = sortCallbackResults.results;
-                                        callbackResults.resultsCode = sortCallbackResults.resultsCode;
+                                        callbackResults.result = sortCallbackResults.result;
+                                        callbackResults.resultCode = sortCallbackResults.resultCode;
 
                                         if (callbackResults.Success())
                                         {
@@ -6348,15 +6369,15 @@ namespace Com.RedicalGames.Filar
 
                                             if (serializableDataList != null && serializableDataList.Count > 0)
                                             {
-                                                callbackResults.results = "GetSortedWidgetList Success";
+                                                callbackResults.result = "GetSortedWidgetList Success";
                                                 callbackResults.data = serializableDataList;
-                                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                             }
                                             else
                                             {
-                                                callbackResults.results = "Something Sinister Happaned. What's Going On Here. Huh!";
+                                                callbackResults.result = "Something Sinister Happaned. What's Going On Here. Huh!";
                                                 callbackResults.data = default;
-                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                             }
                                         }
                                         else
@@ -6387,15 +6408,15 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.CallbackDataList<AppData.SceneAssetWidget> callbackResults = new AppData.CallbackDataList<AppData.SceneAssetWidget>();
 
-                callbackResults.results = GetProjectStructureData().results;
-                callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                callbackResults.result = GetProjectStructureData().result;
+                callbackResults.resultCode = GetProjectStructureData().resultCode;
 
                 if (callbackResults.Success())
                 {
                     GetProjectStructureData().data.GetProjectInfo().GetSortType(sortTypeCallbackResults =>
                     {
-                        callbackResults.results = sortTypeCallbackResults.results;
-                        callbackResults.resultsCode = sortTypeCallbackResults.resultsCode;
+                        callbackResults.result = sortTypeCallbackResults.result;
+                        callbackResults.resultCode = sortTypeCallbackResults.resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -6426,9 +6447,9 @@ namespace Com.RedicalGames.Filar
                                     break;
                             }
 
-                            callbackResults.results = $"Sorted Widgets Using : {sortTypeCallbackResults.data} Sort Type.";
+                            callbackResults.result = $"Sorted Widgets Using : {sortTypeCallbackResults.data} Sort Type.";
                             callbackResults.data = screenWidgetList;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }
                     });
                 }
@@ -6448,20 +6469,20 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.ComponentValid(widgets, componentCallbackResults =>
             {
-                callbackResults.results = componentCallbackResults.results;
-                callbackResults.resultsCode = componentCallbackResults.resultsCode;
+                callbackResults.result = componentCallbackResults.result;
+                callbackResults.resultCode = componentCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.results = GetProjectStructureData().results;
-                    callbackResults.resultsCode = GetProjectStructureData().resultsCode;
+                    callbackResults.result = GetProjectStructureData().result;
+                    callbackResults.resultCode = GetProjectStructureData().resultCode;
 
                     if (callbackResults.Success())
                     {
                         GetProjectStructureData().data.GetProjectInfo().GetSortType(sortedCallbackResults =>
                         {
-                            callbackResults.results = sortedCallbackResults.results;
-                            callbackResults.resultsCode = sortedCallbackResults.resultsCode;
+                            callbackResults.result = sortedCallbackResults.result;
+                            callbackResults.resultCode = sortedCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
@@ -6530,9 +6551,9 @@ namespace Com.RedicalGames.Filar
                                         break;
                                 }
 
-                                callbackResults.results = "Widgets Sorted Successfully.";
+                                callbackResults.result = "Widgets Sorted Successfully.";
                                 callbackResults.data = widgets;
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                         });
                     }
@@ -6551,7 +6572,7 @@ namespace Com.RedicalGames.Filar
                 if (containerCallbackResults.Success())
                     canSort = containerCallbackResults.data.GetContentCount() > 1;
                 else
-                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
             });
 
             return canSort;
@@ -6569,14 +6590,14 @@ namespace Com.RedicalGames.Filar
 
                 AppData.Helpers.GetComponent(ScreenUIManager.Instance, hasScreenManagerCallbackResults =>
                 {
-                    callbackResults.resultsCode = hasScreenManagerCallbackResults.resultsCode;
+                    callbackResults.resultCode = hasScreenManagerCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
                         ScreenUIManager.Instance.GetCurrentScreen(currentScreenCallbackResults => 
                         {
-                            callbackResults.results = currentScreenCallbackResults.results;
-                            callbackResults.resultsCode = currentScreenCallbackResults.resultsCode;
+                            callbackResults.result = currentScreenCallbackResults.result;
+                            callbackResults.resultCode = currentScreenCallbackResults.resultCode;
 
                             if(callbackResults.Success())
                             {
@@ -6592,8 +6613,8 @@ namespace Com.RedicalGames.Filar
 
                                                 if (filterType != AppData.ProjectCategoryType.Project_All)
                                                 {
-                                                    callbackResults.results = GetProjectRootStructureData().results;
-                                                    callbackResults.resultsCode = GetProjectRootStructureData().resultsCode;
+                                                    callbackResults.result = GetProjectRootStructureData().result;
+                                                    callbackResults.resultCode = GetProjectRootStructureData().resultCode;
 
                                                     if (callbackResults.Success())
                                                     {
@@ -6603,9 +6624,9 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             var filteredProjectFiles = Directory.GetFileSystemEntries(filterDirectory, "*.json", SearchOption.TopDirectoryOnly);
 
-                                                            AppData.Helpers.StringArrayValueValid(filteredProjectFiles, valueIsValidCallbackResults =>
+                                                            AppData.Helpers.StringValueValid(valueIsValidCallbackResults =>
                                                             {
-                                                                callbackResults.resultsCode = valueIsValidCallbackResults.resultsCode;
+                                                                callbackResults.resultCode = valueIsValidCallbackResults.resultCode;
 
                                                                 if (callbackResults.Success())
                                                                 {
@@ -6637,9 +6658,9 @@ namespace Com.RedicalGames.Filar
                                                                                                     validProjectsfound.Add(validData);
                                                                                                 else
                                                                                                 {
-                                                                                                    callbackResults.results = $"Found Valid Project Data Contains Excluded File : {excludedFile} Or Project Data Contains Already Contains Project : {validData}";
+                                                                                                    callbackResults.result = $"Found Valid Project Data Contains Excluded File : {excludedFile} Or Project Data Contains Already Contains Project : {validData}";
                                                                                                     callbackResults.data = default;
-                                                                                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                                                                                                     break;
                                                                                                 }
@@ -6650,18 +6671,18 @@ namespace Com.RedicalGames.Filar
                                                                                     }
                                                                                     else
                                                                                     {
-                                                                                        callbackResults.results = "Couldn't Get Excluded File Data.";
+                                                                                        callbackResults.result = "Couldn't Get Excluded File Data.";
                                                                                         callbackResults.data = default;
-                                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                                     }
                                                                                 }
                                                                             }
                                                                             else
-                                                                                Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                                                                                Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
 
-                                                                            AppData.Helpers.StringListValueValid(validProjectsfound, hasValidDataCallbackResults =>
+                                                                            AppData.Helpers.StringValueValid(hasValidDataCallbackResults =>
                                                                             {
-                                                                                callbackResults.resultsCode = hasValidDataCallbackResults.resultsCode;
+                                                                                callbackResults.resultCode = hasValidDataCallbackResults.resultCode;
 
                                                                                 if (callbackResults.Success())
                                                                                 {
@@ -6685,13 +6706,13 @@ namespace Com.RedicalGames.Filar
                                                                                             if (loadedProjectCallbackResults.Success())
                                                                                                 validProjectsfoundDirectories.Add(loadedProjectCallbackResults.data);
                                                                                             else
-                                                                                                LogError($"Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.results}", this);
+                                                                                                LogError($"Project Data Failed To Load : {fileName} From Path : {directoryData.path} In Directory Directory : {directoryData.projectDirectory} With Results : {loadedProjectCallbackResults.result}", this);
                                                                                         });
                                                                                     }
 
                                                                                     AppData.Helpers.SerializableComponentValid(validProjectsfoundDirectories, hasComponentsCallbackResults =>
                                                                                     {
-                                                                                        callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+                                                                                        callbackResults.resultCode = hasComponentsCallbackResults.resultCode;
 
                                                                                         if (callbackResults.Success())
                                                                                         {
@@ -6705,9 +6726,9 @@ namespace Com.RedicalGames.Filar
                                                                                                         projectsFilteredResults.Add(validDirectory);
                                                                                                     else
                                                                                                     {
-                                                                                                        callbackResults.results = $"Projects Filtered Results Already Contains Valid File Data Directory : {validDirectory}.";
+                                                                                                        callbackResults.result = $"Projects Filtered Results Already Contains Valid File Data Directory : {validDirectory}.";
                                                                                                         callbackResults.data = default;
-                                                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                                                                                                         break;
                                                                                                     }
@@ -6719,28 +6740,28 @@ namespace Com.RedicalGames.Filar
 
                                                                                                     if (projectsFilteredResults.Contains(validDirectory))
                                                                                                     {
-                                                                                                        callbackResults.results = $"Failed To Remove Valid Directory Data : {validDirectory} From Projects Filtered Results.";
+                                                                                                        callbackResults.result = $"Failed To Remove Valid Directory Data : {validDirectory} From Projects Filtered Results.";
                                                                                                         callbackResults.data = default;
-                                                                                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                                                     }
                                                                                                 }
                                                                                             }
 
                                                                                             AppData.Helpers.SerializableComponentValid(projectsFilteredResults, hasComponentsCallbackResults =>
                                                                                             {
-                                                                                                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+                                                                                                callbackResults.resultCode = hasComponentsCallbackResults.resultCode;
 
                                                                                                 if (callbackResults.Success())
                                                                                                 {
                                                                                                     CreateUIScreenProjectSelectionWidgets(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), projectsFilteredResults, GetWidgetsRefreshData().widgetsContainer, (widgetsCreated) =>
                                                                                                     {
-                                                                                                        callbackResults.results = widgetsCreated.results;
-                                                                                                        callbackResults.resultsCode = widgetsCreated.resultsCode;
+                                                                                                        callbackResults.result = widgetsCreated.result;
+                                                                                                        callbackResults.resultCode = widgetsCreated.resultCode;
 
                                                                                                         if (callbackResults.Success())
                                                                                                         {
                                                                                                             callbackResults.data = filterType;
-                                                                                                            projectsFound = widgetsCreated.resultsCode == AppData.Helpers.SuccessCode;
+                                                                                                            projectsFound = widgetsCreated.resultCode == AppData.Helpers.SuccessCode;
 
                                                                                                             if (GetProjectRootStructureData().Success())
                                                                                                             {
@@ -6749,20 +6770,21 @@ namespace Com.RedicalGames.Filar
 
                                                                                                                 SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
                                                                                                                 {
-                                                                                                                    callbackResults.results = dataSavedCallbackResults.results;
-                                                                                                                    callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+                                                                                                                    callbackResults.result = dataSavedCallbackResults.result;
+                                                                                                                    callbackResults.resultCode = dataSavedCallbackResults.resultCode;
 
                                                                                                                     if (callbackResults.Success())
                                                                                                                     {
                                                                                                                         var sortingContents = GetDropdownContent<AppData.SortType>().data;
 
-                                                                                                                        AppData.Helpers.StringListValueValid(sortingContents, isValidCallbackResults =>
+                                                                                                                        AppData.Helpers.StringValueValid(isValidCallbackResults =>
                                                                                                                         {
                                                                                                                             if (isValidCallbackResults.Success())
                                                                                                                                 sortingContents.Remove(sortingContents.Find(content => content.Contains("Category")));
                                                                                                                             else
-                                                                                                                                Log(isValidCallbackResults.resultsCode, isValidCallbackResults.results, this);
-                                                                                                                        });
+                                                                                                                                Log(isValidCallbackResults.resultCode, isValidCallbackResults.result, this);
+
+                                                                                                                        }, AppData.Helpers.GetArray(sortingContents));
 
                                                                                                                         var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Contents", AppData.InputType.DropDown, placeHolder: "Sort", contents: sortingContents, dropdownActionType: AppData.InputDropDownActionType.SortingList);
                                                                                                                         SetContentScreenUIStatesEvent(sortingListParam);
@@ -6770,17 +6792,17 @@ namespace Com.RedicalGames.Filar
                                                                                                                         //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionDropdownOptions(AppData.InputDropDownActionType.SortingList, sortingContents);
                                                                                                                     }
 
-                                                                                                                    Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
                                                                                                                 });
                                                                                                             }
                                                                                                             else
-                                                                                                                Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                                                                                Log(GetProjectRootStructureData().resultCode, GetProjectRootStructureData().result, this);
                                                                                                         }
                                                                                                     });
                                                                                                 }
                                                                                                 else
                                                                                                 {
-                                                                                                    callbackResults.results = $"Couldn't Find Widgets For Filter Type : {filterType}";
+                                                                                                    callbackResults.result = $"Couldn't Find Widgets For Filter Type : {filterType}";
                                                                                                     callbackResults.data = default;
                                                                                                 }
                                                                                             });
@@ -6789,25 +6811,25 @@ namespace Com.RedicalGames.Filar
                                                                                         }
                                                                                         else
                                                                                         {
-                                                                                            callbackResults.results = "Couldn't Get Valid Projects File Data.";
+                                                                                            callbackResults.result = "Couldn't Get Valid Projects File Data.";
                                                                                             callbackResults.data = default;
                                                                                         }
                                                                                     });
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    callbackResults.results = $"Couldn't Find Any Valid Project Files In Directory : {filterDirectory}";
+                                                                                    callbackResults.result = $"Couldn't Find Any Valid Project Files In Directory : {filterDirectory}";
                                                                                     callbackResults.data = default;
                                                                                 }
-                                                                            });
+                                                                            }, AppData.Helpers.GetArray(validProjectsfound));
 
                                                                             #endregion
                                                                         }
                                                                         else
                                                                         {
-                                                                            callbackResults.results = widgetsClearedCallbackResults.results;
+                                                                            callbackResults.result = widgetsClearedCallbackResults.result;
                                                                             callbackResults.data = default;
-                                                                            callbackResults.resultsCode = widgetsClearedCallbackResults.resultsCode;
+                                                                            callbackResults.resultCode = widgetsClearedCallbackResults.resultCode;
                                                                         }
 
                                                                         #endregion
@@ -6815,16 +6837,16 @@ namespace Com.RedicalGames.Filar
                                                                 }
                                                                 else
                                                                 {
-                                                                    callbackResults.results = $"Couldn't Find Project Directory Data From Directory : {filterDirectory}.";
+                                                                    callbackResults.result = $"Couldn't Find Project Directory Data From Directory : {filterDirectory}.";
                                                                     callbackResults.data = default;
                                                                 }
-                                                            });
+                                                            }, filteredProjectFiles);
                                                         }
                                                         else
                                                         {
-                                                            callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory} Not Found.";
+                                                            callbackResults.result = $"Couldn't Filter Project Widgets - Directory : {filterDirectory} Not Found.";
                                                             callbackResults.data = default;
-                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                         }
                                                     }
                                                 }
@@ -6837,21 +6859,21 @@ namespace Com.RedicalGames.Filar
 
                                                         SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
                                                         {
-                                                            callbackResults.results = dataSavedCallbackResults.results;
-                                                            callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+                                                            callbackResults.result = dataSavedCallbackResults.result;
+                                                            callbackResults.resultCode = dataSavedCallbackResults.resultCode;
 
                                                             if(callbackResults.Success())
                                                                 ScreenUIManager.Instance.Refresh();
 
-                                                            Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                            Log(callbackResults.resultCode, callbackResults.result, this);
                                                         });
                                                     }
                                                     else
-                                                        Log(GetProjectRootStructureData().resultsCode, GetProjectRootStructureData().results, this);
+                                                        Log(GetProjectRootStructureData().resultCode, GetProjectRootStructureData().result, this);
                                                 }
                                             }
                                             else
-                                                Log(enumCallbackResults.resultsCode, enumCallbackResults.results, this);
+                                                Log(enumCallbackResults.resultCode, enumCallbackResults.result, this);
                                         });
 
                                         break;
@@ -6876,19 +6898,19 @@ namespace Com.RedicalGames.Filar
                                                         }
                                                         else
                                                         {
-                                                            callbackResults.results = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
+                                                            callbackResults.result = $"Couldn't Filter Project Widgets - Directory : {filterDirectory.projectDirectory} Not Found.";
                                                             callbackResults.data = default;
-                                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                         }
                                                     }
                                                     else
-                                                        Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultsCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).results, this);
+                                                        Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).result, this);
                                                 }
                                                 else
                                                     ScreenUIManager.Instance.Refresh();
                                             }
                                             else
-                                                Log(enumCallbackResults.resultsCode, enumCallbackResults.results, this);
+                                                Log(enumCallbackResults.resultCode, enumCallbackResults.result, this);
                                         });
 
                                         break;
@@ -6897,7 +6919,7 @@ namespace Com.RedicalGames.Filar
                         });
                     }
                     else
-                        callbackResults.results = "Screen UI Manager Instance Is Not Yet Initialized";
+                        callbackResults.result = "Screen UI Manager Instance Is Not Yet Initialized";
                 });
 
                 callback?.Invoke(callbackResults);
@@ -6915,7 +6937,7 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.SerializableComponentValid(contents, hasComponentsCallbackResults => 
             {
-                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+                callbackResults.resultCode = hasComponentsCallbackResults.resultCode;
 
                 if(callbackResults.Success())
                 {
@@ -6925,9 +6947,9 @@ namespace Com.RedicalGames.Filar
                         if (!filterContent.Contains(content.GetProjectInfo().categoryType.ToString()))
                             filterContent.Add(content.GetProjectInfo().categoryType.ToString());
 
-                    AppData.Helpers.StringListValueValid(filterContent, hasComponentsCallbackResults => 
+                    AppData.Helpers.StringValueValid(hasComponentsCallbackResults => 
                     {
-                        callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+                        callbackResults.resultCode = hasComponentsCallbackResults.resultCode;
 
                         if(callbackResults.Success())
                         {
@@ -6956,9 +6978,9 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
 
-                                AppData.Helpers.StringListValueValid(contentDataList, hasValuesComponentsCallbackResults =>
+                                AppData.Helpers.StringValueValid(hasValuesComponentsCallbackResults =>
                                 {
-                                    callbackResults.resultsCode = hasValuesComponentsCallbackResults.resultsCode;
+                                    callbackResults.resultCode = hasValuesComponentsCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
@@ -6972,60 +6994,61 @@ namespace Com.RedicalGames.Filar
                                                 validContentDataList.Remove(item);
                                         }
 
-                                        AppData.Helpers.StringListValueValid(validContentDataList, hasValuesComponentsCallbackResults =>
+                                        AppData.Helpers.StringValueValid(hasValuesComponentsCallbackResults =>
                                         {
-                                            callbackResults.resultsCode = hasValuesComponentsCallbackResults.resultsCode;
+                                            callbackResults.resultCode = hasValuesComponentsCallbackResults.resultCode;
 
                                             if (callbackResults.Success())
                                             {
-                                                callbackResults.results = $"Found : {hasValuesComponentsCallbackResults.data.Count} Widget Type(s).";
-                                                callbackResults.data = hasValuesComponentsCallbackResults.data;
-                                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                                callbackResults.result = $"Found : {hasValuesComponentsCallbackResults.data.Length} Widget Type(s).";
+                                                callbackResults.data = AppData.Helpers.GetList(hasValuesComponentsCallbackResults.data);
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                             }
                                             else
                                             {
-                                                callbackResults.results = "Couldn't Get Any Filter Types - Please Check Here.";
+                                                callbackResults.result = "Couldn't Get Any Filter Types - Please Check Here.";
                                                 callbackResults.data = default;
-                                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                             }
-                                        });
+                                        }, AppData.Helpers.GetArray(validContentDataList));
                                     }
                                     else
                                     {
-                                        callbackResults.results = "Failed To Get Dropdown Content";
+                                        callbackResults.result = "Failed To Get Dropdown Content";
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                     }
-                                });
+
+                                }, AppData.Helpers.GetArray(contentDataList));
                             }
                             else
                             {
-                                callbackResults.results = "Failed There Are No Args Or Data Content Is Null.";
+                                callbackResults.result = "Failed There Are No Args Or Data Content Is Null.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = "There Were No Filter Contents Found.";
+                            callbackResults.result = "There Were No Filter Contents Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
                         }
-                    });
+                    }, AppData.Helpers.GetArray(filterContent));
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Contents Assigned To Get Filter Types From.";
+                    callbackResults.result = "There Are No Contents Assigned To Get Filter Types From.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             });
 
 
             if(callbackResults.Success())
-                Log(callbackResults.resultsCode, $"===========================>> Get Filter Types For :{callbackResults.data.Count} Content.", this);
+                Log(callbackResults.resultCode, $"===========================>> Get Filter Types For :{callbackResults.data.Count} Content.", this);
             else
-                Log(callbackResults.resultsCode, $"===========================>> Get Filter Content Failed.", this);
+                Log(callbackResults.resultCode, $"===========================>> Get Filter Content Failed.", this);
 
             callback?.Invoke(callbackResults);
         }
@@ -7047,9 +7070,9 @@ namespace Com.RedicalGames.Filar
 
             LoadRootStructureData(loadedRootStructureCallbackResults => 
             {
-                callbackResults.results = loadedRootStructureCallbackResults.results;
+                callbackResults.result = loadedRootStructureCallbackResults.result;
                 callbackResults.data = default;
-                callbackResults.resultsCode = loadedRootStructureCallbackResults.resultsCode;
+                callbackResults.resultCode = loadedRootStructureCallbackResults.resultCode;
 
                 if (loadedRootStructureCallbackResults.Success())
                     callbackResults.data = loadedRootStructureCallbackResults.data;
@@ -7137,13 +7160,13 @@ namespace Com.RedicalGames.Filar
             if (renderProfileUIHandlerPrefab != null)
             {
                 callbackResults.data = renderProfileUIHandlerPrefab;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                callbackResults.results = "Prefab Retrieved Successfully.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Prefab Retrieved Successfully.";
             }
             else
             {
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-                callbackResults.results = "Render Profile UI Handler Prefab Is Missing / Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Render Profile UI Handler Prefab Is Missing / Null.";
             }
 
             callback.Invoke(callbackResults);
@@ -7192,20 +7215,20 @@ namespace Com.RedicalGames.Filar
 
                                     AddContentToDynamicWidgetContainer(folder.GetComponent<AppData.UIScreenWidget>(), dataPackets.containerType, dataPackets.containerContentOrientation);
 
-                                    callbackResults.results = "Folder Created Successfully.";
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.result = "Folder Created Successfully.";
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = "CreateFolderWidget Failed : folderHandlerPrefab Is Null.";
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.result = "CreateFolderWidget Failed : folderHandlerPrefab Is Null.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
-                                    Log(prefabCallbackResults.resultsCode, prefabCallbackResults.results, this);
+                                    Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
                                 }
                             });
                         }
                         else
-                            Log(GetProjectStructureData().resultsCode, GetProjectStructureData().results, this);
+                            Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
                     }
                     else
                         LogError("Widget Prefab Data Missing.", this);
@@ -7235,13 +7258,13 @@ namespace Com.RedicalGames.Filar
 
                 AddContentToDynamicWidgetContainer(profileAsset.GetComponent<AppData.UIScreenWidget>(), dataPackets.containerType, dataPackets.containerContentOrientation);
 
-                callbackResults.results = "Render Profile Created Successfully.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = "Render Profile Created Successfully.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "CreateProfileWidget Failed : renderProfileUIHandlerPrefab Is Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "CreateProfileWidget Failed : renderProfileUIHandlerPrefab Is Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7251,8 +7274,8 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            callbackResults.results = "----------------> Duplicating A Profile";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            callbackResults.result = "----------------> Duplicating A Profile";
 
             callback.Invoke(callbackResults);
         }
@@ -7261,8 +7284,8 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-            callbackResults.results = "----------------> Clearing All User Profiles";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            callbackResults.result = "----------------> Clearing All User Profiles";
 
             callback.Invoke(callbackResults);
         }
@@ -7301,22 +7324,22 @@ namespace Com.RedicalGames.Filar
                         hexadecimal = hexadecimal
                     };
 
-                    callbackResults.results = $"Get Color From Hexadecimal Success : Returning Color For Hexadecimal Value : {hexadecimal}.";
+                    callbackResults.result = $"Get Color From Hexadecimal Success : Returning Color For Hexadecimal Value : {hexadecimal}.";
                     callbackResults.data = colorInfo;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Get Color From Hexadecimal Failed : Couldn't Try Parse Html String : {hexadecimal} Using Unity's Color Utility Class.";
+                    callbackResults.result = $"Get Color From Hexadecimal Failed : Couldn't Try Parse Html String : {hexadecimal} Using Unity's Color Utility Class.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = $"Get Color From Hexadecimal Failed : Invalid Hexadecimal Value - Parameter Value Is Null / Empty.";
+                callbackResults.result = $"Get Color From Hexadecimal Failed : Invalid Hexadecimal Value - Parameter Value Is Null / Empty.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7339,9 +7362,9 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = $"Get Hexidecimal From Color Failed : Couldn't Get Data.";
+                callbackResults.result = $"Get Hexidecimal From Color Failed : Couldn't Get Data.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7354,7 +7377,7 @@ namespace Com.RedicalGames.Filar
             for (int i = 0; i < spectrumSize; i++)
                 GetColorFromHexidecimal(AppData.Helpers.GetColorGradientHexadecimal(spectrumSize, i), (callbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         colors[i] = callbackResults.data.color;
                     else
                         Debug.LogError("-----------------> Color Not Found");
@@ -7371,7 +7394,7 @@ namespace Com.RedicalGames.Filar
             for (int i = 0; i < spectrumSize; i++)
                 GetColorFromHexidecimal(AppData.Helpers.GetColorGradientHexadecimal(spectrumSize, i), (callbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         colors.Add(callbackResults.data);
                     else
                         Debug.LogError("-----------------> Color Not Found");
@@ -7385,18 +7408,18 @@ namespace Com.RedicalGames.Filar
         {
             colorSwatchData.Init(fileName, (swatchCreated) =>
             {
-                if (AppData.Helpers.IsSuccessCode(swatchCreated.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(swatchCreated.resultCode))
                 {
                     CreateColorSwatchContent(swatchCreated.data, AppData.ContentContainerType.ColorSwatches, AppData.OrientationType.VerticalGrid, (callback) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
-                            Debug.Log($"--------------> CreateColorSwatchContent Success With Results : {swatchCreated.results}");
+                        if (AppData.Helpers.IsSuccessCode(callback.resultCode))
+                            Debug.Log($"--------------> CreateColorSwatchContent Success With Results : {swatchCreated.result}");
                         else
-                            Debug.LogError($"-----------> CreateColorSwatchContent Failed With Results : {callback.results}");
+                            Debug.LogError($"-----------> CreateColorSwatchContent Failed With Results : {callback.result}");
                     });
                 }
                 else
-                    Debug.LogError($"--> Failed To Create Swatch Drop Down Data With Results : {swatchCreated.results}");
+                    Debug.LogError($"--> Failed To Create Swatch Drop Down Data With Results : {swatchCreated.result}");
             });
         }
 
@@ -7414,7 +7437,7 @@ namespace Com.RedicalGames.Filar
                     {
                         CreateDynamicScreenContent(colorSwatchButtonHandlerPrefab, containerType, containerOrientation, (callbackDataResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultCode))
                             {
                                 ColorSwatchButtonHandler swatchHandler = callbackDataResults.data as ColorSwatchButtonHandler;
 
@@ -7424,7 +7447,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         callbackResults = initializationCallback;
 
-                                        if (AppData.Helpers.IsSuccessCode(initializationCallback.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(initializationCallback.resultCode))
                                         {
                                             colorSwatchData.AddColorInfoToLibrary(colorInfo);
 
@@ -7444,8 +7467,8 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    callbackResults.results = "CreateColorSwatchContent Failed : Swatch Handler Component Is Missing / Null.";
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.result = "CreateColorSwatchContent Failed : Swatch Handler Component Is Missing / Null.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
 
                             // Add To Custom Swatch.
@@ -7457,27 +7480,27 @@ namespace Com.RedicalGames.Filar
                         }
                             else
                             {
-                                callbackResults.results = $"Color Swatches Failed With Results : {callbackDataResults.results}";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = $"Color Swatches Failed With Results : {callbackDataResults.result}";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         });
                     }
                     else
                     {
-                        callbackResults.results = "CreateColorSwatchContent Failed : Swatch Color ID List Is Null.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = "CreateColorSwatchContent Failed : Swatch Color ID List Is Null.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "CreateColorSwatchContent Failed : Swatch Name Is Null / Empty.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "CreateColorSwatchContent Failed : Swatch Name Is Null / Empty.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "CreateColorSwatchContent Failed : colorSwatchData Swatches Is Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "CreateColorSwatchContent Failed : colorSwatchData Swatches Is Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7503,7 +7526,7 @@ namespace Com.RedicalGames.Filar
                         {
                             CreateDynamicScreenContents(colorSwatchButtonHandlerPrefab, swatch.colorIDList, containerType, containerOrientation, (callback) =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                                 {
                                     swatchPallet.name = swatch.name;
 
@@ -7517,7 +7540,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 callbackResults = initializationCallback;
 
-                                                if (AppData.Helpers.IsSuccessCode(initializationCallback.resultsCode))
+                                                if (AppData.Helpers.IsSuccessCode(initializationCallback.resultCode))
                                                 {
                                                     swatchHandler.SetSwatchID(swatchName);
                                                     swatchPallet.AddSwatchButton(swatchHandler);
@@ -7528,45 +7551,45 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                         {
-                                            callbackResults.results = "CreateColorSwatchContent Failed : Swatch Handler Component Is Missing / Null.";
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.result = "CreateColorSwatchContent Failed : Swatch Handler Component Is Missing / Null.";
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
 
                                     }
 
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         if (swatchPallet.swatchButtonList.Count > 0)
                                             colorSwatchData.AddPallet(swatchPallet);
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"Color Swatches Failed With Results : {callback.results}";
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.result = $"Color Swatches Failed With Results : {callback.result}";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             });
                         }
                         else
                         {
-                            callbackResults.results = "CreateColorSwatchContent Failed : Swatch Color ID List Is Null.";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.result = "CreateColorSwatchContent Failed : Swatch Color ID List Is Null.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "CreateColorSwatchContent Failed : Color Swatch Data Has Failed To Load.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = "CreateColorSwatchContent Failed : Color Swatch Data Has Failed To Load.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "CreateColorSwatchContent Failed : Swatch Name Is Null / Empty.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "CreateColorSwatchContent Failed : Swatch Name Is Null / Empty.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "CreateColorSwatchContent Failed : colorSwatchData Swatches Is Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "CreateColorSwatchContent Failed : colorSwatchData Swatches Is Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7578,15 +7601,15 @@ namespace Com.RedicalGames.Filar
 
             if (colorSwatchData.swatches.Count > 0 && colorSwatchData.swatchDropDownList.Count > 0)
             {
-                callbackResults.results = "CreateColorSwatchContent Success : Color Swatch Data Initialized.";
+                callbackResults.result = "CreateColorSwatchContent Success : Color Swatch Data Initialized.";
                 callbackResults.data = colorSwatchData;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "CreateColorSwatchContent Failed : Color Swatch Data Swatches / Color Swatch Data swatchDropDownList Null.";
+                callbackResults.result = "CreateColorSwatchContent Failed : Color Swatch Data Swatches / Color Swatch Data swatchDropDownList Null.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -7600,40 +7623,40 @@ namespace Com.RedicalGames.Filar
             {
                 colorSwatchData.ShowPallet(swatchName);
 
-                callbackResults.results = "Select Color Swatch Pallet Selected Successful.";
+                callbackResults.result = "Select Color Swatch Pallet Selected Successful.";
                 callbackResults.data = swatchName;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
                 // Create New data
                 colorSwatchData.Init(fileName, (swatchCreated) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(swatchCreated.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(swatchCreated.resultCode))
                     {
                         CreateColorSwatchContent(swatchName, AppData.ContentContainerType.ColorSwatches, AppData.OrientationType.VerticalGrid, (callbackDataResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultCode))
                             {
                                 colorSwatchData.ShowPallet(swatchName);
 
-                                callbackResults.results = "SelectColorSwatchPallet Selected Successful.";
+                                callbackResults.result = "SelectColorSwatchPallet Selected Successful.";
                                 callbackResults.data = swatchName;
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = $"SelectColorSwatchPallet Failed With Results : {callbackDataResults.results}.";
+                                callbackResults.result = $"SelectColorSwatchPallet Failed With Results : {callbackDataResults.result}.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         });
                     }
                     else
                     {
-                        callbackResults.results = $"SelectColorSwatchPallet  Failed To Create Swatch Drop Down Data With Results : {swatchCreated.results}.";
+                        callbackResults.result = $"SelectColorSwatchPallet  Failed To Create Swatch Drop Down Data With Results : {swatchCreated.result}.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 });
             }
@@ -7664,29 +7687,29 @@ namespace Com.RedicalGames.Filar
                         AddContentToDynamicWidgetContainer(contentComponent, containerType, containerOrientation);
 
                         callbackResults.data = contentComponent;
-                        callbackResults.results = $"CreateDynamicScreenContent Success : Content : {content.name} Instantiated.";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = $"CreateDynamicScreenContent Success : Content : {content.name} Instantiated.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
 
                     if (contentComponent == null)
                     {
                         callbackResults.data = default;
-                        callbackResults.results = $"CreateDynamicScreenContent Failed : Content Component Type : {contentPrefab.GetType()} Doesn't Match Required Components.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = $"CreateDynamicScreenContent Failed : Content Component Type : {contentPrefab.GetType()} Doesn't Match Required Components.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
                     callbackResults.data = default;
-                    callbackResults.results = $"CreateDynamicScreenContent Failed : Content Failed To Instantiate.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"CreateDynamicScreenContent Failed : Content Failed To Instantiate.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
                 callbackResults.data = default;
-                callbackResults.results = "CreateDynamicScreenContent Failed : Content Prefab Is Not Found / Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "CreateDynamicScreenContent Failed : Content Prefab Is Not Found / Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7718,43 +7741,43 @@ namespace Com.RedicalGames.Filar
                             AddContentToDynamicWidgetContainer(contentComponent, containerType, containerOrientation);
 
                             callbackResults.data = createdContentList;
-                            callbackResults.results = $"CreateDynamicScreenContent Success : Content : {content.name} Instantiated.";
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.result = $"CreateDynamicScreenContent Success : Content : {content.name} Instantiated.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }
 
                         if (contentComponent == null)
                         {
                             callbackResults.data = default;
-                            callbackResults.results = $"CreateDynamicScreenContent Failed : Content Component Type : {contentPrefab.GetType()} Doesn't Match Required Components.";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.result = $"CreateDynamicScreenContent Failed : Content Component Type : {contentPrefab.GetType()} Doesn't Match Required Components.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
                         callbackResults.data = default;
-                        callbackResults.results = $"CreateDynamicScreenContent Failed : Content Failed To Instantiate.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = $"CreateDynamicScreenContent Failed : Content Failed To Instantiate.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
 
                 if (createdContentList.Count == contents.Count)
                 {
                     callbackResults.data = createdContentList;
-                    callbackResults.results = $"CreateDynamicScreenContent Success :{createdContentList.Count} Content(s) Created Inside Container : {containerType}.";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.result = $"CreateDynamicScreenContent Success :{createdContentList.Count} Content(s) Created Inside Container : {containerType}.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
                     callbackResults.data = default;
-                    callbackResults.results = $"CreateDynamicScreenContent Failed : { contents.Count} Content(s) Failed To Create.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"CreateDynamicScreenContent Failed : { contents.Count} Content(s) Failed To Create.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
                 callbackResults.data = default;
-                callbackResults.results = "CreateDynamicScreenContent Failed : Content Prefab Is Not Found / Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "CreateDynamicScreenContent Failed : Content Prefab Is Not Found / Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7770,8 +7793,8 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.ProjectDataComponentValid(fileDatas, componentsValidCallback => 
             {
-                callbackResults.results = componentsValidCallback.results;
-                callbackResults.resultsCode = componentsValidCallback.resultsCode;
+                callbackResults.result = componentsValidCallback.result;
+                callbackResults.resultCode = componentsValidCallback.resultCode;
 
                 if(callbackResults.Success())
                 {
@@ -7779,8 +7802,8 @@ namespace Com.RedicalGames.Filar
 
                     AppData.Helpers.ProjectDataComponentValid(fileData, componentsValidCallback => 
                     {
-                        callbackResults.results = componentsValidCallback.results;
-                        callbackResults.resultsCode = componentsValidCallback.resultsCode;
+                        callbackResults.result = componentsValidCallback.result;
+                        callbackResults.resultCode = componentsValidCallback.resultCode;
 
                         if (callbackResults.Success())
                             callbackResults.data = fileData;
@@ -7816,15 +7839,15 @@ namespace Com.RedicalGames.Filar
                         directory = GetAppDirectoryData(storageType).data.directory
                     };
 
-                    callbackResults.results = $"Storage Data : {storage.name} Found.";
+                    callbackResults.result = $"Storage Data : {storage.name} Found.";
                     callbackResults.data = storage;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Storage Data Of Type : {storageType} Not Found.";
+                    callbackResults.result = $"Storage Data Of Type : {storageType} Not Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
 
@@ -7843,8 +7866,8 @@ namespace Com.RedicalGames.Filar
 
             DirectoryFound(directoryData.rootDirectory, directoryCheckCallback =>
             {
-                callbackResults.results = directoryCheckCallback.results;
-                callbackResults.resultsCode = directoryCheckCallback.resultsCode;
+                callbackResults.result = directoryCheckCallback.result;
+                callbackResults.resultCode = directoryCheckCallback.resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -7853,10 +7876,10 @@ namespace Com.RedicalGames.Filar
 
                     data.SetCreationDateTime(DateTime.Now);
 
-                    AppData.Helpers.StringValueValid(directoryData.path, hasPathCalllbackResults => 
+                    AppData.Helpers.StringValueValid(hasPathCalllbackResults => 
                     {
-                        callbackResults.results = hasPathCalllbackResults.results;
-                        callbackResults.resultsCode = hasPathCalllbackResults.resultsCode;
+                        callbackResults.result = hasPathCalllbackResults.result;
+                        callbackResults.resultCode = hasPathCalllbackResults.resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -7870,9 +7893,9 @@ namespace Com.RedicalGames.Filar
                                 {
                                     File.WriteAllText(data.storageData.path, JSONString);
 
-                                    callbackResults.results = $"Created New Data Success : : {data.name} As : {data.storageData.path}";
+                                    callbackResults.result = $"Created New Data Success : : {data.name} As : {data.storageData.path}";
                                     callbackResults.data = data;
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                                 else
                                 {
@@ -7883,23 +7906,23 @@ namespace Com.RedicalGames.Filar
                                     if (!File.Exists(data.storageData.path))
                                         File.WriteAllText(data.storageData.path, JSONString);
 
-                                    callbackResults.results = $"Created New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
+                                    callbackResults.result = $"Created New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
                                     callbackResults.data = data;
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = "Failed To Create A JSON File.";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = "Failed To Create A JSON File.";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
-                    });
+                    }, directoryData.path);
                 }
                 else
                 {
-                    callbackResults.results = directoryCheckCallback.results;
-                    callbackResults.resultsCode = directoryCheckCallback.resultsCode;
+                    callbackResults.result = directoryCheckCallback.result;
+                    callbackResults.resultCode = directoryCheckCallback.resultCode;
                 }
             });
 
@@ -7926,8 +7949,8 @@ namespace Com.RedicalGames.Filar
                     {
                         File.WriteAllText(data.storageData.path, JSONString);
 
-                        callbackResults.results = $"-->  Save Data Success : : {data.name} As : {data.storageData.path}";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = $"-->  Save Data Success : : {data.name} As : {data.storageData.path}";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
@@ -7936,23 +7959,23 @@ namespace Com.RedicalGames.Filar
                         if (!File.Exists(data.storageData.path))
                             File.WriteAllText(data.storageData.path, JSONString);
 
-                        callbackResults.results = $"--> Create New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = $"--> Create New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"--> Failed To Create A JSON File.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"--> Failed To Create A JSON File.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
-                callbackResults.results = $"Success - File Saved in Directory : {data.storageData.path}";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = $"Success - File Saved in Directory : {data.storageData.path}";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = $"Save data Failed : File Not found In Directory : {data.storageData.path}";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Save data Failed : File Not found In Directory : {data.storageData.path}";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -7964,8 +7987,8 @@ namespace Com.RedicalGames.Filar
 
             SaveData(data, dataSavedCallbackResults =>
             {
-                callbackResults.results = dataSavedCallbackResults.results;
-                callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+                callbackResults.result = dataSavedCallbackResults.result;
+                callbackResults.resultCode = dataSavedCallbackResults.resultCode;
             });
 
             callback.Invoke(callbackResults);
@@ -7987,8 +8010,8 @@ namespace Com.RedicalGames.Filar
                 {
                     LoadData<AppData.ProjectRootStructureData>(rootProjectStructureData.name, appStorageData, (rootStructureLoadedCallbackResults) =>
                     {
-                        callbackResults.results = rootStructureLoadedCallbackResults.results;
-                        callbackResults.resultsCode = rootStructureLoadedCallbackResults.resultsCode;
+                        callbackResults.result = rootStructureLoadedCallbackResults.result;
+                        callbackResults.resultCode = rootStructureLoadedCallbackResults.resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -8026,9 +8049,9 @@ namespace Com.RedicalGames.Filar
 
                             CreateData(rootProjectStructureData, storageData, (rootStructureCreatedCallbackResults) =>
                             {
-                                callbackResults.results = rootStructureCreatedCallbackResults.results;
+                                callbackResults.result = rootStructureCreatedCallbackResults.result;
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = rootStructureCreatedCallbackResults.resultsCode;
+                                callbackResults.resultCode = rootStructureCreatedCallbackResults.resultCode;
 
                                 if (callbackResults.Success())
                                 {
@@ -8041,15 +8064,15 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Root Project Storage Data Directory Not Found.";
+                    callbackResults.result = "Root Project Storage Data Directory Not Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = GetAppDirectoryData(rootStructureStorageData.type).results;
-                callbackResults.resultsCode = GetAppDirectoryData(rootStructureStorageData.type).resultsCode;
+                callbackResults.result = GetAppDirectoryData(rootStructureStorageData.type).result;
+                callbackResults.resultCode = GetAppDirectoryData(rootStructureStorageData.type).resultCode;
             }
 
             callback.Invoke(callbackResults);
@@ -8061,20 +8084,20 @@ namespace Com.RedicalGames.Filar
 
             FileFound(directoryData.path, checkFileExistenceCallback =>
             {
-                if (AppData.Helpers.IsSuccessCode(checkFileExistenceCallback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(checkFileExistenceCallback.resultCode))
                 {
                     string JSONString = File.ReadAllText(directoryData.path);
                     T data = JsonUtility.FromJson<T>(JSONString);
 
-                    callbackResults.results = checkFileExistenceCallback.results;
+                    callbackResults.result = checkFileExistenceCallback.result;
                     callbackResults.data = data;
-                    callbackResults.resultsCode = checkFileExistenceCallback.resultsCode;
+                    callbackResults.resultCode = checkFileExistenceCallback.resultCode;
                 }
                 else
                 {
-                    callbackResults.results = checkFileExistenceCallback.results;
+                    callbackResults.result = checkFileExistenceCallback.result;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = checkFileExistenceCallback.resultsCode;
+                    callbackResults.resultCode = checkFileExistenceCallback.resultCode;
                 }
             });
 
@@ -8098,30 +8121,30 @@ namespace Com.RedicalGames.Filar
 
                         if (data.name == fileName)
                         {
-                            callbackResults.results = "Data Loaded Successfully.";
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.result = "Data Loaded Successfully.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             callbackResults.data = data;
                             break;
                         }
                         else
                         {
-                            callbackResults.results = $"--> File : {fileName} Not Loaded From Directory : {directoryData.directory} - Loaded Data Is Null / Empty.";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.result = $"--> File : {fileName} Not Loaded From Directory : {directoryData.directory} - Loaded Data Is Null / Empty.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             callbackResults.data = default;
                         }
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"--> No Files Found In Directory : {directoryData.directory}";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"--> No Files Found In Directory : {directoryData.directory}";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     callbackResults.data = default;
                 }
             }
             else
             {
-                callbackResults.results = $"Load Data Failed : Directory : {directoryData.directory} Not Found.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Load Data Failed : Directory : {directoryData.directory} Not Found.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 callbackResults.data = default;
             }
 
@@ -8133,17 +8156,17 @@ namespace Com.RedicalGames.Filar
             AppData.CallbackDataList<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackDataList<AppData.StorageDirectoryData>();
 
 
-            AppData.Helpers.StringValueValid(storageData.projectDirectory, directoryAssignedCallbackResults => 
+            AppData.Helpers.StringValueValid(directoryAssignedCallbackResults => 
             {
-                callbackResults.results = directoryAssignedCallbackResults.results;
-                callbackResults.resultsCode = directoryAssignedCallbackResults.resultsCode;
+                callbackResults.result = directoryAssignedCallbackResults.result;
+                callbackResults.resultCode = directoryAssignedCallbackResults.resultCode;
 
                 if(callbackResults.Success())
                 {
                     DirectoryFound(storageData.projectDirectory, foundDirectoriesCallback =>
                     {
-                        callbackResults.results = foundDirectoriesCallback.results;
-                        callbackResults.resultsCode = foundDirectoriesCallback.resultsCode;
+                        callbackResults.result = foundDirectoriesCallback.result;
+                        callbackResults.resultCode = foundDirectoriesCallback.resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -8219,23 +8242,23 @@ namespace Com.RedicalGames.Filar
 
                                         if (validFoldersfoundDirectories.Count > 0)
                                         {
-                                            callbackResults.results = $"{validFoldersfoundDirectories.Count} Directories Found In Directory : {storageData.projectDirectory}";
+                                            callbackResults.result = $"{validFoldersfoundDirectories.Count} Directories Found In Directory : {storageData.projectDirectory}";
                                             callbackResults.data = validFoldersfoundDirectories;
-                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
                                         else
                                         {
-                                            callbackResults.results = $"Failed To Create Valid Directory Entries For Directories In Directory : {storageData.projectDirectory}";
+                                            callbackResults.result = $"Failed To Create Valid Directory Entries For Directories In Directory : {storageData.projectDirectory}";
                                             callbackResults.data = default;
-                                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"{validDirectoryEntriesFound.Count} : Valid Directory Entries Found In Directory : {storageData.projectDirectory}";
+                                    callbackResults.result = $"{validDirectoryEntriesFound.Count} : Valid Directory Entries Found In Directory : {storageData.projectDirectory}";
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             }
                         }
@@ -8245,13 +8268,148 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Storage Directory Cannot Be Null";
+                    callbackResults.result = "Storage Directory Cannot Be Null";
                     callbackResults.data = default;
                 }
-            });
+            }, storageData.projectDirectory);
 
             callback.Invoke(callbackResults);
         }
+
+        #region Libraries
+
+        #region Screen Load Info Library
+
+        AppData.ScreenLoadInfoInstanceLibrary GetScreenLoadInfoInstanceLibrary() => screenLoadInfoInstanceLibrary;
+
+        public void GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType screenType, Action<AppData.CallbackData<AppData.ScreenLoadInfoInstance>> callback)
+        {
+            AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
+
+            if (callbackResults.Success())
+            {
+                GetScreenLoadInfoInstanceLibrary().GetScreenLoadInfoInstance(screenType, screenLoadInfoCallbackResults =>
+                {
+                    callbackResults.SetResultsData(screenLoadInfoCallbackResults);
+                });
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.ScreenLoadInfoInstance> GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType screenType)
+        {
+            AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
+
+            if (callbackResults.Success())
+            {
+                GetScreenLoadInfoInstanceLibrary().GetScreenLoadInfoInstance(screenType, screenLoadInfoCallbackResults =>
+                {
+                    callbackResults.SetResults(screenLoadInfoCallbackResults);
+                });
+            }
+
+            return callbackResults;
+        }
+
+        public void GetInitialScreenLoadInfoInstanceFromLibrary(Action<AppData.CallbackData<AppData.ScreenLoadInfoInstance>> callback)
+        {
+            AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
+
+            if (callbackResults.Success())
+            {
+                GetScreenLoadInfoInstanceLibrary().GetInitialScreenLoadInfoInstance(screenLoadInfoCallbackResults =>
+                {
+                    callbackResults.SetResults(screenLoadInfoCallbackResults);
+                });
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.ScreenLoadInfoInstance> GetInitialScreenLoadInfoInstanceFromLibrary()
+        {
+            AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
+
+            if (callbackResults.Success())
+            {
+                GetScreenLoadInfoInstanceLibrary().GetInitialScreenLoadInfoInstance(screenLoadInfoCallbackResults =>
+                {
+                    callbackResults.SetResults(screenLoadInfoCallbackResults);
+                });
+            }
+
+            return callbackResults;
+        }
+
+        #endregion
+
+        #region Storage Sources
+
+        AppData.AppDataStorageSourceLibrary GetAppDataStorageSourceLibrary() => storageSourceLibrary;
+
+        public void GetAppDataStorageSourceInfoFromLibrary(AppData.StorableType storableType, Action<AppData.CallbackData<AppData.StorageSourceInfo>> callback)
+        {
+            AppData.CallbackData<AppData.StorageSourceInfo> callbackResults = new AppData.CallbackData<AppData.StorageSourceInfo>();
+
+            callbackResults.result = GetAppDataStorageSourceLibrary().IsInitialized().result;
+            callbackResults.resultCode = GetAppDataStorageSourceLibrary().IsInitialized().resultCode;
+
+            if (callbackResults.Success())
+            {
+                GetAppDataStorageSourceLibrary().GetStorageSourceInfo(storableType, storageSourceCallbackResults => 
+                {
+                    callbackResults = storageSourceCallbackResults;
+                });
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        public void GetAppDataStorageSourceInfoFileExtensionFromLibrary(AppData.StorableType storableType, Action<AppData.CallbackData<AppData.FileExtensionType>> callback)
+        {
+            AppData.CallbackData<AppData.FileExtensionType> callbackResults = new AppData.CallbackData<AppData.FileExtensionType>();
+
+            callbackResults.result = GetAppDataStorageSourceLibrary().IsInitialized().result;
+            callbackResults.resultCode = GetAppDataStorageSourceLibrary().IsInitialized().resultCode;
+
+            if (callbackResults.Success())
+            {
+                GetAppDataStorageSourceLibrary().GetStorageSourceInfo(storableType, storageSourceCallbackResults =>
+                {
+                    callbackResults.result = storageSourceCallbackResults.result;
+                    callbackResults.resultCode = storageSourceCallbackResults.resultCode;
+
+                    if(callbackResults.Success())
+                    {
+                        var storageSource = storageSourceCallbackResults.data;
+
+                        callbackResults.result = $"Found File Extension Of Type : {storageSource.GetStorableFileExtension()} From App Data Storage Source Info File Extension From Library For Storable Type : {storableType}";
+                        callbackResults.data = storageSource.GetStorableFileExtension();
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Find File Extension From App Data Storage Source Info File Extension From Library For Storable Type : {storableType}";
+                        callbackResults.data = default;
+                    }
+                });
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Delete This
+
+        public AppData.DataPacketsLibrary GetDataPacketsLibrary()
+        {
+            return dataPacketsLibrary;
+        }
+
+        #endregion
+
+        #endregion
 
         #endregion
 

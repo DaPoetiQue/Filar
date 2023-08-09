@@ -45,9 +45,9 @@ namespace Com.RedicalGames.Filar
 
                 SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                 {
-                    loadingScreenDataPacketsCallbackResults.results = getLoadingScreenDataPacketsCallbackResults.results;
-                    loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.data.dataPackets;
-                    loadingScreenDataPacketsCallbackResults.resultsCode = getLoadingScreenDataPacketsCallbackResults.resultsCode;
+                    loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.Result;
+                    loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.Data.dataPackets;
+                    loadingScreenDataPacketsCallbackResults.resultCode = getLoadingScreenDataPacketsCallbackResults.ResultCode;
                 });
 
                 if (loadingScreenDataPacketsCallbackResults.Success())
@@ -70,20 +70,20 @@ namespace Com.RedicalGames.Filar
                         {
                             await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
 
-                            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
+                            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
                             await Task.Delay(loadingScreenExitDelay);
 
                             await ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
                         }
                     }
                     else
-                        Log(screenUIManagerInstanceCallbackResults.resultsCode, screenUIManagerInstanceCallbackResults.results, this);
+                        Log(screenUIManagerInstanceCallbackResults.resultCode, screenUIManagerInstanceCallbackResults.result, this);
                 }
                 else
-                    Log(loadingScreenDataPacketsCallbackResults.resultsCode, loadingScreenDataPacketsCallbackResults.results, this);
+                    Log(loadingScreenDataPacketsCallbackResults.resultCode, loadingScreenDataPacketsCallbackResults.result, this);
             }
             else
-                Log(sceneAssetsManagerInstanceCallbackResults.resultsCode, sceneAssetsManagerInstanceCallbackResults.results, this);
+                Log(sceneAssetsManagerInstanceCallbackResults.resultCode, sceneAssetsManagerInstanceCallbackResults.result, this);
         }
 
         #endregion
