@@ -77,7 +77,7 @@ namespace Com.RedicalGames.Filar
 
                         SceneAssetsManager.Instance.GetHexidecimalFromColor(selectedColorInfo.color, (getHexadecimalCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
                                 selectedColorInfo = getHexadecimalCallbackResults.data;
                                 AppData.ActionEvents.OnSwatchColorPickedEvent(selectedColorInfo, true, false);
@@ -85,7 +85,7 @@ namespace Com.RedicalGames.Filar
                                 colorPickerVisualizer.SetPickerScreenPosition(pos);
                             }
                             else
-                                Debug.LogWarning($"--> GradientColorPickerHandler OnPointerDown Failed With Results : {getHexadecimalCallbackResults.results}");
+                                Debug.LogWarning($"--> GradientColorPickerHandler OnPointerDown Failed With Results : {getHexadecimalCallbackResults.result}");
                         });
                     }
                 }
@@ -118,7 +118,7 @@ namespace Com.RedicalGames.Filar
 
                         SceneAssetsManager.Instance.GetHexidecimalFromColor(selectedColorInfo.color, (getHexadecimalCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
                                 selectedColorInfo = getHexadecimalCallbackResults.data;
                                 AppData.ActionEvents.OnSwatchColorPickedEvent(selectedColorInfo, true, false);
@@ -126,7 +126,7 @@ namespace Com.RedicalGames.Filar
                                 colorPickerVisualizer.SetPickerScreenPosition(pos);
                             }
                             else
-                                Debug.LogWarning($"--> GradientColorPickerHandler OnPointerDown Failed With Results : {getHexadecimalCallbackResults.results}");
+                                Debug.LogWarning($"--> GradientColorPickerHandler OnPointerDown Failed With Results : {getHexadecimalCallbackResults.result}");
                         });
                     }
                 }
@@ -148,13 +148,13 @@ namespace Com.RedicalGames.Filar
 
             captureScreenInfoRoutine = StartCoroutine(CaptureScreenInfo((captureResults) =>
             {
-                if (AppData.Helpers.IsSuccessCode(captureResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(captureResults.resultCode))
                 {
                     screenDataTexture = captureResults.data;
                     Debug.LogError($"--> Capture Screen Info Success : {captureResults.data.GetPixels().Length} Pixels Found.");
                 }
                 else
-                    Debug.LogWarning($"--> On Enable CaptureScreenInfo Failed With Results : {captureResults.results}");
+                    Debug.LogWarning($"--> On Enable CaptureScreenInfo Failed With Results : {captureResults.result}");
             }));
 
 
@@ -179,15 +179,15 @@ namespace Com.RedicalGames.Filar
 
             if (screenColorData)
             {
-                callbackResults.results = "Screen Color Data Pixels Loaded Successfully.";
+                callbackResults.result = "Screen Color Data Pixels Loaded Successfully.";
                 callbackResults.data = screenColorData;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Screen Color Data Not Loaded.";
+                callbackResults.result = "Screen Color Data Not Loaded.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);

@@ -39,22 +39,22 @@ namespace Com.RedicalGames.Filar
                 if (RectTransformUtility.ScreenPointToLocalPointInRectangle(previewRect, Input.mousePosition, eventCamera, out pos))
                 {
 
-                    float xRot = Input.GetAxis("Mouse X") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewWidgetOrbitSpeed).value;
-                    float yRot = Input.GetAxis("Mouse Y") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewWidgetOrbitSpeed).value;
+                    float xRot = Input.GetAxis("Mouse X") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewWidgetOrbitSpeed).value;
+                    float yRot = Input.GetAxis("Mouse Y") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewWidgetOrbitSpeed).value;
 
                     Vector3 rightVect = Vector3.Cross(eventCamera.transform.up, transform.position - eventCamera.transform.position);
                     Vector3 upVect = Vector3.Cross(transform.position - eventCamera.transform.position, rightVect);
 
                     if (widgetType == AppData.PreviewOrbitWidgetType.SceneAssetOrbitWidget)
                     {
-                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(-xRot, upVect) * transform.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewWidgetOrbitSpeed).value * Time.smoothDeltaTime);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(yRot, rightVect) * transform.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewWidgetOrbitSpeed).value * Time.smoothDeltaTime);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(-xRot, upVect) * transform.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewWidgetOrbitSpeed).value * Time.smoothDeltaTime);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(yRot, rightVect) * transform.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewWidgetOrbitSpeed).value * Time.smoothDeltaTime);
                     }
 
                     if (widgetType == AppData.PreviewOrbitWidgetType.SkyboxOrbitWidget)
                     {
                         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(-xRot, upVect) * transform.rotation,
-                            SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewWidgetOrbitSpeed).value * Time.smoothDeltaTime);
+                            SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewWidgetOrbitSpeed).value * Time.smoothDeltaTime);
 
                         float rotationAngle = Mathf.Abs(transform.eulerAngles.y);
 

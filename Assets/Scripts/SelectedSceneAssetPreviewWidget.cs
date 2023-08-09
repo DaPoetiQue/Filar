@@ -96,12 +96,12 @@ namespace Com.RedicalGames.Filar
             {
                 SelectableManager.Instance.Select(asset, AppData.FocusedSelectionType.InteractedItem, selectionCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(selectionCallback.resultCode))
                     {
-                        LogSuccess(selectionCallback.results, this, () => OnHideScreenWidget());
+                        LogSuccess(selectionCallback.result, this, () => OnHideScreenWidget());
                     }
                     else
-                        LogError(selectionCallback.results, this, () => OnHideScreenWidget());
+                        LogError(selectionCallback.result, this, () => OnHideScreenWidget());
                 });
             }
             else
@@ -237,6 +237,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
         }

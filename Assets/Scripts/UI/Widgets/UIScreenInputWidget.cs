@@ -58,8 +58,8 @@ namespace Com.RedicalGames.Filar
                     GetInputDataPacket<AppData.ButtonDataPackets>(inputCallbackResults =>
                     {
                         callbackResults.data = inputCallbackResults.data as T;
-                        callbackResults.results = inputCallbackResults.results;
-                        callbackResults.resultsCode = inputCallbackResults.resultsCode;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
                     });
 
                     break;
@@ -86,15 +86,15 @@ namespace Com.RedicalGames.Filar
                         if (buttonComponentConfig != null && buttonComponentConfig.value != null)
                         {
 
-                            callbackResults.results = (buttonComponentConfig.value) ? $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (buttonComponentConfig.value) ? $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {buttonComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = buttonComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (buttonComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (buttonComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Button Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Button Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -103,15 +103,15 @@ namespace Com.RedicalGames.Filar
 
                         if (inputFieldComponentConfig != null && inputFieldComponentConfig.value != null)
                         {
-                            callbackResults.results = (inputFieldComponentConfig.value) ? $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (inputFieldComponentConfig.value) ? $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputFieldComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = inputFieldComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (inputFieldComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (inputFieldComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Input Field Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Input Field Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -120,15 +120,15 @@ namespace Com.RedicalGames.Filar
 
                         if (inputSliderComponentConfig != null && inputSliderComponentConfig.value != null)
                         {
-                            callbackResults.results = (inputSliderComponentConfig.value) ? $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (inputSliderComponentConfig.value) ? $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {inputSliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = inputSliderComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (inputSliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (inputSliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Input Slider Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Input Slider Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -137,15 +137,15 @@ namespace Com.RedicalGames.Filar
 
                         if (sliderComponentConfig != null && sliderComponentConfig.value != null)
                         {
-                            callbackResults.results = (sliderComponentConfig.value) ? $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (sliderComponentConfig.value) ? $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {sliderComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = sliderComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (sliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (sliderComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Slider Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Slider Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -154,15 +154,15 @@ namespace Com.RedicalGames.Filar
 
                         if (checkboxComponentConfig != null && checkboxComponentConfig.value != null)
                         {
-                            callbackResults.results = (checkboxComponentConfig.value) ? $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (checkboxComponentConfig.value) ? $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {checkboxComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = checkboxComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (checkboxComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (checkboxComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Checkbox Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Checkbox Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -171,15 +171,15 @@ namespace Com.RedicalGames.Filar
 
                         if (dropdownComponentConfig != null && dropdownComponentConfig.value != null)
                         {
-                            callbackResults.results = (dropdownComponentConfig.value) ? $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (dropdownComponentConfig.value) ? $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {dropdownComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = dropdownComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (dropdownComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (dropdownComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Dropdown Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Dropdown Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -188,15 +188,15 @@ namespace Com.RedicalGames.Filar
 
                         if (textComponentConfig != null && textComponentConfig.value != null)
                         {
-                            callbackResults.results = (textComponentConfig.value) ? $"Text Displayer Name : {textComponentConfig.name} - Text Displayer Type Is Set To {inputType} Successfully" : $"Text Displayer Name : {textComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (textComponentConfig.value) ? $"Text Displayer Name : {textComponentConfig.name} - Text Displayer Type Is Set To {inputType} Successfully" : $"Text Displayer Name : {textComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = textComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (textComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (textComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Text Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Text Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -205,15 +205,15 @@ namespace Com.RedicalGames.Filar
 
                         if (imageComponentConfig != null && imageComponentConfig.value != null)
                         {
-                            callbackResults.results = (imageComponentConfig.value) ? $"Image Displayer Name : {imageComponentConfig.name} - Image Displayer Type Is Set To {inputType} Successfully" : $"Image Displayer Name : {imageComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.result = (imageComponentConfig.value) ? $"Image Displayer Name : {imageComponentConfig.name} - Image Displayer Type Is Set To {inputType} Successfully" : $"Image Displayer Name : {imageComponentConfig.name} - Displayer Type Is Set To {inputType} But Value Is Missing.";
                             callbackResults.data = imageComponentConfig.dataPackets as T;
-                            callbackResults.resultsCode = (imageComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = (imageComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = "Image Component Is Missing / Null / Not Found.";
+                            callbackResults.result = "Image Component Is Missing / Null / Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                         break;
@@ -221,9 +221,9 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "Input Type Is Set To None";
+                callbackResults.result = "Input Type Is Set To None";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
