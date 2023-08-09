@@ -1129,6 +1129,9 @@ namespace Com.RedicalGames.Filar
             public SceneDataPackets dataPackets = new SceneDataPackets();
 
             [Space(5)]
+            public List<SequenceInstance> sequences = new List<SequenceInstance>();
+
+            [Space(5)]
             public bool initialScreen = false;
 
             [Space(5)]
@@ -1184,6 +1187,11 @@ namespace Com.RedicalGames.Filar
             public bool InitialScreen() => initialScreen;
 
             public string GetInstanceName() => name ?? $"{dataPackets.screenType + " Screen Load Info"}";
+
+            public List<SequenceInstance> GetSequenceInstanceList() => sequences;
+            public SequenceInstance[] GetSequenceInstanceArray() => sequences.ToArray();
+
+            public bool HasSequenceInstances() => sequences.Count > 0;
 
             #endregion
 
