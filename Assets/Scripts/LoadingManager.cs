@@ -139,65 +139,72 @@ namespace Com.RedicalGames.Filar
 
                                 #endregion
 
-                                #region Loading Sequence Initialization
-
-                                AppData.SequenceInstance networkSequenceInstance = new AppData.SequenceInstance("Network Check Loading Sequence Data", AppData.LoadingSequenceID.CheckingNetworkConnection);
-                                AppData.SequenceInstance initializationSequenceInstance = new AppData.SequenceInstance("App Initialization Loading Sequence Data", AppData.LoadingSequenceID.AppInitialization);
-                                AppData.SequenceInstance compatibilitySequenceInstance = new AppData.SequenceInstance("App Compatibility Loading Sequence Data", AppData.LoadingSequenceID.CheckingAppCompatibility);
-                                AppData.SequenceInstance storageSequenceInstance = new AppData.SequenceInstance("Storage Loading Sequence Data", AppData.LoadingSequenceID.StorageInitialization);
-                                AppData.SequenceInstance profileSequenceInstance = new AppData.SequenceInstance("Profile", AppData.LoadingSequenceID.CheckingProfile);
-                                AppData.SequenceInstance fetchProfileSequenceInstance = new AppData.SequenceInstance("Profile", AppData.LoadingSequenceID.FetchProfile);
-                                AppData.SequenceInstance assetsSequenceInstance = new AppData.SequenceInstance("Assets Loading Sequence Data", AppData.LoadingSequenceID.InitializingUserAssets);
-
-                                #endregion
-
-                                #region Staging Sequences
-
-                                GetLoadingSequence().StageSequence(sequencesStagedCallbackResults =>
-                                {
-                                    callbackResults.SetResult(sequencesStagedCallbackResults);
-
-                                    //LogInfo($" <++++++++++++++++++++++++++++++> Staging - Sequence List Count : {GetLoadingSequence().GetSequenceDataCount()} - Code : {callbackResults.resultsCode} - Results : {callbackResults.results}", this);
-
-                                    if (callbackResults.Success())
-                                    {
-                                        GetLoadingSequence().Process(loadingSequenceCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(loadingSequenceCallbackResults);
-
-                                            if (!callbackResults.Success())
-                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                        });
-                                    }
-                                    else
-                                        Log(callbackResults.resultCode, callbackResults.result, this);
-
-                                }, networkSequenceInstance, initializationSequenceInstance, compatibilitySequenceInstance, storageSequenceInstance, profileSequenceInstance, fetchProfileSequenceInstance, assetsSequenceInstance);
-
-                                #endregion
-
-                                #region Processing Loading Sequence
-
-                                LogInfo($" <++++++++++++++++++++++++++++++> Initial Load - Code : {callbackResults.resultCode} - Results : {callbackResults.result} - Complted : {GetLoadingSequence().Completed()}", this);
-
                                 if (callbackResults.Success())
                                 {
-                                    await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+                                    #region Loading Sequence Initialization
 
-                                    LogInfo($" <++++++++++++++++++++++++++++++> Initial Load Running : {GetLoadingSequence().IsRunning()} - Sequence List Count : {GetLoadingSequence().GetSequenceDataCount()}", this);
+                                    if(screenLoadInfoInstance.HasSequenceInstances())
+                                    {
+                                        //AppData.SequenceInstance networkSequenceInstance = new AppData.SequenceInstance("Network Check Loading Sequence Data", AppData.LoadingSequenceID.CheckingNetworkConnection);
+                                        //AppData.SequenceInstance initializationSequenceInstance = new AppData.SequenceInstance("App Initialization Loading Sequence Data", AppData.LoadingSequenceID.AppInitialization);
+                                        //AppData.SequenceInstance compatibilitySequenceInstance = new AppData.SequenceInstance("App Compatibility Loading Sequence Data", AppData.LoadingSequenceID.CheckingAppCompatibility);
+                                        //AppData.SequenceInstance storageSequenceInstance = new AppData.SequenceInstance("Storage Loading Sequence Data", AppData.LoadingSequenceID.StorageInitialization);
+                                        //AppData.SequenceInstance profileSequenceInstance = new AppData.SequenceInstance("Profile", AppData.LoadingSequenceID.CheckingProfile);
+                                        //AppData.SequenceInstance fetchProfileSequenceInstance = new AppData.SequenceInstance("Profile", AppData.LoadingSequenceID.FetchProfile);
+                                        //AppData.SequenceInstance assetsSequenceInstance = new AppData.SequenceInstance("Assets Loading Sequence Data", AppData.LoadingSequenceID.InitializingUserAssets);
 
-                                    while (GetLoadingSequence().IsRunning())
-                                        await Task.Yield();
+                                        #endregion
+
+                                        #region Staging Sequences
+
+                                        GetLoadingSequence().StageSequence(sequencesStagedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(sequencesStagedCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                GetLoadingSequence().Process(loadingSequenceCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(loadingSequenceCallbackResults);
+
+                                                    if (!callbackResults.Success())
+                                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.resultCode, callbackResults.result, this);
+
+                                        }, screenLoadInfoInstance.GetSequenceInstanceArray());
+
+                                        #endregion
+
+                                        #region Processing Loading Sequence
+
+                                        LogInfo($" <++++++++++++++++++++++++++++++> Initial Load - Code : {callbackResults.resultCode} - Results : {callbackResults.result} - Complted : {GetLoadingSequence().Completed()}", this);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+
+                                            LogInfo($" <++++++++++++++++++++++++++++++> Initial Load Running : {GetLoadingSequence().IsRunning()} - Sequence List Count : {GetLoadingSequence().GetSequenceDataCount()}", this);
+
+                                            while (GetLoadingSequence().IsRunning())
+                                                await Task.Yield();
 
 
-                                    LogInfo($" <++++++++++++++++++++++++++++++> Initial Load Completed : {GetLoadingSequence().Completed()}", this);
+                                            LogInfo($" <++++++++++++++++++++++++++++++> Initial Load Completed : {GetLoadingSequence().Completed()}", this);
 
-                                    //OnInitialLoad = false;
+                                            //OnInitialLoad = false;
+                                        }
+                                        else
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+
+                                        #endregion
+
+                                    }
+                                    else
+                                        LogWarning("Initial Load Screen Sequence Data Missing / Not Found.", this);
                                 }
-                                else
-                                    Log(callbackResults.resultCode, callbackResults.result, this);
-
-                                #endregion
                             }
                             else
                             {
