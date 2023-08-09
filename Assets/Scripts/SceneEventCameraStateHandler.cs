@@ -333,12 +333,12 @@ namespace Com.RedicalGames.Filar
 
             if (currentEventCamera.value.transform.position != camPoseTarget.position)
             {
-                currentEventCamera.value.transform.position = Vector3.Lerp(currentEventCamera.value.transform.position, camPoseTarget.position, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewModeOrbitSpeed).value * Time.smoothDeltaTime);
+                currentEventCamera.value.transform.position = Vector3.Lerp(currentEventCamera.value.transform.position, camPoseTarget.position, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewModeOrbitSpeed).value * Time.smoothDeltaTime);
             }
 
             if (currentEventCamera.value.transform.rotation != camPoseTarget.rotation)
             {
-                currentEventCamera.value.transform.rotation = Quaternion.Slerp(currentEventCamera.value.transform.rotation, camPoseTarget.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeValueType.PreviewModeOrbitSpeed).value * Time.smoothDeltaTime);
+                currentEventCamera.value.transform.rotation = Quaternion.Slerp(currentEventCamera.value.transform.rotation, camPoseTarget.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Runtime, AppData.RuntimeExecution.PreviewModeOrbitSpeed).value * Time.smoothDeltaTime);
             }
 
             if (previousAngle != currentEventCamera.value.transform.rotation)

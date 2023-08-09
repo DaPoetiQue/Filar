@@ -68,8 +68,8 @@ namespace Com.RedicalGames.Filar
 
                             subWidget.ShowWidget(dataPackets.navigationTabWidgetType, (callback) =>
                             {
-                                if (!AppData.Helpers.IsSuccessCode(callback.resultsCode))
-                                    Debug.LogError($"------> Failed To Show Tab Widget : {dataPackets.navigationTabWidgetType} With Error Result : {callback.results}");
+                                if (!AppData.Helpers.IsSuccessCode(callback.resultCode))
+                                    Debug.LogError($"------> Failed To Show Tab Widget : {dataPackets.navigationTabWidgetType} With Error Result : {callback.result}");
 
                             });
 
@@ -79,8 +79,8 @@ namespace Com.RedicalGames.Filar
 
                             subWidget.HideWidget(dataPackets.navigationTabWidgetType, (callback) =>
                             {
-                                if (!AppData.Helpers.IsSuccessCode(callback.resultsCode))
-                                    Debug.LogError($"------> Failed : {dataPackets.navigationTabWidgetType} With Error Result : {callback.results}");
+                                if (!AppData.Helpers.IsSuccessCode(callback.resultCode))
+                                    Debug.LogError($"------> Failed : {dataPackets.navigationTabWidgetType} With Error Result : {callback.result}");
 
                             });
 
@@ -100,8 +100,8 @@ namespace Com.RedicalGames.Filar
             {
                 navigationWidget.Init((status) =>
                 {
-                    if (!AppData.Helpers.IsSuccessCode(status.resultsCode))
-                        Debug.LogWarning($"--> Init Failed With Results : {status.results}");
+                    if (!AppData.Helpers.IsSuccessCode(status.resultCode))
+                        Debug.LogWarning($"--> Init Failed With Results : {status.result}");
                 });
             }
             else
@@ -176,6 +176,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
         }

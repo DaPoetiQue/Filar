@@ -91,25 +91,25 @@ namespace Com.RedicalGames.Filar
 
                 SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, folder =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(folder.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(folder.resultCode))
                     {
                         if (SelectableManager.Instance != null)
                             SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
                         else
                         {
-                            callbackResults.results = "Selectable Manager Instance Not Yet Initialized.";
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.result = "Selectable Manager Instance Not Yet Initialized.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             callbackResults.data = default;
                         }
                     }
                     else
-                        LogWarning(folder.results, this);
+                        LogWarning(folder.result, this);
                 });
 
                 folderNavigation.Execute();
 
-                callbackResults.results = "Success : Returning From Folder";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = "Success : Returning From Folder";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
                 if (ScreenUIManager.Instance != null)
                 {
@@ -123,7 +123,7 @@ namespace Com.RedicalGames.Filar
                             if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                                 folderNavigationDataPackets.widgetTitle = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
                             else
-                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
                         }
                     }
                     else
@@ -137,8 +137,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "Failed : There Are No Commands In folderNavigationCommands";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Failed : There Are No Commands In folderNavigationCommands";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -191,7 +191,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
             }
             else
-                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
         }
 
         public AppData.SceneDataPackets GetEmptyFolderDataPackets()
@@ -216,13 +216,13 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
             {
-                callbackResults.results = validComponentCallbackResults.results;
-                callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
+                callbackResults.result = validComponentCallbackResults.result;
+                callbackResults.resultCode = validComponentCallbackResults.resultCode;
             
                 if(callbackResults.Success())
                 {
-                    callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
-                    callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+                    callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
+                    callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
 
                     if (callbackResults.Success())
                     {
@@ -268,14 +268,14 @@ namespace Com.RedicalGames.Filar
                                     break;
                             }
 
-                            callbackResults.results = $"Empty Content Data Packets For Screen Type : {screenType} Found.";
+                            callbackResults.result = $"Empty Content Data Packets For Screen Type : {screenType} Found.";
                             callbackResults.data = dataPackets;
                         }
                         else
                         {
-                            callbackResults.results = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                            callbackResults.result = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                 }

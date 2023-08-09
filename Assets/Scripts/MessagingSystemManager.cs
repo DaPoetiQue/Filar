@@ -42,8 +42,8 @@ namespace Com.RedicalGames.Filar
 
             LoadMessageGroups(messageGroupsLoadedCallbackResults =>
             {
-                callbackResults.results = messageGroupsLoadedCallbackResults.results;
-                callbackResults.resultsCode = messageGroupsLoadedCallbackResults.resultsCode;
+                callbackResults.result = messageGroupsLoadedCallbackResults.result;
+                callbackResults.resultCode = messageGroupsLoadedCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -58,14 +58,14 @@ namespace Com.RedicalGames.Filar
 
                     if (messageGroup != null)
                     {
-                        callbackResults.results = $"Message Group : {messageGroup.name} - For Screen ID : {screenIdentifier} Found.";
+                        callbackResults.result = $"Message Group : {messageGroup.name} - For Screen ID : {screenIdentifier} Found.";
                         callbackResults.data = messageGroup;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Find Message Group For Screen ID : {screenIdentifier}.";
+                        callbackResults.result = $"Couldn't Find Message Group For Screen ID : {screenIdentifier}.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
             });
@@ -81,27 +81,27 @@ namespace Com.RedicalGames.Filar
 
             GetMessageCroups(messageGroupsCallbackResults =>
             {
-                callbackResults.results = messageGroupsCallbackResults.results;
-                callbackResults.resultsCode = messageGroupsCallbackResults.resultsCode;
+                callbackResults.result = messageGroupsCallbackResults.result;
+                callbackResults.resultCode = messageGroupsCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                 {
                     AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults =>
                     {
-                        callbackResults.results = sceneAssetsManagerCallbackResults.results;
-                        callbackResults.resultsCode = sceneAssetsManagerCallbackResults.resultsCode;
+                        callbackResults.result = sceneAssetsManagerCallbackResults.result;
+                        callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.results = sceneAssetsManagerCallbackResults.data.GetAppDirectoryData(messageStorageType).results;
-                            callbackResults.resultsCode = sceneAssetsManagerCallbackResults.data.GetAppDirectoryData(messageStorageType).resultsCode;
+                            callbackResults.result = sceneAssetsManagerCallbackResults.data.GetAppDirectoryData(messageStorageType).result;
+                            callbackResults.resultCode = sceneAssetsManagerCallbackResults.data.GetAppDirectoryData(messageStorageType).resultCode;
 
                             if (callbackResults.Success())
                             {
                                 sceneAssetsManagerCallbackResults.data.GetStorageData("Message Groups", messageStorageType, storageDataCallbackResults =>
                                 {
-                                    callbackResults.results = storageDataCallbackResults.results;
-                                    callbackResults.resultsCode = storageDataCallbackResults.resultsCode;
+                                    callbackResults.result = storageDataCallbackResults.result;
+                                    callbackResults.resultCode = storageDataCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
@@ -114,8 +114,8 @@ namespace Com.RedicalGames.Filar
 
                                         sceneAssetsManagerCallbackResults.data.LoadData<AppData.MessageGroupData>(storageDataCallbackResults.data, loadedDataCallbackResults => 
                                         {
-                                            callbackResults.results = loadedDataCallbackResults.results;
-                                            callbackResults.resultsCode = loadedDataCallbackResults.resultsCode;
+                                            callbackResults.result = loadedDataCallbackResults.result;
+                                            callbackResults.resultCode = loadedDataCallbackResults.resultCode;
 
                                             if (callbackResults.Success())
                                                 callbackResults.data = loadedDataCallbackResults.data;
@@ -123,11 +123,11 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 sceneAssetsManagerCallbackResults.data.CreateData(messageGroupData, storageDataCallbackResults.data, dataCreatedCallbackResults =>
                                                 {
-                                                    callbackResults.results = sceneAssetsManagerCallbackResults.results;
+                                                    callbackResults.result = sceneAssetsManagerCallbackResults.result;
                                                     callbackResults.data = messageGroupData;
-                                                    callbackResults.resultsCode = sceneAssetsManagerCallbackResults.resultsCode;
+                                                    callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
 
-                                                    Log(callbackResults.resultsCode, callbackResults.results, this);
+                                                    Log(callbackResults.resultCode, callbackResults.result, this);
                                                 });
                                             }
                                         });
@@ -153,8 +153,8 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.GetAppComponentsValid(messageGroups, "Message Group List", messageGroupCallbackResults =>
             {
-                callbackResults.results = messageGroupCallbackResults.results;
-                callbackResults.resultsCode = messageGroupCallbackResults.resultsCode;
+                callbackResults.result = messageGroupCallbackResults.result;
+                callbackResults.resultCode = messageGroupCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                     callbackResults.data = messageGroupCallbackResults.data;
