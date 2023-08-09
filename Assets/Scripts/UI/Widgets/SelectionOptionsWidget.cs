@@ -43,7 +43,7 @@ namespace Com.RedicalGames.Filar
                 if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                     SetCheckboxValue(SceneAssetsManager.Instance.GetProjectStructureData().data.InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
                 else
-                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
 
                 var widgetsContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
 
@@ -63,11 +63,11 @@ namespace Com.RedicalGames.Filar
 
                     widgetsContainer.WidgetsInCurrentPageSelected(widgetsSelectionCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(widgetsSelectionCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(widgetsSelectionCallback.resultCode))
                         {
                             GetActionButtonOfType(AppData.InputActionButtonType.SelectionButton, getButtonCallback =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(getButtonCallback.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(getButtonCallback.resultCode))
                                 {
                                     foreach (var button in getButtonCallback.data)
                                     {
@@ -80,14 +80,14 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    LogError(getButtonCallback.results, this);
+                                    LogError(getButtonCallback.result, this);
                             });
                         }
                         else
                         {
                             GetActionButtonOfType(AppData.InputActionButtonType.SelectionButton, getButtonCallback =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(getButtonCallback.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(getButtonCallback.resultCode))
                                 {
                                     foreach (var button in getButtonCallback.data)
                                     {
@@ -107,7 +107,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    LogError(getButtonCallback.results, this);
+                                    LogError(getButtonCallback.result, this);
                             });
                         }
                     });
@@ -140,7 +140,7 @@ namespace Com.RedicalGames.Filar
                     if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
                         SceneAssetsManager.Instance.GetProjectStructureData().data.SetInverseSelect(value);
                     else
-                        Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                        Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
                 }
                 else
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
@@ -153,6 +153,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
         }

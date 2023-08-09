@@ -86,11 +86,11 @@ namespace Com.RedicalGames.Filar
                                                             UpdateWidgetsSelection(getFolderStructureSelectionData.data);
                                                     }
                                                     else
-                                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.results}");
+                                                        Debug.LogWarning($"--> OnScreenWidget's GetFilteredWidgetsFromList Failed With Results : {getFolderStructureSelectionData.result}");
                                                 });
                                             }
                                             else
-                                                Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                                Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                                         });
                                     }
                                     else
@@ -123,11 +123,11 @@ namespace Com.RedicalGames.Filar
                                                                     UpdateWidgetSelection(widget);
                                                                 }
                                                                 else
-                                                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                                                    Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                                                             });
                                                         }
                                                         else
-                                                            Log(valueValidCallbackResults.resultsCode, valueValidCallbackResults.results, this);
+                                                            Log(valueValidCallbackResults.resultCode, valueValidCallbackResults.result, this);
                                                     });
 
                                                     AppData.Helpers.ValueIsGraterThanReference(contentCount, 1, valueAssignedCallbackResults => 
@@ -145,28 +145,28 @@ namespace Com.RedicalGames.Filar
                                                                     UpdateWidgetsSelection(getFolderStructureSelectionData.data);
                                                                 }
                                                                 else
-                                                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                                                    Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                                                             });
                                                         }
                                                         else
-                                                            Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                                                            Log(valueAssignedCallbackResults.resultCode, valueAssignedCallbackResults.result, this);
                                                     });
                                                 }
                                                 else
-                                                    Log(getFolderStructureSelectionData.resultsCode, getFolderStructureSelectionData.results, this);
+                                                    Log(getFolderStructureSelectionData.resultCode, getFolderStructureSelectionData.result, this);
                                             });
                                         }
                                         else
-                                            Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                            Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                                     });
                                 }
                             }
                             else
-                                Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                                Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                         });
                     }
                     else
-                        Log(projectSelectionSystemCallbackResults.resultsCode, projectSelectionSystemCallbackResults.results, this);
+                        Log(projectSelectionSystemCallbackResults.resultCode, projectSelectionSystemCallbackResults.result, this);
                 });
             }
         }
@@ -203,7 +203,7 @@ namespace Com.RedicalGames.Filar
                 SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
             }
             else
-                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
         }
 
         void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
@@ -280,6 +280,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
         }

@@ -71,7 +71,7 @@ namespace Com.RedicalGames.Filar
 
             GenerateColorData((initializeCallBackResults) =>
             {
-                if (AppData.Helpers.IsSuccessCode(initializeCallBackResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(initializeCallBackResults.resultCode))
                 {
                     if (gradientColoredBG == null)
                     {
@@ -82,7 +82,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    Debug.LogError($"--> Initialize Color Data Failed With Results : {initializeCallBackResults.results}");
+                    Debug.LogError($"--> Initialize Color Data Failed With Results : {initializeCallBackResults.result}");
             });
 
             return gradientInputContainerRect && gradientSelectorInput && gradientColoredBG;
@@ -105,7 +105,7 @@ namespace Com.RedicalGames.Filar
 
                         SceneAssetsManager.Instance.GetHexidecimalFromColor(selectedColor, (getHexadecimalCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
                                 selectedColorInfo = getHexadecimalCallbackResults.data;
                                 AppData.ActionEvents.OnSwatchColorPickedEvent(selectedColorInfo, true, false);
@@ -113,7 +113,7 @@ namespace Com.RedicalGames.Filar
                                 gradientSelectorInput.anchoredPosition = pos;
                             }
                             else
-                                Debug.LogWarning($"--> GradientColorPickerHandler OnPointerDown Failed With Results : {getHexadecimalCallbackResults.results}");
+                                Debug.LogWarning($"--> GradientColorPickerHandler OnPointerDown Failed With Results : {getHexadecimalCallbackResults.result}");
                         });
                     }
                 }
@@ -141,7 +141,7 @@ namespace Com.RedicalGames.Filar
 
                         SceneAssetsManager.Instance.GetHexidecimalFromColor(selectedColor, (getHexadecimalCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
                                 selectedColorInfo = getHexadecimalCallbackResults.data;
                                 AppData.ActionEvents.OnSwatchColorPickedEvent(selectedColorInfo, true, false);
@@ -149,7 +149,7 @@ namespace Com.RedicalGames.Filar
                                 gradientSelectorInput.anchoredPosition = pos;
                             }
                             else
-                                Debug.LogWarning($"--> GradientColorPickerHandler OnDrag Failed With Results : {getHexadecimalCallbackResults.results}");
+                                Debug.LogWarning($"--> GradientColorPickerHandler OnDrag Failed With Results : {getHexadecimalCallbackResults.result}");
                         });
                     }
                 }
@@ -201,9 +201,9 @@ namespace Com.RedicalGames.Filar
 
                 if (gradientDisplayer.texture == tex)
                 {
-                    callbackResults.results = "Success";
+                    callbackResults.result = "Success";
                     callbackResults.data = tex;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
 
                 if (saturationGradientDisplayer)
@@ -227,9 +227,9 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "Setting Gradient Displayer Failed : Displayer Not Found";
+                callbackResults.result = "Setting Gradient Displayer Failed : Displayer Not Found";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
