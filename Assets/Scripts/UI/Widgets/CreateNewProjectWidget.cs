@@ -224,21 +224,21 @@ namespace Com.RedicalGames.Filar
 
                             switch (restrictionCallbackResults.data.GetProjectSupportType())
                             {
-                                case AppData.AppProjectSupportType.Supports_3D:
+                                case AppData.Compatibility.Supports_3D:
 
                                     projectTypeContentParam.contents = new List<string> { "3D" };
                                     projectTypeContentParam.SetUIInputState(AppData.InputUIState.Disabled);
 
                                     break;
 
-                                case AppData.AppProjectSupportType.Supports_AR:
+                                case AppData.Compatibility.Supports_AR:
 
                                     projectTypeContentParam.contents = new List<string> { "3D", "AR" };
                                     projectTypeContentParam.SetUIInputState(AppData.InputUIState.Enabled);
 
                                     break;
 
-                                case AppData.AppProjectSupportType.Supports_VR:
+                                case AppData.Compatibility.Supports_VR:
 
                                     projectTypeContentParam.contents = new List<string> { "3D", "AR", "VR" };
                                     projectTypeContentParam.SetUIInputState(AppData.InputUIState.Enabled);
