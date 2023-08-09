@@ -86,7 +86,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var success = await appManagerCallbackResults.data.CheckConnectionStatus();
 
-                                            if (success)
+                                            if (success.Success())
                                             {
                                                 if (!string.IsNullOrEmpty(dataPackets.externalLinkURL))
                                                     Application.OpenURL(dataPackets.externalLinkURL);
