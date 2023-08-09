@@ -712,6 +712,8 @@ namespace Com.RedicalGames.Filar
             ContentImportExportScreenFadeOutDuration,
             ARViewScreenFadeInDuration,
             ARViewScreenFadeOutDuration,
+            NetworkInitializationDefaultDuration,
+            DefaultAppTimeout,
             None
         }
 
@@ -1030,7 +1032,7 @@ namespace Com.RedicalGames.Filar
             Filar_FBR
         }
 
-        public enum AppProjectSupportType
+        public enum Compatibility
         {
             Supports_3D,
             Supports_AR,
@@ -1550,11 +1552,11 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var messageDisplayerWidget = screenUIManager.GetScreen(screenUIManager.GetCurrentUIScreenType()).data.value.GetWidget(WidgetType.MessageDisplayerWidget);
+                            var messageDisplayerWidget = screenUIManager.GetScreen(UIScreenType.LoadingScreen).data.value.GetWidget(WidgetType.MessageDisplayerWidget);
 
                             if (messageDisplayerWidget != null)
                             {
-                                if (screenUIManager.GetCurrentUIScreenType() == UIScreenType.LandingPageScreen)
+                                if (screenUIManager.GetCurrentUIScreenType() == UIScreenType.LoadingScreen)
                                 {
                                     messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader());
                                     messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetBody());
@@ -1566,65 +1568,130 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if(callbackResults.Success())
                                         {
-                                            switch (GetSequenceID())
+                                            callbackResults.SetResults(Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized."));
+
+                                            if (callbackResults.Success())
                                             {
-                                                case LoadingSequenceID.Default:
+                                                var appManager = Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name).data;
 
-                                                    break;
+                                                switch (GetSequenceID())
+                                                {
+                                                    case LoadingSequenceID.Default:
 
-                                                case LoadingSequenceID.CheckingNetworkConnection:
+                                                        break;
 
-                                                    callbackResults.SetResults(Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized."));
+                                                    case LoadingSequenceID.CheckingNetworkConnection:
 
-                                                    var success = await Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized.").data.CheckConnectionStatus();
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var resultCallback = await appManager.CheckConnectionStatus();
 
-                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Load Sequence Completed With Success : {success}", this);
+                                                            if (resultCallback.Success())
+                                                                OnCompletition();
+                                                            else
+                                                            {
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Failed  - Show Network Pop Up", this);
+                                                            }
+                                                        }
 
-                                                    if (success)
-                                                    {
-                                                        LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Success - Load Next Sequence", this);
-                                                    }
-                                                    else
-                                                    {
-                                                        LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Failed  - Show Network Pop Up", this);
-                                                    }
+                                                        break;
 
-                                                    break;
+                                                    case LoadingSequenceID.AppInitialization:
 
-                                                case LoadingSequenceID.AppInitialization:
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var resultCallback = await appManager.PermissionsGranted();
+
+                                                            if (resultCallback.Success())
+                                                                OnCompletition();
+                                                            else
+                                                            {
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Permissions Not Granted  - Show Permissions Pop Up", this);
+                                                            }
+                                                        }
+
+                                                        break;
+
+                                                    case LoadingSequenceID.CheckingAppCompatibility:
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var resultCallback = await appManager.CompatibilityStatus();
+
+                                                            if (resultCallback.Success())
+                                                                OnCompletition();
+                                                            else
+                                                            {
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Device Is Only 3D Compitable  - Show Compatiblity Message Pop Up", this);
+                                                            }
+                                                        }
+
+                                                        break;
+
+                                                    case LoadingSequenceID.StorageInitialization:
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var resultCallback = await appManager.StorageInitialized();
+
+                                                            if (resultCallback.Success())
+                                                                OnCompletition();
+                                                            else
+                                                            {
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Storage Initialization Failed  - Show Storage Error Pop Up", this);
+                                                            }
+                                                        }
+
+                                                        break;
+
+                                                    case LoadingSequenceID.InitializingUserAssets:
 
 
-                                                    break;
+                                                        break;
 
-                                                case LoadingSequenceID.CheckingAppCompatibility:
+                                                    case LoadingSequenceID.CheckingProfile:
 
-                                                    break;
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var resultCallback = await appManager.ProfileInitialization();
 
-                                                case LoadingSequenceID.StorageInitialization:
+                                                            if (resultCallback.Success())
+                                                                OnCompletition();
+                                                            else
+                                                            {
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Profile Initialization Failed  - Start Profile Creation Proccess", this);
+                                                            }
+                                                        }
 
-                                                    break;
+                                                        break;
 
-                                                case LoadingSequenceID.InitializingUserAssets:
+                                                    case LoadingSequenceID.FetchProfile:
 
-                                                    break;
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var resultCallback = await appManager.ProfileInitialized();
 
-                                                case LoadingSequenceID.CheckingProfile:
+                                                            if (resultCallback.Success())
+                                                                OnCompletition();
+                                                            else
+                                                            {
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Getting Initialized Profile Failed  - Show Profile Initialization Error.", this);
+                                                            }
+                                                        }
 
-                                                    break;
-
-                                                case LoadingSequenceID.FetchProfile:
-
-                                                    break;
+                                                        break;
+                                                }
                                             }
                                         }
                                     }
 
-                                    //while (IsRunning() && !Completed())
-                                    //{
-                                    //    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Execute Load Sequence - Runni8ng Sequence ID : {GetSequenceID()}", this);
+                                    while (IsRunning() && !Completed())
+                                    {
 
-                                    //    await Task.Yield();
-                                    //}
+                                        //LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Execute Load Sequence - Runni8ng Sequence ID : {GetSequenceID()}", this);
+
+                                        await Task.Yield();
+                                    }
                                 }
                                 else
                                 {
@@ -1787,36 +1854,25 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void Process(Action<Callback> callback = null)
+            public async Task Process(Action<Callback> callback = null)
             {
                 try
                 {
                     Callback callbackResults = new Callback();
 
-                    //if (IsRunning())
-                    //{
-                    //    callbackResults.results = "Loading Sequence Is Already In Progress - Returning From Function.";
-                    //    callbackResults.resultsCode = Helpers.WarningCode;
-
-                    //    callback?.Invoke(callbackResults);
-
-                    //    return;
-                    //}
-
                     Helpers.GetAppComponentValid(sequenceDataQueue, "Sequence Data Queue", async componentsValidCallbackResults => 
                     {
                         callbackResults.SetResults(componentsValidCallbackResults);
-
-                        if (callbackResults.Success())
-                        {
-                            while (IsRunning())
-                            {
-                                var sequenceInstance = sequenceDataQueue.Dequeue();
-                                await sequenceInstance.GetSequenceData().Execute();
-                            }
-                        }
-
                     }, "Sequence Data Queue Is Not Yet Initialized");
+
+                    if (callbackResults.Success())
+                    {
+                        while (IsRunning())
+                        {
+                            var sequenceInstance = sequenceDataQueue.Dequeue();
+                            await sequenceInstance.GetSequenceData().Execute();
+                        }
+                    }
 
                     callback?.Invoke(callbackResults);
                 }
@@ -2522,7 +2578,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public AppProjectSupportType projectSupportType;
+            public Compatibility projectSupportType;
 
             #endregion
 
@@ -2530,9 +2586,9 @@ namespace Com.RedicalGames.Filar
 
             public void SetRestrictionType(AppRestrictionType restrictionType) => this.restrictionType = restrictionType;
 
-            public void SetProjectSupportType(AppProjectSupportType supportType) => projectSupportType = supportType;
+            public void SetProjectSupportType(Compatibility supportType) => projectSupportType = supportType;
 
-            public AppProjectSupportType GetProjectSupportType()
+            public Compatibility GetProjectSupportType()
             {
                 return projectSupportType;
             }
