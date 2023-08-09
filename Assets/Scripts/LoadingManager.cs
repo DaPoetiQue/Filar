@@ -82,7 +82,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var screenUIManager = screenUIManagerInstanceCallbackResults.data;
 
-                            if(OnShowSplashScreen && !OnInitialLoad)
+                            if(OnShowSplashScreen && !screenLoadInfoInstance.InitialScreen())
                             {
                                 #region Show Splash Screen
 
@@ -111,7 +111,7 @@ namespace Com.RedicalGames.Filar
                                             if (callbackResults.Success())
                                             {
                                                 OnShowSplashScreen = false;
-                                                OnInitialLoad = true;
+                                                //OnInitialLoad = true;
                                             }
                                         }
                                     }
@@ -122,10 +122,9 @@ namespace Com.RedicalGames.Filar
                                 #endregion
 
                             }
-                            else if (OnInitialLoad && !OnShowSplashScreen)
+                            else if (screenLoadInfoInstance.InitialScreen() && !OnShowSplashScreen)
                             {
                                 #region Loading Data Initialization
-
 
                                 AppData.CallbackData<AppData.SceneDataPackets> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
 
@@ -154,7 +153,7 @@ namespace Com.RedicalGames.Filar
 
                                 #region Staging Sequences
 
-                                GetLoadingSequence().StageSequence(sequencesStagedCallbackResults => 
+                                GetLoadingSequence().StageSequence(sequencesStagedCallbackResults =>
                                 {
                                     callbackResults.SetResult(sequencesStagedCallbackResults);
 
@@ -162,17 +161,17 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        GetLoadingSequence().Process(loadingSequenceCallbackResults => 
+                                        GetLoadingSequence().Process(loadingSequenceCallbackResults =>
                                         {
                                             callbackResults.SetResult(loadingSequenceCallbackResults);
 
-                                            if(!callbackResults.Success())
+                                            if (!callbackResults.Success())
                                                 Log(callbackResults.resultCode, callbackResults.result, this);
                                         });
                                     }
                                     else
                                         Log(callbackResults.resultCode, callbackResults.result, this);
-                                
+
                                 }, networkSequenceInstance, initializationSequenceInstance, compatibilitySequenceInstance, storageSequenceInstance, profileSequenceInstance, fetchProfileSequenceInstance, assetsSequenceInstance);
 
                                 #endregion
@@ -193,7 +192,7 @@ namespace Com.RedicalGames.Filar
 
                                     LogInfo($" <++++++++++++++++++++++++++++++> Initial Load Completed : {GetLoadingSequence().Completed()}", this);
 
-                                    OnInitialLoad = false;
+                                    //OnInitialLoad = false;
                                 }
                                 else
                                     Log(callbackResults.resultCode, callbackResults.result, this);

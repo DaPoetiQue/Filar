@@ -123,24 +123,29 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var loadingManager = loadingManagerCallbackResults.data;
 
-                                                await loadingManager.LoadScreen(splashScreenLoadInfo, showSplashScreenCallbackResults =>
+                                                await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(showSplashScreenCallbackResults);
 
-
-                                                    LogInfo($" <==++> Splash Screen Completed - Load Initial Screen - Code : {callbackResults.ResultCode} - Result : {callbackResults.Result}", this);
-
                                                     if (callbackResults.Success())
                                                     {
+                                                        callbackResults.SetResult(sceneAssetsManager.GetInitialScreenLoadInfoInstanceFromLibrary());
 
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var initialLoadInfo = sceneAssetsManager.GetInitialScreenLoadInfoInstanceFromLibrary().data;
+
+                                                            await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
+                                                            {
+                                                                initialLoadInfoCallbackResults.LogResult();
+                                                            });
+                                                        }
                                                     }
                                                 });
                                             }
 
                                         }, "Screen UI Manager Instance Is Not Yet Initialized");
                                     }
-                                    else
-                                        LogError(" <--------------> Splash Screen Info Not Found", this);
                                 }
                             });
                         }

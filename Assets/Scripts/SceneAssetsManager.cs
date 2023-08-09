@@ -8335,7 +8335,7 @@ namespace Com.RedicalGames.Filar
             {
                 GetScreenLoadInfoInstanceLibrary().GetInitialScreenLoadInfoInstance(screenLoadInfoCallbackResults =>
                 {
-                    callbackResults.SetResults(screenLoadInfoCallbackResults);
+                    callbackResults.SetResultsData(screenLoadInfoCallbackResults);
                 });
             }
 
