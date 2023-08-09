@@ -18,7 +18,7 @@ namespace Com.RedicalGames.Filar
         {
             switch (dataPackets.action)
             {
-                case AppData.InputActionButtonType.HideScreenWidget:
+                case AppData.InputActionButtonType.CloseButton:
 
                     CloseWidget(this);
 

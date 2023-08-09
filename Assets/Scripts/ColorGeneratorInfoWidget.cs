@@ -35,14 +35,14 @@ namespace Com.RedicalGames.Filar
 
                     break;
 
-                case AppData.InputActionButtonType.HideScreenWidget:
+                case AppData.InputActionButtonType.CloseButton:
 
                     parentWidget.HideChildWidget(AppData.SettingsWidgetType.ColorSettingsImportWidget);
                     CloseWidget(this);
 
                     break;
 
-                case AppData.InputActionButtonType.Confirm:
+                case AppData.InputActionButtonType.ConfirmationButton:
 
                     if (colorPalletWidget != null)
                     {

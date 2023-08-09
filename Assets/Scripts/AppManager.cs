@@ -39,11 +39,17 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets initialLoadDataPackets = new AppData.SceneDataPackets();
+        bool requestStoragePermissions;
 
         [Space(5)]
         [SerializeField]
-        bool requestStoragePermissions;
+        AppData.AppMode appMode = AppData.AppMode.None;
+
+        AppData.Profile userProfile = new AppData.Profile();
+
+        #region Loading Data
+
+        #endregion
 
         #endregion
 
@@ -70,67 +76,141 @@ namespace Com.RedicalGames.Filar
                 StoragePermissionRequest();
         }
 
-        void Init()
+        async void Init(Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
+
+            if(callbackResults.Success())
+            {
+                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized.").data;
+
+                do
+                {
+                    screenUIManager.OnScreenInit(appInitializationCallbackResults =>
+                    {
+                        callbackResults.SetResults(appInitializationCallbackResults);
+                    });
+
+                    await Task.Yield();
+                }
+                while (!screenUIManager.IsInitialized());
+
+                if (callbackResults.Success())
+                {
+                    AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                    {
+                        callbackResults.SetResults(sceneAssetsManagerCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
+
+                            sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
+                            {
+                                callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.data;
+
+                                    if (splashScreenLoadInfo != null)
+                                    {
+                                        AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, async loadingManagerCallbackResults =>
+                                        {
+                                            callbackResults.SetResults(loadingManagerCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var loadingManager = loadingManagerCallbackResults.data;
+
+                                                await loadingManager.LoadScreen(splashScreenLoadInfo, showSplashScreenCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(showSplashScreenCallbackResults);
+
+
+                                                    LogInfo($" <==++> Splash Screen Completed - Load Initial Screen - Code : {callbackResults.ResultCode} - Result : {callbackResults.Result}", this);
+
+                                                    if (callbackResults.Success())
+                                                    {
+
+                                                    }
+                                                });
+                                            }
+
+                                        }, "Screen UI Manager Instance Is Not Yet Initialized");
+                                    }
+                                    else
+                                        LogError(" <--------------> Splash Screen Info Not Found", this);
+                                }
+                            });
+                        }
+
+                    }, "Screen UI Manager Instance Is Not Yet Initialized");
+                }
+            }
+        }
+
+        void DeleteThis()
         {
             //if (SceneAssetsManager.Instance != null)
             //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);;
 
-            OnProjectSupport(projectSupportCallbackResults => 
-            {
-                if (projectSupportCallbackResults.Success())
-                {
-                    AppData.Helpers.GetComponent(SceneAssetsManager.Instance, hasComponentCallbackResults =>
-                    {
-                        if (hasComponentCallbackResults.Success())
-                        {
-                            SceneAssetsManager.Instance.InitializeStorage(storageInitializedCallbackResults =>
-                            {
-                                if (storageInitializedCallbackResults.Success())
-                                {
-                                    SceneAssetsManager.Instance.LoadRootStructureData(loadedProjectDataResultsCallback =>
-                                    {
-                                        if (loadedProjectDataResultsCallback.Success())
-                                        {
-                                            var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
+            //OnProjectSupport(projectSupportCallbackResults => 
+            //{
+            //    if (projectSupportCallbackResults.Success())
+            //    {
+            //        AppData.Helpers.GetComponent(SceneAssetsManager.Instance, hasComponentCallbackResults =>
+            //        {
+            //            if (hasComponentCallbackResults.Success())
+            //            {
+            //                SceneAssetsManager.Instance.InitializeStorage(storageInitializedCallbackResults =>
+            //                {
+            //                    if (storageInitializedCallbackResults.Success())
+            //                    {
+            //                        SceneAssetsManager.Instance.LoadRootStructureData(loadedProjectDataResultsCallback =>
+            //                        {
+            //                            if (loadedProjectDataResultsCallback.Success())
+            //                            {
+            //                                var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
 
-                                            SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure, projectStructureInitializedCallbackResults => 
-                                            {
-                                                if (projectStructureInitializedCallbackResults.Success())
-                                                    OnLoadAppInitializationBootScreen();
-                                                else
-                                                    Log(projectStructureInitializedCallbackResults.resultsCode, projectStructureInitializedCallbackResults.results, this);
-                                            });
+            //                                SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure, projectStructureInitializedCallbackResults => 
+            //                                {
+            //                                    if (projectStructureInitializedCallbackResults.Success())
+            //                                        OnLoadAppInitializationBootScreen();
+            //                                    else
+            //                                        Log(projectStructureInitializedCallbackResults.resultsCode, projectStructureInitializedCallbackResults.results, this);
+            //                                });
 
-                                            // Check This Later On.......................................................................................................................................
+            //                                // Check This Later On.......................................................................................................................................
 
-                                            //SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
-                                            //{
-                                            //    if (containerResults.Success())
-                                            //    {
-                                            //        var rootFolder = rootProjectStructure.rootFolder;
-                                            //        var container = containerResults.data;
+            //                                //SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
+            //                                //{
+            //                                //    if (containerResults.Success())
+            //                                //    {
+            //                                //        var rootFolder = rootProjectStructure.rootFolder;
+            //                                //        var container = containerResults.data;
 
-                                            //        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
+            //                                //        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
 
-                                            //        LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> On Load App", this);
-                                            //    }
-                                            //    else
-                                            //        Log(containerResults.resultsCode, containerResults.results, this);
-                                            //});
-                                        }
-                                        else
-                                            Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
-                                    });
-                                }
-                                else
-                                    Log(storageInitializedCallbackResults.resultsCode, storageInitializedCallbackResults.results, this);
-                            });
-                        }
-                    });
-                }
-                else
-                    Log(projectSupportCallbackResults.resultsCode, projectSupportCallbackResults.results, this);
-            });
+            //                                //        LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> On Load App", this);
+            //                                //    }
+            //                                //    else
+            //                                //        Log(containerResults.resultsCode, containerResults.results, this);
+            //                                //});
+            //                            }
+            //                            else
+            //                                Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
+            //                        });
+            //                    }
+            //                    else
+            //                        Log(storageInitializedCallbackResults.resultsCode, storageInitializedCallbackResults.results, this);
+            //                });
+            //            }
+            //        });
+            //    }
+            //    else
+            //        Log(projectSupportCallbackResults.resultsCode, projectSupportCallbackResults.results, this);
+            //});
         }
 
         void OnProjectSupport(Action<AppData.CallbackData<AppData.ProjectRestriction>> callback)
@@ -147,15 +227,15 @@ namespace Com.RedicalGames.Filar
             {
                 appInfo.appRestrictions.Add(supportRestriction);
 
-                callbackResults.results = $"Added Project Restriction With Support Type : {GetProjectSupportType()}.";
+                callbackResults.result = $"Added Project Restriction With Support Type : {GetProjectSupportType()}.";
                 callbackResults.data = supportRestriction;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = $"Project Restriction Of Type : {GetProjectSupportType()} Already Exists In App Restrictions.";
+                callbackResults.result = $"Project Restriction Of Type : {GetProjectSupportType()} Already Exists In App Restrictions.";
                 callbackResults.data = supportRestriction;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
 
             callback.Invoke(callbackResults);
@@ -212,50 +292,118 @@ namespace Com.RedicalGames.Filar
                     {
                         if (screenManagerComponentCallbackResults.Success())
                         {
-                            screenManagerComponentCallbackResults.data.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
+                            var screenManager = screenManagerComponentCallbackResults.data;
+
+                            screenManager.OnAppBootScreen(AppData.UIScreenType.SplashScreen, async onAppBootCallbackResults =>
                             {
                                 if (onAppBootCallbackResults.Success())
                                 {
-                                    await screenManagerComponentCallbackResults.data.ShowScreenAsync(onAppBootCallbackResults.data);
+                                    await screenManager.ShowScreenAsync(onAppBootCallbackResults.data);
 
-                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.OnSplashScreenExitDelay).value);
+                                    int splashScreenDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeExecution.OnSplashScreenExitDelay).value);
                                     await Task.Delay(splashScreenDuration);
 
-                                    await screenManagerComponentCallbackResults.data.HideScreenAsync(onAppBootCallbackResults.data);
+                                    await screenManager.HideScreenAsync(onAppBootCallbackResults.data);
 
-                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.OnScreenChangedExitDelay).value);
+                                    int appLoadDelayedDuration = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
                                     await Task.Delay(appLoadDelayedDuration);
 
                                     #region Trigger Loading Manager
 
-                                    sceneAssetsManagerCallbackResults.data.GetDataPacketsLibrary().GetDataPacket(appBootScreen, async loadedInitialDataPacketsCallbackResults =>
+                                    sceneAssetsManagerCallbackResults.data.GetDataPacketsLibrary().GetDataPacket(appBootScreen, loadedInitialDataPacketsCallbackResults =>
                                     {
                                         if (loadedInitialDataPacketsCallbackResults.Success())
                                         {
                                             if (loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
-                                                await screenManagerComponentCallbackResults.data.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults =>
+
+                                                AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, loadingManagerCallbackResults => 
                                                 {
-                                                    Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this);
-                                                });
+                                                    if (loadingManagerCallbackResults.Success())
+                                                    {
+                                                        loadingManagerCallbackResults.data.Init(async loadingManagerInitializationCallbackResults => 
+                                                        {
+                                                            if(loadingManagerInitializationCallbackResults.Success())
+                                                            {
+                                                                await screenManager.GoToSelectedScreenAsync(loadedInitialDataPacketsCallbackResults.data.dataPackets, screenLoadedCallbackResults =>
+                                                                {
+                                                                    if (screenLoadedCallbackResults.Success())
+                                                                    {
+                                                                        //AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, profileManagerCallbackResults =>
+                                                                        //{
+                                                                        //    if (profileManagerCallbackResults.Success())
+                                                                        //    {
+                                                                        //        if (profileManagerCallbackResults.data.SignedIn == false)
+                                                                        //        {
+                                                                        //            screenManager.GetScreen(screenLoadedCallbackResults.data.screenType, async loadedScreenCallbacResults =>
+                                                                        //            {
+                                                                        //                if (loadedScreenCallbacResults.Success())
+                                                                        //                {
+                                                                        //                    AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
+                                                                        //                    {
+                                                                        //                        screenType = AppData.UIScreenType.LandingPageScreen,
+                                                                        //                        widgetType = AppData.WidgetType.SignInWidget,
+                                                                        //                        blurScreen = true,
+                                                                        //                        blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Background
+                                                                        //                    };
+
+                                                                        //                    var success = await CheckConnectionStatus();
+
+                                                                        //                    if (success)
+                                                                        //                        loadedScreenCallbacResults.data.value.ShowWidget(dataPackets);
+                                                                        //                    else
+                                                                        //                    {
+                                                                        //                        AppData.SceneDataPackets networkDataPackets = new AppData.SceneDataPackets
+                                                                        //                        {
+                                                                        //                            screenType = AppData.UIScreenType.LandingPageScreen,
+                                                                        //                            widgetType = AppData.WidgetType.NetworkNotificationWidget,
+                                                                        //                            blurScreen = true,
+                                                                        //                            blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                                                                        //                        };
+
+                                                                        //                        loadedScreenCallbacResults.data.value.ShowWidget(networkDataPackets);
+                                                                        //                        LogError(" <++++++++++++++++++++++++++> Show Network Error Pop-Up", this);
+                                                                        //                    }
+                                                                        //                }
+                                                                        //            });
+                                                                        //        }
+                                                                        //    }
+                                                                        //    else
+                                                                        //        Log(profileManagerCallbackResults.resultsCode, profileManagerCallbackResults.results, this);
+
+                                                                        //}, "Profile Manager Instance Is Not Yet Initialized.");
+                                                                    }
+
+                                                                    Log(screenLoadedCallbackResults.resultCode, screenLoadedCallbackResults.result, this);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(loadingManagerInitializationCallbackResults.resultCode, loadingManagerInitializationCallbackResults.result, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(loadingManagerCallbackResults.resultCode, loadingManagerCallbackResults.result, this);
+                                                
+                                                }, "Profile Manager Instance Is Not Yet Initialized.");
+
                                             else
                                                 LogInfo($"Load Screen : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenType} With Transition Type : {loadedInitialDataPacketsCallbackResults.data.dataPackets.screenTransition}", this);
                                         }
                                         else
-                                            Log(loadedInitialDataPacketsCallbackResults.resultsCode, loadedInitialDataPacketsCallbackResults.results, this);
+                                            Log(loadedInitialDataPacketsCallbackResults.resultCode, loadedInitialDataPacketsCallbackResults.result, this);
                                     });
 
                                     #endregion
                                 }
                                 else
-                                    Log(onAppBootCallbackResults.resultsCode, onAppBootCallbackResults.results, this);
+                                    Log(onAppBootCallbackResults.resultCode, onAppBootCallbackResults.result, this);
                             });
                         }
                         else
-                            Log(screenManagerComponentCallbackResults.resultsCode, screenManagerComponentCallbackResults.results, this);
+                            Log(screenManagerComponentCallbackResults.resultCode, screenManagerComponentCallbackResults.result, this);
                     }, "Screen UI Manager Instance Is Not Yet Initialized.");
                 }
                 else
-                    Log(sceneAssetsManagerCallbackResults.resultsCode, sceneAssetsManagerCallbackResults.results, this);
+                    Log(sceneAssetsManagerCallbackResults.resultCode, sceneAssetsManagerCallbackResults.result, this);
             
             }, "Scene Assets Manager Instance Is Not Yet Initialized.");
         }
@@ -275,25 +423,55 @@ namespace Com.RedicalGames.Filar
 
                 if(restriction != null)
                 {
-                    callbackResults.results = $"App Info Restriction Found.";
+                    callbackResults.result = $"App Info Restriction Found.";
                     callbackResults.data = restriction;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Get App Restriction Failed : App Info Restriction Of Type : {restrictionType} Not Found / Not Yet Initialized.";
+                    callbackResults.result = $"Get App Restriction Failed : App Info Restriction Of Type : {restrictionType} Not Found / Not Yet Initialized.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Get App Restriction Failed : App Info Restrictions Are Not Yet Initialized.";
+                callbackResults.result = "Get App Restriction Failed : App Info Restrictions Are Not Yet Initialized.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
+        }
+
+        #region Networking
+
+        public async Task<bool> CheckConnectionStatus()
+        {
+            float timeOut = 3.0f;
+
+            await Task.Delay(1000);
+
+           while(Application.internetReachability == NetworkReachability.NotReachable || timeOut > 0.0f)
+            {
+                timeOut -= 1 * Time.deltaTime;;
+
+                if (Application.internetReachability != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
+                    break;
+
+                await Task.Yield();
+            }
+
+            return Application.internetReachability != NetworkReachability.NotReachable;
+        }
+
+        #endregion
+
+        public void SetAppMode(AppData.AppMode appMode) => this.appMode = appMode;
+
+        public AppData.AppMode GetAppMode()
+        {
+            return appMode;
         }
 
         #endregion

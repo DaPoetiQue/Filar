@@ -44,15 +44,15 @@ namespace Com.RedicalGames.Filar
 
             if(tutorialView != null)
             {
-                callbackResults.results = $"Tutorial View Of Type : {widgetType} Found In Tutorial Views.";
+                callbackResults.result = $"Tutorial View Of Type : {widgetType} Found In Tutorial Views.";
                 callbackResults.data = tutorialView;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = $"Tutorial View Of Type : {widgetType} Not Found In Tutorial Views.";
+                callbackResults.result = $"Tutorial View Of Type : {widgetType} Not Found In Tutorial Views.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);

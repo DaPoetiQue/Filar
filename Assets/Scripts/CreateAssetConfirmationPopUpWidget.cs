@@ -261,6 +261,11 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
+        protected override void ScrollerPosition(Vector2 position)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

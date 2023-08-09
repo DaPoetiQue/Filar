@@ -41,7 +41,13 @@ namespace Com.RedicalGames.Filar
             JPEG,
             MTL,
             JSON,
-            FBS
+            FBS,
+            GLB,
+            GLTF,
+            AUTH,
+            DAT,
+            LIC,
+            NONE
         }
 
         public enum SceneAssetScaleDirection
@@ -102,7 +108,7 @@ namespace Com.RedicalGames.Filar
         public enum WidgetType
         {
             None,
-            ConfirmationPopWidget,
+            ConfirmationPopUpWidget,
             SliderValueWidget,
             WarningPromptWidget,
             SceneAssetPreviewWidget,
@@ -131,7 +137,11 @@ namespace Com.RedicalGames.Filar
             CreateNewProjectWidget,
             ProjectCreationWarningWidget,
             HomeMenuWidget,
-            MessageDisplayerWidget
+            MessageDisplayerWidget,
+            SignInWidget,
+            SignInWarningWidget,
+            AnonymousSignInConfirmationWidget,
+            TermsAndConditionsWidget
         }
 
         public enum SubWidgetType
@@ -151,10 +161,10 @@ namespace Com.RedicalGames.Filar
 
         public enum InputActionButtonType
         {
-            Confirm,
+            ConfirmationButton,
             Cancel,
             OpenPopUp,
-            HideScreenWidget,
+            CloseButton,
             Undo,
             Edit,
             Delete,
@@ -231,6 +241,13 @@ namespace Com.RedicalGames.Filar
             GoToHomeButton,
             OpenProfileButton,
             OpenInboxButton,
+            SignInButton,
+            SignUpButton,
+            SignInViewChangeButton,
+            AnonymousSignInButton,
+            ReadButton,
+            OfflineModeButton,
+            GoToWebsiteLinkButton,
             None
         }
 
@@ -370,6 +387,9 @@ namespace Com.RedicalGames.Filar
             ToggleColorDropPicker,
             ToggleVoiceInput,
             InverseSelection,
+            RememberUserProfileOption,
+            AcceptTermsAndConditionsOption,
+            RecieveNewsAndUpdatesOption,
             None
         }
 
@@ -648,7 +668,7 @@ namespace Com.RedicalGames.Filar
             Editor
         }
 
-        public enum RuntimeValueType
+        public enum RuntimeExecution
         {
             InspectorModePanSpeed,
             PreviewModeOrbitSpeed,
@@ -707,6 +727,13 @@ namespace Com.RedicalGames.Filar
             ARMode,
             PreviewMode,
             EditMode,
+        }
+
+        public enum AppMode
+        {
+            None,
+            Online,
+            Offline
         }
 
         public enum PermissionType
@@ -942,10 +969,10 @@ namespace Com.RedicalGames.Filar
             ModifiedItem
         }
 
-        public enum LogInfoType
+        public enum LogInfoChannel
         {
             All,
-            Info,
+            Debug,
             Success,
             Error,
             Warning,
@@ -1026,6 +1053,1046 @@ namespace Com.RedicalGames.Filar
             Objective
         }
 
+        public enum ProfileType
+        {
+            None,
+            Guest,
+            Curator
+        }
+
+        public enum LoadingSequenceID
+        {
+            Default,
+            CheckingNetworkConnection,
+            AppInitialization,
+            CheckingAppCompatibility,
+            StorageInitialization,
+            InitializingUserAssets,
+            CheckingProfile,
+            FetchProfile,
+        }
+
+        #region Loading Data
+
+        #region Screen Load Data
+
+        [Serializable]
+        public class RuntimeInstanceInfo : ProjectData
+        {
+            #region Components
+
+            public RuntimeExecution runtimeReference = RuntimeExecution.None;
+
+            int runtimeValue;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetRuntimeValueType(RuntimeExecution runtimeReference) => this.runtimeReference = runtimeReference;
+
+            public void SetRuntimeData(int runtimeValue) => this.runtimeValue = runtimeValue;
+
+            #endregion
+
+            #region Data Getters
+
+            public int GetScreenDelayTime()
+            {
+                var sceneAssetsManagerCallbackResults = Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name);
+
+                int delayTime = 0; 
+
+                if(sceneAssetsManagerCallbackResults.Success())
+                {
+                    var sceneAssetsManager = Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+                    delayTime = Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(runtimeReference).value);
+                }
+
+                return delayTime;
+            }
+
+            public RuntimeExecution GetRuntimeValueType() => runtimeReference;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ScreenLoadInfoInstance : ProjectData
+        {
+            #region Components
+
+            public SceneDataPackets dataPackets = new SceneDataPackets();
+
+            [Space(5)]
+            public bool initialScreen = false;
+
+            [Space(5)]
+            public List<RuntimeInstanceInfo> runtimeInstanceInfoList = new List<RuntimeInstanceInfo>();
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public ScreenLoadInfoInstance()
+            {
+
+            }
+
+            public ScreenLoadInfoInstance(string name, SceneDataPackets dataPackets, bool initialScreen)
+            {
+                this.name = name;
+                this.dataPackets = dataPackets;
+                this.initialScreen = initialScreen;
+            }
+
+            #endregion
+
+            #region Initialization
+
+            public Callback LibraryInitialized()
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(runtimeInstanceInfoList, "Runtime Instance Info List", runtimeInstanceInfoCallbackResults =>
+                {
+                    callbackResults.SetResults(runtimeInstanceInfoCallbackResults);
+
+                    if (callbackResults.Success())
+                        callbackResults.result = $"Screen Load Info Instance Initialization Success - Initialized With {runtimeInstanceInfoList.Count} Screen Load Info Instances.";
+                    else
+                        callbackResults.result = "Screen Load Info Instance Initialization Failed.";
+                });
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public SceneDataPackets GetScreenData() => dataPackets;
+
+            public UIScreenType GetScreenType() => dataPackets.screenType;
+
+            public bool InitialScreen() => initialScreen;
+
+            public string GetInstanceName() => name ?? $"{dataPackets.screenType + " Screen Load Info"}";
+
+            #endregion
+
+            #region Screen Load Time Data
+
+            #region Time Execution
+
+            public async Task<CallbackData<int>> OnScreenLoadExecutionTime(RuntimeExecution runtimeReference)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>(Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var sceneAssetsManager = Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+
+                    callbackResults.SetResults(GetRuntimeInstanceInfo(runtimeReference));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResults(sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(GetScreenType()));
+
+                        if (callbackResults.Success())
+                        {
+                            var screenLoadInfo = sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(GetScreenType()).data;
+
+                            var runtimeInstanceInfo = GetRuntimeInstanceInfo(runtimeReference).data;
+
+                            if (runtimeInstanceInfo != null)
+                            {
+                                if (runtimeInstanceInfo?.GetScreenDelayTime() != null)
+                                {
+                                    Debug.Log($" <++++++++++++> Oh, It Worksh : {runtimeInstanceInfo?.GetScreenDelayTime()}");
+
+                                    await Task.Delay(runtimeInstanceInfo.GetScreenDelayTime());
+
+                                    callbackResults.result = $"Screen Of Type : {GetScreenType()} On Loaded Delay Completed.";
+                                    callbackResults.data = runtimeInstanceInfo.GetScreenDelayTime();
+                                }
+                                else
+                                    Debug.Log(" <++++++++++++> Broken Too");
+                            }
+                            else
+                                Debug.Log(" <++++++++++++> Broken Here");
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Runtime Instance Info 
+
+            public void GetRuntimeInstanceInfo(RuntimeExecution runtimeExecution, Action<CallbackData<RuntimeInstanceInfo>> callback)
+            {
+                CallbackData<RuntimeInstanceInfo> callbackResults = new CallbackData<RuntimeInstanceInfo>(LibraryInitialized());
+
+                if(callbackResults.Success())
+                {
+                    var runtimeInstanceInfo = runtimeInstanceInfoList.Find(runtimeInstance => runtimeInstance.GetRuntimeValueType() == runtimeExecution);
+
+                    Helpers.GetAppComponentValid(runtimeExecution, "Runtime Instance Info", runtimeInstanceInfoCallbackResults => 
+                    {
+                        callbackResults.SetResults(runtimeInstanceInfoCallbackResults);
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Runtime Instance Info Success - Found Runtime Instance Info Of Type : {runtimeExecution}";
+                        }
+
+                    }, $"Get Runtime Instance Info Failed - Runtime Instance Info Of Type {runtimeExecution} Is Not Found In - Possible Causes - Not Assigned In The Inspector Panel");
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public CallbackData<RuntimeInstanceInfo> GetRuntimeInstanceInfo(RuntimeExecution runtimeExecution)
+            {
+                CallbackData<RuntimeInstanceInfo> callbackResults = new CallbackData<RuntimeInstanceInfo>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    var runtimeInstanceInfo = runtimeInstanceInfoList.Find(runtimeInstance => runtimeInstance.GetRuntimeValueType() == runtimeExecution);
+
+                    Helpers.GetAppComponentValid(runtimeExecution, "Runtime Instance Info", runtimeInstanceInfoCallbackResults =>
+                    {
+                        callbackResults.SetResults(runtimeInstanceInfoCallbackResults);
+
+                        if (callbackResults.Success())
+                            callbackResults.SetResults($"Get Runtime Instance Info Success - Found Runtime Instance Info Of Type : {runtimeExecution}", data: runtimeInstanceInfo);
+
+                    }, $"Get Runtime Instance Info Failed - Runtime Instance Info Of Type {runtimeExecution} Is Not Found In - Possible Causes - Not Assigned In The Inspector Panel");
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ScreenLoadInfoInstanceLibrary : DataDebugger
+        {
+            #region Components
+
+            [Space(10)]
+            public List<ScreenLoadInfoInstance> screenLoadInfoInstances = new List<ScreenLoadInfoInstance>();
+
+            #endregion
+
+            #region Main
+
+            #region Initialization
+
+            public Callback LibraryInitialized()
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(screenLoadInfoInstances, "Screen Load Info Instance List", screenLoadInfoInstancesCallbackResults =>
+                {
+                    callbackResults.SetResults(screenLoadInfoInstancesCallbackResults);
+
+                    if (callbackResults.Success())
+                        callbackResults.result = $"Screen Load Info Instance Library Initialization Success - Initialized With {screenLoadInfoInstances.Count} Screen Load Info Instances.";
+                    else
+                        callbackResults.result = "Screen Load Info Instance Library Initialization Failed.";
+                });
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Screens Info Instances
+
+            public CallbackDataList<ScreenLoadInfoInstance> GetScreenLoadInfoInstances()
+            {
+                CallbackDataList<ScreenLoadInfoInstance> callbackResults = new CallbackDataList<ScreenLoadInfoInstance>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{GetScreenLoadInfoInstancesCount()} Screen Load Info Instances Has Been Successfully Found.";
+                    callbackResults.data = screenLoadInfoInstances;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Getting Screen Load Info Instances Failed -  Screen Load Info Instances Have not Been Initialized Yet.";
+                    callbackResults.data = default;
+                }
+
+                return callbackResults;
+            }
+
+            public void GetScreenLoadInfoInstances(Action<CallbackDataList<ScreenLoadInfoInstance>> callback)
+            {
+                CallbackDataList<ScreenLoadInfoInstance> callbackResults = new CallbackDataList<ScreenLoadInfoInstance>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{GetScreenLoadInfoInstancesCount()} Screen Load Info Instances Has Been Successfully Found.";
+                    callbackResults.data = screenLoadInfoInstances;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Getting Screen Load Info Instances Failed -  Screen Load Info Instances Have not Been Initialized Yet.";
+                    callbackResults.data = default;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public int GetScreenLoadInfoInstancesCount() => screenLoadInfoInstances.Count;
+
+            #endregion
+
+            #region Screen Load Info
+
+            public CallbackData<ScreenLoadInfoInstance> GetScreenLoadInfoInstance(UIScreenType screenType)
+            {
+                CallbackData<ScreenLoadInfoInstance> callbackResults = new CallbackData<ScreenLoadInfoInstance>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    var screenLoadInfoInstance = screenLoadInfoInstances.Find(screenLoadInfo => screenLoadInfo.GetScreenType() == screenType);
+
+                    if (screenLoadInfoInstance != null)
+                    {
+                        callbackResults.result = $"Get Screen Load Info Instance Success - Screen Load Info Instance : {screenLoadInfoInstance.GetInstanceName()} For Screen Type : {screenLoadInfoInstance.GetScreenType()} Successfully Found.";
+                        callbackResults.data = screenLoadInfoInstance;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Screen Load Info Instance Failed - Screen Load Info Instance For Screen Type : {screenLoadInfoInstance.GetScreenType()} Not Found In Screen Load Info Instance Library - Possible Cause => Not Yet Initialized In The Inspector Panel, Please See Scene Assets Manager To Initialize Or Visit Here.."; ;
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public void GetScreenLoadInfoInstance(UIScreenType screenType, Action<CallbackData<ScreenLoadInfoInstance>> callback)
+            {
+                CallbackData<ScreenLoadInfoInstance> callbackResults = new CallbackData<ScreenLoadInfoInstance>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    var screenLoadInfoInstance = screenLoadInfoInstances.Find(screenLoadInfo => screenLoadInfo.GetScreenType() == screenType);
+
+                    if (screenLoadInfoInstance != null)
+                    {
+                        callbackResults.result = $"Get Screen Load Info Instance Success - Screen Load Info Instance : {screenLoadInfoInstance.GetInstanceName()} For Screen Type : {screenLoadInfoInstance.GetScreenType()} Successfully Found.";
+                        callbackResults.data = screenLoadInfoInstance;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Screen Load Info Instance Failed - Screen Load Info Instance For Screen Type : {screenLoadInfoInstance.GetScreenType()} Not Found In Screen Load Info Instance Library - Possible Cause => Not Yet Initialized In The Inspector Panel, Please See Scene Assets Manager To Initialize Or Visit Here.."; ;
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Initial Screen Load Info
+
+            public CallbackData<ScreenLoadInfoInstance> GetInitialScreenLoadInfoInstance()
+            {
+                CallbackData<ScreenLoadInfoInstance> callbackResults = new CallbackData<ScreenLoadInfoInstance>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    var screenLoadInfoInstance = screenLoadInfoInstances.Find(screenLoadInfo => screenLoadInfo.InitialScreen() == true);
+
+                    if (screenLoadInfoInstance != null)
+                    {
+                        callbackResults.result = $"Get Screen Load Info Instance Success - Screen Load Info Instance : {screenLoadInfoInstance.GetInstanceName()} For Screen Type : {screenLoadInfoInstance.GetScreenType()} Successfully Found.";
+                        callbackResults.data = screenLoadInfoInstance;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Initial Screen Load Info Instance Failed - Initial Screen Load Info Instance For Screen Type : {screenLoadInfoInstance.GetScreenType()} Not Found In Screen Load Info Instance Library - Possible Cause => Not Yet Initialized In The Inspector Panel, Please See Scene Assets Manager To Initialize Or Visit Here.."; ;
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public void GetInitialScreenLoadInfoInstance(Action<CallbackData<ScreenLoadInfoInstance>> callback)
+            {
+                CallbackData<ScreenLoadInfoInstance> callbackResults = new CallbackData<ScreenLoadInfoInstance>(LibraryInitialized());
+
+                if (callbackResults.Success())
+                {
+                    var screenLoadInfoInstance = screenLoadInfoInstances.Find(screenLoadInfo => screenLoadInfo.InitialScreen() == true);
+
+                    if (screenLoadInfoInstance != null)
+                    {
+                        callbackResults.result = $"Get Screen Load Info Instance Success - Screen Load Info Instance : {screenLoadInfoInstance.GetInstanceName()} For Screen Type : {screenLoadInfoInstance.GetScreenType()} Successfully Found.";
+                        callbackResults.data = screenLoadInfoInstance;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Initial Screen Load Info Instance Failed - Initial Screen Load Info Instance For Screen Type : {screenLoadInfoInstance.GetScreenType()} Not Found In Screen Load Info Instance Library - Possible Cause => Not Yet Initialized In The Inspector Panel, Please See Scene Assets Manager To Initialize Or Visit Here.."; ;
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SequenceData : DataDebugger
+        {
+            #region Components
+
+            public MessageFormat content = new MessageFormat();
+
+            [Space(5)]
+            public LoadingSequenceID sequenceID = LoadingSequenceID.Default;
+
+            public string Name => name ?? "Loading Sequence Data Name Not Assigned.";
+
+            bool completed = false;
+            bool isRunning = false;
+
+            #endregion
+
+            #region Main
+
+            public SequenceData()
+            {
+            }
+
+            public SequenceData(string name, MessageFormat content, LoadingSequenceID sequenceID)
+            {
+                this.name = name;
+                this.content = content;
+                this.sequenceID = sequenceID;
+            }
+
+            public LoadingSequenceID GetSequenceID()
+            {
+                return sequenceID;
+            }
+
+            public void GetContent(Action<CallbackData<MessageFormat>> callback)
+            {
+                CallbackData<MessageFormat> callbackResults = new CallbackData<MessageFormat>();
+
+                callbackResults.result = GetContent().Initialized().result;
+                callbackResults.resultCode = GetContent().Initialized().resultCode;
+
+                if (callbackResults.Success())
+                    callbackResults.data = GetContent();
+
+                callback.Invoke(callbackResults);
+            }
+
+            public MessageFormat GetContent()
+            {
+                return content;
+            }
+
+            public async Task<Callback> Execute()
+            {
+                try
+                {
+                    Callback callbackResults = new Callback(Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var screenUIManager = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized.").data;
+
+                        if (callbackResults.Success())
+                        {
+                            var messageDisplayerWidget = screenUIManager.GetScreen(screenUIManager.GetCurrentUIScreenType()).data.value.GetWidget(WidgetType.MessageDisplayerWidget);
+
+                            if (messageDisplayerWidget != null)
+                            {
+                                if (screenUIManager.GetCurrentUIScreenType() == UIScreenType.LandingPageScreen)
+                                {
+                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader());
+                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetBody());
+                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetFooter());
+
+                                    Run();
+
+                                    if(IsRunning() && !Completed())
+                                    {
+                                        if(callbackResults.Success())
+                                        {
+                                            switch (GetSequenceID())
+                                            {
+                                                case LoadingSequenceID.Default:
+
+                                                    break;
+
+                                                case LoadingSequenceID.CheckingNetworkConnection:
+
+                                                    callbackResults.SetResults(Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized."));
+
+                                                    var success = await Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized.").data.CheckConnectionStatus();
+
+                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Load Sequence Completed With Success : {success}", this);
+
+                                                    if (success)
+                                                    {
+                                                        LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Success - Load Next Sequence", this);
+                                                    }
+                                                    else
+                                                    {
+                                                        LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Failed  - Show Network Pop Up", this);
+                                                    }
+
+                                                    break;
+
+                                                case LoadingSequenceID.AppInitialization:
+
+
+                                                    break;
+
+                                                case LoadingSequenceID.CheckingAppCompatibility:
+
+                                                    break;
+
+                                                case LoadingSequenceID.StorageInitialization:
+
+                                                    break;
+
+                                                case LoadingSequenceID.InitializingUserAssets:
+
+                                                    break;
+
+                                                case LoadingSequenceID.CheckingProfile:
+
+                                                    break;
+
+                                                case LoadingSequenceID.FetchProfile:
+
+                                                    break;
+                                            }
+                                        }
+                                    }
+
+                                    //while (IsRunning() && !Completed())
+                                    //{
+                                    //    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Execute Load Sequence - Runni8ng Sequence ID : {GetSequenceID()}", this);
+
+                                    //    await Task.Yield();
+                                    //}
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Load Sequence Failed - Current Screen : {screenUIManager.GetCurrentUIScreenType()} Is Not Valid For This Execution - Required Loading Screen - Please See Here.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Message Displayer Widget Not Found For Screen : {screenUIManager.GetCurrentUIScreenType()}.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                    }
+
+                    return callbackResults;
+                }
+                catch(Exception exception)
+                {
+                    throw exception;
+                }
+            }
+
+            void OnCompletition() => completed = true;
+            public bool Completed() => completed;
+
+            void Run() => isRunning = true;
+
+            public bool IsRunning() => isRunning; 
+
+            #endregion
+        }
+
+        #endregion
+
+        [Serializable]
+        public class SequenceInstance : ProjectData
+        {
+            #region Components
+
+            LoadingSequenceID sequenceID;
+            SequenceData sequenceData;
+            bool completed;
+
+            public string Name => name ?? "Sequence Instance Name Is Not Assigned";
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public SequenceInstance()
+            {
+
+            }
+
+            public SequenceInstance(string name, LoadingSequenceID sequenceID)
+            {
+                this.name = name;
+                this.sequenceID = sequenceID;
+            }
+
+            #endregion
+
+            #region Setters
+
+            public void SetSequenceData(SequenceData sequenceData) => this.sequenceData = sequenceData;
+
+            public void SetSequenceID(LoadingSequenceID sequenceID) => this.sequenceID = sequenceID;
+
+            public void Completed() => completed = true;
+
+            #endregion
+
+            #region Getters
+
+            public SequenceData GetSequenceData()
+            {
+                return sequenceData;
+            }
+
+            public LoadingSequenceID GetSequenceID()
+            {
+                return sequenceID;
+            }
+
+            public bool IsCompleted()
+            {
+                return completed;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class LoadingSequence : DataDebugger
+        {
+            #region Components
+
+            [SerializeField]
+            List<SequenceData> sequenceDataList = new List<SequenceData>();
+
+            Queue<SequenceInstance> sequenceDataQueue = new Queue<SequenceInstance>();
+
+            #endregion
+
+            #region Main
+
+            public void StageSequence(Action<Callback> callback, params SequenceInstance[] sequenceInstances)
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(sequenceInstances, "Sequence Instance", componentsValidCallbackResults =>
+                {
+                    callbackResults.SetResults(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < sequenceInstances.Length; i++)
+                        {
+                            GetSequenceData(sequenceInstances[i].GetSequenceID(), sequenceDataCallbackResults =>
+                            {
+                                callbackResults.SetResults(sequenceDataCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    sequenceInstances[i].SetSequenceData(sequenceDataCallbackResults.data);
+
+                                    AddStagedSequenceInstance(sequenceInstances[i], i, sequenceInstanceStagedCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(sequenceInstanceStagedCallbackResults);
+
+                                        if (!callbackResults.Success())
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    });
+                                }
+                                else
+                                    callbackResults.result = $"Failed To Assign Sequence Data For : {sequenceInstances[i].name} At Index : {i}.";
+                            });
+
+                            if(!callbackResults.Success())
+                            {
+                                int breakIndex = (i + 1) - sequenceInstances.Length;
+                                callbackResults.result = $"Failed To Assign Sequence Data For : {sequenceInstances[i].name} At Index : {i} - With Results : {callbackResults.result} - Action => Breaking Out Of Loop With : {breakIndex} Files Remaining For Staging.";
+                                break;
+                            }
+                        }
+
+                        if (callbackResults.Success())
+                            callbackResults.result = $"{sequenceInstances.Length} Of {sequenceInstances.Length} Files Have Been Staged Successfully.";
+                    }
+
+                }, "Stage Sequence - Sequence Instance Parameter Is Not Assigned / Null.");
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void Process(Action<Callback> callback = null)
+            {
+                try
+                {
+                    Callback callbackResults = new Callback();
+
+                    //if (IsRunning())
+                    //{
+                    //    callbackResults.results = "Loading Sequence Is Already In Progress - Returning From Function.";
+                    //    callbackResults.resultsCode = Helpers.WarningCode;
+
+                    //    callback?.Invoke(callbackResults);
+
+                    //    return;
+                    //}
+
+                    Helpers.GetAppComponentValid(sequenceDataQueue, "Sequence Data Queue", async componentsValidCallbackResults => 
+                    {
+                        callbackResults.SetResults(componentsValidCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            while (IsRunning())
+                            {
+                                var sequenceInstance = sequenceDataQueue.Dequeue();
+                                await sequenceInstance.GetSequenceData().Execute();
+                            }
+                        }
+
+                    }, "Sequence Data Queue Is Not Yet Initialized");
+
+                    callback?.Invoke(callbackResults);
+                }
+                catch(Exception exception)
+                {
+                    throw exception;
+                }
+            }
+
+            public void GetSequenceData(LoadingSequenceID sequenceID, Action<CallbackData<SequenceData>> callback)
+            {
+                CallbackData<SequenceData> callbackResults = new CallbackData<SequenceData>();
+
+                Helpers.GetAppComponentsValid(sequenceDataList, "Sequence Data List", componentsValidCallbackResults => 
+                {
+                    callbackResults.result = componentsValidCallbackResults.result;
+                    callbackResults.resultCode = componentsValidCallbackResults.resultCode;
+
+                    if(callbackResults.Success())
+                    {
+                        var sequenceData = sequenceDataList.Find(sequence => sequence.GetSequenceID() == sequenceID);
+
+                        Helpers.GetAppComponentValid(sequenceData, "Sequence Data", componentsValidCallbackResults => 
+                        {
+                            callbackResults.result = componentsValidCallbackResults.result;
+                            callbackResults.resultCode = componentsValidCallbackResults.resultCode;
+
+                            if (callbackResults.Success())
+                                callbackResults.data = sequenceData;
+
+                        }, $"Sequence Data Of Type : {sequenceID} Missing / Not Found In The Sequence Data List - Initialize In The Editor Inspector.");
+                    }
+
+                }, "Sequence Data List Is Not Yet Initialized In The Editor Inspector Panel");
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void AddStagedSequenceInstance(SequenceInstance sequenceInstance, int index, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (Helpers.HasContents(GetSequenceDataQueue()))
+                {
+                    callbackResults.SetResults(Helpers.GetAppComponentsValid(GetSequenceDataQueue(), "Sequence Data Queue", "Staging Loading Sequence Failed - Sequence Data Queue Is Not Yet Initialized - Sequence Data Queue Contents Are Not Valid", $"Staging Loading Sequence Success - Sequence Data Queue Is Valid With  {GetSequenceDataCount()} Sequence Instances Already Staged And Is Ready To Stage : {sequenceInstance.name} With ID : {sequenceInstance.GetSequenceID()}."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.ComponentDoesntHaveContent(GetSequenceDataQueue(), sequenceInstance, "Sequence Data Queue", $"Component Validation Failed - Couldn't Add  Loading Sequence Instance : {sequenceInstance.name} With Sequence ID : {sequenceInstance.GetSequenceID()} At Index : {index} - This Has Been Added To The Queue But It's Missing For Some Unknown Reason - Please Check Here."));
+
+                        if(callbackResults.Success())
+                        {
+                            GetSequenceDataQueue().Enqueue(sequenceInstance);
+                            callbackResults.SetResult(Helpers.ComponentHasContent(GetSequenceDataQueue(), sequenceInstance, "Sequence Data Queue", sequenceInstance.name, $"Stage Sequence Instance Failed - Sequence Data Queue Doesn't Contain Sequance Instance : {sequenceInstance.name}", $"Stage Sequence Instance Success - Sequence Data Queue Is Valid With : {GetSequenceDataCount()} Content(s) And Contain Sequance Instance : {sequenceInstance.name}."));
+                        }
+                    }
+                }
+                else
+                {
+                    GetSequenceDataQueue().Enqueue(sequenceInstance);
+                    if (Helpers.HasContents(GetSequenceDataQueue()))
+                    {
+                        callbackResults.SetResult(Helpers.ComponentHasContent(GetSequenceDataQueue(), sequenceInstance, "Sequence Data Queue", sequenceInstance.name, $"Stage Sequence Instance Failed - Sequence Data Queue Doesn't Contain Sequance Instance : {sequenceInstance.name}", $"Stage Sequence Instance Success - Sequence Data Queue Is Valid With : {GetSequenceDataCount()} Content(s) And Contain Sequance Instance : {sequenceInstance.name}."));
+
+                        if (callbackResults.Success())
+                            callbackResults.result = $" {sequenceInstance.name} With Sequence ID : {sequenceInstance.GetSequenceID()} At Index : {index}";
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Stage Loading Sequence Instance : {sequenceInstance.name} With Sequence ID : {sequenceInstance.GetSequenceID()} At Index : {index}";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public Callback IsInitialized()
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(sequenceDataList, "Sequence Data List", componentsValidCallbackResults =>
+                {
+                    callbackResults.result = componentsValidCallbackResults.result;
+                    callbackResults.resultCode = componentsValidCallbackResults.resultCode;
+
+                }, "Loading Sequence Initialization Failed - Loading Sequence Data List Missing / Not Yet Initialized In The Editor Inspector Panel");
+
+                return callbackResults;
+            }
+
+            public int GetSequenceDataCount() => sequenceDataQueue.Count;
+
+            public bool Completed() => !IsRunning();
+
+            public Queue<SequenceInstance> GetSequenceDataQueue() => sequenceDataQueue;
+
+            public bool IsRunning() => Helpers.HasContents(GetSequenceDataQueue());
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Session Storage
+
+        public static class SessionStorage<K, V>
+        {
+            #region Components
+
+            static Dictionary<K, V> sessionDataDictionary = new Dictionary<K, V>();
+
+            #endregion
+
+            #region Main
+
+            public static void Store(K key, V value, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if(!sessionDataDictionary.ContainsKey(key))
+                {
+                    sessionDataDictionary.Add(key, value);
+
+                    if (sessionDataDictionary.ContainsKey(key))
+                        callbackResults.result = $"Data With Key : {key.GetType().ToString()} Has Been Stored Successfully For This Session";
+                    else
+                    {
+                        callbackResults.result = $"Failed To Store Session Data With Key : {key.GetType().ToString()} - Unexpected Error - Please Check Here";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Data With Key : {key.GetType().ToString()} Is Already Stored In This Session";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public static void GetStoredSessionData(K key, Action<CallbackData<V>> callback)
+            {
+                CallbackData<V> callbackResults = new CallbackData<V>();
+
+                if (sessionDataDictionary.TryGetValue(key, out V value))
+                {
+                    callbackResults.result = $"Sorage Session Value Of Key : {key} Has Been Loaded Successfully.";
+                    callbackResults.data = value;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Sorage Session Value Of Key : {key} - Possible Issue => There Is No Data Stored With Key : {key}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void ClearStorage() => sessionDataDictionary?.Clear();
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Profile
+
+        [Serializable]
+        public class Profile : SerializableData
+        {
+            #region Components
+
+            #region User Login Info
+
+            public string userName;
+            public string userEmail;
+            public string userPassword;
+
+            public string userProfilePictureURL;
+
+            #endregion
+
+            #region User App Info
+
+            public Telemetry telemetry = new Telemetry();
+
+            #endregion
+
+            #endregion
+
+            #region Main
+
+            public Profile()
+            {
+            }
+
+            public Profile(string userName, string userEmail, string userPassword, ProfileType userProfileType, string userProfilePictureURL = null)
+            {
+                this.userName = userName;
+                this.userEmail = userEmail;
+                this.userPassword = userPassword;
+                this.telemetry.SetProfileType(userProfileType);
+                this.userProfilePictureURL = userProfilePictureURL;
+            }
+
+            #region Info Setters
+
+            public void SetUserName(string userName) => this.userName = userName;
+            public void SetUserEmail(string userEmail) => this.userEmail = userEmail;
+            public void SetUserPassword(string userPassword) => this.userPassword = userPassword;
+            public void SetUserProfilePictureURL(string userProfilePictureURL) => this.userProfilePictureURL = userProfilePictureURL;
+            public void SetUserProfileType(ProfileType userProfileType) => telemetry.SetProfileType(userProfileType);
+
+            #endregion
+
+            #region Info Getters
+
+            public string GetUserName()
+            {
+                return userName;
+            }
+
+            public string GetUserEmail()
+            {
+                return userEmail;
+            }
+
+            public string GetUserPassword()
+            {
+                return userPassword;
+            }
+
+            public string GetUserProfilePictureURL()
+            {
+                return userProfilePictureURL;
+            }
+
+            public ProfileType GetUserProfileType()
+            {
+                return telemetry.GetProfileType();
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
+        #region
+
+        [Serializable]
+        public class Telemetry
+        {
+            #region Components
+
+            public ProfileType profileType;
+
+            #endregion
+
+            #region Main
+
+            public Telemetry()
+            {
+
+            }
+
+            public Telemetry(ProfileType profileType)
+            {
+                this.profileType = profileType;
+            }
+
+            public void SetProfileType(ProfileType profileType) => this.profileType = profileType;
+
+            public ProfileType GetProfileType()
+            {
+                return profileType;
+            }
+
+            #endregion
+        }
+
+        #endregion
 
         #region Debugging
 
@@ -1037,7 +2104,7 @@ namespace Com.RedicalGames.Filar
             public string attributeName;
 
             [Space(5)]
-            public LogInfoType logType;
+            public LogInfoChannel logType;
 
             [Space(5)]
             public string logColorValue;
@@ -1078,7 +2145,7 @@ namespace Com.RedicalGames.Filar
             [Header("Debugging : Log Info Attributes")]
             [Space(10)]
             [SerializeField]
-            public LogInfoType enabledInfoLogs;
+            public LogInfoChannel enabledInfoLogs;
 
             [Space(10)]
             [Header("Debugging : Exceptions Attributes")]
@@ -1096,7 +2163,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public LogInfoType GetEnabledLogInfoType()
+            public LogInfoChannel GetEnabledLogInfoType()
             {
                 return enabledInfoLogs;
             }
@@ -1305,13 +2372,13 @@ namespace Com.RedicalGames.Filar
 
                         if (value?.sprite == SceneAssetsManager.Instance.GetImageFromLibrary(imageType).value)
                         {
-                            callbackResults.results = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Has Been Set Successfully";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Has Been Set Successfully";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Couldn't Set UI Image Data For Some Weired Reasons - Please Check Here.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Couldn't Set UI Image Data For Some Weired Reasons - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
@@ -1329,19 +2396,19 @@ namespace Com.RedicalGames.Filar
                 {
                     if (value.sprite != null)
                     {
-                        callbackResults.results = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Has Been Initialized Successfully.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Has Been Initialized Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Value Sprite Component Is Missing / Null / Not Assigned In The Inspector Panel.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Value Sprite Component Is Missing / Null / Not Assigned In The Inspector Panel.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Value Is Missing / Null / Not Assigned In The Inspector Panel.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"UI Image Displayer : {name} Of Type {imageDisplayerType}'s Value Is Missing / Null / Not Assigned In The Inspector Panel.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -1377,13 +2444,13 @@ namespace Com.RedicalGames.Filar
 
                         if(value == SceneAssetsManager.Instance.GetImageFromLibrary(imageType).value)
                         {
-                            callbackResults.results = $"UI Image Data Set Successfully";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = $"UI Image Data Set Successfully";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = "Couldn't Set UI Image Data For Some Wiered Reasons - Please Check Here.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Couldn't Set UI Image Data For Some Wiered Reasons - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
@@ -1399,13 +2466,13 @@ namespace Com.RedicalGames.Filar
 
                 if(value != null)
                 {
-                    callbackResults.results = $"UI Image Displayer : {name} Of Type {imageType}'s Has Been Initialized Successfully.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"UI Image Displayer : {name} Of Type {imageType}'s Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"UI Image Displayer : {name} Of Type {imageType}'s Value Is Missing / Null / Not Assigned In The Inspector Panel.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"UI Image Displayer : {name} Of Type {imageType}'s Value Is Missing / Null / Not Assigned In The Inspector Panel.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -1676,9 +2743,9 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<SortType> callbackResults = new CallbackData<SortType>();
 
-                callbackResults.results = $"Found Sort Type : {sortType}";
+                callbackResults.result = $"Found Sort Type : {sortType}";
                 callbackResults.data = sortType;
-                callbackResults.resultsCode = Helpers.SuccessCode;
+                callbackResults.resultCode = Helpers.SuccessCode;
 
                 callback.Invoke(callbackResults);
             }
@@ -1695,33 +2762,33 @@ namespace Com.RedicalGames.Filar
                         {
                             case UIScreenType.ProjectCreationScreen:
 
-                                callbackResults.results = $"Found Filter Of Type : {categoryType}.";
+                                callbackResults.result = $"Found Filter Of Type : {categoryType}.";
                                 callbackResults.data = categoryType;
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
 
                                 break;
 
                             case UIScreenType.ProjectDashboardScreen:
 
-                                callbackResults.results = $"Found Filter Of Type : {categoryType}.";
+                                callbackResults.result = $"Found Filter Of Type : {categoryType}.";
                                 callbackResults.data = categoryType;
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
 
                                 break;
                         }
                     }
                     else
                     {
-                        callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+                        callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+                        callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Screen UI Manager Instance Is Not Yet Initialized.";
+                    callbackResults.result = "Screen UI Manager Instance Is Not Yet Initialized.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -1845,8 +2912,8 @@ namespace Com.RedicalGames.Filar
 
                 Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
                 {
-                    callbackResults.results = validComponentCallbackResults.results;
-                    callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
+                    callbackResults.result = validComponentCallbackResults.result;
+                    callbackResults.resultCode = validComponentCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
@@ -1856,22 +2923,22 @@ namespace Com.RedicalGames.Filar
                             {
                                 GetProjectInfo().SetCategoryType((ProjectCategoryType)filterType);
 
-                                callbackResults.results = $"Project Category Type Set To : {GetProjectInfo().GetCategoryType()}";
+                                callbackResults.result = $"Project Category Type Set To : {GetProjectInfo().GetCategoryType()}";
                                 callbackResults.data = GetProjectInfo().GetCategoryType();
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = ScreenUIManager.Instance.HasCurrentScreen().results;
+                                callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = ScreenUIManager.Instance.HasCurrentScreen().resultsCode;
+                                callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = "Current Screen Is Not Yet Initialized / Not Found - Missing.";
+                            callbackResults.result = "Current Screen Is Not Yet Initialized / Not Found - Missing.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
@@ -1923,15 +2990,15 @@ namespace Com.RedicalGames.Filar
 
                 if(projectInfo != null)
                 {
-                    callbackResults.results = "Project Info Found.";
+                    callbackResults.result = "Project Info Found.";
                     callbackResults.data = projectInfo;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Project Info Is Null.";
+                    callbackResults.result = "Project Info Is Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -2035,7 +3102,7 @@ namespace Com.RedicalGames.Filar
                 {
                     string[] files = Directory.GetFiles(storageData.projectDirectory);
 
-                    Helpers.StringArrayValueValid(files, filesValidCallbackResults => 
+                    Helpers.StringValueValid(filesValidCallbackResults => 
                     {
                         if(filesValidCallbackResults.Success())
                         {
@@ -2046,7 +3113,7 @@ namespace Com.RedicalGames.Filar
                                     if (!validFilePath.Contains(file))
                                         validFilePath.Add(file);
 
-                            Helpers.StringListValueValid(validFilePath, filesValidCallbackResults => 
+                            Helpers.StringValueValid(filesValidCallbackResults => 
                             {
                                 if (filesValidCallbackResults.Success())
                                 {
@@ -2067,7 +3134,7 @@ namespace Com.RedicalGames.Filar
                                                     loadedAssetsData.Add(assetsLoadedCallbackResults.data);
                                             }
                                             else
-                                                Debug.LogError(assetsLoadedCallbackResults.results);
+                                                Debug.LogError(assetsLoadedCallbackResults.result);
                                         });
                                     }
 
@@ -2085,16 +3152,16 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            Debug.LogError(validComponentsCallbackResults.results);
+                                            Debug.LogError(validComponentsCallbackResults.result);
                                     });
                                 }
                                 else
-                                    Debug.LogError(filesValidCallbackResults.results);
-                            });
+                                    Debug.LogError(filesValidCallbackResults.result);
+                            }, Helpers.GetArray(validFilePath));
                         }
                         else
-                            Debug.LogError(filesValidCallbackResults.results);
-                    });
+                            Debug.LogError(filesValidCallbackResults.result);
+                    }, files);
                 }
                 else
                     Debug.LogError($"Directory : {storageData.projectDirectory} Not Valid / Doesn't Exist Or Make Sense Anymore!");
@@ -2330,16 +3397,16 @@ namespace Com.RedicalGames.Filar
 
                     //ScreenUIManager.Instance.Refresh();
 
-                    callbackResults.results = $"Go To Page : {pageIndex} Success. Page Found.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Go To Page : {pageIndex} Success. Page Found.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
 
                     #endregion
                 }
 
                 if (paginationWidget == null || currentPage == null)
                 {
-                    callbackResults.results = $"Go To Page : {pageIndex} Failed. Page Not Found.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Go To Page : {pageIndex} Failed. Page Not Found.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2375,9 +3442,9 @@ namespace Com.RedicalGames.Filar
                                 {
                                     pageIndexFound = true;
 
-                                    callbackResults.results = $"Success - Item Page Index Found At : {pageIndex}";
+                                    callbackResults.result = $"Success - Item Page Index Found At : {pageIndex}";
                                     callbackResults.data = pageIndex;
-                                    callbackResults.resultsCode = (pageIndexFound)? Helpers.SuccessCode : Helpers.ErrorCode;
+                                    callbackResults.resultCode = (pageIndexFound)? Helpers.SuccessCode : Helpers.ErrorCode;
 
                                     break;
                                 }
@@ -2389,16 +3456,16 @@ namespace Com.RedicalGames.Filar
 
                     if (!pageIndexFound)
                     {
-                        callbackResults.results = $"Failed : Page Index Not Found For : {itemName}.";
+                        callbackResults.result = $"Failed : Page Index Not Found For : {itemName}.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = (pageIndexFound)? Helpers.SuccessCode : Helpers.ErrorCode;
+                        callbackResults.resultCode = (pageIndexFound)? Helpers.SuccessCode : Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Failed : No Pages Found.";
+                    callbackResults.result = "Failed : No Pages Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = (pageIndexFound)? Helpers.SuccessCode : Helpers.ErrorCode;
+                    callbackResults.resultCode = (pageIndexFound)? Helpers.SuccessCode : Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -2513,20 +3580,20 @@ namespace Com.RedicalGames.Filar
 
                     if (available)
                     {
-                        callbackResults.results = "Slot Found.";
+                        callbackResults.result = "Slot Found.";
                         callbackResults.data = pageID;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Slot Not Found.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Slot Not Found.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Pages Not Found.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Pages Not Found.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2538,13 +3605,13 @@ namespace Com.RedicalGames.Filar
 
                 if (itemList.Count % 2 == 0)
                 {
-                    callbackResults.results = "No Slot Available - Recalculate Content Container";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "No Slot Available - Recalculate Content Container";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
                 else
                 {
-                    callbackResults.results = "Slot Available";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Slot Available";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2666,25 +3733,25 @@ namespace Com.RedicalGames.Filar
                         {
                             scrollBarComponent.Initialize(fadeUIScrollBar);
 
-                            callbackResults.results = "Initialized Success : Scroller Value & Scrollbar Value Components Assigned";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Initialized Success : Scroller Value & Scrollbar Value Components Assigned";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = "Initialized Failed : Scrollbar Is Enabled But Scrollbar Value Is Not Assigned";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Initialized Failed : Scrollbar Is Enabled But Scrollbar Value Is Not Assigned";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "Initialized Success : Scroller Value & Scrollbar Value Components Assigned";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = "Initialized Success : Scroller Value & Scrollbar Value Components Assigned";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Initialized Failed : Scroller Value & Scrollbar Components Not Assigned";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Initialized Failed : Scroller Value & Scrollbar Components Not Assigned";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2707,13 +3774,13 @@ namespace Com.RedicalGames.Filar
 
                             Initialized(isInitializedCallback =>
                             {
-                                if (Helpers.IsSuccessCode(isInitializedCallback.resultsCode))
+                                if (Helpers.IsSuccessCode(isInitializedCallback.resultCode))
                                 {
                                     scrollBarComponent.Show();
                                     value.horizontalScrollbar = GetUIScrollBarComponent().value;
                                 }
                                 else
-                                    Debug.LogWarning($"Initialize's Initialized Failed With Results : {isInitializedCallback.results}");
+                                    Debug.LogWarning($"Initialize's Initialized Failed With Results : {isInitializedCallback.result}");
                             });
 
                             break;
@@ -2722,13 +3789,13 @@ namespace Com.RedicalGames.Filar
 
                             Initialized(isInitializedCallback =>
                             {
-                                if (Helpers.IsSuccessCode(isInitializedCallback.resultsCode))
+                                if (Helpers.IsSuccessCode(isInitializedCallback.resultCode))
                                 {
                                     scrollBarComponent.Show();
                                     value.verticalScrollbar = GetUIScrollBarComponent().value;
                                 }
                                 else
-                                    Debug.LogWarning($"Initialize's Initialized Failed With Results : {isInitializedCallback.results}");
+                                    Debug.LogWarning($"Initialize's Initialized Failed With Results : {isInitializedCallback.result}");
                             });
 
                             break;
@@ -2758,13 +3825,13 @@ namespace Com.RedicalGames.Filar
 
                 if (value != null && isReset)
                 {
-                    callbackResults.results = "Scroller Reset.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Scroller Reset.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Scroller Not Reset Reset.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Scroller Not Reset Reset.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2919,22 +3986,22 @@ namespace Com.RedicalGames.Filar
                 {
                     if (scrollBarUIFaderComponent != null)
                     {
-                        callbackResults.results = "Success";
+                        callbackResults.result = "Success";
                         callbackResults.data = scrollBarUIFaderComponent.GetFaderAlphaValue();
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Failed : UIScrollbar scrollbarFaderCanvasgroupComponent Is Missing / Null.";
+                        callbackResults.result = "Failed : UIScrollbar scrollbarFaderCanvasgroupComponent Is Missing / Null.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Failed : UIScrollbar Variable Not Set To 'fadeOnOutOfFocus'";
+                    callbackResults.result = "Failed : UIScrollbar Variable Not Set To 'fadeOnOutOfFocus'";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2949,7 +4016,7 @@ namespace Com.RedicalGames.Filar
                     if (isFading)
                     {
                         float fadeValue = scrollBarUIFaderComponent.GetFaderAlphaValue();
-                        fadeValue = Mathf.Lerp(fadeValue, visibleStateValue, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
+                        fadeValue = Mathf.Lerp(fadeValue, visibleStateValue, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
 
                         scrollBarUIFaderComponent.SetFaderAlphaValue(fadeValue);
 
@@ -2974,7 +4041,7 @@ namespace Com.RedicalGames.Filar
                     if (isFading)
                     {
                         float fadeValue = scrollBarUIFaderComponent.GetFaderAlphaValue();
-                        fadeValue = Mathf.Lerp(fadeValue, hiddenStateValue, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
+                        fadeValue = Mathf.Lerp(fadeValue, hiddenStateValue, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
 
                         scrollBarUIFaderComponent.SetFaderAlphaValue(fadeValue);
 
@@ -3121,31 +4188,31 @@ namespace Com.RedicalGames.Filar
 
                 if (isLockable && lockStateDisplayer.value != null && lockStateDisplayer.imageDisplayerType == UIImageDisplayerType.LockIcon)
                 {
-                    callbackResults.results = $"Lock State Component Has Been Initialized Successfully From Class : {fromClass.name}.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Lock State Component Has Been Initialized Successfully From Class : {fromClass.name}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
                     if (!isLockable)
                     {
-                        callbackResults.results = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name} - UI Screen Asset Is Not Set To Lockable.";
-                        callbackResults.resultsCode = Helpers.WarningCode;
+                        callbackResults.result = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name} - UI Screen Asset Is Not Set To Lockable.";
+                        callbackResults.resultCode = Helpers.WarningCode;
 
                         callback?.Invoke(callbackResults);
                     }
 
                     if (lockStateDisplayer.value == null)
                     {
-                        callbackResults.results = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name}. - Lock State Component Displayer Value Not Found / Missing / Null / Not Assigned In The Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name}. - Lock State Component Displayer Value Not Found / Missing / Null / Not Assigned In The Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
 
                         callback?.Invoke(callbackResults);
                     }
 
                     if (lockStateDisplayer.imageDisplayerType != UIImageDisplayerType.LockIcon)
                     {
-                        callbackResults.results = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name}. - Lock State Component Displayer Is Set To : {lockStateDisplayer.imageDisplayerType}. Expected Image Displayer Type Is :  {UIImageDisplayerType.LockIcon}.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Lock State Component Has Not Been Initialized Successfully From Class : {fromClass.name}. - Lock State Component Displayer Is Set To : {lockStateDisplayer.imageDisplayerType}. Expected Image Displayer Type Is :  {UIImageDisplayerType.LockIcon}.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
 
                         callback?.Invoke(callbackResults);
                     }
@@ -3409,21 +4476,21 @@ namespace Com.RedicalGames.Filar
                         {
                             if (GetCurrentSelectionState().showSelection)
                             {
-                                callbackResults.results = $"Show Selection Frame For [State] : {state} --> Show Tint Set To : {showTint}";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = $"Show Selection Frame For [State] : {state} --> Show Tint Set To : {showTint}";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = "Couldn't Showing Selection Frame For Some Reason - Asset possibly Disabled";
-                                callbackResults.resultsCode = Helpers.WarningCode;
+                                callbackResults.result = "Couldn't Showing Selection Frame For Some Reason - Asset possibly Disabled";
+                                callbackResults.resultCode = Helpers.WarningCode;
                             }
                         }
                         else
                         {
                             if (!GetCurrentSelectionState().showSelection)
                             {
-                                callbackResults.results = "Selection Frame Not Showing --> Possibility : UIImageDisplayerType Not Set To Selection Frame";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Selection Frame Not Showing --> Possibility : UIImageDisplayerType Not Set To Selection Frame";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                     }
@@ -3431,13 +4498,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (callback != null)
                         {
-                            callbackResults.results = "UIImageDisplayerType Not Set To Selection Frame";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "UIImageDisplayerType Not Set To Selection Frame";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Show Selection Frame For [State] : {state} --> Possibility : UIImageDisplayerType Not Set To Selection Frame.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Show Selection Frame For [State] : {state} --> Possibility : UIImageDisplayerType Not Set To Selection Frame.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                 }
@@ -3445,13 +4512,13 @@ namespace Com.RedicalGames.Filar
                 {
                     if (callback != null)
                     {
-                        callbackResults.results = "Selection Frame's Value Is Missing / Null.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Selection Frame's Value Is Missing / Null.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Show Selection Frame For [State] : {state} --> Possibility : Selection Frame's Value Is Missing / Null.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Show Selection Frame For [State] : {state} --> Possibility : Selection Frame's Value Is Missing / Null.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
 
@@ -3485,25 +4552,25 @@ namespace Com.RedicalGames.Filar
 
                         if (hidden)
                         {
-                            callbackResults.results = $"Selection Frame : {selectionComponent.selectionFrame.name} Hidden.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = $"Selection Frame : {selectionComponent.selectionFrame.name} Hidden.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Hide Selection Frame : {selectionComponent.selectionFrame.name} For Some Reason.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Hide Selection Frame : {selectionComponent.selectionFrame.name} For Some Reason.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Hide : {selectionComponent.selectionFrame.name}. UI Image Displayer Type Is Not Set To Selection Frame.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Hide : {selectionComponent.selectionFrame.name}. UI Image Displayer Type Is Not Set To Selection Frame.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Hide : {selectionComponent.selectionFrame.name}. - Selection Frame Missing / Null / Not Yet Initialized.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Couldn't Hide : {selectionComponent.selectionFrame.name}. - Selection Frame Missing / Null / Not Yet Initialized.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3825,13 +4892,13 @@ namespace Com.RedicalGames.Filar
 
                     selectables.Add(selectable);
 
-                    callbackResults.results = $"Selectable : {selectable.name} Added.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Selectable : {selectable.name} Added.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Selectable ALready Exists";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = "Selectable ALready Exists";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3889,19 +4956,19 @@ namespace Com.RedicalGames.Filar
 
                     if(deselected)
                     {
-                        callbackResults.results = $"Deselected All Selections For : {groupID} Group.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"Deselected All Selections For : {groupID} Group.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Failed To Clear Selections For : {groupID} Group - PleaseCheck Here.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Failed To Clear Selections For : {groupID} Group - PleaseCheck Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"There Are No Selectables To Clear Selections For : {groupID} Group";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"There Are No Selectables To Clear Selections For : {groupID} Group";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -3969,18 +5036,18 @@ namespace Com.RedicalGames.Filar
 
                     HasFocusedSelectionInfo(selectable.name, hasSelectionCallback =>
                     {
-                        if (!Helpers.IsSuccessCode(hasSelectionCallback.resultsCode))
+                        if (!Helpers.IsSuccessCode(hasSelectionCallback.resultCode))
                         {
                             OnAddSelection(selectable.name, FocusedSelectionType.SelectedItem, addedSelectionCallback =>
                             {
-                                if (Helpers.IsSuccessCode(addedSelectionCallback.resultsCode))
+                                if (Helpers.IsSuccessCode(addedSelectionCallback.resultCode))
                                     OnSelection?.Invoke(dataPackets);
                                 else
-                                    Debug.LogError(addedSelectionCallback.results);
+                                    Debug.LogError(addedSelectionCallback.result);
                             });
                         }
                         else
-                            Debug.LogError(hasSelectionCallback.results);
+                            Debug.LogError(hasSelectionCallback.result);
                     });
                 }
             }
@@ -3999,9 +5066,9 @@ namespace Com.RedicalGames.Filar
 
                 OnRemoveSelection(deselectedWidget.name, FocusedSelectionType.SelectedItem, deselectionCallback => 
                 {
-                    Debug.LogError($"================> Removed : {deselectionCallback.resultsCode} So Deselect Widget - Results : {deselectionCallback.results}...............");
+                    Debug.LogError($"================> Removed : {deselectionCallback.resultCode} So Deselect Widget - Results : {deselectionCallback.result}...............");
 
-                    if (Helpers.IsSuccessCode(deselectionCallback.resultsCode))
+                    if (Helpers.IsSuccessCode(deselectionCallback.resultCode))
                         OnDeselection?.Invoke();
                     else
                         callbackResults = deselectionCallback;
@@ -4016,9 +5083,9 @@ namespace Com.RedicalGames.Filar
 
                 OnRemoveSelection(selectionName, FocusedSelectionType.SelectedItem, deselectionCallback =>
                 {
-                    Debug.LogError($"================> Removed Is : {deselectionCallback.resultsCode} To Deselect Widget - Results : {deselectionCallback.results}...............");
+                    Debug.LogError($"================> Removed Is : {deselectionCallback.resultCode} To Deselect Widget - Results : {deselectionCallback.result}...............");
 
-                    if (Helpers.IsSuccessCode(deselectionCallback.resultsCode))
+                    if (Helpers.IsSuccessCode(deselectionCallback.resultCode))
                         OnDeselection?.Invoke();
                     else
                         callbackResults = deselectionCallback;
@@ -4031,12 +5098,12 @@ namespace Com.RedicalGames.Filar
             {
                 DeselectWidgets(GetFocusedSelectionInfoList(), deselectionCallback => 
                 {
-                    if (Helpers.IsSuccessCode(deselectionCallback.resultsCode))
+                    if (Helpers.IsSuccessCode(deselectionCallback.resultCode))
                     {
                         OnDeselection?.Invoke();
                     }
                     else
-                        Debug.LogError(deselectionCallback.results);
+                        Debug.LogError(deselectionCallback.result);
                 });
             }
 
@@ -4067,10 +5134,10 @@ namespace Com.RedicalGames.Filar
 
                 OnGetSelectedWidgets(selectionCallback => 
                 {
-                    if (Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                    if (Helpers.IsSuccessCode(selectionCallback.resultCode))
                         widgetsList = selectionCallback.data;
                     else
-                        Debug.LogError(selectionCallback.results);
+                        Debug.LogError(selectionCallback.result);
                 });
 
                 return widgetsList;
@@ -4084,8 +5151,8 @@ namespace Com.RedicalGames.Filar
                 {
                     widgetsContainer.OnWidgetSelectionState(GetFocusedSelectionInfoList(), FocusedSelectionType.SelectedItem, selectionCallback => 
                     {
-                        if(!Helpers.IsSuccessCode(selectionCallback.resultsCode))
-                            Debug.LogError(selectionCallback.results);
+                        if(!Helpers.IsSuccessCode(selectionCallback.resultCode))
+                            Debug.LogError(selectionCallback.result);
                     });
                 }
                 else
@@ -4106,13 +5173,13 @@ namespace Com.RedicalGames.Filar
 
                 if(cachedSelectionData.selections.Count > 0)
                 {
-                    callbackResults.results = $"{cachedSelectionData.selections.Count} Selections Cached.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"{cachedSelectionData.selections.Count} Selections Cached.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Cache : {focusedSelectionData.selections.Count} Selections Of Type : {focusedSelectionData.selectionType}";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Couldn't Cache : {focusedSelectionData.selections.Count} Selections Of Type : {focusedSelectionData.selectionType}";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4126,13 +5193,13 @@ namespace Com.RedicalGames.Filar
 
                 if(cachedSelectionData.selections.Count == 0)
                 {
-                    callbackResults.results = $"Cache Cleared";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Cache Cleared";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Cache Couldn't Clear - : {cachedSelectionData.selections.Count} Selections Found";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Cache Couldn't Clear - : {cachedSelectionData.selections.Count} Selections Found";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4144,15 +5211,15 @@ namespace Com.RedicalGames.Filar
 
                 if(HasCachedSelectionInfo())
                 {
-                    callbackResults.results = "Cached Selection Info Data Found.";
+                    callbackResults.result = "Cached Selection Info Data Found.";
                     callbackResults.data = cachedSelectionData.selections;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Cached Selection Info Data Found.";
+                    callbackResults.result = "There Are No Cached Selection Info Data Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -4172,22 +5239,22 @@ namespace Com.RedicalGames.Filar
 
                     if (cachedSelectionInfoNameList.Count > 0)
                     {
-                        callbackResults.results = "Cached Selection Info Data Found.";
+                        callbackResults.result = "Cached Selection Info Data Found.";
                         callbackResults.data = cachedSelectionInfoNameList;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "There Are No Valid Cached Selection Info Data Loaded From Cache List - Something Is Really Wrong.";
+                        callbackResults.result = "There Are No Valid Cached Selection Info Data Loaded From Cache List - Something Is Really Wrong.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Cached Selection Info Data Found.";
+                    callbackResults.result = "There Are No Cached Selection Info Data Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -4210,14 +5277,14 @@ namespace Com.RedicalGames.Filar
                         widgetsContainer.OnWidgetSelectionState(selections, selectionCallback => { callbackResults = selectionCallback; });
                     else
                     {
-                        callbackResults.results = "Widgets Container Missing / Not Found";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Widgets Container Missing / Not Found";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "No Selections Found";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "No Selections Found";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4235,7 +5302,7 @@ namespace Com.RedicalGames.Filar
                     {
                         widgetsContainer.OnWidgetSelectionState(selections, FocusedSelectionType.Default, selectionCallback => 
                         {
-                            if (Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                            if (Helpers.IsSuccessCode(selectionCallback.resultCode))
                                 OnClearFocusedSelectionsInfo();
 
                             callbackResults = selectionCallback; 
@@ -4243,14 +5310,14 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = "Widgets Container Missing / Not Found";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Widgets Container Missing / Not Found";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "No Selections Found";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "No Selections Found";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4274,18 +5341,18 @@ namespace Com.RedicalGames.Filar
                                 selectionList.Add(screenWidget);
                             else
                             {
-                                callbackResults.results = $"Screen Widget Named : {widget.name} Already Added To List.";
+                                callbackResults.result = $"Screen Widget Named : {widget.name} Already Added To List.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
 
                                 break;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Screen Widget Named : {widget.name} Not Found.";
+                            callbackResults.result = $"Screen Widget Named : {widget.name} Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             break;
                         }
@@ -4293,22 +5360,22 @@ namespace Com.RedicalGames.Filar
 
                     if (selectionList.Count > 0)
                     {
-                        callbackResults.results = $"{selectionList.Count} Selections Found.";
+                        callbackResults.result = $"{selectionList.Count} Selections Found.";
                         callbackResults.data = selectionList;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Selection Widgets Not Found.";
+                        callbackResults.result = "Selection Widgets Not Found.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Selections Found.";
+                    callbackResults.result = "There Are No Selections Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -4328,26 +5395,26 @@ namespace Com.RedicalGames.Filar
                 {
                     OnClearFocusedSelectionsInfo(selectionInfoCleared =>
                     {
-                        if (Helpers.IsSuccessCode(selectionInfoCleared.resultsCode))
+                        if (Helpers.IsSuccessCode(selectionInfoCleared.resultCode))
                         {
                             OnSetFocusedWidgetSelectionInfo(selectionInfo, true, onSelectionCallback =>
                             {
-                                if (Helpers.IsSuccessCode(onSelectionCallback.resultsCode))
+                                if (Helpers.IsSuccessCode(onSelectionCallback.resultCode))
                                 {
-                                    callbackResults.results = $"Set Highlighted Folder To Widget Named : {selectionName} Success.";
+                                    callbackResults.result = $"Set Highlighted Folder To Widget Named : {selectionName} Success.";
                                     callbackResults.data = selectionInfo;
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.resultCode = Helpers.SuccessCode;
 
                                     ActionEvents.OnWidgetSelectionEvent();
                                 }
                                 else
-                                    Debug.LogError(onSelectionCallback.results);
+                                    Debug.LogError(onSelectionCallback.result);
                             });
                         }
                         else
                         {
-                            callbackResults.results = selectionInfoCleared.results;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = selectionInfoCleared.result;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                             callbackResults.data = default;
                         }
                     });
@@ -4356,16 +5423,16 @@ namespace Com.RedicalGames.Filar
                 {
                     OnSetFocusedWidgetSelectionInfo(selectionInfo, true, onSelectionCallback =>
                     {
-                        if (Helpers.IsSuccessCode(onSelectionCallback.resultsCode))
+                        if (Helpers.IsSuccessCode(onSelectionCallback.resultCode))
                         {
-                            callbackResults.results = $"Set Highlighted Folder To Widget Named : {selectionName} Success.";
+                            callbackResults.result = $"Set Highlighted Folder To Widget Named : {selectionName} Success.";
                             callbackResults.data = selectionInfo;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
                             ActionEvents.OnWidgetSelectionEvent(selectionInfo);
                         }
                         else
-                            Debug.LogError(onSelectionCallback.results);
+                            Debug.LogError(onSelectionCallback.result);
                     });
                 }
 
@@ -4380,7 +5447,7 @@ namespace Com.RedicalGames.Filar
                 {
                     HasFocusedSelectionInfo(selectionName, selectionCheckCallback =>
                     {
-                        if (!Helpers.IsSuccessCode(selectionCheckCallback.resultsCode))
+                        if (!Helpers.IsSuccessCode(selectionCheckCallback.resultCode))
                         {
                             FocusedSelectionInfo<SceneDataPackets> selectionInfo = new FocusedSelectionInfo<SceneDataPackets>
                             {
@@ -4396,21 +5463,21 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (selectionCallback.Success())
                                         {
-                                            callbackResults.results = selectionCallback.results;
-                                            callbackResults.resultsCode = selectionCallback.resultsCode;
+                                            callbackResults.result = selectionCallback.result;
+                                            callbackResults.resultCode = selectionCallback.resultCode;
 
                                             ActionEvents.OnWidgetSelectionAdded();
                                         }
                                         else
-                                            Debug.LogError(selectionCallback.results);
+                                            Debug.LogError(selectionCallback.result);
                                     });
                                 }
                             });
                         }
                         else
                         {
-                            callbackResults.results = selectionCheckCallback.results;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = selectionCheckCallback.result;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     });
                 }
@@ -4465,22 +5532,22 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    callbackResults.results = selectionFoundCallback.results;
-                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                    callbackResults.result = selectionFoundCallback.result;
+                                    callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             });
                         }
                         else
                         {
-                            callbackResults.results = selectionCallback.results;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = selectionCallback.result;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     });
                 }
                 else
                 {
-                    callbackResults.results = "There Are Currently No Selectables To Deslect.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "There Are Currently No Selectables To Deslect.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4494,15 +5561,15 @@ namespace Com.RedicalGames.Filar
 
                 if(selectionInfo != null)
                 {
-                    callbackResults.results = $"Selection Info For : {selectionName} Found";
+                    callbackResults.result = $"Selection Info For : {selectionName} Found";
                     callbackResults.data = selectionInfo;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Selection Info For : {selectionName} Not Found";
+                    callbackResults.result = $"Selection Info For : {selectionName} Not Found";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -4536,22 +5603,22 @@ namespace Com.RedicalGames.Filar
                     {
                         OnSetFocusedWidgetSelectionInfo(selectionInfoList, selectionType, true, selectionCallback =>
                         {
-                            callbackResults.results = selectionCallback.results;
-                            callbackResults.resultsCode = selectionCallback.resultsCode;
+                            callbackResults.result = selectionCallback.result;
+                            callbackResults.resultCode = selectionCallback.resultCode;
                         });
                     }
                     else
                     {
-                        callbackResults.results = "There Are No Selection Info Created - Data Missing.";
+                        callbackResults.result = "There Are No Selection Info Created - Data Missing.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Selection Widgets Found";
+                    callbackResults.result = "There Are No Selection Widgets Found";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4574,13 +5641,13 @@ namespace Com.RedicalGames.Filar
                         }
                     }
 
-                    callbackResults.results = (hasSelection) ? $"Selection : {selectionName} Exists." : $"Selection : {selectionName} Doesn't Exists.";
-                    callbackResults.resultsCode = (hasSelection)? Helpers.SuccessCode : Helpers.ErrorCode;
+                    callbackResults.result = (hasSelection) ? $"Selection : {selectionName} Exists." : $"Selection : {selectionName} Doesn't Exists.";
+                    callbackResults.resultCode = (hasSelection)? Helpers.SuccessCode : Helpers.ErrorCode;
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Active Selections Found.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "There Are No Active Selections Found.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4617,15 +5684,15 @@ namespace Com.RedicalGames.Filar
 
                 if (HasActiveSelections())
                 {
-                    callbackResults.results = $"Found {GetFocusedSelectionDataCount()} Focused Asset(s)";
+                    callbackResults.result = $"Found {GetFocusedSelectionDataCount()} Focused Asset(s)";
                     callbackResults.data = focusedSelectionData;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "There Is No Focused Widget Info Found.";
+                    callbackResults.result = "There Is No Focused Widget Info Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4658,8 +5725,8 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                         {
-                                            callbackResults.results = $"Widget Named : {selection.name} Not Found";
-                                            callbackResults.resultsCode = Helpers.ErrorCode;
+                                            callbackResults.result = $"Widget Named : {selection.name} Not Found";
+                                            callbackResults.resultCode = Helpers.ErrorCode;
 
                                             cleared = false;
                                         }
@@ -4673,19 +5740,19 @@ namespace Com.RedicalGames.Filar
 
                                 if (!HasActiveSelections())
                                 {
-                                    callbackResults.results = "Focused Selection Cleared Successfully.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = "Focused Selection Cleared Successfully.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = "Focused Selection Failed To Clear For Some Reason.";
-                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                    callbackResults.result = "Focused Selection Failed To Clear For Some Reason.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"Couldn't Clear Content.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = $"Couldn't Clear Content.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                     }
@@ -4695,13 +5762,13 @@ namespace Com.RedicalGames.Filar
 
                         if (!HasActiveSelections())
                         {
-                            callbackResults.results = "Focused Selection Cleared Successfully.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Focused Selection Cleared Successfully.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = "Focused Selection Failed To Clear For Some Reason.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Focused Selection Failed To Clear For Some Reason.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
 
@@ -4743,8 +5810,8 @@ namespace Com.RedicalGames.Filar
                                     {
                                         Debug.LogError($"Widget Named : {selection.name} Not Found");
 
-                                        callbackResults.results = $"Widget Named : {selection.name} Not Found";
-                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                        callbackResults.result = $"Widget Named : {selection.name} Not Found";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
 
                                         cleared = false;
 
@@ -4759,19 +5826,19 @@ namespace Com.RedicalGames.Filar
 
                                 if (!HasActiveSelections())
                                 {
-                                    callbackResults.results = "Focused Selection Cleared Successfully.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = "Focused Selection Cleared Successfully.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = "Focused Selection Failed To Clear For Some Reason.";
-                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                    callbackResults.result = "Focused Selection Failed To Clear For Some Reason.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"Couldn't Clear Content.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = $"Couldn't Clear Content.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
@@ -4780,20 +5847,20 @@ namespace Com.RedicalGames.Filar
 
                             if (!HasActiveSelections())
                             {
-                                callbackResults.results = "Focused Selection Cleared Successfully.";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = "Focused Selection Cleared Successfully.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = "Focused Selection Failed To Clear For Some Reason.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Focused Selection Failed To Clear For Some Reason.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                     }
                     else
                     {
-                        callbackResults.results = "No Widgets Found To Clear.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "No Widgets Found To Clear.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
 
                     callback?.Invoke(callbackResults);
@@ -4813,7 +5880,7 @@ namespace Com.RedicalGames.Filar
                 {
                     OnClearFocusedSelectionsInfo(cleared =>
                     {
-                        if (Helpers.IsSuccessCode(cleared.resultsCode))
+                        if (Helpers.IsSuccessCode(cleared.resultCode))
                         {
                             focusedSelectionData.selections = new List<FocusedSelectionInfo<SceneDataPackets>>();
                             focusedSelectionData.selections.Add(newSelectionInfo);
@@ -4823,19 +5890,19 @@ namespace Com.RedicalGames.Filar
 
                             if (focusedSelectionData.selections.Count > 0)
                             {
-                                callbackResults.results = "New Focused Selection Info List Set.";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = "New Focused Selection Info List Set.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = "New Focused Selection Info List Not Set - Check Here.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "New Focused Selection Info List Not Set - Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Failed To Clear Focused Selection Data.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Failed To Clear Focused Selection Data.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     });
                 }
@@ -4848,13 +5915,13 @@ namespace Com.RedicalGames.Filar
 
                     if (focusedSelectionData.selections.Count > 0)
                     {
-                        callbackResults.results = "New Focused Selection Info List Set.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = "New Focused Selection Info List Set.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "New Focused Selection Info List Not Set - Check Here.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "New Focused Selection Info List Not Set - Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
 
@@ -4869,7 +5936,7 @@ namespace Com.RedicalGames.Filar
                 {
                     OnClearFocusedSelectionsInfo(cleared =>
                     {
-                        if (Helpers.IsSuccessCode(cleared.resultsCode))
+                        if (Helpers.IsSuccessCode(cleared.resultCode))
                         {
                             focusedSelectionData.selections = newSelectionInfoList;
                             focusedSelectionData.selectionType = selectionType;
@@ -4877,19 +5944,19 @@ namespace Com.RedicalGames.Filar
 
                             if (focusedSelectionData.selections.Count > 0)
                             {
-                                callbackResults.results = "New Focused Selection Info List Set.";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = "New Focused Selection Info List Set.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = "New Focused Selection Info List Not Set - Check Here.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "New Focused Selection Info List Not Set - Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Failed To Clear Focused Selection Data.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Failed To Clear Focused Selection Data.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     });
                 }
@@ -4901,13 +5968,13 @@ namespace Com.RedicalGames.Filar
 
                     if (focusedSelectionData.selections.Count > 0)
                     {
-                        callbackResults.results = "New Focused Selection Info List Set.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = "New Focused Selection Info List Set.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "New Focused Selection Info List Not Set - Check Here.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "New Focused Selection Info List Not Set - Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
 
@@ -4924,15 +5991,15 @@ namespace Com.RedicalGames.Filar
 
                 if (focusedSelectionData.selections.Count > 0)
                 {
-                    callbackResults.results = "New Focused Selection Info List Set.";
+                    callbackResults.result = "New Focused Selection Info List Set.";
                     callbackResults.data = focusedSelectionData.selections;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "New Focused Selection Info List Not Set - Check Here.";
+                    callbackResults.result = "New Focused Selection Info List Not Set - Check Here.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -4946,15 +6013,15 @@ namespace Com.RedicalGames.Filar
 
                 HasFocusedSelectionInfo(selectionToRemove.name, selectionCallback =>
                 {
-                    if (!Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                    if (!Helpers.IsSuccessCode(selectionCallback.resultCode))
                     {
-                        callbackResults.results = $"{selectionToRemove.name} Removed Successfully.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"{selectionToRemove.name} Removed Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"{selectionToRemove.name} Couldn't Be Removed.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"{selectionToRemove.name} Couldn't Be Removed.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 });
 
@@ -4969,28 +6036,28 @@ namespace Com.RedicalGames.Filar
                 {
                     GetFocusedSelectionState(selectionType, selectionStateCallback =>
                     {
-                        if (Helpers.IsSuccessCode(selectionStateCallback.resultsCode))
+                        if (Helpers.IsSuccessCode(selectionStateCallback.resultCode))
                         {
                             foreach (var selection in selectionList)
                                 selection.OnSelectionFrameState(selectionStateCallback.data);
 
-                            callbackResults.results = $"Selected : {selectionList.Count} Widgets To State : {selectionStateCallback.data.state} - From Type : {selectionStateCallback.data.selectionInfoType} Nou.";
+                            callbackResults.result = $"Selected : {selectionList.Count} Widgets To State : {selectionStateCallback.data.state} - From Type : {selectionStateCallback.data.selectionInfoType} Nou.";
                             callbackResults.data = selectionList.FindLast(x => x.GetActive());
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = selectionStateCallback.results;
+                            callbackResults.result = selectionStateCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     });
                 }
                 else
                 {
-                    callbackResults.results = "Selection Info List Is Null / Empty.";
+                    callbackResults.result = "Selection Info List Is Null / Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5016,15 +6083,15 @@ namespace Com.RedicalGames.Filar
 
                 if (selectionData != null)
                 {
-                    callbackResults.results = $"Found Focused Selection Info Data Of Type : {selectionType}";
+                    callbackResults.result = $"Found Focused Selection Info Data Of Type : {selectionType}";
                     callbackResults.data = selectionData;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Find Focused Selection Info Data Of Type : {selectionType}";
+                    callbackResults.result = $"Couldn't Find Focused Selection Info Data Of Type : {selectionType}";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5047,8 +6114,8 @@ namespace Com.RedicalGames.Filar
 
                         group.OnRegisterSelectableToEventListener(selectable, selectableAddedCallbackResults => 
                         {
-                            callbackResults.results = selectableAddedCallbackResults.results;
-                            callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
+                            callbackResults.result = selectableAddedCallbackResults.result;
+                            callbackResults.resultCode = selectableAddedCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
@@ -5065,36 +6132,36 @@ namespace Com.RedicalGames.Filar
                             {
                                 group.OnRegisterSelectableToEventListener(selectable, selectableAddedCallbackResults => 
                                 {
-                                    callbackResults.results = selectableAddedCallbackResults.results;
-                                    callbackResults.resultsCode = selectableAddedCallbackResults.resultsCode;
+                                    callbackResults.result = selectableAddedCallbackResults.result;
+                                    callbackResults.resultCode = selectableAddedCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.results = $"Register : {selectable.name} - Of Type {selectable.inputType} - State : {selectable.GetInputUIState()} To Group : {groupID}";
+                                        callbackResults.result = $"Register : {selectable.name} - Of Type {selectable.inputType} - State : {selectable.GetInputUIState()} To Group : {groupID}";
                                         callbackResults.data = group;
                                     }
                                 });
                             }
                             else
                             {
-                                callbackResults.results = $"Selectable : {selectable.name} Already Exists In UI Group ID : {groupID}.";
+                                callbackResults.result = $"Selectable : {selectable.name} Already Exists In UI Group ID : {groupID}.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.WarningCode;
+                                callbackResults.resultCode = Helpers.WarningCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Failed To Get Selectable UI Group ID : {groupID}.";
+                            callbackResults.result = $"Failed To Get Selectable UI Group ID : {groupID}.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Selectable Component Is Null.";
+                    callbackResults.result = "Selectable Component Is Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -5110,19 +6177,19 @@ namespace Com.RedicalGames.Filar
                     {
                         group.Select(selectable);
 
-                        callbackResults.results = $"Selected Input : {selectable.name} From : {groupID} Group.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"Selected Input : {selectable.name} From : {groupID} Group.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"No Selectable Group Found - Failed To Select : {selectable.name} From : {groupID} Group";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"No Selectable Group Found - Failed To Select : {selectable.name} From : {groupID} Group";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Selectable Is Null / Not Found. Failed To Select UI Input";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Selectable Is Null / Not Found. Failed To Select UI Input";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5139,8 +6206,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"No Selectable UI Groups Found To Clear.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"No Selectable UI Groups Found To Clear.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5159,8 +6226,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"No Selectable Found To Clear For : {groupID} Group";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"No Selectable Found To Clear For : {groupID} Group";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5187,22 +6254,22 @@ namespace Com.RedicalGames.Filar
 
                     if (selected)
                     {
-                        callbackResults.results = $"Selected Screen UI.";
+                        callbackResults.result = $"Selected Screen UI.";
                         callbackResults.data = selectable;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Couldn't Find Selectable UI.";
+                        callbackResults.result = "Couldn't Find Selectable UI.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Selectable Screen List Data.";
+                    callbackResults.result = "There Are No Selectable Screen List Data.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -5296,7 +6363,7 @@ namespace Com.RedicalGames.Filar
             public BuildType runtimeType;
 
             [Space(5)]
-            public RuntimeValueType valueType;
+            public RuntimeExecution valueType;
         }
 
         [Serializable]
@@ -5332,13 +6399,13 @@ namespace Com.RedicalGames.Filar
 
                 if (sliderValue.value != null && inputValue.value != null)
                 {
-                    callbackResults.results = "";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5353,6 +6420,67 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Messaging System
+
+        [Serializable]
+        public class MessageFormat
+        {
+            #region Components
+
+            [Space(5)]
+            public string header;
+
+            [Space(5)]
+            public string body;
+
+            [Space(5)]
+            public string footer;
+
+            #endregion
+
+            #region Main
+
+            public MessageFormat()
+            {
+            }
+
+            public MessageFormat(string header, string body, string footer = null)
+            {
+                this.header = header;
+                this.body = body;
+                this.footer = footer;
+            }
+
+            public string GetHeader()
+            {
+                return header;
+            }
+
+            public string GetBody()
+            {
+                return body;
+            }
+
+            public string GetFooter()
+            {
+                return footer;
+            }
+
+            public Callback Initialized()
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.StringValueValid(validDataCallbackResults => 
+                {
+                    callbackResults.result = validDataCallbackResults.result;
+                    callbackResults.resultCode = validDataCallbackResults.resultCode;
+
+                }, GetHeader(), GetBody());
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
 
         [Serializable]
         public class Message
@@ -5453,12 +6581,12 @@ namespace Com.RedicalGames.Filar
 
                 Helpers.GetAppComponentsValid(messages, "Messages List", componentsCallbackResults => 
                 {
-                    callbackResults.resultsCode = componentsCallbackResults.resultsCode;
+                    callbackResults.resultCode = componentsCallbackResults.resultCode;
 
                     if (callbackResults.Success())
-                        callbackResults.results = $"{componentsCallbackResults.data.Count} Messages Initialized Successfully.";
+                        callbackResults.result = $"{componentsCallbackResults.data.Count} Messages Initialized Successfully.";
                     else
-                        callbackResults.results = $"There Are No Messages Assigned To : {name}.";
+                        callbackResults.result = $"There Are No Messages Assigned To : {name}.";
 
                 }, "Messages Are Not Initialized In The Inspector Panel.");
 
@@ -5469,12 +6597,12 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataList<Message> callbackResults = new CallbackDataList<Message>();
 
-                callbackResults.results = GroupInitialized().results;
-                callbackResults.resultsCode = GroupInitialized().resultsCode;
+                callbackResults.result = GroupInitialized().result;
+                callbackResults.resultCode = GroupInitialized().resultCode;
 
                 if(callbackResults.Success())
                 {
-                    callbackResults.results = $"Found : {messages.Count} Message(s)";
+                    callbackResults.result = $"Found : {messages.Count} Message(s)";
                     callbackResults.data = messages;
                 }
 
@@ -5485,8 +6613,8 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataList<Message> callbackResults = new CallbackDataList<Message>();
 
-                callbackResults.results = GroupInitialized().results;
-                callbackResults.resultsCode = GroupInitialized().resultsCode;
+                callbackResults.result = GroupInitialized().result;
+                callbackResults.resultCode = GroupInitialized().resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -5494,14 +6622,14 @@ namespace Com.RedicalGames.Filar
 
                     if(messageList != null && messageList.Count > 0)
                     {
-                        callbackResults.results = $"Found : {messages.Count} Message(s)";
+                        callbackResults.result = $"Found : {messages.Count} Message(s)";
                         callbackResults.data = messageList;
                     }
                     else
                     {
-                        callbackResults.results = $"Failed To Find Messages With ID : {messageIdentifier}";
+                        callbackResults.result = $"Failed To Find Messages With ID : {messageIdentifier}";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
 
@@ -5512,15 +6640,15 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<Message> callbackResults = new CallbackData<Message>();
 
-                callbackResults.results = GroupInitialized().results;
-                callbackResults.resultsCode = GroupInitialized().resultsCode;
+                callbackResults.result = GroupInitialized().result;
+                callbackResults.resultCode = GroupInitialized().resultCode;
 
                 if (callbackResults.Success())
                 {
                     int random = UnityEngine.Random.Range(0, messages.Count - 1);
                     var randomMessage = messages[random];
 
-                    callbackResults.results = $"Found Random Message : {randomMessage.name}";
+                    callbackResults.result = $"Found Random Message : {randomMessage.name}";
                     callbackResults.data = randomMessage;
                 }
 
@@ -5531,8 +6659,8 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<Message> callbackResults = new CallbackData<Message>();
 
-                callbackResults.results = GroupInitialized().results;
-                callbackResults.resultsCode = GroupInitialized().resultsCode;
+                callbackResults.result = GroupInitialized().result;
+                callbackResults.resultCode = GroupInitialized().resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -5543,14 +6671,14 @@ namespace Com.RedicalGames.Filar
                         int random = UnityEngine.Random.Range(0, messageList.Count - 1);
                         var randomMessage = messageList[random];
 
-                        callbackResults.results = $"Found Random Message : {randomMessage.name}";
+                        callbackResults.result = $"Found Random Message : {randomMessage.name}";
                         callbackResults.data = randomMessage;
                     }
                     else
                     {
-                        callbackResults.results = $"Failed To Find Messages With ID : {messageIdentifier}";
+                        callbackResults.result = $"Failed To Find Messages With ID : {messageIdentifier}";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
 
@@ -5587,8 +6715,8 @@ namespace Com.RedicalGames.Filar
 
                 Helpers.GetAppComponentsValid(messageGroups, "Message Group List", messageGroupCallbackResults =>
                 {
-                    callbackResults.results = messageGroupCallbackResults.results;
-                    callbackResults.resultsCode = messageGroupCallbackResults.resultsCode;
+                    callbackResults.result = messageGroupCallbackResults.result;
+                    callbackResults.resultCode = messageGroupCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                         callbackResults.data = messageGroupCallbackResults.data;
@@ -5604,8 +6732,8 @@ namespace Com.RedicalGames.Filar
 
                 Helpers.GetAppComponentsValid(messageGroups, "MessageGroup List", messageGroupCallbackResults =>
                 {
-                    callbackResults.results = messageGroupCallbackResults.results;
-                    callbackResults.resultsCode = messageGroupCallbackResults.resultsCode;
+                    callbackResults.result = messageGroupCallbackResults.result;
+                    callbackResults.resultCode = messageGroupCallbackResults.resultCode;
 
                     if (callbackResults.Success())
                     {
@@ -5613,14 +6741,14 @@ namespace Com.RedicalGames.Filar
 
                         if (messageGroup != null)
                         {
-                            callbackResults.results = $"Message Group : {messageGroup.name} - For Screen ID : {screenIdentifier} Found.";
+                            callbackResults.result = $"Message Group : {messageGroup.name} - For Screen ID : {screenIdentifier} Found.";
                             callbackResults.data = messageGroup;
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Find Message Group For Screen ID : {screenIdentifier}.";
+                            callbackResults.result = $"Couldn't Find Message Group For Screen ID : {screenIdentifier}.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
 
@@ -5907,20 +7035,20 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if(fileUpdatredCallback.Success())
                                             {
-                                                callbackResults.results = $"Field Of Type : {infoField.type} - Has Been Updated.";
-                                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                                callbackResults.result = $"Field Of Type : {infoField.type} - Has Been Updated.";
+                                                callbackResults.resultCode = Helpers.SuccessCode;
                                             }
                                             else
                                             {
-                                                callbackResults.results = $"Couldn't Update Field Of Type : {infoField.type} - {fileUpdatredCallback.results}.";
-                                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                                callbackResults.result = $"Couldn't Update Field Of Type : {infoField.type} - {fileUpdatredCallback.result}.";
+                                                callbackResults.resultCode = Helpers.ErrorCode;
                                             }
                                         });
                                     }
                                     else
                                     {
-                                        callbackResults.results = $"Couldn't Update Field Of Type : {infoField.type} - Check Here.";
-                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                        callbackResults.result = $"Couldn't Update Field Of Type : {infoField.type} - Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
                                     }
                                 });
                             }
@@ -5947,9 +7075,9 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = checkComponentsCallback.results;
+                        callbackResults.result = checkComponentsCallback.result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = checkComponentsCallback.resultsCode;
+                        callbackResults.resultCode = checkComponentsCallback.resultCode;
                     }
                 });
 
@@ -5962,24 +7090,24 @@ namespace Com.RedicalGames.Filar
 
                 if(field.value == null)
                 {
-                    callbackResults.results = $"Field Of Type : {field.type} Value Is Missing / Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Field Of Type : {field.type} Value Is Missing / Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
 
                     callback?.Invoke(callbackResults);
                 }
 
                 if(string.IsNullOrEmpty(field.name))
                 {
-                    callbackResults.results = $"Field Of Type : {field.type} Value Is Missing / Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Field Of Type : {field.type} Value Is Missing / Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
 
                     callback?.Invoke(callbackResults);
                 }
 
                 if(field.value != null && !string.IsNullOrEmpty(field.name))
                 {
-                    callbackResults.results = $"Field : {field.name} Of Type : {field.type} Is Valid.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Field : {field.name} Of Type : {field.type} Is Valid.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -5997,15 +7125,15 @@ namespace Com.RedicalGames.Filar
                         {
                             if(!fieldCheckCallback.Success())
                             {
-                                callbackResults.results = $"Field Of Type : {field.type} Value Is Missing / Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = $"Field Of Type : {field.type} Value Is Missing / Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
 
                                 callback?.Invoke(callbackResults);
                             }
                             else
                             {
-                                callbackResults.results = $"Field : {field.name} Of Type : {field.type} Is Valid.";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = $"Field : {field.name} Of Type : {field.type} Is Valid.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                         });
                     }
@@ -6035,23 +7163,23 @@ namespace Com.RedicalGames.Filar
                                     if(vaildFieldCallback.Success())
                                         callbackResults.data = field;
 
-                                    callbackResults.results = vaildFieldCallback.results;
-                                    callbackResults.resultsCode = vaildFieldCallback.resultsCode;
+                                    callbackResults.result = vaildFieldCallback.result;
+                                    callbackResults.resultCode = vaildFieldCallback.resultCode;
                                 });
                             }
                             else
                             {
-                                callbackResults.results = getFieldCallback.results;
+                                callbackResults.result = getFieldCallback.result;
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         });
                     }
                     else 
                     {
-                        callbackResults.results = checkComponentsCallback.results;
+                        callbackResults.result = checkComponentsCallback.result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 });
 
@@ -6761,7 +7889,43 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public InputSelectionStateInfoGroup selectionStatesInfo = new InputSelectionStateInfoGroup();
+            public InputSelectionStateInfoGroup selectionStatesInfo = new InputSelectionStateInfoGroup()
+            {
+                states = new List<SelectionState>
+                {
+                  //  Normal State
+                  new SelectionState
+                  {
+                      name = "Normal",
+                      color = Color.white,
+                      state = InputUIState.Normal
+                  },
+
+                  //  Enabled State
+                  new SelectionState
+                  {
+                      name = "Enabled",
+                      color = Color.white,
+                      state = InputUIState.Enabled
+                  },
+
+                  //  Disabled State
+                  new SelectionState
+                  {
+                      name = "Disabled",
+                      color = Color.gray,
+                      state = InputUIState.Disabled
+                  },
+
+                  //  Selected State
+                  new SelectionState
+                  {
+                      name = "Selected",
+                      color = Color.white,
+                      state = InputUIState.Selected
+                  }
+                }
+            };
 
             [Space(5)]
             public bool selectable;
@@ -6830,7 +7994,7 @@ namespace Com.RedicalGames.Filar
                                                     selectionFrame.sprite = validationCallbackResults.data.value;
                                             }
                                             else
-                                                Debug.LogError(validationCallbackResults.results);
+                                                Debug.LogError(validationCallbackResults.result);
                                         });
                                     }
 
@@ -6849,7 +8013,7 @@ namespace Com.RedicalGames.Filar
                             if (selectionStateCallbackResults.Success())
                                 SetSelectionState(visualizationType, selectionStateCallbackResults.data);
                             else
-                                Debug.LogError(selectionStateCallbackResults.results);
+                                Debug.LogError(selectionStateCallbackResults.result);
                         });
                     }
                     else
@@ -6886,7 +8050,7 @@ namespace Com.RedicalGames.Filar
                                                     selectionFrame.sprite = validationCallbackResults.data.value;
                                             }
                                             else
-                                                Debug.LogError(validationCallbackResults.results);
+                                                Log(validationCallbackResults.resultCode, validationCallbackResults.result, this);
                                         });
                                     }
 
@@ -6904,7 +8068,7 @@ namespace Com.RedicalGames.Filar
                         if (selectionStateCallbackResults.Success())
                             SetSelectionState(visualizationType, selectionStateCallbackResults.data);
                         else
-                            Debug.LogError(selectionStateCallbackResults.results);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
             }
@@ -6954,7 +8118,7 @@ namespace Com.RedicalGames.Filar
                                 selectionFrame.sprite = validationCallbackResults.data.value;
                         }
                         else
-                            Debug.LogError(validationCallbackResults.results);
+                            Debug.LogError(validationCallbackResults.result);
                     });
                 }
             }
@@ -7237,7 +8401,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
                 else
@@ -7349,7 +8513,7 @@ namespace Com.RedicalGames.Filar
                             if (initializedCallbackResults.Success())
                                 Deselect();
                             else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
                         });
                     }
                     else
@@ -7502,7 +8666,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
                 else
@@ -7593,7 +8757,7 @@ namespace Com.RedicalGames.Filar
                             if (initializedCallbackResults.Success())
                                 Deselect();
                             else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
                         });
                     }
                     else
@@ -7779,7 +8943,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
                 else
@@ -7867,7 +9031,7 @@ namespace Com.RedicalGames.Filar
                             if (initializedCallbackResults.Success())
                                 Deselect();
                             else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
                         });
                     }
                     else
@@ -8001,7 +9165,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
                 else
@@ -8087,7 +9251,7 @@ namespace Com.RedicalGames.Filar
                             if (initializedCallbackResults.Success())
                                 Deselect();
                             else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
                         });
                     }
                     else
@@ -8198,7 +9362,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
                 else
@@ -8286,7 +9450,7 @@ namespace Com.RedicalGames.Filar
                             if (initializedCallbackResults.Success())
                                 Deselect();
                             else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
                         });
                     }
                     else
@@ -8432,7 +9596,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultsCode, selectionStateCallbackResults.results, this);
+                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
                 else
@@ -8512,7 +9676,7 @@ namespace Com.RedicalGames.Filar
                             if (initializedCallbackResults.Success())
                                 Deselect();
                             else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.results}");
+                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
                         });
                     }
                     else
@@ -8777,35 +9941,35 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public List<SelectionState> states = new List<SelectionState>
-            {
-                new SelectionState
-                {
-                    name = "Normal",
-                    color = Color.white,
-                    state = InputUIState.Normal
-                },
+                                                        {
+                                                            new SelectionState
+                                                            {
+                                                                name = "Normal",
+                                                                color = Color.white,
+                                                                state = InputUIState.Normal
+                                                            },
 
-                new SelectionState
-                {
-                    name = "Enabled",
-                    color = Color.white,
-                    state = InputUIState.Enabled
-                },
+                                                            new SelectionState
+                                                            {
+                                                                name = "Enabled",
+                                                                color = Color.white,
+                                                                state = InputUIState.Enabled
+                                                            },
 
-                new SelectionState
-                {
-                    name = "Disabled",
-                    color = Color.grey,
-                    state = InputUIState.Disabled
-                },
+                                                            new SelectionState
+                                                            {
+                                                                name = "Disabled",
+                                                                color = Color.grey,
+                                                                state = InputUIState.Disabled
+                                                            },
 
-                new SelectionState
-                {
-                    name = "Selected",
-                    color = Color.cyan,
-                    state = InputUIState.Selected
-                }
-            };
+                                                            new SelectionState
+                                                            {
+                                                                name = "Selected",
+                                                                color = Color.white,
+                                                                state = InputUIState.Selected
+                                                            }
+                                                        };
 
             //[HideInInspector]
             public InputUIState inputState;
@@ -8813,6 +9977,11 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Main
+
+            public InputSelectionStateInfoGroup()
+            {
+                
+            }
 
             public void SetInputState(InputUIState inputState) => this.inputState = inputState;
 
@@ -8831,22 +10000,22 @@ namespace Com.RedicalGames.Filar
 
                     if (!string.IsNullOrEmpty(state.name))
                     {
-                        callbackResults.results = $"Found Selection State : {state.name} Of Type : {inputState}.";
+                        callbackResults.result = $"Found Selection State : {state.name} Of Type : {inputState}.";
                         callbackResults.data = state;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Selection State Of Type : {inputState} Not Assigned.";
+                        callbackResults.result = $"Selection State Of Type : {inputState} Not Assigned.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Selection States Assigned.";
+                    callbackResults.result = "There Are No Selection States Assigned.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -8862,22 +10031,22 @@ namespace Com.RedicalGames.Filar
 
                     if (!string.IsNullOrEmpty(state.name))
                     {
-                        callbackResults.results = $"Found Selection State : {state.name} Of Type : {inputState}.";
+                        callbackResults.result = $"Found Selection State : {state.name} Of Type : {inputState}.";
                         callbackResults.data = state;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Selection State Of Type : {inputState} Not Assigned.";
+                        callbackResults.result = $"Selection State Of Type : {inputState} Not Assigned.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Selection States Assigned.";
+                    callbackResults.result = "There Are No Selection States Assigned.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -8942,22 +10111,22 @@ namespace Com.RedicalGames.Filar
 
                     if(!string.IsNullOrEmpty(state.name))
                     {
-                        callbackResults.results = $"Found Validation State : {state.name} Of Type : {Results}.";
+                        callbackResults.result = $"Found Validation State : {state.name} Of Type : {Results}.";
                         callbackResults.data = state;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Validation State Of Type : {Results} Not Assigned.";
+                        callbackResults.result = $"Validation State Of Type : {Results} Not Assigned.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Validation States Assigned.";
+                    callbackResults.result = "There Are No Validation States Assigned.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -8973,22 +10142,22 @@ namespace Com.RedicalGames.Filar
 
                     if (!string.IsNullOrEmpty(state.name))
                     {
-                        callbackResults.results = $"Found Validation State : {state.name} Of Type : {Results}.";
+                        callbackResults.result = $"Found Validation State : {state.name} Of Type : {Results}.";
                         callbackResults.data = state;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Validation State Of Type : {Results} Not Assigned.";
+                        callbackResults.result = $"Validation State Of Type : {Results} Not Assigned.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Validation States Assigned.";
+                    callbackResults.result = "There Are No Validation States Assigned.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -9107,27 +10276,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedActionButtonList != null && initializedActionButtonList.Count == actionComponents.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Components Group Has Been Initialized Successfully With : {initializedActionButtonList.Count} Action Components.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Components Group Has Been Initialized Successfully With : {initializedActionButtonList.Count} Action Components.";
                             callbackResults.data = actionComponents;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = actionComponents.Count - initializedActionButtonList.Count;
-                            callbackResults.results = $"Couldn't Initialized {actionComponents.Count} Action Component(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Components - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {actionComponents.Count} Action Component(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Components - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't  Initialized Action Component Group List From : {fromClass?.GetUniqueClassName()}. Action Components List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't  Initialized Action Component Group List From : {fromClass?.GetUniqueClassName()}. Action Components List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Component Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Component Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9192,27 +10361,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedActionInputFieldsList != null && initializedActionInputFieldsList.Count == buttons.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Button Group Has Been Initialized Successfully With : {initializedActionInputFieldsList.Count} Input Buttons.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Button Group Has Been Initialized Successfully With : {initializedActionInputFieldsList.Count} Input Buttons.";
                             callbackResults.data = initializedActionInputFieldsList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = buttons.Count - initializedActionInputFieldsList.Count;
-                            callbackResults.results = $"Couldn't Initialized {buttons.Count} Action Button(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Action Button(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {buttons.Count} Action Button(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Action Button(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't  Initialized Action Button Group List From : {fromClass?.GetUniqueClassName()}. Action Button(s) List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't  Initialized Action Button Group List From : {fromClass?.GetUniqueClassName()}. Action Button(s) List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Button Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Button Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9259,27 +10428,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedActionInputFieldsList != null && initializedActionInputFieldsList.Count == actionInputFields.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Fields Group Has Been Initialized Successfully With : {initializedActionInputFieldsList.Count} Input Fields.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Fields Group Has Been Initialized Successfully With : {initializedActionInputFieldsList.Count} Input Fields.";
                             callbackResults.data = initializedActionInputFieldsList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = actionInputFields.Count - initializedActionInputFieldsList.Count;
-                            callbackResults.results = $"Couldn't Initialized {actionInputFields.Count} Action Input Field(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Field(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {actionInputFields.Count} Action Input Field(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Field(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't  Initialized Action Input Fields Group List From : {fromClass?.GetUniqueClassName()}. Action Input Fields List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't  Initialized Action Input Fields Group List From : {fromClass?.GetUniqueClassName()}. Action Input Fields List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Input Fields Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Input Fields Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9326,27 +10495,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedActionInputSlidersList != null && initializedActionInputSlidersList.Count == actionInputSliders.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Sliders Group Has Been Initialized Successfully With : {initializedActionInputSlidersList.Count} Input Sliders.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Sliders Group Has Been Initialized Successfully With : {initializedActionInputSlidersList.Count} Input Sliders.";
                             callbackResults.data = initializedActionInputSlidersList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = actionInputSliders.Count - initializedActionInputSlidersList.Count;
-                            callbackResults.results = $"Couldn't Initialized {actionInputSliders.Count} Action Input Slider(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Slider(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {actionInputSliders.Count} Action Input Slider(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Slider(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't  Initialized Action Input Sliders Group List From : {fromClass?.GetUniqueClassName()}. Action Input Sliders List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't  Initialized Action Input Sliders Group List From : {fromClass?.GetUniqueClassName()}. Action Input Sliders List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Input Sliders Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Input Sliders Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9393,27 +10562,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedActionInputCheckboxesList != null && initializedActionInputCheckboxesList.Count == actionInputCheckboxes.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Checkbox Group Has Been Initialized Successfully With : {initializedActionInputCheckboxesList.Count} Input Checkboxes.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Checkbox Group Has Been Initialized Successfully With : {initializedActionInputCheckboxesList.Count} Input Checkboxes.";
                             callbackResults.data = initializedActionInputCheckboxesList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = actionInputCheckboxes.Count - initializedActionInputCheckboxesList.Count;
-                            callbackResults.results = $"Couldn't Initialized {actionInputCheckboxes.Count} Action Input Checkbox(es) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Checkbox(es) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {actionInputCheckboxes.Count} Action Input Checkbox(es) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Checkbox(es) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't  Initialized Action Input Checkboxes Group List From : {fromClass?.GetUniqueClassName()}. Action Input Checkboxes List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't  Initialized Action Input Checkboxes Group List From : {fromClass?.GetUniqueClassName()}. Action Input Checkboxes List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Input Checkboxes Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Input Checkboxes Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9460,27 +10629,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedActionInputDropdownsList != null && initializedActionInputDropdownsList.Count == actionInputDropdowns.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Dropdown Group Has Been Initialized Successfully With : {initializedActionInputDropdownsList.Count} Input Dropdowns.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Input Dropdown Group Has Been Initialized Successfully With : {initializedActionInputDropdownsList.Count} Input Dropdowns.";
                             callbackResults.data = initializedActionInputDropdownsList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = actionInputDropdowns.Count - initializedActionInputDropdownsList.Count;
-                            callbackResults.results = $"Couldn't Initialized {actionInputDropdowns.Count} Action Input Dropdown(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Dropdown(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {actionInputDropdowns.Count} Action Input Dropdown(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input Dropdown(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't  Initialized Action Input Dropdowns Group List From : {fromClass?.GetUniqueClassName()}. Action Input Dropdowns List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't  Initialized Action Input Dropdowns Group List From : {fromClass?.GetUniqueClassName()}. Action Input Dropdowns List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Input Dropdowns Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Input Dropdowns Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9527,27 +10696,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedUISliderssList != null && initializedUISliderssList.Count == actionUISliders.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. Action Input UI Sliders Group Has Been Initialized Successfully With : {initializedUISliderssList.Count} Input UI Sliders.";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. Action Input UI Sliders Group Has Been Initialized Successfully With : {initializedUISliderssList.Count} Input UI Sliders.";
                             callbackResults.data = initializedUISliderssList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = actionUISliders.Count - initializedUISliderssList.Count;
-                            callbackResults.results = $"Couldn't Initialized {actionUISliders.Count} Action Input UI Slider(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input UI Slider(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {actionUISliders.Count} Action Input UI Slider(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} Input UI Slider(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Initialized Action Input UI Sliders Group List From : {fromClass?.GetUniqueClassName()}. Action Input UI Sliders List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Initialized Action Input UI Sliders Group List From : {fromClass?.GetUniqueClassName()}. Action Input UI Sliders List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Action Input UI Sliders Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Action Input UI Sliders Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9653,27 +10822,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedUITextsList != null && initializedUITextsList.Count == uiTexts.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. UI Text Group Has Been Initialized Successfully With : {initializedUITextsList.Count} UI Text(s).";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. UI Text Group Has Been Initialized Successfully With : {initializedUITextsList.Count} UI Text(s).";
                             callbackResults.data = initializedUITextsList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = uiTexts.Count - initializedUITextsList.Count;
-                            callbackResults.results = $"Couldn't Initialized {uiTexts.Count} UI Text(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} UI Text(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {uiTexts.Count} UI Text(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} UI Text(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Initialized UI Texts Group List From : {fromClass?.GetUniqueClassName()}. UI Texts List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Initialized UI Texts Group List From : {fromClass?.GetUniqueClassName()}. UI Texts List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"UI Text Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"UI Text Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -9720,27 +10889,27 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedimageDisplayersList != null && initializedimageDisplayersList.Count == imageDisplayers.Count)
                         {
-                            callbackResults.results = $"Class : {fromClass?.GetUniqueClassName()}. UI Image Displayer Group Has Been Initialized Successfully With : {initializedimageDisplayersList.Count} UI Image Displayer(s).";
+                            callbackResults.result = $"Class : {fromClass?.GetUniqueClassName()}. UI Image Displayer Group Has Been Initialized Successfully With : {initializedimageDisplayersList.Count} UI Image Displayer(s).";
                             callbackResults.data = initializedimageDisplayersList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
                             int invalidDataCount = imageDisplayers.Count - initializedimageDisplayersList.Count;
-                            callbackResults.results = $"Couldn't Initialized {imageDisplayers.Count} UI Image Displayer(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} UI Image Displayer(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Couldn't Initialized {imageDisplayers.Count} UI Image Displayer(s) From Class : {fromClass?.GetUniqueClassName()}. Found Issues With {invalidDataCount} UI Image Displayer(s) - Please Check : {fromClass?.GetUniqueClassName()} In The Unity Editor Inspector.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Initialized UI Image Displayer Group List From : {fromClass?.GetUniqueClassName()}. UI Image Displayer List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Initialized UI Image Displayer Group List From : {fromClass?.GetUniqueClassName()}. UI Image Displayer List Is Null / Empt / Not Assigned In Unity Editor Inspector.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"UI Image Displayer Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"UI Image Displayer Group List Has Not Been Initialized From : {fromClass?.GetUniqueClassName()} Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 initialize = callbackResults.Success();
@@ -10402,6 +11571,203 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class TransitionableUI : DataDebugger
+        {
+            #region Components
+
+            public RectTransform transitionable;
+            public Vector2 targetPosition;
+            public float transitionSpeed;
+
+            bool transitionUI = false;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public TransitionableUI()
+            {
+            }
+
+            public TransitionableUI(RectTransform transitionable) => this.transitionable = transitionable;
+
+            public TransitionableUI(RectTransform transitionable, Vector2 target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(RectTransform transitionable, RectTransform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target.anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(RectTransform transitionable, Transform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(RectTransform transitionable, GameObject target, float transitionSpeed)
+            {
+                this.transitionable = transitionable;
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(Transform transitionable, Vector2 target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(Transform transitionable, RectTransform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(Transform transitionable, Transform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, Vector2 target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, RectTransform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, Transform target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            public TransitionableUI(GameObject transitionable, GameObject target, float transitionSpeed)
+            {
+                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition; ;
+                this.transitionSpeed = transitionSpeed;
+            }
+
+            #endregion
+
+            #region Events
+
+            private void ActionEvents__Update()
+            {
+                if (!transitionUI)
+                    return;
+
+                if (!IsCompleted())
+                    transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, targetPosition, transitionSpeed * Time.smoothDeltaTime);
+                else
+                {
+                    transitionable.anchoredPosition = targetPosition;
+                    transitionUI = false;
+                    ActionEvents._Update -= ActionEvents__Update;
+                }
+            }
+
+            #endregion
+
+            #region Setters
+
+            public void SetTransitionable(RectTransform transitionable) => this.transitionable = transitionable;
+            public void SetTransitionable(Transform transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
+            public void SetTransitionable(GameObject transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
+
+            public void SetTarget(Vector2 target) => this.targetPosition = target;
+            public void SetTarget(RectTransform target) => this.targetPosition = target.anchoredPosition;
+            public void SetTarget(Transform target) => this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+            public void SetTarget(GameObject target) => this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+
+            public void SetSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
+
+            #endregion
+
+            #region Getters
+
+            public RectTransform GetTransitionable()
+            {
+                return transitionable;
+            }
+
+            public Vector2 GetTargetPosition()
+            {
+                return targetPosition;
+            }
+
+            public float GetTransitionSpeed()
+            {
+                return transitionSpeed;
+            }
+
+            public bool IsCompleted()
+            {
+                return (transitionable.anchoredPosition - targetPosition).magnitude <= 0.01f;
+            }
+
+            #endregion
+
+            #region Actions
+
+            public void Transition()
+            {
+                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f)
+                {
+                    ActionEvents._Update += ActionEvents__Update;
+                    transitionUI = true;
+                }
+                else
+                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+            }
+
+            public async Task<bool> TransitionAsync()
+            {
+                if(transitionable != null && !IsCompleted() && transitionSpeed > 0.0f)
+                {
+                    ActionEvents._Update += ActionEvents__Update;
+
+                    transitionUI = true;
+
+                    while (transitionUI && !IsCompleted())
+                        await Task.Yield();
+
+                    return IsCompleted();
+                }
+                else
+                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+
+                return false;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class DataPacket
         {
             #region Components
@@ -10440,22 +11806,22 @@ namespace Com.RedicalGames.Filar
 
                     if(dataPacket != null)
                     {
-                        callbackResults.results = $"Found Data Packet For : {screenType} In Data Packets Collection.";
+                        callbackResults.result = $"Found Data Packet For : {screenType} In Data Packets Collection.";
                         callbackResults.data = dataPacket;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Find Data Packet For : {screenType} In Data Packets Collection.";
+                        callbackResults.result = $"Couldn't Find Data Packet For : {screenType} In Data Packets Collection.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.result = "There Are No Data Packets Found - Data Packets Collection Is Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -10471,22 +11837,22 @@ namespace Com.RedicalGames.Filar
 
                     if (dataPacket != null)
                     {
-                        callbackResults.results = $"Found Data Packet For : {widgetType} In Data Packets Collection.";
+                        callbackResults.result = $"Found Data Packet For : {widgetType} In Data Packets Collection.";
                         callbackResults.data = dataPacket;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Find Data Packet For : {widgetType} In Data Packets Collection.";
+                        callbackResults.result = $"Couldn't Find Data Packet For : {widgetType} In Data Packets Collection.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.result = "There Are No Data Packets Found - Data Packets Collection Is Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -10502,22 +11868,22 @@ namespace Com.RedicalGames.Filar
                     {
                         dataPacketsCollection.Add(dataPacket);
 
-                        callbackResults.results = $"Data Packet : {dataPacket.name} Added To Data Packets Collection.";
+                        callbackResults.result = $"Data Packet : {dataPacket.name} Added To Data Packets Collection.";
                         callbackResults.data = dataPacket;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Data Packet : {dataPacket.name} Already Exists In Data Packets Collection.";
+                        callbackResults.result = $"Data Packet : {dataPacket.name} Already Exists In Data Packets Collection.";
                         callbackResults.data = dataPacket;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.result = "There Are No Data Packets Found - Data Packets Collection Is Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -10555,7 +11921,7 @@ namespace Com.RedicalGames.Filar
                 sceneAssetsDictionary = new Dictionary<string, SceneAsset>();
                 imageAssetsDictionary = new Dictionary<string, Sprite>();
 
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
                 //Helpers.ProjectDataComponentValid(screenWidgetPrefabLibrary.screenWidgetPrefabDataList, dataValidCallbackResults =>
                 //{
@@ -10795,13 +12161,13 @@ namespace Com.RedicalGames.Filar
                 {
                     value.transform.SetSiblingIndex(index);
 
-                    callbackResults.results = $"Asset : {value.name} Has Been Set To index : {index}.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Asset : {value.name} Has Been Set To index : {index}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Set Asset List Index Value For : {value} Missing / Not Assigned.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Set Asset List Index Value For : {value} Missing / Not Assigned.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -10819,35 +12185,174 @@ namespace Com.RedicalGames.Filar
 
         #region Callback Class
 
-        public class Callback
+        public abstract class CallbackResultInfo : DataDebugger
         {
             #region Components
 
-            public LogInfoType resultsCode;
-            public string results;
+            public LogInfoChannel resultCode;
+            public string result;
+            public string resultClass;
+            protected bool hasResultsData = false;
 
-            public UnityEngine.Object classInfo;
+            public string Name => name ?? "Callback Name Not Assigned";
 
             #endregion
 
             #region Main
 
-            public void SetClassInfo<T>(T classInfo) where T : UnityEngine.Object => this.classInfo = classInfo;
+            #region Results
 
-            public T GetClassInfo<T>() where T : UnityEngine.Object
+            #region Abstract Functions
+
+            public abstract bool Success();
+
+            #endregion
+
+            public void SetResult(Callback callbackResults)
             {
-                return classInfo as T;
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
             }
 
-            public bool Success()
+            public void LogResult() => Log(ResultCode, Result, GetClassInfo ?? this.name);
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName => Name;
+
+            public string Result { get { return result; } protected set { } }
+
+            public LogInfoChannel ResultCode { get { return resultCode; } protected set { } }
+
+            #endregion
+
+            #region Class Info Initialization
+
+            public void SetUnityClassInfo<T>(T classInfo) where T : UnityEngine.Object => resultClass = classInfo.name;
+            public void SetAppClassInfo<T>(T classInfo) where T : AppMonoBaseClass => resultClass = classInfo.name;
+            public void SetDebuggerClassInfo<T>(T classInfo) where T : DataDebugger => resultClass = classInfo.name;
+
+            public string GetClassInfo => resultClass;
+
+            #endregion
+
+            #endregion
+
+        }
+
+        public class Callback : CallbackResultInfo
+        {
+            #region Main
+
+            #region Constructors
+
+            public Callback()
             {
-                return Helpers.IsSuccessCode(resultsCode);
+
             }
+
+            public Callback(string name, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public Callback(string name, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public Callback(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+            public override bool Success() => Helpers.IsSuccessCode(ResultCode);
+
+            //protected bool HasResultsData() => hasResultsData;
+
+            //protected void SetHasResultsData() => hasResultsData = true;
 
             public static implicit operator Action<object>(Callback v)
             {
                 throw new NotImplementedException();
             }
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetResults<T>(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetResults<T>(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetResults<T>(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetResults<T>(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetResults<T>(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetResults<T,U>(CallbackTuple<T,U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+            #region Parameter Results
+
+            public void SetResults(string results = null, LogInfoChannel resultsCode = LogInfoChannel.Debug, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            #endregion
+
+            #region Callback Getters
+
+            public (string results, LogInfoChannel resultsCode) GetCallbackResultsTupil()
+            {
+                return (this.result, this.resultCode);
+            }
+
+            #endregion
+
+            #endregion
 
             #endregion
         }
@@ -10857,6 +12362,176 @@ namespace Com.RedicalGames.Filar
             #region Components
            
             public T data;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public CallbackData()
+            {
+
+            }
+
+            public CallbackData(string name, T data, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.data = data;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public CallbackData(string name, T data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackData(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+
+            public CallbackData(CallbackData<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                data = callbackResults.Data;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackData(CallbackDataList<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackData(CallbackDataArray<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackData(CallbackDataQueue<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public T GetData()
+            {
+                if(data != null)
+                    return data;
+                else
+                {
+                    SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
+                    Log(ResultCode, Result, this);
+
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                }
+            }
+
+            public T Data => GetData();
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetData(T data) => this.data = data;
+
+            #endregion
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetResultsData(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackTuple<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+            #region Callback Getters
+
+            public (string results, T data, LogInfoChannel resultsCode) GetCallbackDataResultsTupil()
+            {
+                return (result, data, resultCode);
+            }
+
+            #endregion
+
+            #region Results
+
+            #endregion
+
+            #region Parameter Assignable Results
+
+            public void SetResults(string results = null, LogInfoChannel resultCode = LogInfoChannel.None, T data = default, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultClass = classInfo;
+
+                if (resultCode != LogInfoChannel.None)
+                    this.resultCode = resultCode;
+            }
+
+            #endregion
+
+            #endregion
 
             #endregion
         }
@@ -10871,14 +12546,327 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
+            #region Constructors
+
             public CallbackDataList()
             {
 
             }
 
+            public CallbackDataList(string name, List<T> data, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.data = data;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public CallbackDataList(string name, List<T> data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackDataList(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+
+            public CallbackDataList(CallbackData<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataList(CallbackDataList<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                data = callbackResults.Data;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataList(CallbackDataArray<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataList(CallbackDataQueue<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+
+            #region Data Getters
+
+            public List<T> GetData()
+            {
+                if (data != null && data.Count > 0)
+                    return data;
+                else
+                {
+                    SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
+                    Log(ResultCode, Result, this);
+
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                }
+            }
+
+            public List<T> Data => GetData();
+
+            #endregion
+
+            #region Data Setters
+
             public CallbackDataList(List<T> data) => this.data = data;
 
             public void SetData(List<T> data) => this.data = data;
+
+            #endregion
+
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetDataResults(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;              
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetList(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetList(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackTuple<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+
+            #region Parameter Assignable Results
+
+            public void SetResults(string results = null, LogInfoChannel resultsCode = LogInfoChannel.Debug, List<T> data = default, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            #endregion
+
+            #endregion
+
+            #endregion
+        }
+
+        public class CallbackDataQueue<T> : Callback
+        {
+            #region Components
+
+            public Queue<T> data = new Queue<T>();
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public CallbackDataQueue()
+            {
+
+            }
+
+            public CallbackDataQueue(string name, Queue<T> data, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.data = data;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public CallbackDataQueue(string name, Queue<T> data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackDataQueue(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+
+            public CallbackDataQueue(CallbackData<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataQueue(CallbackDataList<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataQueue(CallbackDataArray<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataQueue(CallbackDataQueue<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                data = callbackResults.Data;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public Queue<T> GetData()
+            {
+                if (data != null && data.Count > 0)
+                    return data;
+                else
+                {
+                    SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
+                    Log(ResultCode, Result, this);
+
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                }
+            }
+
+            public Queue<T> Data => GetData();
+
+            #endregion
+
+            #region Data Setters
+
+            public CallbackDataQueue(Queue<T> data) => this.data = data;
+
+            public void SetData(Queue<T> data) => this.data = data;
+
+            #endregion
+
+            public void SetResults(string results = null, LogInfoChannel resultsCode = LogInfoChannel.Debug, Queue<T> data = default, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetDataResults(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetQueue(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetQueue(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackTuple<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+            #endregion
 
             #endregion
         }
@@ -10944,6 +12932,163 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             public T[] data;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public CallbackDataArray()
+            {
+
+            }
+
+            public CallbackDataArray(string name, T[] data, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.data = data;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public CallbackDataArray(string name, T[] data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackDataArray(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackData<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackDataList<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackDataArray<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                data = callbackResults.GetData();
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackDataQueue<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.Result;
+                resultCode = callbackResults.ResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public T[] GetData()
+            {
+                if (data != null && data.Length > 0)
+                    return data;
+                else
+                {
+                    SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
+                    Log(ResultCode, Result, this);
+
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                }
+            }
+
+            public T[] Data => GetData();
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetData(T[] data) => this.data = data;
+
+            #endregion
+
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetDataResults(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetArray(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetArray(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackTuple<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+            #region Parameter Assignable Results
+
+            public void SetResults(string results = null, LogInfoChannel resultsCode = LogInfoChannel.Debug, T[] data = default, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            #endregion
+
+            #endregion
 
             #endregion
         }
@@ -11256,20 +13401,20 @@ namespace Com.RedicalGames.Filar
 
                     if(!GetActive())
                     {
-                        callbackResults.results = "Container Failed To Show -Please Check Here.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Container Failed To Show -Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                     else
                     {
-                        callbackResults.results = "Container Showing.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = "Container Showing.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
 
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Container Value Missing / Not Found.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Container Value Missing / Not Found.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -11287,20 +13432,20 @@ namespace Com.RedicalGames.Filar
 
                     if (GetActive())
                     {
-                        callbackResults.results = "Container Failed To Hide -Please Check Here.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Container Failed To Hide -Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
          
                     }
                     else
                     {
-                        callbackResults.results = "Container Hidden.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = "Container Hidden.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Container Value Missing / Not Found.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Container Value Missing / Not Found.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -11353,23 +13498,23 @@ namespace Com.RedicalGames.Filar
                     {
                         ShowInfo(showInfoCallback => 
                         {
-                            callbackResults.results = showInfoCallback.results;
-                            callbackResults.resultsCode = showInfoCallback.resultsCode;
+                            callbackResults.result = showInfoCallback.result;
+                            callbackResults.resultCode = showInfoCallback.resultCode;
                         });
                     }
                     else
                     {
                         HideInfo(hiddingContainerCallback => 
                         {
-                            callbackResults.results = "Couldn't Show Info. Info Field Null / Empty.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Couldn't Show Info. Info Field Null / Empty.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         });
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Couldn't Show Info. Info Widget Field List Is Null / Empty.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Couldn't Show Info. Info Widget Field List Is Null / Empty.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -11381,17 +13526,17 @@ namespace Com.RedicalGames.Filar
 
                 GetWidgetsContainer(containerFoundCallback => 
                 {
-                    if(Helpers.IsSuccessCode(containerFoundCallback.resultsCode))
+                    if(Helpers.IsSuccessCode(containerFoundCallback.resultCode))
                     {
                         containerFoundCallback.data.Show(showContainerCallback => 
                         {
-                            callbackResults.results = showContainerCallback.results;
-                            callbackResults.resultsCode = showContainerCallback.resultsCode;
+                            callbackResults.result = showContainerCallback.result;
+                            callbackResults.resultCode = showContainerCallback.resultCode;
                         });
                     }
 
-                    callbackResults.results = containerFoundCallback.results;
-                    callbackResults.resultsCode = containerFoundCallback.resultsCode;
+                    callbackResults.result = containerFoundCallback.result;
+                    callbackResults.resultCode = containerFoundCallback.resultCode;
 
                 });
 
@@ -11404,17 +13549,17 @@ namespace Com.RedicalGames.Filar
 
                 GetWidgetsContainer(containerFoundCallback =>
                 {
-                    if (Helpers.IsSuccessCode(containerFoundCallback.resultsCode))
+                    if (Helpers.IsSuccessCode(containerFoundCallback.resultCode))
                     {
                         containerFoundCallback.data.Hide(showContainerCallback =>
                         {
-                            callbackResults.results = showContainerCallback.results;
-                            callbackResults.resultsCode = showContainerCallback.resultsCode;
+                            callbackResults.result = showContainerCallback.result;
+                            callbackResults.resultCode = showContainerCallback.resultCode;
                         });
                     }
 
-                    callbackResults.results = containerFoundCallback.results;
-                    callbackResults.resultsCode = containerFoundCallback.resultsCode;
+                    callbackResults.result = containerFoundCallback.result;
+                    callbackResults.resultCode = containerFoundCallback.resultCode;
 
                 });
 
@@ -11427,15 +13572,15 @@ namespace Com.RedicalGames.Filar
 
                 if(contentContainer.HasContainer())
                 {
-                    callbackResults.results = "Widgets Info Container Loaded.";
+                    callbackResults.result = "Widgets Info Container Loaded.";
                     callbackResults.data = contentContainer;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Widgets Info Container Missing / Not Found - Please Check Here.";
+                    callbackResults.result = "Widgets Info Container Missing / Not Found - Please Check Here.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -11607,8 +13752,8 @@ namespace Com.RedicalGames.Filar
                                     {
                                         widget.Init<ButtonDataPackets>(initializationCallback =>
                                         {
-                                            callbackResults.results = initializationCallback.results;
-                                            callbackResults.resultsCode = initializationCallback.resultsCode;
+                                            callbackResults.result = initializationCallback.result;
+                                            callbackResults.resultCode = initializationCallback.resultCode;
 
                                             if (initializationCallback.Success())
                                             {
@@ -11618,8 +13763,8 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                                     {
-                                                        callbackResults.results = structureCallbackResults.results;
-                                                        callbackResults.resultsCode = structureCallbackResults.resultsCode;
+                                                        callbackResults.result = structureCallbackResults.result;
+                                                        callbackResults.resultCode = structureCallbackResults.resultCode;
 
                                                         if (structureCallbackResults.Success())
                                                         {
@@ -11627,7 +13772,7 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 structureCallbackResults.data.OnRegisterInputToSelectableEventListener(selectableComponent.selectableAssetType, button, selectableCallbackResults =>
                                                                 {
-                                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                                    Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                                                 });
                                                             }
 
@@ -11635,25 +13780,25 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 structureCallbackResults.data.OnClearInputSelection(ScreenUIManager.Instance.GetCurrentUIScreenType(), clearCallbackResults => 
                                                                 {
-                                                                    Log(clearCallbackResults.resultsCode, clearCallbackResults.results, this);
+                                                                    Log(clearCallbackResults.resultCode, clearCallbackResults.result, this);
                                                                 });
 
                                                                 OnActionButtonInputs(button);
                                                             });
 
-                                                            callbackResults.results = "Action Group Initialized";
-                                                            callbackResults.resultsCode = Helpers.SuccessCode;
+                                                            callbackResults.result = "Action Group Initialized";
+                                                            callbackResults.resultCode = Helpers.SuccessCode;
                                                         }
                                                     });
                                                 }
                                                 else
                                                 {
-                                                    callbackResults.results = $"Button : {button.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                                    callbackResults.result = $"Button : {button.name}'s Value Missing / Not Assigned In The Editor Inspector.";
+                                                    callbackResults.resultCode = Helpers.ErrorCode;
                                                 }
                                             }
 
-                                            Log(initializationCallback.resultsCode, initializationCallback.results, this);
+                                            Log(initializationCallback.resultCode, initializationCallback.result, this);
                                         });
                                     }
                                 }
@@ -11994,7 +14139,7 @@ namespace Com.RedicalGames.Filar
                                                     LogError("Action Group Button Component Not Found", this);
                                             }
                                             else
-                                                Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
                                         });
                                     }
                                 }
@@ -12075,7 +14220,7 @@ namespace Com.RedicalGames.Filar
                                                             LogError($"===> No Text Displayer Set To Type : {textType}", this);
                                                     }
                                                     else
-                                                        Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                                        Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
                                                 });
                                             }
                                             else
@@ -12245,20 +14390,20 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         button.SetButtonActionEvent(buttonAction);
 
-                                                        callbackResults.results = $"Set Action Button Event Success - Action Button : {button.name} Of Type : {actionType} Found.";
-                                                        callbackResults.resultsCode = Helpers.SuccessCode;
+                                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {button.name} Of Type : {actionType} Found.";
+                                                        callbackResults.resultCode = Helpers.SuccessCode;
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.results = $"Set Action Button Event Failed - Action Button : {button.name} Of Type : {actionType} Found With Missing Value - For Screen Widget : {name}.";
-                                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {button.name} Of Type : {actionType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
                                                     }
                                                 }
                                                 else
                                                     LogError("Action Group Button Component Not Found", this);
                                             }
                                             else
-                                                Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
                                         });
                                     }
                                 }
@@ -12268,8 +14413,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -12306,7 +14451,7 @@ namespace Com.RedicalGames.Filar
                                                 LogError("Action Group Button Component Not Found", this);
                                         }
                                         else
-                                            Log(dataPacketsCallback.resultsCode, dataPacketsCallback.results, this);
+                                            Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
                                     });
                                 }
                             }
@@ -12343,10 +14488,10 @@ namespace Com.RedicalGames.Filar
                     {
                         GetWidgetContainer().GetContent(this, contentFound =>
                         {
-                            if (Helpers.IsSuccessCode(contentFound.resultsCode))
+                            if (Helpers.IsSuccessCode(contentFound.resultCode))
                                 containerFolderWidgetsReferenceList = contentFound.data;
                             else
-                                Debug.LogWarning($"--> OnBeginDrag Failed With Results : {contentFound.results}");
+                                Debug.LogWarning($"--> OnBeginDrag Failed With Results : {contentFound.result}");
                         });
                     }
                     else
@@ -12362,10 +14507,10 @@ namespace Com.RedicalGames.Filar
                 {
                     GetWidgetContainer().GetWidgetSiblingIndex(this, foundSiblingIndex =>
                     {
-                        if (Helpers.IsSuccessCode(foundSiblingIndex.resultsCode))
+                        if (Helpers.IsSuccessCode(foundSiblingIndex.resultCode))
                             SetContentSiblingIndexValue(foundSiblingIndex.data);
                         else
-                            Debug.LogWarning($"GetWidgetSiblindIndex Results : {foundSiblingIndex.results}");
+                            Debug.LogWarning($"GetWidgetSiblindIndex Results : {foundSiblingIndex.result}");
                     });
                 }
             }
@@ -12458,7 +14603,7 @@ namespace Com.RedicalGames.Filar
 
                                             GetWidgetContainer().GetPlaceHolder(placeholder =>
                                             {
-                                                if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                if (Helpers.IsSuccessCode(placeholder.resultCode))
                                                 {
                                                     if (!placeholder.data.IsActive())
                                                         placeholder.data.ShowPlaceHolder(GetWidgetContainer().GetContentContainer(), widgetRect.sizeDelta, GetContentSiblingIndex());
@@ -12467,7 +14612,7 @@ namespace Com.RedicalGames.Filar
                                                     GetFolderWidgets();
                                                 }
                                                 else
-                                                    LogWarning(placeholder.results, this, () => OnBeginDragExecuted(eventData));
+                                                    LogWarning(placeholder.result, this, () => OnBeginDragExecuted(eventData));
                                             });
 
                                             #endregion
@@ -12513,13 +14658,13 @@ namespace Com.RedicalGames.Filar
 
                                         OnDragWidgetEvent(eventData, GetWidgetContainer().GetScrollerDragViewPort(), currentDragEventData =>
                                         {
-                                            if (Helpers.IsSuccessCode(currentDragEventData.resultsCode))
+                                            if (Helpers.IsSuccessCode(currentDragEventData.resultCode))
                                             {
                                                 OnEdgeScrolling(currentDragEventData.data);
                                                 HighlightHoveredFolderOnDrag(eventData, currentDragEventData.data);
                                             }
                                             else
-                                                LogError(currentDragEventData.results, this, () => OnDragExecuted(eventData));
+                                                LogError(currentDragEventData.result, this, () => OnDragExecuted(eventData));
                                         });
 
                                         #endregion
@@ -12580,7 +14725,7 @@ namespace Com.RedicalGames.Filar
 
                                         GetWidgetContainer().GetPlaceHolder(placeholder =>
                                         {
-                                            if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                            if (Helpers.IsSuccessCode(placeholder.resultCode))
                                             {
                                                 if (placeholder.data.IsActive())
                                                 {
@@ -12589,7 +14734,7 @@ namespace Com.RedicalGames.Filar
                                                 }
                                             }
                                             else
-                                                Debug.LogWarning($"--> Failed With Results : {placeholder.results}");
+                                                Debug.LogWarning($"--> Failed With Results : {placeholder.result}");
                                         });
 
                                         isDragging = false;
@@ -12633,7 +14778,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.HasFocusedSelectionInfo(name, hasSelectionCallback =>
                                 {
-                                    if (Helpers.IsSuccessCode(hasSelectionCallback.resultsCode))
+                                    if (Helpers.IsSuccessCode(hasSelectionCallback.resultCode))
                                     {
                                         StartCoroutine(ExecuteDeselectionStateChangedAsync());
                                     }
@@ -12697,12 +14842,12 @@ namespace Com.RedicalGames.Filar
                     {
                         projectSelectionCallbackResults.data.Deselect(name, deselectionCallback =>
                         {
-                            if (!Helpers.IsSuccessCode(deselectionCallback.resultsCode))
-                                LogError(deselectionCallback.results, this, () => ExecuteDeselectionStateChangedAsync());
+                            if (!Helpers.IsSuccessCode(deselectionCallback.resultCode))
+                                LogError(deselectionCallback.result, this, () => ExecuteDeselectionStateChangedAsync());
                         });
                     }
                     else
-                        Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                        Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                 });
 
                 yield return new WaitForEndOfFrame();
@@ -12716,7 +14861,7 @@ namespace Com.RedicalGames.Filar
                         if (containerCallbackResults.Success())
                             containerCallbackResults.data.OnFocusedSelectionStateUpdate();
                         else
-                            Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                            Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                     });
                 }
             }
@@ -12741,14 +14886,14 @@ namespace Com.RedicalGames.Filar
                                     {
                                         SceneAssetsManager.Instance.DirectoryFound(hoveredFolderData.storageData.projectDirectory, directoryCheckCallback =>
                                         {
-                                            if (Helpers.IsSuccessCode(directoryCheckCallback.resultsCode))
+                                            if (Helpers.IsSuccessCode(directoryCheckCallback.resultCode))
                                             {
                                                 StorageDirectoryData sourceDirectoryData = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? GetFolderData().storageData : GetAssetData().storageData;
                                                 StorageDirectoryData targetStorageData = GetTargetDirectoryFromSourceStorageDirectoryData(sourceDirectoryData, hoveredFolderData.storageData);
 
                                                 OnDragInsideFolderEvent(sourceDirectoryData, targetStorageData, widgetMovedCallback =>
                                                 {
-                                                    if (Helpers.IsSuccessCode(widgetMovedCallback.resultsCode))
+                                                    if (Helpers.IsSuccessCode(widgetMovedCallback.resultCode))
                                                     {
                                                         GetWidgetContainer().OnFocusToWidget(hoveredWidget, false, true);
 
@@ -12758,10 +14903,10 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 SelectableManager.Instance.OnClearFocusedSelectionsInfo(selectionInfoCleared =>
                                                                 {
-                                                                    if (Helpers.IsSuccessCode(selectionInfoCleared.resultsCode))
+                                                                    if (Helpers.IsSuccessCode(selectionInfoCleared.resultCode))
                                                                         SelectableManager.Instance.Select(hoveredFolderData.name, FocusedSelectionType.HoveredItem);
                                                                     else
-                                                                        LogError(selectionInfoCleared.results, this, () => OnPointerUpExecuted(eventData));
+                                                                        LogError(selectionInfoCleared.result, this, () => OnPointerUpExecuted(eventData));
                                                                 });
                                                             }
                                                             else
@@ -12775,7 +14920,7 @@ namespace Com.RedicalGames.Filar
 
                                                         if (notification.showNotifications)
                                                         {
-                                                            notification.message = widgetMovedCallback.results;
+                                                            notification.message = widgetMovedCallback.result;
                                                             NotificationSystemManager.Instance.ScheduleNotification(notification);
                                                         }
                                                     }
@@ -12795,7 +14940,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 GetWidgetContainer().GetPlaceHolder(placeholder =>
                                                                 {
-                                                                    if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                                    if (Helpers.IsSuccessCode(placeholder.resultCode))
                                                                     {
                                                                         if (placeholder.data.IsActive())
                                                                         {
@@ -12804,7 +14949,7 @@ namespace Com.RedicalGames.Filar
                                                                         }
                                                                     }
                                                                     else
-                                                                        LogWarning(placeholder.results, this, () => OnPointerUpExecuted(eventData));
+                                                                        LogWarning(placeholder.result, this, () => OnPointerUpExecuted(eventData));
                                                                 });
 
                                                                 OnReset();
@@ -12825,12 +14970,12 @@ namespace Com.RedicalGames.Filar
                                                             }
                                                         }
                                                         else
-                                                            LogWarning(widgetMovedCallback.results, this, () => OnPointerUpExecuted(eventData));
+                                                            LogWarning(widgetMovedCallback.result, this, () => OnPointerUpExecuted(eventData));
                                                     }
                                                 });
                                             }
                                             else
-                                                LogWarning(directoryCheckCallback.results, this, () => OnPointerUpExecuted(eventData));
+                                                LogWarning(directoryCheckCallback.result, this, () => OnPointerUpExecuted(eventData));
                                         });
                                     }
                                     else
@@ -12906,7 +15051,7 @@ namespace Com.RedicalGames.Filar
                                 dragPosition = dragPos;
                         }
                         else
-                            Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                            Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
                     }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
@@ -12916,15 +15061,15 @@ namespace Com.RedicalGames.Filar
 
                     widgetRect.anchoredPosition = dragPosition;
 
-                    callbackResults.results = $"Success - Dragging Widget At Position : {pos}";
+                    callbackResults.result = $"Success - Dragging Widget At Position : {pos}";
                     callbackResults.data = dragPosition;
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Failed - Dragging Off Screen";
+                    callbackResults.result = "Failed - Dragging Off Screen";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -13098,7 +15243,7 @@ namespace Com.RedicalGames.Filar
 
                 }
                 else
-                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
 
                #endregion 
 
@@ -13116,7 +15261,7 @@ namespace Com.RedicalGames.Filar
                 float distance = dragDistance / 100.0f;
                 distance = Mathf.Clamp(distance, 0.0f, 1.0f);
 
-                snap = distance <= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.SnapDraggedWidgetToHoveredFolderDistance).value;
+                snap = distance <= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.SnapDraggedWidgetToHoveredFolderDistance).value;
 
                 return snap;
             }
@@ -13143,8 +15288,8 @@ namespace Com.RedicalGames.Filar
                                 float targetDistanceDevided = targetDistance / 100.0f;
                                 float targetDistanceClampled = Mathf.Clamp(targetDistanceDevided, 0.0f, 1.0f);
 
-                                highlight = targetDistanceClampled <= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.HighlightHoveredFolderDistance).value;
-                                snap = targetDistanceClampled <= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.SnapDraggedWidgetToHoveredFolderDistance).value;
+                                highlight = targetDistanceClampled <= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.HighlightHoveredFolderDistance).value;
+                                snap = targetDistanceClampled <= SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.SnapDraggedWidgetToHoveredFolderDistance).value;
                                 targetScreenPosition = targetPos;
                                 targetWorldPosition = eventData.enterEventCamera.ScreenToWorldPoint(targetScreenPosition);
                             }
@@ -13185,7 +15330,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.OnMoveToDirectory(sourceDirectoryData, targetDirectoryData, widget.GetSelectableWidgetType(), fileMoveCallback =>
                                 {
-                                    if (Helpers.IsSuccessCode(fileMoveCallback.resultsCode))
+                                    if (Helpers.IsSuccessCode(fileMoveCallback.resultCode))
                                     {
                                         if (widget != null)
                                         {
@@ -13199,13 +15344,13 @@ namespace Com.RedicalGames.Filar
 
                                             GetWidgetContainer().GetPlaceHolder(placeholder =>
                                             {
-                                                if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                if (Helpers.IsSuccessCode(placeholder.resultCode))
                                                 {
                                                     if (placeholder.data.IsActive())
                                                         placeholder.data.ResetPlaceHolder();
                                                 }
                                                 else
-                                                    LogWarning(placeholder.results, this);
+                                                    LogWarning(placeholder.result, this);
                                             });
                                         }
                                         else
@@ -13213,8 +15358,8 @@ namespace Com.RedicalGames.Filar
 
                                         if (callback != null)
                                         {
-                                            callbackResults.results = fileMoveCallback.results;
-                                            callbackResults.resultsCode = fileMoveCallback.resultsCode;
+                                            callbackResults.result = fileMoveCallback.result;
+                                            callbackResults.resultCode = fileMoveCallback.resultCode;
                                         }
                                     }
                                     else
@@ -13228,32 +15373,32 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (callback != null)
                                             {
-                                                callbackResults.results = fileMoveCallback.results;
-                                                callbackResults.resultsCode = fileMoveCallback.resultsCode;
+                                                callbackResults.result = fileMoveCallback.result;
+                                                callbackResults.resultCode = fileMoveCallback.resultCode;
                                             }
                                             else
-                                                LogWarning($"On Move To Directory Failed With Results : {fileMoveCallback.results}", this);
+                                                LogWarning($"On Move To Directory Failed With Results : {fileMoveCallback.result}", this);
                                         }
                                     }
                                 });
                             }
                             else
                             {
-                                callbackResults.results = "Source / Target Directory Data Is Missing / Null Or Invalid.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Source / Target Directory Data Is Missing / Null Or Invalid.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = "Widget Is Null / Couldn't Cats This To UIScreenWidget<SceneDataPackets>";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Widget Is Null / Couldn't Cats This To UIScreenWidget<SceneDataPackets>";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
                         string assetType = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? "Folder" : "File";
-                        callbackResults.results = $"{assetType} Already Exist In Folder : {targetDirectoryData.name} ";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"{assetType} Already Exist In Folder : {targetDirectoryData.name} ";
+                        callbackResults.resultCode = Helpers.ErrorCode;
 
                         callbackResults.data = new DirectoryInfo
                         {
@@ -13362,9 +15507,9 @@ namespace Com.RedicalGames.Filar
 
                                 Debug.LogError($"==> New Selection State : {selectableComponent.GetCurrentSelectionState().showSelection}");
 
-                                callbackResults.results = $"Showing Selection Frame For [State] : {selectionInfoData.state} - (Widget) Selection For Game Object [Named] {this.name}.";
+                                callbackResults.result = $"Showing Selection Frame For [State] : {selectionInfoData.state} - (Widget) Selection For Game Object [Named] {this.name}.";
                                 callbackResults.data = GetWidgetSelectionInfoData(newSelectionInfoData);
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
 
                                 //if (selectionFrame.GetCurrentSelectionState().showSelection)
                                 //{
@@ -13390,27 +15535,27 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"Selection Widget Value For State : {selectionInfoData.state} - Not Found For Game Object {this.name}.";
+                                callbackResults.result = $"Selection Widget Value For State : {selectionInfoData.state} - Not Found For Game Object {this.name}.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
 
                             #endregion
                         }
                         else
                         {
-                            callbackResults.results = $"Not Initialized. Selection Frame For [State] : {selectionInfoData.state} is Missing / Null For Game Object [Named] : {this.name}.";
+                            callbackResults.result = $"Not Initialized. Selection Frame For [State] : {selectionInfoData.state} is Missing / Null For Game Object [Named] : {this.name}.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
                         StartCoroutine(OnSelectionFrameStateAsync(selectionInfoData.showSelection, selectionInfoData.state, selectionInfoData.showTint));
 
-                        callbackResults.results = "Async Called. OnSelectionFrameState Async Called.";
+                        callbackResults.result = "Async Called. OnSelectionFrameState Async Called.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.InfoCode;
+                        callbackResults.resultCode = Helpers.InfoCode;
                     }
                 }
 
@@ -13812,22 +15957,22 @@ namespace Com.RedicalGames.Filar
 
                     if(assigned)
                     {
-                        callbackResults.results = $"UI Action Component : {name} Has Required Components";
+                        callbackResults.result = $"UI Action Component : {name} Has Required Components";
                         callbackResults.data = GetUIComponentList();
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"UI Action Component : {name} Has Some Missing Data For Component : {missingValueInfo}. Value Is Not Assigned In The Editor IInspector";
+                        callbackResults.result = $"UI Action Component : {name} Has Some Missing Data For Component : {missingValueInfo}. Value Is Not Assigned In The Editor IInspector";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"{name} Is Set To Initialize Component But However, Buttons Are Not Assigned In The Inspector Panel. Triggered From : {fromClass.name}";
+                    callbackResults.result = $"{name} Is Set To Initialize Component But However, Buttons Are Not Assigned In The Inspector Panel. Triggered From : {fromClass.name}";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -13876,8 +16021,8 @@ namespace Com.RedicalGames.Filar
 
                     Helpers.GetAppComponentValid(screenData, screenData.name, componentValidCallbackResults =>
                     {
-                        callbackResults.results = componentValidCallbackResults.results;
-                        callbackResults.resultsCode = componentValidCallbackResults.resultsCode;
+                        callbackResults.result = componentValidCallbackResults.result;
+                        callbackResults.resultCode = componentValidCallbackResults.resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -13885,8 +16030,8 @@ namespace Com.RedicalGames.Filar
 
                             LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> Screen Init : On Show Status : {onShowResults}", this);
 
-                            callbackResults.results = GetScreenViewIsInitialized(onShowResults).results;
-                            callbackResults.resultsCode = GetScreenViewIsInitialized(onShowResults).resultsCode;
+                            callbackResults.result = GetScreenViewIsInitialized(onShowResults).result;
+                            callbackResults.resultCode = GetScreenViewIsInitialized(onShowResults).resultCode;
 
                             if (callbackResults.Success())
                             {
@@ -13896,13 +16041,13 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.results = InitializeViewFaderCallbackResults().results;
-                                        callbackResults.resultsCode = InitializeViewFaderCallbackResults().resultsCode;
+                                        callbackResults.result = InitializeViewFaderCallbackResults().result;
+                                        callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
 
                                         if (callbackResults.Success())
                                         {
-                                            callbackResults.results = GetActiveViewFader().results;
-                                            callbackResults.resultsCode = GetActiveViewFader().resultsCode;
+                                            callbackResults.result = GetActiveViewFader().result;
+                                            callbackResults.resultCode = GetActiveViewFader().resultCode;
 
                                             if (callbackResults.Success())
                                                 GetActiveViewFader().data.Init(this, initializationCallbackResults => { callbackResults = initializationCallbackResults; });
@@ -13910,7 +16055,7 @@ namespace Com.RedicalGames.Filar
                                         else
                                         {
                                             callbackResults.data = screenDataSetupCallbackResults.data;
-                                            callbackResults.resultsCode = Helpers.SuccessCode;
+                                            callbackResults.resultCode = Helpers.SuccessCode;
                                         }
 
                                         if(callbackResults.Success())
@@ -13941,8 +16086,8 @@ namespace Com.RedicalGames.Filar
                 this.screenType = screenType;
                 this.initialVisibility = initialVisibility;
 
-                callbackResults.results = (this.screenType != UIScreenType.None)? $"Initialized View Fader : {name} For Screen Of Type : {this.screenType}" : $"Failed To Initialize View Fader : {name} - Screen Type Is Set To Default / None.";
-                callbackResults.resultsCode = (this.screenType != UIScreenType.None) ? Helpers.SuccessCode : Helpers.WarningCode;
+                callbackResults.result = (this.screenType != UIScreenType.None)? $"Initialized View Fader : {name} For Screen Of Type : {this.screenType}" : $"Failed To Initialize View Fader : {name} - Screen Type Is Set To Default / None.";
+                callbackResults.resultCode = (this.screenType != UIScreenType.None) ? Helpers.SuccessCode : Helpers.WarningCode;
 
                 callback?.Invoke(callbackResults);
             }
@@ -13973,9 +16118,9 @@ namespace Com.RedicalGames.Filar
 
                 bool hasComponents = (view != null && (onShowScreen)? !view.activeInHierarchy && !view.activeSelf : view.activeInHierarchy && view.activeSelf);
 
-                callbackResults.results = (hasComponents)? $"Screen View : {name} Has Been Loaded Successfully And Is Active." : $"Failed To Get Screen View : {name} - Screen View's Value Is Missing / Null / Not Assigned In The Unity Inspector Panel.";
+                callbackResults.result = (hasComponents)? $"Screen View : {name} Has Been Loaded Successfully And Is Active." : $"Failed To Get Screen View : {name} - Screen View's Value Is Missing / Null / Not Assigned In The Unity Inspector Panel.";
                 callbackResults.data = (hasComponents) ? view : default;
-                callbackResults.resultsCode = (hasComponents) ? Helpers.SuccessCode : Helpers.ErrorCode;
+                callbackResults.resultCode = (hasComponents) ? Helpers.SuccessCode : Helpers.ErrorCode;
 
                 return callbackResults;
             }
@@ -13984,18 +16129,18 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.results = GetScreenViewIsInitialized(true).results;
-                callbackResults.resultsCode = GetScreenViewIsInitialized(true).resultsCode;
+                callbackResults.result = GetScreenViewIsInitialized(true).result;
+                callbackResults.resultCode = GetScreenViewIsInitialized(true).resultCode;
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.results = InitializeViewFaderCallbackResults().results;
-                    callbackResults.resultsCode = InitializeViewFaderCallbackResults().resultsCode;
+                    callbackResults.result = InitializeViewFaderCallbackResults().result;
+                    callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.results = GetActiveViewFader().results;
-                        callbackResults.resultsCode = GetActiveViewFader().resultsCode;
+                        callbackResults.result = GetActiveViewFader().result;
+                        callbackResults.resultCode = GetActiveViewFader().resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -14010,11 +16155,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 var fadeModeType = faderComponent.GetScreenFadeMode();
 
-                                LogInfoType fadeViewResultsCode = (fadeModeType == ScreenFadeModeType.Default || fadeModeType == ScreenFadeModeType.OnShowScreen)? Helpers.SuccessCode : Helpers.ErrorCode;
+                                LogInfoChannel fadeViewResultsCode = (fadeModeType == ScreenFadeModeType.Default || fadeModeType == ScreenFadeModeType.OnShowScreen)? Helpers.SuccessCode : Helpers.ErrorCode;
                                 string fadeViewResults = (fadeViewResultsCode == Helpers.SuccessCode) ? $"Successfully Fading Out And Showing Screen : {GetUIScreenType()} With Fade Mode : {fadeModeType}" : $"Fade View Mode Is Disabled On Show : Current Mode Is Set To : {fadeModeType}";
 
-                                callbackResults.results = fadeViewResults;
-                                callbackResults.resultsCode = fadeViewResultsCode;
+                                callbackResults.result = fadeViewResults;
+                                callbackResults.resultCode = fadeViewResultsCode;
 
                                 if (callbackResults.Success())
                                 {
@@ -14024,19 +16169,19 @@ namespace Com.RedicalGames.Filar
                                 else
                                 {
                                     OnScreenViewVisibility(true);
-                                    callbackResults.results = $"On Show Screen : {GetUIScreenType()} - With Fader Mode Results : {callbackResults.results}.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = $"On Show Screen : {GetUIScreenType()} - With Fader Mode Results : {callbackResults.result}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                             }
                             else
-                                Log(callbackResults.resultsCode, callbackResults.results, this);
+                                Log(callbackResults.resultCode, callbackResults.result, this);
                         }
                     }
                     else
                     {
                         OnScreenViewVisibility(true);
-                        callbackResults.results = $"On Show Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.results}.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"On Show Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.result}.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                 }
 
@@ -14047,18 +16192,18 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.results = GetScreenViewIsInitialized(false).results;
-                callbackResults.resultsCode = GetScreenViewIsInitialized(false).resultsCode;
+                callbackResults.result = GetScreenViewIsInitialized(false).result;
+                callbackResults.resultCode = GetScreenViewIsInitialized(false).resultCode;
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.results = InitializeViewFaderCallbackResults().results;
-                    callbackResults.resultsCode = InitializeViewFaderCallbackResults().resultsCode;
+                    callbackResults.result = InitializeViewFaderCallbackResults().result;
+                    callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.results = GetActiveViewFader().results;
-                        callbackResults.resultsCode = GetActiveViewFader().resultsCode;
+                        callbackResults.result = GetActiveViewFader().result;
+                        callbackResults.resultCode = GetActiveViewFader().resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -14070,11 +16215,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 var fadeModeType = faderComponent.GetScreenFadeMode();
 
-                                LogInfoType fadeViewResultsCode = (fadeModeType == ScreenFadeModeType.Default || fadeModeType == ScreenFadeModeType.OnHideScreen) ? Helpers.SuccessCode : Helpers.ErrorCode;
+                                LogInfoChannel fadeViewResultsCode = (fadeModeType == ScreenFadeModeType.Default || fadeModeType == ScreenFadeModeType.OnHideScreen) ? Helpers.SuccessCode : Helpers.ErrorCode;
                                 string fadeViewResults = (fadeViewResultsCode == Helpers.SuccessCode) ? $"Successfully Fading In And Hidding Screen : {GetUIScreenType()} With Fade Mode : {fadeModeType}" : $"Fade View Mode Is Disabled On Hide : Current Mode Is Set To : {fadeModeType}";
 
-                                callbackResults.results = fadeViewResults;
-                                callbackResults.resultsCode = fadeViewResultsCode;
+                                callbackResults.result = fadeViewResults;
+                                callbackResults.resultCode = fadeViewResultsCode;
 
                                 if (callbackResults.Success())
                                 {
@@ -14089,19 +16234,19 @@ namespace Com.RedicalGames.Filar
                                     OnScreenViewVisibility(false);
                                     faderComponent.SetFaderVisibilityValue(0.0f);
 
-                                    callbackResults.results = $"On Hide Screen : {GetUIScreenType()} - With Fader Mode Results : {callbackResults.results}.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = $"On Hide Screen : {GetUIScreenType()} - With Fader Mode Results : {callbackResults.result}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                             }
                             else
-                                Log(callbackResults.resultsCode, callbackResults.results, this);
+                                Log(callbackResults.resultCode, callbackResults.result, this);
                         }
                     }
                     else
                     {
                         OnScreenViewVisibility(false);
-                        callbackResults.results = $"On Hide Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.results}.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"On Hide Screen Of Type : {GetUIScreenType()} - Status : {callbackResults.result}.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                 }
 
@@ -14112,12 +16257,12 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<ScreenFaderComponent> callbackResults = new CallbackData<ScreenFaderComponent>();
 
-                callbackResults.results = fader.GetActiveFader().results;
-                callbackResults.resultsCode = fader.GetActiveFader().resultsCode;
+                callbackResults.result = fader.GetActiveFader().result;
+                callbackResults.resultCode = fader.GetActiveFader().resultCode;
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.results = $"Get Active View Fader : {name} Is Initialized And Active.";
+                    callbackResults.result = $"Get Active View Fader : {name} Is Initialized And Active.";
                     callbackResults.data = fader;
                 }
 
@@ -14128,10 +16273,10 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<ScreenFaderComponent> callbackResults = new CallbackData<ScreenFaderComponent>();
 
-                callbackResults.results = fader.OnCanInitializeViewFaderResults().results;
-                callbackResults.resultsCode = fader.OnCanInitializeViewFaderResults().resultsCode;
+                callbackResults.result = fader.OnCanInitializeViewFaderResults().result;
+                callbackResults.resultCode = fader.OnCanInitializeViewFaderResults().resultCode;
 
-                callbackResults.results = (callbackResults.Success())? callbackResults.results : $"View Fader Is Not Applicable For Screen : {GetUIScreenType()}";
+                callbackResults.result = (callbackResults.Success())? callbackResults.result : $"View Fader Is Not Applicable For Screen : {GetUIScreenType()}";
                 callbackResults.data = (callbackResults.Success()) ? fader : default;
 
                 return callbackResults;
@@ -14237,10 +16382,10 @@ namespace Com.RedicalGames.Filar
 
                 GetScreenView().Init(this, async screenViewInitializationCallbackResults =>
                 {
-                    callbackResults.results = screenViewInitializationCallbackResults.results;
-                    callbackResults.resultsCode = screenViewInitializationCallbackResults.resultsCode;
+                    callbackResults.result = screenViewInitializationCallbackResults.result;
+                    callbackResults.resultCode = screenViewInitializationCallbackResults.resultCode;
 
-                    Log(callbackResults.resultsCode , $" <<<<<<<<<===================================>>>>>>>>>>> On Screen View Init Code : {callbackResults.resultsCode} - Results : {callbackResults.results}", this);
+                    Log(callbackResults.resultCode , $" <<<<<<<<<===================================>>>>>>>>>>> On Screen View Init Code : {callbackResults.resultCode} - Results : {callbackResults.result}", this);
 
                     if (callbackResults.Success())
                     {
@@ -14248,30 +16393,30 @@ namespace Com.RedicalGames.Filar
                         {
                             if (screenWidgetsList == null || screenActionButtonList == null || loadingItemList == null || screenActionDropDownList == null || screenActionInputFieldList == null || screenTextList == null || screenActionSliderList == null || screenActionCheckboxList == null)
                             {
-                                callbackResults.results = "Missing Components - Check : Pop Up List / Screen Action Buton List / Loading Item List / Screen Action Drop Down List / Screen Action Input Field List / Screen Text List / Screen Action Slider List / Screen Action Checkbox List.";
+                                callbackResults.result = "Missing Components - Check : Pop Up List / Screen Action Buton List / Loading Item List / Screen Action Drop Down List / Screen Action Input Field List / Screen Text List / Screen Action Slider List / Screen Action Checkbox List.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                             else
                             {
-                                callbackResults.results = "Includes Loading Assets - Has Required Components";
+                                callbackResults.result = "Includes Loading Assets - Has Required Components";
                                 callbackResults.data = this;
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                         }
                         else
                         {
                             if (screenWidgetsList == null || screenActionButtonList == null || screenActionDropDownList == null || screenActionInputFieldList == null || screenTextList == null || screenActionSliderList == null || screenActionCheckboxList == null)
                             {
-                                callbackResults.results = "Missing Components - Check : Pop Up List / Screen Action Buton List / Screen Action Drop Down List / Screen Action Input Field List / Screen Text List / Screen Action Slider List / Screen Action Checkbox List.";
+                                callbackResults.result = "Missing Components - Check : Pop Up List / Screen Action Buton List / Screen Action Drop Down List / Screen Action Input Field List / Screen Text List / Screen Action Slider List / Screen Action Checkbox List.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                             else
                             {
-                                callbackResults.results = "Has Required Components";
+                                callbackResults.result = "Has Required Components";
                                 callbackResults.data = this;
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                         }
 
@@ -14289,7 +16434,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, button, selectableCallbackResults =>
                                                 {
-                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                    Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                                 });
                                             });
                                         }
@@ -14325,7 +16470,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, slider, selectableCallbackResults =>
                                                 {
-                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                    Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                                 });
                                             });
                                         }
@@ -14361,7 +16506,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, checkbox, selectableCallbackResults =>
                                                 {
-                                                    Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                    Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                                 });
                                             });
                                         }
@@ -14417,7 +16562,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, dropdown, selectableCallbackResults =>
                                                     {
-                                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                                     });
                                                 });
                                             }
@@ -14476,7 +16621,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     structureCallbackResults.data.OnRegisterInputToSelectableEventListener(screenType, inputField, selectableCallbackResults =>
                                                     {
-                                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                                     });
                                                 });
                                             }
@@ -14589,20 +16734,20 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        callbackResults.results = $"Screen Widget : {widget.name} Widget Layouts Not Initialized.";
+                                        callbackResults.result = $"Screen Widget : {widget.name} Widget Layouts Not Initialized.";
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                        callbackResults.resultCode = Helpers.ErrorCode;
                                     }
                                 }
                             }
                         }
                         else
-                            LogError(callbackResults.results, this);
+                            LogError(callbackResults.result, this);
                     }
                     else
                     {
-                        callbackResults.results = screenViewInitializationCallbackResults.results;
-                        callbackResults.resultsCode = screenViewInitializationCallbackResults.resultsCode;
+                        callbackResults.result = screenViewInitializationCallbackResults.result;
+                        callbackResults.resultCode = screenViewInitializationCallbackResults.resultCode;
                     }
                 });
 
@@ -14621,18 +16766,18 @@ namespace Com.RedicalGames.Filar
 
                 switch (widgetType)
                 {
-                    case WidgetType.ConfirmationPopWidget:
+                    case WidgetType.ConfirmationPopUpWidget:
 
 
                         switch (actionType)
                         {
-                            case InputActionButtonType.HideScreenWidget:
+                            case InputActionButtonType.CloseButton:
 
                                 HideScreenWidget(widgetType, dataPackets);
 
                                 break;
 
-                            case InputActionButtonType.Confirm:
+                            case InputActionButtonType.ConfirmationButton:
 
                                 //Debug.Log("--> Confirmed From Pop Up.");
 
@@ -14661,7 +16806,7 @@ namespace Com.RedicalGames.Filar
 
                         switch (actionType)
                         {
-                            case InputActionButtonType.HideScreenWidget:
+                            case InputActionButtonType.CloseButton:
 
                                 HideScreenWidget(widgetType, dataPackets);
 
@@ -14820,16 +16965,16 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"Screen UI Of Type : {GetUIScreenType()} Is Not Equal To The Current Screen View Of Type : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
-                        callbackResults.classInfo = this;
+                        callbackResults.result = $"Screen UI Of Type : {GetUIScreenType()} Is Not Equal To The Current Screen View Of Type : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.SetAppClassInfo(this);
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Screen UI Manager Instance Is Not Yet Initialized.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
-                    callbackResults.classInfo = this;
+                    callbackResults.result = "Screen UI Manager Instance Is Not Yet Initialized.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                    callbackResults.SetAppClassInfo(this);
                 }
 
                 callback?.Invoke(callbackResults);
@@ -14976,7 +17121,7 @@ namespace Com.RedicalGames.Filar
                                                                             if (contentIndexCallbackResults.Success())
                                                                                 OnDropDownFilterOptions(contentIndexCallbackResults.data);
                                                                             else
-                                                                                Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                                                Log(contentIndexCallbackResults.resultCode, contentIndexCallbackResults.result, this);
                                                                         });
                                                                     }
                                                                     else
@@ -14992,13 +17137,13 @@ namespace Com.RedicalGames.Filar
                                                                             if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
                                                                                 dropdown.value.value = (int)SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
                                                                             else
-                                                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                                                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
 
                                                                             break;
                                                                     }
                                                                 }
                                                                 else
-                                                                    Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                                                                    Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
 
                                                                 SceneAssetsManager.Instance.SetCanFilterContent(true);
                                                             }
@@ -15015,7 +17160,7 @@ namespace Com.RedicalGames.Filar
 
                                                     case InputDropDownActionType.SortingList:
 
-                                                        Helpers.StringListValueValid(contentGroup?.contents, hasContentsCallbackResults =>
+                                                        Helpers.StringValueValid(hasContentsCallbackResults =>
                                                         {
                                                             if (hasContentsCallbackResults.Success() && SceneAssetsManager.Instance.CanSortContents())
                                                             {
@@ -15042,7 +17187,7 @@ namespace Com.RedicalGames.Filar
                                                                             if (contentIndexCallbackResults.Success())
                                                                                 OnDropDownSortingOptions(contentIndexCallbackResults.data);
                                                                             else
-                                                                                Log(contentIndexCallbackResults.resultsCode, contentIndexCallbackResults.results, this);
+                                                                                Log(contentIndexCallbackResults.resultCode, contentIndexCallbackResults.result, this);
                                                                         });
                                                                     }
                                                                     else
@@ -15074,7 +17219,7 @@ namespace Com.RedicalGames.Filar
                                                                                             if (dataSavedCallbackResults.Success())
                                                                                                 dropdown.value.value = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(sortType);
                                                                                             else
-                                                                                                Log(dataSavedCallbackResults.resultsCode, dataSavedCallbackResults.results, this);
+                                                                                                Log(dataSavedCallbackResults.resultCode, dataSavedCallbackResults.result, this);
                                                                                         });
                                                                                     }
                                                                                     else
@@ -15084,20 +17229,21 @@ namespace Com.RedicalGames.Filar
                                                                                     dropdown.value.value = index;
                                                                             }
                                                                             else
-                                                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                                                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
 
                                                                             break;
                                                                     }
                                                                 }
                                                                 else
-                                                                    Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                                                                    Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
                                                             }
                                                             else
                                                             {
                                                                 dropdown.SetContent(new List<string> { contentGroup?.placeHolder });
                                                                 dropdown.SetUIInputState(InputUIState.Disabled);
                                                             }
-                                                        });
+
+                                                        }, Helpers.GetArray(contentGroup?.contents));
 
                                                         break;
                                                 }
@@ -15123,10 +17269,10 @@ namespace Com.RedicalGames.Filar
                                         }
                                     }
                                     else
-                                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
                                 }
                                 else
-                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                    Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                             });
                         }
                         else
@@ -15138,7 +17284,7 @@ namespace Com.RedicalGames.Filar
                     #endregion
                 }
                 else
-                    LogWarning("ScreenActionDropDownList Is Null / Empty.", this);
+                    LogWarning("ScreenActionDropDownList Is Null / Empty, .", this);
             }
 
             public void SetActionDropdownState(InputDropDownActionType actionType, InputUIState state)
@@ -15562,11 +17708,11 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         SceneAssetsManager.Instance.DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
                                                         {
-                                                            if (Helpers.IsSuccessCode(directoryFoundCallback.resultsCode))
+                                                            if (Helpers.IsSuccessCode(directoryFoundCallback.resultCode))
                                                             {
                                                                 SceneAssetsManager.Instance.BuildSceneAsset(currentFolder.storageData, (assetBuiltCallback) =>
                                                                 {
-                                                                    if (Helpers.IsSuccessCode(assetBuiltCallback.resultsCode))
+                                                                    if (Helpers.IsSuccessCode(assetBuiltCallback.resultCode))
                                                                     {
                                                                         if (ScreenUIManager.Instance != null)
                                                                             ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
@@ -15574,11 +17720,11 @@ namespace Com.RedicalGames.Filar
                                                                             LogWarning("Screen Manager Missing.", this, () => OnBuildNewAsset_ActionEvent(dataPackets));
                                                                     }
                                                                     else
-                                                                        LogWarning(assetBuiltCallback.results, this, () => OnBuildNewAsset_ActionEvent(dataPackets));
+                                                                        LogWarning(assetBuiltCallback.result, this, () => OnBuildNewAsset_ActionEvent(dataPackets));
                                                                 });
                                                             }
                                                             else
-                                                                LogWarning(directoryFoundCallback.results, this, () => OnBuildNewAsset_ActionEvent(dataPackets));
+                                                                LogWarning(directoryFoundCallback.result, this, () => OnBuildNewAsset_ActionEvent(dataPackets));
                                                         });
                                                     }
                                                     else
@@ -15679,11 +17825,11 @@ namespace Com.RedicalGames.Filar
                 {
                     await screenManagerCallbackResults.data.GoToSelectedScreenAsync(dataPackets, screenLoadedCallbackResults =>
                     {
-                        Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this); ;
+                        Log(screenLoadedCallbackResults.resultCode, screenLoadedCallbackResults.result, this); ;
                     });
                 }
                 else
-                    Log(screenManagerCallbackResults.resultsCode, screenManagerCallbackResults.results, this);
+                    Log(screenManagerCallbackResults.resultCode, screenManagerCallbackResults.result, this);
             }
 
             void OnReturn_ActionEvent()
@@ -15699,7 +17845,7 @@ namespace Com.RedicalGames.Filar
 
                             ScreenNavigationManager.Instance.ReturnFromFolder(returnFromFolder =>
                             {
-                                if (!Helpers.IsSuccessCode(returnFromFolder.resultsCode))
+                                if (!Helpers.IsSuccessCode(returnFromFolder.resultCode))
                                 {
 
 
@@ -15755,15 +17901,15 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                 }
                                                 else
-                                                    Log(onCreateNewCallbackResults.resultsCode, onCreateNewCallbackResults.results, this);
+                                                    Log(onCreateNewCallbackResults.resultCode, onCreateNewCallbackResults.result, this);
                                             });
                                         }
                                         else
-                                            Log(placeholderCallbackResults.resultsCode, placeholderCallbackResults.results, this);
+                                            Log(placeholderCallbackResults.resultCode, placeholderCallbackResults.result, this);
                                     });
                                 }
                                 else
-                                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                             });
                         }
                         else
@@ -15796,10 +17942,10 @@ namespace Com.RedicalGames.Filar
                                     {
                                         contentContainer.data.Pagination_CurrentPageContainsSelection(hasSelectionCallback =>
                                         {
-                                            if (Helpers.IsSuccessCode(hasSelectionCallback.resultsCode))
+                                            if (Helpers.IsSuccessCode(hasSelectionCallback.resultCode))
                                                 selectionName = hasSelectionCallback.data;
                                             else
-                                                LogError(hasSelectionCallback.results, this, () => OnChangeLayoutView_ActionEvent(dataPackets));
+                                                LogError(hasSelectionCallback.result, this, () => OnChangeLayoutView_ActionEvent(dataPackets));
                                         });
                                     }
 
@@ -15828,7 +17974,7 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                            Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
                                     });
 
                                     if (!string.IsNullOrEmpty(selectionName))
@@ -15856,7 +18002,7 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                            Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
                                     });
                                 }
 
@@ -15866,7 +18012,7 @@ namespace Com.RedicalGames.Filar
                                 LogSuccess($"Selectable Manager Instance Is Not Yet Initialized.", this, () => OnChangeLayoutView_ActionEvent(dataPackets));
                         }
                         else
-                            LogWarning(contentContainer.results, this, () => OnChangeLayoutView_ActionEvent(dataPackets));
+                            LogWarning(contentContainer.result, this, () => OnChangeLayoutView_ActionEvent(dataPackets));
                     });
                 }
                 else
@@ -15879,7 +18025,7 @@ namespace Com.RedicalGames.Filar
                 {
                     SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, contentContainer =>
                     {
-                        if (Helpers.IsSuccessCode(contentContainer.resultsCode))
+                        if (Helpers.IsSuccessCode(contentContainer.resultCode))
                         {
                             SceneAssetsManager.Instance.GetPaginationViewType(paginationViewCallbackResults => 
                             {
@@ -15901,11 +18047,11 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    Log(paginationViewCallbackResults.resultsCode, paginationViewCallbackResults.results, this);
+                                    Log(paginationViewCallbackResults.resultCode, paginationViewCallbackResults.result, this);
                             });
                         }
                         else
-                            LogWarning(contentContainer.results, this, () => OnPagination_ActionEvent(dataPackets));
+                            LogWarning(contentContainer.result, this, () => OnPagination_ActionEvent(dataPackets));
                     });
                 }
                 else
@@ -15920,7 +18066,7 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, contentContainer =>
                         {
-                            if (Helpers.IsSuccessCode(contentContainer.resultsCode))
+                            if (Helpers.IsSuccessCode(contentContainer.resultCode))
                             {
                                 Debug.LogError("==> On Screen Refresh - Check Here - Has Something To Do With Ambushed Data.");
 
@@ -15936,7 +18082,7 @@ namespace Com.RedicalGames.Filar
                                 //}
                             }
                             else
-                                LogWarning(contentContainer.results, this, () => OnRefresh_ActionEvent());
+                                LogWarning(contentContainer.result, this, () => OnRefresh_ActionEvent());
                         });
                     }
                     else
@@ -16201,8 +18347,8 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = componentCheckCallback.results;
-                        callbackResults.resultsCode = componentCheckCallback.resultsCode;
+                        callbackResults.result = componentCheckCallback.result;
+                        callbackResults.resultCode = componentCheckCallback.resultCode;
                     }
                 });
 
@@ -16224,7 +18370,7 @@ namespace Com.RedicalGames.Filar
                 if (screenWidgetsList.Count == 0)
                     return;
 
-                var widget = screenWidgetsList.Find(widget => widget.type.Equals(widgetType));
+                var widget = screenWidgetsList.Find(widget => widget.widgetType.Equals(widgetType));
 
                 if (widget)
                 {
@@ -16243,7 +18389,7 @@ namespace Com.RedicalGames.Filar
                         if (scrollerResetCallback.Success())
                             widget.ShowScreenWidget(dataPackets);
                         else
-                            Log(scrollerResetCallback.resultsCode, scrollerResetCallback.results, this);
+                            Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
                     });
                 }
                 else
@@ -16255,12 +18401,14 @@ namespace Com.RedicalGames.Filar
                 if (screenWidgetsList.Count == 0)
                     return;
 
-                var widget = screenWidgetsList.Find(widget => widget.type.Equals(dataPackets.widgetType));
+                var widget = screenWidgetsList.Find(widget => widget.widgetType.Equals(dataPackets.widgetType));
 
                 if (widget)
                 {
                     if (dataPackets.blurScreen)
                         Blur(dataPackets);
+
+                    LogInfo($" <============================================> Show Widget : {dataPackets.widgetType} Now!", this);
 
                     widget.ResetScrollPosition(scrollerResetCallback => 
                     {
@@ -16279,19 +18427,19 @@ namespace Com.RedicalGames.Filar
                                                 if (inputsClearedCallbackResults.Success())
                                                     widget.ShowScreenWidget(dataPackets);
                                                 else
-                                                    Log(inputsClearedCallbackResults.resultsCode, inputsClearedCallbackResults.results, this);
+                                                    Log(inputsClearedCallbackResults.resultCode, inputsClearedCallbackResults.result, this);
                                             });
                                         }
                                         else
-                                            Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
                                     });
                                 }
                                 else
-                                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                    Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                             });
                         }
                         else
-                            Log(scrollerResetCallback.resultsCode, scrollerResetCallback.results, this);
+                            Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
                     });
                 }
                 else
@@ -16305,7 +18453,7 @@ namespace Com.RedicalGames.Filar
 
                 foreach (var widget in screenWidgetsList)
                 {
-                    if (widget.type == dataPackets.widgetType)
+                    if (widget.widgetType == dataPackets.widgetType)
                     {
                         if (dataPackets.blurScreen)
                             Blur(dataPackets);
@@ -16326,7 +18474,7 @@ namespace Com.RedicalGames.Filar
                 if (screenWidgetsList.Count == 0)
                     return;
 
-                var widget = screenWidgetsList.Find(widget => widget.type == widgetType);
+                var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
 
                 if (widget != null)
                 {
@@ -16345,15 +18493,15 @@ namespace Com.RedicalGames.Filar
                                             Focus();
                                         }
                                         else
-                                            Log(hideCallback.resultsCode, hideCallback.results, this);
+                                            Log(hideCallback.resultCode, hideCallback.result, this);
                                     });
                                 }
                                 else
-                                    Log(selectionsClearedCallbackResults.resultsCode, selectionsClearedCallbackResults.results, this);
+                                    Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
                             });
                         }
                         else
-                            Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
                     });
                 }
                 else
@@ -16362,7 +18510,7 @@ namespace Com.RedicalGames.Filar
 
             public Widget GetWidget(WidgetType widgetType)
             {
-                return screenWidgetsList.Find(widget => widget.type == widgetType);
+                return screenWidgetsList.Find(widget => widget.widgetType == widgetType);
             }
 
             public List<Widget> GetWidgets()
@@ -16375,7 +18523,7 @@ namespace Com.RedicalGames.Filar
                 if (screenWidgetsList.Count == 0)
                     return;
 
-                var widget = screenWidgetsList.Find(widget => widget.type == widgetType);
+                var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
 
                 if(widget != null)
                 {
@@ -16389,7 +18537,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     widget.Hide();
 
-                                    if (widgetType == WidgetType.ConfirmationPopWidget)
+                                    if (widgetType == WidgetType.ConfirmationPopUpWidget)
                                     {
                                         if (SelectableManager.Instance)
                                         {
@@ -16402,17 +18550,17 @@ namespace Com.RedicalGames.Filar
                                             LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
                                     }
 
-                                    if (widget.type == WidgetType.SceneAssetPreviewWidget)
+                                    if (widget.widgetType == WidgetType.SceneAssetPreviewWidget)
                                         if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
                                             ActionEvents.OnResetCameraToDefaultPoseEvent();
                                     Focus();
                                 }
                                 else
-                                    Log(selectionsClearedCallbackResults.resultsCode, selectionsClearedCallbackResults.results, this);
+                                    Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
                             });
                         }
                         else
-                            Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
                     });
 
 
@@ -16440,7 +18588,7 @@ namespace Com.RedicalGames.Filar
                 {
                     foreach (var popUpWidget in screenWidgetsList)
                     {
-                        if (popUpWidget.type == type)
+                        if (popUpWidget.widgetType == type)
                         {
                             widget = popUpWidget;
                             break;
@@ -16502,7 +18650,7 @@ namespace Com.RedicalGames.Filar
 
             void OnButtonClicked(Widget widget, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
-                widget.OnWidgetActionEvent(widget.type, actionType, dataPackets);
+                widget.OnWidgetActionEvent(widget.widgetType, actionType, dataPackets);
             }
 
             public void SetScreenData(SceneDataPackets dataPackets)
@@ -16802,13 +18950,13 @@ namespace Com.RedicalGames.Filar
                 {
                     layout?.SetActive(true);
 
-                    callbackResults.results = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Set To Active.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Set To Active.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Layout View Of Type : {layoutViewType} Is Not Initialized.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Not Initialized.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -16822,13 +18970,13 @@ namespace Com.RedicalGames.Filar
                 {
                     layout?.SetActive(false);
 
-                    callbackResults.results = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Deactivated.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Deactivated.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Layout View Of Type : {layoutViewType} Is Not Initialized.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Not Initialized.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -16866,22 +19014,22 @@ namespace Com.RedicalGames.Filar
 
                     if (initializedWidgetPrefabList != null && initializedWidgetPrefabList.Count > 0 )
                     {
-                        callbackResults.results = $"{screenWidgetPrefabDataList.Count} Initialized Screen UI Widgets Prefabs Data Found - Loaded.";
+                        callbackResults.result = $"{screenWidgetPrefabDataList.Count} Initialized Screen UI Widgets Prefabs Data Found - Loaded.";
                         callbackResults.data = screenWidgetPrefabDataList;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Find Initialized UI Screen Widgets Prefab Data From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                        callbackResults.result = $"Couldn't Find Initialized UI Screen Widgets Prefab Data From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Get All UI Screen Widgets Prefab Data From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                    callbackResults.result = $"Couldn't Get All UI Screen Widgets Prefab Data From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -16901,29 +19049,29 @@ namespace Com.RedicalGames.Filar
 
                         if (initializedWidgetPrefabList != null && initializedWidgetPrefabList.Count > 0)
                         {
-                            callbackResults.results = $"{widgetsPefabsFoundForScreenTypeList.Count} Initialized UI Screen Widget Prefab(s) For Screen Type : {screenType} Found - Loaded.";
+                            callbackResults.result = $"{widgetsPefabsFoundForScreenTypeList.Count} Initialized UI Screen Widget Prefab(s) For Screen Type : {screenType} Found - Loaded.";
                             callbackResults.data = widgetsPefabsFoundForScreenTypeList;
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Find Initialized UI Screen Widgets Prefab Data For Screen Type : {screenType} - From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                            callbackResults.result = $"Couldn't Find Initialized UI Screen Widgets Prefab Data For Screen Type : {screenType} - From UI Screen Widgets Prefab Data Library. - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Find Any UI Screen Widget Prefab Data For Screen Type : {screenType} - Please Make Sure UI Screen Widget Prefabs Data For Screen Type : {screenType} Is Initialized In Scene Assets Manager Editor Inspector.";
+                        callbackResults.result = $"Couldn't Find Any UI Screen Widget Prefab Data For Screen Type : {screenType} - Please Make Sure UI Screen Widget Prefabs Data For Screen Type : {screenType} Is Initialized In Scene Assets Manager Editor Inspector.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Get All UI Screen Widgets Prefab Data For Screen Type : {screenType} - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
+                    callbackResults.result = $"Couldn't Get All UI Screen Widgets Prefab Data For Screen Type : {screenType} - Screen Widget Prefab Data List Has No Data / Is Null / Empty / Not Initialized In Scene Assets Manager Editor Inspector.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -16979,37 +19127,37 @@ namespace Com.RedicalGames.Filar
 
                                 if (screenWidgetPrefabList.Contains(widgetPrefab))
                                 {
-                                    callbackResults.results = $"Added UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Library For Screen Type : {screenType}.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = $"Added UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Library For Screen Type : {screenType}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data For Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Library Of Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}. Not Sure What Could Be The Issue, Please Check Scene Assets Manager Prefab Library..";
-                                    callbackResults.resultsCode = Helpers.WarningCode;
+                                    callbackResults.result = $"Couldn't Add UI Screen Widget Prefab Data For Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Library Of Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}. Not Sure What Could Be The Issue, Please Check Scene Assets Manager Prefab Library..";
+                                    callbackResults.resultCode = Helpers.WarningCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Of Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Already Exists In The UI Screen Woidgets Data Library.";
-                                callbackResults.resultsCode = Helpers.WarningCode;
+                                callbackResults.result = $"Couldn't Add UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Of Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Already Exists In The UI Screen Woidgets Data Library.";
+                                callbackResults.resultCode = Helpers.WarningCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Of Screen Type : {screenType} - Screen Type : Is Invalid For This Data. Please Add To Matching Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}";
-                            callbackResults.resultsCode = Helpers.WarningCode;
+                            callbackResults.result = $"Couldn't Add UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} To UI Screen Widgets Prefab Data Of Screen Type : {screenType} - Screen Type : Is Invalid For This Data. Please Add To Matching Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}";
+                            callbackResults.resultCode = Helpers.WarningCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Data To UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Widget Is Null / Missing / Not Found.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Add UI Screen Widget Prefab Data To UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Widget Is Null / Missing / Not Found.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Add UI Screen Widget Prefab Dat To UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Widgets List Is Null / Not Initialized In SCene Assets Manager's Editor.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Couldn't Add UI Screen Widget Prefab Dat To UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Widgets List Is Null / Not Initialized In SCene Assets Manager's Editor.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -17031,37 +19179,37 @@ namespace Com.RedicalGames.Filar
 
                                 if (!screenWidgetPrefabList.Contains(widgetPrefab))
                                 {
-                                    callbackResults.results = $"Removed UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType}.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = $"Removed UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Not Removed. Not Sure What Could Be The Issue, Please Check Here.";
-                                    callbackResults.resultsCode = Helpers.WarningCode;
+                                    callbackResults.result = $"Couldn't Remove UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Not Removed. Not Sure What Could Be The Issue, Please Check Here.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Doesn't Exist In The UI Screen Widgets Data Library.";
-                                callbackResults.resultsCode = Helpers.WarningCode;
+                                callbackResults.result = $"Couldn't Remove UI Screen Widget Prefab Data Of Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - UI Screen Widget Prefab Data Named : {widgetPrefab.name} With Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} Doesn't Exist In The UI Screen Widgets Data Library.";
+                                callbackResults.resultCode = Helpers.WarningCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab Data For Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Type : Is Invalid For This Data. Please Check To See If Is Matching Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}";
-                            callbackResults.resultsCode = Helpers.WarningCode;
+                            callbackResults.result = $"Couldn't Remove UI Screen Widget Prefab Data For Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()} From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Type : Is Invalid For This Data. Please Check To See If Is Matching Screen Type : {widgetPrefab.GetUIWidgetPresenterScreenType()}";
+                            callbackResults.resultCode = Helpers.WarningCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Widget Is Null / Missing / Not Found.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Couldn't Remove UI Screen Widget Prefab From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Widget Is Null / Missing / Not Found.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Couldn't Remove UI Screen Widget Prefab From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Widgets List Is Null / Not Initialized In SCene Assets Manager's Editor.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Couldn't Remove UI Screen Widget Prefab From UI Screen Widgets Prefab Data Library For Screen Type : {screenType} - Screen Widgets List Is Null / Not Initialized In SCene Assets Manager's Editor.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -17087,36 +19235,36 @@ namespace Com.RedicalGames.Filar
 
                             if (widget != null)
                             {
-                                callbackResults.results = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
+                                callbackResults.result = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
                                 callbackResults.data = widget;
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
+                                callbackResults.result = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
+                            callbackResults.result = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
+                        callbackResults.result = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
+                    callbackResults.result = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -17147,43 +19295,43 @@ namespace Com.RedicalGames.Filar
 
                                 if(widget != null)
                                 {
-                                    callbackResults.results = $"UI Screen Widgets Prefab Data Of Widget Type : {widgetType} - On Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
+                                    callbackResults.result = $"UI Screen Widgets Prefab Data Of Widget Type : {widgetType} - On Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
                                     callbackResults.data = widget;
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = $"UI Screen Widgets Prefab Data Of Widget Type : {widgetType} - On Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
+                                    callbackResults.result = $"UI Screen Widgets Prefab Data Of Widget Type : {widgetType} - On Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
                                     callbackResults.data = default;
-                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                    callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
-                                callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
+                                callbackResults.result = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
                                 callbackResults.data = default;
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
+                            callbackResults.result = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"There Are No Screen Widgets Of Selectable Widgets Type : {widgetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} Please Varify If UI Screen Widgets Prefab Data Library Is Initialized With Widget Of Type : {widgetType} - In Scene Assets Manager's Editor Panel.";
+                        callbackResults.result = $"There Are No Screen Widgets Of Selectable Widgets Type : {widgetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} Please Varify If UI Screen Widgets Prefab Data Library Is Initialized With Widget Of Type : {widgetType} - In Scene Assets Manager's Editor Panel.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
+                    callbackResults.result = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }    
 
                 callback.Invoke(callbackResults);
@@ -17253,28 +19401,28 @@ namespace Com.RedicalGames.Filar
             [Header("Widget UI Inputs")]
 
             [Space(5)]
-            public List<UIButton<ButtonDataPackets>> buttons;
+            public List<UIButton<ButtonDataPackets>> buttons = new List<UIButton<ButtonDataPackets>>();
 
             [Space(5)]
-            public List<UIInputField<InputFieldDataPackets>> inputs;
+            public List<UIInputField<InputFieldDataPackets>> inputs = new List<UIInputField<InputFieldDataPackets>>();
 
             [Space(5)]
-            public List<UIDropDown<DropdownDataPackets>> dropdowns;
+            public List<UIDropDown<DropdownDataPackets>> dropdowns = new List<UIDropDown<DropdownDataPackets>>();
 
             [Space(5)]
-            public List<UIInputSlider<InputSliderDataPackets>> sliders;
+            public List<UIInputSlider<InputSliderDataPackets>> sliders = new List<UIInputSlider<InputSliderDataPackets>>();
 
             [Space(5)]
-            public List<UISlider<SliderDataPackets>> uiSliders;
+            public List<UISlider<SliderDataPackets>> uiSliders = new List<UISlider<SliderDataPackets>>();
 
             [Space(5)]
-            public List<UICheckbox<CheckboxDataPackets>> checkboxes;
+            public List<UICheckbox<CheckboxDataPackets>> checkboxes = new List<UICheckbox<CheckboxDataPackets>>();
 
             [Space(5)]
-            public List<UIText<TextDataPackets>> textDisplayerList;
+            public List<UIText<TextDataPackets>> textDisplayerList = new List<UIText<TextDataPackets>>();
 
             [Space(5)]
-            public List<UIImageDisplayer<ImageDataPackets>> imageDisplayers;
+            public List<UIImageDisplayer<ImageDataPackets>> imageDisplayers = new List<UIImageDisplayer<ImageDataPackets>>();
 
             #endregion
 
@@ -17284,7 +19432,7 @@ namespace Com.RedicalGames.Filar
             [Header("Widget Scroller")]
 
             [Space(5)]
-            public UIScroller<SceneDataPackets> scroller;
+            public UIScroller<SceneDataPackets> scroller = new UIScroller<SceneDataPackets>();
 
             #endregion
 
@@ -17292,7 +19440,7 @@ namespace Com.RedicalGames.Filar
             [Header("Widget Settings")]
 
             [Space(5)]
-            public WidgetType type;
+            public WidgetType widgetType;
 
             [Space(5)]
             [SerializeField]
@@ -17367,6 +19515,9 @@ namespace Com.RedicalGames.Filar
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
             protected HomeMenuWidget homeMenuWidget;
             protected UIMessageDisplayerWidget messageDisplayerWidget;
+            protected SignInWidget signInWidget;
+            protected AnonymousSignInConfirmationWidget anonymousSignInConfirmationWidget;
+            protected TermsAndConditionsWidget termsAndConditionsWidget;
 
             #endregion
 
@@ -17416,14 +19567,14 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, button, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, button, selectableCallbackResults =>
                                     {
                                         if (selectableCallbackResults.Success())
                                         {
 
                                         }
                                         else
-                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                     });
                                 });
                             }
@@ -17459,9 +19610,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, inputField, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputField, selectableCallbackResults =>
                                     {
-                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                     });
                                 });
                             }
@@ -17499,9 +19650,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, inputSlider, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputSlider, selectableCallbackResults =>
                                     {
-                                        Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                     });
                                 });
                             }
@@ -17537,14 +19688,14 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, dropdown, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, dropdown, selectableCallbackResults =>
                                     {
                                         if (selectableCallbackResults.Success())
                                         {
 
                                         }
                                         else
-                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                     });
                                 });
                             }
@@ -17580,14 +19731,14 @@ namespace Com.RedicalGames.Filar
                             {
                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(type, checkbox, selectableCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, checkbox, selectableCallbackResults =>
                                     {
                                         if (selectableCallbackResults.Success())
                                         {
 
                                         }
                                         else
-                                            Log(selectableCallbackResults.resultsCode, selectableCallbackResults.results, this);
+                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                     });
                                 });
                             }
@@ -17610,6 +19761,23 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                 }
+
+                #endregion
+
+                #region Initialize Scroller
+
+                scroller.Initialized(scrollerInitializedCallback =>
+                {
+                    if (Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
+                    {
+                        scroller.value.onValueChanged.AddListener(value => { ScrollerPosition(value); });
+
+                        if (scroller.GetFadeUIScrollBar())
+                            scroller.GetUIScrollBarComponent().SetVisibilityState(UIScreenWidgetVisibilityState.Hidden);
+                    }
+                    else
+                        LogWarning(scrollerInitializedCallback.result, this);
+                });
 
                 #endregion
             }
@@ -17676,7 +19844,7 @@ namespace Com.RedicalGames.Filar
 
                                         break;
 
-                                    case InputActionButtonType.HideScreenWidget:
+                                    case InputActionButtonType.CloseButton:
 
                                         OnHideScreenWidget_ActionEvent(popUpType, dataPackets);
 
@@ -17694,7 +19862,7 @@ namespace Com.RedicalGames.Filar
 
                                         break;
 
-                                    case InputActionButtonType.Confirm:
+                                    case InputActionButtonType.ConfirmationButton:
 
                                         OnConfirm_ActionEvent(popUpType, dataPackets);
 
@@ -17813,14 +19981,33 @@ namespace Com.RedicalGames.Filar
                                         OnOpenSettings_ActionEvents(dataPackets);
 
                                         break;
+
+                                    case InputActionButtonType.SignUpButton:
+
+                                        OnSignUp_ActionEvents(dataPackets);
+
+                                        break;
+
+
+                                    case InputActionButtonType.SignInButton:
+
+                                        OnSignIn_ActionEvents(dataPackets);
+
+                                        break;
+
+                                    case InputActionButtonType.ReadButton:
+
+                                        OnSkipSignIn_ActionEvents(dataPackets);
+
+                                        break;
                                 }
                             }
                             else
-                                Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                                Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                         });
                     }
                     else
-                        Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results, this);
+                        Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
                 });
 
                 ActionEvents.OnPopUpActionEvent(popUpType, actionType, dataPackets);
@@ -17880,7 +20067,7 @@ namespace Com.RedicalGames.Filar
 
                                 widgetsContainer.SelectAllWidgets(true, selectionCallback =>
                                 {
-                                    if (Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                                    if (Helpers.IsSuccessCode(selectionCallback.resultCode))
                                     {
                                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.SelectionOptionsWidget);
@@ -17892,7 +20079,7 @@ namespace Com.RedicalGames.Filar
                                         widgetsContainer.OnFocusedSelectionStateUpdate();
                                     }
                                     else
-                                        LogError(selectionCallback.results, this, () => OnSelection_ActionEvents(dataPackets));
+                                        LogError(selectionCallback.result, this, () => OnSelection_ActionEvents(dataPackets));
                                 });
 
                                 break;
@@ -17931,7 +20118,7 @@ namespace Com.RedicalGames.Filar
 
                                                 }
                                                 else
-                                                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                                                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
                                             });
                                         }
 
@@ -17939,7 +20126,7 @@ namespace Com.RedicalGames.Filar
                                         widgetsContainer.OnFocusedSelectionStateUpdate();
                                     }
                                     else
-                                        LogError(selectionCallback.results, this, () => OnSelection_ActionEvents(dataPackets));
+                                        LogError(selectionCallback.result, this, () => OnSelection_ActionEvents(dataPackets));
                                 });
 
                                 break;
@@ -17986,7 +20173,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         SceneAssetsManager.Instance.GetSortedWidgetsFromList(projectSelectionSystemCallbackResults.data.GetCurrentSelections(), dataPackets.selectableAssetType, getFolderStructureSelectionData =>
                                                         {
-                                                            if (Helpers.IsSuccessCode(getFolderStructureSelectionData.resultsCode))
+                                                            if (Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                                             {
                                                                 int lastSelectionIndex = getFolderStructureSelectionData.data.Count - 1;
                                                                 UIScreenWidget lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
@@ -17997,7 +20184,7 @@ namespace Com.RedicalGames.Filar
                                                                     LogWarning("Show Delete Asset Widget Failed - Last Selected Widget Not Found.", this, () => OnDelete_ActionEvent(dataPackets));
                                                             }
                                                             else
-                                                                LogWarning(getFolderStructureSelectionData.results, this, () => OnDelete_ActionEvent(dataPackets));
+                                                                LogWarning(getFolderStructureSelectionData.result, this, () => OnDelete_ActionEvent(dataPackets));
                                                         });
 
                                                         if (selectionCount == 1)
@@ -18071,15 +20258,15 @@ namespace Com.RedicalGames.Filar
                                                                 dataPackets.popUpMessage = messageInfo;
                                                             }
                                                             else
-                                                                Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                                                                Log(valueAssignedCallbackResults.resultCode, valueAssignedCallbackResults.result, this);
                                                         });
                                                     }
                                                     else
-                                                        LogError(projectSelectionSystemCallbackResults.results);
+                                                        LogError(projectSelectionSystemCallbackResults.result);
                                                 });
                                             }
                                             else
-                                                Debug.LogError(valueCallbackResults.results);
+                                                Debug.LogError(valueCallbackResults.result);
                                         });
                                     }
                                     else
@@ -18096,11 +20283,11 @@ namespace Com.RedicalGames.Filar
                                     showWidgetAsyncRoutine = StartCoroutine(ShowWidgetAsync(dataPackets));
                             }
                             else
-                                Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                                Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                         });
                     }
                     else
-                        Debug.LogError(valueCallbackResults.results);
+                        Debug.LogError(valueCallbackResults.result);
                 });
             }
 
@@ -18130,7 +20317,7 @@ namespace Com.RedicalGames.Filar
 
                                 SceneAssetsManager.Instance.SetDefaultUIWidgetActionState(currentSelection, widgetActionState, assetsPinnedCallback =>
                                 {
-                                    if (Helpers.IsSuccessCode(assetsPinnedCallback.resultsCode))
+                                    if (Helpers.IsSuccessCode(assetsPinnedCallback.resultCode))
                                     {
                                         ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.InputIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
 
@@ -18176,30 +20363,30 @@ namespace Com.RedicalGames.Filar
                                                                         NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                                                                     }
                                                                     else
-                                                                        Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                                                                        Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
                                                                 }
                                                                 else
-                                                                    Log(widgetsSortedCallbackResults.resultsCode, widgetsSortedCallbackResults.results, this);
+                                                                    Log(widgetsSortedCallbackResults.resultCode, widgetsSortedCallbackResults.result, this);
                                                             });
                                                         }
                                                         else
-                                                            LogWarning(contentLoadedCallback.results, this);
+                                                            LogWarning(contentLoadedCallback.result, this);
                                                     });
                                                 }
                                                 else
-                                                    Log(containerCallbackResults.resultsCode, containerCallbackResults.results, this);
+                                                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                                             });
                                         }
                                     }
                                     else
-                                        LogWarning(assetsPinnedCallback.results, this);
+                                        LogWarning(assetsPinnedCallback.result, this);
                                 });
                             }
                             else
                                 LogWarning("Pin Button Failed - There Are No Selections Found.", this);
                         }
                         else
-                            Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                            Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                     });
                 }
                 else
@@ -18216,26 +20403,26 @@ namespace Com.RedicalGames.Filar
                 {
                     SceneAssetsManager.Instance.DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
                     {
-                        if (Helpers.IsSuccessCode(directoryFoundCallback.resultsCode))
+                        if (Helpers.IsSuccessCode(directoryFoundCallback.resultCode))
                         {
                             SceneAssetsManager.Instance.BuildSceneAsset(currentFolder.storageData, (assetBuiltCallback) =>
                             {
-                                if (Helpers.IsSuccessCode(assetBuiltCallback.resultsCode))
+                                if (Helpers.IsSuccessCode(assetBuiltCallback.resultCode))
                                 {
                                     if (ScreenUIManager.Instance != null)
                                     {
-                                        ActionEvents.OnPopUpActionEvent(popUpType, InputActionButtonType.HideScreenWidget, dataPackets);
+                                        ActionEvents.OnPopUpActionEvent(popUpType, InputActionButtonType.CloseButton, dataPackets);
                                         ScreenUIManager.Instance.ShowScreenAsync(currentDataPackets);
                                     }
                                     else
                                         LogWarning("Screen Manager Missing.", this, () => OnBuildNewAsset_ActionEvent(popUpType, dataPackets));
                                 }
                                 else
-                                    LogWarning(assetBuiltCallback.results, this, () => OnBuildNewAsset_ActionEvent(popUpType, dataPackets));
+                                    LogWarning(assetBuiltCallback.result, this, () => OnBuildNewAsset_ActionEvent(popUpType, dataPackets));
                             });
                         }
                         else
-                            LogWarning(directoryFoundCallback.results, this, () => OnBuildNewAsset_ActionEvent(popUpType, dataPackets));
+                            LogWarning(directoryFoundCallback.result, this, () => OnBuildNewAsset_ActionEvent(popUpType, dataPackets));
                     });
                 }
                 else
@@ -18252,7 +20439,7 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.OnClearPreviewedContent(false, contentClrearedCallback =>
                         {
-                            if (Helpers.IsSuccessCode(contentClrearedCallback.resultsCode))
+                            if (Helpers.IsSuccessCode(contentClrearedCallback.resultCode))
                             {
                                 SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
                                 ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
@@ -18260,7 +20447,7 @@ namespace Com.RedicalGames.Filar
                                 ScreenUIManager.Instance.Refresh();
                             }
                             else
-                                LogError(contentClrearedCallback.results, this);
+                                LogError(contentClrearedCallback.result, this);
                         });
 
                         //dataPackets.sceneAsset = null;
@@ -18293,8 +20480,8 @@ namespace Com.RedicalGames.Filar
                             screenType = UIScreenType.ProjectDashboardScreen,
                             screenPosition = SceneAssetPivot.TopCenter,
                             blurScreen = true,
-                            delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.NotificationDelay).value,
-                            duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.NotificationDuration).value // Get From Value List In Scene Assets Manager.
+                            delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.NotificationDelay).value,
+                            duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.NotificationDuration).value // Get From Value List In Scene Assets Manager.
                         };
 
                         NotificationSystemManager.Instance.ScheduleNotification(notification);
@@ -18320,7 +20507,7 @@ namespace Com.RedicalGames.Filar
                                         ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(viewCallback.data.dataPackets);
                                 }
                                 else
-                                    Log(viewCallback.resultsCode, viewCallback.results, this);
+                                    Log(viewCallback.resultCode, viewCallback.result, this);
                             });
                         }
                         else
@@ -18508,7 +20695,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Export Asset Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnSceneAssetExport_ActionEvent(popUpType, dataPackets));
             }
 
-            void OnPermissionsReques_ActionEvents(WidgetType popUpType, SceneDataPackets dataPackets)
+            async void OnPermissionsReques_ActionEvents(WidgetType popUpType, SceneDataPackets dataPackets)
             {
                 try
                 {
@@ -18525,7 +20712,7 @@ namespace Com.RedicalGames.Filar
 
                     SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);
 
-                    ScreenUIManager.Instance.ShowScreenAsync(AssetImportContentManager.Instance.GetRequestedPermissionData());
+                   await  ScreenUIManager.Instance.ShowScreenAsync(AssetImportContentManager.Instance.GetRequestedPermissionData());
 
                     SceneAssetsManager.Instance.SetCurrentSceneMode(AssetImportContentManager.Instance.GetRequestedPermissionData().sceneMode);
 
@@ -18565,7 +20752,7 @@ namespace Com.RedicalGames.Filar
                                 if (deletedFileCount > 0)
                                     SceneAssetsManager.Instance.OnDelete(selectedWidgets, deletedAssetsCallback =>
                                     {
-                                        if (Helpers.IsSuccessCode(deletedAssetsCallback.resultsCode))
+                                        if (Helpers.IsSuccessCode(deletedAssetsCallback.resultCode))
                                         {
                                             if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                                 ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
@@ -18589,13 +20776,13 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            LogWarning(deletedAssetsCallback.results, this, () => OnDeleteAssetWidget_ActionEvent(dataPackets));
+                                            LogWarning(deletedAssetsCallback.result, this, () => OnDeleteAssetWidget_ActionEvent(dataPackets));
                                     });
                                 else
                                     LogWarning("Delete Assets Failed - No Assets To Delete Found.", this, () => OnDeleteAssetWidget_ActionEvent(dataPackets));
                             }
                             else
-                                Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                                Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                         });
                     }
                     else
@@ -18617,13 +20804,13 @@ namespace Com.RedicalGames.Filar
 
                     SceneAssetsManager.Instance.CreateNewProjectFolder((folderCreated) =>
                     {
-                        if (Helpers.IsSuccessCode(folderCreated.resultsCode))
+                        if (Helpers.IsSuccessCode(folderCreated.resultCode))
                         {
                             if (SelectableManager.Instance)
                             {
                                 SelectableManager.Instance.OnSetFocusedWidgetSelectionInfo(folderCreated.data, true, selectionInfoSet =>
                                 {
-                                    if (Helpers.IsSuccessCode(selectionInfoSet.resultsCode))
+                                    if (Helpers.IsSuccessCode(selectionInfoSet.resultCode))
                                     {
                                         var widgetsContainer = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
 
@@ -18646,13 +20833,13 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     widgetsContainer.Pagination_GoToItemPageAsync(widget, goToPageCallback =>
                                                     {
-                                                        if (Helpers.IsSuccessCode(goToPageCallback.resultsCode))
+                                                        if (Helpers.IsSuccessCode(goToPageCallback.resultCode))
                                                         {
                                                             if (dataPackets.notification.showNotifications)
                                                                 NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                                                         }
                                                         else
-                                                            LogError(goToPageCallback.results, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                                                            LogError(goToPageCallback.result, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
                                                     });
                                                 }
                                                 else
@@ -18663,14 +20850,14 @@ namespace Com.RedicalGames.Filar
                                             LogError($"Widgets Container Not Found.", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
                                     }
                                     else
-                                        LogWarning(selectionInfoSet.results, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                                        LogWarning(selectionInfoSet.result, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
                                 });
                             }
                             else
                                 LogError($"Couldn't Create New Folder - Selectable Manager Instance Is Not Yet Initialized", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
                         }
                         else
-                            LogWarning(folderCreated.results, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
+                            LogWarning(folderCreated.result, this, () => OnCreateNewFolder_ActionEvent(dataPackets));
                     });
                 }
                 else
@@ -18729,6 +20916,26 @@ namespace Com.RedicalGames.Filar
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         break;
+
+                    case WidgetType.SignInWarningWidget:
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+
+                        SceneDataPackets loginViewDataPackets = new SceneDataPackets
+                        {
+                            screenType = dataPackets.screenType,
+                            widgetType = WidgetType.SignInWidget,
+                            blurScreen = true,
+                            blurContainerLayerType = ScreenBlurContainerLayerType.Background
+                        };
+
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(loginViewDataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
+
+                        break;
                 }
             }
 
@@ -18770,7 +20977,7 @@ namespace Com.RedicalGames.Filar
                 {
                     ScreenCaptureManager.Instance.CaptureScreen((onScreenCaptured) =>
                     {
-                        if (Helpers.IsSuccessCode(onScreenCaptured.resultsCode))
+                        if (Helpers.IsSuccessCode(onScreenCaptured.resultCode))
                         {
                             if (ScreenUIManager.Instance != null)
                             {
@@ -18780,7 +20987,7 @@ namespace Com.RedicalGames.Filar
                                 LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
                         }
                         else
-                            LogWarning(onScreenCaptured.results, this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
+                            LogWarning(onScreenCaptured.result, this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
                     });
                 }
                 else
@@ -18795,10 +21002,10 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
                         {
-                            if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultsCode))
+                            if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
                                 dynamicWidgetsContainer.data.ScrollToTop();
                             else
-                                LogWarning(dynamicWidgetsContainer.results, this, () => OnScrollToTop_ActionEvent());
+                                LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToTop_ActionEvent());
                         });
                     }
                     else
@@ -18816,10 +21023,10 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
                         {
-                            if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultsCode))
+                            if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
                                 dynamicWidgetsContainer.data.ScrollToBottom();
                             else
-                                LogWarning(dynamicWidgetsContainer.results, this, () => OnScrollToBottom_ActionEvent());
+                                LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToBottom_ActionEvent());
                         });
                     }
                     else
@@ -18851,7 +21058,7 @@ namespace Com.RedicalGames.Filar
                                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPacketCallbackResults.data.dataPackets);
                                         }
                                         else
-                                            Log(dataPacketCallbackResults.resultsCode, dataPacketCallbackResults.results, this);
+                                            Log(dataPacketCallbackResults.resultCode, dataPacketCallbackResults.result, this);
                                     });
                                 }
 
@@ -18876,7 +21083,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 widgetContainer.GetPlaceHolder(placeholder =>
                                                 {
-                                                    if (Helpers.IsSuccessCode(placeholder.resultsCode))
+                                                    if (Helpers.IsSuccessCode(placeholder.resultCode))
                                                     {
                                                         if (!placeholder.data.IsActive())
                                                         {
@@ -18887,7 +21094,7 @@ namespace Com.RedicalGames.Filar
                                                         }
                                                     }
                                                     else
-                                                        LogWarning(placeholder.results, this, () => OnProject_FolderActions_ActionEvent(dataPackets));
+                                                        LogWarning(placeholder.result, this, () => OnProject_FolderActions_ActionEvent(dataPackets));
                                                 });
                                             }
                                             else
@@ -18906,7 +21113,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultsCode, ScreenUIManager.Instance.HasCurrentScreen().results, this);
+                        Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
                 }
                 else
                     LogError("Screen UI Manager Instance Is Not Yet Initialized", this, () => OnProject_FolderActions_ActionEvent(dataPackets));
@@ -19032,7 +21239,7 @@ namespace Com.RedicalGames.Filar
                                         LogError("Couldn't Edit File. No Selection Found.", this);
                                 }
                                 else
-                                    Log(selectionDataCallback.resultsCode, selectionDataCallback.results, this);
+                                    Log(selectionDataCallback.resultCode, selectionDataCallback.result, this);
                             });
                         }
                         else
@@ -19061,7 +21268,7 @@ namespace Com.RedicalGames.Filar
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
                             }
                             else
-                                Log(tutorialFoundCallback.resultsCode, tutorialFoundCallback.results, this);
+                                Log(tutorialFoundCallback.resultCode, tutorialFoundCallback.result, this);
                         });
                     }
                     else
@@ -19089,11 +21296,11 @@ namespace Com.RedicalGames.Filar
                 {
                     await screenManagerCallbackResults.data.GoToSelectedScreenAsync(dataPackets, screenLoadedCallbackResults => 
                     {
-                        Log(screenLoadedCallbackResults.resultsCode, screenLoadedCallbackResults.results, this); ;
+                        Log(screenLoadedCallbackResults.resultCode, screenLoadedCallbackResults.result, this); ;
                     });
                 }
                 else
-                    Log(screenManagerCallbackResults.resultsCode, screenManagerCallbackResults.results, this);
+                    Log(screenManagerCallbackResults.resultCode, screenManagerCallbackResults.result, this);
             }
 
             void OnOpenProfile_ActionEvents(SceneDataPackets dataPackets)
@@ -19105,7 +21312,7 @@ namespace Com.RedicalGames.Filar
 
                     }
                     else
-                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                        Log(screenManagerValidCallbackResults.resultCode, "Screen UI Manager Is Not Yet Initialized.", this);
                 });
             }
 
@@ -19118,7 +21325,7 @@ namespace Com.RedicalGames.Filar
 
                     }
                     else
-                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                        Log(screenManagerValidCallbackResults.resultCode, "Screen UI Manager Is Not Yet Initialized.", this);
                 });
             }
 
@@ -19131,8 +21338,49 @@ namespace Com.RedicalGames.Filar
 
                     }
                     else
-                        Log(screenManagerValidCallbackResults.resultsCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                        Log(screenManagerValidCallbackResults.resultCode, "Screen UI Manager Is Not Yet Initialized.", this);
                 });
+            }
+
+            void OnSignUp_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnSignIn_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(screenManagerValidCallbackResults.resultCode, "Screen UI Manager Is Not Yet Initialized.", this);
+                });
+            }
+
+            void OnSkipSignIn_ActionEvents(SceneDataPackets dataPackets)
+            {
+                Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerValidCallbackResults =>
+                {
+                    if (screenManagerValidCallbackResults.Success())
+                    {
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                        else
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
+                    }
+
+                }, "Screen UI Manager Is Not Yet Initialized.");
             }
 
             #endregion
@@ -19161,7 +21409,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                        Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
                 });
             }
 
@@ -19176,7 +21424,7 @@ namespace Com.RedicalGames.Filar
 
             void UndoChanges()
             {
-                if (type == WidgetType.SliderValueWidget)
+                if (widgetType == WidgetType.SliderValueWidget)
                 {
                     if (sliderWidget.slider != null)
                     {
@@ -19216,7 +21464,7 @@ namespace Com.RedicalGames.Filar
 
                     switch (dataPackets.widgetType)
                     {
-                        case WidgetType.ConfirmationPopWidget:
+                        case WidgetType.ConfirmationPopUpWidget:
 
                             Debug.Log($"---> Showing Widget For : {dataPackets.sceneAsset.name}");
 
@@ -19408,6 +21656,8 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnInputFieldValueChanged(int value, InputFieldDataPackets dataPackets);
             protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxDataPackets dataPackets);
 
+            protected abstract void ScrollerPosition(Vector2 position);
+
             protected abstract void OnScreenWidget();
 
             protected abstract void OnShowScreenWidget(SceneDataPackets dataPackets);
@@ -19470,22 +21720,22 @@ namespace Com.RedicalGames.Filar
 
                     if (input.value != null)
                     {
-                        callbackResults.results = $"Found Input Field : {input.name} Of Type : {actionType}";
+                        callbackResults.result = $"Found Input Field : {input.name} Of Type : {actionType}";
                         callbackResults.data = input;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Find Input Field Of Type : {actionType}";
+                        callbackResults.result = $"Couldn't Find Input Field Of Type : {actionType}";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "There Are No Inputs Found.";
+                    callbackResults.result = "There Are No Inputs Found.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -19505,13 +21755,13 @@ namespace Com.RedicalGames.Filar
                         {
                             if (selectionSystemCallbackResults.Success())
                             {
-                                selectionSystemCallbackResults.data.OnSelectUIInput(type, input, selectionCallbackResults => 
+                                selectionSystemCallbackResults.data.OnSelectUIInput(widgetType, input, selectionCallbackResults => 
                                 {
-                                    Log(selectionCallbackResults.resultsCode, selectionCallbackResults.results, this);
+                                    Log(selectionCallbackResults.resultCode, selectionCallbackResults.result, this);
                                 });
                             }
                             else
-                                Log(selectionSystemCallbackResults.resultsCode, selectionSystemCallbackResults.results, this);
+                                Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
                         });
                     }
                     else
@@ -19595,8 +21845,8 @@ namespace Com.RedicalGames.Filar
 
                         OnHideScreenWidget();
 
-                        callbackResults.results = "Widget Hidden.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = "Widget Hidden.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
 
                         break;
 
@@ -19611,13 +21861,13 @@ namespace Com.RedicalGames.Filar
 
                                 if (onWidgetTransition == false)
                                 {
-                                    callbackResults.results = "Widget Hidden.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = "Widget Hidden.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = "Widget Not Hidden.";
-                                    callbackResults.resultsCode = Helpers.WarningCode;
+                                    callbackResults.result = "Widget Not Hidden.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
                                 }
                             }
                             else
@@ -19645,11 +21895,11 @@ namespace Com.RedicalGames.Filar
 
                             if (widgetContainer.hiddenScreenPoint != null && widgetContainer.visibleScreenPoint != null)
                             {
-                                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenWidgetTransitionalSpeed).value > 0)
+                                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value > 0)
                                 {
                                     Vector2 screenPoint = widgetRect.anchoredPosition;
 
-                                    screenPoint = Vector2.Lerp(screenPoint, widgetContainer.visibleScreenPoint.anchoredPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
+                                    screenPoint = Vector2.Lerp(screenPoint, widgetContainer.visibleScreenPoint.anchoredPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
                                     widgetRect.anchoredPosition = screenPoint;
 
                                     float distance = (widgetRect.anchoredPosition - widgetContainer.visibleScreenPoint.anchoredPosition).sqrMagnitude;
@@ -19663,7 +21913,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    LogWarning($"Scene Assets Manager Instance Get Default Execution Times Is Not Set - Currently {SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenWidgetTransitionalSpeed).value}.", this, () => OnWidgetTransition());
+                                    LogWarning($"Scene Assets Manager Instance Get Default Execution Times Is Not Set - Currently {SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value}.", this, () => OnWidgetTransition());
 
                             }
                             else
@@ -19683,7 +21933,7 @@ namespace Com.RedicalGames.Filar
                             if (widgetContainer.hiddenScreenPoint != null && widgetContainer.visibleScreenPoint != null)
                             {
                                 Vector2 screenPoint = widgetRect.anchoredPosition;
-                                screenPoint = Vector2.Lerp(screenPoint, widgetContainer.hiddenScreenPoint.anchoredPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeValueType.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
+                                screenPoint = Vector2.Lerp(screenPoint, widgetContainer.hiddenScreenPoint.anchoredPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
 
                                 widgetRect.anchoredPosition = screenPoint;
 
@@ -19782,22 +22032,22 @@ namespace Com.RedicalGames.Filar
 
                     if(foundButtons.Count > 0)
                     {
-                        callbackResults.results = $"{foundButtons.Count} Button(s) Matching Action Type : {actionType} Found For Widget Type : {type} - Named : {name}";
+                        callbackResults.result = $"{foundButtons.Count} Button(s) Matching Action Type : {actionType} Found For Widget Type : {widgetType} - Named : {name}";
                         callbackResults.data = foundButtons;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"No Buttons Matching Action Type : {actionType} Found For Widget Type : {type} - Named : {name}";
+                        callbackResults.result = $"No Buttons Matching Action Type : {actionType} Found For Widget Type : {widgetType} - Named : {name}";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"No Buttons Found For Widget Type : {type} - Named : {name}";
+                    callbackResults.result = $"No Buttons Found For Widget Type : {widgetType} - Named : {name}";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -19816,7 +22066,7 @@ namespace Com.RedicalGames.Filar
                     if (button != null)
                         button.SetUIImageValue(SceneAssetsManager.Instance.GetImageFromLibrary(imageType), displayerType);
                     else
-                        LogWarning($"Button Of Type : {actionType} With Displayer : {displayerType} & Image Type : {imageType} Not Found In Widget Type : {type} With Action Button List With : {buttons.Count} Buttons.", this, () => SetActionButtonUIImageValue(actionType, displayerType, imageType));
+                        LogWarning($"Button Of Type : {actionType} With Displayer : {displayerType} & Image Type : {imageType} Not Found In Widget Type : {widgetType} With Action Button List With : {buttons.Count} Buttons.", this, () => SetActionButtonUIImageValue(actionType, displayerType, imageType));
                 }
                 else
                     LogWarning("Screen Action Button List Is Null / Empty.", this, () => SetActionButtonUIImageValue(actionType, displayerType, imageType));
@@ -19862,7 +22112,7 @@ namespace Com.RedicalGames.Filar
                     if (button != null)
                         button.SetUIInputState(state);
                     else
-                        LogWarning($"Button Of Type : {actionType} Not Found In Widgt Type : {type} With Action Button List With : {buttons.Count} Buttons", this, () => SetActionButtonState(actionType, state));
+                        LogWarning($"Button Of Type : {actionType} Not Found In Widgt Type : {widgetType} With Action Button List With : {buttons.Count} Buttons", this, () => SetActionButtonState(actionType, state));
                 }
                 else
                     LogWarning("Screen Action Button List Is Null / Empty.", this, () => SetActionButtonState(actionType, state));
@@ -19897,7 +22147,7 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetUIInputState(state);
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields");
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputs.Count} Input Fields");
                 }
                 else
                     LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
@@ -19912,7 +22162,7 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetValue(value);
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this);
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputs.Count} Input Fields", this);
                 }
                 else
                     LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
@@ -19927,7 +22177,7 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetValue(value.ToString());
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this);
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputs.Count} Input Fields", this);
                 }
                 else
                     LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
@@ -19942,7 +22192,7 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this);
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputs.Count} Input Fields", this);
                 }
                 else
                     LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
@@ -19957,7 +22207,7 @@ namespace Com.RedicalGames.Filar
                     if (inputField != null)
                         inputField.SetPlaceHolderText(placeholder);
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {inputs.Count} Input Fields", this) ;
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputs.Count} Input Fields", this) ;
                 }
                 else
                     LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
@@ -19976,7 +22226,7 @@ namespace Com.RedicalGames.Filar
                     if (dropdown.value != null)
                         dropdown.SetUIInputState(state);
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns", this);
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {dropdowns.Count} Dropdowns", this);
                 }
                 else
                     LogWarning("SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.", this);
@@ -19994,7 +22244,7 @@ namespace Com.RedicalGames.Filar
                         dropdown.SetUIInputState(state);
                     }
                     else
-                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {dropdowns.Count} Dropdowns", this);
+                        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {dropdowns.Count} Dropdowns", this);
                 }
                 else
                     LogWarning("SetActionDropdownState Failed : screenActionDropDownList Is Null / Empty.", this);
@@ -20145,7 +22395,7 @@ namespace Com.RedicalGames.Filar
                     if (slider.value != null)
                         slider.SetUIInputState(state);
                     else
-                        Debug.LogWarning($"--> Failed : Slider Of Type : {valueType} Not Found In Widget Type : {type} With Sliders List With : {uiSliders.Count} Sliders");
+                        Debug.LogWarning($"--> Failed : Slider Of Type : {valueType} Not Found In Widget Type : {widgetType} With Sliders List With : {uiSliders.Count} Sliders");
                 }
                 else
                     Debug.LogWarning("--> SetActionSliderState Failed : screenActionSliderList Is Null / Empty.");
@@ -20181,7 +22431,7 @@ namespace Com.RedicalGames.Filar
                     if (checkbox != null)
                         checkbox.SetUIInputState(state);
                     else
-                        Debug.LogWarning($"--> Failed :Checkbox Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {checkboxes.Count} Checkboxes");
+                        Debug.LogWarning($"--> Failed :Checkbox Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {checkboxes.Count} Checkboxes");
                 }
                 else
                     Debug.LogWarning("--> SetActionCheckboxState Failed : screenActionCheckboxList Is Null / Empty.");
@@ -20216,7 +22466,7 @@ namespace Com.RedicalGames.Filar
                     if (checkbox != null)
                         checkbox.SetSelectionState(value);
                     else
-                        Debug.LogWarning($"--> Failed : Checkbox Of Type : {actionType} Not Found In Widget Type : {type} With Input Field List With : {checkboxes.Count} Checkboxes");
+                        Debug.LogWarning($"--> Failed : Checkbox Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {checkboxes.Count} Checkboxes");
                 }
                 else
                     Debug.LogWarning("--> SetActionCheckboxValue Failed : screenActionCheckboxList Is Null / Empty.");
@@ -20251,7 +22501,7 @@ namespace Com.RedicalGames.Filar
                     if (textDisplayer != null)
                         textDisplayer.SetScreenUITextValue(value);
                     else
-                        Debug.LogWarning($"--> Failed : Text Displayer Of Type : {textType} Not Found In Widget Type : {type} With Input Field List With : {textDisplayerList.Count} Text Displayers");
+                        Debug.LogWarning($"--> Failed : Text Displayer Of Type : {textType} Not Found In Widget Type : {widgetType} With Input Field List With : {textDisplayerList.Count} Text Displayers");
                 }
                 else
                     Debug.LogWarning("--> SetUITextDisplayerValue Failed : screenTextList Is Null / Empty.");
@@ -20266,7 +22516,7 @@ namespace Com.RedicalGames.Filar
                     if (textDisplayer != null)
                         textDisplayer.SetScreenUITextValue(value.ToString());
                     else
-                        Debug.LogWarning($"--> Failed : Text Displayer Of Type : {textType} Not Found In Widget Type : {type} With Input Field List With : {textDisplayerList.Count} Text Displayers");
+                        Debug.LogWarning($"--> Failed : Text Displayer Of Type : {textType} Not Found In Widget Type : {widgetType} With Input Field List With : {textDisplayerList.Count} Text Displayers");
                 }
                 else
                     Debug.LogWarning("--> SetUITextDisplayerValue Failed : screenTextList Is Null / Empty.");
@@ -20285,7 +22535,7 @@ namespace Com.RedicalGames.Filar
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(screenCaptureData, dataPackets);
                     else
-                        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {type} With Input Field List With : {imageDisplayers.Count} Image Displayers");
+                        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
                 }
                 else
                     Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
@@ -20300,7 +22550,7 @@ namespace Com.RedicalGames.Filar
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(imageData);
                     else
-                        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {type} With Input Field List With : {imageDisplayers.Count} Image Displayers");
+                        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
                 }
                 else
                     Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
@@ -20315,7 +22565,7 @@ namespace Com.RedicalGames.Filar
                     if (imageDisplayer != null)
                         imageDisplayer.SetImageData(image);
                     else
-                        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {type} With Input Field List With : {imageDisplayers.Count} Image Displayers");
+                        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
                 }
                 else
                     Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
@@ -20333,8 +22583,8 @@ namespace Com.RedicalGames.Filar
                     scroller.ResetPosition(resetCallback => { callbackResults = resetCallback; });
                 else
                 {
-                    callbackResults.results = "Reset Scroller Disabled.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Reset Scroller Disabled.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -20550,11 +22800,11 @@ namespace Com.RedicalGames.Filar
                         if (initializeActionButtonList)
                             OnActionButtonInitialized((callbackResults) =>
                             {
-                                if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                     foreach (var button in actionButtonList)
                                         button.value.onClick.AddListener(() => OnActionButtonClickedEvent(button.dataPackets));
                                 else
-                                    LogWarning(callbackResults.results, this, () => Initialize());
+                                    LogWarning(callbackResults.result, this, () => Initialize());
                             });
 
                         #endregion
@@ -20564,14 +22814,14 @@ namespace Com.RedicalGames.Filar
                         if (initializeActionInputFieldList)
                             OnActionInputFieldInitialized((callbackResults) =>
                             {
-                                if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                     foreach (var inputField in actionInputFieldList)
                                     {
                                         inputField.Initialize();
                                         inputField.value.onValueChanged.AddListener((value) => OnActionInputFieldValueChangedEvent(value, inputField.dataPackets));
                                     }
                                 else
-                                    LogWarning(callbackResults.results, this, () => Initialize());
+                                    LogWarning(callbackResults.result, this, () => Initialize());
                             });
 
                         #endregion
@@ -20581,14 +22831,14 @@ namespace Com.RedicalGames.Filar
                         if (initializeActionSliderList)
                             OnActionSliderInitialized((callbackResults) =>
                             {
-                                if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                     foreach (var slider in actionSliderList)
                                     {
                                         slider.Initialize();
                                         slider.value.onValueChanged.AddListener((value) => OnActionSliderValueChangedEvent(value, slider.dataPackets));
                                     }
                                 else
-                                    LogWarning(callbackResults.results, this, () => Initialize());
+                                    LogWarning(callbackResults.result, this, () => Initialize());
                             });
 
                         #endregion
@@ -20598,7 +22848,7 @@ namespace Com.RedicalGames.Filar
                         if (initializeActionInputSliderList)
                             OnActionInputSliderInitialized((callbackResults) =>
                             {
-                                if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                     foreach (var inputSlider in actionInputSliderList)
                                     {
                                         inputSlider.Initialize();
@@ -20606,7 +22856,7 @@ namespace Com.RedicalGames.Filar
                                         inputSlider.inputField.onValueChanged.AddListener((value) => OnInputSliderValueChangedEvent(value, inputSlider.dataPackets));
                                     }
                                 else
-                                    LogWarning(callbackResults.results, this, () => Initialize());
+                                    LogWarning(callbackResults.result, this, () => Initialize());
                             });
 
                         #endregion
@@ -20616,14 +22866,14 @@ namespace Com.RedicalGames.Filar
                         if (initializeActionCheckboxList)
                             OnActionChecboxInitialized((callbackResults) =>
                             {
-                                if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                     foreach (var checkbox in actionCheckboxList)
                                     {
                                         checkbox.Initialize();
                                         checkbox.value.onValueChanged.AddListener((value) => OnActionCheckboxValueChangedEvent(value, checkbox.dataPackets));
                                     }
                                 else
-                                    LogWarning(callbackResults.results, this, () => Initialize());
+                                    LogWarning(callbackResults.result, this, () => Initialize());
                             });
 
                         #endregion
@@ -20633,11 +22883,11 @@ namespace Com.RedicalGames.Filar
                         if (initializeSettingsDataScreenWidgetsList)
                             OnSettingsWidgetInitialized((callbackResults) =>
                             {
-                                if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                     foreach (var widget in settingsDataScreenWidgetsList)
                                         widget.Initialize();
                                 else
-                                    LogWarning(callbackResults.results, this, () => Initialize());
+                                    LogWarning(callbackResults.result, this, () => Initialize());
                             });
 
                         #endregion
@@ -20648,8 +22898,8 @@ namespace Com.RedicalGames.Filar
                         {
                             OnSettingsSubWidgetsInitialized((subWidgetsCallbackResults) =>
                             {
-                                if (!Helpers.IsSuccessCode(subWidgetsCallbackResults.resultsCode))
-                                    LogWarning(subWidgetsCallbackResults.results, this, () => Initialize());
+                                if (!Helpers.IsSuccessCode(subWidgetsCallbackResults.resultCode))
+                                    LogWarning(subWidgetsCallbackResults.result, this, () => Initialize());
                             });
                         }
 
@@ -20677,7 +22927,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnSettingsWidgetInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
                         foreach (var widgetScreen in settingsDataScreenWidgetsList)
                             if (widgetScreen.dataPackets.widgetTabID == widgetTabID)
@@ -20686,7 +22936,7 @@ namespace Com.RedicalGames.Filar
                                 widgetScreen.Hide();
                     }
                     else
-                        LogWarning(callbackResults.results, this, () => Initialize());
+                        LogWarning(callbackResults.result, this, () => Initialize());
                 });
             }
 
@@ -20728,7 +22978,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionButtonInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var actionButton in actionButtonList)
                         {
                             if (actionButton.value)
@@ -20737,7 +22987,7 @@ namespace Com.RedicalGames.Filar
                                 LogError("Action Button Value Missing", this, () => SetActionButtons(buttonState));
                         }
                     else
-                        LogError(callbackResults.results, this, () => SetActionButtons(buttonState));
+                        LogError(callbackResults.result, this, () => SetActionButtons(buttonState));
                 });
             }
 
@@ -20745,7 +22995,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputFieldInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
                         UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.action == actionType);
 
@@ -20757,7 +23007,7 @@ namespace Com.RedicalGames.Filar
                             LogError($"Input Field : {actionType} Value Is Not Found / Null.", this, () => SetAcionInputFieldValue(actionType, value));
                     }
                     else
-                        LogError(callbackResults.results, this, () => SetAcionInputFieldValue(actionType, value));
+                        LogError(callbackResults.result, this, () => SetAcionInputFieldValue(actionType, value));
                 });
             }
 
@@ -20765,7 +23015,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputSliderInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
                         UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
 
@@ -20778,7 +23028,7 @@ namespace Com.RedicalGames.Filar
                             LogError($"Input Slider : {actionType} Is Not Initialized.", this, () => SetAcionInputSliderValue(actionType, sliderValue, inputValue));
                     }
                     else
-                        LogWarning(callbackResults.results, this, () => SetAcionInputSliderValue(actionType, sliderValue, inputValue));
+                        LogWarning(callbackResults.result, this, () => SetAcionInputSliderValue(actionType, sliderValue, inputValue));
                 });
             }
 
@@ -20786,7 +23036,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputSliderInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
                         UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
 
@@ -20796,7 +23046,7 @@ namespace Com.RedicalGames.Filar
                             LogError($"Input Slider : {actionType} Is Not Initialized.", this, () => SetAcionInputSliderValue(actionType, sliderValue));
                     }
                     else
-                        LogWarning(callbackResults.results, this, () => SetAcionInputSliderValue(actionType, sliderValue));
+                        LogWarning(callbackResults.result, this, () => SetAcionInputSliderValue(actionType, sliderValue));
                 });
             }
 
@@ -20804,7 +23054,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputSliderInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
                         UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
 
@@ -20814,7 +23064,7 @@ namespace Com.RedicalGames.Filar
                             LogError($"Input Slider : {actionType} Is Not Initialized.", this, () => SetAcionInputSliderValue(actionType, inputValue));
                     }
                     else
-                        LogWarning(callbackResults.results, this, () => SetAcionInputSliderValue(actionType, inputValue));
+                        LogWarning(callbackResults.result, this, () => SetAcionInputSliderValue(actionType, inputValue));
                 });
             }
 
@@ -20830,13 +23080,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (button.value != null)
                         {
-                            callbackResults.results = "ActionButtonsList Buttons Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ActionButtonsList Buttons Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ActionButtonsList Value At Index : {actionButtonList.IndexOf(button)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ActionButtonsList Value At Index : {actionButtonList.IndexOf(button)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -20845,8 +23095,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"ActionButtonsList Is Null For Widgets Type : {widgetType} On Game Object : {this.name}.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"ActionButtonsList Is Null For Widgets Type : {widgetType} On Game Object : {this.name}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -20862,13 +23112,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (inputField.value != null)
                         {
-                            callbackResults.results = "ActionInputFieldList Buttons Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ActionInputFieldList Buttons Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ActionInputFieldList Value At Index : {actionInputFieldList.IndexOf(inputField)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ActionInputFieldList Value At Index : {actionInputFieldList.IndexOf(inputField)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -20877,8 +23127,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"ActionInputFieldList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"ActionInputFieldList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -20897,13 +23147,13 @@ namespace Com.RedicalGames.Filar
                             //dropdown.Initialize(dropdown.dataPackets);
                             //dropdown._AddInputEventListener += OnInputDropdownSelectedEvent;
 
-                            callbackResults.results = "OnActionDropdownInitialized Initialized Sucess : actionDropdownList Buttons Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "OnActionDropdownInitialized Initialized Sucess : actionDropdownList Buttons Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"OnActionDropdownInitialized Initialized Failed : actionDropdownList Value At Index : {actionDropdownList.IndexOf(dropdown)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"OnActionDropdownInitialized Initialized Failed : actionDropdownList Value At Index : {actionDropdownList.IndexOf(dropdown)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -20912,8 +23162,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"OnActionDropdownInitialized Initialized Failed : actionDropdownList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"OnActionDropdownInitialized Initialized Failed : actionDropdownList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -20936,13 +23186,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (slider.value != null)
                         {
-                            callbackResults.results = "ActionSliderList Slider Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ActionSliderList Slider Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ActionSliderList Value At Index : {actionSliderList.IndexOf(slider)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ActionSliderList Value At Index : {actionSliderList.IndexOf(slider)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -20951,8 +23201,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"ActionSliderList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"ActionSliderList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -20968,13 +23218,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (inputSlider.IsInitialized())
                         {
-                            callbackResults.results = "ActionInputSliderList Input Slider Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ActionInputSliderList Input Slider Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ActionInputSliderList Value At Index : {actionInputSliderList.IndexOf(inputSlider)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ActionInputSliderList Value At Index : {actionInputSliderList.IndexOf(inputSlider)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -20983,8 +23233,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"AcionInputSliderList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"AcionInputSliderList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21022,13 +23272,13 @@ namespace Com.RedicalGames.Filar
                                     else
                                         dropdown.value.value = contentList.IndexOf(contentList.Last());
 
-                                    callbackResults.results = $"ActionDropdownList's : {dropdown.name} Has Been Created Successfully.";
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.result = $"ActionDropdownList's : {dropdown.name} Has Been Created Successfully.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.results = "Dropdown Content List Is Null.";
-                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                    callbackResults.result = "Dropdown Content List Is Null.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
                                 }
 
                                 break;
@@ -21038,8 +23288,8 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = $"ActionDropdownList Value At Index : {actionDropdownList.IndexOf(dropdown)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ActionDropdownList Value At Index : {actionDropdownList.IndexOf(dropdown)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -21048,8 +23298,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"ActionDropdownList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"ActionDropdownList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21065,13 +23315,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (checkbox.value != null)
                         {
-                            callbackResults.results = "ActionCheckboxList Buttons Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ActionCheckboxList Buttons Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ActionCheckboxList Value At Index : {actionCheckboxList.IndexOf(checkbox)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ActionCheckboxList Value At Index : {actionCheckboxList.IndexOf(checkbox)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -21080,8 +23330,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"ActionCheckboxList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"ActionCheckboxList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21097,13 +23347,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (uiText.value != null)
                         {
-                            callbackResults.results = "ScreenUITextList Buttons Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ScreenUITextList Buttons Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ScreenUITextList Value At Index : {screenUITextList.IndexOf(uiText)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ScreenUITextList Value At Index : {screenUITextList.IndexOf(uiText)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -21112,8 +23362,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"ScreenUITextList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"ScreenUITextList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21129,13 +23379,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (panelWidget.value != null)
                         {
-                            callbackResults.results = "PanelWidgetsList Buttons Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "PanelWidgetsList Buttons Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"PanelWidgetsList Value At Index : {settingsDataScreenWidgetsList.IndexOf(panelWidget)} Is Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"PanelWidgetsList Value At Index : {settingsDataScreenWidgetsList.IndexOf(panelWidget)} Is Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
 
                             callback?.Invoke(callbackResults);
                             break;
@@ -21144,8 +23394,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"PanelWidgetsList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"PanelWidgetsList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21170,19 +23420,19 @@ namespace Com.RedicalGames.Filar
 
                     if (subWidgetsList != null && subWidgetsList.Count > 0)
                     {
-                        callbackResults.results = $"Sub Widgets Found In Childrens.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"Sub Widgets Found In Childrens.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"PanelWidgetsList Is Null.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"PanelWidgetsList Is Null.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Sub Widgets List Already Initialized.";
-                    callbackResults.resultsCode = Helpers.WarningCode;
+                    callbackResults.result = $"Sub Widgets List Already Initialized.";
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21204,31 +23454,31 @@ namespace Com.RedicalGames.Filar
                             {
                                 inputField.SetValue(value);
 
-                                callbackResults.results = $"ActionInputFieldList Value : {value} Set For Type : {type}.";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = $"ActionInputFieldList Value : {value} Set For Type : {type}.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = $"Action InputField List Value : {value} For Type : {type} Is Missing / Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = $"Action InputField List Value : {value} For Type : {type} Is Missing / Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"Input Field Of Type : {type} Is Missing / Not Found In Action Input Field List.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Input Field Of Type : {type} Is Missing / Not Found In Action Input Field List.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "ActionInputFieldList Is Null.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "ActionInputFieldList Is Null.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Set Input Field Failed : Input Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Set Input Field Failed : Input Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21238,7 +23488,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputSliderInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var inputSlider in actionInputSliderList)
                         {
                             if (inputSlider.dataPackets.action == actionType)
@@ -21251,7 +23501,7 @@ namespace Com.RedicalGames.Filar
                                 continue;
                         }
                     else
-                        LogWarning(callbackResults.results, this, () => UpdateInputFieldInfo(actionType, fieldName, fieldColor));
+                        LogWarning(callbackResults.result, this, () => UpdateInputFieldInfo(actionType, fieldName, fieldColor));
                 });
             }
 
@@ -21259,7 +23509,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionChecboxInitialized((checkboxInitializedCallbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(checkboxInitializedCallbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(checkboxInitializedCallbackResults.resultCode))
                     {
                         foreach (var checkbox in actionCheckboxList)
                         {
@@ -21273,7 +23523,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        LogWarning(checkboxInitializedCallbackResults.results, this, () => UpdateInputActionCheckbox(actionType, isSelected));
+                        LogWarning(checkboxInitializedCallbackResults.result, this, () => UpdateInputActionCheckbox(actionType, isSelected));
                 });
             }
 
@@ -21281,7 +23531,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputSliderInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var inputSlider in actionInputSliderList)
                         {
 
@@ -21294,7 +23544,7 @@ namespace Com.RedicalGames.Filar
                                 continue;
                         }
                     else
-                        LogWarning(callbackResults.results, this, () => UpdateInputFieldUIInputState(actionType, state));
+                        LogWarning(callbackResults.result, this, () => UpdateInputFieldUIInputState(actionType, state));
                 });
             }
 
@@ -21315,7 +23565,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionInputSliderInitialized((callbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var inputSlider in actionInputSliderList)
                         {
 
@@ -21328,7 +23578,7 @@ namespace Com.RedicalGames.Filar
                                 continue;
                         }
                     else
-                        LogWarning(callbackResults.results, this, () => ResetInputFieldValue(actionType, value = 0));
+                        LogWarning(callbackResults.result, this, () => ResetInputFieldValue(actionType, value = 0));
                 });
             }
 
@@ -21336,7 +23586,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnSettingsSubWidgetsInitialized((subWidgetCallbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultCode))
                     {
                         SettingsWidget widget = subWidgetsList.Find((x) => x.widgetType == widgetType);
 
@@ -21346,7 +23596,7 @@ namespace Com.RedicalGames.Filar
                             LogWarning("Loaded Sub Widget Not Found / Null.", this, () => ShowChildWidget(widgetType));
                     }
                     else
-                        LogWarning(subWidgetCallbackResults.results, this, () => ShowChildWidget(widgetType));
+                        LogWarning(subWidgetCallbackResults.result, this, () => ShowChildWidget(widgetType));
                 });
             }
 
@@ -21354,7 +23604,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnSettingsSubWidgetsInitialized((subWidgetCallbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultCode))
                     {
                         SettingsWidget widget = subWidgetsList.Find((x) => x.widgetType == widgetType);
 
@@ -21364,7 +23614,7 @@ namespace Com.RedicalGames.Filar
                             LogWarning("Loaded Sub Widget Not Found / Null.", this, () => ShowChildWidget(widgetType, message, textType));
                     }
                     else
-                        LogWarning(subWidgetCallbackResults.results, this, () => ShowChildWidget(widgetType, message, textType));
+                        LogWarning(subWidgetCallbackResults.result, this, () => ShowChildWidget(widgetType, message, textType));
                 });
             }
 
@@ -21372,7 +23622,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnSettingsSubWidgetsInitialized((subWidgetCallbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultCode))
                     {
                         SettingsWidget widget = subWidgetsList.Find((x) => x.widgetType == widgetType);
 
@@ -21382,7 +23632,7 @@ namespace Com.RedicalGames.Filar
                             LogWarning("Loaded Widget Is Null Or Value Is Empty In Sub Widgets list.", this, () => HideChildWidget(widgetType));
                     }
                     else
-                        LogWarning(subWidgetCallbackResults.results, this, () => HideChildWidget(widgetType));
+                        LogWarning(subWidgetCallbackResults.result, this, () => HideChildWidget(widgetType));
                 });
             }
 
@@ -21390,7 +23640,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnSettingsSubWidgetsInitialized((subWidgetCallbackResults) =>
                 {
-                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(subWidgetCallbackResults.resultCode))
                     {
                         SettingsWidget widget = subWidgetsList.Find((x) => x.widgetType == widgetType);
 
@@ -21400,7 +23650,7 @@ namespace Com.RedicalGames.Filar
                             LogWarning("Loaded Widget Is Null Or Value Is Empty In Sub Widgets list.", this, () => ResetChildWidget(widgetType));
                     }
                     else
-                        LogWarning(subWidgetCallbackResults.results, this, () => ResetChildWidget(widgetType));
+                        LogWarning(subWidgetCallbackResults.result, this, () => ResetChildWidget(widgetType));
                 });
             }
 
@@ -21603,7 +23853,18 @@ namespace Com.RedicalGames.Filar
 
         #region Class Data
 
-        #region Color Data
+        #region Serialization Data
+
+        public enum StorableType
+        {
+            None,
+            Profile,
+            Project,
+            Folder,
+            Asset,
+            Info,
+            License
+        }
 
         [Serializable]
         public class SerializableData
@@ -21612,9 +23873,11 @@ namespace Com.RedicalGames.Filar
 
             public string name;
 
+            [Space(5)]
+            public StorableType dataType;
+
             [HideInInspector]
             public StorageDirectoryData storageData = new StorageDirectoryData();
-
 
             [HideInInspector]
             public DateTimeComponent creationDateTime = new DateTimeComponent();
@@ -21625,7 +23888,6 @@ namespace Com.RedicalGames.Filar
 
             public SerializableData()
             {
-
             }
 
             public SerializableData(StorageDirectoryData storageData) => this.storageData = storageData;
@@ -21651,6 +23913,291 @@ namespace Com.RedicalGames.Filar
             {
                 return creationDateTime;
             }
+
+            public void Serialize<T>(T data, StorageType storageType, FileExtensionType fileExtension = FileExtensionType.NONE, Action<CallbackData<T>> callback = null) where T : SerializableData
+            {
+                CallbackData<T> callbackResults = new CallbackData<T>();
+
+                Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                {
+                    callbackResults.result = sceneAssetsManagerCallbackResults.result;
+                    callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
+
+                    if (callbackResults.Success())
+                    {
+                        var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
+
+                        Helpers.StringValueValid(nameVaildCallbacResults =>
+                        {
+                            callbackResults.result = nameVaildCallbacResults.result;
+                            callbackResults.resultCode = nameVaildCallbacResults.resultCode;
+
+                            if (callbackResults.Success())
+                            {
+                                if (storageType != StorageType.None)
+                                {
+                                    callbackResults.result = sceneAssetsManager.GetAppDirectoryData(storageType).result;
+                                    callbackResults.resultCode = sceneAssetsManager.GetAppDirectoryData(storageType).resultCode;
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var appStorageData = sceneAssetsManager.GetAppDirectoryData(storageType).data;
+
+                                        if (sceneAssetsManager.DirectoryFound(appStorageData))
+                                        {
+                                            string storageName = data.name + "_" + $"{GetSerializableDataType()}Data";
+
+                                            callbackResults.result = GetExtensionType().result;
+                                            callbackResults.resultCode = GetExtensionType().resultCode;
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var getExtension = (fileExtension != FileExtensionType.NONE) ? fileExtension : GetExtensionType().data;
+
+                                                string storageNameWithExtension = storageName + fileExtension.ToString().ToLower();
+                                                string filePath = Path.Combine(appStorageData.directory, storageNameWithExtension);
+                                                string formattedFilePath = filePath.Replace("\\", "/");
+
+                                                string storagedDirectory = sceneAssetsManager.GetAppDirectoryData(storageType).data.directory;
+
+                                                var storageData = new StorageDirectoryData
+                                                {
+                                                    name = storageName,
+                                                    path = formattedFilePath,
+                                                    projectDirectory = storagedDirectory,
+                                                    rootDirectory = appStorageData.directory,
+                                                    directory = storagedDirectory
+                                                };
+
+                                                Helpers.StorageDataValidation(storageData, storageDataValidationCallbackResults =>
+                                                {
+                                                    callbackResults.result = nameVaildCallbacResults.result;
+                                                    callbackResults.resultCode = nameVaildCallbacResults.resultCode;
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        sceneAssetsManager.CreateData(this, storageData, (dataCreatedCallbackResults) =>
+                                                        {
+                                                            callbackResults.resultCode = dataCreatedCallbackResults.resultCode;
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                var storageResults = (dataCreatedCallbackResults.data.GetStorageData().type == StorageType.Project_Structure) ? $"Project Structure Data : {dataCreatedCallbackResults.data.name} Of Storage Type : {dataCreatedCallbackResults.data.GetStorageData().type} - Has Been Serialized Successfully With Path :{dataCreatedCallbackResults.data.GetStorageData().path} - At Directory : { dataCreatedCallbackResults.data.GetStorageData().rootDirectory } And Project Directory : {dataCreatedCallbackResults.data.GetStorageData().projectDirectory }" : $"{dataCreatedCallbackResults.data.name} Of Storage Type : {dataCreatedCallbackResults.data.GetStorageData().type} - Has Been Serialized Successfully With Path :{dataCreatedCallbackResults.data.GetStorageData().path} - At Directory : { dataCreatedCallbackResults.data.GetStorageData().rootDirectory }";
+
+                                                                callbackResults.result = storageResults;
+                                                                callbackResults.data = dataCreatedCallbackResults.data as T;
+                                                            }
+                                                            else
+                                                            {
+                                                                callbackResults.result = $"Serializing Data Failed With Results : {dataCreatedCallbackResults.result}";
+                                                                callbackResults.data = default;
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Serialize : {name} Failed : No Storage Directory Data Found For Storage Type {storageType} - Please Check Scene Assets Manager And Initialize In The Inspector Panel.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Serialize : {name} Failed : Storage Type Is Set To Default : None";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            }
+
+                        }, name);
+                    }
+
+                }, "Scene Assets Manager Instance Is Not Yet Initialized.");
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public StorageDirectoryData GetStorageData()
+            {
+                return storageData;
+            }
+
+            public void SetSerializableDataType(StorableType type) => this.dataType = type;
+
+            public StorableType GetSerializableDataType()
+            {
+                return dataType;
+            }
+
+            public CallbackData<FileExtensionType> GetExtensionType()
+            {
+                CallbackData<FileExtensionType> callbackResults = new CallbackData<FileExtensionType>();
+
+                Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults => 
+                {
+                    callbackResults.result = sceneAssetsManagerCallbackResults.result;
+                    callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
+
+                    if(callbackResults.Success())
+                    {
+                        var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
+
+                        sceneAssetsManager.GetAppDataStorageSourceInfoFileExtensionFromLibrary(GetSerializableDataType(), storageSourceExtensionCallbackResults =>  { callbackResults = storageSourceExtensionCallbackResults; });
+                    }
+
+                }, "Scene Assets Manager Instance Is Not Yet Initialized.");
+
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class AppDataStorageSourceLibrary : ProjectData
+        {
+            #region Components
+
+            [Space(5)]
+            public List<StorageSourceInfo> storageSourceInfoList = new List<StorageSourceInfo>();
+
+            public FileExtensionType FallbackExtension { get; private set; } = FileExtensionType.JSON;
+
+            #endregion
+
+            #region Main
+
+            public Callback IsInitialized()
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(storageSourceInfoList, "Storage Source Info List", storageSourceInfoListValidationCallbackResults => 
+                {
+
+                    callbackResults.result = storageSourceInfoListValidationCallbackResults.result;
+                    callbackResults.resultCode = storageSourceInfoListValidationCallbackResults.resultCode;
+
+                    if(callbackResults.Success())
+                    {
+                        var getStorageSourceInfoList = storageSourceInfoListValidationCallbackResults.data;
+
+                        int index = 0;
+
+                        for (int i = 0; i < getStorageSourceInfoList.Count; i++)
+                        {
+                            if(getStorageSourceInfoList[i].GetStorableFileExtension() == FileExtensionType.NONE)
+                            {
+                                callbackResults.result = $"Storage Source Info At Index : {i} Extension Is Set To Default : NONE - Initialization Failed";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+
+                                break;
+                            }
+                        }
+
+                        if (callbackResults.Success())
+                            callbackResults.result = "App Data Storage Source Library Has Been Initialized Successfully.";               
+                    }
+
+                }, "Storage Source Info List Is Not Yet Initialized In The Editor Inspector Panel - Please See Scene Assets Manager Editor.");
+
+
+                return callbackResults;
+            }
+
+            public void GetStorageSourceInfo(StorableType storableType, Action<CallbackData<StorageSourceInfo>> callback)
+            {
+                CallbackData<StorageSourceInfo> callbackResults = new CallbackData<StorageSourceInfo>();
+
+                callbackResults.result = IsInitialized().result;
+                callbackResults.resultCode = IsInitialized().resultCode;
+
+                if (callbackResults.Success())
+                {
+                    var storageSourceInfo = storageSourceInfoList.Find(sourceInfo => sourceInfo.GetStorableType() == storableType);
+
+                    Helpers.GetAppComponentValid(storageSourceInfo, "Storage Source Info", storageSourceInfoValidationCallbackResults =>
+                    {
+                        callbackResults.result = storageSourceInfoValidationCallbackResults.result;
+                        callbackResults.resultCode = storageSourceInfoValidationCallbackResults.resultCode;
+
+                        if (callbackResults.Success())
+                        {
+                            if (storageSourceInfo.GetStorableFileExtension() == FileExtensionType.NONE)
+                                storageSourceInfo.SetStorableFileExtension(FallbackExtension);
+
+                            callbackResults.result = $"Storage Source Info : {storageSourceInfo.GetName()} For Storable Type : {storableType} With Extension Type : {storageSourceInfo.GetStorableFileExtension()} Is Valid And Assigned.";
+                            callbackResults.data = storageSourceInfo;
+                        }
+
+                    }, "Storage Source Info For Storable Type : {} Is Not Yet Initialized In The Editor Inspector Panel - Please See Scene Assets Manager Editor.");
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+        }
+
+
+        [Serializable]
+        public class StorageSourceInfo : ProjectData
+        {
+            #region Components
+
+            [Space(5)]
+            public StorableType storableType;
+
+            [Space(5)]
+            public FileExtensionType storableFileExtension = FileExtensionType.NONE;
+
+            [Space(5)]
+            public SceneDataPackets dataPackets = new SceneDataPackets();
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+           public StorageSourceInfo()
+           {
+
+           }
+
+            public StorageSourceInfo(string name, StorableType storableDataType, FileExtensionType storableDataFileExtension)
+            {
+                this.name = name;
+                this.storableType = storableDataType;
+                this.storableFileExtension = storableDataFileExtension;
+            }
+
+            #endregion
+
+            #region Setters
+
+            public void SetName(string name) => this.name = name;
+
+            public void SetStorableDataType(StorableType storableDataType) => this.storableType = storableDataType;
+
+            public void SetStorableFileExtension(FileExtensionType storableDataFileExtension) => this.storableFileExtension = storableDataFileExtension;
+
+            #endregion
+
+            #region Getters
+
+            public string GetName() => name ?? "Storage Source Info Name Not Assigned.";
+
+            public StorableType GetStorableType() => storableType;
+
+            public FileExtensionType GetStorableFileExtension() => storableFileExtension;
+
+            public SceneDataPackets GetSceneDataPackets() => dataPackets;
+
+            #endregion
 
             #endregion
         }
@@ -21680,7 +24227,6 @@ namespace Com.RedicalGames.Filar
 
             public DateTimeComponent()
             {
-
             }
 
             public DateTimeComponent(DateTime dateTime)
@@ -21728,6 +24274,10 @@ namespace Com.RedicalGames.Filar
 
             #endregion
         }
+
+        #endregion
+
+        #region Color Data
 
         [Serializable]
         public struct ColorInfo
@@ -21777,13 +24327,13 @@ namespace Com.RedicalGames.Filar
                     foreach (var colorIconButton in swatchButtonList)
                         colorIconButton.Show();
 
-                    callbackResults.results = "Show Color Swatch Success : Swatch Color Showing.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Show Color Swatch Success : Swatch Color Showing.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Show Color Swatch Failed : Swatch Color ID List Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Show Color Swatch Failed : Swatch Color ID List Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21798,13 +24348,13 @@ namespace Com.RedicalGames.Filar
                     foreach (var colorIconButton in swatchButtonList)
                         colorIconButton.Hide();
 
-                    callbackResults.results = "Hide Color Swatch Success : Swatch Color Showing.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Hide Color Swatch Success : Swatch Color Showing.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Hide Color Swatch Failed : Swatch Color ID List Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Hide Color Swatch Failed : Swatch Color ID List Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21842,21 +24392,21 @@ namespace Com.RedicalGames.Filar
 
                 HasSwatchDataContent((callbackDataResults) =>
                 {
-                    if (Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackDataResults.resultCode))
                     {
                         CreateSwatchDropDownList(fileName, (createCallbackResults) =>
                         {
-                            callbackResults.results = createCallbackResults.results;
-                            callbackResults.resultsCode = createCallbackResults.resultsCode;
+                            callbackResults.result = createCallbackResults.result;
+                            callbackResults.resultCode = createCallbackResults.resultCode;
 
-                            if (Helpers.IsSuccessCode(createCallbackResults.resultsCode))
+                            if (Helpers.IsSuccessCode(createCallbackResults.resultCode))
                                 callbackResults.data = createCallbackResults.data.First();
                             else
-                                Debug.LogError($"--> Init Failed With Results : {createCallbackResults.results}");
+                                Debug.LogError($"--> Init Failed With Results : {createCallbackResults.result}");
                         });
                     }
                     else
-                        Debug.LogError($"--> Init Failed With Results : {callbackDataResults.results}");
+                        Debug.LogError($"--> Init Failed With Results : {callbackDataResults.result}");
                 });
 
                 callback?.Invoke(callbackResults);
@@ -21876,7 +24426,7 @@ namespace Com.RedicalGames.Filar
                         {
                             SceneAssetsManager.Instance.LoadData<SwatchData>(fileName, directoryData, (loadedDataResults) =>
                             {
-                                if (Helpers.IsSuccessCode(loadedDataResults.resultsCode))
+                                if (Helpers.IsSuccessCode(loadedDataResults.resultCode))
                                 {
                                     foreach (var swatch in loadedDataResults.data.swatches)
                                         if (!swatchDropDownList.Contains(swatch.name))
@@ -21884,16 +24434,16 @@ namespace Com.RedicalGames.Filar
 
                                     HasSwatchDropDownContent((callbackDataResults) =>
                                     {
-                                        callbackResults.results = callbackDataResults.results;
+                                        callbackResults.result = callbackDataResults.result;
                                         callbackResults.data = swatchDropDownList;
-                                        callbackResults.resultsCode = callbackDataResults.resultsCode;
+                                        callbackResults.resultCode = callbackDataResults.resultCode;
                                     });
 
                                     loadedSwatchData = loadedDataResults.data;
 
-                                    callbackResults.results = $"CreateSwatchDropDownList Sucess : {loadedDataResults.data.name} Loaded.Successfully.";
+                                    callbackResults.result = $"CreateSwatchDropDownList Sucess : {loadedDataResults.data.name} Loaded.Successfully.";
                                     callbackResults.data = swatchDropDownList;
-                                    callbackResults.resultsCode = Helpers.SuccessCode;
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
@@ -21903,7 +24453,7 @@ namespace Com.RedicalGames.Filar
 
                                         SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                         {
-                                            if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                            if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                             {
                                                 loadedSwatchData = createDataCallback.data;
 
@@ -21913,25 +24463,25 @@ namespace Com.RedicalGames.Filar
 
                                                 HasSwatchDropDownContent((callbackDataResults) =>
                                                 {
-                                                    callbackResults.results = callbackDataResults.results;
+                                                    callbackResults.result = callbackDataResults.result;
                                                     callbackResults.data = swatchDropDownList;
-                                                    callbackResults.resultsCode = callbackDataResults.resultsCode;
+                                                    callbackResults.resultCode = callbackDataResults.resultCode;
                                                 });
 
                                             }
                                             else
                                             {
-                                                callbackResults.results = createDataCallback.results;
+                                                callbackResults.result = createDataCallback.result;
                                                 callbackResults.data = default;
-                                                callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                callbackResults.resultCode = createDataCallback.resultCode;
                                             }
                                         });
                                     }
                                     else
                                     {
-                                        callbackResults.results = $"CreateSwatchDropDownList Failed : Swatches List Is Empty.";
+                                        callbackResults.result = $"CreateSwatchDropDownList Failed : Swatches List Is Empty.";
                                         callbackResults.data = default;
-                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                        callbackResults.resultCode = Helpers.ErrorCode;
                                     }
                                 }
                             });
@@ -21939,9 +24489,9 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = $"CreateSwatchDropDownList Failed : Storage Directory : {directoryData.projectDirectory} Not Found.";
+                            callbackResults.result = $"CreateSwatchDropDownList Failed : Storage Directory : {directoryData.projectDirectory} Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
@@ -21949,9 +24499,9 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "CreateSwatchDropDownList Failed : SceneAssetsManager.Instance Is Not Yet initialized.";
+                    callbackResults.result = "CreateSwatchDropDownList Failed : SceneAssetsManager.Instance Is Not Yet initialized.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -21963,10 +24513,10 @@ namespace Com.RedicalGames.Filar
 
                 HasSwatchDropDownContent((callbackDataResults) =>
                 {
-                    callbackResults.results = callbackDataResults.results;
-                    callbackResults.resultsCode = callbackDataResults.resultsCode;
+                    callbackResults.result = callbackDataResults.result;
+                    callbackResults.resultCode = callbackDataResults.resultCode;
 
-                    if (Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackDataResults.resultCode))
                         callbackResults.data = swatchDropDownList;
                     else
                         callbackResults.data = default;
@@ -21981,13 +24531,13 @@ namespace Com.RedicalGames.Filar
 
                 if (swatchDropDownList.Count > 0)
                 {
-                    callbackResults.results = "Has Swatch Drop Down Content Success : Swatch Drop Down List Initialized";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Has Swatch Drop Down Content Success : Swatch Drop Down List Initialized";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Has Swatch Drop Down Content Failed : Swatch Drop Down List Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Has Swatch Drop Down Content Failed : Swatch Drop Down List Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22018,13 +24568,13 @@ namespace Com.RedicalGames.Filar
 
                     #endregion
 
-                    callbackResults.results = "Has Swatch Data Content Success : Swatches Initialized";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Has Swatch Data Content Success : Swatches Initialized";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Has Swatch Data Content Failed : Swatches Are Not Initialized In The Inspector Panel.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Has Swatch Data Content Failed : Swatches Are Not Initialized In The Inspector Panel.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22038,7 +24588,7 @@ namespace Com.RedicalGames.Filar
                 {
                     SceneAssetsManager.Instance.GetColorSwatchData((swatchDataResults) =>
                     {
-                        if (Helpers.IsSuccessCode(swatchDataResults.resultsCode))
+                        if (Helpers.IsSuccessCode(swatchDataResults.resultCode))
                         {
                             if (swatchDataResults.data.SwatchDataLoadedSuccessfully())
                             {
@@ -22046,7 +24596,7 @@ namespace Com.RedicalGames.Filar
 
                                 swatchDataResults.data.GetColorSwatchInLoadedData(swatchName, (loadedSwatchDataResults) =>
                                 {
-                                    if (Helpers.IsSuccessCode(loadedSwatchDataResults.resultsCode))
+                                    if (Helpers.IsSuccessCode(loadedSwatchDataResults.resultCode))
                                     {
                                     #region Test
 
@@ -22054,13 +24604,13 @@ namespace Com.RedicalGames.Filar
                                         {
                                             callbackResults = dropDownCreated;
 
-                                            if (Helpers.IsSuccessCode(dropDownCreated.resultsCode))
+                                            if (Helpers.IsSuccessCode(dropDownCreated.resultCode))
                                             {
                                                 ColorSwatch swatch = loadedSwatchDataResults.data;
 
                                                 SwatchExistsInSwatches(swatchName, (swatchExistsCallbackResults) =>
                                                 {
-                                                    if (Helpers.IsSuccessCode(swatchExistsCallbackResults.resultsCode))
+                                                    if (Helpers.IsSuccessCode(swatchExistsCallbackResults.resultCode))
                                                     {
                                                         if (swatchExistsCallbackResults.data.colorIDList.Count > 0)
                                                         {
@@ -22070,28 +24620,28 @@ namespace Com.RedicalGames.Filar
                                                                 swatch.colorIDList.Add(colorInfo);
                                                             else
                                                             {
-                                                                callbackResults.results = $"CreateColorInCustomSwatch Failed : Color Info : {colorInfo.hexadecimal} Already Exists In : {swatch.name} swatch.colorIDList Is Null.";
-                                                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                                                callbackResults.result = $"CreateColorInCustomSwatch Failed : Color Info : {colorInfo.hexadecimal} Already Exists In : {swatch.name} swatch.colorIDList Is Null.";
+                                                                callbackResults.resultCode = Helpers.ErrorCode;
                                                             }
 
                                                             SceneAssetsManager.Instance.CreateColorInfoContent(colorInfo, swatchName, ContentContainerType.ColorSwatches, OrientationType.HorizontalGrid, (callbackDataResults) =>
                                                             {
-                                                                callbackResults.results = callbackDataResults.results;
-                                                                callbackResults.resultsCode = callbackDataResults.resultsCode;
+                                                                callbackResults.result = callbackDataResults.result;
+                                                                callbackResults.resultCode = callbackDataResults.resultCode;
 
                                                                 if (callbackResults.Success())
                                                                 {
                                                                     SceneAssetsManager.Instance.GetColorSwatchData((colorSwatchDataResults) =>
                                                                     {
-                                                                        callbackResults.results = colorSwatchDataResults.results;
-                                                                        callbackResults.resultsCode = colorSwatchDataResults.resultsCode;
+                                                                        callbackResults.result = colorSwatchDataResults.result;
+                                                                        callbackResults.resultCode = colorSwatchDataResults.resultCode;
 
                                                                         if (callbackResults.Success())
                                                                         {
                                                                             colorSwatchDataResults.data.AddColorToSwatch(colorInfo, swatch, (addSwatchCallback) =>
                                                                             {
-                                                                                callbackResults.results = addSwatchCallback.results;
-                                                                                callbackResults.resultsCode = addSwatchCallback.resultsCode;
+                                                                                callbackResults.result = addSwatchCallback.result;
+                                                                                callbackResults.resultCode = addSwatchCallback.resultCode;
 
                                                                                 if (callbackResults.Success())
                                                                                 {
@@ -22103,7 +24653,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                         SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                                                         {
-                                                                                            if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                                                                            if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                                                                             {
                                                                                                 swatchDropDownList = new List<string>();
 
@@ -22113,40 +24663,40 @@ namespace Com.RedicalGames.Filar
 
                                                                                                 HasSwatchDropDownContent((callbackDataResults) =>
                                                                                                 {
-                                                                                                    callbackResults.results = createDataCallback.results;
+                                                                                                    callbackResults.result = createDataCallback.result;
                                                                                                     callbackResults.data = swatchDropDownList;
-                                                                                                    callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                                                                    callbackResults.resultCode = createDataCallback.resultCode;
                                                                                                 });
 
                                                                                             }
                                                                                             else
                                                                                             {
-                                                                                                callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
+                                                                                                callbackResults.result = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
                                                                                                 callbackResults.data = default;
-                                                                                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                                                                                callbackResults.resultCode = Helpers.ErrorCode;
                                                                                             }
                                                                                         });
                                                                                     }
                                                                                     else
-                                                                                        Debug.LogError($"{SceneAssetsManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).results}");
+                                                                                        Debug.LogError($"{SceneAssetsManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).result}");
                                                                                 }
                                                                                 else
-                                                                                    Debug.LogError($"Create Color In Custom Swatch Failed With Results : {callbackResults.results}");
+                                                                                    Debug.LogError($"Create Color In Custom Swatch Failed With Results : {callbackResults.result}");
                                                                             });
                                                                         }
                                                                         else
-                                                                            Debug.LogError($"--> Adding Color To Swatch Failed With Error Results : {callbackDataResults.results}");
+                                                                            Debug.LogError($"--> Adding Color To Swatch Failed With Error Results : {callbackDataResults.result}");
                                                                     });
                                                                 }
                                                                 else
-                                                                    Debug.LogError($"--> Create Color Failed With Error Results : {callbackDataResults.results}");
+                                                                    Debug.LogError($"--> Create Color Failed With Error Results : {callbackDataResults.result}");
 
                                                             });
                                                         }
                                                         else
                                                         {
-                                                            callbackResults.results = $"CreateColorInCustomSwatch Failed : Swtach : {swatch.name} swatch.colorIDList Is Null.";
-                                                            callbackResults.resultsCode = Helpers.ErrorCode;
+                                                            callbackResults.result = $"CreateColorInCustomSwatch Failed : Swtach : {swatch.name} swatch.colorIDList Is Null.";
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
                                                         }
                                                     }
                                                     else
@@ -22159,14 +24709,14 @@ namespace Com.RedicalGames.Filar
                                                                 swatch.colorIDList.Add(colorInfo);
                                                             else
                                                             {
-                                                                callbackResults.results = $"CreateColorInCustomSwatch Failed : Color Info : {colorInfo.hexadecimal} Already Exists In : {swatch.name} swatch.colorIDList Is Null.";
-                                                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                                                callbackResults.result = $"CreateColorInCustomSwatch Failed : Color Info : {colorInfo.hexadecimal} Already Exists In : {swatch.name} swatch.colorIDList Is Null.";
+                                                                callbackResults.resultCode = Helpers.ErrorCode;
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            callbackResults.results = $"CreateColorInCustomSwatch Failed : Swtach : {swatch.name} swatch.colorIDList Is Null.";
-                                                            callbackResults.resultsCode = Helpers.ErrorCode;
+                                                            callbackResults.result = $"CreateColorInCustomSwatch Failed : Swtach : {swatch.name} swatch.colorIDList Is Null.";
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
                                                         }
 
                                                         if (SceneAssetsManager.Instance.GetAppDirectoryData(directoryType).Success())
@@ -22177,7 +24727,7 @@ namespace Com.RedicalGames.Filar
 
                                                             SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                             {
-                                                                if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                                                if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                                                 {
                                                                     swatchDropDownList = new List<string>();
 
@@ -22187,17 +24737,17 @@ namespace Com.RedicalGames.Filar
 
                                                                     HasSwatchDropDownContent((callbackDataResults) =>
                                                                     {
-                                                                        callbackResults.results = createDataCallback.results;
+                                                                        callbackResults.result = createDataCallback.result;
                                                                         callbackResults.data = swatchDropDownList;
-                                                                        callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                                        callbackResults.resultCode = createDataCallback.resultCode;
                                                                     });
 
                                                                 }
                                                                 else
                                                                 {
-                                                                    callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
+                                                                    callbackResults.result = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
                                                                     callbackResults.data = default;
-                                                                    callbackResults.resultsCode = Helpers.ErrorCode;
+                                                                    callbackResults.resultCode = Helpers.ErrorCode;
                                                                 }
                                                             });
                                                         }
@@ -22208,7 +24758,7 @@ namespace Com.RedicalGames.Filar
 
                                             }
                                             else
-                                                Debug.LogError($"---> On Dropdown Create Failed With Resuts : {dropDownCreated.results}.");
+                                                Debug.LogError($"---> On Dropdown Create Failed With Resuts : {dropDownCreated.result}.");
                                         });
 
                                     #endregion
@@ -22241,7 +24791,7 @@ namespace Com.RedicalGames.Filar
 
                                                 SceneAssetsManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                 {
-                                                    if (Helpers.IsSuccessCode(createDataCallback.resultsCode))
+                                                    if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                                     {
                                                         swatchDropDownList = new List<string>();
 
@@ -22251,17 +24801,17 @@ namespace Com.RedicalGames.Filar
 
                                                         HasSwatchDropDownContent((callbackDataResults) =>
                                                         {
-                                                            callbackResults.results = createDataCallback.results;
+                                                            callbackResults.result = createDataCallback.result;
                                                             callbackResults.data = swatchDropDownList;
-                                                            callbackResults.resultsCode = createDataCallback.resultsCode;
+                                                            callbackResults.resultCode = createDataCallback.resultCode;
                                                         });
 
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.results = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
+                                                        callbackResults.result = "CreateColorInCustomSwatch Failed :  SceneAssetsManager.Instance.CreateData Couldn't Load.";
                                                         callbackResults.data = default;
-                                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
                                                     }
                                                 });
                                             }
@@ -22270,29 +24820,29 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                         {
-                                            callbackResults.results = $"CreateColorInCustomSwatch Failed : Swatch : {swatchName} Already Exists In swatchPalletList.";
-                                            callbackResults.resultsCode = Helpers.ErrorCode;
+                                            callbackResults.result = $"CreateColorInCustomSwatch Failed : Swatch : {swatchName} Already Exists In swatchPalletList.";
+                                            callbackResults.resultCode = Helpers.ErrorCode;
                                         }
                                     }
                                 });
                             }
                             else
                             {
-                                callbackResults.results = "CreateColorInCustomSwatch Failed : swatchDataResults Couldn't Load For Some Reason.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "CreateColorInCustomSwatch Failed : swatchDataResults Couldn't Load For Some Reason.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"CreateColorInCustomSwatch GetColorSwatchData Failed With Results : {swatchDataResults.results}";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"CreateColorInCustomSwatch GetColorSwatchData Failed With Results : {swatchDataResults.result}";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     });
                 }
                 else
                 {
-                    callbackResults.results = "CreateColorInCustomSwatch Failed : SceneAssetsManager.Instance Is Not Yet Initialized.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "CreateColorInCustomSwatch Failed : SceneAssetsManager.Instance Is Not Yet Initialized.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22308,20 +24858,20 @@ namespace Com.RedicalGames.Filar
 
                     if (swatch.colorIDList != null && swatch.colorIDList.Count > 0)
                     {
-                        callbackResults.results = $"GetColorSwatchInLoadedData Success : Swatch : {swatchName} Data Loaded";
+                        callbackResults.result = $"GetColorSwatchInLoadedData Success : Swatch : {swatchName} Data Loaded";
                         callbackResults.data = swatch;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "GetColorSwatchInLoadedData Failed : Swatch Data Couldn't Load For Some Reason.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "GetColorSwatchInLoadedData Failed : Swatch Data Couldn't Load For Some Reason.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "GetColorSwatchInLoadedData Failed : Swatch Data Couldn't Load For Some Reason.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "GetColorSwatchInLoadedData Failed : Swatch Data Couldn't Load For Some Reason.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22355,7 +24905,7 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults = callbackDataResults;
 
-                    if (Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackDataResults.resultCode))
                     {
                         if (swatch.colorIDList.Count > 0)
                         {
@@ -22363,23 +24913,23 @@ namespace Com.RedicalGames.Filar
                             {
                                 swatch.colorIDList.Add(colorInfo);
 
-                                callbackDataResults.results = "AddColorToSwatch Success : Color Info Added To swatch.colorIDList.";
-                                callbackDataResults.resultsCode = Helpers.SuccessCode;
+                                callbackDataResults.result = "AddColorToSwatch Success : Color Info Added To swatch.colorIDList.";
+                                callbackDataResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackDataResults.results = "AddColorToSwatch Failed : Color Info Already Exists In swatch.colorIDList.";
-                                callbackDataResults.resultsCode = Helpers.ErrorCode;
+                                callbackDataResults.result = "AddColorToSwatch Failed : Color Info Already Exists In swatch.colorIDList.";
+                                callbackDataResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackDataResults.results = "AddColorToSwatch Failed : swatch.colorIDList Is Null.";
-                            callbackDataResults.resultsCode = Helpers.ErrorCode;
+                            callbackDataResults.result = "AddColorToSwatch Failed : swatch.colorIDList Is Null.";
+                            callbackDataResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
-                        Debug.LogError($"--> AddColorToSwatch Failed With Results : {callbackDataResults.results}");
+                        Debug.LogError($"--> AddColorToSwatch Failed With Results : {callbackDataResults.result}");
                 });
 
                 callback?.Invoke(callbackResults);
@@ -22421,16 +24971,16 @@ namespace Com.RedicalGames.Filar
                 {
                     if (swatch.name == swatchName)
                     {
-                        callbackResults.results = $"SwatchExistsInSwatches Success : Color Swatch : {swatchName} Exists In Swatches List.";
+                        callbackResults.result = $"SwatchExistsInSwatches Success : Color Swatch : {swatchName} Exists In Swatches List.";
                         callbackResults.data = swatch;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
 
                         break;
                     }
                     else
                     {
-                        callbackResults.results = $"SwatchExistsInSwatches Failed : Color Swatch : {swatchName} Doesn't Exist In Swatches List.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"SwatchExistsInSwatches Failed : Color Swatch : {swatchName} Doesn't Exist In Swatches List.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
 
@@ -22465,13 +25015,13 @@ namespace Com.RedicalGames.Filar
 
                     colorInfoLibrary.Add(colorInfo);
 
-                    callbackResults.results = $"AddColorInfoToLibrary Success : Color : {colorInfo.hexadecimal} Added To Library.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"AddColorInfoToLibrary Success : Color : {colorInfo.hexadecimal} Added To Library.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"AddColorInfoToLibrary Failed : Color : {colorInfo.hexadecimal} Already Exists.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"AddColorInfoToLibrary Failed : Color : {colorInfo.hexadecimal} Already Exists.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22487,8 +25037,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (color.hexadecimal == Helpers.TrimStringValue(colorInfo.hexadecimal, 6))
                         {
-                            callbackResults.results = "ColorInfoExistsInLibrary Success : Color Exists In Library.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ColorInfoExistsInLibrary Success : Color Exists In Library.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
                             break;
                         }
@@ -22496,8 +25046,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "ColorInfoExistsInLibrary Failed : colorInfoLibrary Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "ColorInfoExistsInLibrary Failed : colorInfoLibrary Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22513,8 +25063,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (color.hexadecimal == Helpers.TrimStringValue(colorInfo.hexadecimal, 6))
                         {
-                            callbackResults.results = "ColorInfoExistsInLibrary Success : Color Exists In Library.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "ColorInfoExistsInLibrary Success : Color Exists In Library.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
                             break;
                         }
@@ -22522,8 +25072,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "ColorInfoExistsInLibrary Failed : colorInfoLibrary Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "ColorInfoExistsInLibrary Failed : colorInfoLibrary Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -22589,22 +25139,22 @@ namespace Com.RedicalGames.Filar
                             {
                                 navigationTab.Init((navigationTabCallback) =>
                                 {
-                                    if (Helpers.IsSuccessCode(navigationTabCallback.resultsCode))
+                                    if (Helpers.IsSuccessCode(navigationTabCallback.resultCode))
                                     {
-                                        callbackResults.results = navigationTabCallback.results;
-                                        callbackResults.resultsCode = Helpers.SuccessCode;
+                                        callbackResults.result = navigationTabCallback.result;
+                                        callbackResults.resultCode = Helpers.SuccessCode;
                                     }
                                     else
                                     {
-                                        callbackResults.results = navigationTabCallback.results;
-                                        callbackResults.resultsCode = Helpers.ErrorCode;
+                                        callbackResults.result = navigationTabCallback.result;
+                                        callbackResults.resultCode = Helpers.ErrorCode;
                                     }
                                 });
                             }
                             else
                             {
-                                callbackResults.results = "Navigation Button Value Is Missing / Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Navigation Button Value Is Missing / Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
 
                                 break;
                             }
@@ -22612,8 +25162,8 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = "Navigation Buttons List Is Null / Empty.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Navigation Buttons List Is Null / Empty.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
 
                     // Buttons
@@ -22628,15 +25178,15 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = "Navigation Button Value Is Missing / Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Navigation Button Value Is Missing / Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                     }
                     else
                     {
-                        callbackResults.results = "Navigation Buttons List Is Null / Empty.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "Navigation Buttons List Is Null / Empty.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
 
                     callback.Invoke(callbackResults);
@@ -22724,20 +25274,20 @@ namespace Com.RedicalGames.Filar
                         {
                             navigationTab.Init();
 
-                            callbackResults.results = "Success.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Success.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = "Navigation Button Value Is Missing / Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Navigation Button Value Is Missing / Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Navigation Buttons List Is Null / Empty.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Navigation Buttons List Is Null / Empty.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -22823,13 +25373,13 @@ namespace Com.RedicalGames.Filar
                             {
                                 button.value.onClick.AddListener(() => OnActionButtonPressedEvent(button.dataPackets, button.dataPackets.action));
 
-                                callbackResults.results = "Initialized Successfully";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = "Initialized Successfully";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = "Button Value Is Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Button Value Is Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
 
                                 break;
                             }
@@ -22844,13 +25394,13 @@ namespace Com.RedicalGames.Filar
                             {
                                 slider.value.onValueChanged.AddListener((value) => OnActionSliderValueChangedEvent(slider.dataPackets, value));
 
-                                callbackResults.results = "Initialized Successfully";
-                                callbackResults.resultsCode = Helpers.SuccessCode;
+                                callbackResults.result = "Initialized Successfully";
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = "Slider Value Is Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Slider Value Is Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
 
                                 break;
                             }
@@ -22865,14 +25415,14 @@ namespace Com.RedicalGames.Filar
                             {
                                 widget.Init((callback) =>
                                 {
-                                    callbackResults.results = callback.results;
-                                    callbackResults.resultsCode = callback.resultsCode;
+                                    callbackResults.result = callback.result;
+                                    callbackResults.resultCode = callback.resultCode;
                                 });
                             }
                             else
                             {
-                                callbackResults.results = "Widget Value Is Null.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = "Widget Value Is Null.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
 
                                 break;
                             }
@@ -22880,8 +25430,8 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"-----> Nav Tab Widgets For Tab : {name} Missing : {navigationTabWidgetsList.Count}";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"-----> Nav Tab Widgets For Tab : {name} Missing : {navigationTabWidgetsList.Count}";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
 
                     if (hasSubNavigationTabs)
@@ -22890,7 +25440,7 @@ namespace Com.RedicalGames.Filar
                         {
                             navigationSubWidget.Init(navigationID, (navigationCallback) =>
                             {
-                                if (Helpers.IsSuccessCode(navigationCallback.resultsCode))
+                                if (Helpers.IsSuccessCode(navigationCallback.resultCode))
                                 {
                                     if (navigationSubWidget.navigationSubTabsList != null)
                                     {
@@ -22899,26 +25449,26 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        callbackResults.results = navigationCallback.results;
-                                        callbackResults.resultsCode = navigationCallback.resultsCode;
+                                        callbackResults.result = navigationCallback.result;
+                                        callbackResults.resultCode = navigationCallback.resultCode;
                                     }
                                 }
                                 else
                                 {
-                                    callbackResults.results = navigationCallback.results;
-                                    callbackResults.resultsCode = navigationCallback.resultsCode;
+                                    callbackResults.result = navigationCallback.result;
+                                    callbackResults.resultCode = navigationCallback.resultCode;
                                 }
 
                             });
                         }
                         else
                         {
-                            callbackResults.results = "Show Navigation Tab Failed: Subwidget Is Missing / Null.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "Show Navigation Tab Failed: Subwidget Is Missing / Null.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
 
-                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                         if (initialVisibilityState)
                             Show();
                         else
@@ -22926,8 +25476,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Show Navigation Tab Failed: Value Is Missing / Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "Show Navigation Tab Failed: Value Is Missing / Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -22963,25 +25513,25 @@ namespace Com.RedicalGames.Filar
                         {
                             tabWidget.Show();
 
-                            callbackResults.results = $"ShowWidget Success : NavigationTabWidget : {tabWidget.name} Is Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = $"ShowWidget Success : NavigationTabWidget : {tabWidget.name} Is Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"ShowWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"ShowWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "ShowWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "ShowWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "ShowWidget Failed : navigationTabWidgetsList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "ShowWidget Failed : navigationTabWidgetsList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -23005,26 +25555,26 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"ShowWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = $"ShowWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = "ShowWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "ShowWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"ShowWidget Failed : Selected Navigation Tab ID : {navigationID} Doesn't Match The Current Navigation ID : {this.navigationID}.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"ShowWidget Failed : Selected Navigation Tab ID : {navigationID} Doesn't Match The Current Navigation ID : {this.navigationID}.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "ShowWidget Failed : navigationTabWidgetsList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "ShowWidget Failed : navigationTabWidgetsList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -23042,27 +25592,27 @@ namespace Com.RedicalGames.Filar
                     {
                         if (tabWidget.IsInitialized())
                         {
-                            callbackResults.results = $"HideWidget Success : NavigationTabWidget : {tabWidget.name} Initialized.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = $"HideWidget Success : NavigationTabWidget : {tabWidget.name} Initialized.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
                             tabWidget.Hide();
                         }
                         else
                         {
-                            callbackResults.results = $"HideWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = $"HideWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "HideWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = "HideWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "HideWidget Failed : navigationTabWidgetsList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "HideWidget Failed : navigationTabWidgetsList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -23087,26 +25637,26 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = $"HideWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
-                                callbackResults.resultsCode = Helpers.ErrorCode;
+                                callbackResults.result = $"HideWidget Failed : NavigationTabWidget : {tabWidget.name} Is Not Initialized.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = "HideWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
-                            callbackResults.resultsCode = Helpers.ErrorCode;
+                            callbackResults.result = "HideWidget Failed : NavigationTabWidget Not Found In navigationTabWidgetsList.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"HideWidget Failed : Selected Navigation Tab ID : {navigationID} Doesn't Match The Current Navigation ID : {this.navigationID}.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"HideWidget Failed : Selected Navigation Tab ID : {navigationID} Doesn't Match The Current Navigation ID : {this.navigationID}.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "HideWidget Failed : navigationTabWidgetsList Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = "HideWidget Failed : navigationTabWidgetsList Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -23142,10 +25692,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(RenderingSettingsManager.Instance.GetRenderingSettingsData().GetLightingSettingsData().GetLightColor(), (callbackResults) =>
                                 {
-                                    if (Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                         ActionEvents.OnSwatchColorPickedEvent(callbackResults.data, false, true);
                                     else
-                                        Debug.LogError($"--> OnActionButtonPressedEvent OpenColorPicker Failed With Results : {callbackResults.results}");
+                                        Debug.LogError($"--> OnActionButtonPressedEvent OpenColorPicker Failed With Results : {callbackResults.result}");
                                 });
                             }
                             else
@@ -23176,10 +25726,10 @@ namespace Com.RedicalGames.Filar
                                         {
                                             SceneAssetsManager.Instance.Duplicate((duplicateCallback) =>
                                             {
-                                                if (Helpers.IsSuccessCode(duplicateCallback.resultsCode))
-                                                    Debug.Log($"-------------------> RG_Unity: {duplicateCallback.results}");
+                                                if (Helpers.IsSuccessCode(duplicateCallback.resultCode))
+                                                    Debug.Log($"-------------------> RG_Unity: {duplicateCallback.result}");
                                                 else
-                                                    Debug.LogWarning($"--> Failed To Create With Results : {duplicateCallback.results}");
+                                                    Debug.LogWarning($"--> Failed To Create With Results : {duplicateCallback.result}");
 
                                             });
                                         }
@@ -23214,10 +25764,10 @@ namespace Com.RedicalGames.Filar
                                         {
                                             SceneAssetsManager.Instance.ClearAllRenderProfiles((clearAllCallback) =>
                                             {
-                                                if (Helpers.IsSuccessCode(clearAllCallback.resultsCode))
-                                                    Debug.Log($"-------------------> RG_Unity: {clearAllCallback.results}");
+                                                if (Helpers.IsSuccessCode(clearAllCallback.resultCode))
+                                                    Debug.Log($"-------------------> RG_Unity: {clearAllCallback.result}");
                                                 else
-                                                    Debug.LogWarning($"--> Failed To Create With Results : {clearAllCallback.results}");
+                                                    Debug.LogWarning($"--> Failed To Create With Results : {clearAllCallback.result}");
 
                                             });
                                         }
@@ -23409,13 +25959,13 @@ namespace Com.RedicalGames.Filar
                         {
                             button.value.onClick.AddListener(() => OnActionButtonClickedEvent(button.dataPackets));
 
-                            callbackResults.results = "Initialized Successfully.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Initialized Successfully.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = "Init Failed : Button Value Is Null.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Init Failed : Button Value Is Null.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
                             break;
                         }
@@ -23423,8 +25973,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Initialized Successfully.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 if (actionDropDownList.Count > 0)
@@ -23464,13 +26014,13 @@ namespace Com.RedicalGames.Filar
                                     break;
                             }
 
-                            callbackResults.results = "Initialized Successfully.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Initialized Successfully.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = "Init Failed : Drop Down Value Is Null.";
-                            callbackResults.resultsCode = Helpers.SuccessCode;
+                            callbackResults.result = "Init Failed : Drop Down Value Is Null.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
                             break;
                         }
@@ -23478,11 +26028,11 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "Initialized Successfully.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
-                isInitialized = (callbackResults.resultsCode == Helpers.SuccessCode)? true : false;
+                isInitialized = (callbackResults.resultCode == Helpers.SuccessCode)? true : false;
 
                 if (isInitialized)
                     if (initialVisibilityState)
@@ -23499,7 +26049,7 @@ namespace Com.RedicalGames.Filar
 
                 switch (dataPackets.action)
                 {
-                    case InputActionButtonType.Confirm:
+                    case InputActionButtonType.ConfirmationButton:
 
                         switch (dataPackets.navigationTabWidgetType)
                         {
@@ -23517,10 +26067,10 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     SceneAssetsManager.Instance.CreateNewRenderProfile(dataPackets, (createRendererCallback) =>
                                                     {
-                                                        if (Helpers.IsSuccessCode(createRendererCallback.resultsCode))
+                                                        if (Helpers.IsSuccessCode(createRendererCallback.resultCode))
                                                             ActionEvents.OnNavigationTabWidgetEvent(dataPackets);
                                                         else
-                                                            Debug.LogWarning($"--> Failed To Create With Results : {createRendererCallback.results}");
+                                                            Debug.LogWarning($"--> Failed To Create With Results : {createRendererCallback.result}");
                                                     });
                                                 }
                                                 else
@@ -23630,13 +26180,13 @@ namespace Com.RedicalGames.Filar
                     if (initialVisibilityState)
                         Show(ScreenBlurContainerLayerType.Default);
 
-                    callbackResults.results = "Screen Blur Initialized.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = "Screen Blur Initialized.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Initialize Screen Blur : {name} From Class : {fromClass.name} Value Missing / Not Assigned In The Editor Inspector.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Initialize Screen Blur : {name} From Class : {fromClass.name} Value Missing / Not Assigned In The Editor Inspector.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -23651,9 +26201,9 @@ namespace Com.RedicalGames.Filar
                     AddToSelectedContainer(layerType, addedToContainerCallback => 
                     {
 
-                        Debug.Log($"===> Blur Screen With Layer Type : {layerType} - Success : {addedToContainerCallback.resultsCode} - Results : {addedToContainerCallback.results}");
+                        Debug.Log($"===> Blur Screen With Layer Type : {layerType} - Success : {addedToContainerCallback.resultCode} - Results : {addedToContainerCallback.result}");
 
-                        bool isVisible = addedToContainerCallback.resultsCode == Helpers.SuccessCode;
+                        bool isVisible = addedToContainerCallback.resultCode == Helpers.SuccessCode;
 
                         OnSetBlurObjectVisibilityState(isVisible);
                         callbackResults = addedToContainerCallback;
@@ -23661,8 +26211,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = $"Show Blur Object Of Layer Type : {layerType} Failed : Screen Blur Object Value Is Missing / Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Show Blur Object Of Layer Type : {layerType} Failed : Screen Blur Object Value Is Missing / Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -23701,19 +26251,19 @@ namespace Com.RedicalGames.Filar
                     {
                         OnSetBlurObjectContainer(container.GetValueAssigned(), true);
 
-                        callbackResults.results = $"Setting Blur Object : {value.name} To Container : {container.value.name} Of Type : {layerType}.";
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.result = $"Setting Blur Object : {value.name} To Container : {container.value.name} Of Type : {layerType}.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Container Of Type : {layerType} Value Is Missing Null.";
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Container Of Type : {layerType} Value Is Missing Null.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Add To Selected Container Of Type : {layerType} Failed : Display Layer Container List Is Null.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Add To Selected Container Of Type : {layerType} Failed : Display Layer Container List Is Null.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -24048,8 +26598,8 @@ namespace Com.RedicalGames.Filar
                 {
                     if (screenViewerComponent.GetUIScreenType() != UIScreenType.None)
                     {
-                        callbackResults.results = GetActiveFader().results;
-                        callbackResults.resultsCode = GetActiveFader().resultsCode;
+                        callbackResults.result = GetActiveFader().result;
+                        callbackResults.resultCode = GetActiveFader().resultCode;
 
                         if (callbackResults.Success())
                         {
@@ -24065,16 +26615,16 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.results = $"Screen Viewer Param : {screenViewerComponent?.name}'s Is Assigned From Base's Int Function But Its Screen Type Is Set To Default / None.";
+                        callbackResults.result = $"Screen Viewer Param : {screenViewerComponent?.name}'s Is Assigned From Base's Int Function But Its Screen Type Is Set To Default / None.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.WarningCode;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Screen Viewer Param Value For View Fader : {name} Is Null / Not Assigned From Base's Int Function";
+                    callbackResults.result = $"Screen Viewer Param Value For View Fader : {name} Is Null / Not Assigned From Base's Int Function";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -24099,9 +26649,9 @@ namespace Com.RedicalGames.Filar
                         else
                         {
                             canFade = false;
-                            Log(fadeOutDuractionCallbackResults.resultsCode, fadeOutDuractionCallbackResults.results, this);
+                            Log(fadeOutDuractionCallbackResults.resultCode, fadeOutDuractionCallbackResults.result, this);
 
-                            throw new ArgumentNullException("Fade Out Duration", fadeOutDuractionCallbackResults.results);   
+                            throw new ArgumentNullException("Fade Out Duration", fadeOutDuractionCallbackResults.result);   
                         }
 
                     }, $"Fade Out Duration Value Is Set To Default : 0 - Possible Action - Check If Default Execution Time For Screen : {GetUIScreenType()} Has Been Initialized From The Scene Assets Manager.");
@@ -24121,9 +26671,9 @@ namespace Com.RedicalGames.Filar
                         else
                         {
                             canFade = false;
-                            Log(fadeInDuractionCallbackResults.resultsCode, fadeInDuractionCallbackResults.results, this);
+                            Log(fadeInDuractionCallbackResults.resultCode, fadeInDuractionCallbackResults.result, this);
 
-                            throw new ArgumentNullException("Fade In Duration", fadeInDuractionCallbackResults.results);
+                            throw new ArgumentNullException("Fade In Duration", fadeInDuractionCallbackResults.result);
                         }
 
                     }, $"Fade In Duration Value Is Set To Default : 0 - Possible Action - Check If Default Execution Time For Screen : {GetUIScreenType()} Has Been Initialized From The Scene Assets Manager.");
@@ -24137,8 +26687,8 @@ namespace Com.RedicalGames.Filar
                 this.screenType = screenType;
                 this.initialVisibilityState = initialVisibilityState;
 
-                callbackResults.results = (this.screenType != UIScreenType.None) ? $"Initialized View Fader : {name} For Screen Of Type : {this.screenType}" : $"Failed To Initialize View Fader : {name} - Screen Type Is Set To Default / None.";
-                callbackResults.resultsCode = (this.screenType != UIScreenType.None) ? Helpers.SuccessCode : Helpers.WarningCode;
+                callbackResults.result = (this.screenType != UIScreenType.None) ? $"Initialized View Fader : {name} For Screen Of Type : {this.screenType}" : $"Failed To Initialize View Fader : {name} - Screen Type Is Set To Default / None.";
+                callbackResults.resultCode = (this.screenType != UIScreenType.None) ? Helpers.SuccessCode : Helpers.WarningCode;
 
                 if (callbackResults.Success())
                 {
@@ -24160,8 +26710,8 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.results = GetActiveFader().results;
-                callbackResults.resultsCode = GetActiveFader().resultsCode;
+                callbackResults.result = GetActiveFader().result;
+                callbackResults.resultCode = GetActiveFader().resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -24171,11 +26721,11 @@ namespace Com.RedicalGames.Filar
                     while (canFade)
                         await Task.Yield();
 
-                    LogInfoType fadeInResultsCode = (GetOpacity().data >= visible) ? Helpers.SuccessCode : Helpers.ErrorCode;
+                    LogInfoChannel fadeInResultsCode = (GetOpacity().data >= visible) ? Helpers.SuccessCode : Helpers.ErrorCode;
                     string fadeInResults = (fadeInResultsCode == Helpers.SuccessCode) ? $"View : {GetUIScreenType()} Has Been Faded In Successfully" : $"Failed To Fade In View : {GetUIScreenType()} - Current Fader Opacity Is : {GetOpacity().data}";
 
-                    callbackResults.results = fadeInResults;
-                    callbackResults.resultsCode = fadeInResultsCode;
+                    callbackResults.result = fadeInResults;
+                    callbackResults.resultCode = fadeInResultsCode;
 
                     if (callbackResults.Success())
                     {
@@ -24191,28 +26741,28 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.results = GetActiveFader().results;
-                callbackResults.resultsCode = GetActiveFader().resultsCode;
+                callbackResults.result = GetActiveFader().result;
+                callbackResults.resultCode = GetActiveFader().resultCode;
 
                 if (callbackResults.Success())
                 {
                     canFade = true;
                     fadeDirection = fadeOut;
 
-                    LogInfo($" <-------------------------------> [Fade Out - Start] Showing Screen : {GetUIScreenType()} - Code : {callbackResults.resultsCode} - Results : {callbackResults.results}", this);
+                    LogInfo($" <-------------------------------> [Fade Out - Start] Showing Screen : {GetUIScreenType()} - Code : {callbackResults.resultCode} - Results : {callbackResults.result}", this);
 
                     while (canFade)
                     {
                         await Task.Yield();
                     }
 
-                    LogInfoType fadeOutResultsCode = (GetOpacity().data <= hidden) ? Helpers.SuccessCode : Helpers.ErrorCode;
+                    LogInfoChannel fadeOutResultsCode = (GetOpacity().data <= hidden) ? Helpers.SuccessCode : Helpers.ErrorCode;
                     string fadeOutResults = (fadeOutResultsCode == Helpers.SuccessCode) ? $"View : {GetUIScreenType()} Has Been Faded Out Successfully" : $"Failed To Fade out View : {GetUIScreenType()} - Current Fader Opacity Is : {GetOpacity().data}";
 
-                    callbackResults.results = fadeOutResults;
-                    callbackResults.resultsCode = fadeOutResultsCode;
+                    callbackResults.result = fadeOutResults;
+                    callbackResults.resultCode = fadeOutResultsCode;
 
-                    LogInfo($" <-------------------------------> [Fade Out - Complete] Shown Screen - : {GetUIScreenType()} - Code : {callbackResults.resultsCode} - Results : {callbackResults.results}", this);
+                    LogInfo($" <-------------------------------> [Fade Out - Complete] Shown Screen - : {GetUIScreenType()} - Code : {callbackResults.resultCode} - Results : {callbackResults.result}", this);
 
                     if (callbackResults.Success())
                     {
@@ -24232,20 +26782,20 @@ namespace Com.RedicalGames.Filar
                 if (OnViewFaderInitialized().Success())
                     value.alpha = opacity;
                 else
-                    Log(OnViewFaderInitialized().resultsCode, OnViewFaderInitialized().results, this);
+                    Log(OnViewFaderInitialized().resultCode, OnViewFaderInitialized().result, this);
             }
 
             public CallbackData<float> GetOpacity()
             {
                 CallbackData<float> callbackResults = new CallbackData<float>();
 
-                callbackResults.results = GetActiveFader().results;
-                callbackResults.resultsCode = GetActiveFader().resultsCode;
+                callbackResults.result = GetActiveFader().result;
+                callbackResults.resultCode = GetActiveFader().resultCode;
 
                 if (callbackResults.Success())
                 {
                     callbackResults.data = GetActiveFader().data.alpha;
-                    callbackResults.results = $"Returning Opacity Value Of : { callbackResults.data }";
+                    callbackResults.result = $"Returning Opacity Value Of : { callbackResults.data }";
                 }
 
                 return callbackResults;
@@ -24255,13 +26805,13 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.results = OnViewFaderInitialized().results;
-                callbackResults.resultsCode = OnViewFaderInitialized().resultsCode;
+                callbackResults.result = OnViewFaderInitialized().result;
+                callbackResults.resultCode = OnViewFaderInitialized().resultCode;
 
                 if(callbackResults.Success())
                 {
-                    callbackResults.results = GetOpacity().results;
-                    callbackResults.resultsCode = GetOpacity().resultsCode;
+                    callbackResults.result = GetOpacity().result;
+                    callbackResults.resultCode = GetOpacity().resultCode;
 
                     if (callbackResults.Success() && active)
                     {
@@ -24269,12 +26819,12 @@ namespace Com.RedicalGames.Filar
 
                         if (opacityResults == hidden)
                         {
-                            callbackResults.results = "Can Fade In Successfully Because Fader Component Is Currently Inactive.";
+                            callbackResults.result = "Can Fade In Successfully Because Fader Component Is Currently Inactive.";
                             // callbackResults.data = true;
                         }
                         else
                         {
-                            callbackResults.results = "Can Not Fade In Because Fader Component Is Currently Active - Can Only Fade Out Now.";
+                            callbackResults.result = "Can Not Fade In Because Fader Component Is Currently Active - Can Only Fade Out Now.";
                             //callbackResults.data = false;
                             // callbackResults.resultsCode = Helpers.WarningCode;
                         }
@@ -24288,13 +26838,13 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.results = OnViewFaderInitialized().results;
-                callbackResults.resultsCode = OnViewFaderInitialized().resultsCode;
+                callbackResults.result = OnViewFaderInitialized().result;
+                callbackResults.resultCode = OnViewFaderInitialized().resultCode;
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.results = GetOpacity().results;
-                    callbackResults.resultsCode = GetOpacity().resultsCode;
+                    callbackResults.result = GetOpacity().result;
+                    callbackResults.resultCode = GetOpacity().resultCode;
 
                     if (callbackResults.Success() && active)
                     {
@@ -24302,13 +26852,13 @@ namespace Com.RedicalGames.Filar
 
                         if (opacityResults == visible)
                         {
-                            callbackResults.results = "Can Fade Out Successfully Because Fader Component Is Currently Active.";
+                            callbackResults.result = "Can Fade Out Successfully Because Fader Component Is Currently Active.";
                           
                         }
                         else
                         {
-                            callbackResults.results = "Can Not Fade Out Because Fader Component Is Currently Inactive - Can Only Fade In Now.";
-                            callbackResults.resultsCode = Helpers.WarningCode;
+                            callbackResults.result = "Can Not Fade Out Because Fader Component Is Currently Inactive - Can Only Fade In Now.";
+                            callbackResults.resultCode = Helpers.WarningCode;
                         }
                     }
                 }
@@ -24320,24 +26870,24 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<CanvasGroup> callbackResults = new CallbackData<CanvasGroup>();
 
-                callbackResults.results = OnViewFaderInitialized().results;
-                callbackResults.resultsCode = OnViewFaderInitialized().resultsCode;
+                callbackResults.result = OnViewFaderInitialized().result;
+                callbackResults.resultCode = OnViewFaderInitialized().resultCode;
 
                 if (callbackResults.Success())
                 {
                     string results = (active) ? $"Screen View Fader Component For Screen : {GetUIScreenType()}'s Is Initialized Successfully And Active." : $"Screen View Fader Component For Screen : {GetUIScreenType()}'s Is Initialized Successfully But Is Not Set To Active In The Unity Inspector Panel..";
 
-                    callbackResults.results = results;
+                    callbackResults.result = results;
                     callbackResults.data = (active) ? value : default;
-                    callbackResults.resultsCode = (active) ? Helpers.SuccessCode : Helpers.WarningCode;
+                    callbackResults.resultCode = (active) ? Helpers.SuccessCode : Helpers.WarningCode;
                 }
                 else
                 {
                     string results = (active) ? $"View Fader Component For Screen : {GetUIScreenType()} Is Set To Active But It's Component Value Is Missing / Null / Not Assigned In The Unity Inspector Panel." : "View Fader Is No Applicable For This Screen.";
 
-                    callbackResults.results = results;
+                    callbackResults.result = results;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = (active) ? Helpers.WarningCode : Helpers.ErrorCode;
+                    callbackResults.resultCode = (active) ? Helpers.WarningCode : Helpers.ErrorCode;
                 }
 
                 return callbackResults;
@@ -24349,13 +26899,13 @@ namespace Com.RedicalGames.Filar
 
                 if(value != null && value.isActiveAndEnabled && value.gameObject.activeInHierarchy && value.gameObject.activeSelf)
                 {
-                    callbackResults.results = $"Screen Fader Value : {value.name} Is Assigned.";
-                    callbackResults.resultsCode = Helpers.SuccessCode;
+                    callbackResults.result = $"Screen Fader Value : {value.name} Is Assigned.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Screen Fader Value Is Missing / Not Active In The Scene Hierachy.";
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.result = $"Screen Fader Value Is Missing / Not Active In The Scene Hierachy.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 return callbackResults;
@@ -24365,11 +26915,11 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                LogInfoType resultsCode = (active && OnViewFaderInitialized().Success()) ? Helpers.SuccessCode : Helpers.WarningCode;
-                string results = (resultsCode == LogInfoType.Success) ? $"Can Initiaze View Fader : {name}." : (active && !OnViewFaderInitialized().Success())? $"Screen View Fader : {name} Is Active But Not Initialized With Code : {OnViewFaderInitialized().resultsCode} - Results : {OnViewFaderInitialized().results}" : "";
+                LogInfoChannel resultsCode = (active && OnViewFaderInitialized().Success()) ? Helpers.SuccessCode : Helpers.WarningCode;
+                string results = (resultsCode == LogInfoChannel.Success) ? $"Can Initiaze View Fader : {name}." : (active && !OnViewFaderInitialized().Success())? $"Screen View Fader : {name} Is Active But Not Initialized With Code : {OnViewFaderInitialized().resultCode} - Results : {OnViewFaderInitialized().result}" : "";
 
-                callbackResults.results = results;
-                callbackResults.resultsCode = resultsCode;
+                callbackResults.result = results;
+                callbackResults.resultCode = resultsCode;
 
                 return callbackResults;
             }
@@ -24478,6 +27028,12 @@ namespace Com.RedicalGames.Filar
         public class DataPackets
         {
             [Space(5)]
+            [Header("External Link URL")]
+
+            [Space(5)]
+            public string externalLinkURL;
+
+            [Space(5)]
             [Header("Default Data Packet")]
 
             [Space(5)]
@@ -24533,7 +27089,7 @@ namespace Com.RedicalGames.Filar
             public SelectableWidgetType selectableAssetType;
 
             [Space(5)]
-            public RuntimeValueType sceneAssetScaleValueType;
+            public RuntimeExecution sceneAssetScaleValueType;
 
             [Space(5)]
             public OrientationType dynamicWidgetsContainerOrientation;
@@ -24821,6 +27377,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Space(5)]
             public string name;
 
             #endregion
@@ -24832,17 +27389,43 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            #region Logs
+            #region Log Functions
 
-            public void Log<T>(LogInfoType infoType, string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.Log(infoType, logMessage, fromClass);
+            #region Generic Log
 
-            public void LogInfo<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogInfo(logMessage, fromClass);
+            public void Log<T>(LogInfoChannel infoType, string logMessage, T fromClass = null) where T : DataDebugger => AppDataDebugger.Instance.Log(infoType, logMessage, fromClass);
 
-            public void LogSuccess<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogSuccess(logMessage, fromClass);
+            public void Log(LogInfoChannel infoType, string logMessage, string fromClassName = null) => AppDataDebugger.Instance.Log(infoType, logMessage, fromClassName);
 
-            public void LogWarning<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogWarning(logMessage, fromClass);
+            #endregion
 
-            public void LogError<T>(string logMessage, T fromClass) where T : DataDebugger => AppDataDebugger.Instance.LogError(logMessage, fromClass);
+            #region Info
+
+            public void LogInfo<T>(string logMessage, T fromClass = null) where T : DataDebugger => AppDataDebugger.Instance.LogInfo(logMessage, fromClass);
+            public void LogInfo(string logMessage, string fromClassName = null) => AppDataDebugger.Instance.LogInfo(logMessage, fromClassName);
+
+            #endregion
+
+            #region Success
+
+            public void LogSuccess<T>(string logMessage, T fromClass = null) where T : DataDebugger => AppDataDebugger.Instance.LogSuccess(logMessage, fromClass);
+            public void LogSuccess(string logMessage, string fromClassName = null) => AppDataDebugger.Instance.LogSuccess(logMessage, fromClassName);
+
+            #endregion
+
+            #region Warnings
+
+            public void LogWarning<T>(string logMessage, T fromClass = null) where T : DataDebugger => AppDataDebugger.Instance.LogWarning(logMessage, fromClass);
+            public void LogWarning(string logMessage, string fromClassName = null) => AppDataDebugger.Instance.LogWarning(logMessage, fromClassName);
+
+            #endregion
+
+            #region Errors
+
+            public void LogError<T>(string logMessage, T fromClass = null) where T : DataDebugger => AppDataDebugger.Instance.LogError(logMessage, fromClass);
+            public void LogError(string logMessage, string fromClassName = null)  => AppDataDebugger.Instance.LogError(logMessage, fromClassName);
+
+            #endregion
 
             #endregion
 
@@ -24924,15 +27507,15 @@ namespace Com.RedicalGames.Filar
                     var color = (System.Drawing.Color)converter.ConvertFromString(colorName);
                     Color newColor = new Color(color.R, color.G, color.B, color.A);
 
-                    callbackResults.results = "Success : Color Found.";
+                    callbackResults.result = "Success : Color Found.";
                     callbackResults.data = newColor;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Failed : Color Not Found.";
+                    callbackResults.result = "Failed : Color Not Found.";
                     callbackResults.data = Color.clear;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -25322,15 +27905,15 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.result = "Component Is Not Valid - Not Found / Missing / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25342,15 +27925,15 @@ namespace Com.RedicalGames.Filar
 
                 if (value > 0)
                 {
-                    callbackResults.results = $"Value Is Valid - The Assigned Value Is : {value}.";
+                    callbackResults.result = $"Value Is Valid - The Assigned Value Is : {value}.";
                     callbackResults.data = value;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = (callbackFailFallbackResults != null) ? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
+                    callbackResults.result = (callbackFailFallbackResults != null) ? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25362,15 +27945,15 @@ namespace Com.RedicalGames.Filar
 
                 if(value > 0)
                 {
-                    callbackResults.results = $"Value Is Valid - The Assigned Value Is : {value}.";
+                    callbackResults.result = $"Value Is Valid - The Assigned Value Is : {value}.";
                     callbackResults.data = value;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = (callbackFailFallbackResults != null)? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
+                    callbackResults.result = (callbackFailFallbackResults != null)? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25382,14 +27965,14 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25401,13 +27984,13 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.name} Is Valid.";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25421,13 +28004,13 @@ namespace Com.RedicalGames.Filar
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"Found {components.Count} Valid Components.";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Found {components.Count} Valid Components.";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Components Are Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Components Are Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25439,13 +28022,13 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Components : {component.name} Is Valid.";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Components : {component.name} Is Valid.";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25475,13 +28058,13 @@ namespace Com.RedicalGames.Filar
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"Found {components.Count} Valid Components.";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Found {components.Count} Valid Components.";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Components Are Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Components Are Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25495,15 +28078,15 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Component : {componentInfo} Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.result = $"Component : {componentInfo} Is Not Valid - Not Found / Missing / Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25515,15 +28098,15 @@ namespace Com.RedicalGames.Filar
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"Component Is Valid - Has {components.Count} Content Assigned.";
+                    callbackResults.result = $"Component Is Valid - Has {components.Count} Content Assigned.";
                     callbackResults.data = components;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Could Be Null Or Empty.";
+                    callbackResults.result = "Component Is Not Valid - Could Be Null Or Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25535,43 +28118,257 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
                     string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
-                    callbackResults.results = results;
+                    callbackResults.result = results;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
             }
 
+            #region Has Contents
 
-            public static void GetAppComponentsValid<T>(List<T> components, string listIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            public static bool HasContents<T>(List<T> componentList) => componentList.Count > 0;
+            public static bool HasContents<T>(Queue<T> componentList) => componentList.Count > 0;
+            public static bool HasContents<T>(Stack<T> componentList) => componentList.Count > 0;
+            public static bool HasContents<T>(T[] componentArray) => componentArray.Length > 0;
+
+            #endregion
+
+            #region Has Content validation
+
+            public static Callback ComponentHasContent<T>(List<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (contents.Contains(referencedContent))
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Check Has Component Validation Success - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} - Contents Is Valid And It Contains Content Named : {contentIdentifier} As Expected";
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Check Has Component Validation Failed - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} Contents Doesn't Contain Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static Callback ComponentHasContent<T>(T[] contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (contents.Contains(referencedContent))
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Check Has Component Validation Success - Contents Array : {contentsIdentifier ?? "Contents Array Name Not Assigned"} With : {contents.Length} - Contents Is Valid And It Contains Content Named : {contentIdentifier} As Expected";
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Check Has Component Validation Failed - Contents Array : {contentsIdentifier ?? "Contents Array Name Not Assigned"} With : {contents.Length} Contents Doesn't Contain Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static Callback ComponentHasContent<T>(Queue<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (contents.Contains(referencedContent))
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Check Has Component Validation Success - Contents Queue : {contentsIdentifier ?? "Contents Queue Name Not Assigned"} With : {contents.Count} - Contents Is Valid And It Contains Content Named : {contentIdentifier} As Expected";
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Check Has Component Validation Failed - Contents Queue : {contentsIdentifier ?? "Contents Queue Name Not Assigned"} With : {contents.Count} Contents Doesn't Contain Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Has No Content validation
+
+            public static Callback ComponentDoesntHaveContent<T>(List<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (!contents.Contains(referencedContent))
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Check Has No Component Validation Success - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} - Contents Is Valid And It Doesn't Contains Content Named : {contentIdentifier} As Expected";
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Check  Has No Component Validation Failed - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} Contents Already Contains Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static Callback ComponentDoesntHaveContent<T>(T[] contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (!contents.Contains(referencedContent))
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Check Has No Component Validation Success - Contents Array : {contentsIdentifier ?? "Componet Array Name Not Assigned"} With : {contents.Length} - Contents Is Valid And It Doesn't Contains Content Named : {contentIdentifier} As Expected";
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Check Has No Component Validation Failed - Components Array : {contentsIdentifier ?? "Componet Array Name Not Assigned"} With : {contents.Length} Contents Already Contains Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static Callback ComponentDoesntHaveContent<T>(Queue<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (!contents.Contains(referencedContent))
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Check Has No Component Validation Success - Contents Queue : {contentsIdentifier ?? "Contents Queue Name Not Assigned"} With : {contents.Count} - Contents Is Valid And It Doesn't Contains Content Named : {contentIdentifier} As Expected";
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Check Has No Component Validation Failed - Contents Queue : {contentsIdentifier ?? "Contents Queue Name Not Assigned"} With : {contents.Count} Contents Already Contains Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Check Component Validation
+
+            public static void GetAppComponentsValid<T>(List<T> components, string listIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
                 CallbackDataList<T> callbackResults = new CallbackDataList<T>();
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Count} Components Are Assigned And Valid.";
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Count} Components Are Assigned And Valid.";
                     callbackResults.data = components;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
                     string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
 
-                    callbackResults.results = results;
+                    callbackResults.result = results;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
+            }
+
+            public static void GetAppComponentsValid<T>(T[] components, string listIdentifier = null, Action<CallbackDataArray<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                CallbackDataArray<T> callbackResults = new CallbackDataArray<T>();
+
+                if (components != null && components.Length > 0)
+                {
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Length} Components Are Assigned And Valid.";
+                    callbackResults.data = components;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void GetAppComponentsValid(List<ProjectData> components, string listIdentifier = null, Action<CallbackDataList<ProjectData>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                CallbackDataList<ProjectData> callbackResults = new CallbackDataList<ProjectData>();
+
+                if (components != null && components.Count > 0)
+                {
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Count} Components Are Assigned And Valid.";
+                    callbackResults.data = components;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static void GetAppComponentsValid<T>(Queue<T> queueComponent, string queueIdentifier = null, Action<CallbackDataQueue<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                CallbackDataQueue<T> callbackResults = new CallbackDataQueue<T>();
+
+                if (queueComponent != null && queueComponent.Count > 0)
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"{queueComponent.Count} Components Are Assigned And Valid.";
+                    callbackResults.data = queueComponent;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static CallbackDataQueue<T> GetAppComponentsValid<T>(Queue<T> queueComponent, string queueIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                CallbackDataQueue<T> callbackResults = new CallbackDataQueue<T>();
+
+                if (queueComponent != null && queueComponent.Count > 0)
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Component : {queueIdentifier ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = queueComponent;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {queueIdentifier ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public static CallbackData<T> GetAppComponentValid<T>(T component, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
@@ -25580,21 +28377,69 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
                     string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
 
-                    callbackResults.results = results;
+                    callbackResults.result = results;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 return callbackResults;
             }
+
+            public static CallbackData<T> GetAppComponentValid<T>(T component, string name = null) where T : class
+            {
+                CallbackData<T> callbackResults = new CallbackData<T>();
+
+                if (component != null)
+                {
+                    callbackResults.result = $"Component : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = component;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Component : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null."; ;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static Callback GetScreenDataPacketsValid(SceneDataPackets dataPackets, string name = null, string failedOperationFallbackResults = null, string warningOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if(dataPackets != null)
+                {
+                    if(dataPackets.screenType != UIScreenType.None)
+                    {
+                        callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} For Screen Type : {dataPackets.screenType}.";
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = (warningOperationFallbackResults != null) ? warningOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} Is Not Valid - Screen Of Type Is Set To Default : {dataPackets.screenType}.";
+                        callbackResults.resultCode = WarningCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = (failedOperationFallbackResults != null)? failedOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} Is Not Valid - Screen Data Packets Is Null / Invalid / Not Assigned In The Function Call Parameter.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             public static void ProjectDataComponentValid<T>(T component, Action<Callback> callback) where T : ProjectData
             {
@@ -25602,13 +28447,13 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.name} Is Valid.";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Not Found / Missing / Null.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Component Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25620,13 +28465,13 @@ namespace Com.RedicalGames.Filar
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"Found : {components.Count} Valid Components";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Found : {components.Count} Valid Components";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Missing / Not Assigned In The Editor Inspector Panel.";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = "Component Is Not Valid - Missing / Not Assigned In The Editor Inspector Panel.";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25638,15 +28483,15 @@ namespace Com.RedicalGames.Filar
 
                 if (value > 0)
                 {
-                    callbackResults.results = $"Value Is Valid And Set to : {value}.";
+                    callbackResults.result = $"Value Is Valid And Set to : {value}.";
                     callbackResults.data = value;
-                   callbackResults.resultsCode = SuccessCode;
+                   callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Value Is Not Assigned - Value Is Set To Zero.";
+                    callbackResults.result = "Value Is Not Assigned - Value Is Set To Zero.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25658,15 +28503,15 @@ namespace Com.RedicalGames.Filar
 
                 if (value > referenceValue)
                 {
-                    callbackResults.results = $"Value : {value} Is Valid And Is Greater Than  : {referenceValue}.";
+                    callbackResults.result = $"Value : {value} Is Valid And Is Greater Than  : {referenceValue}.";
                     callbackResults.data = value;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Value : {value} Is Invalid - Value Is Less Than Reference : {referenceValue}.";
+                    callbackResults.result = $"Value : {value} Is Invalid - Value Is Less Than Reference : {referenceValue}.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25678,15 +28523,15 @@ namespace Com.RedicalGames.Filar
 
                 if (value == referenceValue)
                 {
-                    callbackResults.results = $"Value : {value} Is Valid And Is Equal To Reference  : {referenceValue}.";
+                    callbackResults.result = $"Value : {value} Is Valid And Is Equal To Reference  : {referenceValue}.";
                     callbackResults.data = value;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Value : {value} Is Not Equal To Reference : {referenceValue}.";
+                    callbackResults.result = $"Value : {value} Is Not Equal To Reference : {referenceValue}.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25698,55 +28543,133 @@ namespace Com.RedicalGames.Filar
 
                 if (value == 0)
                 {
-                    callbackResults.results = $"Value Is Valid And Set To Zero.";
+                    callbackResults.result = $"Value Is Valid And Set To Zero.";
                     callbackResults.data = value;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Value Is Assigned - Value Is Set To {value}.";
+                    callbackResults.result = $"Value Is Assigned - Value Is Set To {value}.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
             }
 
-            public static void StringValueValid(string value, Action<CallbackData<string>> callback)
+            public static void StorageDataValidation(StorageDirectoryData storageData, Action<CallbackData<StorageDirectoryData>> callback)
             {
-                CallbackData<string> callbackResults = new CallbackData<string>();
+                CallbackData<StorageDirectoryData> callbackResults = new CallbackData<StorageDirectoryData>();
 
-                if (!string.IsNullOrEmpty(value))
+                GetAppComponentValid(storageData, "Storage Data", storageIsValidCallbackResults => 
                 {
-                    callbackResults.results = $"Value : {value} Is Valid.";
-                    callbackResults.data = value;
-                    callbackResults.resultsCode = SuccessCode;
-                }
-                else
-                {
-                    callbackResults.results = "Value Is Null Or Empty.";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
-                }
+                    callbackResults.result = storageIsValidCallbackResults.result;
+                    callbackResults.resultCode = storageIsValidCallbackResults.resultCode;
+
+                    if(callbackResults.Success())
+                    {
+                        if (storageData.type != StorageType.None)
+                        {
+                            StringValueValid(nameIsValidCallbackResults =>
+                            {
+                                callbackResults.result = nameIsValidCallbackResults.result;
+                                callbackResults.resultCode = nameIsValidCallbackResults.resultCode;
+
+                                if (callbackResults.Success())
+                                {
+                                    StringValueValid(pathIsValidCallbackResults =>
+                                    {
+                                        callbackResults.result = pathIsValidCallbackResults.result;
+                                        callbackResults.resultCode = pathIsValidCallbackResults.resultCode;
+
+                                        if (callbackResults.Success())
+                                        {
+                                            StringValueValid(rootDirectoryIsValidCallbackResults =>
+                                            {
+                                                callbackResults.result = rootDirectoryIsValidCallbackResults.result;
+                                                callbackResults.resultCode = rootDirectoryIsValidCallbackResults.resultCode;
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (storageData.type == StorageType.Project_Structure)
+                                                    {
+                                                        StringValueValid(rootDirectoryIsValidCallbackResults =>
+                                                        {
+                                                            callbackResults.result = rootDirectoryIsValidCallbackResults.result;
+                                                            callbackResults.resultCode = rootDirectoryIsValidCallbackResults.resultCode;
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                callbackResults.result = $"Storage Data {storageData.name} Of Type : {storageData.type} Is Valid With Path : {storageData.path} At Directory {storageData.rootDirectory}. Please Note! - {storageData.name} Is A Structured Data With Project Directory : {storageData.projectDirectory}.";
+                                                                callbackResults.data = storageData;
+                                                            }
+                                                            else
+                                                            {
+                                                                callbackResults.result = $"Storage Data : {storageData.name}'s Project Directory Missing / Not Found / Not Initialized-Assigned.";
+                                                                callbackResults.resultCode = ErrorCode;
+                                                            }
+
+                                                        }, storageData.projectDirectory);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = $"Storage Data {storageData.name} Of Type : {storageData.type} Is Valid With Path : {storageData.path} At Directory {storageData.rootDirectory}. Please Note! - {storageData.name} Is Not A Structured Data.";
+                                                        callbackResults.data = storageData;
+                                                    }
+                                                }
+
+                                            }, storageData.rootDirectory);
+                                        }
+
+                                    }, storageData.path);
+                                }
+
+                            }, storageData.name);
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Storage Data : {storageData.name ?? "Storage Data Name Missing"} Is Not Valid : Storage Type Is Set To Default : None";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = ErrorCode;
+                        }
+                    }
+
+                }, "Storage Data Parameter Is Null - The Assigned Parameter Is Null.");
 
                 callback.Invoke(callbackResults);
             }
 
-            public static void StringListValueValid(List<string> values, Action<CallbackDataList<string>> callback)
+            public static void StringValueValid(Action<CallbackDataArray<string>> callback, params string[] values)
             {
-                CallbackDataList<string> callbackResults = new CallbackDataList<string>();
+                CallbackDataArray<string> callbackResults = new CallbackDataArray<string>();
 
-                if (values != null && values.Count > 0)
+                if (values != null && values.Length > 0)
                 {
-                    callbackResults.results = $"Component Is Valid - Has {values.Count} Content Assigned.";
-                    callbackResults.data = values;
-                    callbackResults.resultsCode = SuccessCode;
+                    for (int i = 0; i < values.Length; i++)
+                    {
+                        if(!string.IsNullOrEmpty(values[i]))
+                            callbackResults.resultCode = SuccessCode;
+                        else
+                        {
+                            callbackResults.result = $"Value At Index : {i} Is Not Valid.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = ErrorCode;
+
+                            break;
+                        }
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{values.Length} Values Are Valid.";
+                        callbackResults.data = values;
+                    }
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Could Be Null Or Empty.";
+                    callbackResults.result = "[Helpers] String Value Valid - There Are No Values Assigned To Validate.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25758,38 +28681,64 @@ namespace Com.RedicalGames.Filar
 
                 if (values != null && values.Count >= hasRequiredAmount)
                 {
-                    callbackResults.results = $"Component Is Valid - And Has Required Amount Pf {values.Count} Contents.";
+                    callbackResults.result = $"Component Is Valid - And Has Required Amount Pf {values.Count} Contents.";
                     callbackResults.data = values;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Not Assigned Or Doesn't Have Required Amount Of Contents.";
+                    callbackResults.result = "Component Is Not Valid - Not Assigned Or Doesn't Have Required Amount Of Contents.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
             }
 
-            public static void StringArrayValueValid(string[] components, Action<CallbackDataArray<string>> callback)
+            public static List<T> GetList<T>(T[] values)
             {
-                CallbackDataArray<string> callbackResults = new CallbackDataArray<string>();
+                return values.ToList();
+            }
 
-                if (components != null && components.Length > 0)
+            public static T[] GetArray<T>(List<T> values)
+            {
+                return values.ToArray();
+            }
+
+            public static Queue<T> GetQueue<T>(List<T> values)
+            {
+                Queue<T> queue = new Queue<T>();
+
+                for (int i = 0; i < values.Count; i++)
                 {
-                    callbackResults.results = $"Component Is Valid - Has {components.Length} Content Assigned.";
-                    callbackResults.data = components;
-                    callbackResults.resultsCode = SuccessCode;
-                }
-                else
-                {
-                    callbackResults.results = "Component Is Not Valid - Could Be Null Or Empty.";
-                    callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    if (!queue.Contains(values[i]))
+                        queue.Enqueue(values[i]);
                 }
 
-                callback.Invoke(callbackResults);
+                return queue;
+            }
+
+            public static Queue<T> GetQueue<T>(T[] values)
+            {
+                Queue<T> queue = new Queue<T>();
+
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (!queue.Contains(values[i]))
+                        queue.Enqueue(values[i]);
+                }
+
+                return queue;
+            }
+
+            public static List<T> GetList<T>(Queue<T> values)
+            {
+                return values.ToList();
+            }
+
+            public static T[] GetArray<T>(Queue<T> values)
+            {
+                return values.ToArray();
             }
 
             public static void ComponentValid<T>(List<T> components, Action<CallbackDataList<T>> callback) where T : AppMonoBaseClass
@@ -25798,15 +28747,15 @@ namespace Com.RedicalGames.Filar
 
                 if(components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"Component Is Valid - Has {components.Count} Content Assigned.";
+                    callbackResults.result = $"Component Is Valid - Has {components.Count} Content Assigned.";
                     callbackResults.data = components;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Could Be Null Or Empty.";
+                    callbackResults.result = "Component Is Not Valid - Could Be Null Or Empty.";
                     callbackResults.data = default;
-                   callbackResults.resultsCode = ErrorCode;
+                   callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25818,15 +28767,15 @@ namespace Com.RedicalGames.Filar
 
                 if (components != null && components.Count > 0)
                 {
-                    callbackResults.results = $"Component Is Valid - Has {components.Count} Content Assigned.";
+                    callbackResults.result = $"Component Is Valid - Has {components.Count} Content Assigned.";
                     callbackResults.data = components;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Could Be Null Or Empty.";
+                    callbackResults.result = "Component Is Not Valid - Could Be Null Or Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25838,15 +28787,15 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.name} Is Valid.";
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Is Not Valid - Could Be Null.";
+                    callbackResults.result = "Component Is Not Valid - Could Be Null.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25883,22 +28832,22 @@ namespace Com.RedicalGames.Filar
 
                     if(data != null)
                     {
-                        callbackResults.results = $"String : {value} Has Been Converted To Enum Of Type : {data}";
+                        callbackResults.result = $"String : {value} Has Been Converted To Enum Of Type : {data}";
                         callbackResults.data = data;
-                        callbackResults.resultsCode = Helpers.SuccessCode;
+                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Couldn't Converted String Value {value} To Enum Data.";
+                        callbackResults.result = $"Couldn't Converted String Value {value} To Enum Data.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = $"Failed To Parse String : {value} To Enum Data.";
+                    callbackResults.result = $"Failed To Parse String : {value} To Enum Data.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 callback.Invoke(callbackResults);
@@ -25945,7 +28894,7 @@ namespace Com.RedicalGames.Filar
 
                 await Task.Delay(value);
 
-                callbackResults.resultsCode = SuccessCode;
+                callbackResults.resultCode = SuccessCode;
 
                 callback?.Invoke(callbackResults);
             }
@@ -25980,7 +28929,7 @@ namespace Com.RedicalGames.Filar
 
                 await Task.Delay(GetCachedApplicationFrameRate());
 
-                callbackResults.resultsCode = SuccessCode;
+                callbackResults.resultCode = SuccessCode;
                 callback?.Invoke(callbackResults);
             }
 
@@ -26008,13 +28957,13 @@ namespace Com.RedicalGames.Filar
 
                 if(value_A.Equals(value_B))
                 {
-                    callbackResults.results = $"Value_A Of Type : {value_A.GetType()} Is Equal To Value_B Of Type : {value_B.GetType()}";
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.result = $"Value_A Of Type : {value_A.GetType()} Is Equal To Value_B Of Type : {value_B.GetType()}";
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Value_A Of Type : {value_A.GetType()} Is Not Equal To Value_B Of Type : {value_B.GetType()}";
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.result = $"Value_A Of Type : {value_A.GetType()} Is Not Equal To Value_B Of Type : {value_B.GetType()}";
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26033,47 +28982,47 @@ namespace Com.RedicalGames.Filar
 
                         if (valueA.Count.Equals(valueB.Count))
                         {
-                            callbackResults.results = $"List Component Value_A Of ID Type : {valueA_ID} Is Equal To List Component Value_B Of ID Type : {valueB_ID} With : {valueA.Count} Item(s).";
+                            callbackResults.result = $"List Component Value_A Of ID Type : {valueA_ID} Is Equal To List Component Value_B Of ID Type : {valueB_ID} With : {valueA.Count} Item(s).";
 
                             callbackResults.tuple_A = valueA;
                             callbackResults.tuple_B = valueB;
                             callbackResults.size = valueA.Count;
 
-                            callbackResults.resultsCode = SuccessCode;
+                            callbackResults.resultCode = SuccessCode;
                         }
                         else
                         {
                             string greaterValue = (valueA.Count > valueB.Count) ? $"Value_A : {valueA_ID} Is Greater Than Value_B" : $"Value_B : {valueB_ID} Is Greater Than Value_A";
 
-                            callbackResults.results = $"List Components Don't Have Equal Values : {greaterValue}. - Value_A : {valueA.Count} - Value B : {valueB.Count}";
+                            callbackResults.result = $"List Components Don't Have Equal Values : {greaterValue}. - Value_A : {valueA.Count} - Value B : {valueB.Count}";
 
                             callbackResults.tuple_A = default;
                             callbackResults.tuple_B = default;
                             callbackResults.size = default;
 
-                            callbackResults.resultsCode = ErrorCode;
+                            callbackResults.resultCode = ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "List Component Value_B Is Null / Empty.";
+                        callbackResults.result = "List Component Value_B Is Null / Empty.";
 
                         callbackResults.tuple_A = default;
                         callbackResults.tuple_B = default;
                         callbackResults.size = default;
 
-                        callbackResults.resultsCode = ErrorCode;
+                        callbackResults.resultCode = ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "List Component Value_A Is Null / Empty.";
+                    callbackResults.result = "List Component Value_A Is Null / Empty.";
 
                     callbackResults.tuple_A = default;
                     callbackResults.tuple_B = default;
                     callbackResults.size = default;
 
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26091,47 +29040,47 @@ namespace Com.RedicalGames.Filar
 
                         if (valueA.Count.Equals(valueB.Count))
                         {
-                            callbackResults.results = $"List Component Value_A Of ID Type : {values_ID} Is Equal To List Component Value_B Of ID Type : {values_ID} With : {valueA.Count} Item(s).";
+                            callbackResults.result = $"List Component Value_A Of ID Type : {values_ID} Is Equal To List Component Value_B Of ID Type : {values_ID} With : {valueA.Count} Item(s).";
 
                             callbackResults.tuple_A = valueA;
                             callbackResults.tuple_B = valueB;
                             callbackResults.size = valueA.Count;
 
-                            callbackResults.resultsCode = SuccessCode;
+                            callbackResults.resultCode = SuccessCode;
                         }
                         else
                         {
                             string greaterValue = (valueA.Count > valueB.Count) ? $"Value_A : {values_ID} Is Greater Than Value_B" : $"Value_B : {values_ID} Is Greater Than Value_A";
 
-                            callbackResults.results = $"List Components Don't Have Equal Values : {greaterValue}. - Value_A : {valueA.Count} - Value B : {valueB.Count}";
+                            callbackResults.result = $"List Components Don't Have Equal Values : {greaterValue}. - Value_A : {valueA.Count} - Value B : {valueB.Count}";
 
                             callbackResults.tuple_A = default;
                             callbackResults.tuple_B = default;
                             callbackResults.size = default;
 
-                            callbackResults.resultsCode = ErrorCode;
+                            callbackResults.resultCode = ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = "List Component Value_B Is Null / Empty.";
+                        callbackResults.result = "List Component Value_B Is Null / Empty.";
 
                         callbackResults.tuple_A = default;
                         callbackResults.tuple_B = default;
                         callbackResults.size = default;
 
-                        callbackResults.resultsCode = ErrorCode;
+                        callbackResults.resultCode = ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "List Component Value_A Is Null / Empty.";
+                    callbackResults.result = "List Component Value_A Is Null / Empty.";
 
                     callbackResults.tuple_A = default;
                     callbackResults.tuple_B = default;
                     callbackResults.size = default;
 
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26143,15 +29092,15 @@ namespace Com.RedicalGames.Filar
 
                 if (source != null && source.Count > 0)
                 {
-                    callbackResults.results = $"List Component Has {source.Count} Items.";
+                    callbackResults.result = $"List Component Has {source.Count} Items.";
                     callbackResults.data = source;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "List Component Has No Data.";
+                    callbackResults.result = "List Component Has No Data.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26168,15 +29117,15 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null && component.Count > 0)
                 {
-                    callbackResults.results = "Component Value Is Not Null Or Empty.";
+                    callbackResults.result = "Component Value Is Not Null Or Empty.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = "Component Value Is Null Or Empty.";
+                    callbackResults.result = "Component Value Is Null Or Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26188,15 +29137,15 @@ namespace Com.RedicalGames.Filar
 
                 if(component != null)
                 {
-                    callbackResults.results = $"Component : {component.GetType().Name} Is Valid.";
+                    callbackResults.result = $"Component : {component.GetType().Name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Component : {component.GetType().Name} Is Null / Empty.";
+                    callbackResults.result = $"Component : {component.GetType().Name} Is Null / Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26213,15 +29162,15 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.GetType().Name} Is Valid.";
+                    callbackResults.result = $"Component : {component.GetType().Name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Component : {component.GetType().Name} Is Null / Empty.";
+                    callbackResults.result = $"Component : {component.GetType().Name} Is Null / Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26238,15 +29187,15 @@ namespace Com.RedicalGames.Filar
 
                 if (component != null)
                 {
-                    callbackResults.results = $"Component : {component.GetType().Name} Is Valid.";
+                    callbackResults.result = $"Component : {component.GetType().Name} Is Valid.";
                     callbackResults.data = component;
-                    callbackResults.resultsCode = SuccessCode;
+                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Component : {component.GetType().Name} Is Null / Empty.";
+                    callbackResults.result = $"Component : {component.GetType().Name} Is Null / Empty.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = ErrorCode;
+                    callbackResults.resultCode = ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -26256,32 +29205,32 @@ namespace Com.RedicalGames.Filar
 
             #region Log Information 
 
-            public static LogInfoType InfoCode { get { return LogInfoType.Info; } }
+            public static LogInfoChannel InfoCode { get { return LogInfoChannel.Debug; } }
 
-            public static LogInfoType SuccessCode { get { return LogInfoType.Success; } }
+            public static LogInfoChannel SuccessCode { get { return LogInfoChannel.Success; } }
 
-            public static LogInfoType WarningCode { get { return LogInfoType.Warning; } }
+            public static LogInfoChannel WarningCode { get { return LogInfoChannel.Warning; } }
 
-            public static LogInfoType ErrorCode { get { return LogInfoType.Error; } }
+            public static LogInfoChannel ErrorCode { get { return LogInfoChannel.Error; } }
 
 
-            public static bool IsInfoCode(LogInfoType resultCode)
+            public static bool IsInfoCode(LogInfoChannel resultCode)
             {
                 return resultCode == InfoCode;
             }
 
-            public static bool IsSuccessCode(LogInfoType resultCode)
+            public static bool IsSuccessCode(LogInfoChannel resultCode)
             {
                 return resultCode == SuccessCode;
             }
 
-            public static bool IsWarningCode(LogInfoType resultCode)
+            public static bool IsWarningCode(LogInfoChannel resultCode)
             {
                 return resultCode == WarningCode;
             }
 
 
-            public static bool IsErrorCode(LogInfoType resultCode)
+            public static bool IsErrorCode(LogInfoChannel resultCode)
             {
                 return resultCode == ErrorCode;
             }
@@ -26297,7 +29246,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Main
 
-            void Log<T>(LogInfoType infoType, string logMessage, T fromClass) where T : DataDebugger;
+            void Log<T>(LogInfoChannel infoType, string logMessage, T fromClass) where T : DataDebugger;
 
             void LogInfo<T>(string logMessage, T fromClass) where T : DataDebugger;
 
@@ -26378,19 +29327,12 @@ namespace Com.RedicalGames.Filar
             void SetChildWidgetsState(bool interactable, bool isSelected);
         }
 
-        //public interface IUIScreenComponent
-        //{
-        //    void Init(UIScreenViewComponent screen, Action<Callback> callback = null);
+        public interface ILoadInstance
+        {
+            void AbortLoad();
 
-        //    void SetOpacity(float value);
-        //    CallbackData<float> GetOpacity();
-
-        //    CallbackData<bool> CanFadeInView();
-        //    CallbackData<bool> CanFadeOutView();
-
-        //    void FadeIn();
-        //    void FadeOut();
-        //}
+            Task<Callback> ProcessLoad();
+        }
 
         public interface IUIFaderComponent
         {
@@ -26406,7 +29348,6 @@ namespace Com.RedicalGames.Filar
 
             Task<CallbackData<UIScreenViewComponent>> FadeOut();
         }
-
 
         public interface ISettingsWidget
         {
@@ -26587,7 +29528,6 @@ namespace Com.RedicalGames.Filar
 
         #endregion
     }
-
 
     public static class AppDataExtensions
     {

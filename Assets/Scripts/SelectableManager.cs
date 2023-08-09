@@ -162,7 +162,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
             });
         }
 
@@ -201,7 +201,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
             });
         }
 
@@ -227,7 +227,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    Log(layoutViewCallbackResults.resultsCode, layoutViewCallbackResults.results, this);
+                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
             });
         }
 
@@ -239,22 +239,22 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.ProjectDataComponentValid(projectStructureSelectionSystem, validComponentCallbackResults => 
             {
-                callbackResults.results = validComponentCallbackResults.results;
-                callbackResults.resultsCode = validComponentCallbackResults.resultsCode;
+                callbackResults.result = validComponentCallbackResults.result;
+                callbackResults.resultCode = validComponentCallbackResults.resultCode;
 
                 if (callbackResults.Success())
                 {
                     if (projectStructureSelectionSystem != null)
                     {
-                        callbackResults.results = $"Project Structure Selection System : {projectStructureSelectionSystem.name} Found.";
+                        callbackResults.result = $"Project Structure Selection System : {projectStructureSelectionSystem.name} Found.";
                         callbackResults.data = projectStructureSelectionSystem;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "ProjectStructureSelectionSystem Not Found / Not Yet Initialized.";
+                        callbackResults.result = "ProjectStructureSelectionSystem Not Found / Not Yet Initialized.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
             });
@@ -523,7 +523,7 @@ namespace Com.RedicalGames.Filar
                     });
                 }
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -538,7 +538,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.Select(selection.name, selectionType, selectionCallback => { callbackResults = selectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -553,7 +553,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.Select(selection.name, selectionType, selectionCallback => { callbackResults = selectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -568,7 +568,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.Select(selectionNames, selectionType, selectionCallback => { callbackResults = selectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -581,7 +581,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.Select(selectable, dataPackets, isInitialSelection);
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
         }
 
@@ -592,7 +592,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.Select(name, selectionType);
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
         }
 
@@ -605,7 +605,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.CacheSelection(cacheCallback => { callbackResults = cacheCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -620,7 +620,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.ClearSelectionCache(cacheCallback => { callbackResults = cacheCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -635,7 +635,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     hasCachedInfo = projectSelectionCallbackResults.data.HasCachedSelectionInfo();
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             return hasCachedInfo;
@@ -650,7 +650,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.GetCachedSelectionInfo(getCacheCallback => { callbackResults = getCacheCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback.Invoke(callbackResults);
@@ -665,7 +665,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.GetCachedSelectionInfoNameList(getCacheCallback => { callbackResults = getCacheCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback.Invoke(callbackResults);
@@ -680,7 +680,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.OnAddSelection(selectionName, selectionType, selectionCallback => { callbackResults = selectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -695,7 +695,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.OnRemoveSelection(selectionName, selectionType, removeSelectionCallback => { callbackResults = removeSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -708,7 +708,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.DeselectAll();
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
         }
 
@@ -721,7 +721,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     selectionType = projectSelectionCallbackResults.data.GetCurrentSelectionType();
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             return selectionType;
@@ -736,7 +736,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.HasFocusedSelectionInfo(selectionName, hasSelectionCallback => { callbackResults = hasSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback.Invoke(callbackResults);
@@ -751,7 +751,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.OnSetFocusedWidgetSelectionInfo(newSelectionInfo, isActiveSelection, onSetFocusedWidgetSelectionCallback => { callbackResults = onSetFocusedWidgetSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -766,7 +766,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.OnSetFocusedWidgetSelectionInfo(newSelectionInfoList, selectionType, isActiveSelection, onSetFocusedWidgetSelectionCallback => { callbackResults = onSetFocusedWidgetSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -781,7 +781,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     hasActiveContent = projectSelectionCallbackResults.data.HasActiveSelections();
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             return hasActiveContent;
@@ -796,7 +796,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.OnClearFocusedSelectionsInfo(onClearFocusedSelectionsInfoCallback => { callbackResults = onClearFocusedSelectionsInfoCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -811,7 +811,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.OnClearFocusedSelectionsInfo(resetWidgets, onClearFocusedSelectionsInfoCallback => { callbackResults = onClearFocusedSelectionsInfoCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -826,7 +826,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.GetFocusedSelectionData(getFocusedSelectionCallback => { callbackResults = getFocusedSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -841,7 +841,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     dataCount = projectSelectionCallbackResults.data.GetFocusedSelectionDataCount();
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             return dataCount;
@@ -856,7 +856,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.SetSelectionInfoState(selectionList, selectionType, getFolderStructureSelectionCallback => { callbackResults = getFolderStructureSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -871,7 +871,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     selectionType = projectSelectionCallbackResults.data.GetFocusedSelectionTypeFromState(state);
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             return selectionType;
@@ -886,7 +886,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     projectSelectionCallbackResults.data.GetFocusedSelectionState(selectionType, getFocusedSelectionCallback => { callbackResults = getFocusedSelectionCallback; });
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -901,7 +901,7 @@ namespace Com.RedicalGames.Filar
                 if (projectSelectionCallbackResults.Success())
                     selectionInfo = projectSelectionCallbackResults.data.GetSelectionStates();
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             return selectionInfo;
@@ -915,15 +915,15 @@ namespace Com.RedicalGames.Filar
 
             if (HasNewPageItemSelectedWidget())
             {
-                callbackResults.results = "Success - NewPageItemSelectedWidget Found.";
+                callbackResults.result = "Success - NewPageItemSelectedWidget Found.";
                 callbackResults.data = newPageItemSelectedWidget.Dequeue();
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Failed - There Is No newPageItemSelectedWidget Found.";
+                callbackResults.result = "Failed - There Is No newPageItemSelectedWidget Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -1154,7 +1154,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public AppData.RuntimeValue<float> GetAssetPanDragSpeedRuntimeValue(AppData.BuildType runtimeType, AppData.RuntimeValueType valueType)
+        public AppData.RuntimeValue<float> GetAssetPanDragSpeedRuntimeValue(AppData.BuildType runtimeType, AppData.RuntimeExecution valueType)
         {
             if (assetPanDragSpeedRuntimeList.Count > 0)
             {
@@ -1205,14 +1205,14 @@ namespace Com.RedicalGames.Filar
             if (focusedWidgetInfo.Count > 0)
             {
                 callbackResults.data = focusedWidgetInfo.Dequeue();
-                callbackResults.results = $"GetFocusedWidgetInfo Success : Focused To Widget : {callbackResults.data.GetWidgetName()}.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = $"GetFocusedWidgetInfo Success : Focused To Widget : {callbackResults.data.GetWidgetName()}.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "GetFocusedWidgetInfo Failed : There Is No Focused Widget Assigned.";
+                callbackResults.result = "GetFocusedWidgetInfo Failed : There Is No Focused Widget Assigned.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1318,7 +1318,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
             });
 
             #endregion
@@ -1435,7 +1435,7 @@ namespace Com.RedicalGames.Filar
 
         IEnumerator OnShowSelectionOptions(AppData.SceneDataPackets dataPackets)
         {
-            yield return new WaitForSeconds(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScreenWidgetShowDelayValue).value);
+            yield return new WaitForSeconds(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetShowDelayValue).value);
 
             if (ScreenUIManager.Instance != null)
             {
@@ -1463,7 +1463,7 @@ namespace Com.RedicalGames.Filar
             {
                 GetNewPageItemSelectedWidget(onNewPageItemSelectedWidgetCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(onNewPageItemSelectedWidgetCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(onNewPageItemSelectedWidgetCallback.resultCode))
                         AppData.ActionEvents.OnNavigateAndFocusToSelectionEvent(onNewPageItemSelectedWidgetCallback.data);
                 });
             }
@@ -1529,7 +1529,7 @@ namespace Com.RedicalGames.Filar
 
         IEnumerator OnDeselectionUISatetUpdateAsync()
         {
-            yield return new WaitForSeconds(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScreenWidgetHideDelayValue).value);
+            yield return new WaitForSeconds(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetHideDelayValue).value);
 
             if (ScreenUIManager.Instance != null)
                 ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FileSelectionOptionsWidget);
