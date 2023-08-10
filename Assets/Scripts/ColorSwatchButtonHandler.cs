@@ -33,22 +33,22 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults = callback;
 
-                    if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                     {
                         InitializeColorProperties(colorInfo, (initializationCallback) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(initializationCallback.resultsCode))
-                                Debug.Log($"---> Initialize Success With Results :{initializationCallback.results}");
+                            if (AppData.Helpers.IsSuccessCode(initializationCallback.resultCode))
+                                Debug.Log($"---> Initialize Success With Results :{initializationCallback.result}");
                             else
-                                Debug.LogError($"---> Initialize Failed With Results :{initializationCallback.results}");
+                                Debug.LogError($"---> Initialize Failed With Results :{initializationCallback.result}");
                         });
                     }
                 });
             }
             else
             {
-                callbackResults.results = "ColorSwatchButtonHandler Initialization Failed : Color Swatch Icon Missing / Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "ColorSwatchButtonHandler Initialization Failed : Color Swatch Icon Missing / Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -63,10 +63,10 @@ namespace Com.RedicalGames.Filar
                 if (SceneAssetsManager.Instance != null)
                     SceneAssetsManager.Instance.GetColorSwatchData((swatchDataResults) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(swatchDataResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(swatchDataResults.resultCode))
                             swatchDataResults.data.OnSwatchColorSelection(colorInfo);
                         else
-                            Debug.LogError($"--> ColorSwatchButtonHandler OnActionButtonInputs Failed With Results : {swatchDataResults.results}");
+                            Debug.LogError($"--> ColorSwatchButtonHandler OnActionButtonInputs Failed With Results : {swatchDataResults.result}");
                     });
                 else
                     Debug.LogWarning("--> OnActionButtonInputs's GetColorSwatchData Failed : SceneAssetsManager.Instance Is Not Yet initialized.");
@@ -83,10 +83,10 @@ namespace Com.RedicalGames.Filar
 
                 SceneAssetsManager.Instance.GetColorFromHexidecimal(colorInfo.hexadecimal, (getColorCallback) =>
                 {
-                    callbackResults.results = getColorCallback.results;
-                    callbackResults.resultsCode = getColorCallback.resultsCode;
+                    callbackResults.result = getColorCallback.result;
+                    callbackResults.resultCode = getColorCallback.resultCode;
 
-                    if (AppData.Helpers.IsSuccessCode(getColorCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(getColorCallback.resultCode))
                     {
                         colorSwatchIcon.color = getColorCallback.data.color;
                         colorInfo = getColorCallback.data;
@@ -96,8 +96,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "InitializeColorProperties Failed : Scene Assets Manager Instance Is Not Yet Initialized.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "InitializeColorProperties Failed : Scene Assets Manager Instance Is Not Yet Initialized.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);

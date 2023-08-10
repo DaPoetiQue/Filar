@@ -50,7 +50,7 @@ namespace Com.RedicalGames.Filar
 
                 OnActionDropdownInitialized((callbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var dropdown in actionDropdownList)
                         {
                             switch (dropdown.dataPackets.action)
@@ -79,7 +79,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                     else
-                        LogWarning(callbackResults.results, this, () => Init());
+                        LogWarning(callbackResults.result, this, () => Init());
 
                 });
             }
@@ -150,15 +150,15 @@ namespace Com.RedicalGames.Filar
                     loadingSpinner.SetScreenTextContent("Please Wait - Configuring Lighting Data...", AppData.ScreenTextType.MessageDisplayer);
 
                     AppData.ScreenLoadingInitializationData loadingData = new AppData.ScreenLoadingInitializationData();
-                    loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.DefaultAssetCreationYieldValue).value;
+                    loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultAssetCreationYieldValue).value;
                     loadingData.autoHide = true;
 
                     loadingSpinner.AddLoadingData(loadingData);
 
                     loadingSpinner.Show((spinnerCallbakResults) =>
                     {
-                        if (!AppData.Helpers.IsSuccessCode(spinnerCallbakResults.resultsCode))
-                            LogWarning(spinnerCallbakResults.results, this, () => OnActionButtonClickedEvent(dataPackets));
+                        if (!AppData.Helpers.IsSuccessCode(spinnerCallbakResults.resultCode))
+                            LogWarning(spinnerCallbakResults.result, this, () => OnActionButtonClickedEvent(dataPackets));
                     });
 
                     break;
@@ -271,13 +271,13 @@ namespace Com.RedicalGames.Filar
 
             RenderingSettingsManager.Instance.CreateSkyboxSettings(skyboxSettings, (created) =>
             {
-                if (AppData.Helpers.IsSuccessCode(created.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(created.resultCode))
                 {
                     skyboxCreated = true;
                     Debug.LogError("==> Skybox Created.");
                 }
                 else
-                    LogWarning(created.results, this, () => OnRefreshInProgress());
+                    LogWarning(created.result, this, () => OnRefreshInProgress());
             });
         }
 
@@ -292,8 +292,8 @@ namespace Com.RedicalGames.Filar
                     notificationType = AppData.NotificationType.Info,
                     screenType = AppData.UIScreenType.ProjectDashboardScreen,
                     screenPosition = AppData.SceneAssetPivot.TopCenter,
-                    delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.NotificationDelay).value,
-                    duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.NotificationDuration).value // Get From Value List In Scene Assets Manager.
+                    delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationDelay).value,
+                    duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationDuration).value // Get From Value List In Scene Assets Manager.
                 };
 
                 NotificationSystemManager.Instance.ScheduleNotification(notification);
@@ -328,7 +328,7 @@ namespace Com.RedicalGames.Filar
 
                     RenderingSettingsManager.Instance.GetMaterialShader(AppData.ShaderType.Skybox, (shaderResults) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(shaderResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(shaderResults.resultCode))
                         {
                             skyboxMaterial = new Material(shaderResults.data.value);
                             skyboxMaterial.SetTexture("_MainTex", hdri);
@@ -339,7 +339,7 @@ namespace Com.RedicalGames.Filar
                             RenderingSettingsManager.Instance.GetRenderingSettingsData().SetCurrentSkybox(skyboxMaterial);
                         }
                         else
-                            LogWarning(shaderResults.results, this, () => SetupSkyboxHDRI(hdri));
+                            LogWarning(shaderResults.result, this, () => SetupSkyboxHDRI(hdri));
                     });
                 }
                 else

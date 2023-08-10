@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class LoadingWidget : AppData.Widget
+    public class UILoadStateIndicatorWidget : AppData.Widget
     {
         #region Components
 
@@ -26,7 +26,7 @@ namespace Com.RedicalGames.Filar
 
         new void Init()
         {
-            loadingWidget = this;
+            uiLoadingWidget = this;
             base.Init();
         }
 
@@ -96,7 +96,7 @@ namespace Com.RedicalGames.Filar
 
                         TriggerOnRefreshCompletedEvent();
 
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         callback?.Invoke(callbackResults);
                     }
                     else
@@ -119,7 +119,7 @@ namespace Com.RedicalGames.Filar
 
                             TriggerOnRefreshCompletedEvent();
 
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             callback?.Invoke(callbackResults);
                         }
                     }
@@ -163,6 +163,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
         {
             throw new NotImplementedException();
         }

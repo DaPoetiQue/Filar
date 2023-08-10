@@ -22,13 +22,13 @@ namespace Com.RedicalGames.Filar
             {
                 base.Init(this.selectable);
 
-                callbackResults.results = "Input Initialized";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = "Input Initialized";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Input Missing.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Input Missing.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);

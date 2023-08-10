@@ -50,8 +50,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "Show Spinner Failed : Duration Is Less Than 0.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Show Spinner Failed : Duration Is Less Than 0.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -88,7 +88,7 @@ namespace Com.RedicalGames.Filar
 
                         TriggerOnRefreshCompletedEvent();
 
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         callback?.Invoke(callbackResults);
                     }
                     else
@@ -111,7 +111,7 @@ namespace Com.RedicalGames.Filar
 
                             TriggerOnRefreshCompletedEvent();
 
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             callback?.Invoke(callbackResults);
                         }
                     }
@@ -135,10 +135,10 @@ namespace Com.RedicalGames.Filar
         {
             OnScreenUITextInitialized((textInitializedCallbackResults) =>
             {
-                if (AppData.Helpers.IsSuccessCode(textInitializedCallbackResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(textInitializedCallbackResults.resultCode))
                     SetScreenUITextValue(content, textType);
                 else
-                    Debug.LogWarning($"--> DisplayScreenTextContent's OnScreenUITextInitialized Failed With Results : {textInitializedCallbackResults.results}");
+                    Debug.LogWarning($"--> DisplayScreenTextContent's OnScreenUITextInitialized Failed With Results : {textInitializedCallbackResults.result}");
 
             });
         }

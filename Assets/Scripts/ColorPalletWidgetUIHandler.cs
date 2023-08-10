@@ -80,26 +80,26 @@ namespace Com.RedicalGames.Filar
             {
                 InputValueInitialized((callback) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                     {
                         if (string.IsNullOrEmpty(storageDirectoryData.name))
                             storageDirectoryData.name = "_ColorSettings";
 
                         OnActionButtonInitialized((callbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
                                 SetActionButtonState(AppData.InputActionButtonType.CreateNewColorButton, AppData.InputUIState.Hidden);
                                 SetActionButtonState(AppData.InputActionButtonType.RevertSettingsButton, AppData.InputUIState.Disabled);
                                 SetActionButtonState(AppData.InputActionButtonType.ClearAllButton, AppData.InputUIState.Disabled);
                             }
                             else
-                                Debug.LogError($"OnActionButtonInitialized Failed With Error Results : {callbackResults.results}");
+                                Debug.LogError($"OnActionButtonInitialized Failed With Error Results : {callbackResults.result}");
                         });
 
                         OnActionDropdownInitialized((callbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                 foreach (var dropdown in actionDropdownList)
                                 {
                                     switch (dropdown.dataPackets.action)
@@ -130,13 +130,13 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                             else
-                                Debug.LogWarning($"--> OnActionChecboxInitialized Failed With Results : {callbackResults.results}");
+                                Debug.LogWarning($"--> OnActionChecboxInitialized Failed With Results : {callbackResults.result}");
 
                         });
 
                         OnActionChecboxInitialized((checkboxInitializedCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(checkboxInitializedCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(checkboxInitializedCallbackResults.resultCode))
                             {
                                 if (dropPickerHandler)
                                 {
@@ -147,11 +147,11 @@ namespace Com.RedicalGames.Filar
                                     Debug.LogWarning("--> OnActionChecboxInitialized Failed - DropPickerHandler Is Missing.");
                             }
                             else
-                                Debug.LogWarning($"--> Init OnActionChecboxInitialized Failed With Results : {checkboxInitializedCallbackResults.results}");
+                                Debug.LogWarning($"--> Init OnActionChecboxInitialized Failed With Results : {checkboxInitializedCallbackResults.result}");
                         });
                     }
                     else
-                        Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent Failed With Results : {callback.results}");
+                        Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent Failed With Results : {callback.result}");
                 });
             }
         }
@@ -232,7 +232,7 @@ namespace Com.RedicalGames.Filar
         {
             InputValueInitialized((callback) =>
             {
-                if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                 {
                     if (SceneAssetsManager.Instance != null)
                     {
@@ -241,11 +241,11 @@ namespace Com.RedicalGames.Filar
 
                         SceneAssetsManager.Instance.GetColorSwatchData((callbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
                                 callbackResults.data.GetSwatchDropDownList((callbackDataResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultCode))
                                     {
                                         if (!fromButtonClick)
                                             UpdateDropDownContent(AppData.InputDropDownActionType.SwatchPicker, callbackDataResults.data, true);
@@ -256,18 +256,18 @@ namespace Com.RedicalGames.Filar
                                         UpdateActionInputs(colorInfo, fromButtonClick, onOpenColourSettings);
                                     }
                                     else
-                                        Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent Failed With Results : {callbackDataResults.results}");
+                                        Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent Failed With Results : {callbackDataResults.result}");
                                 });
                             }
                             else
-                                Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent failed With Results : {callbackResults.results}");
+                                Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent failed With Results : {callbackResults.result}");
                         });
                     }
                     else
                         Debug.LogWarning("--> ActionEvents__OnSwatchColorPickedEvent Failed : SceneAssetsManager.Instance Is Null.");
                 }
                 else
-                    Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent Failed With Results : {callback.results}");
+                    Debug.LogError($"--> ActionEvents__OnSwatchColorPickedEvent Failed With Results : {callback.result}");
             });
         }
 
@@ -365,18 +365,18 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.GetColorSwatchData((callbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
                                 callbackResults.data.ColorInfoExistsInLibrary(colorInfo, (colorExistsResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(colorExistsResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(colorExistsResults.resultCode))
                                         OnCreateColorButtonVisibility(false);
                                     else
                                         OnCreateColorButtonVisibility(true);
                                 });
                             }
                             else
-                                Debug.LogError($"--> SetInputSliderValueContent On open Settings GetColorSwatchData Failed With Results : {callbackResults.results}");
+                                Debug.LogError($"--> SetInputSliderValueContent On open Settings GetColorSwatchData Failed With Results : {callbackResults.result}");
                         });
                     }
                     else
@@ -402,18 +402,18 @@ namespace Com.RedicalGames.Filar
                 {
                     SceneAssetsManager.Instance.GetColorSwatchData((callbackResults) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         {
                             tempColorInfo = colorInfo;
 
                             callbackResults.data.ColorInfoExistsInLibrary(colorInfo, (colorExistsResults) =>
                             {
-                                if (!AppData.Helpers.IsSuccessCode(colorExistsResults.resultsCode))
+                                if (!AppData.Helpers.IsSuccessCode(colorExistsResults.resultCode))
                                     OnCreateColorButtonVisibility(true);
                             });
                         }
                         else
-                            Debug.LogError($"--> SetInputSliderValueContent On open Settings GetColorSwatchData Failed With Results : {callbackResults.results}");
+                            Debug.LogError($"--> SetInputSliderValueContent On open Settings GetColorSwatchData Failed With Results : {callbackResults.result}");
                     });
                 }
                 else
@@ -462,19 +462,19 @@ namespace Com.RedicalGames.Filar
                 foreach (var colorDisplayer in selectedColorDisplayerList)
                 {
                     if (colorDisplayer != null)
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     else
                     {
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         break;
                     }
                 }
             }
 
-            if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
-                callbackResults.results = "ColorPalletWidgetUIHandler Init Success : inputSliderValueContent.value Found";
+            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
+                callbackResults.result = "ColorPalletWidgetUIHandler Init Success : inputSliderValueContent.value Found";
             else
-                callbackResults.results = "ColorPalletWidgetUIHandler Init Failed : inputSliderValueContent.value / selectedColorDisplayer Is Null.";
+                callbackResults.result = "ColorPalletWidgetUIHandler Init Failed : inputSliderValueContent.value / selectedColorDisplayer Is Null.";
 
             callback?.Invoke(callbackResults);
         }
@@ -488,8 +488,8 @@ namespace Com.RedicalGames.Filar
         {
             OnUpdateDropdownSelection(actionType, swatchList, isUpdate, (callbackResults) =>
             {
-                if (!AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
-                    Debug.LogError($"OnActioDropdownInitialized Failed With Error Results : {callbackResults.results}");
+                if (!AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
+                    Debug.LogError($"OnActioDropdownInitialized Failed With Error Results : {callbackResults.result}");
             });
         }
 
@@ -499,7 +499,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnActionButtonInitialized((initCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(initCallbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(initCallbackResults.resultCode))
                     {
                         if (show)
                         {
@@ -513,7 +513,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        Debug.LogError($"--> OnCreateColorButtonVisibility Failed With Results : {initCallbackResults.results}");
+                        Debug.LogError($"--> OnCreateColorButtonVisibility Failed With Results : {initCallbackResults.result}");
                 });
             });
         }
@@ -536,15 +536,15 @@ namespace Com.RedicalGames.Filar
 
                     OnCreateButton_Action((createActionCallbackResults) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(createActionCallbackResults.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(createActionCallbackResults.resultCode))
                         {
                             if (SceneAssetsManager.Instance != null)
                                 SceneAssetsManager.Instance.GetColorSwatchData((swatchDataResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(swatchDataResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(swatchDataResults.resultCode))
                                         swatchDataResults.data.OnSwatchColorSelection(currentColorInfo);
                                     else
-                                        Debug.LogError($"--> ColorSwatchButtonHandler OnActionButtonInputs Failed With Results : {swatchDataResults.results}");
+                                        Debug.LogError($"--> ColorSwatchButtonHandler OnActionButtonInputs Failed With Results : {swatchDataResults.result}");
                                 });
                             else
                                 Debug.LogWarning("--> OnActionButtonInputs's GetColorSwatchData Failed : SceneAssetsManager.Instance Is Not Yet initialized.");
@@ -591,10 +591,10 @@ namespace Com.RedicalGames.Filar
 
                     SceneAssetsManager.Instance.GetColorFromHexidecimal(value, (callback) =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(callback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                             UpdateActionInputs(callback.data);
                         else
-                            Debug.LogError($"--> OnHexidecimalInputValueChangedEvent Failed With Results : {callback.results}.");
+                            Debug.LogError($"--> OnHexidecimalInputValueChangedEvent Failed With Results : {callback.result}.");
                     });
                 }
                 else
@@ -621,7 +621,7 @@ namespace Com.RedicalGames.Filar
                         {
                             SceneAssetsManager.Instance.SelectColorSwatchPallet(storageDirectoryData.name, value, (showPalledResults) =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(showPalledResults.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(showPalledResults.resultCode))
                                 {
                                     if (showPalledResults.data == newSwatchFileName)
                                         SetActionButtonState(AppData.InputActionButtonType.ClearAllButton, AppData.InputUIState.Enabled);
@@ -629,7 +629,7 @@ namespace Com.RedicalGames.Filar
                                         SetActionButtonState(AppData.InputActionButtonType.ClearAllButton, AppData.InputUIState.Disabled);
                                 }
                                 else
-                                    Debug.LogError($"--> On Color Swatch Picker Value Changed Event Failed With Results : {showPalledResults.results}");
+                                    Debug.LogError($"--> On Color Swatch Picker Value Changed Event Failed With Results : {showPalledResults.result}");
                             });
 
                         }
@@ -821,10 +821,10 @@ namespace Com.RedicalGames.Filar
 
                 SceneAssetsManager.Instance.GetHexidecimalFromColor(currentColorInfo.color, (callbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         UpdateActionInputs(callbackResults.data);
                     else
-                        Debug.LogError($"--> OnSliderValueChangedEvent Failed With Results : {callbackResults.results}");
+                        Debug.LogError($"--> OnSliderValueChangedEvent Failed With Results : {callbackResults.result}");
                 });
             }
             else
@@ -853,10 +853,10 @@ namespace Com.RedicalGames.Filar
                                 {
                                     SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
                                         else
-                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                     });
                                 }
                                 else
@@ -878,10 +878,10 @@ namespace Com.RedicalGames.Filar
                                 {
                                     SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
                                         else
-                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                     });
                                 }
                                 else
@@ -906,10 +906,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -930,10 +930,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -964,10 +964,10 @@ namespace Com.RedicalGames.Filar
                                 {
                                     SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
                                         else
-                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                     });
                                 }
                                 else
@@ -989,10 +989,10 @@ namespace Com.RedicalGames.Filar
                                 {
                                     SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
                                         else
-                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                     });
                                 }
                                 else
@@ -1017,10 +1017,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -1041,10 +1041,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -1075,10 +1075,10 @@ namespace Com.RedicalGames.Filar
                                 {
                                     SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
                                         else
-                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                     });
                                 }
                                 else
@@ -1100,10 +1100,10 @@ namespace Com.RedicalGames.Filar
                                 {
                                     SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
                                         else
-                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                            Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                     });
                                 }
                                 else
@@ -1128,10 +1128,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -1152,10 +1152,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -1183,10 +1183,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
                                     else
-                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                        Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                                 });
                             }
                             else
@@ -1207,10 +1207,10 @@ namespace Com.RedicalGames.Filar
                         {
                             SceneAssetsManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                             {
-                                if (AppData.Helpers.IsSuccessCode(callbackResults.resultsCode))
+                                if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                     UpdateActionInputs(callbackResults.data);
                                 else
-                                    Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.results}.");
+                                    Debug.LogError($"--> OnInputValueChangedEvent Failed With Results : {callbackResults.result}.");
                             });
                         }
                         else
@@ -1265,32 +1265,32 @@ namespace Com.RedicalGames.Filar
             {
                 SceneAssetsManager.Instance.GetColorSwatchData((getSwatchDataCallbackResults) =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(getSwatchDataCallbackResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(getSwatchDataCallbackResults.resultCode))
                     {
                         getSwatchDataCallbackResults.data.CreateColorInCustomSwatch(storageDirectoryData.name, newSwatchFileName, currentColorInfo, storageDirectoryData.type, (callbackDataResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultCode))
                             {
                                 tempColorInfo = currentColorInfo;
                                 UpdateDropDownContent(AppData.InputDropDownActionType.SwatchPicker, callbackDataResults.data, false);
                                 OnCreateColorButtonVisibility(false);
                             }
                             else
-                                Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {callbackDataResults.results}");
+                                Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {callbackDataResults.result}");
                         });
 
                     }
                     else
-                        Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {getSwatchDataCallbackResults.results}");
+                        Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {getSwatchDataCallbackResults.result}");
 
-                    callbackResults.results = getSwatchDataCallbackResults.results;
-                    callbackResults.resultsCode = getSwatchDataCallbackResults.resultsCode;
+                    callbackResults.result = getSwatchDataCallbackResults.result;
+                    callbackResults.resultCode = getSwatchDataCallbackResults.resultCode;
                 });
             }
             else
             {
-                callbackResults.results = "OnCreateNewColorButtonClickedEvent Failed: SceneAssetsManager.Instance Is Not Yet Initialized.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "OnCreateNewColorButtonClickedEvent Failed: SceneAssetsManager.Instance Is Not Yet Initialized.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1312,11 +1312,11 @@ namespace Com.RedicalGames.Filar
                     {
                         SceneAssetsManager.Instance.GetColorSwatchData((getSwatchDataCallbackResults) =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(getSwatchDataCallbackResults.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(getSwatchDataCallbackResults.resultCode))
                             {
                                 getSwatchDataCallbackResults.data.CreateColorInCustomSwatch(storageDirectoryData.name, newSwatchFileName, colorInfoList[i], storageDirectoryData.type, (callbackDataResults) =>
                                 {
-                                    if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultsCode))
+                                    if (AppData.Helpers.IsSuccessCode(callbackDataResults.resultCode))
                                     {
                                         if (generatedColorsCount == 0)
                                         {
@@ -1327,33 +1327,33 @@ namespace Com.RedicalGames.Filar
                                         generatedColorsCount++;
                                     }
                                     else
-                                        Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {callbackDataResults.results}");
+                                        Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {callbackDataResults.result}");
                                 });
 
                             }
                             else
-                                Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {getSwatchDataCallbackResults.results}");
+                                Debug.LogError($"--> OnCreateNewColorButtonClickedEvent Failed With results : {getSwatchDataCallbackResults.result}");
 
-                            callbackResults.results = getSwatchDataCallbackResults.results;
-                            callbackResults.resultsCode = getSwatchDataCallbackResults.resultsCode;
+                            callbackResults.result = getSwatchDataCallbackResults.result;
+                            callbackResults.resultCode = getSwatchDataCallbackResults.resultCode;
                         });
                     }
                     else
                     {
-                        callbackResults.results = "OnCreateNewColorButtonClickedEvent Failed: SceneAssetsManager.Instance Is Not Yet Initialized.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = "OnCreateNewColorButtonClickedEvent Failed: SceneAssetsManager.Instance Is Not Yet Initialized.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
 
                 if (generatedColorsCount == colorInfoList.Count)
                 {
-                    callbackResults.results = $"Success - {colorInfoList.Count} Colors Generated Successfully.";
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.result = $"Success - {colorInfoList.Count} Colors Generated Successfully.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Failed - Couldn't Populate Swatch With : {colorInfoList.Count} Colors.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = $"Failed - Couldn't Populate Swatch With : {colorInfoList.Count} Colors.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                 }
             }

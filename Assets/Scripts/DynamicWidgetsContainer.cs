@@ -164,13 +164,13 @@ namespace Com.RedicalGames.Filar
 
             scroller.Initialized(scrollerInitializedCallback =>
             {
-                if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
                 {
                     if (scroller.GetFadeUIScrollBar())
                         scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilityState.Hidden);
                 }
                 else
-                    LogWarning(scrollerInitializedCallback.results, this);
+                    LogWarning(scrollerInitializedCallback.result, this);
             });
         }
 
@@ -230,10 +230,10 @@ namespace Com.RedicalGames.Filar
         {
             ClearWidgets(false, onScreenWigetsCleared =>
             {
-                if (AppData.Helpers.IsSuccessCode(onScreenWigetsCleared.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(onScreenWigetsCleared.resultCode))
                     InitializeContainer();
                 else
-                    Debug.LogWarning($"---> Clear Widgets Results : {onScreenWigetsCleared.results}.");
+                    Debug.LogWarning($"---> Clear Widgets Results : {onScreenWigetsCleared.result}.");
             });
         }
 
@@ -278,9 +278,9 @@ namespace Com.RedicalGames.Filar
 
             if (scroller.value != null)
             {
-                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToTopSpeedValue).value > 0)
+                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 {
-                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToTopSpeedValue).value / (GetContentCount() / (GetContentCount() / 2))) * Time.smoothDeltaTime);
+                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / (GetContentCount() / 2))) * Time.smoothDeltaTime);
                     scroller.value.content.localPosition = scrollPosition;
 
                     float distance = ((Vector2)scroller.value.content.localPosition - Vector2.zero).sqrMagnitude;
@@ -309,9 +309,9 @@ namespace Com.RedicalGames.Filar
 
             if (scroller.value != null)
             {
-                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToTopSpeedValue).value > 0)
+                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 {
-                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, container.sizeDelta, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToTopSpeedValue).value / (GetContentCount() / 2)) * Time.smoothDeltaTime);
+                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, container.sizeDelta, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / 2)) * Time.smoothDeltaTime);
                     scroller.value.content.localPosition = scrollPosition;
 
                     float distance = (orientation == AppData.OrientationType.Vertical) ? scroller.value.verticalNormalizedPosition : scroller.value.horizontalNormalizedPosition;
@@ -334,7 +334,7 @@ namespace Com.RedicalGames.Filar
             if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
                 return;
 
-            if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToTopSpeedValue).value > 0)
+            if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 scroller.value.content.localPosition = container.sizeDelta;
         }
 
@@ -354,7 +354,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (scroller.value.normalizedPosition.y > 0.0f && scroller.value.normalizedPosition.y <= 1.0f)
                             {
-                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
+                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
                                 scroller.value.content.localPosition = focusedPosition;
 
                                 float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
@@ -377,7 +377,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (scroller.value.normalizedPosition.x > 0.0f && scroller.value.normalizedPosition.x <= 1.0f)
                             {
-                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
+                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
                                 scroller.value.content.localPosition = focusedPosition;
 
                                 float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
@@ -417,7 +417,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (scroller.value.normalizedPosition.y <= 1.0f)
                         {
-                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.EdgeScrollSpeedValue).value * Time.smoothDeltaTime);
+                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.EdgeScrollSpeedValue).value * Time.smoothDeltaTime);
                             scroller.value.content.localPosition = scrollPosition;
 
                             float distance = ((Vector2)scroller.value.content.localPosition - Vector2.zero).sqrMagnitude;
@@ -435,7 +435,7 @@ namespace Com.RedicalGames.Filar
                         if (scroller.value.normalizedPosition.y > 0.0f)
                         {
                             Vector2 targetPosition = new Vector2(0, 1000);
-                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, targetPosition, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.EdgeScrollSpeedValue).value / 3) * Time.smoothDeltaTime);
+                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, targetPosition, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.EdgeScrollSpeedValue).value / 3) * Time.smoothDeltaTime);
                             scroller.value.content.localPosition = scrollPosition;
 
                             float distance = ((Vector2)scroller.value.content.localPosition - targetPosition).sqrMagnitude;
@@ -473,7 +473,7 @@ namespace Com.RedicalGames.Filar
 
                         if (canFadeOutScrollBar)
                         {
-                            if (currentScrollBarFadeDelayDuration < SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeValueType.ScrollBarFadeDelayDuration).value)
+                            if (currentScrollBarFadeDelayDuration < SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollBarFadeDelayDuration).value)
                                 currentScrollBarFadeDelayDuration += 1.0f * Time.smoothDeltaTime;
                             else
                                 scroller.OnScrollbarFadeOut();
@@ -499,7 +499,7 @@ namespace Com.RedicalGames.Filar
                 {
                     scroller.GetUIScrollBarComponent().GetScrollbarFaderAlphaValue(scrollBarFaderCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(scrollBarFaderCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(scrollBarFaderCallback.resultCode))
                         {
                             if (scrollBarFaderCallback.data != 1.0f)
                             {
@@ -509,7 +509,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Debug.LogWarning($"--> SetFingerDragEvent's GetScrollbarFaderAlphaValue Failed With Results : {scrollBarFaderCallback.results}");
+                            Debug.LogWarning($"--> SetFingerDragEvent's GetScrollbarFaderAlphaValue Failed With Results : {scrollBarFaderCallback.result}");
                     });
                 }
                 else
@@ -527,7 +527,7 @@ namespace Com.RedicalGames.Filar
                 {
                     scroller.GetUIScrollBarComponent().GetScrollbarFaderAlphaValue(scrollBarFaderCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(scrollBarFaderCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(scrollBarFaderCallback.resultCode))
                         {
                             if (scrollBarFaderCallback.data != 0.0f)
                             {
@@ -538,7 +538,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Debug.LogWarning($"--> SetFingerUpEvent's GetScrollbarFaderAlphaValue Failed With Results : {scrollBarFaderCallback.results}");
+                            Debug.LogWarning($"--> SetFingerUpEvent's GetScrollbarFaderAlphaValue Failed With Results : {scrollBarFaderCallback.result}");
                     });
                 }
                 else
@@ -751,30 +751,30 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.Callback callbackResults = new AppData.Callback();
 
-                AppData.LogInfoType screenTypeResultsCode = (GetUIScreenType() != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
-                string screenTypeResults = (screenTypeResultsCode == AppData.LogInfoType.Success) ? $"Adding Screen Widget To Container : {name} For Screen : {GetUIScreenType()}" : $"Couldn't Add Screen Widget To Container : {name} - Containers Screen Reference Type Is Set To Default : {GetUIScreenType()}";
+                AppData.LogInfoChannel screenTypeResultsCode = (GetUIScreenType() != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                string screenTypeResults = (screenTypeResultsCode == AppData.LogInfoChannel.Success) ? $"Adding Screen Widget To Container : {name} For Screen : {GetUIScreenType()}" : $"Couldn't Add Screen Widget To Container : {name} - Containers Screen Reference Type Is Set To Default : {GetUIScreenType()}";
 
-                callbackResults.results = screenTypeResults;
-                callbackResults.resultsCode = screenTypeResultsCode;
+                callbackResults.result = screenTypeResults;
+                callbackResults.resultCode = screenTypeResultsCode;
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.results = GetActiveContainer().results;
-                    callbackResults.resultsCode = GetActiveContainer().resultsCode;
+                    callbackResults.result = GetActiveContainer().result;
+                    callbackResults.resultCode = GetActiveContainer().resultCode;
 
                     if (callbackResults.Success())
                     {
                         AppData.Helpers.GetAppComponentValid(screenWidget, screenWidget?.name, hasScreenWidgetCallbackResults =>
                         {
-                            callbackResults.results = hasScreenWidgetCallbackResults.results;
-                            callbackResults.resultsCode = hasScreenWidgetCallbackResults.resultsCode;
+                            callbackResults.result = hasScreenWidgetCallbackResults.result;
+                            callbackResults.resultCode = hasScreenWidgetCallbackResults.resultCode;
 
                             if (callbackResults.Success())
                             {
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
                                 screenWidget.gameObject.transform.SetParent(container, keepWorldPosition);
 
-                                callbackResults.results = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
+                                callbackResults.result = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
 
                                 if (containerUpdateRoutine != null)
                                 {
@@ -787,8 +787,8 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                callbackResults.results = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
 
                         }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
@@ -812,11 +812,11 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<RectTransform> callbackResults = new AppData.CallbackData<RectTransform>();
 
-            AppData.LogInfoType getActiveResultsCode = (container.gameObject.activeSelf && container.gameObject.activeInHierarchy && container.gameObject.activeSelf && gameObject.activeSelf && gameObject.activeInHierarchy && gameObject.activeSelf)? AppData.LogInfoType.Success : AppData.LogInfoType.Error;
-            string getActiveResults = (getActiveResultsCode == AppData.LogInfoType.Success) ? $"Container : {name} Is Initialized And Active" : $"Container : {name} Is Not Initialized Yet / Not Active.";
+            AppData.LogInfoChannel getActiveResultsCode = (container.gameObject.activeSelf && container.gameObject.activeInHierarchy && container.gameObject.activeSelf && gameObject.activeSelf && gameObject.activeInHierarchy && gameObject.activeSelf)? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error;
+            string getActiveResults = (getActiveResultsCode == AppData.LogInfoChannel.Success) ? $"Container : {name} Is Initialized And Active" : $"Container : {name} Is Not Initialized Yet / Not Active.";
 
-            callbackResults.results = getActiveResults;
-            callbackResults.resultsCode = getActiveResultsCode;
+            callbackResults.result = getActiveResults;
+            callbackResults.resultCode = getActiveResultsCode;
 
             return callbackResults;
         }
@@ -887,7 +887,7 @@ namespace Com.RedicalGames.Filar
         {
             GetContent(contentFound =>
             {
-                if (AppData.Helpers.IsSuccessCode(contentFound.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(contentFound.resultCode))
                 {
                     foreach (var content in contentFound.data)
                         content.OnSelectionFrameState(false, AppData.InputUIState.Normal, false);
@@ -901,11 +901,11 @@ namespace Com.RedicalGames.Filar
                         if (projectSelectionCallbackResults.Success())
                             projectSelectionCallbackResults.data.DeselectAll();
                         else
-                            Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                            Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                     });
                 }
                 else
-                    Debug.LogWarning($"--> DeselectAllContentWidgets Failed With Results : {contentFound.results}");
+                    Debug.LogWarning($"--> DeselectAllContentWidgets Failed With Results : {contentFound.result}");
             });
         }
 
@@ -920,7 +920,7 @@ namespace Com.RedicalGames.Filar
 
             GetContent(contentFound =>
             {
-                if (AppData.Helpers.IsSuccessCode(contentFound.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(contentFound.resultCode))
                 {
                     containerRefreshed = false;
 
@@ -1014,13 +1014,13 @@ namespace Com.RedicalGames.Filar
 
                         scroller.Initialized(scrollerInitializedCallback =>
                         {
-                            if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
                             {
                                 if (scroller.GetFadeUIScrollBar())
                                     scroller.GetUIScrollBarComponent().Show();
                             }
                             else
-                                LogWarning(scrollerInitializedCallback.results, this);
+                                LogWarning(scrollerInitializedCallback.result, this);
                         });
 
                         ResetScrollerState();
@@ -1040,7 +1040,7 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
                 else
-                    LogWarning(contentFound.results, this);
+                    LogWarning(contentFound.result, this);
             });
 
             callback?.Invoke(callbackResults);
@@ -1096,14 +1096,14 @@ namespace Com.RedicalGames.Filar
                                     {
                                         SelectableManager.Instance.SetSelectionInfoState(selectionCallback.data, focusedSelectionDataCallback.data.selectionType, selectionSetCallback =>
                                         {
-                                            if (AppData.Helpers.IsSuccessCode(selectionSetCallback.resultsCode))
+                                            if (AppData.Helpers.IsSuccessCode(selectionSetCallback.resultCode))
                                                 OnFocusToSelection(selectionSetCallback.data.GetWidgetAnchoredPosition());
                                             else
-                                                LogError(selectionSetCallback.results, this, () => SetSelectionStateInfo());
+                                                LogError(selectionSetCallback.result, this, () => SetSelectionStateInfo());
                                         });
                                     }
                                     else
-                                        Log(selectionCallback.resultsCode, selectionCallback.results, this);
+                                        Log(selectionCallback.resultCode, selectionCallback.result, this);
                                 });
                             }
                             else
@@ -1140,30 +1140,30 @@ namespace Com.RedicalGames.Filar
 
                         if (widgets.Count == selectionData.selections.Count)
                         {
-                            callbackResults.results = $"Found : {widgets.Count} Selected Widget(s).";
+                            callbackResults.result = $"Found : {widgets.Count} Selected Widget(s).";
                             callbackResults.data = widgets;
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.results = $"Could'nt Find All Selected Widgets - {widgets.Count} Of {selectionData.selections.Count}.";
+                            callbackResults.result = $"Could'nt Find All Selected Widgets - {widgets.Count} Of {selectionData.selections.Count}.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = contentCallback.results;
+                        callbackResults.result = contentCallback.result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = contentCallback.resultsCode;
+                        callbackResults.resultCode = contentCallback.resultCode;
                     }
                 });
             }
             else
             {
-                callbackResults.results = "There Are No Contents Loaded Yet. Possible Race Condition.";
+                callbackResults.result = "There Are No Contents Loaded Yet. Possible Race Condition.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -1230,7 +1230,7 @@ namespace Com.RedicalGames.Filar
             {
                 paginationComponent.GetItemPageIndex(widgetName, onItemPageIndexResults =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultCode))
                     {
                         if (paginationComponent.CurrentPageIndex != onItemPageIndexResults.data)
                             Pagination_SelectPage(onItemPageIndexResults.data, true);
@@ -1308,15 +1308,15 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    Log(projectSelectionCallbackResults.resultsCode, projectSelectionCallbackResults.results, this);
+                                    Log(projectSelectionCallbackResults.resultCode, projectSelectionCallbackResults.result, this);
                             });
                         }
                         else
-                            Log(valueAssignedCallbackResults.resultsCode, valueAssignedCallbackResults.results, this);
+                            Log(valueAssignedCallbackResults.resultCode, valueAssignedCallbackResults.result, this);
                     });
                 }
                 else
-                    Log(validComponentCallbackResults.resultsCode, validComponentCallbackResults.results);
+                    Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result);
             });
         }
 
@@ -1351,25 +1351,25 @@ namespace Com.RedicalGames.Filar
                             {
                                 SceneAssetsManager.Instance.UnloadUnusedAssets();
 
-                                callbackResults.results = "All Widgets Cleared.";
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.result = "All Widgets Cleared.";
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.results = $"{container.childCount} : Widgets Failed To Clear.";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = $"No Widgets To Clear From Container : {gameObject.name}";
-                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                            callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"Curent Screen Is Not Yet Initialized.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
 
@@ -1422,22 +1422,22 @@ namespace Com.RedicalGames.Filar
 
                 if (widgetsList.Count > 0)
                 {
-                    callbackResults.results = $"GetContent Success : {GetContentCount()} - Content Widgets Found Successfully.";
+                    callbackResults.result = $"GetContent Success : {GetContentCount()} - Content Widgets Found Successfully.";
                     callbackResults.data = widgetsList;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"GetContent Failed : {GetContentCount()} - Content Widgets Couldn't Be Added To Widgets List. - Status Unknown.";
+                    callbackResults.result = $"GetContent Failed : {GetContentCount()} - Content Widgets Couldn't Be Added To Widgets List. - Status Unknown.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "GetContent Failed : No Content Found.";
+                callbackResults.result = "GetContent Failed : No Content Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1451,13 +1451,13 @@ namespace Com.RedicalGames.Filar
             {
                 widget.SetContentSiblingIndex(index);
 
-                callbackResults.results = $"Asset : {widget.name} Has Been Set To index : {index}.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = $"Asset : {widget.name} Has Been Set To index : {index}.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = $"Set Asset List Index Value For : {widget} Missing / Not Assigned.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Set Asset List Index Value For : {widget} Missing / Not Assigned.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1469,8 +1469,8 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.ComponentValid(widgets, hasComponentsCallbackResults => 
             {
-                callbackResults.results = hasComponentsCallbackResults.results;
-                callbackResults.resultsCode = hasComponentsCallbackResults.resultsCode;
+                callbackResults.result = hasComponentsCallbackResults.result;
+                callbackResults.resultCode = hasComponentsCallbackResults.resultCode;
 
                 if(callbackResults.Success())
                 {
@@ -1480,9 +1480,9 @@ namespace Com.RedicalGames.Filar
                     {
                         if(selectable.GetSelectableWidgetType() != selectableWidgetType)
                         {
-                            callbackResults.results = $"Widget Selection Type : {selectable.GetSelectableWidgetType()} Mismatch From Type : {selectableWidgetType}";
+                            callbackResults.result = $"Widget Selection Type : {selectable.GetSelectableWidgetType()} Mismatch From Type : {selectableWidgetType}";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                             break;
                         }
@@ -1490,7 +1490,7 @@ namespace Com.RedicalGames.Filar
 
                     if(callbackResults.Success())
                     {
-                        callbackResults.results = $"Selectable Type Found : {selectableWidgetType}";
+                        callbackResults.result = $"Selectable Type Found : {selectableWidgetType}";
                         callbackResults.data = selectableWidgetType;
                     }
                 }
@@ -1526,22 +1526,22 @@ namespace Com.RedicalGames.Filar
 
                 if (widgetsList.Count > 0)
                 {
-                    callbackResults.results = $"GetContent Success : {GetContentCount()} - Content Widgets Found Successfully.";
+                    callbackResults.result = $"GetContent Success : {GetContentCount()} - Content Widgets Found Successfully.";
                     callbackResults.data = widgetsList;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"GetContent Failed : {GetContentCount()} - Content Widgets Couldn't Be Added To Widgets List. - Status Unknown.";
+                    callbackResults.result = $"GetContent Failed : {GetContentCount()} - Content Widgets Couldn't Be Added To Widgets List. - Status Unknown.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "GetContent Failed : No Content Found.";
+                callbackResults.result = "GetContent Failed : No Content Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1553,15 +1553,15 @@ namespace Com.RedicalGames.Filar
 
             GetContent(contentFound =>
             {
-                if (AppData.Helpers.IsSuccessCode(contentFound.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(contentFound.resultCode))
                 {
                     foreach (var content in contentFound.data)
                     {
                         if (content.name == contentName)
                         {
-                            callbackResults.results = contentFound.results;
+                            callbackResults.result = contentFound.result;
                             callbackResults.data = content;
-                            callbackResults.resultsCode = contentFound.resultsCode;
+                            callbackResults.resultCode = contentFound.resultCode;
 
                             break;
                         }
@@ -1571,9 +1571,9 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = contentFound.results;
+                    callbackResults.result = contentFound.result;
                     callbackResults.data = default;
-                    callbackResults.resultsCode = contentFound.resultsCode;
+                    callbackResults.resultCode = contentFound.resultCode;
                 }
             });
 
@@ -1613,13 +1613,13 @@ namespace Com.RedicalGames.Filar
                         break;
                 }
 
-                callbackResults.results = $"Widget : {selection.name} Selected.";
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.result = $"Widget : {selection.name} Selected.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = $"Widget : {selection.name} Not Found. Get Widget Named : {selection.name} Failed.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Widget : {selection.name} Not Found. Get Widget Named : {selection.name} Failed.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1654,13 +1654,13 @@ namespace Com.RedicalGames.Filar
                                 break;
                         }
 
-                        callbackResults.results = $"Widget : {selection.name} Selected.";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = $"Widget : {selection.name} Selected.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Widget : {selection.name} Not Found. Get Widget Named : {selection.name} Failed.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = $"Widget : {selection.name} Not Found. Get Widget Named : {selection.name} Failed.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                         break;
                     }
@@ -1668,8 +1668,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = $"No Selections Found - Silection List Is Null / Empty.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"No Selections Found - Silection List Is Null / Empty.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1704,13 +1704,13 @@ namespace Com.RedicalGames.Filar
                                 break;
                         }
 
-                        callbackResults.results = $"Widget : {selection.name} Selected.";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = $"Widget : {selection.name} Selected.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = $"Widget : {selection.name} Not Found. Get Widget Named : {selection.name} Failed.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = $"Widget : {selection.name} Not Found. Get Widget Named : {selection.name} Failed.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                         break;
                     }
@@ -1718,8 +1718,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = $"No Selections Found - Silection List Is Null / Empty.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"No Selections Found - Silection List Is Null / Empty.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1735,7 +1735,7 @@ namespace Com.RedicalGames.Filar
                 {
                     SelectableManager.Instance.CacheSelection(selectionCachedCallback =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(selectionCachedCallback.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(selectionCachedCallback.resultCode))
                         {
                             List<string> newSelectionNameList = new List<string>();
 
@@ -1753,15 +1753,15 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    callbackResults.results = "There Are No Widgets Found In Current Page.";
-                                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                    callbackResults.result = "There Are No Widgets Found In Current Page.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
                             }
                             else
                             {
                                 GetContent(foundWidgetsCallback => 
                                 {
-                                    if(AppData.Helpers.IsSuccessCode(foundWidgetsCallback.resultsCode))
+                                    if(AppData.Helpers.IsSuccessCode(foundWidgetsCallback.resultCode))
                                     {
                                         foreach (var widget in foundWidgetsCallback.data)
                                         {
@@ -1771,8 +1771,8 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        callbackResults.results = foundWidgetsCallback.results;
-                                        callbackResults.resultsCode = foundWidgetsCallback.resultsCode;
+                                        callbackResults.result = foundWidgetsCallback.result;
+                                        callbackResults.resultCode = foundWidgetsCallback.resultCode;
                                     }
                                 });
                             }
@@ -1787,7 +1787,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             SelectableManager.Instance.GetCachedSelectionInfoNameList(cachedSelectionInfoCallback =>
                                             {
-                                                if (AppData.Helpers.IsSuccessCode(cachedSelectionInfoCallback.resultsCode))
+                                                if (AppData.Helpers.IsSuccessCode(cachedSelectionInfoCallback.resultCode))
                                                 {
                                                     foreach (var selection in cachedSelectionInfoCallback.data)
                                                         if (newSelectionNameList.Contains(selection))
@@ -1795,29 +1795,29 @@ namespace Com.RedicalGames.Filar
                                                 }
                                                 else
                                                 {
-                                                    callbackResults.results = cachedSelectionInfoCallback.results;
-                                                    callbackResults.resultsCode = cachedSelectionInfoCallback.resultsCode;
+                                                    callbackResults.result = cachedSelectionInfoCallback.result;
+                                                    callbackResults.resultCode = cachedSelectionInfoCallback.resultCode;
                                                 }
                                             });
                                         }
                                     }
                                 }
                                 else
-                                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
 
                                 SelectableManager.Instance.Select(newSelectionNameList, AppData.FocusedSelectionType.SelectedItem, selectionCallback =>
                                 {
                                     if(selectionCallback.Success())
                                         AppData.ActionEvents.OnAllWidgetsSelectionEvent(current_PageView);
 
-                                    callbackResults.results = selectionCallback.results;
-                                    callbackResults.resultsCode = selectionCallback.resultsCode;
+                                    callbackResults.result = selectionCallback.result;
+                                    callbackResults.resultCode = selectionCallback.resultCode;
                                 });
                             }
                             else
                             {
-                                callbackResults.results = "There Is No New Selection Name List Found.";
-                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                                callbackResults.result = "There Is No New Selection Name List Found.";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
@@ -1826,14 +1826,14 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = "There Is No Active Selection";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "There Is No Active Selection";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Selectable Manager Instance Is Not Yet Initialized";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Selectable Manager Instance Is Not Yet Initialized";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1846,15 +1846,15 @@ namespace Com.RedicalGames.Filar
              
             if(SelectableManager.Instance.GetFocusedSelectionDataCount() == GetContentCount())
             {
-                callbackResults.results = $"All : {GetContentCount()} Widgets Are Selected";
+                callbackResults.result = $"All : {GetContentCount()} Widgets Are Selected";
                 callbackResults.data = GetContentCount();
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Not All Widgets Are Selected";
+                callbackResults.result = "Not All Widgets Are Selected";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
             }
 
             callback.Invoke(callbackResults);
@@ -1866,7 +1866,7 @@ namespace Com.RedicalGames.Filar
 
             GetContent(allContentCallback => 
             {
-                if(AppData.Helpers.IsSuccessCode(allContentCallback.resultsCode))
+                if(AppData.Helpers.IsSuccessCode(allContentCallback.resultCode))
                 {
                     HasSelectedAll(allContentCallback.data, selectionCallback =>
                     {
@@ -1875,8 +1875,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.results = allContentCallback.results;
-                    callbackResults.resultsCode = allContentCallback.resultsCode;
+                    callbackResults.result = allContentCallback.result;
+                    callbackResults.resultCode = allContentCallback.resultCode;
                 }
             });
 
@@ -1898,8 +1898,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "Current Page Widgets Not Found.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Current Page Widgets Not Found.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -1913,15 +1913,15 @@ namespace Com.RedicalGames.Filar
             {
                 SelectableManager.Instance.HasFocusedSelectionInfo(widget.name, selectionCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(selectionCallback.resultsCode) && widget.IsSelected() && widgetList.Count.Equals(SelectableManager.Instance.GetFocusedSelectionDataCount()))
+                    if (AppData.Helpers.IsSuccessCode(selectionCallback.resultCode) && widget.IsSelected() && widgetList.Count.Equals(SelectableManager.Instance.GetFocusedSelectionDataCount()))
                     {
-                        callbackResults.results = "All Are Selected.";
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = "All Are Selected.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Not All Are Selected.";
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.result = "Not All Are Selected.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         callback.Invoke(callbackResults);
                     }
                 });
@@ -1938,7 +1938,7 @@ namespace Com.RedicalGames.Filar
             {
                 GetContent(contentCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
                     {
                         if (contentCallback.data != null && contentCallback.data.Count > 0)
                         {
@@ -1954,7 +1954,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            LogError(contentCallback.results, this);
+                            LogError(contentCallback.result, this);
                     }
                 });
             }
@@ -1975,7 +1975,7 @@ namespace Com.RedicalGames.Filar
             {
                 GetContent(contentCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
                     {
                         if (contentCallback.data != null && contentCallback.data.Count > 0)
                         {
@@ -1990,9 +1990,9 @@ namespace Com.RedicalGames.Filar
                                         pageID = Pagination_GetItemPageIndex(itemName)
                                     };
 
-                                    callbackResults.results = $"Item Named : {itemName} Found.";
+                                    callbackResults.result = $"Item Named : {itemName} Found.";
                                     callbackResults.data = foundWidget;
-                                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
                                     break;
                                 }
@@ -2002,16 +2002,16 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.results = "There Are No Content Found - Please Check Code Here Above";
+                            callbackResults.result = "There Are No Content Found - Please Check Code Here Above";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = contentCallback.results;
+                        callbackResults.result = contentCallback.result;
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 });
             }
@@ -2029,7 +2029,7 @@ namespace Com.RedicalGames.Filar
             {
                 GetContent(contentCallback =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
                     {
                         bool widgetFound = false;
 
@@ -2039,9 +2039,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 widgetFound = true;
 
-                                callbackResults.results = $"GetWidgetNamed : {widgetName} Success With Results : {contentCallback.results}.";
+                                callbackResults.result = $"GetWidgetNamed : {widgetName} Success With Results : {contentCallback.result}.";
                                 callbackResults.data = widget;
-                                callbackResults.resultsCode = (widgetFound)? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                                callbackResults.resultCode = (widgetFound)? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
 
                                 break;
                             }
@@ -2049,24 +2049,24 @@ namespace Com.RedicalGames.Filar
 
                         if (!widgetFound)
                         {
-                            callbackResults.results = $"GetWidgetNamed : {widgetName} Failed - Widget : {widgetName} Not Found.";
+                            callbackResults.result = $"GetWidgetNamed : {widgetName} Failed - Widget : {widgetName} Not Found.";
                             callbackResults.data = default;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.results = $"GetWidgetNamed : {widgetName} Failed With Results : {contentCallback.results}.";
+                        callbackResults.result = $"GetWidgetNamed : {widgetName} Failed With Results : {contentCallback.result}.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 });
             }
             else
             {
-                callbackResults.results = $"GetWidgetNamed : {widgetName} Failed : There Are No Contents Found.";
+                callbackResults.result = $"GetWidgetNamed : {widgetName} Failed : There Are No Contents Found.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback.Invoke(callbackResults);
@@ -2078,15 +2078,15 @@ namespace Com.RedicalGames.Filar
 
             if (placeHolder.value && placeHolder.container)
             {
-                callbackResults.results = "GetPlaceHolder Success";
+                callbackResults.result = "GetPlaceHolder Success";
                 callbackResults.data = placeHolder;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Container / Value Missing Null.";
+                callbackResults.result = "Container / Value Missing Null.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2115,22 +2115,22 @@ namespace Com.RedicalGames.Filar
 
                 if (widgetFound)
                 {
-                    callbackResults.results = $"Widget : {widget.name} Found Inside Dynamic Container.";
+                    callbackResults.result = $"Widget : {widget.name} Found Inside Dynamic Container.";
                     callbackResults.data = siblingIndex;
-                    callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.results = $"Widget : {widget.name} Not Found Inside Dynamic Container.";
+                    callbackResults.result = $"Widget : {widget.name} Not Found Inside Dynamic Container.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Dynamic Container Has No Widgets.";
+                callbackResults.result = "Dynamic Container Has No Widgets.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2248,7 +2248,7 @@ namespace Com.RedicalGames.Filar
         {
             paginationComponent.GetItemPageIndex(item.name, onItemPageIndexResults =>
             {
-                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultCode))
                 {
                     if (paginationComponent.CurrentPageIndex != onItemPageIndexResults.data)
                         Pagination_SelectPage(onItemPageIndexResults.data, false);
@@ -2273,8 +2273,8 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.results = "Couldn't Go To Items Page Because Item Is Null.";
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = "Couldn't Go To Items Page Because Item Is Null.";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
 
                 callback?.Invoke(callbackResults);
             }
@@ -2288,7 +2288,7 @@ namespace Com.RedicalGames.Filar
 
             paginationComponent.GetItemPageIndex(item.name, onItemPageIndexResults =>
             {
-                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultCode))
                 {
                     if (paginationComponent.CurrentPageIndex != onItemPageIndexResults.data)
                         Pagination_SelectPage(onItemPageIndexResults.data, false);
@@ -2296,8 +2296,8 @@ namespace Com.RedicalGames.Filar
                         return;
                 }
 
-                callbackResults.results = onItemPageIndexResults.results;
-                callbackResults.resultsCode = onItemPageIndexResults.resultsCode;
+                callbackResults.result = onItemPageIndexResults.result;
+                callbackResults.resultCode = onItemPageIndexResults.resultCode;
             });
 
             callback?.Invoke(callbackResults);
@@ -2309,7 +2309,7 @@ namespace Com.RedicalGames.Filar
 
             paginationComponent.GetItemPageIndex(item.name, onItemPageIndexResults =>
             {
-                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultCode))
                     pageIndex = onItemPageIndexResults.data;
             });
 
@@ -2322,7 +2322,7 @@ namespace Com.RedicalGames.Filar
 
             paginationComponent.GetItemPageIndex(itemName, onItemPageIndexResults =>
             {
-                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(onItemPageIndexResults.resultCode))
                     pageIndex = onItemPageIndexResults.data;
             });
 
@@ -2356,7 +2356,7 @@ namespace Com.RedicalGames.Filar
                     {
                         SelectableManager.Instance.HasFocusedSelectionInfo(widget.name, selectionCallback => 
                         {
-                            if (AppData.Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                            if (AppData.Helpers.IsSuccessCode(selectionCallback.resultCode))
                             {
                                 if(!selectedItemsList.Contains(widget.name))
                                     selectedItemsList.Add(widget.name);
@@ -2369,29 +2369,29 @@ namespace Com.RedicalGames.Filar
 
                     if (containsSelection)
                     {
-                        callbackResults.results = "Current Page Contains Selection.";
+                        callbackResults.result = "Current Page Contains Selection.";
                         callbackResults.data = seletionName;
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.results = "Current Page Doesn't Contain Selection.";
+                        callbackResults.result = "Current Page Doesn't Contain Selection.";
                         callbackResults.data = default;
-                        callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.results = "Current Page Not Found / Page Doesn't Have Items.";
+                    callbackResults.result = "Current Page Not Found / Page Doesn't Have Items.";
                     callbackResults.data = default;
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.results = "Selectable Manager Instance Is Not Yet Initialized.";
+                callbackResults.result = "Selectable Manager Instance Is Not Yet Initialized.";
                 callbackResults.data = default;
-                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -2429,14 +2429,14 @@ namespace Com.RedicalGames.Filar
 
             GetItem<AppData.UIScreenWidget>(selectionName, selectionCallback =>
             {
-                if (AppData.Helpers.IsSuccessCode(selectionCallback.resultsCode))
+                if (AppData.Helpers.IsSuccessCode(selectionCallback.resultCode))
                 {
                     LogSuccess($"Go To Selected Item : {selectionName}'s Page", this, () => OnLayoutViewChangeSelectionAsync(selectionName));
 
                     Pagination_GoToItemPage(selectionCallback.data.item);
                 }
                 else
-                    LogError(selectionCallback.results, this, () => OnLayoutViewChangeSelectionAsync(selectionName));
+                    LogError(selectionCallback.result, this, () => OnLayoutViewChangeSelectionAsync(selectionName));
             });
         }
 
@@ -2450,17 +2450,17 @@ namespace Com.RedicalGames.Filar
             {
                 paginationComponent.GetSlotAvailablePageNumber(itemsPerPage, slotAvailable =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(slotAvailable.resultsCode))
+                    if (AppData.Helpers.IsSuccessCode(slotAvailable.resultCode))
                     {
                         Pagination_GoToPage(slotAvailable.data);
 
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-                        callbackResults.results = "Can Create New Widget Successfully.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        callbackResults.result = "Can Create New Widget Successfully.";
                     }
                     else
                     {
                         OnSetWidgetsVisibilityState(false);
-                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                 });
 
@@ -2474,7 +2474,7 @@ namespace Com.RedicalGames.Filar
                 {
                     GetContent(loadedContent =>
                     {
-                        if (AppData.Helpers.IsSuccessCode(loadedContent.resultsCode))
+                        if (AppData.Helpers.IsSuccessCode(loadedContent.resultCode))
                         {
                             int itemsPerPage = (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
 
@@ -2484,11 +2484,11 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (GetLayout().viewType == AppData.LayoutViewType.ItemView)
                                     {
-                                        if (AppData.Helpers.IsSuccessCode(isLoadAvailableCallback.resultsCode))
+                                        if (AppData.Helpers.IsSuccessCode(isLoadAvailableCallback.resultCode))
                                         {
                                             OnSnapToBottom();
 
-                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
                                         else
                                         {
@@ -2504,7 +2504,7 @@ namespace Com.RedicalGames.Filar
 
                                             OnSnapToBottom();
 
-                                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
                                     }
 
@@ -2522,28 +2522,28 @@ namespace Com.RedicalGames.Filar
 
                                         OnSnapToBottom();
 
-                                        callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                     }
                                 }); ;
                             }
                             else
                             {
-                                callbackResults.results = "Slot Available, No Need To Snap To Bottom.";
-                                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                                callbackResults.result = "Slot Available, No Need To Snap To Bottom.";
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                             }
                         }
                         else
                         {
-                            callbackResults.results = loadedContent.results;
-                            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                            callbackResults.result = loadedContent.result;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
                     });
                 }
                 else
                 {
-                    callbackResults.results = "No Content Fount.";
-                    callbackResults.resultsCode = AppData.Helpers.ErrorCode;
+                    callbackResults.result = "No Content Fount.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2594,7 +2594,7 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
             else
-                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectStructureData().results, this);
+                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
         }
 
         public AppData.UILayoutDimensions GetUILayoutDimension(AppData.LayoutViewType layoutView)

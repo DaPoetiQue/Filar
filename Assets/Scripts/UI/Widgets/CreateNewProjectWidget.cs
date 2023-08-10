@@ -33,11 +33,11 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
-            if (popUpType == type)
+            if (popUpType == widgetType)
             {
                 switch(actionType)
                 {
-                    case AppData.InputActionButtonType.Confirm:
+                    case AppData.InputActionButtonType.ConfirmationButton:
 
                         OnDataValidation(newProjectStructureData, dataValidCallbackResults => 
                         {
@@ -60,7 +60,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     if (createdCallbackResults.Success())
                                                     {
-                                                        dataPackets.notification.message = createNewProjectCallbackResults.results;
+                                                        dataPackets.notification.message = createNewProjectCallbackResults.result;
 
                                                         if (dataPackets.notification.showNotifications)
                                                             NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
@@ -68,14 +68,14 @@ namespace Com.RedicalGames.Filar
                                                         ScreenUIManager.Instance.Refresh();
                                                     }
                                                     else
-                                                        Log(createdCallbackResults.resultsCode, createdCallbackResults.results, this);
+                                                        Log(createdCallbackResults.resultCode, createdCallbackResults.result, this);
                                                 }));
                                             }
                                             else
-                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode, SceneAssetsManager.Instance.GetProjectRootStructureData().results, this);
+                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
                                         }
                                         else
-                                            Log(createNewProjectCallbackResults.resultsCode, createNewProjectCallbackResults.results, this);
+                                            Log(createNewProjectCallbackResults.resultCode, createNewProjectCallbackResults.result, this);
                                     });
                                 }
                                 else
@@ -85,7 +85,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 OnInputFieldValidation(AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
 
-                                Log(dataValidCallbackResults.resultsCode, dataValidCallbackResults.results, this);
+                                Log(dataValidCallbackResults.resultCode, dataValidCallbackResults.result, this);
                             }
                         });
 
@@ -105,8 +105,8 @@ namespace Com.RedicalGames.Filar
 
             SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
             {
-                callbackResults.results = dataSavedCallbackResults.results;
-                callbackResults.resultsCode = dataSavedCallbackResults.resultsCode;
+                callbackResults.result = dataSavedCallbackResults.result;
+                callbackResults.resultCode = dataSavedCallbackResults.resultCode;
             });
 
             yield return new WaitForEndOfFrame();
@@ -131,15 +131,15 @@ namespace Com.RedicalGames.Filar
                     layouts = folderStructureDataTemplate.layouts,
                 };
 
-                callbackResults.results = "New Project Data Created.";
+                callbackResults.result = "New Project Data Created.";
                 callbackResults.data = project;
-                callbackResults.resultsCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode;
+                callbackResults.resultCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode;
             }
             else
             {
-                callbackResults.results = SceneAssetsManager.Instance.GetProjectRootStructureData().results;
+                callbackResults.result = SceneAssetsManager.Instance.GetProjectRootStructureData().result;
                 callbackResults.data = default;
-                callbackResults.resultsCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultsCode;
+                callbackResults.resultCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode;
             }
 
             callback.Invoke(callbackResults);
@@ -172,7 +172,7 @@ namespace Com.RedicalGames.Filar
                                             OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
                                     }
                                     else
-                                        Log(inputFieldCallbackResults.resultsCode, inputFieldCallbackResults.results, this);
+                                        Log(inputFieldCallbackResults.resultCode, inputFieldCallbackResults.result, this);
                                 });
                             }
                             else
@@ -185,7 +185,7 @@ namespace Com.RedicalGames.Filar
                                             OnInputFieldValidation(AppData.ValidationResultsType.Warning, dataValidCallbackResults.data);
                                     }
                                     else
-                                        Log(inputFieldCallbackResults.resultsCode, inputFieldCallbackResults.results, this);
+                                        Log(inputFieldCallbackResults.resultCode, inputFieldCallbackResults.result, this);
                                 });
                             }
                         });
@@ -224,21 +224,21 @@ namespace Com.RedicalGames.Filar
 
                             switch (restrictionCallbackResults.data.GetProjectSupportType())
                             {
-                                case AppData.AppProjectSupportType.Supports_3D:
+                                case AppData.Compatibility.Supports_3D:
 
                                     projectTypeContentParam.contents = new List<string> { "3D" };
                                     projectTypeContentParam.SetUIInputState(AppData.InputUIState.Disabled);
 
                                     break;
 
-                                case AppData.AppProjectSupportType.Supports_AR:
+                                case AppData.Compatibility.Supports_AR:
 
                                     projectTypeContentParam.contents = new List<string> { "3D", "AR" };
                                     projectTypeContentParam.SetUIInputState(AppData.InputUIState.Enabled);
 
                                     break;
 
-                                case AppData.AppProjectSupportType.Supports_VR:
+                                case AppData.Compatibility.Supports_VR:
 
                                     projectTypeContentParam.contents = new List<string> { "3D", "AR", "VR" };
                                     projectTypeContentParam.SetUIInputState(AppData.InputUIState.Enabled);
@@ -254,11 +254,11 @@ namespace Com.RedicalGames.Filar
                             SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
                         }
                         else
-                            Log(restrictionCallbackResults.resultsCode, restrictionCallbackResults.results, this);
+                            Log(restrictionCallbackResults.resultCode, restrictionCallbackResults.result, this);
                     });
                 }
                 else
-                    Log(newProjectCallbackResults.resultsCode, newProjectCallbackResults.results, this);
+                    Log(newProjectCallbackResults.resultCode, newProjectCallbackResults.result, this);
             });
         }
 
@@ -284,15 +284,15 @@ namespace Com.RedicalGames.Filar
 
             if (isValidName)
             {
-                callbackResults.results = "Data Is Valid";
+                callbackResults.result = "Data Is Valid";
                 callbackResults.data = AppData.InputFieldActionType.AssetNameField;
-                callbackResults.resultsCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.results = "Name Field Is required - Invalid";
+                callbackResults.result = "Name Field Is required - Invalid";
                 callbackResults.data = AppData.InputFieldActionType.AssetNameField;
-                callbackResults.resultsCode = AppData.Helpers.WarningCode;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
             }
 
             callback.Invoke(callbackResults);
@@ -342,6 +342,11 @@ namespace Com.RedicalGames.Filar
 
                     break;
             }
+        }
+
+        protected override void ScrollerPosition(Vector2 position)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

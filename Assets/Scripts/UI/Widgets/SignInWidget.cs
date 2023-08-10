@@ -30,12 +30,20 @@ namespace Com.RedicalGames.Filar
                     var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
 
                     transitionable = new AppData.TransitionableUI(widgetContainer.value);
+<<<<<<< HEAD
                     transitionable.SetSpeed(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeValueType.ScreenWidgetTransitionalSpeed).value);
+=======
+                    transitionable.SetSpeed(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+>>>>>>> Initialization
 
                     base.Init();
                 }
                 else
+<<<<<<< HEAD
                     Log(sceneAssetsManagerCallbackResults.resultsCode, sceneAssetsManagerCallbackResults.results, this);
+=======
+                    Log(sceneAssetsManagerCallbackResults.resultCode, sceneAssetsManagerCallbackResults.result, this);
+>>>>>>> Initialization
             
             }, "Scene Assets Manager Instance Is Not Yet Initialized.");
         }
@@ -84,7 +92,11 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
+<<<<<<< HEAD
             if (actionType == AppData.InputActionButtonType.SignUp_SignIn_SelectionButton)
+=======
+            if (actionType == AppData.InputActionButtonType.SignInViewChangeButton)
+>>>>>>> Initialization
             {
                 isInitialView = !isInitialView;
 
@@ -102,14 +114,23 @@ namespace Com.RedicalGames.Filar
 
             LogInfo(" <+++++++++++++> Go To Login Screen", this);
 
+<<<<<<< HEAD
             SetActionButtonState(AppData.InputActionButtonType.SignUp_SignIn_SelectionButton, AppData.InputUIState.Disabled);
+=======
+            SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
+>>>>>>> Initialization
 
             await transitionable.TransitionAsync();
 
             string buttonTitle = (isInitialView) ? "Sign In" : "Sign Up";
 
+<<<<<<< HEAD
             SetActionButtonTitle(AppData.InputActionButtonType.SignUp_SignIn_SelectionButton, buttonTitle);
             SetActionButtonState(AppData.InputActionButtonType.SignUp_SignIn_SelectionButton, AppData.InputUIState.Enabled);
+=======
+            SetActionButtonTitle(AppData.InputActionButtonType.SignInViewChangeButton, buttonTitle);
+            SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Enabled);
+>>>>>>> Initialization
 
             LogInfo(" <+++++++++++++> Went To Login Screen", this);
         }
@@ -119,6 +140,14 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+<<<<<<< HEAD
+=======
+        protected override void ScrollerPosition(Vector2 position)
+        {
+            throw new System.NotImplementedException();
+        }
+
+>>>>>>> Initialization
         #endregion
     }
 }
