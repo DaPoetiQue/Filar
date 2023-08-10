@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class LoadingWidget : AppData.Widget
+    public class UILoadStateIndicatorWidget : AppData.Widget
     {
         #region Components
 
@@ -26,7 +26,7 @@ namespace Com.RedicalGames.Filar
 
         new void Init()
         {
-            loadingWidget = this;
+            uiLoadingWidget = this;
             base.Init();
         }
 
