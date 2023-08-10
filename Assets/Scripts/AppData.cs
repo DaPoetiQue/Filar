@@ -1591,6 +1591,19 @@ namespace Com.RedicalGames.Filar
                                                             else
                                                             {
                                                                 LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Failed  - Show Network Pop Up", this);
+
+                                                                screenUIManager.GetCurrentScreenData().value.HideScreenWidget(WidgetType.LoadingWidget);
+
+                                                                SceneDataPackets networkDataPackets = new AppData.SceneDataPackets
+                                                                {
+                                                                    screenType = screenUIManager.GetCurrentUIScreenType(),
+                                                                    widgetType = WidgetType.NetworkNotificationWidget,
+                                                                    blurScreen = true,
+                                                                    blurContainerLayerType = ScreenBlurContainerLayerType.ForeGround
+                                                                };
+
+                                                                screenUIManager.GetCurrentScreenData().value.ShowWidget(networkDataPackets);
+
                                                             }
                                                         }
 
@@ -19575,7 +19588,7 @@ namespace Com.RedicalGames.Filar
             protected UIAssetActionWarningWidget uiAssetWarningWidget;
             protected SelectionOptionsWidget selectionOptionsWidget;
             protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
-            protected LoadingWidget loadingWidget;
+            protected UILoadStateIndicatorWidget uiLoadingWidget;
             protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
             protected CreateNewProjectWidget createNewProjectWidget;
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
