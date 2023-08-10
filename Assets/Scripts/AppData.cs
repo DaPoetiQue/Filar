@@ -1594,7 +1594,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 screenUIManager.GetCurrentScreenData().value.HideScreenWidget(WidgetType.LoadingWidget);
 
-                                                                SceneDataPackets networkDataPackets = new AppData.SceneDataPackets
+                                                                SceneDataPackets networkDataPackets = new SceneDataPackets
                                                                 {
                                                                     screenType = screenUIManager.GetCurrentUIScreenType(),
                                                                     widgetType = WidgetType.NetworkNotificationWidget,
@@ -1603,7 +1603,6 @@ namespace Com.RedicalGames.Filar
                                                                 };
 
                                                                 screenUIManager.GetCurrentScreenData().value.ShowWidget(networkDataPackets);
-
                                                             }
                                                         }
 
@@ -1814,6 +1813,8 @@ namespace Com.RedicalGames.Filar
 
             Queue<SequenceInstance> sequenceDataQueue = new Queue<SequenceInstance>();
 
+            List<SequenceInstance> processedSequences = new List<SequenceInstance>();
+
             #endregion
 
             #region Main
@@ -1882,8 +1883,10 @@ namespace Com.RedicalGames.Filar
                     {
                         while (IsRunning())
                         {
-                            var sequenceInstance = sequenceDataQueue.Dequeue();
-                            await sequenceInstance.GetSequenceData().Execute();
+                            var processingQueueResults = await AddToProcessingQueueAsync(sequenceDataQueue.Dequeue());
+
+                            if(processingQueueResults.Success())
+                                await ProcessQueueSequenceAsync();
                         }
                     }
 
@@ -1984,6 +1987,97 @@ namespace Com.RedicalGames.Filar
             public Queue<SequenceInstance> GetSequenceDataQueue() => sequenceDataQueue;
 
             public bool IsRunning() => Helpers.HasContents(GetSequenceDataQueue());
+
+            #region Processed
+
+            public List<SequenceInstance> GetProcessedSequences() => processedSequences;
+
+            public void GetFirstProcessedSequence(Action<CallbackData<SequenceInstance>> callback)
+            {
+                CallbackData<SequenceInstance> callbackResults = new CallbackData<SequenceInstance>();
+
+                Helpers.GetAppComponentsValid(processedSequences, "Processed Sequences", componentsValidCallbackResults =>
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var lastProccessed = componentsValidCallbackResults.data.FirstOrDefault(processd => processd.IsCompleted() == false);
+
+                        if (lastProccessed != null)
+                        {
+                            callbackResults.result = $"Successfully Found First Processed Sequence : {lastProccessed.name}.";
+                            callbackResults.data = lastProccessed;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Find Last Processed Sequence.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+
+                }, "Processed Sequences Are Not Yet Initialized");
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void GetLastProcessedSequence(Action<CallbackData<SequenceInstance>> callback)
+            {
+                CallbackData<SequenceInstance> callbackResults = new CallbackData<SequenceInstance>();
+
+                Helpers.GetAppComponentsValid(processedSequences, "Processed Sequences", componentsValidCallbackResults => 
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if(callbackResults.Success())
+                    {
+                        var lastProccessed = componentsValidCallbackResults.data.FindLast(processd => processd.IsCompleted() == false);
+
+                        if(lastProccessed != null)
+                        {
+                            callbackResults.result = $"Successfully Found Last Processed Sequence : {lastProccessed.name}.";
+                            callbackResults.data = lastProccessed;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Find Last Processed Sequence.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+
+                }, "Processed Sequences Are Not Yet Initialized");
+
+                callback.Invoke(callbackResults);
+            }
+
+            public async Task<Callback> AddToProcessingQueueAsync(SequenceInstance sequenceInstance)
+            {
+                Callback callbackResults = new Callback(Helpers.ComponentDoesntHaveContent(GetProcessedSequences(), sequenceInstance, "Processed Sequences", "Sequence Instance"));
+
+                if (callbackResults.Success())
+                    return await Helpers.ComponentAddContentAsync(sequenceInstance, GetProcessedSequences(), "Sequence Instance", "Processed Sequences");
+
+                return callbackResults;
+            }
+
+            public async Task<CallbackData<SequenceInstance>> ProcessQueueSequenceAsync()
+            {
+                CallbackData<SequenceInstance> callbackResults = new CallbackData<SequenceInstance>();
+
+                GetLastProcessedSequence(processedSequencesCallbackResults =>
+                {
+                    callbackResults.SetResultsData(processedSequencesCallbackResults);
+                });
+
+                if (callbackResults.Success())
+                    await callbackResults.data.GetSequenceData().Execute();
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
         }
@@ -18587,6 +18681,41 @@ namespace Com.RedicalGames.Filar
                     LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
             }
 
+            public void HideScreenWidget(Widget widget, bool canTransition = true)
+            {
+                if (screenWidgetsList.Count == 0)
+                    return;
+
+                if (widget != null)
+                {
+                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                    {
+                        if (selectionSystemCallbackResults.Success())
+                        {
+                            selectionSystemCallbackResults.data.OnClearInputSelection(widget.widgetType, selectionsClearedCallbackResults =>
+                            {
+                                if (selectionsClearedCallbackResults.Success())
+                                {
+                                    widget.Hide(canTransition, hideCallback =>
+                                    {
+                                        if (hideCallback.Success())
+                                            Focus();
+                                        else
+                                            Log(hideCallback.resultCode, hideCallback.result, this);
+                                    });
+                                }
+                                else
+                                    Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
+                            });
+                        }
+                        else
+                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
+                    });
+                }
+                else
+                    LogError($"Couldn't Hide Widget Of Type : {widget} - Widget Missing / Not Found.", this);
+            }
+
             public Widget GetWidget(WidgetType widgetType)
             {
                 return screenWidgetsList.Find(widget => widget.widgetType == widgetType);
@@ -28330,6 +28459,68 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = failedOperationFallbackResults ?? $"Check Has No Component Validation Failed - Contents Queue : {contentsIdentifier ?? "Contents Queue Name Not Assigned"} With : {contents.Count} Contents Already Contains Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Add Content To List
+
+            public static Callback ComponentAddContent<T>(T referencedContent, List<T> contents, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (!contents.Contains(referencedContent))
+                {
+                    contents.Add(referencedContent);
+
+                    if (contents.Contains(referencedContent))
+                    {
+                        callbackResults.result = successOperationFallbackResults ?? $"Check Has No Component Validation Success - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} - Contents Is Valid And It Doesn't Contains Content Named : {contentIdentifier} As Expected";
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = failedOperationFallbackResults ?? $"Added Content Validation Failed - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} Couldn't Add Content For Some Reason - ID : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                        callbackResults.resultCode = ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Added Content Validation Failed - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} Contents Already Contains Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static async Task<Callback> ComponentAddContentAsync<T>(T referencedContent, List<T> contents, string contentIdentifier = null, string contentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            {
+                Callback callbackResults = new Callback();
+
+                if (!contents.Contains(referencedContent))
+                {
+                    contents.Add(referencedContent);
+
+                    await Task.Delay(100);
+
+                    if (contents.Contains(referencedContent))
+                    {
+                        callbackResults.result = successOperationFallbackResults ?? $"Check Has No Component Validation Success - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} - Contents Is Valid And It Doesn't Contains Content Named : {contentIdentifier} As Expected";
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = failedOperationFallbackResults ?? $"Added Content Validation Failed - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} Couldn't Add Content For Some Reason - ID : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
+                        callbackResults.resultCode = ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = failedOperationFallbackResults ?? $"Added Content Validation Failed - Contents List : {contentsIdentifier ?? "Contents List Name Not Assigned"} With : {contents.Count} Contents Already Contains Content : {contentIdentifier ?? "Content Name Not Assigned"} And This Is Unexpected.";
                     callbackResults.resultCode = ErrorCode;
                 }
 

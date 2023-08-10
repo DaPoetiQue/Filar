@@ -70,6 +70,8 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
+                    OnInitialLoad = screenLoadInfoInstance.InitialScreen();
+
                     var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
 
                     if (callbackResults.Success())
