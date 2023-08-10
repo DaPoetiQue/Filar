@@ -544,7 +544,6 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-
         #region Storage
 
         public async Task<AppData.Callback> StorageInitialized()
