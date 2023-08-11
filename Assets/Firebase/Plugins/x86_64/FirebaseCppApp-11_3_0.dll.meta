@@ -1,7 +1,15 @@
 fileFormatVersion: 2
 guid: 30564cad37354e87944803d35f88989a
+<<<<<<< HEAD
 labels:
 - gvh
+=======
+<<<<<<< HEAD
+=======
+labels:
+- gvh
+>>>>>>> AppServices
+>>>>>>> main
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -30,7 +38,15 @@ PluginImporter:
     second:
       enabled: 1
       settings:
+<<<<<<< HEAD
         CPU: AnyCPU
+=======
+<<<<<<< HEAD
+        CPU: x86_64
+=======
+        CPU: AnyCPU
+>>>>>>> AppServices
+>>>>>>> main
   - first:
       Standalone: OSXUniversal
     second:
