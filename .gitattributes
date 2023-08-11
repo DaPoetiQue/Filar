@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-11_3_0.dll filter=lfs diff=lfs merge=lfs -text
+Assets/Firebase filter=lfs diff=lfs merge=lfs -text
+=======
+>>>>>>> 546f3689ed89844a54188f855d6db89bf809f221
 Assets/Firebase/Plugins/x86_64/FirebaseCppApp-11_3_0.dll filter=lfs diff=lfs merge=lfs -text
 Assets/Firebase filter=lfs diff=lfs merge=lfs -text
 C:/Users/hlula/Documents/Development/Designar[[:space:]]Main[[:space:]]App/Filar/Firebase filter=lfs diff=lfs merge=lfs -text
@@ -103,3 +110,7 @@ C:/Users/hlula/Documents/Development/Designar[[:space:]]Main[[:space:]]App/Filar
 /Assets/Plugins/iOS/Firebase/libFirebaseCppAuth.a filter=lfs diff=lfs merge=lfs -text
 /Assets/Plugins/tvOS/Firebase/libFirebaseCppApp.a filter=lfs diff=lfs merge=lfs -text
 /Assets/Plugins/tvOS/Firebase/libFirebaseCppAuth.a filter=lfs diff=lfs merge=lfs -text
+<<<<<<< HEAD
+=======
+>>>>>>> AppServices
+>>>>>>> 546f3689ed89844a54188f855d6db89bf809f221
