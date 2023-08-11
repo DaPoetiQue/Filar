@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> AppServices
->>>>>>> main
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &619988283
@@ -8864,33 +8854,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> main
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:e9e571de8d626a414214eaa764bad04844b98ca388ccc11b4518b1f88fcdeff1
-size 235642
-<<<<<<< HEAD
->>>>>>> AppServices
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:a50ab2eaec055b957e6b0ff04d2497a9ecf315d4a10e9bd007e0d7fbbf40d26c
-size 235814
->>>>>>> 546f3689ed89844a54188f855d6db89bf809f221
-=======
->>>>>>> 80bd9825b60a76f615d009cae012bcec7f5eb7c4
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:9633aacd4982c11bed78ac00fc093e72bbabbcd3a7632d81e4e7ea9d3c93a36b
-size 235843
->>>>>>> 0ea7fe5cd38f4013c014a0b75b10d04079845c6a
->>>>>>> AppServices
->>>>>>> main
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:a50ab2eaec055b957e6b0ff04d2497a9ecf315d4a10e9bd007e0d7fbbf40d26c
-size 235814
->>>>>>> 546f3689ed89844a54188f855d6db89bf809f221

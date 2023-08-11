@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> AppServices
->>>>>>> main
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &3706476561590600082
@@ -30041,33 +30031,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> main
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:7b80b26295adf4b9b22927ec115ae0ea866261706484483c68bcbcb7c1e17939
-size 891098
-<<<<<<< HEAD
->>>>>>> AppServices
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:38f7af9df62f95ac0c9f65edb33d135439aa1720c3d6c8c0a715eda9683f8bf4
-size 891270
->>>>>>> 546f3689ed89844a54188f855d6db89bf809f221
-=======
->>>>>>> 80bd9825b60a76f615d009cae012bcec7f5eb7c4
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:ea57d4f245b6a2cb8aa50870aa35b1ce545780638cfdf40c6d2c4e8fcef9309d
-size 891299
->>>>>>> 0ea7fe5cd38f4013c014a0b75b10d04079845c6a
->>>>>>> AppServices
->>>>>>> main
-=======
-version https://git-lfs.github.com/spec/v1
-oid sha256:38f7af9df62f95ac0c9f65edb33d135439aa1720c3d6c8c0a715eda9683f8bf4
-size 891270
->>>>>>> 546f3689ed89844a54188f855d6db89bf809f221
