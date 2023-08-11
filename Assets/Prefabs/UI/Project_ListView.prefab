@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &860508931
@@ -6196,3 +6198,13 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:0484764671f8c4b8d80f9c4b428bea0eb9d80f64a1d38d23ebc3704ddfca65eb
+size 164048
+>>>>>>> AppServices
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:01657d56e7356137555e356c99ad2aa93a021617228d422d5684bb87062beaf7
+size 164220
+>>>>>>> 546f3689ed89844a54188f855d6db89bf809f221
