@@ -1,6 +1,11 @@
 using System;
+<<<<<<< HEAD
 //using Firebase;
 //using Firebase.Auth;
+=======
+using Firebase;
+using Firebase.Auth;
+>>>>>>> AppServices
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -30,14 +35,23 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         public AppData.StorageDirectoryData profileStorageData = new AppData.StorageDirectoryData();
 
+<<<<<<< HEAD
         //[Space(5)]
         //public DependencyStatus authDependencyStatus = DependencyStatus.UnavailableOther;
+=======
+        [Space(5)]
+        public DependencyStatus authDependencyStatus = DependencyStatus.UnavailableOther;
+>>>>>>> AppServices
 
         public bool SignedIn { get; private set; }
 
         #region Firebase
 
+<<<<<<< HEAD
         //FirebaseAuth authentication;
+=======
+        FirebaseAuth authentication;
+>>>>>>> AppServices
 
         public bool TermsAndConditionsAccepted { get; private set; }
 
@@ -55,6 +69,7 @@ namespace Com.RedicalGames.Filar
 
         void Setup()
         {
+<<<<<<< HEAD
             //Initialize Authentication
             //FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => 
             //{
@@ -70,6 +85,22 @@ namespace Com.RedicalGames.Filar
             //    else
             //        throw task.Exception;
             //});
+=======
+            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+            {
+                authDependencyStatus = task.Result;
+
+                if (task.Exception == null)
+                {
+                    if (authDependencyStatus == DependencyStatus.Available)
+                        authentication = FirebaseAuth.DefaultInstance;
+                    else
+                        LogInfo($"Authentication Dependency Is Not Available - Dependency Status : {authDependencyStatus}", this);
+                }
+                else
+                    throw task.Exception;
+            });
+>>>>>>> AppServices
         }
 
         void CreateProfile(AppData.Profile profile, Action<AppData.CallbackData<AppData.Profile>> callback = null)
@@ -110,6 +141,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+<<<<<<< HEAD
         //public async Task<AuthError> SignInAsync(AppData.Profile profile)
         //{
         //    AuthError authError = AuthError.None;
@@ -198,6 +230,97 @@ namespace Com.RedicalGames.Filar
         //        authentication.SignOut();
         //    }
         //}
+=======
+        public async Task<AuthError> SignInAsync(AppData.Profile profile)
+        {
+            AuthError authError = AuthError.None;
+
+            try
+            {
+                if (authDependencyStatus == DependencyStatus.Available)
+                {
+                    await authentication.SignInWithEmailAndPasswordAsync(profile.GetUserEmail(), profile.GetUserPassword()).ContinueWith(signedInTaskCompletion =>
+                    {
+                        if (signedInTaskCompletion.Exception == null)
+                        {
+                            if (signedInTaskCompletion.Result.User.IsValid())
+                            {
+                                LogSuccess($"User : {authentication.CurrentUser.DisplayName} Has Signed In Successfully.", this);
+                            }
+                            else
+                                LogWarning($"User : {profile.GetUserEmail()} Is Not Valid", this);
+                        }
+                        else
+                        {
+                            FirebaseException fbException = signedInTaskCompletion.Exception.GetBaseException() as FirebaseException;
+                            authError = (AuthError)fbException.ErrorCode;
+                        }
+
+                        return authError;
+                    });
+                }
+
+                return authError;
+            }
+            catch (Exception exception)
+            {
+                FirebaseException fbException = exception.GetBaseException() as FirebaseException;
+                var errorCode = (AuthError)fbException.ErrorCode;
+
+                return errorCode;
+            }
+        }
+
+        public async Task<AuthError> SignUpAsync(string userEmail, string userPassWord)
+        {
+            AuthError authError = AuthError.None;
+
+            try
+            {
+                if (authDependencyStatus == DependencyStatus.Available)
+                {
+                    await authentication.CreateUserWithEmailAndPasswordAsync(userEmail, userPassWord).ContinueWith(async signedUpTaskCompletion =>
+                    {
+                        if (signedUpTaskCompletion.Exception == null)
+                        {
+                            if (signedUpTaskCompletion.Result.User.IsValid())
+                            {
+                                LogSuccess($" <+++++++++++++++++++++> User : {userEmail} Has Been Created Successfully. Choose Varification Method.", this);
+                            }
+                            else
+                                LogWarning($"User : {userEmail} Is Not Valid", this);
+                        }
+                        else
+                        {
+                            FirebaseException fbException = signedUpTaskCompletion.Exception.GetBaseException() as FirebaseException;
+                            authError = (AuthError)fbException.ErrorCode;
+                        }
+
+                        return authError;
+                    });
+                }
+
+                return authError;
+            }
+            catch (Exception exception)
+            {
+                FirebaseException fbException = exception.GetBaseException() as FirebaseException;
+                var errorCode = (AuthError)fbException.ErrorCode;
+
+                return errorCode;
+            }
+        }
+
+        public void SignOut()
+        {
+            if (authDependencyStatus == DependencyStatus.Available)
+            {
+                LogInfo($"User : {authentication.CurrentUser.DisplayName} Has Signed Out.");
+                authentication.SignOut();
+            }
+        }
+
+>>>>>>> AppServices
 
         public void AcceptTermsAndConditions() => TermsAndConditionsAccepted = true;
 
