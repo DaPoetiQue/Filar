@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 using System;
 using Firebase;
 using Firebase.Auth;
@@ -7,6 +8,11 @@ using System;
 //using Firebase;
 //using Firebase.Auth;
 >>>>>>> origin
+=======
+using System;
+using Firebase;
+using Firebase.Auth;
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -36,25 +42,35 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         public AppData.StorageDirectoryData profileStorageData = new AppData.StorageDirectoryData();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
 
         [Space(5)]
         public DependencyStatus authDependencyStatus = DependencyStatus.UnavailableOther;
 
+<<<<<<< HEAD
 =======
 
         //[Space(5)]
         //public DependencyStatus authDependencyStatus = DependencyStatus.UnavailableOther;
 >>>>>>> origin
+=======
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
 
         public bool SignedIn { get; private set; }
 
         #region Firebase
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         FirebaseAuth authentication;
 =======
         //FirebaseAuth authentication;
 >>>>>>> origin
+=======
+        FirebaseAuth authentication;
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
 
         public bool TermsAndConditionsAccepted { get; private set; }
 
@@ -88,6 +104,7 @@ namespace Com.RedicalGames.Filar
                 else
                     throw task.Exception;
             });
+<<<<<<< HEAD
 =======
             //FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => 
             //{
@@ -104,6 +121,8 @@ namespace Com.RedicalGames.Filar
             //        throw task.Exception;
             //});
 >>>>>>> origin
+=======
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
         }
 
         void CreateProfile(AppData.Profile profile, Action<AppData.CallbackData<AppData.Profile>> callback = null)
@@ -144,6 +163,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
         public async Task<AuthError> SignInAsync(AppData.Profile profile)
         {
             AuthError authError = AuthError.None;
@@ -232,6 +254,7 @@ namespace Com.RedicalGames.Filar
                 authentication.SignOut();
             }
         }
+<<<<<<< HEAD
 =======
 
         //public async Task<AuthError> SignInAsync(AppData.Profile profile)
@@ -323,6 +346,8 @@ namespace Com.RedicalGames.Filar
         //    }
         //}
 >>>>>>> origin
+=======
+>>>>>>> a937f26da77822f7a71249d6ea677408e5039438
 
         public void AcceptTermsAndConditions() => TermsAndConditionsAccepted = true;
 
