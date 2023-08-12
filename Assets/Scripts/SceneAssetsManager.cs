@@ -297,14 +297,31 @@ namespace Com.RedicalGames.Filar
 
                 //postData.serializableAsset = new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>());
 
-                //AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile : profile, data: postData);
+                //AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile: profile, data: postData);
                 //string post = JsonUtility.ToJson(newPost);
 
                 //await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
 
                 #endregion
 
-                await Task.Delay(1000);
+                #region Test Load
+
+                var value = await databaseReference.Child("Posts").Child("User").GetValueAsync();
+
+                var resultsJson = value.GetRawJsonValue();
+
+                string jsonData = resultsJson.Replace("\\", "");
+
+
+                LogInfo($" ======>>>>>>>>><<<<<<<< Loading Mesh Raw : {jsonData}", this);
+
+                AppData.PostData postData = JsonUtility.FromJson<AppData.PostData>(jsonData);
+
+                LogInfo($" ======>>>>>>>>><<<<<<<< Loading Mesh With : {postData?.serializableAsset?.subMeshData[0]?.vertices?.Length} Vertices", this);
+
+                #endregion
+
+                 await Task.Delay(1000);
 
                 callbackResults.result = "Database Initialized Successfully";
                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
