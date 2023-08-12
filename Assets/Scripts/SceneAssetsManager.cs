@@ -207,6 +207,9 @@ namespace Com.RedicalGames.Filar
         List<UIScreenFolderWidget> folderHandlerComponentsList = new List<UIScreenFolderWidget>();
 
         [SerializeField]
+        GameObject testAsset;
+
+        [SerializeField]
         AppData.Folder currentFolder;
 
         AppData.Folder widgetsRefreshFolder = new AppData.Folder();
@@ -280,18 +283,26 @@ namespace Com.RedicalGames.Filar
 
                 FirebaseDatabase.DefaultInstance.GetReference("Hlulie").ValueChanged += OnDatabaseUpdate;
 
-                AppData.Profile profile = new AppData.Profile();
+                #region Test
 
-                profile.userName = "Hlulie";
-                profile.userEmail = "Hlulie21@home.com";
-                profile.userPassword = "19910530";
+                //AppData.Profile profile = new AppData.Profile();
 
-                profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+                //profile.userName = "Hlulie";
+                //profile.userEmail = "Hlulie21@home.com";
+                //profile.userPassword = "19910530";
 
-                AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile : profile);
-                string post = JsonUtility.ToJson(newPost);
+                //profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
 
-                await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
+                //AppData.PostData postData = new AppData.PostData();
+
+                //postData.serializableAsset = new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>());
+
+                //AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile : profile, data: postData);
+                //string post = JsonUtility.ToJson(newPost);
+
+                //await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
+
+                #endregion
 
                 await Task.Delay(1000);
 

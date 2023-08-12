@@ -38,11 +38,6 @@ namespace Com.RedicalGames.Filar
             };
         }
 
-        public static List<T> ToList<T>(this T[] array)
-        {
-            return array.ToList();
-        }
-
         #region Mesh
 
         #endregion
