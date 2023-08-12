@@ -183,6 +183,9 @@ namespace Com.RedicalGames.Filar
                                             await Task.Delay(loadingScreenExitDelay);
 
                                             await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenData());
+
+                                            int initialScreenDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
+                                            await Task.Delay(initialScreenDelay);
                                         }
                                         else
                                             Log(callbackResults.resultCode, callbackResults.result, this);

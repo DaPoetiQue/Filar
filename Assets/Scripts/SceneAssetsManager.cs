@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Linq;
 using static TMPro.TMP_Dropdown;
+using Firebase;
+using Firebase.Database;
 
 namespace Com.RedicalGames.Filar
 {
@@ -220,6 +222,14 @@ namespace Com.RedicalGames.Filar
 
         Coroutine refreshAsyncRoutine;
 
+        #region Database
+
+        DatabaseReference databaseReference;
+
+        IDictionary<string, object> database;
+
+        #endregion
+
         #region Filter And Sort Data
 
         bool canFilterContents = false;
@@ -256,6 +266,48 @@ namespace Com.RedicalGames.Filar
             }
 
             _instance = this;
+        }
+
+        public async Task<AppData.Callback> InitializeDatabase()
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            do
+            {
+                await Task.Delay(1000);
+
+                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+
+                FirebaseDatabase.DefaultInstance.GetReference("Hlulie").ValueChanged += OnDatabaseUpdate;
+
+                AppData.Profile profile = new AppData.Profile();
+
+                profile.userName = "Hlulie";
+                profile.userEmail = "Hlulie21@home.com";
+                profile.userPassword = "19910530";
+
+                profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+
+                AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile : profile);
+                string post = JsonUtility.ToJson(newPost);
+
+                await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
+
+                await Task.Delay(1000);
+
+                callbackResults.result = "Database Initialized Successfully";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+                await Task.Delay(1000);
+            }
+            while (databaseReference == null);
+
+            return callbackResults;
+        }
+
+        private void OnDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
+        {
+           
         }
 
         public void InitializeStorage(Action<AppData.Callback> callback = null)

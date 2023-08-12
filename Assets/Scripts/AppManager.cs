@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 using UnityEngine.Android;
 
 namespace Com.RedicalGames.Filar
@@ -45,7 +48,13 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.AppMode appMode = AppData.AppMode.None;
 
+        [Space(5)]
+        [SerializeField]
+        List<AppData.PermissionInfo> permissionInfos = new List<AppData.PermissionInfo>();
+
         AppData.Profile userProfile = new AppData.Profile();
+
+        public AppData.Compatibility Compatibility { get; private set; }
 
         #region Loading Data
 
@@ -137,7 +146,33 @@ namespace Com.RedicalGames.Filar
 
                                                             await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
                                                             {
-                                                                initialLoadInfoCallbackResults.LogResult();
+                                                                callbackResults.SetResult(initialLoadInfoCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    screenUIManager.GetCurrentScreen(currentScreenCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(currentScreenCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            //var currentScreen = currentScreenCallbackResults.data;
+
+                                                                            //AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
+                                                                            //{
+                                                                            //    screenType = AppData.UIScreenType.LandingPageScreen,
+                                                                            //    widgetType = AppData.WidgetType.SignInWidget,
+                                                                            //    blurScreen = true,
+                                                                            //    blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Background
+                                                                            //};
+
+                                                                            //currentScreen.value.ShowWidget(dataPackets);
+
+                                                                           // LogSuccess($" *==========> Loaded Screen : {currentScreen.value.GetUIScreenType()}", this);
+
+                                                                        }
+                                                                    });
+                                                                }
                                                             });
                                                         }
                                                     }
@@ -279,6 +314,8 @@ namespace Com.RedicalGames.Filar
                 return false;
 
         }
+
+        public bool ReadWritePermissionsGranted() => PermissionGranted(Permission.ExternalStorageRead) && PermissionGranted(Permission.ExternalStorageRead);
 
         public AndroidJavaObject GetInitializedPluginInstance(string pluginBundle)
         {
@@ -449,6 +486,28 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        #region Initialize App Entry
+
+        public async Task<AppData.Callback> InitializeAppEntryPoint()
+        {
+            AppData.CallbackData<SceneAssetsManager> callbackResults = new AppData.CallbackData<SceneAssetsManager>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
+
+            if(callbackResults.Success())
+            {
+                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+
+                return await sceneAssetsManager.InitializeDatabase();
+            }
+
+            return callbackResults.CallbackResults;
+        }
+
+        #endregion
+
+        #region Compatibility
+
+        #endregion
+
         #region Networking
 
         public async Task<AppData.Callback> CheckConnectionStatus()
@@ -515,12 +574,25 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.Callback> PermissionsGranted()
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(AppData.Helpers.GetQueue(permissionInfos), queueIdentifier: "Permission Infos", failedOperationFallbackResults: "Permissions Info Are Not Yet Initialized In App Manager", " Permissions Info Initoialized Successfully"));
 
-            await Task.Delay(2000);
+            if (callbackResults.Success())
+            {
+                var permissionInfoQueue = AppData.Helpers.GetAppComponentsValid(AppData.Helpers.GetQueue(permissionInfos), queueIdentifier: "", failedOperationFallbackResults: "", "").data;
 
-            callbackResults.result = "Permissions Granted.";
-            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                while(permissionInfoQueue.Count > 0)
+                {
+                    var permisionInfo = permissionInfoQueue.Dequeue();
+
+                    while(permisionInfo.IsGranted == false)
+                        await Task.Delay(100);
+
+                    await Task.Yield();
+                }
+
+                callbackResults.result = "Permissions Granted.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
 
             return callbackResults;
         }
@@ -533,11 +605,58 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.Compatibility> callbackResults = new AppData.CallbackData<AppData.Compatibility>();
 
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
-            callbackResults.result = "Permissions Granted.";
-            callbackResults.data = AppData.Compatibility.Supports_AR;
+            #region Grant Default 3D Support.
+
+            callbackResults.result = "Is Only Compitable With Default 3D Support.";
+            callbackResults.data = AppData.Compatibility.Supports_3D;
             callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            #endregion
+
+            await Task.Delay(1000);
+
+            #region Check For AR Support.
+
+            StartCoroutine(ARSession.CheckAvailability());
+
+            while (ARSession.state == ARSessionState.CheckingAvailability)
+                await Task.Yield();
+
+            if (ARSession.state != ARSessionState.Unsupported)
+            {
+                if (ARSession.state == ARSessionState.NeedsInstall)
+                {
+                    // Show Require Install Pop Up
+                }
+
+                if (ARSession.state == ARSessionState.Installing)
+                {
+                    while (ARSession.state == ARSessionState.Installing)
+                        await Task.Yield();
+                }
+
+                if (ARSession.state == ARSessionState.Ready)
+                {
+                    callbackResults.result = "Has AR Support.";
+                    callbackResults.data = AppData.Compatibility.Supports_AR;
+                }
+            }
+
+            #endregion
+
+            await Task.Delay(1000);
+
+            #region Check For VR Support.
+
+            if (callbackResults.Success() && callbackResults.data == AppData.Compatibility.Supports_AR && Input.gyro.enabled)
+            {
+                callbackResults.result = "Has VR Support.";
+                callbackResults.data = AppData.Compatibility.Supports_VR;
+            }
+
+            #endregion
 
             return callbackResults;
         }

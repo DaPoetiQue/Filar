@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
@@ -1074,6 +1073,64 @@ namespace Com.RedicalGames.Filar
             FetchProfile,
         }
 
+        #region Database
+
+        public class DatabaseAssets : IDictionary
+        {
+            public object this[object key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            public bool IsFixedSize => throw new NotImplementedException();
+
+            public bool IsReadOnly => throw new NotImplementedException();
+
+            public ICollection Keys => throw new NotImplementedException();
+
+            public ICollection Values => throw new NotImplementedException();
+
+            public int Count => throw new NotImplementedException();
+
+            public bool IsSynchronized => throw new NotImplementedException();
+
+            public object SyncRoot => throw new NotImplementedException();
+
+            public void Add(object key, object value)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Clear()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Contains(object key)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void CopyTo(Array array, int index)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IDictionaryEnumerator GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Remove(object key)
+            {
+                throw new NotImplementedException();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
         #region Loading Data
 
         #region Screen Load Data
@@ -1590,8 +1647,6 @@ namespace Com.RedicalGames.Filar
                                                                 OnCompletition();
                                                             else
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Network Failed  - Show Network Pop Up", this);
-
                                                                 screenUIManager.GetCurrentScreenData().value.HideScreenWidget(WidgetType.LoadingWidget);
 
                                                                 SceneDataPackets networkDataPackets = new SceneDataPackets
@@ -1612,13 +1667,13 @@ namespace Com.RedicalGames.Filar
 
                                                         if (callbackResults.Success())
                                                         {
-                                                            var resultCallback = await appManager.PermissionsGranted();
+                                                            var resultCallback = await appManager.InitializeAppEntryPoint();
 
                                                             if (resultCallback.Success())
                                                                 OnCompletition();
                                                             else
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Permissions Not Granted  - Show Permissions Pop Up", this);
+                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Init Results {resultCallback.Result}", this);
                                                             }
                                                         }
 
@@ -2072,7 +2127,14 @@ namespace Com.RedicalGames.Filar
                 });
 
                 if (callbackResults.Success())
-                    await callbackResults.data.GetSequenceData().Execute();
+                {
+                    var sequenceInstance = callbackResults.data;
+
+                    if (sequenceInstance != null)
+                        await callbackResults.data.GetSequenceData().Execute();
+                    else
+                        LogError(" *===>>> Last Processed Sequence Instance Not Found.", this);
+                }
 
                 return callbackResults;
             }
@@ -2142,6 +2204,343 @@ namespace Com.RedicalGames.Filar
             }
 
             public static void ClearStorage() => sessionDataDictionary?.Clear();
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Post
+
+        [Serializable]
+        public class PostData : ProjectData
+        {
+            #region Components
+
+            public SerializableAsset serializableAsset = new SerializableAsset();
+
+            #endregion
+
+            #region Main
+
+            public PostData()
+            {
+
+            }
+
+            public PostData(SerializableAsset serializableAsset)
+            {
+                this.serializableAsset = serializableAsset;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class Post : SerializableData
+        {
+            #region Components
+
+            public string caption;
+            public Profile profile;
+            public PostData data;
+
+            public int likes;
+
+            public Dictionary<Profile, string> comments;
+
+            #endregion
+
+            #region Main
+
+            public Post()
+            {
+            }
+
+            public Post(string caption = null, Profile profile = null, PostData data = null)
+            {
+                this.caption = caption;
+                this.profile = profile;
+                this.data = data;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SerializableAsset : ProjectData
+        {
+            #region Components
+
+            public List<SerializableMeshData> subMeshData = new List<SerializableMeshData>();
+
+            #endregion
+
+            #region Main
+
+            public SerializableAsset()
+            {
+
+            }
+
+            public SerializableAsset(params MeshFilter[] filters)
+            {
+                for (int i = 0; i < filters.Length; i++)
+                    subMeshData.Add(filters[i].sharedMesh.ToSerializableMeshData());
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class  SerializableMeshData : ProjectData
+        {
+            #region Components
+
+            public SerializableVector[] vertices;
+            public SerializableVector[] normals;
+            public SerializableVector[] uvs;
+            public int[] triangles;
+            public SerializableVector[] tangents;
+
+            #endregion
+
+            #region Main
+
+            public SerializableMeshData()
+            {
+
+            }
+
+            public SerializableMeshData(SerializableVector[] vertices = null, int[] triangles = null, SerializableVector[] normals = null, SerializableVector[] uvs = null, SerializableVector[] tangents = null)
+            {
+                this.vertices = vertices;
+                this.triangles = triangles;
+                this.normals = normals;
+                this.uvs = uvs;
+                this.tangents = tangents;
+            }
+
+            public SerializableMeshData(Mesh mesh)
+            {
+                #region Vertices
+
+                vertices = new SerializableVector[mesh.vertexCount];
+
+                for (int i = 0; i < mesh.vertexCount; i++)
+                    vertices[i] = mesh.vertices[i].ToSerializableVector();
+
+                #endregion
+
+                #region Triangles
+
+                triangles = new int[mesh.triangles.Length];
+
+                for (int i = 0; i < mesh.triangles.Length; i++)
+                    triangles[i] = mesh.triangles[i];
+
+                #endregion
+
+                #region Normals
+
+                normals = new SerializableVector[mesh.normals.Length];
+
+                for (int i = 0; i < mesh.normals.Length; i++)
+                    normals[i] = mesh.normals[i].ToSerializableVector();
+
+                #endregion
+
+                #region UVs
+
+                uvs = new SerializableVector[mesh.uv.Length];
+
+                for (int i = 0; i < mesh.normals.Length; i++)
+                    normals[i] = mesh.normals[i].ToSerializableVector();
+
+                #endregion
+
+                #region Tangents
+
+                tangents = new SerializableVector[mesh.tangents.Length];
+
+                for (int i = 0; i < mesh.tangents.Length; i++)
+                    tangents[i] = mesh.tangents[i].ToSerializableVector();
+
+                #endregion
+
+
+            }
+
+            public Mesh GetMesh()
+            {
+                Mesh mesh = new Mesh();
+
+                mesh.name = name;
+
+                #region Vertices
+
+                List<Vector3> verts = new List<Vector3>();
+
+                for (int i = 0; i < vertices.Length; i++)
+                    verts.Add(vertices[i].ToVector3());
+
+                mesh.SetVertices(verts);
+
+                #endregion
+
+                #region Triangles
+
+                mesh.SetTriangles(triangles, 0);
+
+                #endregion
+
+                #region Normals
+
+                List<Vector3> norms = new List<Vector3>();
+
+                for (int i = 0; i < normals.Length; i++)
+                    norms.Add(normals[i].ToVector3());
+
+                mesh.SetNormals(norms);
+
+                mesh.RecalculateNormals();
+
+                #endregion
+
+                #region Uvs
+
+                List<Vector2> uv = new List<Vector2>();
+
+                for (int i = 0; i < uvs.Length; i++)
+                    uv.Add(uvs[i].ToVector2());
+
+                mesh.SetUVs(0, uv);
+
+                #endregion
+
+                #region Tangents
+
+                mesh.RecalculateTangents();
+
+                #endregion
+
+                mesh.RecalculateBounds();
+
+                return mesh;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SerializableVector : ProjectData
+        {
+            #region Components
+
+            public float x, y, z, w;
+
+            #endregion
+
+            #region Main
+
+            public SerializableVector()
+            {
+
+            }
+
+            public SerializableVector(float x, float y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+
+            public SerializableVector(float x, float y, float z)
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
+            public SerializableVector(float x, float y, float z, float w)
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.w = w;
+            }
+
+            public SerializableVector(Vector2 vector)
+            {
+                x = vector.x;
+                y = vector.y;
+            }
+
+            public SerializableVector(Vector3 vector)
+            {
+                x = vector.x;
+                y = vector.y;
+                z = vector.z;
+            }
+
+            public SerializableVector(Vector4 vector)
+            {
+                x = vector.x;
+                y = vector.y;
+                z = vector.z;
+                w = vector.w;
+            }
+
+            public Vector2 ToVector2() => new Vector2(x, y);
+            public Vector3 ToVector3() => new Vector3(x, y, z);
+            public Vector4 ToVector4() => new Vector4(x, y, z, w);
+
+            public SerializableVector FromVector(Vector2 vector) => new SerializableVector(vector.x, vector.y);
+            public SerializableVector FromVector(Vector3 vector) => new SerializableVector(vector.x, vector.y, vector.z);
+            public SerializableVector FromVector(Vector4 vector) => new SerializableVector(vector.x, vector.y, vector.z, vector.w);
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Permissions
+
+        [Serializable]
+        public class PermissionInfo : ProjectData
+        {
+            #region Components
+
+            [Space(5)]
+            public string title;
+
+            [Space(5)]
+            public string message;
+
+            [Space(5)]
+            public PermissionType type;
+
+            [HideInInspector]
+            public bool granted;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void Granted() => granted = true;
+
+            #endregion
+
+            #region Data Getters
+
+            public string Title => title;
+            public string Message => message;
+
+            public PermissionType Permission => type;
+            public bool IsGranted => granted;
+
+            #endregion
 
             #endregion
         }
@@ -12523,6 +12922,8 @@ namespace Com.RedicalGames.Filar
                 return (this.result, this.resultCode);
             }
 
+            public Callback CallbackResults { get { return this; } protected set { } }
+
             #endregion
 
             #endregion
@@ -19701,7 +20102,6 @@ namespace Com.RedicalGames.Filar
             protected SelectedSceneAssetPreviewWidget selectedSceneAssetPreviewWidget;
             protected SceneAssetPropertiesWidget assetPropertiesWidget;
             protected AssetImportWidget assetImportWidget;
-            protected AppPermissionsRequestWidget permissionsRequestWidget;
             protected LoadingScreenWidget loadingScreenWidget;
             protected SceneAssetExportWidget sceneAssetExportWidget;
             protected RenderSettingsWidget renderSettingsWidget;
@@ -19726,6 +20126,7 @@ namespace Com.RedicalGames.Filar
             protected SignInWidget signInWidget;
             protected AnonymousSignInConfirmationWidget anonymousSignInConfirmationWidget;
             protected TermsAndConditionsWidget termsAndConditionsWidget;
+            protected PermissionRequestWidget permissionRequestWidget;
 
             #endregion
 
@@ -21502,6 +21903,16 @@ namespace Com.RedicalGames.Filar
 
                 if (screenManagerCallbackResults.Success())
                 {
+                    //AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
+                    //{
+                    //    screenType = AppData.UIScreenType.LandingPageScreen,
+                    //    widgetType = AppData.WidgetType.SignInWidget,
+                    //    blurScreen = true,
+                    //    blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Background
+                    //};
+
+                    //screenManagerCallbackResults.data.
+
                     await screenManagerCallbackResults.data.GoToSelectedScreenAsync(dataPackets, screenLoadedCallbackResults => 
                     {
                         Log(screenLoadedCallbackResults.resultCode, screenLoadedCallbackResults.result, this); ;
