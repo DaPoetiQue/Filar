@@ -162,6 +162,11 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
+        protected override void OnSetUIWidgetData(AppData.Post post)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
     }

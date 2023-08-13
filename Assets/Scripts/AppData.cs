@@ -14480,6 +14480,7 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnActionButtonInputs(UIButton<ButtonDataPackets> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetUIWidgetData(ProjectStructureData structureData);
+            protected abstract void OnSetUIWidgetData(Post post);
             protected abstract void OnSetAssetData(SceneAsset assetData);
             protected abstract void OnScreenUIRefreshed();
 

@@ -1,4 +1,3 @@
-using System.IO;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -131,6 +130,11 @@ namespace Com.RedicalGames.Filar
                         Log(projectInfoCallbackResults.resultCode, projectInfoCallbackResults.result, this);
                 });
             }
+        }
+
+        protected override void OnSetUIWidgetData(AppData.Post post)
+        {
+            throw new System.NotImplementedException();
         }
 
         #endregion
