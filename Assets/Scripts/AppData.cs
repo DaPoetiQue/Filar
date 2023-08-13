@@ -542,6 +542,7 @@ namespace Com.RedicalGames.Filar
             SkyboxContent,
             FolderStuctureContent,
             ProjectSelectionContent,
+            LandingPageSelectionContent,
             None
         }
 

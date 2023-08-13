@@ -283,45 +283,59 @@ namespace Com.RedicalGames.Filar
 
                 FirebaseDatabase.DefaultInstance.GetReference("Hlulie").ValueChanged += OnDatabaseUpdate;
 
-                #region Test
+                #region Test Add Data
+
+                //Dictionary<string, object> childs = new Dictionary<string, object>();
+
+                //childs.Add("New Post", "Data Goes Here......");
+
+                //await databaseReference.Child("Posts").UpdateChildrenAsync(childs);
+
+                #endregion
+
+                #region Test Save
 
                 //AppData.Profile profile = new AppData.Profile();
 
-                //profile.userName = "Hlulie";
-                //profile.userEmail = "Hlulie21@home.com";
-                //profile.userPassword = "19910530";
+                //profile.userName = "Billie";
+                //profile.userEmail = "Billie@home.com";
+                //profile.userPassword = "19470302";
 
                 //profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
 
-                //AppData.PostData postData = new AppData.PostData();
-
-                //postData.serializableAsset = new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>());
+                //AppData.PostData postData = new AppData.PostData(new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>()));
 
                 //AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile: profile, data: postData);
                 //string post = JsonUtility.ToJson(newPost);
 
-                //await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
+                //Dictionary<string, object> childs = new Dictionary<string, object>();
+
+                //childs.Add(profile.userName, post);
+
+                //await databaseReference.Child("Posts").UpdateChildrenAsync(childs);
+
+                // await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
 
                 #endregion
 
                 #region Test Load
 
-                var value = await databaseReference.Child("Posts").Child("User").GetValueAsync();
+                //var value = await databaseReference.Child("Posts").Child("User").GetValueAsync();
 
-                var resultsJson = value.GetRawJsonValue();
+                //var resultsJson = (string)value.GetValue(true);
 
-                string jsonData = resultsJson.Replace("\\", "");
+                //AppData.Post postData = JsonUtility.FromJson<AppData.Post>(resultsJson);
 
+                //LogInfo($" ======>>>>>>>>><<<<<<<< Loading Mesh With : {postData.data.serializableAsset.subMeshData.Count} - Meshes - Default With {postData.data.serializableAsset.subMeshData[0].vertices.Length} Vertices", this);
 
-                LogInfo($" ======>>>>>>>>><<<<<<<< Loading Mesh Raw : {jsonData}", this);
+                //GameObject gameObject = new GameObject("Loaded Mesh Box");
+                //gameObject.AddComponent<MeshRenderer>();
+                //gameObject.AddComponent<MeshFilter>().sharedMesh = postData.data.serializableAsset.subMeshData[0].GetMesh();
 
-                AppData.PostData postData = JsonUtility.FromJson<AppData.PostData>(jsonData);
-
-                LogInfo($" ======>>>>>>>>><<<<<<<< Loading Mesh With : {postData?.serializableAsset?.subMeshData[0]?.vertices?.Length} Vertices", this);
 
                 #endregion
 
-                 await Task.Delay(1000);
+                await Task.Delay(1000);
 
                 callbackResults.result = "Database Initialized Successfully";
                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
