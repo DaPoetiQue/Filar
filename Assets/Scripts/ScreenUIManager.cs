@@ -1120,6 +1120,24 @@ namespace Com.RedicalGames.Filar
                                 {
                                     switch (hasContentCallbackResults.data)
                                     {
+                                        case AppData.UIScreenType.LandingPageScreen:
+
+                                            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.LandingPageSelectionContent, widgetsContentContainer =>
+                                            {
+                                                if (widgetsContentContainer.Success())
+                                                {
+                                                    LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
+
+                                                    //widgetsContentContainer.data.DeselectAllContentWidgets();
+
+                                                    //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
+                                                }
+                                                else
+                                                    Log(widgetsContentContainer.ResultCode, widgetsContentContainer.Result, this);
+                                            });
+
+                                            break;
+
                                         case AppData.UIScreenType.ProjectCreationScreen:
 
                                             break;
@@ -1176,29 +1194,61 @@ namespace Com.RedicalGames.Filar
             {
                 if (containerCallbackResults.Success())
                 {
-                    if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                    switch(GetCurrentUIScreenType())
                     {
-                        if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
-                        {
-                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
-                            var container = containerCallbackResults.data;
+                        case AppData.UIScreenType.LandingPageScreen:
 
-                            SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
+                            LogInfo($" *==============* Getting Container.", this);
+
+                            SceneAssetsManager.Instance.SetWidgetsRefreshData(null, containerCallbackResults.data, dataSetupCallbackResults =>
                             {
                                 if (dataSetupCallbackResults.Success())
                                 {
-                                    SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
-                                    {
-                                        Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
-                                    });
+                                    //SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                    //{
+                                    //    Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+                                    //});
                                 }
                             });
-                        }
-                        else
-                            Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+
+                            break;
+
+                        case AppData.UIScreenType.ProjectCreationScreen:
+
+                            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                            {
+                                if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                                {
+                                    var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
+                                    var container = containerCallbackResults.data;
+
+                                    SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
+                                    {
+                                        if (dataSetupCallbackResults.Success())
+                                        {
+                                            SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                            {
+                                                Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+                                            });
+                                        }
+                                    });
+                                }
+                                else
+                                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                            }
+                            else
+                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
+
+                            break;
+
+                        case AppData.UIScreenType.ProjectDashboardScreen:
+
+                            break;
+
+                        case AppData.UIScreenType.ContentImportExportScreen:
+
+                            break;
                     }
-                    else
-                        Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
                 }
                 else
                     Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);

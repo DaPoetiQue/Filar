@@ -156,6 +156,8 @@ namespace Com.RedicalGames.Filar
 
                                                                         if (callbackResults.Success())
                                                                         {
+                                                                            screenUIManager.Refresh();
+
                                                                             //var currentScreen = currentScreenCallbackResults.data;
 
                                                                             //AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
@@ -168,7 +170,7 @@ namespace Com.RedicalGames.Filar
 
                                                                             //currentScreen.value.ShowWidget(dataPackets);
 
-                                                                           // LogSuccess($" *==========> Loaded Screen : {currentScreen.value.GetUIScreenType()}", this);
+                                                                            // LogSuccess($" *==========> Loaded Screen : {currentScreen.value.GetUIScreenType()}", this);
 
                                                                         }
                                                                     });

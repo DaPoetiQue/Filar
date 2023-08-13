@@ -2412,7 +2412,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.result = $"Failed : Container Of Tye : {containerType} Not Found In dynamicWidgetsContainersList.";
+                    callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In dynamicWidgetsContainersList.";
                     callbackResults.data = default;
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
@@ -3962,6 +3962,20 @@ namespace Com.RedicalGames.Filar
                         {
                             switch (dataPackets.screenType)
                             {
+                                case AppData.UIScreenType.LandingPageScreen:
+
+                                    widgetsContainer.ClearWidgets(false, widgetsClearedCallback => 
+                                    {
+                                        LogInfo($" *==============* Widgets Cleared : {widgetsClearedCallback.Result}", this);
+
+                                        if (widgetsClearedCallback.Success())
+                                        {
+
+                                        }
+                                    });
+
+                                    break;
+
                                 case AppData.UIScreenType.ProjectCreationScreen:
 
                                     widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
@@ -8506,6 +8520,10 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #endregion
+
+        #endregion
+
+        #region Database
 
         #endregion
     }
