@@ -140,7 +140,8 @@ namespace Com.RedicalGames.Filar
             SignInWidget,
             SignInWarningWidget,
             AnonymousSignInConfirmationWidget,
-            TermsAndConditionsWidget
+            TermsAndConditionsWidget,
+            PostsWidget
         }
 
         public enum SubWidgetType
@@ -5007,6 +5008,11 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public UIStateData uiStateInfoData;
+
+            [Space(5)]
+            public bool selectable;
+
+            public bool Selectable { get { return selectable; } private set { selectable = value; } }
 
             #endregion
 
@@ -15112,6 +15118,8 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> OnDrag Failed : SelectableManager.Instance Is Not Yet Initialized.");
             }
 
+            public UISelectionStateData GetSelectionStateData() => selectableComponent;
+
             #region Events Callbacks
 
             #region Drag Callbacks
@@ -15142,73 +15150,76 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (IsDraggableWidget())
+                    if (GetSelectionStateData().Selectable)
                     {
-                        if (SelectableManager.Instance != null)
+                        if (IsDraggableWidget())
                         {
-                            if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
+                            if (SelectableManager.Instance != null)
                             {
-                                if (GetActive())
+                                if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                                 {
-                                    if (GetWidgetContainer().GetScrollerDragViewPort() == null)
-                                        return;
-
-                                    Vector2 pos;
-
-                                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(GetWidgetContainer().GetScrollerDragViewPort(), eventData.position, eventData.pressEventCamera, out pos))
+                                    if (GetActive())
                                     {
-                                        if (!IsSelected())
+                                        if (GetWidgetContainer().GetScrollerDragViewPort() == null)
+                                            return;
+
+                                        Vector2 pos;
+
+                                        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(GetWidgetContainer().GetScrollerDragViewPort(), eventData.position, eventData.pressEventCamera, out pos))
                                         {
-                                            #region Setup
-
-                                            ResetWidgetOnBeginDrag(eventData, pos);
-                                            // GetFolderWidgets();
-
-                                            GetWidgetContainer().SetFingerDragEvent();
-
-                                            Deselected();
-
-                                            #endregion
-
-                                            #region Set Sibling Index Data
-
-                                            OnSetSiblingIndexData();
-
-                                            #endregion
-
-                                            #region On Disbale Selections On Drag
-
-                                            ResetWidgetsSelectionOnBeginDrag();
-
-                                            #endregion
-
-                                            #region Parent Widget
-
-                                            GetWidgetContainer().GetPlaceHolder(placeholder =>
+                                            if (!IsSelected())
                                             {
-                                                if (Helpers.IsSuccessCode(placeholder.resultCode))
+                                                #region Setup
+
+                                                ResetWidgetOnBeginDrag(eventData, pos);
+                                                // GetFolderWidgets();
+
+                                                GetWidgetContainer().SetFingerDragEvent();
+
+                                                Deselected();
+
+                                                #endregion
+
+                                                #region Set Sibling Index Data
+
+                                                OnSetSiblingIndexData();
+
+                                                #endregion
+
+                                                #region On Disbale Selections On Drag
+
+                                                ResetWidgetsSelectionOnBeginDrag();
+
+                                                #endregion
+
+                                                #region Parent Widget
+
+                                                GetWidgetContainer().GetPlaceHolder(placeholder =>
                                                 {
-                                                    if (!placeholder.data.IsActive())
-                                                        placeholder.data.ShowPlaceHolder(GetWidgetContainer().GetContentContainer(), widgetRect.sizeDelta, GetContentSiblingIndex());
+                                                    if (Helpers.IsSuccessCode(placeholder.resultCode))
+                                                    {
+                                                        if (!placeholder.data.IsActive())
+                                                            placeholder.data.ShowPlaceHolder(GetWidgetContainer().GetContentContainer(), widgetRect.sizeDelta, GetContentSiblingIndex());
 
-                                                    widgetRect.SetParent(GetWidgetContainer().GetItemDragContainer(), false);
-                                                    GetFolderWidgets();
-                                                }
-                                                else
-                                                    LogWarning(placeholder.result, this, () => OnBeginDragExecuted(eventData));
-                                            });
+                                                        widgetRect.SetParent(GetWidgetContainer().GetItemDragContainer(), false);
+                                                        GetFolderWidgets();
+                                                    }
+                                                    else
+                                                        LogWarning(placeholder.result, this, () => OnBeginDragExecuted(eventData));
+                                                });
 
-                                            #endregion
+                                                #endregion
+                                            }
                                         }
                                     }
                                 }
                             }
+                            else
+                                LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnBeginDragExecuted(eventData));
                         }
                         else
-                            LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnBeginDragExecuted(eventData));
+                            LogWarning($"On Begin Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                     }
-                    else
-                        LogWarning($"On Begin Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                 }
                 catch(Exception exception)
                 {
@@ -15221,61 +15232,64 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (IsDraggableWidget())
+                    if (GetSelectionStateData().Selectable)
                     {
-                        if (SelectableManager.Instance != null)
+                        if (IsDraggableWidget())
                         {
-                            if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
+                            if (SelectableManager.Instance != null)
                             {
-                                if (this != null && GetActive())
+                                if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                                 {
-                                    if (GetWidgetContainer().GetScrollerDragViewPort() == null)
-                                        return;
-
-                                    var actionType = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
-                                    OnSetActionButtonEvent(actionType);
-
-                                    if (!IsSelected() && canDrag)
+                                    if (this != null && GetActive())
                                     {
-                                        #region On Drag Item
+                                        if (GetWidgetContainer().GetScrollerDragViewPort() == null)
+                                            return;
 
-                                        OnDragWidgetEvent(eventData, GetWidgetContainer().GetScrollerDragViewPort(), currentDragEventData =>
+                                        var actionType = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? InputActionButtonType.OpenFolderButton : InputActionButtonType.OpenSceneAssetPreview;
+                                        OnSetActionButtonEvent(actionType);
+
+                                        if (!IsSelected() && canDrag)
                                         {
-                                            if (Helpers.IsSuccessCode(currentDragEventData.resultCode))
+                                            #region On Drag Item
+
+                                            OnDragWidgetEvent(eventData, GetWidgetContainer().GetScrollerDragViewPort(), currentDragEventData =>
                                             {
-                                                OnEdgeScrolling(currentDragEventData.data);
-                                                HighlightHoveredFolderOnDrag(eventData, currentDragEventData.data);
-                                            }
-                                            else
-                                                LogError(currentDragEventData.result, this, () => OnDragExecuted(eventData));
-                                        });
+                                                if (Helpers.IsSuccessCode(currentDragEventData.resultCode))
+                                                {
+                                                    OnEdgeScrolling(currentDragEventData.data);
+                                                    HighlightHoveredFolderOnDrag(eventData, currentDragEventData.data);
+                                                }
+                                                else
+                                                    LogError(currentDragEventData.result, this, () => OnDragExecuted(eventData));
+                                            });
 
-                                        #endregion
-                                    }
-                                    else
-                                    {
-                                        if (isScrolling == false)
-                                            isScrolling = true;
-
-                                        if (isScrolling)
+                                            #endregion
+                                        }
+                                        else
                                         {
-                                            eventData.pointerDrag = GetWidgetContainer().GetUIScroller().value.gameObject;
-                                            EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().value.gameObject);
+                                            if (isScrolling == false)
+                                                isScrolling = true;
 
-                                            GetWidgetContainer().GetUIScroller().value.OnInitializePotentialDrag(eventData);
-                                            GetWidgetContainer().GetUIScroller().value.OnBeginDrag(eventData);
+                                            if (isScrolling)
+                                            {
+                                                eventData.pointerDrag = GetWidgetContainer().GetUIScroller().value.gameObject;
+                                                EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().value.gameObject);
 
-                                            OnDeselect();
+                                                GetWidgetContainer().GetUIScroller().value.OnInitializePotentialDrag(eventData);
+                                                GetWidgetContainer().GetUIScroller().value.OnBeginDrag(eventData);
+
+                                                OnDeselect();
+                                            }
                                         }
                                     }
                                 }
                             }
+                            else
+                                LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnDragExecuted(eventData));
                         }
                         else
-                            LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnDragExecuted(eventData));
+                            LogWarning($"On Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                     }
-                    else
-                        LogWarning($"On Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                 }
                 catch(Exception execption)
                 {
@@ -15288,53 +15302,56 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (IsDraggableWidget())
+                    if (GetSelectionStateData().Selectable)
                     {
-                        if (SelectableManager.Instance != null)
+                        if (IsDraggableWidget())
                         {
-                            if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
+                            if (SelectableManager.Instance != null)
                             {
-                                if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                                if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                                 {
-                                    if (!IsSelected())
+                                    if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
                                     {
-                                        buttonComponent.interactable = true;
-                                        buttonComponent.CancelInvoke();
-
-                                        widgetRect.localScale = Vector3.one;
-                                        //OnSelectionFrameState(false, InputUIState.Normal, false);
-
-                                        ResetFolderWidgets();
-
-                                        GetWidgetContainer().GetPlaceHolder(placeholder =>
+                                        if (!IsSelected())
                                         {
-                                            if (Helpers.IsSuccessCode(placeholder.resultCode))
+                                            buttonComponent.interactable = true;
+                                            buttonComponent.CancelInvoke();
+
+                                            widgetRect.localScale = Vector3.one;
+                                            //OnSelectionFrameState(false, InputUIState.Normal, false);
+
+                                            ResetFolderWidgets();
+
+                                            GetWidgetContainer().GetPlaceHolder(placeholder =>
                                             {
-                                                if (placeholder.data.IsActive())
+                                                if (Helpers.IsSuccessCode(placeholder.resultCode))
                                                 {
-                                                    widgetRect.SetParent(GetWidgetContainer().GetContentContainer(), false);
-                                                    placeholder.data.ResetPlaceHolder(ref widgetRect);
+                                                    if (placeholder.data.IsActive())
+                                                    {
+                                                        widgetRect.SetParent(GetWidgetContainer().GetContentContainer(), false);
+                                                        placeholder.data.ResetPlaceHolder(ref widgetRect);
+                                                    }
                                                 }
-                                            }
-                                            else
-                                                Debug.LogWarning($"--> Failed With Results : {placeholder.result}");
-                                        });
+                                                else
+                                                    Debug.LogWarning($"--> Failed With Results : {placeholder.result}");
+                                            });
 
-                                        isDragging = false;
+                                            isDragging = false;
 
-                                        // This below here works but not desirable.
-                                        //ScreenUIManager.Instance.Refresh();
+                                            // This below here works but not desirable.
+                                            //ScreenUIManager.Instance.Refresh();
+                                        }
+
+                                        OnReset();
                                     }
-
-                                    OnReset();
                                 }
                             }
+                            else
+                                LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnEndDragExecuted(eventData));
                         }
                         else
-                            LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnEndDragExecuted(eventData));
+                            LogWarning($"On Drag End Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                     }
-                    else
-                        LogWarning($"On Drag End Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                 }
                 catch(Exception exception)
                 {
@@ -15351,21 +15368,39 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (GetWidgetContainer())
+                    if (GetSelectionStateData().Selectable)
                     {
-                        if (GetActive() && GetWidgetContainer().IsContainerActive())
+                        if (GetWidgetContainer())
                         {
-                            GetWidgetContainer().SetFingerDown(true);
-
-                            if (SelectableManager.Instance.HasActiveSelection() && SelectableManager.Instance.GetCurrentSelectionType() == FocusedSelectionType.SelectedItem)
+                            if (GetActive() && GetWidgetContainer().IsContainerActive())
                             {
-                                SelectableManager.Instance.HasFocusedSelectionInfo(name, hasSelectionCallback =>
+                                GetWidgetContainer().SetFingerDown(true);
+
+                                if (SelectableManager.Instance.HasActiveSelection() && SelectableManager.Instance.GetCurrentSelectionType() == FocusedSelectionType.SelectedItem)
                                 {
-                                    if (Helpers.IsSuccessCode(hasSelectionCallback.resultCode))
+                                    SelectableManager.Instance.HasFocusedSelectionInfo(name, hasSelectionCallback =>
                                     {
-                                        StartCoroutine(ExecuteDeselectionStateChangedAsync());
-                                    }
-                                    else
+                                        if (Helpers.IsSuccessCode(hasSelectionCallback.resultCode))
+                                        {
+                                            StartCoroutine(ExecuteDeselectionStateChangedAsync());
+                                        }
+                                        else
+                                        {
+                                            buttonComponent.CancelInvoke();
+
+                                            currentPressDuration = 0.0f;
+                                            canDrag = false;
+                                            isScrolling = false;
+
+                                            SetFingerDown(true);
+
+                                            StartCoroutine(ExecuteSelectionStateChangedAsync());
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    if (!IsSelected())
                                     {
                                         buttonComponent.CancelInvoke();
 
@@ -15374,22 +15409,7 @@ namespace Com.RedicalGames.Filar
                                         isScrolling = false;
 
                                         SetFingerDown(true);
-
-                                        StartCoroutine(ExecuteSelectionStateChangedAsync());
                                     }
-                                });
-                            }
-                            else
-                            {
-                                if (!IsSelected())
-                                {
-                                    buttonComponent.CancelInvoke();
-
-                                    currentPressDuration = 0.0f;
-                                    canDrag = false;
-                                    isScrolling = false;
-
-                                    SetFingerDown(true);
                                 }
                             }
                         }
@@ -15397,7 +15417,7 @@ namespace Com.RedicalGames.Filar
                 }
                 catch(Exception exception)
                 {
-                    LogError(exception.Message, this, () => OnPointerDownExecuted(eventData));
+                    LogError(exception.Message, this);
                     throw exception;
                 }
             }
@@ -15453,147 +15473,150 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
-                    {
-                        GetWidgetContainer().SetFingerUpEvent();
-
-                        if (hoveredWidget != null)
+                    if (GetSelectionStateData().Selectable)
+                    { 
+                        if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
                         {
-                            if (hoveredWidget.IsHovered())
+                            GetWidgetContainer().SetFingerUpEvent();
+
+                            if (hoveredWidget != null)
                             {
-                                if (SceneAssetsManager.Instance != null)
+                                if (hoveredWidget.IsHovered())
                                 {
-                                    Folder hoveredFolderData = hoveredWidget.GetFolderData();
-
-                                    if (!string.IsNullOrEmpty(hoveredFolderData.storageData.projectDirectory))
+                                    if (SceneAssetsManager.Instance != null)
                                     {
-                                        SceneAssetsManager.Instance.DirectoryFound(hoveredFolderData.storageData.projectDirectory, directoryCheckCallback =>
+                                        Folder hoveredFolderData = hoveredWidget.GetFolderData();
+
+                                        if (!string.IsNullOrEmpty(hoveredFolderData.storageData.projectDirectory))
                                         {
-                                            if (Helpers.IsSuccessCode(directoryCheckCallback.resultCode))
+                                            SceneAssetsManager.Instance.DirectoryFound(hoveredFolderData.storageData.projectDirectory, directoryCheckCallback =>
                                             {
-                                                StorageDirectoryData sourceDirectoryData = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? GetFolderData().storageData : GetAssetData().storageData;
-                                                StorageDirectoryData targetStorageData = GetTargetDirectoryFromSourceStorageDirectoryData(sourceDirectoryData, hoveredFolderData.storageData);
-
-                                                OnDragInsideFolderEvent(sourceDirectoryData, targetStorageData, widgetMovedCallback =>
+                                                if (Helpers.IsSuccessCode(directoryCheckCallback.resultCode))
                                                 {
-                                                    if (Helpers.IsSuccessCode(widgetMovedCallback.resultCode))
-                                                    {
-                                                        GetWidgetContainer().OnFocusToWidget(hoveredWidget, false, true);
+                                                    StorageDirectoryData sourceDirectoryData = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? GetFolderData().storageData : GetAssetData().storageData;
+                                                    StorageDirectoryData targetStorageData = GetTargetDirectoryFromSourceStorageDirectoryData(sourceDirectoryData, hoveredFolderData.storageData);
 
-                                                        if (SelectableManager.Instance != null)
+                                                    OnDragInsideFolderEvent(sourceDirectoryData, targetStorageData, widgetMovedCallback =>
+                                                    {
+                                                        if (Helpers.IsSuccessCode(widgetMovedCallback.resultCode))
                                                         {
-                                                            if (SelectableManager.Instance.HasActiveSelection())
+                                                            GetWidgetContainer().OnFocusToWidget(hoveredWidget, false, true);
+
+                                                            if (SelectableManager.Instance != null)
                                                             {
-                                                                SelectableManager.Instance.OnClearFocusedSelectionsInfo(selectionInfoCleared =>
+                                                                if (SelectableManager.Instance.HasActiveSelection())
                                                                 {
-                                                                    if (Helpers.IsSuccessCode(selectionInfoCleared.resultCode))
-                                                                        SelectableManager.Instance.Select(hoveredFolderData.name, FocusedSelectionType.HoveredItem);
-                                                                    else
-                                                                        LogError(selectionInfoCleared.result, this, () => OnPointerUpExecuted(eventData));
-                                                                });
+                                                                    SelectableManager.Instance.OnClearFocusedSelectionsInfo(selectionInfoCleared =>
+                                                                    {
+                                                                        if (Helpers.IsSuccessCode(selectionInfoCleared.resultCode))
+                                                                            SelectableManager.Instance.Select(hoveredFolderData.name, FocusedSelectionType.HoveredItem);
+                                                                        else
+                                                                            LogError(selectionInfoCleared.result, this, () => OnPointerUpExecuted(eventData));
+                                                                    });
+                                                                }
+                                                                else
+                                                                    SelectableManager.Instance.Select(hoveredFolderData.name, FocusedSelectionType.HoveredItem);
                                                             }
                                                             else
-                                                                SelectableManager.Instance.Select(hoveredFolderData.name, FocusedSelectionType.HoveredItem);
-                                                        }
-                                                        else
-                                                            LogError("Selectable Manager Instance Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
+                                                                LogError("Selectable Manager Instance Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
 
-                                                    // Reload Screen
-                                                    ScreenUIManager.Instance.Refresh();
+                                                        // Reload Screen
+                                                        ScreenUIManager.Instance.Refresh();
 
-                                                        if (notification.showNotifications)
-                                                        {
-                                                            notification.message = widgetMovedCallback.result;
-                                                            NotificationSystemManager.Instance.ScheduleNotification(notification);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (widgetMovedCallback.data.dataAlreadyExistsInTargetDirectory)
-                                                        {
-                                                            if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                                                            if (notification.showNotifications)
                                                             {
-                                                                buttonComponent.interactable = false;
-                                                                buttonComponent.CancelInvoke();
-
-                                                                widgetRect.localScale = Vector3.one;
-                                                            //OnSelectionFrameState(false, InputUIState.Normal, false);
-
-                                                            ResetFolderWidgets();
-
-                                                                GetWidgetContainer().GetPlaceHolder(placeholder =>
-                                                                {
-                                                                    if (Helpers.IsSuccessCode(placeholder.resultCode))
-                                                                    {
-                                                                        if (placeholder.data.IsActive())
-                                                                        {
-                                                                            widgetRect.SetParent(GetWidgetContainer().GetContentContainer(), false);
-                                                                            placeholder.data.ResetPlaceHolder(ref widgetRect);
-                                                                        }
-                                                                    }
-                                                                    else
-                                                                        LogWarning(placeholder.result, this, () => OnPointerUpExecuted(eventData));
-                                                                });
-
-                                                                OnReset();
-
-                                                                string widgetTitle = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? $"Folder Already Exist" : "File Already Exist";
-
-                                                                SceneDataPackets dataPackets = new SceneDataPackets
-                                                                {
-                                                                    widgetTitle = widgetTitle,
-                                                                    widgetType = WidgetType.UIAssetActionWarningWidget,
-                                                                    blurScreen = true
-                                                                };
-
-                                                                if (ScreenUIManager.Instance != null)
-                                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
-                                                                else
-                                                                    LogError($"Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
+                                                                notification.message = widgetMovedCallback.result;
+                                                                NotificationSystemManager.Instance.ScheduleNotification(notification);
                                                             }
                                                         }
                                                         else
-                                                            LogWarning(widgetMovedCallback.result, this, () => OnPointerUpExecuted(eventData));
-                                                    }
-                                                });
-                                            }
-                                            else
-                                                LogWarning(directoryCheckCallback.result, this, () => OnPointerUpExecuted(eventData));
-                                        });
+                                                        {
+                                                            if (widgetMovedCallback.data.dataAlreadyExistsInTargetDirectory)
+                                                            {
+                                                                if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                                                                {
+                                                                    buttonComponent.interactable = false;
+                                                                    buttonComponent.CancelInvoke();
+
+                                                                    widgetRect.localScale = Vector3.one;
+                                                                //OnSelectionFrameState(false, InputUIState.Normal, false);
+
+                                                                ResetFolderWidgets();
+
+                                                                    GetWidgetContainer().GetPlaceHolder(placeholder =>
+                                                                    {
+                                                                        if (Helpers.IsSuccessCode(placeholder.resultCode))
+                                                                        {
+                                                                            if (placeholder.data.IsActive())
+                                                                            {
+                                                                                widgetRect.SetParent(GetWidgetContainer().GetContentContainer(), false);
+                                                                                placeholder.data.ResetPlaceHolder(ref widgetRect);
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                            LogWarning(placeholder.result, this, () => OnPointerUpExecuted(eventData));
+                                                                    });
+
+                                                                    OnReset();
+
+                                                                    string widgetTitle = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? $"Folder Already Exist" : "File Already Exist";
+
+                                                                    SceneDataPackets dataPackets = new SceneDataPackets
+                                                                    {
+                                                                        widgetTitle = widgetTitle,
+                                                                        widgetType = WidgetType.UIAssetActionWarningWidget,
+                                                                        blurScreen = true
+                                                                    };
+
+                                                                    if (ScreenUIManager.Instance != null)
+                                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                                                    else
+                                                                        LogError($"Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
+                                                                }
+                                                            }
+                                                            else
+                                                                LogWarning(widgetMovedCallback.result, this, () => OnPointerUpExecuted(eventData));
+                                                        }
+                                                    });
+                                                }
+                                                else
+                                                    LogWarning(directoryCheckCallback.result, this, () => OnPointerUpExecuted(eventData));
+                                            });
+                                        }
+                                        else
+                                            LogWarning("Directory Is Null / Empty.", this, () => OnPointerUpExecuted(eventData));
                                     }
                                     else
-                                       LogWarning("Directory Is Null / Empty.", this, () => OnPointerUpExecuted(eventData));
+                                        LogError("Scene Assets Manager Instance IS Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
                                 }
                                 else
-                                   LogError("Scene Assets Manager Instance IS Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
+                                    LogError($"Folder not Hovered, Eish!!", this, () => OnPointerUpExecuted(eventData));
                             }
                             else
-                                LogError($"Folder not Hovered, Eish!!", this, () => OnPointerUpExecuted(eventData));
+                            {
+                                LogInfo("Check This - Has Something To DO With Selection Ambushed Data.", this, () => OnPointerUpExecuted(eventData));
+
+                                //if (!SelectableManager.Instance.HasFocusedWidgetInfo())
+                                //{
+                                //    UIWidgetInfo widgetInfo = new UIWidgetInfo
+                                //    {
+                                //        widgetName = name,
+                                //        position = GetWidgetLocalPosition(),
+                                //        selectionState = InputUIState.Highlighted
+                                //    };
+
+                                //    GetWidgetContainer().SetFocusedWidgetInfo(widgetInfo);
+                                //}
+                            }
+
+                            if (isScrolling)
+                            {
+                                OnDeselect();
+                                isScrolling = false;
+                            }
+
+                            OnReset();
                         }
-                        else
-                        {
-                            LogInfo("Check This - Has Something To DO With Selection Ambushed Data.", this, () => OnPointerUpExecuted(eventData));
-
-                            //if (!SelectableManager.Instance.HasFocusedWidgetInfo())
-                            //{
-                            //    UIWidgetInfo widgetInfo = new UIWidgetInfo
-                            //    {
-                            //        widgetName = name,
-                            //        position = GetWidgetLocalPosition(),
-                            //        selectionState = InputUIState.Highlighted
-                            //    };
-
-                            //    GetWidgetContainer().SetFocusedWidgetInfo(widgetInfo);
-                            //}
-                        }
-
-                        if (isScrolling)
-                        {
-                            OnDeselect();
-                            isScrolling = false;
-                        }
-
-                        OnReset();
                     }
                 }
                 catch(Exception exception)
@@ -20130,12 +20153,13 @@ namespace Com.RedicalGames.Filar
             protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
             protected CreateNewProjectWidget createNewProjectWidget;
             protected ProjectCreationWarningWidget projectCreationWarningWidget;
-            protected HomeMenuWidget homeMenuWidget;
+            protected MainMenuWidget mainMenuWidget;
             protected UIMessageDisplayerWidget messageDisplayerWidget;
             protected SignInWidget signInWidget;
             protected AnonymousSignInConfirmationWidget anonymousSignInConfirmationWidget;
             protected TermsAndConditionsWidget termsAndConditionsWidget;
             protected PermissionRequestWidget permissionRequestWidget;
+            protected PostsWidget postsWidget;
 
             #endregion
 

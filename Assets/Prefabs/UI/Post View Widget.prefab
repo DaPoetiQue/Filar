@@ -1120,8 +1120,8 @@ MonoBehaviour:
         isDraggable: 0
         selectionDragTriggerRadius: 0
         updateSelectionDimensionsOnDrag: 0
-    selectableWidgetType: 0
-    selectableAssetType: 0
+    selectableWidgetType: 4
+    selectableAssetType: 4
     selectionComponent:
       selectionFrame:
         name: Selection Frame
@@ -1137,7 +1137,7 @@ MonoBehaviour:
     externalLinkURL: 
     selectionOption: 0
     screenType: 5
-    layoutViewType: 2
+    layoutViewType: 0
     containerType: 9
     stateType: 0
     notification:
