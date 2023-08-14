@@ -248,6 +248,8 @@ namespace Com.RedicalGames.Filar
             ReadButton,
             OfflineModeButton,
             GoToWebsiteLinkButton,
+            ShowPostsButton,
+            HidePostsButton,
             None
         }
 

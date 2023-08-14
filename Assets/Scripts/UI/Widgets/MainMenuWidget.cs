@@ -52,7 +52,12 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var currentScreen = currentScreenCallbackResults.data;
 
+                                                currentScreen.value.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+
+                                                currentScreen.value.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+
                                                 await currentScreen.value.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+
 
                                                 AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
                                                 {
