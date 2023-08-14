@@ -19114,6 +19114,31 @@ namespace Com.RedicalGames.Filar
                     LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
             }
 
+            public async Task<Callback> HideScreenWidgetAsync(WidgetType widgetType, bool canTransition = true)
+            {
+                LogInfo($"===========> Now Hide Widget Of Type : {widgetType}.................", this);
+
+                Callback callbackResults = new Callback();
+
+                if (screenWidgetsList.Count != 0)
+                {
+                    var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
+
+                    if (widget != null)
+                    {
+                        await widget.HideAsync(canTransition);
+
+                        Focus();
+                    }
+                    else
+                        LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
+                }
+                else
+                    callbackResults.SetResults("Screen Widgets List Is Null", LogInfoChannel.Error);
+
+                return callbackResults;
+            }
+
             public void HideScreenWidget(Widget widget, bool canTransition = true)
             {
                 if (screenWidgetsList.Count == 0)
@@ -22532,6 +22557,56 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            public async Task<Callback> HideAsync(bool canTransition = true)
+            {
+                Callback callbackResults = new Callback();
+
+                switch (transitionType)
+                {
+                    case TransitionType.Default:
+
+                        OnHideScreenWidget();
+
+                        callbackResults.result = "Widget Hidden.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+
+                        break;
+
+                    case TransitionType.Translate:
+
+                        if (widgetRect)
+                        {
+                            if (canTransition)
+                            {
+                                onWidgetTransition = true;
+                                showWidget = false;
+
+                                if (onWidgetTransition == false)
+                                {
+                                    callbackResults.result = "Widget Hidden.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = "Widget Not Hidden.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+
+                                while (canTransition)
+                                    await Task.Yield();
+                            }
+                            else
+                            {
+                                widgetRect.anchoredPosition = widgetContainer.hiddenScreenPoint.anchoredPosition;
+                            }
+                        }
+
+                        break;
+                }
+
+                return callbackResults;
             }
 
             void OnWidgetTransition()

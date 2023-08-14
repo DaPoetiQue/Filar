@@ -46,11 +46,13 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        screenUIManager.GetCurrentScreen(currentScreenCallbackResults =>
+                                        screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
                                         {
                                             if (currentScreenCallbackResults.Success())
                                             {
                                                 var currentScreen = currentScreenCallbackResults.data;
+
+                                                await currentScreen.value.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
 
                                                 AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
                                                 {
