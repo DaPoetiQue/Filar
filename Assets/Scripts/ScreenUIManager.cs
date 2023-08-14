@@ -1190,7 +1190,7 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(GetCurrentUIScreenType()), containerCallbackResults =>
+            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(dataPackets.containerType, containerCallbackResults =>
             {
                 if (containerCallbackResults.Success())
                 {
@@ -1198,16 +1198,14 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.UIScreenType.LandingPageScreen:
 
-                            LogInfo($" *==============* Getting Container.", this);
-
                             SceneAssetsManager.Instance.SetWidgetsRefreshData(null, containerCallbackResults.data, dataSetupCallbackResults =>
                             {
                                 if (dataSetupCallbackResults.Success())
                                 {
-                                    //SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
-                                    //{
-                                    //    Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
-                                    //});
+                                    SceneAssetsManager.Instance.Init(null, containerCallbackResults.data, assetsInitializedCallback =>
+                                    {
+                                        Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+                                    });
                                 }
                             });
 

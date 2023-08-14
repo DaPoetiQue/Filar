@@ -229,7 +229,7 @@ namespace Com.RedicalGames.Filar
 
         DatabaseReference databaseReference;
 
-        IDictionary<string, object> database;
+       List<AppData.Post> postsDatabase = new List<AppData.Post>();
 
         #endregion
 
@@ -281,7 +281,7 @@ namespace Com.RedicalGames.Filar
 
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
-                FirebaseDatabase.DefaultInstance.GetReference("Hlulie").ValueChanged += OnDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts").ValueChanged += OnDatabaseUpdate;
 
                 #region Test Add Data
 
@@ -347,9 +347,71 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        private void OnDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
+        void OnDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
         {
-           
+            if (valueChangedEvent.DatabaseError == null)
+            {
+                AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
+                {
+                    if(screenUIManagerCallbackResults.Success())
+                    {
+                        var screenUIManager = screenUIManagerCallbackResults.data;
+
+                        LogInfo($" *___________________* Datasabe Updated Wit : {valueChangedEvent.Snapshot.Child("Posts").ChildrenCount} Posts", this);
+
+                        if(valueChangedEvent.Snapshot.Child("Posts").ChildrenCount > 0)
+                        {
+                            var postsSnapshots =  valueChangedEvent.Snapshot.Child("Posts").Children;
+
+                            foreach (var postSnapshot in postsSnapshots)
+                            {
+                                var resultsJson = (string)postSnapshot.GetValue(true);
+                                AppData.Post post = JsonUtility.FromJson<AppData.Post>(resultsJson);
+
+                                if (!postsDatabase.Contains(post))
+                                    postsDatabase.Add(post);
+                                else
+                                    LogWarning("Server Post Already Exists In Local Database", this);
+                            }
+
+                            if (postsDatabase.Count > 0)
+                                screenUIManager.Refresh();
+                            else
+                                LogError("Failed To Get Posts From Database.", this);
+                        }
+                    }
+                
+                }, "Screen UI Manager Is Not Yet Initialized.");
+            }
+            else
+            {
+                // Show Pop Up
+                LogError("Show Database Failed Pop Up.", this);
+            }
+        }
+
+        public void GetPosts(Action<AppData.CallbackDataList<AppData.Post>> callback)
+        {
+            AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>();
+
+            AppData.Helpers.GetAppComponentsValid(postsDatabase, "Database Posts", databasePostsValidationCallbackResults => 
+            {
+                callbackResults.SetResult(databasePostsValidationCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{postsDatabase.Count} Posts Found.";
+                    callbackResults.data = postsDatabase;
+                }
+                else
+                {
+                    callbackResults.result = "There Were No Posts Found.";
+                    callbackResults.data = default;
+                }
+
+            }, "Database Posts Are Not Yet Initialized.", $"{postsDatabase.Count} Database Post(s) Have Been Initialized Successfully.");
+
+            callback.Invoke(callbackResults);
         }
 
         public void InitializeStorage(Action<AppData.Callback> callback = null)
@@ -477,37 +539,6 @@ namespace Com.RedicalGames.Filar
 
                 if (!IsInitialized)
                 {
-                    #region Initialization
-
-                    LogInfo("Initializing Assets Manager.", this);
-
-                    #region Asset Container
-
-                    if (assetContainerList.Count > 0)
-                    {
-                        foreach (var assetContainer in assetContainerList)
-                        {
-                            AppData.Helpers.UnityComponentValid(assetContainer.value, "Asset Container Value", objectValidCallbackResults =>
-                            {
-                                callbackResults.result = objectValidCallbackResults.result;
-                                callbackResults.resultCode = objectValidCallbackResults.resultCode;
-
-                                if (!callbackResults.Success())
-                                {
-                                    callbackResults.result = $"Value For Asset Container : {assetContainer.name} Is Null / Missing / Not Assigned In The Editor Inspector.";
-                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
-                                }
-                            });
-
-                            if (!callbackResults.Success())
-                            {
-                                callback?.Invoke(callbackResults);
-                                break;
-                            }
-                        }
-                    }
-
-                    #endregion
 
                     #region Content Container
 
@@ -537,59 +568,89 @@ namespace Com.RedicalGames.Filar
 
                     #endregion
 
-                    #region Assets Library Initialization
-
-                    sceneAssetLibrary.InitializeLibrary(libraryInitializationCallbackResults =>
+                    switch (ScreenUIManager.Instance.GetCurrentUIScreenType())
                     {
-                        callbackResults = libraryInitializationCallbackResults;
+                        case AppData.UIScreenType.LandingPageScreen:
 
-                        if (callbackResults.Success())
-                        {
-                            #region Layout Data
+                            IsInitialized = databaseReference != null;
 
-                            GetLayoutViewType(layoutViewCallbackResults =>
+                            break;
+
+                        case AppData.UIScreenType.ProjectCreationScreen:
+
+                            #region Asset Container
+
+                            if (assetContainerList.Count > 0)
+                            {
+                                foreach (var assetContainer in assetContainerList)
                                 {
-                                    callbackResults.result = layoutViewCallbackResults.result;
-                                    callbackResults.resultCode = layoutViewCallbackResults.resultCode;
-
-                                    if (callbackResults.Success())
-                                        InitializeFolderLayoutView(layoutViewCallbackResults.data);
-                                    else
+                                    AppData.Helpers.UnityComponentValid(assetContainer.value, "Asset Container Value", objectValidCallbackResults =>
                                     {
-                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                        callbackResults.result = objectValidCallbackResults.result;
+                                        callbackResults.resultCode = objectValidCallbackResults.resultCode;
+
+                                        if (!callbackResults.Success())
+                                        {
+                                            callbackResults.result = $"Value For Asset Container : {assetContainer.name} Is Null / Missing / Not Assigned In The Editor Inspector.";
+                                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                        }
+                                    });
+
+                                    if (!callbackResults.Success())
+                                    {
                                         callback?.Invoke(callbackResults);
+                                        break;
                                     }
-                                });
+                                }
+                            }
 
                             #endregion
 
-                            UnloadUnusedAssets();
+                            #region Assets Library Initialization
 
-                            IsInitialized = callbackResults.Success();
-                        }
-                        else
-                            callback?.Invoke(callbackResults);
-                    });
+                            sceneAssetLibrary.InitializeLibrary(libraryInitializationCallbackResults =>
+                            {
+                                callbackResults = libraryInitializationCallbackResults;
 
-                    #endregion
+                                if (callbackResults.Success())
+                                {
+                                    #region Layout Data
 
-                    #region Rmove This
+                                    GetLayoutViewType(layoutViewCallbackResults =>
+                                    {
+                                        callbackResults.result = layoutViewCallbackResults.result;
+                                        callbackResults.resultCode = layoutViewCallbackResults.resultCode;
 
-                    // Move This To Streaming Assets Or Addressables (Prefered).
+                                        if (callbackResults.Success())
+                                            InitializeFolderLayoutView(layoutViewCallbackResults.data);
+                                        else
+                                        {
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                            callback?.Invoke(callbackResults);
+                                        }
+                                    });
 
-                    //if (renderProfileUIHandlerPrefab == null)
-                    //    if (!string.IsNullOrEmpty(profileWidgetPrefabDirectory))
-                    //        renderProfileUIHandlerPrefab = Resources.Load<RenderProfileUIHandler>(profileWidgetPrefabDirectory);
-                    //    else
-                    //        LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this);
+                                    #endregion
 
-                    //if (colorSwatchButtonHandlerPrefab == null)
-                    //    if (!string.IsNullOrEmpty(profileWidgetPrefabDirectory))
-                    //        colorSwatchButtonHandlerPrefab = Resources.Load<ColorSwatchButtonHandler>(colorSwatchButtonHandlerPrefabDirectory);
-                    //    else
-                    //        LogWarning("Couldn't Load Asset From Resources - Directory Missing.", this);
+                                    UnloadUnusedAssets();
 
-                    #endregion
+                                    IsInitialized = callbackResults.Success();
+                                }
+                                else
+                                    callback?.Invoke(callbackResults);
+                            });
+
+
+                            #endregion
+
+                            break;
+                    
+                    }
+
+                    #region Initialization
+
+                    LogInfo("Initializing Assets Manager.", this);
+
 
                     #endregion
                 }
@@ -2412,7 +2473,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In dynamicWidgetsContainersList.";
+                    callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
                     callbackResults.data = default;
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
@@ -2523,7 +2584,134 @@ namespace Com.RedicalGames.Filar
 
         #region Create UI
 
-        public void CreateUIScreenProjectSelectionWidgets(AppData.UIScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.Project>> callback)
+        void CreateUIScreenPostWidget(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.PostData>> callback)
+        {
+            try
+            {
+                AppData.CallbackDataList<AppData.PostData> callbackResults = new AppData.CallbackDataList<AppData.PostData>();
+
+                if(contentContainer != null && contentContainer.IsContainerActive())
+                {
+                    contentContainer.InitializeContainer();
+
+                    if (screenType == AppData.UIScreenType.LandingPageScreen)
+                    {
+                        GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
+                        {
+                            callbackResults.result = widgetsCallback.result;
+                            callbackResults.resultCode = widgetsCallback.resultCode;
+
+                            if (callbackResults.Success())
+                            {
+                                var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
+
+                                if (widgetPrefabData != null)
+                                {
+                                    widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType, prefabCallbackResults =>
+                                    {
+                                        callbackResults.result = prefabCallbackResults.result;
+                                        callbackResults.resultCode = prefabCallbackResults.resultCode;
+
+                                        if (prefabCallbackResults.Success())
+                                        {
+                                            AppData.Helpers.UnityComponentValid(prefabCallbackResults.data.gameObject, "Post Widget Prefab Value", hasComponentCallbackResults =>
+                                            {
+                                                callbackResults.result = hasComponentCallbackResults.result;
+                                                callbackResults.resultCode = hasComponentCallbackResults.resultCode;
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    List<AppData.PostData> postDatas = new List<AppData.PostData>();
+
+                                                    foreach (var post in posts)
+                                                    {
+                                                        GameObject postWidget = Instantiate(hasComponentCallbackResults.data);
+
+                                                        if (postWidget != null)
+                                                        {
+                                                            AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
+
+                                                            if (widgetComponent != null)
+                                                            {
+                                                                widgetComponent.SetPost(post);
+
+                                                                postWidget.name = post.name;
+                                                                contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);;
+
+                                                                postDatas.Add(post.data);
+
+                                                                callbackResults.result = $"Post Widget : { postWidget.name} Created.";
+                                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                            }
+                                                            else
+                                                            {
+                                                                callbackResults.result = "Post Widget Component Is Null.";
+                                                                callbackResults.data = default;
+                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                        }
+                                                    }
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        callbackResults.result = "Project Widgets Loaded.";
+                                                        callbackResults.data = postDatas;
+                                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Project Widgets Counldn't Load.";
+                                                        callbackResults.data = default;
+                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        else
+                                            Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
+                                    });
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"DWidget Prefab For Screen Type : {screenType} Missing / Null.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        });
+                    }
+                    else
+                    {
+                        callbackResults.result = "Current Screen Type Is Not Landing Page.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
+        void CreateUIScreenProjectSelectionWidgets(AppData.UIScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.Project>> callback)
         {
             try
             {
@@ -2555,7 +2743,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (widgetPrefabData != null)
                                         {
-                                            widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Project, AppData.LayoutViewType.ListView, prefabCallbackResults =>
+                                            widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType, prefabCallbackResults =>
                                             {
                                                 callbackResults.result = prefabCallbackResults.result;
                                                 callbackResults.resultCode = prefabCallbackResults.resultCode;
@@ -2676,7 +2864,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void CreateUIScreenFolderWidgets(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
+        void CreateUIScreenFolderWidgets(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
         {
             try
             {
@@ -2794,7 +2982,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void CreateUIScreenFileWidgets(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
+        void CreateUIScreenFileWidgets(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
         {
             try
             {
@@ -2972,7 +3160,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void CreateUIScreenFileWidgets(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
+        void CreateUIScreenFileWidgets(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback)
         {
             try
             {
@@ -3964,13 +4152,17 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.UIScreenType.LandingPageScreen:
 
+
                                     widgetsContainer.ClearWidgets(false, widgetsClearedCallback => 
                                     {
                                         LogInfo($" *==============* Widgets Cleared : {widgetsClearedCallback.Result}", this);
 
                                         if (widgetsClearedCallback.Success())
                                         {
+                                            if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.LandingPageScreen)
+                                            {
 
+                                            }
                                         }
                                     });
 
@@ -4411,34 +4603,6 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
-        }
-
-        public AppData.ContentContainerType GetContainerType(AppData.UIScreenType screenType)
-        {
-            AppData.ContentContainerType containerType = AppData.ContentContainerType.None;
-
-            switch(screenType)
-            {
-                case AppData.UIScreenType.ProjectCreationScreen:
-
-                    containerType = AppData.ContentContainerType.ProjectSelectionContent;
-
-                    break;
-
-                case AppData.UIScreenType.ProjectDashboardScreen:
-
-                    containerType = AppData.ContentContainerType.FolderStuctureContent;
-
-                    break;
-
-                case AppData.UIScreenType.ContentImportExportScreen:
-
-                    containerType = AppData.ContentContainerType.AssetImport;
-
-                    break;
-            }
-
-            return containerType;
         }
 
         public int GetWidgetsContentCount()

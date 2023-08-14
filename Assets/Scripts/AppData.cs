@@ -931,6 +931,7 @@ namespace Com.RedicalGames.Filar
             Folder,
             Project,
             PlaceHolder,
+            Post,
             None
         }
 
@@ -12494,7 +12495,7 @@ namespace Com.RedicalGames.Filar
                 sceneAssetsDictionary = new Dictionary<string, SceneAsset>();
                 imageAssetsDictionary = new Dictionary<string, Sprite>();
 
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                callbackResults.resultCode = Helpers.SuccessCode;
 
                 //Helpers.ProjectDataComponentValid(screenWidgetPrefabLibrary.screenWidgetPrefabDataList, dataValidCallbackResults =>
                 //{
@@ -14250,6 +14251,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data
 
+            protected Post post;
             protected ProjectStructureData structureData;
             protected SceneAsset assetData;
             protected Folder folderData;
@@ -14486,10 +14488,15 @@ namespace Com.RedicalGames.Filar
 
             #region Set Data
 
+            public void SetPost(Post post)
+            {
+                this.post = post;
+                OnSetUIWidgetData(post);
+            }
+
             public void SetProjectData(ProjectStructureData structureData)
             {
                 this.structureData = structureData;
-
                 OnSetUIWidgetData(structureData);
             }
 

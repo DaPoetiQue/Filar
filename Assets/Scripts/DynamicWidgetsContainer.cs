@@ -17,6 +17,10 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
+        AppData.SelectableWidgetType selectableWidgetType;
+
+        [Space(5)]
+        [SerializeField]
         AppData.UIScreenType screenType;
 
         [Space(5)]
@@ -220,6 +224,8 @@ namespace Com.RedicalGames.Filar
         {
             return scroller.GetDragViewPort();
         }
+
+        public AppData.SelectableWidgetType GetSelectableWidgetType() => selectableWidgetType;
 
         public AppData.UIScroller<AppData.SceneDataPackets> GetUIScroller()
         {
