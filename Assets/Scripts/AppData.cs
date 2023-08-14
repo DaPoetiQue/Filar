@@ -22594,7 +22594,7 @@ namespace Com.RedicalGames.Filar
                                     callbackResults.resultCode = Helpers.WarningCode;
                                 }
 
-                                while (canTransition)
+                                while (onWidgetTransition)
                                     await Task.Yield();
                             }
                             else
