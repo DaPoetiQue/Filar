@@ -1090,12 +1090,7 @@ namespace Com.RedicalGames.Filar
             AppData.Helpers.GetComponent(SceneAssetsManager.Instance, hasComponentCallbackResults =>
             {
                 if (hasComponentCallbackResults.Success())
-                {
-                    if (pageRefreshRoutine != null)
-                        StopCoroutine(pageRefreshRoutine);
-
-                    pageRefreshRoutine = StartCoroutine(OnScreenRefresh(currentScreen.value.GetScreenData()));
-                }
+                    OnScreenRefresh(currentScreen.value.GetScreenData());
                 else
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
             });
@@ -1182,7 +1177,7 @@ namespace Com.RedicalGames.Filar
                 LogError("Refresh Button Failed : Scene Assets Manager Instance Is Not Yet Initialized", this);
         }
 
-        IEnumerator OnScreenRefresh(AppData.SceneDataPackets dataPackets)
+        async void OnScreenRefresh(AppData.SceneDataPackets dataPackets)
         {
             if (dataPackets.blurScreen)
                 currentScreen.value.Blur(dataPackets);
@@ -1200,13 +1195,7 @@ namespace Com.RedicalGames.Filar
 
                             SceneAssetsManager.Instance.SetWidgetsRefreshData(null, containerCallbackResults.data, dataSetupCallbackResults =>
                             {
-                                if (dataSetupCallbackResults.Success())
-                                {
-                                    SceneAssetsManager.Instance.Init(null, containerCallbackResults.data, assetsInitializedCallback =>
-                                    {
-                                        Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
-                                    });
-                                }
+                                Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
                             });
 
                             break;
@@ -1268,16 +1257,18 @@ namespace Com.RedicalGames.Filar
             if (container != null)
             {
                 if (currentScreen.value.GetScreenData().refreshSceneAssets)
-                    yield return new WaitUntil(() => SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), container, dataPackets)); // Wait For Assets To Be Refreshed.
+                {
+                    var refreshTask = await SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), container, dataPackets); // Wait For Assets To Be Refreshed.
+
+                    if (currentScreen.value != null)
+                        currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
+
+                    currentScreen.value.Focus();
+
+                    AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+                }
                 else
-                    yield return AppData.Helpers.GetWaitForSeconds(dataPackets.refreshDuration);
-
-                if (currentScreen.value != null)
-                    currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
-
-                currentScreen.value.Focus();
-
-                AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+                    LogWarning($"Screen Refresh Not Enabled For Screen : {currentScreen.value.GetUIScreenType()}", this);
             }
             else
                 LogError("Failed To Refresh Screen - Content Container Null / Missing.", this);
