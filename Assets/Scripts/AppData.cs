@@ -19004,6 +19004,30 @@ namespace Com.RedicalGames.Filar
                     LogError($"Widget Of Type : {widgetType} - Missing / Not Found.", this);
             }
 
+            public void ShowWidget(Widget widget)
+            {
+                if (screenWidgetsList.Count == 0)
+                    return;
+
+                var widgetToShow = screenWidgetsList.Find(data => data.widgetType.Equals(widget.widgetType));
+
+                if (widgetToShow)
+                {
+                    if (widget.GetDataPackets().blurScreen)
+                        Blur(widget.GetDataPackets());
+
+                    widget.ResetScrollPosition(scrollerResetCallback =>
+                    {
+                        if (scrollerResetCallback.Success())
+                            widget.ShowScreenWidget(widget.GetDataPackets());
+                        else
+                            Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
+                    });
+                }
+                else
+                    LogError($"Widget Of Type : {widget.widgetType} - Missing / Not Found.", this);
+            }
+
             public void ShowWidget(SceneDataPackets dataPackets)
             {
                 if (screenWidgetsList.Count == 0)
@@ -19141,6 +19165,29 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public async Task<Callback> HideScreenWidgetAsync(Widget widget, bool canTransition = true)
+            {
+                Callback callbackResults = new Callback();
+
+                if (screenWidgetsList.Count != 0)
+                {
+                    var widgetToHide = screenWidgetsList.Find(toHide => toHide.widgetType == widget.widgetType);
+
+                    if (widgetToHide != null)
+                    {
+                        await widgetToHide.HideAsync(canTransition);
+
+                        Focus();
+                    }
+                    else
+                        LogError($"Couldn't Hide Widget Of Type : {widget.widgetType} - Widget Missing / Not Found.", this);
+                }
+                else
+                    callbackResults.SetResults("Screen Widgets List Is Null", LogInfoChannel.Error);
+
+                return callbackResults;
+            }
+
             public void HideScreenWidget(Widget widget, bool canTransition = true)
             {
                 if (screenWidgetsList.Count == 0)
@@ -19180,6 +19227,12 @@ namespace Com.RedicalGames.Filar
             {
                 return screenWidgetsList.Find(widget => widget.widgetType == widgetType);
             }
+
+            public Widget GetWidget(Widget widget)
+            {
+                return screenWidgetsList.Find(data => data.widgetType == widget.widgetType);
+            }
+
 
             public List<Widget> GetWidgets()
             {
@@ -20138,6 +20191,10 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected UIScreenWidgetContainer widgetContainer = new UIScreenWidgetContainer();
 
+            [Space(5)]
+            [SerializeField]
+            protected SceneDataPackets dataPackets;
+
             //[HideInInspector]
             public bool dontShowAgain;
 
@@ -20146,9 +20203,6 @@ namespace Com.RedicalGames.Filar
             protected bool isTransitionState;
 
             protected RectTransform widgetRect;
-
-            [HideInInspector]
-            public SceneDataPackets currentDataPackets;
 
             Coroutine showWidgetAsyncRoutine;
 
@@ -20450,6 +20504,8 @@ namespace Com.RedicalGames.Filar
 
                 #endregion
             }
+
+            public SceneDataPackets GetDataPackets() => dataPackets;
 
             void OnDropDownOptionValueChange(int value, DropdownDataPackets dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
 
@@ -21081,7 +21137,7 @@ namespace Com.RedicalGames.Filar
                                     if (ScreenUIManager.Instance != null)
                                     {
                                         ActionEvents.OnPopUpActionEvent(popUpType, InputActionButtonType.CloseButton, dataPackets);
-                                        ScreenUIManager.Instance.ShowScreenAsync(currentDataPackets);
+                                        ScreenUIManager.Instance.ShowScreenAsync(this.dataPackets);
                                     }
                                     else
                                         LogWarning("Screen Manager Missing.", this, () => OnBuildNewAsset_ActionEvent(popUpType, dataPackets));
@@ -22212,7 +22268,7 @@ namespace Com.RedicalGames.Filar
                             break;
                     }
 
-                    currentDataPackets = dataPackets;
+                    this.dataPackets = dataPackets;
 
                     OnScreenWidget();
 

@@ -175,8 +175,8 @@ namespace Com.RedicalGames.Filar
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            if (!string.IsNullOrEmpty(currentDataPackets.popUpMessage))
-                SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, currentDataPackets.popUpMessage);
+            if (!string.IsNullOrEmpty(base.dataPackets.popUpMessage))
+                SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, base.dataPackets.popUpMessage);
         }
 
         void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)

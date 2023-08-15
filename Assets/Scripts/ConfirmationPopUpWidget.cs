@@ -173,8 +173,8 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
-            if (!string.IsNullOrEmpty(currentDataPackets.popUpMessage))
-                SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, currentDataPackets.popUpMessage);
+            if (!string.IsNullOrEmpty(base.dataPackets.popUpMessage))
+                SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, base.dataPackets.popUpMessage);
 
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }

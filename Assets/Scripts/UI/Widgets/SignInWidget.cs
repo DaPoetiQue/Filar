@@ -84,17 +84,48 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
-            if (actionType == AppData.InputActionButtonType.SignInViewChangeButton)
+            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
             {
-                isInitialView = !isInitialView;
+                if (screenUIManagerCallbackResults.Success())
+                {
+                    var screenUIManager = screenUIManagerCallbackResults.data;
 
-                if (isInitialView)
-                    transitionable.SetTarget(widgetContainer.visibleScreenPoint);
-                else
-                    transitionable.SetTarget(widgetContainer.hiddenScreenPoint);
+                    screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
+                    {
+                        if (currentScreenCallbackResults.Success())
+                        {
+                            var screen = currentScreenCallbackResults.data;
 
-                SwitchPage();
-            }
+                            switch (actionType)
+                            {
+                                case AppData.InputActionButtonType.Cancel:
+
+                                    await screen.value.HideScreenWidgetAsync(this);
+
+                                    break;
+
+                                case AppData.InputActionButtonType.SignInViewChangeButton:
+
+                                    isInitialView = !isInitialView;
+
+                                    if (isInitialView)
+                                        transitionable.SetTarget(widgetContainer.visibleScreenPoint);
+                                    else
+                                        transitionable.SetTarget(widgetContainer.hiddenScreenPoint);
+
+                                    SwitchPage();
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(currentScreenCallbackResults.ResultCode, currentScreenCallbackResults.Result, this);
+
+                    });
+                }
+
+            }, "Screen UI Manager Instance Is Not Yet Initialized.");
+
         }
 
         async void SwitchPage()

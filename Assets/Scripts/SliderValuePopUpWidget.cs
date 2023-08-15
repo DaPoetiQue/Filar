@@ -50,7 +50,7 @@ namespace Com.RedicalGames.Filar
             if (updateSliderValue)
                 return;
 
-            RenderingSettingsManager.Instance.SetMaterialValue(currentDataPackets.assetFieldConfiguration, value);
+            RenderingSettingsManager.Instance.SetMaterialValue(dataPackets.assetFieldConfiguration, value);
         }
 
         public void SetSliderValue(float value, AppData.SliderValueType sliderType)

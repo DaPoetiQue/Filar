@@ -23,7 +23,46 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
+            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
+            {
+                if (screenUIManagerCallbackResults.Success())
+                {
+                    var screenUIManager = screenUIManagerCallbackResults.data;
 
+                    screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
+                    {
+                        if (currentScreenCallbackResults.Success())
+                        {
+                            var screen = currentScreenCallbackResults.data;
+
+                            switch (actionType)
+                            {
+                                case AppData.InputActionButtonType.ShowPostsButton:
+
+                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
+
+                                    screen.value.ShowWidget(this);
+
+                                    break;
+
+                                case AppData.InputActionButtonType.HidePostsButton:
+
+                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+
+                                    await screen.value.HideScreenWidgetAsync(this);
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(currentScreenCallbackResults.ResultCode, currentScreenCallbackResults.Result, this);
+
+                    });
+                }
+
+            }, "Screen UI Manager Instance Is Not Yet Initialized.");
         }
 
         protected override void OnHideScreenWidget()
