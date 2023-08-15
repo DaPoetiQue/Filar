@@ -28394,8 +28394,43 @@ namespace Com.RedicalGames.Filar
 
         #region Static Classess
 
+        public struct DeviceInfo
+        {
+            #region Components
+
+            public string deviceName;
+            public string deviceModel;
+            public string deviceID;
+
+            public BatteryStatus batteryStatus;
+
+            public DeviceType deviceType;
+
+            public string operatingSystem;
+
+            public int deviceMemorySize;
+
+            #endregion
+        }
+
         public static class Helpers
         {
+
+            public static DeviceInfo GetDeviceInfo()
+            {
+                return new DeviceInfo
+                {
+                    deviceName = SystemInfo.deviceName,
+                    deviceModel = SystemInfo.deviceModel,
+                    deviceID = SystemInfo.deviceUniqueIdentifier,
+                    batteryStatus = SystemInfo.batteryStatus,
+                    deviceType = SystemInfo.deviceType,
+                    operatingSystem = SystemInfo.operatingSystem,
+                    deviceMemorySize = SystemInfo.systemMemorySize
+                };
+            }
+
+
             public static WaitForSeconds GetWaitForSeconds(float seconds)
             {
                 return new WaitForSeconds(seconds);
