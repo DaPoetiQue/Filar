@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -13084,6 +13086,14 @@ namespace Com.RedicalGames.Filar
             public CallbackData(string name, T data, string results, LogInfoChannel resultsCode, string classInfo = null)
             {
                 this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackData(T data, string results = null, LogInfoChannel resultsCode = LogInfoChannel.All, string classInfo = null)
+            {
                 this.result = results;
                 this.data = data;
                 this.resultCode = resultsCode;
@@ -28334,6 +28344,54 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Encription
+
+        [Serializable]
+        public class EncrptionObject
+        {
+            #region Components
+
+            public string key;
+            public string data;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public EncrptionObject()
+            {
+
+            }
+
+            public EncrptionObject(string key, string data)
+            {
+                this.key = key;
+                this.data = data;
+            }
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetKey(string key) => this.key = key;
+            public void SetData(string data) => this.data = data;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetKey() => key;
+            public string GetData() => data;
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
         #region Static Classess
 
         public static class Helpers
@@ -28640,6 +28698,9 @@ namespace Com.RedicalGames.Filar
                 return "#" + ((Int32)(r * 255)).ToString("X2") + ((Int32)(g * 255)).ToString("X2") + ((Int32)(b * 255)).ToString("X2");
             }
 
+
+            #region Load Formatted Scene Asset Model 
+
             public static GameObject LoadSceneAssetModelFile(string path)
             {
                 return new OBJLoader().Load(path);
@@ -28653,7 +28714,6 @@ namespace Com.RedicalGames.Filar
                 return new OBJLoader().Load(path);
             }
 
-            #region Load Formatted Scene Asset Model 
 
             public static SceneObject LoadFormattedSceneAssetModel(string path, string mtlPath = null, bool addColliders = true)
             {
@@ -28698,6 +28758,8 @@ namespace Com.RedicalGames.Filar
 
                 return sceneObject;
             }
+
+            #endregion
 
             public static string GetElapsedTime(DateTimeComponent dateTime)
             {
@@ -28819,14 +28881,70 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
-                #region Block 001
-
-                #endregion
-
                 return key;
             }
 
             public static string[] GetAlphabets() => new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+            public static string[] GetSymbol() => new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+
+
+            #region Encryption & Decryption
+
+            public static string GenerateEncriptionKey(int length = 2)
+            {
+                string key = "";
+
+                for (int i = 0; i < length; i++)
+                {
+                    int randomSymbol_001 = UnityEngine.Random.Range(0, GetSymbol().Length - 1);
+                    int randomSymbol_002 = UnityEngine.Random.Range(0, GetSymbol().Length - 1);
+
+                    int randomAlphabet_001 = UnityEngine.Random.Range(0, GetAlphabets().Length - 1);
+                    int randomAlphabet_002 = UnityEngine.Random.Range(0, GetAlphabets().Length - 1);
+                    key += UnityEngine.Random.Range(1, 100) + GetSymbol()[randomSymbol_001] + GetAlphabets()[randomAlphabet_001] + GetAlphabets()[randomAlphabet_002] + GetSymbol()[randomSymbol_002];
+                }
+
+                return key;
+            }
+
+
+            public static CallbackData<string> Encrypt(EncrptionObject encrptionObject)
+            {
+                byte[] data = UTF8Encoding.UTF8.GetBytes(encrptionObject.data);
+
+                using(MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+                {
+                    byte[] key = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(encrptionObject.key));
+
+                    using(TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider{Key = key, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7})
+                    {
+                        ICryptoTransform cryptoTransform = tripleDES.CreateEncryptor();
+                        byte[] results = cryptoTransform.TransformFinalBlock(data, 0, data.Length);
+                        return new CallbackData<string>(results: "Encrpted Data Successfully", resultsCode: SuccessCode, data: Convert.ToBase64String(results, 0, results.Length)); 
+                    }
+                }
+            }
+
+            public static CallbackData<string> Decrypt(EncrptionObject encrptionObject)
+            {
+                byte[] data = Convert.FromBase64String(encrptionObject.data);
+
+                using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+                {
+                    byte[] key = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(encrptionObject.key));
+
+                    using (TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider { Key = key, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                    {
+                        ICryptoTransform cryptoTransform = tripleDES.CreateEncryptor();
+                        byte[] results = cryptoTransform.TransformFinalBlock(data, 0, data.Length);
+                        return new CallbackData<string>(results: "Decrypted Data Successfully", resultsCode: SuccessCode, data: UTF8Encoding.UTF8.GetString(results));
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Importers
 
             static Vector3 GetImportedAssetPosition(Vector3 pos, Bounds assetBounds)
             {
