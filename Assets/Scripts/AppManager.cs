@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.Android;
+using System.IO;
 
 namespace Com.RedicalGames.Filar
 {
@@ -51,6 +52,10 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         [SerializeField]
         List<AppData.PermissionInfo> permissionInfos = new List<AppData.PermissionInfo>();
+
+        [Space(5)]
+        [SerializeField]
+        string infoFolderName = "Filar";
 
         AppData.Profile userProfile = new AppData.Profile();
 
@@ -490,23 +495,76 @@ namespace Com.RedicalGames.Filar
 
         #region Initialize App Entry
 
-        public async Task<AppData.Callback> InitializeAppEntryPoint()
+        public async Task<AppData.CallbackData<AppData.AppInfo>> InitializeAppEntryPoint()
         {
-            AppData.CallbackData<SceneAssetsManager> callbackResults = new AppData.CallbackData<SceneAssetsManager>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
 
             if(callbackResults.Success())
             {
                 var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
 
-                return await sceneAssetsManager.InitializeDatabase();
+                await sceneAssetsManager.InitializeDatabase();
+
+                return await GetAppInfoAsync();
             }
 
-            return callbackResults.CallbackResults;
+            return callbackResults;
         }
 
         #endregion
 
-        #region Compatibility
+        #region App Info
+
+        async Task<AppData.CallbackData<AppData.AppInfo>> GetAppInfoAsync()
+        {
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized."));
+
+            if(callbackResults.Success())
+            {
+                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+
+                string directory = sceneAssetsManager.GetStreamingAssetsFolderDirectoryFormat(infoFolderName);
+
+                if(sceneAssetsManager.DirectoryFound(directory))
+                {
+
+                    await Task.Delay(100);
+                }
+                else
+                {
+                    if(sceneAssetsManager.CreateDirectory(directory))
+                    {
+                        AppData.LicenseKey licenceKey = new AppData.LicenseKey(0, AppData.Helpers.GenerateAppKey(), "", AppData.LicenseType.Default, true, new AppData.DateTimeComponent(DateTime.UtcNow));
+                        AppData.AppInfo appInfo = new AppData.AppInfo(licenceKey);
+
+                        AppData.StorageDirectoryData storageData = new AppData.StorageDirectoryData();
+
+                        string pathCombiner = Path.Combine(directory, "AppInfo.lic");
+                        string path = pathCombiner.Replace("\\", "/");
+
+                       storageData.name = "AppInfo";
+                        storageData.path = path;
+                        storageData.directory = directory;
+
+                        sceneAssetsManager.CreateData(appInfo, storageData, dataCreatedCallackResults => 
+                        {
+                            if (!dataCreatedCallackResults.Success())
+                                Log(dataCreatedCallackResults.ResultCode, dataCreatedCallackResults.Result, this);
+                        });
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Create Director For App Info In Streaming Assets.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+
+                    await Task.Delay(100);
+                }
+            }
+
+            return callbackResults;
+        }
 
         #endregion
 
@@ -603,7 +661,7 @@ namespace Com.RedicalGames.Filar
 
         #region Compatibility
 
-        public async Task<AppData.CallbackData<AppData.Compatibility>> CompatibilityStatus()
+        public async Task<AppData.CallbackData<AppData.Compatibility>> GetCompatibilityStatusAsync()
         {
             AppData.CallbackData<AppData.Compatibility> callbackResults = new AppData.CallbackData<AppData.Compatibility>();
 

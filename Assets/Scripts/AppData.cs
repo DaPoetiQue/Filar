@@ -1078,6 +1078,121 @@ namespace Com.RedicalGames.Filar
             FetchProfile,
         }
 
+        public enum LicenseType
+        {
+            Default,
+            Trial,
+            Pro
+        }
+
+        #region App Information
+
+        [Serializable]
+        public class AppInfo : SerializableData
+        {
+            #region Components
+
+            public LicenseKey licenseKey;
+
+            public bool activeProfile;
+
+            #endregion
+
+            #region Main
+
+            public AppInfo()
+            {
+
+            }
+
+            public AppInfo(LicenseKey licenseKey)
+            {
+                this.licenseKey = licenseKey;
+                this.activeProfile = true;
+            }
+
+            public AppInfo(LicenseKey licenseKey, bool activeProfile)
+            {
+                this.licenseKey = licenseKey;
+                this.activeProfile = activeProfile;
+            }
+
+            #region Data Setters
+
+            public void SetLicenseKey(LicenseKey licenseKey) => this.licenseKey = licenseKey;
+            public void SetActiveProfile(bool activeProfile) => this.activeProfile = activeProfile;
+
+            #endregion
+
+
+            #region Data Getters
+
+            public LicenseKey GetLicenseKey(LicenseKey licenseKey) => licenseKey;
+            public bool GetActiveProfile(bool activeProfile) => activeProfile;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class LicenseKey
+        {
+            #region Components
+
+            public uint appKey;
+            public string activationKey;
+            public string deviceID;
+            public LicenseType licenseType;
+            public bool active;
+
+            public DateTimeComponent activationStartDate, activitionEndDate;
+
+            #endregion
+
+            #region Main
+
+            public LicenseKey()
+            {
+
+            }
+
+            public LicenseKey(uint appKey, string activationKey, string deviceID, LicenseType licenseType, bool active, DateTimeComponent activationStartDate, DateTimeComponent activitionEndDate = null)
+            {
+                this.appKey = appKey;
+                this.activationKey = activationKey;
+                this.deviceID = deviceID;
+                this.licenseType = licenseType;
+                this.active = active;
+                this.activationStartDate = activationStartDate;
+                this.activitionEndDate = activitionEndDate;
+            }
+
+            #region Data Setters
+
+            public void SetAppKey(uint appKey) => this.appKey = appKey;
+            public void SetActivationKey(string activationKey) => this.activationKey = activationKey;
+            public void SetDeviceID(string deviceID) => this.deviceID = deviceID;
+            public void SetLicense(LicenseType licenseType) => this.licenseType = licenseType;
+            public void SetActive(bool active) => this.active = active;
+
+            #endregion
+
+            #region Data Getters
+
+            public uint GetAppKey() => appKey;
+            public string GetActivationKey() => activationKey;
+            public string GetDeviceID() => deviceID;
+            public LicenseType GetLicense() => licenseType;
+            public bool GetActive() => active;
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
         #region Database
 
         public class DatabaseAssets : IDictionary
@@ -1688,7 +1803,7 @@ namespace Com.RedicalGames.Filar
 
                                                         if (callbackResults.Success())
                                                         {
-                                                            var resultCallback = await appManager.CompatibilityStatus();
+                                                            var resultCallback = await appManager.GetCompatibilityStatusAsync();
 
                                                             if (resultCallback.Success())
                                                                 OnCompletition();
@@ -28583,6 +28698,135 @@ namespace Com.RedicalGames.Filar
 
                 return sceneObject;
             }
+
+            public static string GetElapsedTime(DateTimeComponent dateTime)
+            {
+                var timeSpan = new TimeSpan(DateTime.UtcNow.Ticks - dateTime.GetDateTime().Ticks);
+                double delta = Math.Abs(timeSpan.TotalSeconds);
+
+                if (delta < 1 * GetTimeFormat().minute)
+                    return timeSpan.Seconds == 1? "1 second ago" : $"{timeSpan.Seconds} seconds ago";
+
+                if (delta < 2 * GetTimeFormat().minute)
+                    return "a minute ago";
+
+                if (delta < 45 * GetTimeFormat().minute)
+                     return $"{timeSpan.Minutes} minutes ago";
+
+                if (delta < 90 * GetTimeFormat().minute)
+                    return "an hour ago";
+
+                if (delta < 24 * GetTimeFormat().hour)
+                    return $"{timeSpan.Hours} hours ago";
+
+                if (delta < 48 * GetTimeFormat().hour)
+                    return "yesterday";
+
+                if (delta < 30 * GetTimeFormat().day)
+                    return $"{timeSpan.Days} days ago";
+
+                if (delta < 12 * GetTimeFormat(). month)
+                {
+                    int months = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 30));
+                    return months <= 1 ? "a month ago" : $"{months} months ago";
+                }
+                else
+                {
+                    int years = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 365));
+                    return years <= 1 ? "a year ago" : $"{years} years ago";
+                }
+            }
+
+            private static (int second, int minute, int hour, int day, int month) GetTimeFormat()
+            {
+                const int second = 1;
+                const int minute = 60 * second;
+                const int hour = 60 * minute;
+                const int day = 24 * hour;
+                const int month = 30 * day;
+
+                return (second, minute, hour, day, month);
+            }
+
+            public static string GetTimeRemaining(DateTimeComponent start, DateTimeComponent end)
+            {
+                var timeSpan = new TimeSpan(start.dateTimeTick -end.dateTimeTick);
+                double delta = Math.Abs(timeSpan.TotalSeconds);
+
+                if (delta < 1 * GetTimeFormat().minute)
+                    return timeSpan.Seconds == 1 ? "1 second remaining" : $"{timeSpan.Seconds} seconds remaining";
+
+                if (delta < 2 * GetTimeFormat().minute)
+                    return $"1 minute {timeSpan.Seconds} seconds remaining";
+
+                if (delta < 45 * GetTimeFormat().minute)
+                    return $"{timeSpan.Minutes} minutes remaining";
+
+                if (delta < 90 * GetTimeFormat().minute)
+                    return $"1 hour {timeSpan.Minutes} minutes remaining";
+
+                if (delta < 24 * GetTimeFormat().hour)
+                    return $"{timeSpan.Hours} hours {timeSpan.Minutes} minutes remaining";
+
+                if (delta < 48 * GetTimeFormat().hour)
+                    return $"1 day {timeSpan.Hours} hours remaining";
+
+                if (delta < 30 * GetTimeFormat().day)
+                    return $"{timeSpan.Days} days remaining";
+
+                int months = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 30));
+
+                if (delta < 12 * GetTimeFormat().month)
+                {
+                    return months <= 1 ? $"1 month {timeSpan.Days} days remaining" : $"{months} months {timeSpan.Days} days remaining";
+                }
+                else
+                {
+                    int years = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 365));
+                    return years <= 1 ? $"1 year {months} months remaining" : $"{years} years {months} months remaining";
+                }
+            }
+
+            public static string GenerateAppKey(int length = 4, string separator = " ")
+            {
+              
+                var alphabets = GetAlphabets();
+
+                List<string> segments = new List<string>();
+
+                for (int i = 0; i < length; i++)
+                {
+                    int randomNumber_001 = UnityEngine.Random.Range(0, 9);
+                    int randomNumber_002 = UnityEngine.Random.Range(0, 9);
+                    int randomNumber_003 = UnityEngine.Random.Range(0, 9);
+
+                    int randomAlphabetIndex_001 = UnityEngine.Random.Range(0, alphabets.Length - 1);
+                    string randomAlphabet_001 = alphabets[randomAlphabetIndex_001];
+
+                    segments.Add($"{randomNumber_001}{randomNumber_002}{randomAlphabet_001}{randomNumber_003}");
+                }
+
+                string key = "";
+
+                if (segments.Count > 0)
+                {
+                    for (int i = 0; i < segments.Count; i++)
+                    {
+                        if (i < segments.Count - 1)
+                            key += segments[i] + $"{separator}";
+                        else
+                            key += segments[i];
+                    }
+                }
+
+                #region Block 001
+
+                #endregion
+
+                return key;
+            }
+
+            public static string[] GetAlphabets() => new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
 
             static Vector3 GetImportedAssetPosition(Vector3 pos, Bounds assetBounds)
             {

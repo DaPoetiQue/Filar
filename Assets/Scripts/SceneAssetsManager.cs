@@ -3762,6 +3762,14 @@ namespace Com.RedicalGames.Filar
             return directoryExists;
         }
 
+        public string GetStreamingAssetsFolderDirectoryFormat(string folderName)
+        {
+            string pathCombiner = Path.Combine(Application.streamingAssetsPath, folderName);
+            string path = pathCombiner.Replace("\\", "/");
+
+            return path;
+        }
+
         public bool DirectoryFound(AppData.StorageDirectoryData directoryData)
         {
             try
