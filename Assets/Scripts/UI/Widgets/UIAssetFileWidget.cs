@@ -39,10 +39,10 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputActionButtonType.Delete:
 
-                    if (SceneAssetsManager.Instance != null)
+                    if (DatabaseManager.Instance != null)
                     {
-                        SceneAssetsManager.Instance.AddToSelectedSceneAsseList(assetData);
-                        SceneAssetsManager.Instance.SetCurrentSceneAsset(assetData);
+                        DatabaseManager.Instance.AddToSelectedSceneAsseList(assetData);
+                        DatabaseManager.Instance.SetCurrentSceneAsset(assetData);
                     }
                     else
                         Debug.LogWarning("--> Assets Manager Not Initialized.");
@@ -60,8 +60,8 @@ namespace Com.RedicalGames.Filar
 
                         actionButton.dataPackets.sceneAsset = assetData;
 
-                        if (SceneAssetsManager.Instance != null)
-                            SceneAssetsManager.Instance.OnSceneAssetEditMode(actionButton.dataPackets);
+                        if (DatabaseManager.Instance != null)
+                            DatabaseManager.Instance.OnSceneAssetEditMode(actionButton.dataPackets);
                         else
                             Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
 
@@ -128,8 +128,8 @@ namespace Com.RedicalGames.Filar
                         assetData.assetMode = AppData.AssetModeType.ARMode;
                         actionButton.dataPackets.sceneAsset = assetData;
 
-                        if (SceneAssetsManager.Instance != null)
-                            SceneAssetsManager.Instance.OnSceneAssetPreviewMode(actionButton.dataPackets);
+                        if (DatabaseManager.Instance != null)
+                            DatabaseManager.Instance.OnSceneAssetPreviewMode(actionButton.dataPackets);
                         else
                             Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
 

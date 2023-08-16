@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
         public void NavigateToFolder(AppData.Folder folder, AppData.UIWidgetInfo folderWidgetInfo, AppData.FolderStructureType structureType)
         {
             // Store Previous Folder
-            AppData.FolderNavigationCommand previousFolderCommand = new AppData.FolderNavigationCommand(SceneAssetsManager.Instance.GetCurrentFolder(), folderWidgetInfo, structureType);
+            AppData.FolderNavigationCommand previousFolderCommand = new AppData.FolderNavigationCommand(DatabaseManager.Instance.GetCurrentFolder(), folderWidgetInfo, structureType);
 
             if (!folderNavigationCommands.Contains(previousFolderCommand))
             {
@@ -89,7 +89,7 @@ namespace Com.RedicalGames.Filar
                     SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
                 }
 
-                SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, folder =>
+                DatabaseManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, folder =>
                 {
                     if (AppData.Helpers.IsSuccessCode(folder.resultCode))
                     {
@@ -120,10 +120,10 @@ namespace Com.RedicalGames.Filar
                             //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FolderNavigationWidget);
                             UpdateNavigationRootTitleDisplayer();
 
-                            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
-                                folderNavigationDataPackets.widgetTitle = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
+                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                folderNavigationDataPackets.widgetTitle = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
                             else
-                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
                         }
                     }
                     else
@@ -151,9 +151,9 @@ namespace Com.RedicalGames.Filar
 
         public void UpdateNavigationRootTitleDisplayer()
         {
-            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+            if (DatabaseManager.Instance.GetProjectStructureData().Success())
             {
-                string rootFolderName = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name + "/";
+                string rootFolderName = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name + "/";
                 string formattedTitle = string.Empty;
 
                 if (folderNavigationNameList.Count == 1)
@@ -169,7 +169,7 @@ namespace Com.RedicalGames.Filar
                     formattedTitle = folderDirectoryIndexedWidgetName;
                 }
                 else
-                    formattedTitle = SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
+                    formattedTitle = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
 
                 if (formattedTitle.Length > folderNavigationDataPackets.widgetTitleCharacterLimit)
                 {
@@ -191,7 +191,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
             }
             else
-                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
         }
 
         public AppData.SceneDataPackets GetEmptyFolderDataPackets()

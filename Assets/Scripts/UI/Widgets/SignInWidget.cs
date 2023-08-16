@@ -23,7 +23,7 @@ namespace Com.RedicalGames.Filar
         {
             signInWidget = this;
 
-            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
             {
                 if (sceneAssetsManagerCallbackResults.Success())
                 {

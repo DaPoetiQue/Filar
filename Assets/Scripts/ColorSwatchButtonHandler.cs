@@ -60,8 +60,8 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.ActionEvents.OnSwatchColorPickedEvent(colorInfo, true, false);
 
-                if (SceneAssetsManager.Instance != null)
-                    SceneAssetsManager.Instance.GetColorSwatchData((swatchDataResults) =>
+                if (DatabaseManager.Instance != null)
+                    DatabaseManager.Instance.GetColorSwatchData((swatchDataResults) =>
                     {
                         if (AppData.Helpers.IsSuccessCode(swatchDataResults.resultCode))
                             swatchDataResults.data.OnSwatchColorSelection(colorInfo);
@@ -77,11 +77,11 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            if (SceneAssetsManager.Instance != null)
+            if (DatabaseManager.Instance != null)
             {
                 //Debug.LogError($"-------> Get Hexadecimal : {colorInfo.hexadecimal}");
 
-                SceneAssetsManager.Instance.GetColorFromHexidecimal(colorInfo.hexadecimal, (getColorCallback) =>
+                DatabaseManager.Instance.GetColorFromHexidecimal(colorInfo.hexadecimal, (getColorCallback) =>
                 {
                     callbackResults.result = getColorCallback.result;
                     callbackResults.resultCode = getColorCallback.resultCode;

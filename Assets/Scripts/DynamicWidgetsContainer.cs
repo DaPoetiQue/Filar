@@ -284,9 +284,9 @@ namespace Com.RedicalGames.Filar
 
             if (scroller.value != null)
             {
-                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
+                if (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 {
-                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / (GetContentCount() / 2))) * Time.smoothDeltaTime);
+                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / (GetContentCount() / 2))) * Time.smoothDeltaTime);
                     scroller.value.content.localPosition = scrollPosition;
 
                     float distance = ((Vector2)scroller.value.content.localPosition - Vector2.zero).sqrMagnitude;
@@ -315,9 +315,9 @@ namespace Com.RedicalGames.Filar
 
             if (scroller.value != null)
             {
-                if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
+                if (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 {
-                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, container.sizeDelta, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / 2)) * Time.smoothDeltaTime);
+                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, container.sizeDelta, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / 2)) * Time.smoothDeltaTime);
                     scroller.value.content.localPosition = scrollPosition;
 
                     float distance = (orientation == AppData.OrientationType.Vertical) ? scroller.value.verticalNormalizedPosition : scroller.value.horizontalNormalizedPosition;
@@ -340,7 +340,7 @@ namespace Com.RedicalGames.Filar
             if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
                 return;
 
-            if (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
+            if (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 scroller.value.content.localPosition = container.sizeDelta;
         }
 
@@ -360,7 +360,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (scroller.value.normalizedPosition.y > 0.0f && scroller.value.normalizedPosition.y <= 1.0f)
                             {
-                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
+                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
                                 scroller.value.content.localPosition = focusedPosition;
 
                                 float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
@@ -383,7 +383,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (scroller.value.normalizedPosition.x > 0.0f && scroller.value.normalizedPosition.x <= 1.0f)
                             {
-                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
+                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
                                 scroller.value.content.localPosition = focusedPosition;
 
                                 float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
@@ -423,7 +423,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (scroller.value.normalizedPosition.y <= 1.0f)
                         {
-                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.EdgeScrollSpeedValue).value * Time.smoothDeltaTime);
+                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.EdgeScrollSpeedValue).value * Time.smoothDeltaTime);
                             scroller.value.content.localPosition = scrollPosition;
 
                             float distance = ((Vector2)scroller.value.content.localPosition - Vector2.zero).sqrMagnitude;
@@ -441,7 +441,7 @@ namespace Com.RedicalGames.Filar
                         if (scroller.value.normalizedPosition.y > 0.0f)
                         {
                             Vector2 targetPosition = new Vector2(0, 1000);
-                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, targetPosition, (SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.EdgeScrollSpeedValue).value / 3) * Time.smoothDeltaTime);
+                            Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, targetPosition, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.EdgeScrollSpeedValue).value / 3) * Time.smoothDeltaTime);
                             scroller.value.content.localPosition = scrollPosition;
 
                             float distance = ((Vector2)scroller.value.content.localPosition - targetPosition).sqrMagnitude;
@@ -479,7 +479,7 @@ namespace Com.RedicalGames.Filar
 
                         if (canFadeOutScrollBar)
                         {
-                            if (currentScrollBarFadeDelayDuration < SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollBarFadeDelayDuration).value)
+                            if (currentScrollBarFadeDelayDuration < DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollBarFadeDelayDuration).value)
                                 currentScrollBarFadeDelayDuration += 1.0f * Time.smoothDeltaTime;
                             else
                                 scroller.OnScrollbarFadeOut();
@@ -1355,7 +1355,7 @@ namespace Com.RedicalGames.Filar
 
                             if (container.childCount == 0)
                             {
-                                SceneAssetsManager.Instance.UnloadUnusedAssets();
+                                DatabaseManager.Instance.UnloadUnusedAssets();
 
                                 callbackResults.result = "All Widgets Cleared.";
                                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -1785,9 +1785,9 @@ namespace Com.RedicalGames.Filar
 
                             if(newSelectionNameList.Count > 0)
                             {
-                                if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                                if (DatabaseManager.Instance.GetProjectStructureData().Success())
                                 {
-                                    if (SceneAssetsManager.Instance.GetProjectStructureData().data.InverseSelect())
+                                    if (DatabaseManager.Instance.GetProjectStructureData().data.InverseSelect())
                                     {
                                         if (SelectableManager.Instance.HasCachedSelectionInfo())
                                         {
@@ -1809,7 +1809,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
 
                                 SelectableManager.Instance.Select(newSelectionNameList, AppData.FocusedSelectionType.SelectedItem, selectionCallback =>
                                 {
@@ -2565,7 +2565,7 @@ namespace Com.RedicalGames.Filar
 
         public void SetScreenBounds(RectTransform bounds)
         {
-            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+            if (DatabaseManager.Instance.GetProjectStructureData().Success())
             {
                 #region Width
 
@@ -2591,7 +2591,7 @@ namespace Com.RedicalGames.Filar
                 int verticalSpacingBottom = heightSpacingMultiplied + heightSpacing;
 
                 int top = -(height + (verticalSpacingTop / 2));
-                int layoutHeight = GetUILayoutDimension(SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType()).containerDimensions.height;
+                int layoutHeight = GetUILayoutDimension(DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType()).containerDimensions.height;
                 int bottom = (-layoutHeight) - (-(height + verticalSpacingBottom));
 
                 screenBounds.top = top;
@@ -2600,7 +2600,7 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
             else
-                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
         }
 
         public AppData.UILayoutDimensions GetUILayoutDimension(AppData.LayoutViewType layoutView)

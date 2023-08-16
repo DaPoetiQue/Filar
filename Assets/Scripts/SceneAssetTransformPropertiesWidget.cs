@@ -69,11 +69,11 @@ namespace Com.RedicalGames.Filar
                     break;
             }
 
-            if (SceneAssetsManager.Instance != null)
+            if (DatabaseManager.Instance != null)
             {
-                if (SceneAssetsManager.Instance.GetCurrentSceneAsset() != null)
+                if (DatabaseManager.Instance.GetCurrentSceneAsset() != null)
                 {
-                    SceneAssetsManager.Instance.GetCurrentSceneAsset().assetImportRotation = propertiesVector;
+                    DatabaseManager.Instance.GetCurrentSceneAsset().assetImportRotation = propertiesVector;
                 }
                 else
                     Debug.LogWarning("--> On UI Input Field Action Value Changed - Scene Assets Manager Instance's Get Current Scene Asset Is Null / Not Found.");

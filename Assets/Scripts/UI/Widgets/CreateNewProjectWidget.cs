@@ -45,13 +45,13 @@ namespace Com.RedicalGames.Filar
                             {
                                 OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
 
-                                if (SceneAssetsManager.Instance != null)
+                                if (DatabaseManager.Instance != null)
                                 {
-                                    SceneAssetsManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
+                                    DatabaseManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
                                     {
                                         if (createNewProjectCallbackResults.Success())
                                         {
-                                            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                                            if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
                                             {
                                                 if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                                     ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
@@ -72,7 +72,7 @@ namespace Com.RedicalGames.Filar
                                                 }));
                                             }
                                             else
-                                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
+                                                Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
                                         }
                                         else
                                             Log(createNewProjectCallbackResults.resultCode, createNewProjectCallbackResults.result, this);
@@ -100,10 +100,10 @@ namespace Com.RedicalGames.Filar
 
             yield return new WaitForEndOfFrame();
 
-            var rootData = SceneAssetsManager.Instance.GetProjectRootStructureData().data;
+            var rootData = DatabaseManager.Instance.GetProjectRootStructureData().data;
             rootData.GetProjectCreationTemplateData().SetProjectInfo(projectInfo);
 
-            SceneAssetsManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
+            DatabaseManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
             {
                 callbackResults.result = dataSavedCallbackResults.result;
                 callbackResults.resultCode = dataSavedCallbackResults.resultCode;
@@ -118,11 +118,11 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.ProjectStructureData> callbackResults = new AppData.CallbackData<AppData.ProjectStructureData>();
 
-            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+            if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
             {
                 var project = new AppData.ProjectStructureData
                 {
-                    projectInfo = new AppData.ProjectInfo(string.Empty, SceneAssetsManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().GetCategoryType(), SceneAssetsManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().GetTamplateType()),
+                    projectInfo = new AppData.ProjectInfo(string.Empty, DatabaseManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().GetCategoryType(), DatabaseManager.Instance.GetProjectRootStructureData().data.projectCreationTemplateData.GetProjectInfo().GetTamplateType()),
                     rootFolder = folderStructureDataTemplate.rootFolder,
                     excludedSystemFiles = folderStructureDataTemplate.excludedSystemFiles,
                     excludedSystemFolders = folderStructureDataTemplate.excludedSystemFolders,
@@ -133,13 +133,13 @@ namespace Com.RedicalGames.Filar
 
                 callbackResults.result = "New Project Data Created.";
                 callbackResults.data = project;
-                callbackResults.resultCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode;
+                callbackResults.resultCode = DatabaseManager.Instance.GetProjectRootStructureData().resultCode;
             }
             else
             {
-                callbackResults.result = SceneAssetsManager.Instance.GetProjectRootStructureData().result;
+                callbackResults.result = DatabaseManager.Instance.GetProjectRootStructureData().result;
                 callbackResults.data = default;
-                callbackResults.resultCode = SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode;
+                callbackResults.resultCode = DatabaseManager.Instance.GetProjectRootStructureData().resultCode;
             }
 
             callback.Invoke(callbackResults);
@@ -219,8 +219,8 @@ namespace Com.RedicalGames.Filar
                             OnClearInputFieldValue(AppData.InputFieldActionType.AssetNameField);
                             OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);
 
-                            var projectTypeContentParam = SceneAssetsManager.Instance.GetUIScreenGroupContentTemplate("Project Type Content", AppData.InputType.DropDown, state: AppData.InputUIState.Disabled,  dropdownActionType: AppData.InputDropDownActionType.ProjectType, placeHolder: "Project Type");
-                            var projectTemplateContentParam = SceneAssetsManager.Instance.GetUIScreenGroupContentTemplate("Project Template Content", AppData.InputType.DropDown, state: AppData.InputUIState.Enabled, dropdownActionType: AppData.InputDropDownActionType.ProjectTamplate, placeHolder: "Templates", contents: SceneAssetsManager.Instance.GetDropdownContent<AppData.ProjectTamplateType>().data);
+                            var projectTypeContentParam = DatabaseManager.Instance.GetUIScreenGroupContentTemplate("Project Type Content", AppData.InputType.DropDown, state: AppData.InputUIState.Disabled,  dropdownActionType: AppData.InputDropDownActionType.ProjectType, placeHolder: "Project Type");
+                            var projectTemplateContentParam = DatabaseManager.Instance.GetUIScreenGroupContentTemplate("Project Template Content", AppData.InputType.DropDown, state: AppData.InputUIState.Enabled, dropdownActionType: AppData.InputDropDownActionType.ProjectTamplate, placeHolder: "Templates", contents: DatabaseManager.Instance.GetDropdownContent<AppData.ProjectTamplateType>().data);
 
                             switch (restrictionCallbackResults.data.GetProjectSupportType())
                             {
@@ -304,13 +304,13 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputDropDownActionType.ProjectType:
 
-                    int contentIndexA = SceneAssetsManager.Instance.GetDropdownContentCount<AppData.ProjectCategoryType>();
-                    int contentIndexB = SceneAssetsManager.Instance.GetDropdownContentCount<AppData.ProjectCategoryType>("Project_", "All");
+                    int contentIndexA = DatabaseManager.Instance.GetDropdownContentCount<AppData.ProjectCategoryType>();
+                    int contentIndexB = DatabaseManager.Instance.GetDropdownContentCount<AppData.ProjectCategoryType>("Project_", "All");
 
-                    int index = value + SceneAssetsManager.Instance.GetDropdownContentIndex(contentIndexA, contentIndexB);
+                    int index = value + DatabaseManager.Instance.GetDropdownContentIndex(contentIndexA, contentIndexB);
                     var categoryType = (AppData.ProjectCategoryType)index;
 
-                    int projectIndex = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(categoryType);
+                    int projectIndex = DatabaseManager.Instance.GetDropdownContentTypeIndex(categoryType);
 
                     if (index.Equals(projectIndex))
                     {
@@ -328,7 +328,7 @@ namespace Com.RedicalGames.Filar
 
                     var templateType = (AppData.ProjectTamplateType)value;
 
-                    int templateIndex = SceneAssetsManager.Instance.GetDropdownContentTypeIndex(templateType);
+                    int templateIndex = DatabaseManager.Instance.GetDropdownContentTypeIndex(templateType);
 
                     if (value.Equals(templateIndex))
                     {

@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
         {
             yield return new WaitForEndOfFrame();
 
-            SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults => 
+            DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
             {
                 if (containerCallbackResults.Success())
                 {
@@ -67,8 +67,8 @@ namespace Com.RedicalGames.Filar
                             Log(placeHolderCallbackResults.resultCode, placeHolderCallbackResults.result, this);
                     });
 
-                    SceneAssetsManager.Instance.CreateNewFolderName = SceneAssetsManager.Instance.GetCreateNewFolderTempName();
-                    SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, SceneAssetsManager.Instance.CreateNewFolderName);
+                    DatabaseManager.Instance.CreateNewFolderName = DatabaseManager.Instance.GetCreateNewFolderTempName();
+                    SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, DatabaseManager.Instance.CreateNewFolderName);
 
                     HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
 
@@ -85,9 +85,9 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                 {
-                    if (SceneAssetsManager.Instance)
+                    if (DatabaseManager.Instance)
                     {
-                        SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults => 
+                        DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
                         {
                             if (containerCallbackResults.Success())
                             {
@@ -122,7 +122,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
         {
-            SceneAssetsManager.Instance.CreateNewFolderName = value;
+            DatabaseManager.Instance.CreateNewFolderName = value;
         }
 
         protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)

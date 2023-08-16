@@ -303,7 +303,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (HasRequiredComponentsAssigned())
                 {
-                    if (SceneAssetsManager.Instance)
+                    if (DatabaseManager.Instance)
                     {
                         foreach (var screen in screens)
                         {
@@ -321,7 +321,7 @@ namespace Com.RedicalGames.Filar
 
                                 // Title Info
                                 AppData.AssetInfoField titleInfoField = new AppData.AssetInfoField();
-                                titleInfoField.name = SceneAssetsManager.Instance.GetDefaultAssetName();
+                                titleInfoField.name = DatabaseManager.Instance.GetDefaultAssetName();
                                 titleInfoField.type = AppData.InfoDisplayerFieldType.Title;
 
                                 // Vertices Info
@@ -342,8 +342,8 @@ namespace Com.RedicalGames.Filar
                                 sceneAsset.info = info;
 
                                 sceneAsset.assetMode = AppData.AssetModeType.CreateMode;
-                                SceneAssetsManager.Instance.SetCurrentSceneAsset(sceneAsset);
-                                SceneAssetsManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
+                                DatabaseManager.Instance.SetCurrentSceneAsset(sceneAsset);
+                                DatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
                                 //if (SceneAssetsManager.Instance.GetCurrentSceneAsset().info.fields != null)
                                 //    screen.value.DisplaySceneAssetInfo(SceneAssetsManager.Instance.GetCurrentSceneAsset());
@@ -424,14 +424,14 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, hasAssetsManagerCallbackResults =>
+                                AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, hasAssetsManagerCallbackResults =>
                                 {
                                     callbackResults.result = hasAssetsManagerCallbackResults.result;
                                     callbackResults.resultCode = hasAssetsManagerCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
-                                        SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(bootScreenType, bootScreenDataPacketsCallbackResults =>
+                                        DatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(bootScreenType, bootScreenDataPacketsCallbackResults =>
                                         {
                                             callbackResults.result = bootScreenDataPacketsCallbackResults.result;
                                             callbackResults.resultCode = bootScreenDataPacketsCallbackResults.resultCode;
@@ -608,11 +608,11 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized."));
+                        callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized."));
 
                         if (callbackResults.Success())
                         {
-                            var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+                            var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
                             callbackResults.SetResults(sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(dataPackets.screenType));
 
@@ -988,24 +988,24 @@ namespace Com.RedicalGames.Filar
 
             if (HasRequiredComponentsAssigned())
             {
-                if (SceneAssetsManager.Instance != null)
+                if (DatabaseManager.Instance != null)
                 {
                     switch(screen.value.GetUIScreenType())
                     {
                         case AppData.UIScreenType.ProjectDashboardScreen:
 
-                            if(SceneAssetsManager.Instance.GetWidgetsContentCount() == 0)
+                            if(DatabaseManager.Instance.GetWidgetsContentCount() == 0)
                                 screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
 
-                            SceneAssetsManager.Instance.GetFolderContentCount(SceneAssetsManager.Instance.GetCurrentFolder(), folderFound =>
+                            DatabaseManager.Instance.GetFolderContentCount(DatabaseManager.Instance.GetCurrentFolder(), folderFound =>
                             {
                                 if (!AppData.Helpers.IsSuccessCode(folderFound.resultCode))
-                                    SceneAssetsManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                                    DatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
                             });
 
-                            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
                             {
-                                if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
+                                if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                                 {
                                     screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
                                     {
@@ -1014,7 +1014,7 @@ namespace Com.RedicalGames.Filar
                                     });
                                 }
 
-                                if (SceneAssetsManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
+                                if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
                                 {
                                     screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
                                     {
@@ -1024,20 +1024,20 @@ namespace Com.RedicalGames.Filar
                                 }
                             }
                             else
-                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
 
-                            if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
-                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, SceneAssetsManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
+                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
                             else
-                                Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
 
                             screen.value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
 
-                            SceneAssetsManager.Instance.GetFolderContentCount(SceneAssetsManager.Instance.GetCurrentFolder(), folderFound =>
+                            DatabaseManager.Instance.GetFolderContentCount(DatabaseManager.Instance.GetCurrentFolder(), folderFound =>
                             {
                                 if (!AppData.Helpers.IsSuccessCode(folderFound.resultCode))
                                 {
-                                    SceneAssetsManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                                    DatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
 
                                     callbackResults.result = $"UI Scene View Of Type {screen.value.GetUIScreenType()} Has Been Updated - UI Disabled On Enter.";
                                     callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -1087,7 +1087,7 @@ namespace Com.RedicalGames.Filar
 
         public void Refresh()
         {
-            AppData.Helpers.GetComponent(SceneAssetsManager.Instance, hasComponentCallbackResults =>
+            AppData.Helpers.GetComponent(DatabaseManager.Instance, hasComponentCallbackResults =>
             {
                 if (hasComponentCallbackResults.Success())
                     OnScreenRefresh(currentScreen.value.GetScreenData());
@@ -1098,7 +1098,7 @@ namespace Com.RedicalGames.Filar
 
         public void ScreenRefresh()
         {
-            if (SceneAssetsManager.Instance != null)
+            if (DatabaseManager.Instance != null)
             {
                 if (SelectableManager.Instance != null)
                 {
@@ -1107,9 +1107,9 @@ namespace Com.RedicalGames.Filar
 
                     if (HasCurrentScreen().Success())
                     {
-                        if (SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
+                        if (DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
                         {
-                            SceneAssetsManager.Instance.HasContentToLoadForSelectedScreen(SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
+                            DatabaseManager.Instance.HasContentToLoadForSelectedScreen(DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
                             {
                                 if (hasContentCallbackResults.Success())
                                 {
@@ -1117,7 +1117,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         case AppData.UIScreenType.LandingPageScreen:
 
-                                            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.LandingPageSelectionContent, widgetsContentContainer =>
+                                            DatabaseManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.LandingPageSelectionContent, widgetsContentContainer =>
                                             {
                                                 if (widgetsContentContainer.Success())
                                                 {
@@ -1139,7 +1139,7 @@ namespace Com.RedicalGames.Filar
 
                                         case AppData.UIScreenType.ProjectDashboardScreen:
 
-                                            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
+                                            DatabaseManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
                                             {
                                                 if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultCode))
                                                 {
@@ -1161,7 +1161,7 @@ namespace Com.RedicalGames.Filar
                             });
                         }
                         else
-                            Log(SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultCode, SceneAssetsManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).result, this);
+                            Log(DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultCode, DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).result, this);
                     }
                     else
                         Log(HasCurrentScreen().resultCode, HasCurrentScreen().result, this);
@@ -1185,7 +1185,7 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            SceneAssetsManager.Instance.GetDynamicWidgetsContainer(dataPackets.containerType, containerCallbackResults =>
+            DatabaseManager.Instance.GetDynamicWidgetsContainer(dataPackets.containerType, containerCallbackResults =>
             {
                 if (containerCallbackResults.Success())
                 {
@@ -1193,7 +1193,7 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.UIScreenType.LandingPageScreen:
 
-                            SceneAssetsManager.Instance.SetWidgetsRefreshData(null, containerCallbackResults.data, dataSetupCallbackResults =>
+                            DatabaseManager.Instance.SetWidgetsRefreshData(null, containerCallbackResults.data, dataSetupCallbackResults =>
                             {
                                 Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
                             });
@@ -1202,18 +1202,18 @@ namespace Com.RedicalGames.Filar
 
                         case AppData.UIScreenType.ProjectCreationScreen:
 
-                            if (SceneAssetsManager.Instance.GetProjectRootStructureData().Success())
+                            if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
                             {
-                                if (SceneAssetsManager.Instance.GetProjectStructureData().Success())
+                                if (DatabaseManager.Instance.GetProjectStructureData().Success())
                                 {
-                                    var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? SceneAssetsManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : SceneAssetsManager.Instance.GetProjectStructureData().data.rootFolder;
+                                    var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : DatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
                                     var container = containerCallbackResults.data;
 
-                                    SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
+                                    DatabaseManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
                                     {
                                         if (dataSetupCallbackResults.Success())
                                         {
-                                            SceneAssetsManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                            DatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
                                             {
                                                 Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
                                             });
@@ -1221,10 +1221,10 @@ namespace Com.RedicalGames.Filar
                                     });
                                 }
                                 else
-                                    Log(SceneAssetsManager.Instance.GetProjectStructureData().resultCode, SceneAssetsManager.Instance.GetProjectStructureData().result, this);
+                                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
                             }
                             else
-                                Log(SceneAssetsManager.Instance.GetProjectRootStructureData().resultCode, SceneAssetsManager.Instance.GetProjectRootStructureData().result, this);
+                                Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
 
                             break;
 
@@ -1241,11 +1241,11 @@ namespace Com.RedicalGames.Filar
                     Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
             });
 
-            var container = SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+            var container = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
 
             if (container == null)
             {
-                SceneAssetsManager.Instance.GetContentContainer(containerCallbackResults =>
+                DatabaseManager.Instance.GetContentContainer(containerCallbackResults =>
                 {
                     if (containerCallbackResults.Success())
                         container = containerCallbackResults.data;
@@ -1258,7 +1258,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (currentScreen.value.GetScreenData().refreshSceneAssets)
                 {
-                    var refreshTask = await SceneAssetsManager.Instance.Refreshed(SceneAssetsManager.Instance.GetCurrentFolder(), container, dataPackets); // Wait For Assets To Be Refreshed.
+                    var refreshTask = await DatabaseManager.Instance.Refreshed(DatabaseManager.Instance.GetCurrentFolder(), container, dataPackets); // Wait For Assets To Be Refreshed.
 
                     if (currentScreen.value != null)
                         currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);

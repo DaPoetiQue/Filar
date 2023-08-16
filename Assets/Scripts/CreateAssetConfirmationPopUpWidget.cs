@@ -61,9 +61,9 @@ namespace Com.RedicalGames.Filar
             else
                 Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
 
-            if (SceneAssetsManager.Instance != null)
+            if (DatabaseManager.Instance != null)
             {
-                var content = SceneAssetsManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
+                var content = DatabaseManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
 
                 if (content.data != null)
                 {
@@ -97,38 +97,38 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-            if (SceneAssetsManager.Instance)
+            if (DatabaseManager.Instance)
             {
-                if (!string.IsNullOrEmpty(SceneAssetsManager.Instance.GetCurrentSceneAsset().name))
+                if (!string.IsNullOrEmpty(DatabaseManager.Instance.GetCurrentSceneAsset().name))
                 {
                     if (titleDisplayer)
-                        titleDisplayer.text = SceneAssetsManager.Instance.GetCurrentSceneAsset().name;
+                        titleDisplayer.text = DatabaseManager.Instance.GetCurrentSceneAsset().name;
                     else
                         Debug.LogWarning("--> Pop Up Title Displayer Missing / Not Assigned In The Inspector Panel.");
 
-                    if (SceneAssetsManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.CreateMode)
+                    if (DatabaseManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.CreateMode)
                         ClearInputFields();
 
-                    if (SceneAssetsManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.EditMode)
+                    if (DatabaseManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.EditMode)
                     {
                         if (nameInputField)
-                            nameInputField.text = SceneAssetsManager.Instance.GetCurrentSceneAsset().name;
+                            nameInputField.text = DatabaseManager.Instance.GetCurrentSceneAsset().name;
 
                         if (descriptionInputField)
-                            descriptionInputField.text = SceneAssetsManager.Instance.GetCurrentSceneAsset().description;
+                            descriptionInputField.text = DatabaseManager.Instance.GetCurrentSceneAsset().description;
 
                         if (submitButtonText != null)
                             submitButtonText.text = updateAssetSubmitButtonTitle;
 
                         if (assetCategoryDropdown != null)
-                            assetCategoryDropdown.value = (int)SceneAssetsManager.Instance.GetCurrentSceneAsset().categoryType;
+                            assetCategoryDropdown.value = (int)DatabaseManager.Instance.GetCurrentSceneAsset().categoryType;
                     }
 
-                    if (!string.IsNullOrEmpty(SceneAssetsManager.Instance.GetCurrentSceneAsset().GetAssetField(AppData.AssetFieldType.Thumbnail).path))
+                    if (!string.IsNullOrEmpty(DatabaseManager.Instance.GetCurrentSceneAsset().GetAssetField(AppData.AssetFieldType.Thumbnail).path))
                     {
                         if (thumbnailDisplayer)
                         {
-                            thumbnailDisplayer.sprite = AppData.Helpers.Texture2DToSprite(AppData.Helpers.LoadTextureFile(SceneAssetsManager.Instance.GetCurrentSceneAsset().GetAssetField(AppData.AssetFieldType.Thumbnail).path));
+                            thumbnailDisplayer.sprite = AppData.Helpers.Texture2DToSprite(AppData.Helpers.LoadTextureFile(DatabaseManager.Instance.GetCurrentSceneAsset().GetAssetField(AppData.AssetFieldType.Thumbnail).path));
                         }
                         else
                             Debug.LogWarning("--> Pop Up Thumbanil Displayer Missing / Not Assigned In The Inspector Panel.");
@@ -170,9 +170,9 @@ namespace Com.RedicalGames.Filar
         {
             if (!string.IsNullOrEmpty(value))
             {
-                if (SceneAssetsManager.Instance != null)
+                if (DatabaseManager.Instance != null)
                 {
-                    AppData.SceneAsset sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                    AppData.SceneAsset sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
                     sceneAsset.name = value;
 
                     AppData.AssetInfoField assetInfoField = sceneAsset.info.GetInfoField(AppData.InfoDisplayerFieldType.Title);
@@ -180,7 +180,7 @@ namespace Com.RedicalGames.Filar
 
                     sceneAsset.info.UpdateInfoField(assetInfoField);
 
-                    SceneAssetsManager.Instance.SetCurrentSceneAsset(sceneAsset);
+                    DatabaseManager.Instance.SetCurrentSceneAsset(sceneAsset);
                 }
                 else
                     Debug.LogWarning("--> Asset Manager Not Initialized.");
@@ -189,12 +189,12 @@ namespace Com.RedicalGames.Filar
 
         void OnSceneAssetDescriptionFieldValueChanged(string value)
         {
-            if (SceneAssetsManager.Instance != null)
+            if (DatabaseManager.Instance != null)
             {
-                AppData.SceneAsset sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                AppData.SceneAsset sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
                 sceneAsset.description = value;
 
-                SceneAssetsManager.Instance.SetCurrentSceneAsset(sceneAsset);
+                DatabaseManager.Instance.SetCurrentSceneAsset(sceneAsset);
             }
             else
                 Debug.LogWarning("--> Asset Manager Not Initialized.");
@@ -202,15 +202,15 @@ namespace Com.RedicalGames.Filar
 
         void OnAssetCategorySelectionDropdownValueChanged(int dropdownIndex)
         {
-            if (SceneAssetsManager.Instance != null)
+            if (DatabaseManager.Instance != null)
             {
-                AppData.SceneAsset sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                AppData.SceneAsset sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
 
                 AppData.AssetCategoryType selectedCategory = (AppData.AssetCategoryType)dropdownIndex;
 
                 sceneAsset.categoryType = selectedCategory;
 
-                SceneAssetsManager.Instance.SetCurrentSceneAsset(sceneAsset);
+                DatabaseManager.Instance.SetCurrentSceneAsset(sceneAsset);
             }
             else
                 Debug.LogWarning("--> Asset Manager Not Initialized.");

@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
                             if (SelectableManager.Instance.HasActiveSelection())
                                 SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                            if (SceneAssetsManager.Instance != null)
+                            if (DatabaseManager.Instance != null)
                             {
                                 AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
                                 {

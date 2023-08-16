@@ -27,6 +27,8 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
+        public NetworkReachability status;
+
         bool serverConnected = false;
 
         #endregion
@@ -67,25 +69,27 @@ namespace Com.RedicalGames.Filar
 
             await Task.Delay(NetworkConnectionDelay());
 
-            while (Application.internetReachability == NetworkReachability.NotReachable || timeOut > 0.0f)
+            status = Application.internetReachability;
+
+            while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
             {
                 timeOut -= 1 * Time.deltaTime; ;
 
-                if (Application.internetReachability != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
+                if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
                     break;
 
                 await Task.Yield();
             }
 
-            string result = (Application.internetReachability != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
-            callbackResults.SetResults(result, (Application.internetReachability != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+            string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
+            callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
 
             return callbackResults;
         }
 
         int NetworkConnectionDelay()
         {
-            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
+            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
 
             if (sceneAssetsManagerCallbackResults.Success())
             {
@@ -104,7 +108,7 @@ namespace Com.RedicalGames.Filar
 
         float DefaultTimeOut()
         {
-            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
+            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
 
             if (sceneAssetsManagerCallbackResults.Success())
             {

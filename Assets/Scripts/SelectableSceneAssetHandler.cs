@@ -73,7 +73,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnFingerDown(Finger finger)
         {
-            if (SceneAssetsManager.Instance)
+            if (DatabaseManager.Instance)
             {
                 isFingerDown = true;
                 isFingerMoved = false;
@@ -106,9 +106,9 @@ namespace Com.RedicalGames.Filar
 
         void OnScreenDoubleTapActionEvent()
         {
-            if (SceneAssetsManager.Instance)
+            if (DatabaseManager.Instance)
             {
-                if (SceneAssetsManager.Instance.GetCurrentSceneMode() == AppData.SceneMode.EditMode)
+                if (DatabaseManager.Instance.GetCurrentSceneMode() == AppData.SceneMode.EditMode)
                 {
                     if (selectableHandler && !tappingAsset)
                     {
@@ -121,8 +121,8 @@ namespace Com.RedicalGames.Filar
                                 SelectableManager.Instance.ClearSelection();
                                 SelectableManager.Instance.ClearSelectionList();
 
-                                if (SceneAssetsManager.Instance.GetCurrentSceneMode() != AppData.SceneMode.EditMode)
-                                    SceneAssetsManager.Instance.SetCurrentSceneMode(AppData.SceneMode.EditMode);
+                                if (DatabaseManager.Instance.GetCurrentSceneMode() != AppData.SceneMode.EditMode)
+                                    DatabaseManager.Instance.SetCurrentSceneMode(AppData.SceneMode.EditMode);
                             }
                             else
                                 Debug.Log("--> No Selection");
@@ -137,8 +137,8 @@ namespace Com.RedicalGames.Filar
                         {
                             SelectableManager.Instance.AddToSelectedList(selectableHandler);
 
-                            if (SceneAssetsManager.Instance.GetCurrentSceneMode() != AppData.SceneMode.EditMode)
-                                SceneAssetsManager.Instance.SetCurrentSceneMode(AppData.SceneMode.EditMode);
+                            if (DatabaseManager.Instance.GetCurrentSceneMode() != AppData.SceneMode.EditMode)
+                                DatabaseManager.Instance.SetCurrentSceneMode(AppData.SceneMode.EditMode);
                         }
                     }
                 }
@@ -157,9 +157,9 @@ namespace Com.RedicalGames.Filar
 
         protected override void UpdateSelectableStateAction()
         {
-            if (SceneAssetsManager.Instance)
+            if (DatabaseManager.Instance)
             {
-                if (SceneAssetsManager.Instance.GetCurrentSceneMode() == AppData.SceneMode.EditMode)
+                if (DatabaseManager.Instance.GetCurrentSceneMode() == AppData.SceneMode.EditMode)
                 {
                     if (isFingerDown)
                     {

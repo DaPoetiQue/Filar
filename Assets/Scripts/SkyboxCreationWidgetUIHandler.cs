@@ -57,7 +57,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputDropDownActionType.SettingsSelectionType:
 
-                                    List<string> skyboxSettingsTypeList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(AppData.DropDownContentType.SkyboxSettings).data);
+                                    List<string> skyboxSettingsTypeList = DatabaseManager.Instance.GetFormatedDropDownContentList(DatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.SkyboxSettings).data);
 
                                     if (skyboxSettingsTypeList != null)
                                         OnInitializeDropDown(dropdown, skyboxSettingsTypeList, false);
@@ -68,7 +68,7 @@ namespace Com.RedicalGames.Filar
 
                                 case AppData.InputDropDownActionType.RotationalDirection:
 
-                                    List<string> rotationalDirectionList = SceneAssetsManager.Instance.GetFormatedDropDownContentList(SceneAssetsManager.Instance.GetDropDownContentData(AppData.DropDownContentType.Directions).data);
+                                    List<string> rotationalDirectionList = DatabaseManager.Instance.GetFormatedDropDownContentList(DatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.Directions).data);
 
                                     if (rotationalDirectionList != null)
                                         OnInitializeDropDown(dropdown, rotationalDirectionList, false);
@@ -150,7 +150,7 @@ namespace Com.RedicalGames.Filar
                     loadingSpinner.SetScreenTextContent("Please Wait - Configuring Lighting Data...", AppData.ScreenTextType.MessageDisplayer);
 
                     AppData.ScreenLoadingInitializationData loadingData = new AppData.ScreenLoadingInitializationData();
-                    loadingData.duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultAssetCreationYieldValue).value;
+                    loadingData.duration = DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultAssetCreationYieldValue).value;
                     loadingData.autoHide = true;
 
                     loadingSpinner.AddLoadingData(loadingData);
@@ -292,8 +292,8 @@ namespace Com.RedicalGames.Filar
                     notificationType = AppData.NotificationType.Info,
                     screenType = AppData.UIScreenType.ProjectDashboardScreen,
                     screenPosition = AppData.SceneAssetPivot.TopCenter,
-                    delay = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationDelay).value,
-                    duration = SceneAssetsManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationDuration).value // Get From Value List In Scene Assets Manager.
+                    delay = DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationDelay).value,
+                    duration = DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationDuration).value // Get From Value List In Scene Assets Manager.
                 };
 
                 NotificationSystemManager.Instance.ScheduleNotification(notification);

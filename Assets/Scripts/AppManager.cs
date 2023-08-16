@@ -111,7 +111,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                    AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
                     {
                         callbackResults.SetResults(sceneAssetsManagerCallbackResults);
 
@@ -333,7 +333,7 @@ namespace Com.RedicalGames.Filar
 
         void OnLoadAppInitializationBootScreen()
         {
-            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
             {
                 if (sceneAssetsManagerCallbackResults.Success())
                 {
@@ -497,15 +497,12 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.CallbackData<AppData.AppInfo>> SynchronizingAppInfo()
         {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
 
             if(callbackResults.Success())
             {
-                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
-
+                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
                 await sceneAssetsManager.InitializeDatabase();
-
-                return await GetAppInfoAsync();
             }
 
             return callbackResults;
@@ -515,35 +512,28 @@ namespace Com.RedicalGames.Filar
 
         #region Initialize App Entry
 
-        public async Task<AppData.CallbackData<AppData.AppInfo>> GetApplicationEntryPoint()
+        public async Task<AppData.CallbackData<AppData.AppInfo>> CheckEntryPointAsync()
         {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                await sceneAssetsManager.InitializeDatabase();
+                do
+                    await Task.Delay(100);
+                while (!sceneAssetsManager.IsServerAppInfoDatabaseInitialized);
 
-                return await GetAppInfoAsync();
-            }
-
-            return callbackResults;
-        }
-
-        #endregion
-
-        #region App Info
-
-        async Task<AppData.CallbackData<AppData.AppInfo>> GetAppInfoAsync()
-        {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized."));
-
-            if(callbackResults.Success())
-            {
-                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
-
-               
+                if(sceneAssetsManager.IsServerAppInfoDatabaseInitialized)
+                {
+                    callbackResults.result = "App Info Has Been Synchronized.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "App Info Synchronization Failed.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
             }
 
             return callbackResults;

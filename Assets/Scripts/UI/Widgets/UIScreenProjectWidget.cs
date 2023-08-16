@@ -46,9 +46,9 @@ namespace Com.RedicalGames.Filar
                             if (SelectableManager.Instance.HasActiveSelection())
                                 SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                            if (SceneAssetsManager.Instance != null)
+                            if (DatabaseManager.Instance != null)
                             {
-                                SceneAssetsManager.Instance.SetCurrentProjectStructureData(structureData);
+                                DatabaseManager.Instance.SetCurrentProjectStructureData(structureData);
                                 //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "New Project Name");
 
                                 AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
@@ -122,7 +122,7 @@ namespace Com.RedicalGames.Filar
                 string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
                 SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
 
-                SceneAssetsManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
+                DatabaseManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
                 {
                     if (projectInfoCallbackResults.Success())
                         SetActionButtonColor(AppData.InputActionButtonType.OpenProject, projectInfoCallbackResults.data.color);

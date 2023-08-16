@@ -75,7 +75,7 @@ namespace Com.RedicalGames.Filar
                         selectedColorInfo.color = screenDataTexture.GetPixel(x, y);
                         colorPickerVisualizer.SetPickedColor(selectedColorInfo.color);
 
-                        SceneAssetsManager.Instance.GetHexidecimalFromColor(selectedColorInfo.color, (getHexadecimalCallbackResults) =>
+                        DatabaseManager.Instance.GetHexidecimalFromColor(selectedColorInfo.color, (getHexadecimalCallbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
@@ -116,7 +116,7 @@ namespace Com.RedicalGames.Filar
                         selectedColorInfo.color = screenDataTexture.GetPixel(x, y);
                         colorPickerVisualizer.SetPickedColor(selectedColorInfo.color);
 
-                        SceneAssetsManager.Instance.GetHexidecimalFromColor(selectedColorInfo.color, (getHexadecimalCallbackResults) =>
+                        DatabaseManager.Instance.GetHexidecimalFromColor(selectedColorInfo.color, (getHexadecimalCallbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {

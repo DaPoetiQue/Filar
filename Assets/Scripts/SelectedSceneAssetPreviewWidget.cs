@@ -193,8 +193,8 @@ namespace Com.RedicalGames.Filar
                     break;
             }
 
-            if (SceneAssetsManager.Instance)
-                SetWidgetAssetData(SceneAssetsManager.Instance.GetCurrentSceneAsset());
+            if (DatabaseManager.Instance)
+                SetWidgetAssetData(DatabaseManager.Instance.GetCurrentSceneAsset());
             else
                 LogWarning("Scene Assets Manager Not Yet Initialized.", this, () => OnShowScreenWidget(dataPackets));
         }

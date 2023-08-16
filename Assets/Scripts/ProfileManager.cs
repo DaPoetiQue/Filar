@@ -74,7 +74,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();
 
-            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults =>
+            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
             {
                 callbackResults.result = sceneAssetsManagerCallbackResults.result;
                 callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
@@ -93,7 +93,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();
 
-            AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, sceneAssetsManagerCallbackResults =>
+            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
             {
 
                 callbackResults.SetResults(sceneAssetsManagerCallbackResults);
@@ -106,6 +106,15 @@ namespace Com.RedicalGames.Filar
             }, "Scene Assets Manager Instance In Not Yet Initialized.");
 
             callback.Invoke(callbackResults);
+        }
+
+        public async Task<AppData.CallbackData<AuthError>> AppSignInAsync()
+        {
+            AppData.CallbackData<AuthError> callbackResults = new AppData.CallbackData<AuthError>();
+
+            await Task.Delay(100);
+
+            return callbackResults;
         }
 
         public async Task<AuthError> SignInAsync(AppData.Profile profile)

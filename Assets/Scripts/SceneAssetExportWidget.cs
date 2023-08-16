@@ -51,9 +51,9 @@ namespace Com.RedicalGames.Filar
         {
             if (exportExtensionDropDown.value != null)
             {
-                if (SceneAssetsManager.Instance != null)
+                if (DatabaseManager.Instance != null)
                 {
-                    var content = SceneAssetsManager.Instance.GetDropdownContent<AppData.ExportExtensionType>();
+                    var content = DatabaseManager.Instance.GetDropdownContent<AppData.ExportExtensionType>();
 
                     if (content.data != null)
                     {
@@ -85,8 +85,8 @@ namespace Com.RedicalGames.Filar
         {
             assetExportData.exportExtension = (AppData.ExportExtensionType)dropdownIndex;
 
-            if (SceneAssetsManager.Instance)
-                SceneAssetsManager.Instance.SetCurrentAssetExportData(assetExportData);
+            if (DatabaseManager.Instance)
+                DatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
             else
                 Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
         }
@@ -95,9 +95,9 @@ namespace Com.RedicalGames.Filar
         {
             assetExportData.name = value;
 
-            if (SceneAssetsManager.Instance)
+            if (DatabaseManager.Instance)
             {
-                SceneAssetsManager.Instance.SetCurrentAssetExportData(assetExportData);
+                DatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
             }
             else
                 Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
@@ -127,22 +127,22 @@ namespace Com.RedicalGames.Filar
                     {
                         if (exportedAssetNameInputField.value != null)
                         {
-                            exportedAssetNameInputField.value.text = SceneAssetsManager.Instance.GetCurrentSceneAsset().name;
+                            exportedAssetNameInputField.value.text = DatabaseManager.Instance.GetCurrentSceneAsset().name;
                         }
                         else
                             Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
 
-                        if (SceneAssetsManager.Instance)
+                        if (DatabaseManager.Instance)
                         {
-                            if (SceneAssetsManager.Instance.GetCurrentSceneAsset().sceneObject.value != null)
+                            if (DatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value != null)
                             {
-                                assetExportData.name = SceneAssetsManager.Instance.GetCurrentSceneAsset().name;
-                                assetExportData.value = SceneAssetsManager.Instance.GetCurrentSceneAsset().sceneObject.value;
+                                assetExportData.name = DatabaseManager.Instance.GetCurrentSceneAsset().name;
+                                assetExportData.value = DatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value;
                             }
                             else
                                 Debug.LogWarning("--> RG_Unity - OnShowScreenWidget Failed : Scene Assets Manager Instance's Get Current Scene Asset Scene Object Value Is Missing / Null");
 
-                            SceneAssetsManager.Instance.SetCurrentAssetExportData(assetExportData);
+                            DatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
                         }
                         else
                             Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
@@ -157,8 +157,8 @@ namespace Com.RedicalGames.Filar
                     break;
             }
 
-            if (SceneAssetsManager.Instance)
-                SetWidgetAssetData(SceneAssetsManager.Instance.GetCurrentSceneAsset());
+            if (DatabaseManager.Instance)
+                SetWidgetAssetData(DatabaseManager.Instance.GetCurrentSceneAsset());
             else
                 Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
         }

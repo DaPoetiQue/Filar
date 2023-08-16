@@ -11,18 +11,18 @@ using Firebase.Database;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SceneAssetsManager : AppMonoBaseClass
+    public class DatabaseManager : AppMonoBaseClass
     {
         #region Static
 
-        static SceneAssetsManager _instance;
+        static DatabaseManager _instance;
 
-        public static SceneAssetsManager Instance
+        public static DatabaseManager Instance
         {
             get
             {
                 if (_instance == null)
-                    _instance = FindObjectOfType<SceneAssetsManager>();
+                    _instance = FindObjectOfType<DatabaseManager>();
 
                 return _instance;
             }
@@ -229,7 +229,8 @@ namespace Com.RedicalGames.Filar
 
         DatabaseReference databaseReference;
 
-       List<AppData.Post> postsDatabase = new List<AppData.Post>();
+        List<AppData.AppInfo> appInfoDatabase = new List<AppData.AppInfo>();
+        List<AppData.Post> postsDatabase = new List<AppData.Post>();
 
         #endregion
 
@@ -245,7 +246,8 @@ namespace Com.RedicalGames.Filar
 
         AppData.NavigationRenderSettingsProfileID profileID;
 
-        public bool IsServerDatabaseInitialized { get; private set; }
+        public bool IsServerAppInfoDatabaseInitialized { get; private set; }
+        public bool IsServerPostsDatabaseInitialized { get; private set; }
         public bool IsLocalStorageInitialized { get; private set; }
 
         #endregion
@@ -282,7 +284,8 @@ namespace Com.RedicalGames.Filar
 
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
-                FirebaseDatabase.DefaultInstance.GetReference("Posts").ValueChanged += OnDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("App Info").ValueChanged += OnAppInfoDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts").ValueChanged += OnPostsDatabaseUpdate;
 
                 #region Test Add Data
 
@@ -348,7 +351,190 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        void OnDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
+        #region App Info Database
+
+        void OnAppInfoDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
+        {
+            if (valueChangedEvent.DatabaseError == null)
+            {
+                if (valueChangedEvent.Snapshot.Key == "App Info")
+                {
+                    if (valueChangedEvent.Snapshot.ChildrenCount > 0)
+                    {
+                        appInfoDatabase = new List<AppData.AppInfo>();
+
+                        var appInfoSnapshots = valueChangedEvent.Snapshot.Children;
+
+                        foreach (var appInfoSnapshot in appInfoSnapshots)
+                        {
+                            var resultsJson = (string)appInfoSnapshot.GetValue(true);
+                            AppData.AppInfo appInfo = JsonUtility.FromJson<AppData.AppInfo>(resultsJson);
+
+                            if (!appInfoDatabase.Contains(appInfo))
+                                appInfoDatabase.Add(appInfo);
+                            else
+                                LogWarning("Server App Info Already Exists In Local Database", this);
+                        }
+                    }
+
+                    IsServerAppInfoDatabaseInitialized = true;
+                }
+            }
+        }
+
+
+        public void GetAppInfo(string deviceID, Action<AppData.CallbackData<AppData.AppInfo>> callback)
+        {
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(GetAppInfoList());
+
+            if (callbackResults.Success())
+            {
+                var appInfos = GetAppInfoList().data;
+
+                foreach (var appInfo in appInfos)
+                {
+                    var device = appInfo.GetLicenseKey().GetDeviceIinfoList().Find(info => info.deviceID == deviceID);
+
+                    if (device != null)
+                    {
+                        callbackResults.result = $"App Info With Device ID : {deviceID} Found.";
+                        callbackResults.data = appInfo;
+
+                        break;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"App Info With Device ID : {deviceID} not Found.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        callbackResults.data = default;
+
+                        continue;
+                    }
+                }
+            }
+
+            callback.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.AppInfo> GetAppInfo(string deviceID)
+        {
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
+
+            if (callbackResults.Success())
+            {
+                var appInfos = GetAppInfoList().data;
+
+                foreach (var appInfo in appInfos)
+                {
+                    var device = appInfo.GetLicenseKey().GetDeviceIinfoList().Find(info => info.deviceID == deviceID);
+
+                    if (device != null)
+                    {
+                        callbackResults.result = $"App Info With Device ID : {deviceID} Found.";
+                        callbackResults.data = appInfo;
+
+                        break;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"App Info With Device ID : {deviceID} not Found.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        callbackResults.data = default;
+
+                        continue;
+                    }
+                }
+            }
+
+            return callbackResults;
+        }
+
+        public async Task<AppData.CallbackData<AppData.AppInfo>> GetAppInfoAsync(string deviceID)
+        {
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
+
+            if (callbackResults.Success())
+            {
+                var appInfos = GetAppInfoList().data;
+
+                foreach (var appInfo in appInfos)
+                {
+                    await Task.Yield();
+
+                    var device = appInfo.GetLicenseKey().GetDeviceIinfoList().Find(info => info.deviceID == deviceID);
+
+                    if (device != null)
+                    {
+                        callbackResults.result = $"App Info With Device ID : {deviceID} Found.";
+                        callbackResults.data = appInfo;
+
+                        break;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"App Info With Device ID : {deviceID} not Found.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        callbackResults.data = default;
+
+                        continue;
+                    }
+                }
+            }
+
+            return callbackResults;
+        }
+
+        public void GetAppInfoList(Action<AppData.CallbackDataList<AppData.AppInfo>> callback)
+        {
+            AppData.CallbackDataList<AppData.AppInfo> callbackResults = new AppData.CallbackDataList<AppData.AppInfo>();
+
+            AppData.Helpers.GetAppComponentsValid(appInfoDatabase, "App Info Database", hasComponentsCallbackResults => 
+            {
+                callbackResults.SetResult(hasComponentsCallbackResults);
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"{appInfoDatabase.Count} App Info Data Found In The Database";
+                    callbackResults.data = appInfoDatabase;
+                }
+                else
+                {
+                    callbackResults.result = "There Are No App Info Data Found In The Database.";
+                    callbackResults.data = default;
+                }
+            });
+
+            callback.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackDataList<AppData.AppInfo> GetAppInfoList()
+        {
+            AppData.CallbackDataList<AppData.AppInfo> callbackResults = new AppData.CallbackDataList<AppData.AppInfo>();
+
+            AppData.Helpers.GetAppComponentsValid(appInfoDatabase, "App Info Database", hasComponentsCallbackResults =>
+            {
+                callbackResults.SetResult(hasComponentsCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{appInfoDatabase.Count} App Info Data Found In The Database";
+                    callbackResults.data = appInfoDatabase;
+                }
+                else
+                {
+                    callbackResults.result = "There Are No App Info Data Found In The Database.";
+                    callbackResults.data = default;
+                }
+            });
+
+            return callbackResults;
+        }
+
+        #endregion
+
+        #region Posts Database
+
+        void OnPostsDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
         {
             if (valueChangedEvent.DatabaseError == null)
             {
@@ -379,8 +565,8 @@ namespace Com.RedicalGames.Filar
 
                                 if (postsDatabase.Count > 0)
                                 {
-                                    if(!IsServerDatabaseInitialized)
-                                        IsServerDatabaseInitialized = true;
+                                    if(!IsServerPostsDatabaseInitialized)
+                                        IsServerPostsDatabaseInitialized = true;
 
                                     screenUIManager.Refresh();
                                 }
@@ -422,6 +608,8 @@ namespace Com.RedicalGames.Filar
 
             callback.Invoke(callbackResults);
         }
+
+        #endregion
 
         public void InitializeStorage(Action<AppData.Callback> callback = null)
         {
@@ -4144,7 +4332,7 @@ namespace Com.RedicalGames.Filar
                         {
                             case AppData.UIScreenType.LandingPageScreen:
 
-                                while (!IsServerDatabaseInitialized)
+                                while (!IsServerPostsDatabaseInitialized)
                                     await Task.Yield();
 
                                 widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
