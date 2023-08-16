@@ -1073,8 +1073,8 @@ namespace Com.RedicalGames.Filar
             Default,
             CheckingNetworkConnection,
             AppInitialization,
-            CheckingAppCompatibility,
-            StorageInitialization,
+            CheckingDeviceCompatibility,
+            AppSigning,
             InitializingUserAssets,
             CheckingProfile,
             FetchProfile,
@@ -1087,6 +1087,18 @@ namespace Com.RedicalGames.Filar
             Pro
         }
 
+        public enum LoadingSequenceMessageType
+        {
+            None,
+            NetworkCheck,
+            ServerConnection,
+            AppInfoSynchronization,
+            ServerEntryPoint,
+            DeviceCompitability,
+            ProfileSynchronization,
+            SigningApp
+        }
+
         #region App Information
 
         [Serializable]
@@ -1094,9 +1106,8 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            public Profile profile;
             public LicenseKey licenseKey;
-
-            public bool activeProfile;
 
             #endregion
 
@@ -1107,32 +1118,43 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public AppInfo(LicenseKey licenseKey)
+            public AppInfo(Profile profile, LicenseKey licenseKey)
             {
+                this.profile = profile;
                 this.licenseKey = licenseKey;
-                this.activeProfile = true;
-            }
-
-            public AppInfo(LicenseKey licenseKey, bool activeProfile)
-            {
-                this.licenseKey = licenseKey;
-                this.activeProfile = activeProfile;
             }
 
             #region Data Setters
 
             public void SetLicenseKey(LicenseKey licenseKey) => this.licenseKey = licenseKey;
-            public void SetActiveProfile(bool activeProfile) => this.activeProfile = activeProfile;
+            public void SetProfile(Profile profile) => this.profile = profile;
 
             #endregion
-
 
             #region Data Getters
 
-            public LicenseKey GetLicenseKey(LicenseKey licenseKey) => licenseKey;
-            public bool GetActiveProfile(bool activeProfile) => activeProfile;
+            public LicenseKey GetLicenseKey() => licenseKey;
+            public Profile GetProfile() => profile;
 
             #endregion
+
+            public CallbackData<LicenseKey> CompareLicense(LicenseKey licenseKey)
+            {
+                CallbackData<LicenseKey> callbackResults = new CallbackData<LicenseKey>();
+
+                if(this.licenseKey.GetAppKey() == licenseKey.GetAppKey())
+                {
+                    callbackResults.result = "License App Key Matched";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "License App Key Doesn't Match";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
 
             #endregion
         }
@@ -1144,7 +1166,7 @@ namespace Com.RedicalGames.Filar
 
             public uint appKey;
             public string activationKey;
-            public string deviceID;
+            public List<DeviceInfo> deviceInfoList;
             public LicenseType licenseType;
             public bool active;
 
@@ -1159,11 +1181,11 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public LicenseKey(uint appKey, string activationKey, string deviceID, LicenseType licenseType, bool active, DateTimeComponent activationStartDate, DateTimeComponent activitionEndDate = null)
+            public LicenseKey(uint appKey, string activationKey, List<DeviceInfo> deviceInfoList, LicenseType licenseType, bool active, DateTimeComponent activationStartDate, DateTimeComponent activitionEndDate = null)
             {
                 this.appKey = appKey;
                 this.activationKey = activationKey;
-                this.deviceID = deviceID;
+                this.deviceInfoList = deviceInfoList;
                 this.licenseType = licenseType;
                 this.active = active;
                 this.activationStartDate = activationStartDate;
@@ -1174,7 +1196,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetAppKey(uint appKey) => this.appKey = appKey;
             public void SetActivationKey(string activationKey) => this.activationKey = activationKey;
-            public void SetDeviceID(string deviceID) => this.deviceID = deviceID;
+            public void SetDeviceInfo(List<DeviceInfo> deviceInfo) => this.deviceInfoList = deviceInfo;
             public void SetLicense(LicenseType licenseType) => this.licenseType = licenseType;
             public void SetActive(bool active) => this.active = active;
 
@@ -1184,7 +1206,7 @@ namespace Com.RedicalGames.Filar
 
             public uint GetAppKey() => appKey;
             public string GetActivationKey() => activationKey;
-            public string GetDeviceID() => deviceID;
+            public List<DeviceInfo> GetDeviceIinfo() => deviceInfoList;
             public LicenseType GetLicense() => licenseType;
             public bool GetActive() => active;
 
@@ -1738,8 +1760,6 @@ namespace Com.RedicalGames.Filar
                                 if (screenUIManager.GetCurrentUIScreenType() == UIScreenType.LoadingScreen)
                                 {
                                     messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader());
-                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetBody());
-                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetFooter());
 
                                     Run();
 
@@ -1753,123 +1773,193 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var appManager = Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name).data;
 
-                                                switch (GetSequenceID())
+                                                if (GetContent().GetMessageList().Success())
                                                 {
-                                                    case LoadingSequenceID.Default:
+                                                    switch (GetSequenceID())
+                                                    {
+                                                        case LoadingSequenceID.Default:
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.CheckingNetworkConnection:
+                                                        case LoadingSequenceID.CheckingNetworkConnection:
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var resultCallback = await appManager.CheckConnectionStatus();
-
-                                                            if (resultCallback.Success())
-                                                                OnCompletition();
-                                                            else
+                                                            if (callbackResults.Success())
                                                             {
-                                                                screenUIManager.GetCurrentScreenData().value.HideScreenWidget(WidgetType.LoadingWidget);
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck));
 
-                                                                SceneDataPackets networkDataPackets = new SceneDataPackets
+                                                                if (callbackResults.Success())
                                                                 {
-                                                                    screenType = screenUIManager.GetCurrentUIScreenType(),
-                                                                    widgetType = WidgetType.NetworkNotificationWidget,
-                                                                    blurScreen = true,
-                                                                    blurContainerLayerType = ScreenBlurContainerLayerType.ForeGround
-                                                                };
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
 
-                                                                screenUIManager.GetCurrentScreenData().value.ShowWidget(networkDataPackets);
+                                                                    callbackResults = await appManager.CheckConnectionStatus();
+
+                                                                    if (callbackResults.Success())
+                                                                        OnCompletition();
+                                                                    else
+                                                                    {
+                                                                        screenUIManager.GetCurrentScreenData().value.HideScreenWidget(WidgetType.LoadingWidget);
+
+                                                                        SceneDataPackets networkDataPackets = new SceneDataPackets
+                                                                        {
+                                                                            screenType = screenUIManager.GetCurrentUIScreenType(),
+                                                                            widgetType = WidgetType.NetworkNotificationWidget,
+                                                                            blurScreen = true,
+                                                                            blurContainerLayerType = ScreenBlurContainerLayerType.ForeGround
+                                                                        };
+
+                                                                        screenUIManager.GetCurrentScreenData().value.ShowWidget(networkDataPackets);
+                                                                    }
+                                                                }
                                                             }
-                                                        }
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.AppInitialization:
+                                                        case LoadingSequenceID.AppInitialization:
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var resultCallback = await appManager.InitializeAppEntryPoint();
-
-                                                            if (resultCallback.Success())
-                                                                OnCompletition();
-                                                            else
+                                                            if (callbackResults.Success())
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Init Results {resultCallback.Result}", this);
+                                                                #region Connecting To Server
+
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
+                                                                    callbackResults = await appManager.InitializeAppEntryPoint();
+                                                                }
+
+                                                                #endregion
+
+                                                                #region Synchronizing Data
+
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    callbackResults = await appManager.InitializeAppEntryPoint();
+                                                                }
+
+                                                                #endregion
+
+                                                                #region Creating Entry Point
+
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerEntryPoint));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    callbackResults = await appManager.InitializeAppEntryPoint();
+                                                                }
+
+                                                                #endregion
+
+                                                                if (callbackResults.Success())
+                                                                    OnCompletition();
+                                                                else
+                                                                {
+                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Init Results {callbackResults.Result}", this);
+                                                                }
                                                             }
-                                                        }
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.CheckingAppCompatibility:
+                                                        case LoadingSequenceID.CheckingDeviceCompatibility:
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var resultCallback = await appManager.GetCompatibilityStatusAsync();
-
-                                                            if (resultCallback.Success())
-                                                                OnCompletition();
-                                                            else
+                                                            if (callbackResults.Success())
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Device Is Only 3D Compitable  - Show Compatiblity Message Pop Up", this);
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).data.message);
+                                                                    callbackResults = await appManager.GetCompatibilityStatusAsync();
+                                                                }
+
+                                                                if (callbackResults.Success())
+                                                                    OnCompletition();
+                                                                else
+                                                                {
+                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Device Is Only 3D Compitable  - Show Compatiblity Message Pop Up", this);
+                                                                }
                                                             }
-                                                        }
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.StorageInitialization:
+                                                        case LoadingSequenceID.AppSigning:
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var resultCallback = await appManager.StorageInitialized();
-
-                                                            if (resultCallback.Success())
-                                                                OnCompletition();
-                                                            else
+                                                            if (callbackResults.Success())
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Storage Initialization Failed  - Show Storage Error Pop Up", this);
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.SigningApp));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
+                                                                    callbackResults = await appManager.StorageInitialized();
+                                                                }
+
+                                                                if (callbackResults.Success())
+                                                                    OnCompletition();
+                                                                else
+                                                                {
+                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Storage Initialization Failed  - Show Storage Error Pop Up", this);
+                                                                }
                                                             }
-                                                        }
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.InitializingUserAssets:
+                                                        case LoadingSequenceID.InitializingUserAssets:
 
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.CheckingProfile:
+                                                        case LoadingSequenceID.CheckingProfile:
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var resultCallback = await appManager.ProfileInitialization();
-
-                                                            if (resultCallback.Success())
-                                                                OnCompletition();
-                                                            else
+                                                            if (callbackResults.Success())
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Profile Initialization Failed  - Start Profile Creation Proccess", this);
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
+                                                                    callbackResults = await appManager.ProfileInitialization();
+                                                                }
+
+                                                                if (callbackResults.Success())
+                                                                    OnCompletition();
+                                                                else
+                                                                {
+                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Profile Initialization Failed  - Start Profile Creation Proccess", this);
+                                                                }
                                                             }
-                                                        }
 
-                                                        break;
+                                                            break;
 
-                                                    case LoadingSequenceID.FetchProfile:
+                                                        case LoadingSequenceID.FetchProfile:
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var resultCallback = await appManager.ProfileInitialized();
-
-                                                            if (resultCallback.Success())
-                                                                OnCompletition();
-                                                            else
+                                                            if (callbackResults.Success())
                                                             {
-                                                                LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Getting Initialized Profile Failed  - Show Profile Initialization Error.", this);
-                                                            }
-                                                        }
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization));
 
-                                                        break;
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
+                                                                    callbackResults = await appManager.ProfileInitialized();
+                                                                }
+
+                                                                if (callbackResults.Success())
+                                                                    OnCompletition();
+                                                                else
+                                                                {
+                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Profile Initialization Failed  - Start Profile Creation Proccess", this);
+                                                                }
+                                                            }
+
+                                                            break;
+                                                    }
                                                 }
+                                                else
+                                                    Log(GetContent().GetMessageList().ResultCode, GetContent().GetMessageList().Result, this);
                                             }
                                         }
                                     }
@@ -7121,6 +7211,26 @@ namespace Com.RedicalGames.Filar
         #region Messaging System
 
         [Serializable]
+        public class LoadingSequenceMessage : ProjectData
+        {
+            #region Components
+
+            public string message;
+
+            [Space(5)]
+            public LoadingSequenceMessageType sequenceState;
+
+            #endregion
+
+            #region Main
+
+            public string GetMessage() => message;
+            public LoadingSequenceMessageType GetSequenceMessageType() => sequenceState;
+
+            #endregion
+        }
+
+        [Serializable]
         public class MessageFormat
         {
             #region Components
@@ -7129,7 +7239,7 @@ namespace Com.RedicalGames.Filar
             public string header;
 
             [Space(5)]
-            public string body;
+            public List<LoadingSequenceMessage> messageList;
 
             [Space(5)]
             public string footer;
@@ -7142,10 +7252,10 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public MessageFormat(string header, string body, string footer = null)
+            public MessageFormat(string header, List<LoadingSequenceMessage> messageList, string footer = null)
             {
                 this.header = header;
-                this.body = body;
+                this.messageList = messageList;
                 this.footer = footer;
             }
 
@@ -7154,9 +7264,98 @@ namespace Com.RedicalGames.Filar
                 return header;
             }
 
-            public string GetBody()
+            public void GetMessage(LoadingSequenceMessageType messageType, Action<CallbackData<LoadingSequenceMessage>> callback)
             {
-                return body;
+                CallbackData<LoadingSequenceMessage> callbackResults = new CallbackData<LoadingSequenceMessage>(GetMessageList());
+
+                if(callbackResults.Success())
+                {
+                    var message = GetMessageList().data.Find(msg => msg.GetSequenceMessageType() == messageType);
+
+                    if(message != null)
+                    {
+                        callbackResults.result = $"Found Message Of Type : {messageType}.";
+                        callbackResults.data = message;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Find Loading Sequence message Of Type : {messageType} In Messages List With : {GetMessageList().data.Count} Message(s).";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public CallbackData<LoadingSequenceMessage> GetMessage(LoadingSequenceMessageType messageType)
+            {
+                CallbackData<LoadingSequenceMessage> callbackResults = new CallbackData<LoadingSequenceMessage>(GetMessageList());
+
+                if (callbackResults.Success())
+                {
+                    var message = GetMessageList().data.Find(msg => msg.GetSequenceMessageType() == messageType);
+
+                    if (message != null)
+                    {
+                        callbackResults.result = $"Found Message Of Type : {messageType}.";
+                        callbackResults.data = message;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Find Loading Sequence message Of Type : {messageType} In Messages List With : {GetMessageList().data.Count} Message(s).";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public void GetMessageList(Action<CallbackDataList<LoadingSequenceMessage>> callback)
+            {
+                CallbackDataList<LoadingSequenceMessage> callbackResults = new CallbackDataList<LoadingSequenceMessage>();
+
+                Helpers.GetAppComponentsValid(messageList, "Message List", validComponentsCallbackResults => 
+                {
+                    callbackResults.SetResult(validComponentsCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{messageList.Count} Messages Found.";
+                        callbackResults.data = messageList;
+                    }
+                    else
+                    {
+                        callbackResults.result = "There Were No Messages Found.";
+                        callbackResults.data = default;
+                    }
+                });
+
+                callback.Invoke(callbackResults);
+            }
+
+            public CallbackDataList<LoadingSequenceMessage> GetMessageList()
+            {
+                CallbackDataList<LoadingSequenceMessage> callbackResults = new CallbackDataList<LoadingSequenceMessage>();
+
+                Helpers.GetAppComponentsValid(messageList, "Message List", validComponentsCallbackResults =>
+                {
+                    callbackResults.SetResult(validComponentsCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{messageList.Count} Messages Found.";
+                        callbackResults.data = messageList;
+                    }
+                    else
+                    {
+                        callbackResults.result = "There Were No Messages Found.";
+                        callbackResults.data = default;
+                    }
+                });
+
+                return callbackResults;
             }
 
             public string GetFooter()
@@ -7170,10 +7369,12 @@ namespace Com.RedicalGames.Filar
 
                 Helpers.StringValueValid(validDataCallbackResults => 
                 {
-                    callbackResults.result = validDataCallbackResults.result;
-                    callbackResults.resultCode = validDataCallbackResults.resultCode;
+                    callbackResults.SetResult(validDataCallbackResults);
 
-                }, GetHeader(), GetBody());
+                    if (callbackResults.Success())
+                        callbackResults.SetResult(GetMessageList());
+
+                }, GetHeader());
 
                 return callbackResults;
             }
