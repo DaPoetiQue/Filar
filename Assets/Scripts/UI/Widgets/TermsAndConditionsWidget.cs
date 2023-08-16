@@ -70,7 +70,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var screenManager = screenManagerComponentCallbackResults.data;
 
-                    screenManager.GetScreen(screenManager.GetCurrentUIScreenType(), async loadedScreenCallbacResults =>
+                    screenManager.GetScreen(screenManager.GetCurrentUIScreenType(), loadedScreenCallbacResults =>
                     {
                         if (loadedScreenCallbacResults.Success())
                         {
@@ -80,11 +80,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputActionButtonType.GoToWebsiteLinkButton:
 
-                                    AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, async appManagerCallbackResults =>
+                                    AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, async networkManagerCallbackResults =>
                                     {
-                                        if (appManagerCallbackResults.Success())
+                                        if (networkManagerCallbackResults.Success())
                                         {
-                                            var success = await appManagerCallbackResults.data.CheckConnectionStatus();
+                                            var success = await networkManagerCallbackResults.data.CheckConnectionStatus();
 
                                             if (success.Success())
                                             {
@@ -108,9 +108,9 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
                                         else
-                                            Log(appManagerCallbackResults.resultCode, appManagerCallbackResults.result, this);
+                                            Log(networkManagerCallbackResults.resultCode, networkManagerCallbackResults.result, this);
 
-                                    }, "App Manager Instance Is Not Yet Initialized");
+                                    }, "Network Manager Instance Is Not Yet Initialized");
 
                                     break;
 

@@ -1076,8 +1076,8 @@ namespace Com.RedicalGames.Filar
             CheckingDeviceCompatibility,
             AppSigning,
             InitializingUserAssets,
-            CheckingProfile,
-            FetchProfile,
+            SynchronizingProfile,
+            InitializingXR,
         }
 
         public enum LicenseType
@@ -1783,15 +1783,19 @@ namespace Com.RedicalGames.Filar
 
                                                         case LoadingSequenceID.CheckingNetworkConnection:
 
+                                                            callbackResults.SetResults(Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
+
                                                             if (callbackResults.Success())
                                                             {
+                                                                var networkManager = Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
+
                                                                 callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck));
 
                                                                 if (callbackResults.Success())
                                                                 {
                                                                     messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
 
-                                                                    callbackResults = await appManager.CheckConnectionStatus();
+                                                                    callbackResults = await networkManager.CheckConnectionStatus();
 
                                                                     if (callbackResults.Success())
                                                                         OnCompletition();
@@ -1820,12 +1824,19 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 #region Connecting To Server
 
-                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection));
+                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
-                                                                    callbackResults = await appManager.InitializeAppEntryPoint();
+                                                                    var networkManager = Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
+
+                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection));
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
+                                                                        callbackResults = await networkManager.ServerConnected();
+                                                                    }
                                                                 }
 
                                                                 #endregion
@@ -1837,7 +1848,7 @@ namespace Com.RedicalGames.Filar
                                                                 if (callbackResults.Success())
                                                                 {
                                                                     messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
-                                                                    callbackResults = await appManager.InitializeAppEntryPoint();
+                                                                    callbackResults = await appManager.SynchronizingAppInfo();
                                                                 }
 
                                                                 #endregion
@@ -1849,7 +1860,7 @@ namespace Com.RedicalGames.Filar
                                                                 if (callbackResults.Success())
                                                                 {
                                                                     messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
-                                                                    callbackResults = await appManager.InitializeAppEntryPoint();
+                                                                    callbackResults = await appManager.SynchronizingAppInfo();
                                                                 }
 
                                                                 #endregion
@@ -1913,7 +1924,7 @@ namespace Com.RedicalGames.Filar
 
                                                             break;
 
-                                                        case LoadingSequenceID.CheckingProfile:
+                                                        case LoadingSequenceID.SynchronizingProfile:
 
                                                             if (callbackResults.Success())
                                                             {
@@ -1935,25 +1946,9 @@ namespace Com.RedicalGames.Filar
 
                                                             break;
 
-                                                        case LoadingSequenceID.FetchProfile:
+                                                        case LoadingSequenceID.InitializingXR:
 
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization));
 
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
-                                                                    callbackResults = await appManager.ProfileInitialized();
-                                                                }
-
-                                                                if (callbackResults.Success())
-                                                                    OnCompletition();
-                                                                else
-                                                                {
-                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Profile Initialization Failed  - Start Profile Creation Proccess", this);
-                                                                }
-                                                            }
 
                                                             break;
                                                     }

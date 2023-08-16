@@ -493,13 +493,33 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        #region Initialize App Entry
+        #region Synchronizing App Info
 
-        public async Task<AppData.CallbackData<AppData.AppInfo>> InitializeAppEntryPoint()
+        public async Task<AppData.CallbackData<AppData.AppInfo>> SynchronizingAppInfo()
         {
             AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
 
             if(callbackResults.Success())
+            {
+                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
+
+                await sceneAssetsManager.InitializeDatabase();
+
+                return await GetAppInfoAsync();
+            }
+
+            return callbackResults;
+        }
+
+        #endregion
+
+        #region Initialize App Entry
+
+        public async Task<AppData.CallbackData<AppData.AppInfo>> GetApplicationEntryPoint()
+        {
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager is Not Yet Initialized."));
+
+            if (callbackResults.Success())
             {
                 var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name).data;
 
@@ -527,68 +547,6 @@ namespace Com.RedicalGames.Filar
             }
 
             return callbackResults;
-        }
-
-        #endregion
-
-        #region Networking
-
-        public async Task<AppData.Callback> CheckConnectionStatus()
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            float timeOut = DefaultTimeOut();
-
-            await Task.Delay(NetworkConnectionDelay());
-
-            while(Application.internetReachability == NetworkReachability.NotReachable || timeOut > 0.0f)
-            {
-                timeOut -= 1 * Time.deltaTime;;
-
-                if (Application.internetReachability != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
-                    break;
-
-                await Task.Yield();
-            }
-
-            string result = (Application.internetReachability != NetworkReachability.NotReachable)? "Network Connection Available." : "Network Connection Not Available.";
-            callbackResults.SetResults(result, (Application.internetReachability != NetworkReachability.NotReachable)? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
-
-            return callbackResults;
-        }
-
-        int NetworkConnectionDelay()
-        {
-            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
-
-            if (sceneAssetsManagerCallbackResults.Success())
-            {
-                var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
-                return AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(AppData.RuntimeExecution.NetworkInitializationDefaultDuration).value);
-            }
-            else
-                Log(sceneAssetsManagerCallbackResults.ResultCode, sceneAssetsManagerCallbackResults.Result, this);
-
-            return 0;
-        }
-
-        #endregion
-
-        #region Time
-
-        float DefaultTimeOut()
-        {
-            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(SceneAssetsManager.Instance, SceneAssetsManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
-
-            if (sceneAssetsManagerCallbackResults.Success())
-            {
-                var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
-                return AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultAppTimeout).value);
-            }
-            else
-                Log(sceneAssetsManagerCallbackResults.ResultCode, sceneAssetsManagerCallbackResults.Result, this);
-
-            return 0;
         }
 
         #endregion
