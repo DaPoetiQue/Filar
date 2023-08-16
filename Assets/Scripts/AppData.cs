@@ -1907,6 +1907,20 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     var profileManager = Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name).data;
 
+                                                                    #region Profile Sync
+
+                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization));
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
+                                                                        callbackResults = await profileManager.SynchronizingProfile();
+                                                                    }
+
+                                                                    #endregion
+
+                                                                    #region App Sign In
+
                                                                     callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.SigningApp));
 
                                                                     if (callbackResults.Success())
@@ -1914,6 +1928,8 @@ namespace Com.RedicalGames.Filar
                                                                         messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
                                                                         callbackResults = await profileManager.AppSignInAsync();
                                                                     }
+
+                                                                    #endregion
                                                                 }
 
                                                                 if (callbackResults.Success())
@@ -1928,28 +1944,6 @@ namespace Com.RedicalGames.Filar
 
                                                         case LoadingSequenceID.InitializingUserAssets:
 
-
-                                                            break;
-
-                                                        case LoadingSequenceID.SynchronizingProfile:
-
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization));
-
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
-                                                                    callbackResults = await appManager.ProfileInitialization();
-                                                                }
-
-                                                                if (callbackResults.Success())
-                                                                    OnCompletition();
-                                                                else
-                                                                {
-                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Profile Initialization Failed  - Start Profile Creation Proccess", this);
-                                                                }
-                                                            }
 
                                                             break;
 

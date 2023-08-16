@@ -371,7 +371,9 @@ namespace Com.RedicalGames.Filar
                             AppData.AppInfo appInfo = JsonUtility.FromJson<AppData.AppInfo>(resultsJson);
 
                             if (!appInfoDatabase.Contains(appInfo))
+                            {
                                 appInfoDatabase.Add(appInfo);
+                            }
                             else
                                 LogWarning("Server App Info Already Exists In Local Database", this);
                         }
@@ -381,7 +383,6 @@ namespace Com.RedicalGames.Filar
                 }
             }
         }
-
 
         public void GetAppInfo(string deviceID, Action<AppData.CallbackData<AppData.AppInfo>> callback)
         {

@@ -76,12 +76,14 @@ namespace Com.RedicalGames.Filar
 
         void SetupInstance()
         {
+            DontDestroyOnLoad(this);
+
             if (_instance != null && _instance != this)
             {
                 Destroy(_instance.gameObject);
             }
-
-            _instance = this;
+            else
+                _instance = this;
         }
 
         public void OnScreenInit(Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
@@ -92,9 +94,11 @@ namespace Com.RedicalGames.Filar
             {
                 List<UIScreenHandler> screenComponents = GetComponentsInChildren<UIScreenHandler>().ToList();
 
-                AppData.Helpers.ListComponentHasData(screenComponents, hasDataCallback =>
+                AppData.Helpers.ListComponentHasData(screenComponents, hasDataCallbackResults =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(hasDataCallback.resultCode))
+                    callbackResults.SetResult(hasDataCallbackResults);
+
+                    if (callbackResults.Success())
                     {
                         screens = new List<AppData.UIScreenViewComponent>();
 
@@ -108,53 +112,56 @@ namespace Com.RedicalGames.Filar
 
                             AddScreen(newScreen, screenAddCallback => { callbackResults = screenAddCallback; });
 
-                            if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
+                            if (callbackResults.Success())
                                 continue;
                             else
                                 break;
                         }
 
-                        AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.data, screenComponents, compareDataCallback =>
+                        if(callbackResults.Success())
                         {
-                            if (compareDataCallback.Success())
+                            AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.data, screenComponents, compareDataCallback =>
                             {
-                                callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
-                                callbackResults.data = compareDataCallback.tuple_A;
-                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                                foreach (var screenView in callbackResults.data)
+                                if (compareDataCallback.Success())
                                 {
-                                    screenView.value.Init(screenInitializationCallback =>
+                                    callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
+                                    callbackResults.data = compareDataCallback.tuple_A;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+                                    foreach (var screenView in callbackResults.data)
                                     {
-                                        callbackResults.result = screenInitializationCallback.result;
-                                        callbackResults.resultCode = screenInitializationCallback.resultCode;
-                                    });
+                                        screenView.value.Init(screenInitializationCallback =>
+                                        {
+                                            callbackResults.result = screenInitializationCallback.result;
+                                            callbackResults.resultCode = screenInitializationCallback.resultCode;
+                                        });
 
-                                    if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
-                                        continue;
+                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
+                                            continue;
+                                        else
+                                            break;
+                                    }
+
+                                    if (callbackResults.Success())
+                                    {
+                                        //SetCurrentScreenData(GetScreenData(AppManager.Instance.GetInitialLoadDataPackets()));
+                                        SetScreensInitialized(callbackResults.Success(), callbackResults.result);
+                                    }
                                     else
-                                        break;
-                                }
-
-                                if (callbackResults.Success())
-                                {
-                                    //SetCurrentScreenData(GetScreenData(AppManager.Instance.GetInitialLoadDataPackets()));
-                                    SetScreensInitialized(callbackResults.Success(), callbackResults.result);
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
                                 }
                                 else
-                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                            }
-                            else
-                            {
-                                callbackResults.result = compareDataCallback.result;
-                                callbackResults.data = default;
-                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                            }
-                        });
+                                {
+                                    callbackResults.result = compareDataCallback.result;
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+                            });
+                        }
                     }
                     else
                     {
-                        callbackResults.result = hasDataCallback.result;
+                        callbackResults.result = hasDataCallbackResults.result;
                         callbackResults.data = default;
                         callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }

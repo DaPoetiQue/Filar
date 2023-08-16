@@ -61,6 +61,9 @@ namespace Com.RedicalGames.Filar
 
         public AppData.Compatibility Compatibility { get; private set; }
 
+        AppData.AppInfo entry = new AppData.AppInfo();
+        public bool AppinfoSynced { get; private set; }
+
         #region Loading Data
 
         #endregion
@@ -96,9 +99,9 @@ namespace Com.RedicalGames.Filar
 
             if(callbackResults.Success())
             {
-                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized.").data;
+                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
 
-                do
+                while (screenUIManager != null && !screenUIManager.IsInitialized())
                 {
                     screenUIManager.OnScreenInit(appInitializationCallbackResults =>
                     {
@@ -107,7 +110,6 @@ namespace Com.RedicalGames.Filar
 
                     await Task.Yield();
                 }
-                while (!screenUIManager.IsInitialized());
 
                 if (callbackResults.Success())
                 {
@@ -155,28 +157,51 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    screenUIManager.GetCurrentScreen(currentScreenCallbackResults =>
+                                                                    screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
                                                                     {
                                                                         callbackResults.SetResult(currentScreenCallbackResults);
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            screenUIManager.Refresh();
+                                                                            var screen = currentScreenCallbackResults.data;
 
-                                                                            //var currentScreen = currentScreenCallbackResults.data;
+                                                                            if (screen.value.GetUIScreenType() == AppData.UIScreenType.LandingPageScreen)
+                                                                            {
+                                                                                var widget = screen.value.GetWidget(AppData.WidgetType.PostsWidget);
 
-                                                                            //AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
-                                                                            //{
-                                                                            //    screenType = AppData.UIScreenType.LandingPageScreen,
-                                                                            //    widgetType = AppData.WidgetType.SignInWidget,
-                                                                            //    blurScreen = true,
-                                                                            //    blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Background
-                                                                            //};
+                                                                                if(widget != null)
+                                                                                {
+                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
 
-                                                                            //currentScreen.value.ShowWidget(dataPackets);
+                                                                                    // Show Loading Spinner
 
-                                                                            // LogSuccess($" *==========> Loaded Screen : {currentScreen.value.GetUIScreenType()}", this);
+                                                                                    screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
 
+                                                                                    screenUIManager.Refresh();
+
+                                                                                    await Task.Delay(3000);
+
+                                                                                    screen.value.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                                                    await Task.Delay(1000);
+
+                                                                                    screen.value.ShowWidget(widget);
+
+                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
+                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    callbackResults.result = $"Widget Type : {AppData.WidgetType.PostsWidget} For Screen : {screen.value.GetUIScreenType()} Not Found.";
+                                                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                callbackResults.result = $"Screen : {screen.value.GetUIScreenType()} Does Not Match Expected Screen Type : {AppData.UIScreenType.LandingPageScreen}";
+                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                            }
                                                                         }
                                                                     });
                                                                 }
@@ -192,7 +217,7 @@ namespace Com.RedicalGames.Filar
                             });
                         }
 
-                    }, "Screen UI Manager Instance Is Not Yet Initialized");
+                    }, "Database Manager Instance Is Not Yet Initialized");
                 }
             }
         }
@@ -501,11 +526,17 @@ namespace Com.RedicalGames.Filar
 
             if(callbackResults.Success())
             {
-                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
-                await sceneAssetsManager.InitializeDatabase();
+                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                await databaseManager.InitializeDatabase();
             }
 
             return callbackResults;
+        }
+
+        public void SyncAppInfo(AppData.AppInfo appInfo)
+        {
+            this.entry = appInfo;
+            AppinfoSynced = true;
         }
 
         #endregion
@@ -518,13 +549,12 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                do
-                    await Task.Delay(100);
-                while (!sceneAssetsManager.IsServerAppInfoDatabaseInitialized);
+                while (!databaseManager.IsServerAppInfoDatabaseInitialized)
+                    await Task.Yield();
 
-                if(sceneAssetsManager.IsServerAppInfoDatabaseInitialized)
+                if(databaseManager.IsServerAppInfoDatabaseInitialized)
                 {
                     callbackResults.result = "App Info Has Been Synchronized.";
                     callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -537,6 +567,26 @@ namespace Com.RedicalGames.Filar
             }
 
             return callbackResults;
+        }
+
+        public void GetAppInfo(Action<AppData.CallbackData<AppData.AppInfo>> callback)
+        {
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
+
+            if(AppinfoSynced)
+            {
+                callbackResults.result = "App Info Is Synced.";
+                callbackResults.data = entry;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = "App Info Is Not Synced.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback.Invoke(callbackResults);
         }
 
         #endregion
@@ -643,34 +693,6 @@ namespace Com.RedicalGames.Filar
             await Task.Delay(2000);
 
             callbackResults.result = "Storage Initialized.";
-            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-            return callbackResults;
-        }
-
-        #endregion
-
-        #region Profile
-
-        public async Task<AppData.Callback> ProfileInitialization()
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            await Task.Delay(2000);
-
-            callbackResults.result = "Profile Initialization.";
-            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-            return callbackResults;
-        }
-
-        public async Task<AppData.Callback> ProfileInitialized()
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            await Task.Delay(2000);
-
-            callbackResults.result = "Profile Initialized.";
             callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
             return callbackResults;

@@ -34,6 +34,7 @@ namespace Com.RedicalGames.Filar
         public DependencyStatus authDependencyStatus = DependencyStatus.UnavailableOther;
 
         public bool SignedIn { get; private set; }
+        public bool AuthenticationInitialized { get; private set; }
 
         #region Firebase
 
@@ -44,31 +45,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Awake() => Setup();
-
-        #endregion
-
         #region Main
-
-        void Setup()
-        {
-            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
-            {
-                authDependencyStatus = task.Result;
-
-                if (task.Exception == null)
-                {
-                    if (authDependencyStatus == DependencyStatus.Available)
-                        authentication = FirebaseAuth.DefaultInstance;
-                    else
-                        LogInfo($"Authentication Dependency Is Not Available - Dependency Status : {authDependencyStatus}", this);
-                }
-                else
-                    throw task.Exception;
-            });
-        }
 
         void CreateProfile(AppData.Profile profile, Action<AppData.CallbackData<AppData.Profile>> callback = null)
         {
@@ -108,13 +85,120 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        public async Task<AppData.Callback> SynchronizingProfile()
+        {
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Is Not Yet Initialized."));
+
+            if(callbackResults.Success())
+            {
+                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+
+                await FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+                {
+                    authDependencyStatus = task.Result;
+
+                    if (task.Exception == null)
+                    {
+                        if (authDependencyStatus == DependencyStatus.Available)
+                        {
+                            authentication = FirebaseAuth.DefaultInstance;
+                            authentication.StateChanged += AuthenticationStateChangeEvent;
+                        }
+                        else
+                            LogInfo($"Authentication Dependency Is Not Available - Dependency Status : {authDependencyStatus}", this);
+                    }
+                    else
+                        throw task.Exception;
+                });
+
+                string deviceID = AppData.Helpers.GetDeviceInfo().deviceID;
+
+                var appInfoTaskResults = await databaseManager.GetAppInfoAsync(deviceID);
+
+                await Task.Delay(2000);
+
+                if (callbackResults.Success())
+                {
+                    AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, async appManagerCallbackResults =>
+                    {
+                        if (appManagerCallbackResults.Success())
+                        {
+                            appManagerCallbackResults.data.SyncAppInfo(appInfoTaskResults.data);
+                        }
+                        else
+                            Log(appManagerCallbackResults.ResultCode, appManagerCallbackResults.Result, this);
+
+                        await Task.Delay(1000);
+
+                    }, "App Manager instane Is Not Yet Initialized.");
+                }
+            }
+
+            return callbackResults;
+        }
+
+        private void AuthenticationStateChangeEvent(object sender, EventArgs state)
+        {
+            if(!AuthenticationInitialized)
+            {
+                AuthenticationInitialized = true;
+                LogInfo(" >>>>>>>>>>>>>>> Authentication Initialized.", this);
+            }
+            else
+            {
+                LogInfo(" >>>>>>>>>>>>>>> Sign In State Changed.", this);
+            }
+        }
+
         public async Task<AppData.CallbackData<AuthError>> AppSignInAsync()
         {
             AppData.CallbackData<AuthError> callbackResults = new AppData.CallbackData<AuthError>();
 
-            await Task.Delay(100);
+            try
+            {
+                if (authDependencyStatus == DependencyStatus.Available)
+                {
+                    var anonymousSignInTadk = await authentication.SignInAnonymouslyAsync().ContinueWith(async signedInTaskCompletion =>
+                    {
+                        if (signedInTaskCompletion.Exception == null)
+                        {
+                            if (signedInTaskCompletion.Result.User.IsValid())
+                            {
+                                callbackResults.result = "App Signed In Successgully.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
-            return callbackResults;
+                                await Task.Delay(1000);
+                            }
+                            else
+                            {
+                                callbackResults.result = "App Sign In Failed - Please Check Here.";
+                                callbackResults.data = AuthError.Failure;
+                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            FirebaseException fbException = signedInTaskCompletion.Exception.GetBaseException() as FirebaseException;
+
+                            callbackResults.result = $"Sign In Failed With Exception : {fbException.Message}";
+                            callbackResults.data = (AuthError)fbException.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+
+                        return callbackResults;
+                    });
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                FirebaseException fbException = exception.GetBaseException() as FirebaseException;
+                var errorCode = (AuthError)fbException.ErrorCode;
+
+                return callbackResults;
+            }
         }
 
         public async Task<AuthError> SignInAsync(AppData.Profile profile)
