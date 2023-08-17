@@ -1099,6 +1099,17 @@ namespace Com.RedicalGames.Filar
             SigningApp
         }
 
+        #region Post Data Types
+
+        public enum PostContentStatus
+        {
+            None,
+            Expired,
+            Reported,
+        }
+
+        #endregion
+
         #region App Information
 
         [Serializable]
@@ -2420,8 +2431,587 @@ namespace Com.RedicalGames.Filar
 
         #region Post
 
+        public interface IPostData
+        {
+            void Like();
+
+            void Dislike();
+
+        }
+
         [Serializable]
-        public class PostData : ProjectData
+        public class PostData : DataDebugger, IPostData
+        {
+            #region Components
+
+            #endregion
+
+            #region Main
+
+            #endregion
+            public void Dislike()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Like()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [Serializable]
+        public class Report<T> where T : SerializableData
+        {
+            #region Components
+
+            public Profile reporterProfile = new Profile();
+            public T reportedInfo = null;
+
+            public string additionalInfo = string.Empty;
+
+            public string reportID = string.Empty;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public Report()
+            {
+
+            }
+
+            public Report(Profile reporterProfile, T reportedInfo, string additionalInfo = null, string reportID = null)
+            {
+                this.reporterProfile = reporterProfile;
+                this.reportedInfo = reportedInfo;
+                this.additionalInfo = additionalInfo;
+                this.reportID = reportID ?? Helpers.GenerateUniqueIdentifier();
+            }
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetReporterProfile(Profile reporterProfile) => this.reporterProfile = reporterProfile;
+
+            public void SetReportedInfo(T reportedInfo) => this.reportedInfo = reportedInfo;
+
+            public void SetReportAdditionalInfo(string additionalInfo) => this.additionalInfo = additionalInfo;
+
+            public void SetReportID(string reportID) => this.reportID = reportID;
+
+            #endregion
+
+            #region Data Getters
+
+            public Profile GetReporterProfile() => reporterProfile;
+
+            public T GetReportedInfo() => reportedInfo;
+
+            public string GetReportAdditionalInfo() => additionalInfo;
+
+            public string GetReportID() => reportID;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class Comment : PostData
+        {
+            #region Components
+
+            public string comment;
+
+            #region Comment Interaction Data
+
+            public Dictionary<Profile, PostCommentData> replies = new Dictionary<Profile, PostCommentData>();
+            public List<Profile> likes = new List<Profile>();
+            public List<Profile> dislikes = new List<Profile>();
+
+            public string commentID;
+            public int commentIndex = 0;
+
+            public bool pinned = false;
+
+            #region Comment Reports
+
+            public List<Report<Comment>> reports = new List<Report<Comment>>();
+            public PostContentStatus status;
+
+            #endregion
+
+            #endregion
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public Comment()
+            {
+            }
+
+            public Comment(string comment, string commentID = null)
+            {
+                this.comment = comment;
+                this.commentID = commentID ?? Helpers.GenerateUniqueIdentifier();
+            }
+
+            public Comment(string comment, int commentIndex,  string commentID = null)
+            {
+                this.comment = comment;
+                this.commentIndex = commentIndex;
+                this.commentID = commentID ?? Helpers.GenerateUniqueIdentifier();
+            }
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetComment(string comment) => this.comment = comment;
+            public void SetCommentID(string commentID) => this.commentID = commentID;
+            public void SetCommentIndex(int commentIndex) => this.commentIndex = commentIndex;
+            public void SetCommentStatus(PostContentStatus status) => this.status = status;
+
+            #region Reports
+
+            public void AddReport(Report<Comment> report, Action<CallbackData<Report<Comment>>> callback = null)
+            {
+                CallbackData<Report<Comment>> callbackResults = new CallbackData<Report<Comment>>();
+
+                if(!GetReports().Contains(report))
+                {
+                    GetReports().Add(report);
+
+                    if(GetReports().Contains(report))
+                    {
+                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Added Successfully.";
+                        callbackResults.data = report;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Report Already Exists In Reports List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveReport(Report<Comment> report, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (GetReports().Contains(report))
+                {
+                    GetReports().Remove(report);
+
+                    if (!GetReports().Contains(report))
+                    {
+                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Removed Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Report Doesn't Exists In Reports List.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ClearReports(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetReports().Clear();
+                SetCommentStatus(PostContentStatus.None);
+
+                if (!IsReported())
+                {
+                    callbackResults.result = $"Reports Cleared Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Clear Reports - Please Check Here.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Likes
+
+            #endregion
+
+            #region Dislikes
+
+            #endregion
+
+            #region Replies
+
+            void AddNewReplyData(Profile profile, Comment reply, Action<CallbackData<PostCommentData>> callback = null)
+            {
+                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
+
+                if (reply != null)
+                {
+                    PostCommentData replyData = new PostCommentData(reply);
+
+                    GetReplies().Add(profile, replyData);
+                    GetHasReplied(profile, hasRepliedCallbackResults => { callbackResults.SetResult(hasRepliedCallbackResults); });
+                }
+                else
+                {
+                    callbackResults.result = "Failed To Add New Comment Data - Comment Value Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void AddReply(Profile profile, Comment reply, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveReply(Profile profile, string commentID, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ClearReplies(Action<Callback> callback = null)
+            {
+                Callback  callbackResults = new Callback();
+
+                GetReplies().Clear();
+
+                if (GetReplies().Count == 0)
+                {
+                    callbackResults.result = $"Replies List Cleared.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Clear Replies List.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetComment() => comment;
+
+            public string GetCommentID() => commentID ?? Helpers.GenerateUniqueIdentifier();
+
+            public int GetCommentIndex() => commentIndex;
+
+            public PostContentStatus GetCommentStatus() => status;
+
+            public Dictionary<Profile, PostCommentData> GetReplies() => replies;
+
+            public int GetReplyCount() => replies.Count;
+
+            public void GetHasReplied(Profile profile, Action<CallbackData<PostCommentData>> callback)
+            {
+                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
+
+                if (GetReplies().Keys.Contains(profile))
+                {
+                    if (GetReplies().TryGetValue(profile, out PostCommentData commentData))
+                    {
+                        callbackResults.result = $"Profile Has Replied To Comment ID : {GetCommentID()}";
+                        callbackResults.data = commentData;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Find Comment Data - Please Chec Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Profile Has Not Replied To Comment ID : {GetCommentID()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #region Reports Getters
+
+            public List<Report<Comment>> GetReports() => reports;
+            public int GetReportsCount() => GetReports().Count;
+            public bool IsReported() => GetReportsCount() > 0 && GetCommentStatus() == PostContentStatus.Reported;
+
+            #endregion
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class PostCommentData
+        {
+            #region Components
+
+            public List<Comment> comments = new List<Comment>();
+
+            #endregion
+
+            #region Main
+
+            #region Constuctors
+
+            public PostCommentData()
+            {
+            }
+
+            public PostCommentData(params Comment[] commentsArray)
+            {
+                if(commentsArray != null)
+                    for (int i = 0; i < commentsArray.Length; i++)
+                        if (!comments.Contains(commentsArray[i]))
+                            comments.Add(commentsArray[i]);
+            }
+
+            #endregion
+
+            #region Data Setters
+
+            #region Comments
+
+            public void AddComment(Comment comment, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                if (!GetComments().Contains(comment))
+                {
+                    GetComments().Add(comment);
+
+                    if (GetComments().Contains(comment))
+                    {
+                        callbackResults.result = $"{comment.GetComment()} - Comment Has Been Added To Comments List.";
+                        callbackResults.data = comment;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Add Comment : {comment.GetComment()} - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"{comment.GetComment()} - Comment Already Exists In The Comments List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveComment(Comment comment, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                if (GetComments().Contains(comment))
+                {
+                    GetComments().Remove(comment);
+
+                    if (!GetComments().Contains(comment))
+                    {
+                        callbackResults.result = $"Comment : {comment.GetComment()} Has Been Successfully Removed From Comments List.";
+                        callbackResults.data = comment;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Remove Comment : {comment.GetComment()} - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Comment: {comment.GetComment()} Doesn't Exists In The Comments List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetComment(string commentID, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                Helpers.StringValueValid(hasValidInfoCallbackResults =>
+                {
+                    callbackResults.SetResult(hasValidInfoCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var targetComment = GetComments().Find(commentTarget => commentTarget.GetCommentID() == commentID);
+
+                        if (targetComment != null)
+                        {
+                            callbackResults.result = $"Comment With ID : {commentID} Has Been Found In Comments List.";
+                            callbackResults.data = targetComment;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Find Comment With ID : {commentID} - Please Check Here.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Comment With ID : {commentID} Doesn't Exists In The Comments List.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+
+
+                }, commentID);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ClearComments(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                comments.Clear();
+
+                if (comments.Count == 0)
+                {
+                    callbackResults.result = $"Comments List Cleared.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }          
+                else
+                {
+                    callbackResults.result = $"Failed To Clear Comments List.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Replies
+
+            public void AddReply(Profile profile, string commentID, Comment reply, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                GetComment(commentID, getCommentCallbackResults =>
+                {
+                    callbackResults.SetResult(getCommentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentToReplyTo = getCommentCallbackResults.data;
+                        commentToReplyTo.AddReply(profile, reply, repliedCallbackResults => { callbackResults.SetResult(repliedCallbackResults); });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveReply(Profile profile, string commentID, Comment reply, Action<CallbackData<Comment>> callback = null)
+            {
+                CallbackData<Comment> callbackResults = new CallbackData<Comment>();
+
+                GetComment(commentID, getCommentCallbackResults =>
+                {
+                    callbackResults.SetResult(getCommentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentToUnReplyTo = getCommentCallbackResults.data;
+                        commentToUnReplyTo.RemoveReply(profile, commentID, replyRemovedCallbackResults => { callbackResults.SetResult(replyRemovedCallbackResults); });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ClearReplies(Profile profile, string commentID, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetComment(commentID, getCommentCallbackResults =>
+                {
+                    callbackResults.SetResult(getCommentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentToClearRepliesFrom = getCommentCallbackResults.data;
+                        commentToClearRepliesFrom.ClearReplies(repliesClearedCallbackResults => { callbackResults.SetResult(repliesClearedCallbackResults); });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #endregion
+
+            #region Data Getters
+
+            public List<Comment> GetComments() => comments;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class PostContent : ProjectData
         {
             #region Components
 
@@ -2431,12 +3021,12 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public PostData()
+            public PostContent()
             {
 
             }
 
-            public PostData(SerializableAsset serializableAsset)
+            public PostContent(SerializableAsset serializableAsset)
             {
                 this.serializableAsset = serializableAsset;
             }
@@ -2445,32 +3035,561 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class Post : SerializableData
+        public class Post : PostData
         {
             #region Components
 
-            public string caption;
-            public Profile profile;
-            public PostData data;
+            #region Post Info
 
-            public int likes;
+            public string title = string.Empty;
+            public string caption = string.Empty;
 
-            public Dictionary<Profile, string> comments;
+            #endregion
+
+            #region Post Data
+
+            public Profile profile = new Profile();
+            public PostContent data = new PostContent();
+
+            public string postID;
+
+            #endregion
+
+            #region Post Interaction Data
+
+            public Dictionary<Profile, PostCommentData> comments = new Dictionary<Profile, PostCommentData>();
+            public List<Profile> likes = new List<Profile>();
+            public List<Profile> dislikes = new List<Profile>();
+
+            #endregion
+
+            #region Post Reports
+
+            public List<Report<Post>> reports = new List<Report<Post>>();
+            public PostContentStatus status;
+
+            #endregion
 
             #endregion
 
             #region Main
 
-            public Post()
-            {
-            }
+            #region Constructors
 
-            public Post(string caption = null, Profile profile = null, PostData data = null)
+            public Post() => postID = Helpers.GenerateUniqueIdentifier();
+
+            public Post(string title, string caption, Profile profile, PostContent data, string postID = null)
             {
+                this.title = title;
                 this.caption = caption;
                 this.profile = profile;
                 this.data = data;
+                this.postID = postID ?? Helpers.GenerateUniqueIdentifier();
             }
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetTitle(string title) => this.title = title;
+            public void SetCaption(string caption) => this.caption = caption;
+            public void SetProfile(Profile profile) => this.profile = profile;
+            public void SetPostData(PostContent data) => this.data = data;
+            public void SetPostID(string postID) => this.postID = postID;
+            public void SetPostStatus(PostContentStatus status) => this.status = status;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetTitle() => title;
+            public string GetCaption() => caption;
+
+            public PostContent GetPostData() => data;
+
+            public Profile GetProfile() => profile;
+
+            public List<Profile> GetLikes() => likes;
+            public int GetLikeCount() => likes.Count;
+
+            public List<Profile> GetDislikes() => dislikes;
+            public int GetDislikeCount() => dislikes.Count;
+
+            public Dictionary<Profile, PostCommentData> GetComments() => comments;
+
+            public int GetCommentsCount() => comments.Count;
+
+            public DateTimeComponent GetPostDateTimeComponent() => GetCreationDateTime();
+            public DateTime GetPostDateTime() => GetCreationDateTime().GetDateTime();
+
+            public string GetPostID() => postID ?? Helpers.GenerateUniqueIdentifier();
+
+            public PostContentStatus GetPostStatus() => status;
+
+
+            #region Reports
+
+            public void AddReport(Report<Post> report, Action<CallbackData<Report<Post>>> callback = null)
+            {
+                CallbackData<Report<Post>> callbackResults = new CallbackData<Report<Post>>();
+
+                if (!GetReports().Contains(report))
+                {
+                    GetReports().Add(report);
+
+                    if (GetReports().Contains(report))
+                    {
+                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Added Successfully.";
+                        callbackResults.data = report;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Report Already Exists In Reports List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveReport(Report<Post> report, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (GetReports().Contains(report))
+                {
+                    GetReports().Remove(report);
+
+                    if (!GetReports().Contains(report))
+                    {
+                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Removed Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Report Doesn't Exists In Reports List.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ClearReports(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetReports().Clear();
+                SetPostStatus(PostContentStatus.None);
+
+                if (!IsReported())
+                {
+                    callbackResults.result = $"Reports Cleared Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Clear Reports - Please Check Here.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Likes
+
+            void GetIsLiked(Action<Callback> callback)
+            {
+                Callback callbackResults = new Callback();
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+
+
+            #region Dislikes
+
+            void GetIsDisiked(Action<Callback> callback)
+            {
+                Callback callbackResults = new Callback();
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Comments
+
+            public void AddNewCommentData(Profile profile, Comment comment, Action<CallbackData<PostCommentData>> callback = null)
+            {
+                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
+
+                if (comment != null)
+                {
+                    PostCommentData commentData = new PostCommentData(comment);
+
+                    GetComments().Add(profile, commentData);
+                    GetHasCommented(hasCommentedCallbackResults => { callbackResults.SetResult(hasCommentedCallbackResults); });
+                }
+                else
+                {
+                    callbackResults.result = "Failed To Add New Comment Data - Comment Value Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveCommentData(Profile profile, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(hasCommentedCallbackResults => 
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                        GetComments().Remove(profile);
+
+                    if (!GetComments().Keys.Contains(profile))
+                        callbackResults.result = "Comment Data Has Been Removed Successfully.";
+                    else
+                    {
+                        callbackResults.result = "Failed To Remove Comment Data - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            void GetHasCommented(Action<CallbackData<PostCommentData>> callback)
+            {
+                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
+
+                if (GetComments().Keys.Contains(profile))
+                {
+                    if(GetComments().TryGetValue(profile, out PostCommentData commentData))
+                    {
+                        callbackResults.result = $"Profile Has Commented To Post ID : {GetPostID()}";
+                        callbackResults.data = commentData;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Find Post Comment Data - Please Chec Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Profile Has Not Commented To Post ID : {GetPostID()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #endregion
+
+            #region Post Interactions
+
+            #region Likes
+
+            public void LikePost(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                GetIsLiked(likedCallbackResults => 
+                {
+                    callbackResults.SetResult(likedCallbackResults);
+
+                    if(callbackResults.Success())
+                        RemoveLike(profile, dislikedCallbackResults => { callbackResults.SetResultsData(dislikedCallbackResults); });
+                    else
+                        AddLike(profile, likedCallbackResults => { callbackResults.SetResultsData(likedCallbackResults); });
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            void AddLike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if(!GetLikes().Contains(profile))
+                {
+                    GetLikes().Add(profile);
+
+                    if (GetLikes().Contains(profile))
+                    {
+                        callbackResults.result = "Post Liked. Like Added To Likes List.";
+                        callbackResults.data = GetLikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Like Post. Couldn't Add Like - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Post Already Liked. Couldn't Add Like.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            void RemoveLike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (GetLikes().Contains(profile))
+                {
+                    GetLikes().Remove(profile);
+
+                    if (!GetLikes().Contains(profile))
+                    {
+                        callbackResults.result = "Like Removed. Like Removed From Likes List.";
+                        callbackResults.data = GetLikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Remove Like From Post. Couldn't Remove Like - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Profile Not Found In Liked List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Dislikes
+
+            public void DislikePost(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                GetIsDisiked(dislikedCallbackResults =>
+                {
+                    callbackResults.SetResult(dislikedCallbackResults);
+
+                    if (callbackResults.Success())
+                        RemoveDisike(profile, dislikedCallbackResults => { callbackResults.SetResultsData(dislikedCallbackResults); });
+                    else
+                        AddDislike(profile, likedCallbackResults => { callbackResults.SetResultsData(likedCallbackResults); });
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            void AddDislike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (!GetDislikes().Contains(profile))
+                {
+                    GetDislikes().Add(profile);
+
+                    if (GetDislikes().Contains(profile))
+                    {
+                        callbackResults.result = "Post Disliked. Dislike Added To Dislikes List.";
+                        callbackResults.data = GetLikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Dislike Post. Couldn't Add Dislike - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Post Already Disliked. Couldn't Dislike Post.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            void RemoveDisike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (GetDislikes().Contains(profile))
+                {
+                    GetDislikes().Remove(profile);
+
+                    if (!GetDislikes().Contains(profile))
+                    {
+                        callbackResults.result = "Dislike Removed. Dislike Removed From Dislikes List.";
+                        callbackResults.data = GetDislikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Remove A Dislike From Post. Couldn't Remove Dislike - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Profile Not Found In Disliked List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Comments
+
+            public void AddComment(Profile profile, Comment comment, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentsData = hasCommentedCallbackResults.data;
+                        commentsData.AddComment(comment, commentAddedCallbackResults => { callbackResults.SetResult(commentAddedCallbackResults); });
+                    }
+                    else
+                        AddNewCommentData(profile, comment, newCommentAddedCallbackResults => { callbackResults.SetResult(newCommentAddedCallbackResults); });
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void AddReplyToComment(Profile profile, string commentID, Comment reply, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentsData = hasCommentedCallbackResults.data;
+
+                        commentsData.GetComment(commentID, commentCallbackResults => 
+                        {
+                            callbackResults.SetResult(commentCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                var comment = commentCallbackResults.data;
+
+                                comment.AddReply(profile, reply, commentReplyCallbackResults => { callbackResults.SetResult(commentReplyCallbackResults); });
+                            }
+                        });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+
+            public void RemoveReplyFromComment(Profile profile, string commentID, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentsData = hasCommentedCallbackResults.data;
+
+                        commentsData.GetComment(commentID, commentCallbackResults =>
+                        {
+                            callbackResults.SetResult(commentCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                var comment = commentCallbackResults.data;
+                                comment.RemoveReply(profile, commentID, commentReplyCallbackResults => { callbackResults.SetResult(commentReplyCallbackResults); });
+                            }
+                        });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveComment(Profile profile, Comment comment, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentsData = hasCommentedCallbackResults.data;
+                        commentsData.RemoveComment(comment, commentRemovedCallbackResults => { callbackResults.SetResult(commentRemovedCallbackResults); });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Reports Getters
+
+            public List<Report<Post>> GetReports() => reports;
+            public int GetReportsCount() => GetReports().Count;
+            public bool IsReported() => GetReportsCount() > 0 && GetPostStatus() == PostContentStatus.Reported;
+
+            #endregion
+
+            #endregion
 
             #endregion
         }
@@ -29144,6 +30263,41 @@ namespace Com.RedicalGames.Filar
             public static string GenerateAppKey(int length = 4, string separator = " ")
             {
               
+                var alphabets = GetAlphabets();
+
+                List<string> segments = new List<string>();
+
+                for (int i = 0; i < length; i++)
+                {
+                    int randomNumber_001 = UnityEngine.Random.Range(0, 9);
+                    int randomNumber_002 = UnityEngine.Random.Range(0, 9);
+                    int randomNumber_003 = UnityEngine.Random.Range(0, 9);
+
+                    int randomAlphabetIndex_001 = UnityEngine.Random.Range(0, alphabets.Length - 1);
+                    string randomAlphabet_001 = alphabets[randomAlphabetIndex_001];
+
+                    segments.Add($"{randomNumber_001}{randomNumber_002}{randomAlphabet_001}{randomNumber_003}");
+                }
+
+                string key = "";
+
+                if (segments.Count > 0)
+                {
+                    for (int i = 0; i < segments.Count; i++)
+                    {
+                        if (i < segments.Count - 1)
+                            key += segments[i] + $"{separator}";
+                        else
+                            key += segments[i];
+                    }
+                }
+
+                return key;
+            }
+
+            public static string GenerateUniqueIdentifier(int length = 1, string separator = "")
+            {
+
                 var alphabets = GetAlphabets();
 
                 List<string> segments = new List<string>();

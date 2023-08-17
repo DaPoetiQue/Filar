@@ -2766,11 +2766,11 @@ namespace Com.RedicalGames.Filar
 
         #region Create UI
 
-        void CreateUIScreenPostWidget(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.PostData>> callback)
+        void CreateUIScreenPostWidget(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer contentContainer, Action<AppData.CallbackDataList<AppData.PostContent>> callback)
         {
             try
             {
-                AppData.CallbackDataList<AppData.PostData> callbackResults = new AppData.CallbackDataList<AppData.PostData>();
+                AppData.CallbackDataList<AppData.PostContent> callbackResults = new AppData.CallbackDataList<AppData.PostContent>();
 
                 if(contentContainer != null && contentContainer.IsContainerActive())
                 {
@@ -2801,7 +2801,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                List<AppData.PostData> postDatas = new List<AppData.PostData>();
+                                                List<AppData.PostContent> postDatas = new List<AppData.PostContent>();
 
                                                 foreach (var post in posts)
                                                 {

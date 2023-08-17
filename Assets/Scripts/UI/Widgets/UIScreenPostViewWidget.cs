@@ -85,24 +85,26 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetUIWidgetData(AppData.Post post)
         {
-            //if (!string.IsNullOrEmpty(structureData.projectInfo.name))
-            //{
-            //    SetUITextDisplayerValue(structureData?.projectInfo?.name, AppData.ScreenTextType.TitleDisplayer);
+            #region Post 
 
-            //    string lastModified = structureData?.creationDateTime.date;
-            //    SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
+            LogInfo($" -- Assigning Post : {post.name} - Caption : {post.caption}", this);
 
-            //    string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
-            //    SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
+            SetUITextDisplayerValue(post.name, AppData.ScreenTextType.TitleDisplayer);
 
-            //    SceneAssetsManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults =>
-            //    {
-            //        if (projectInfoCallbackResults.Success())
-            //            SetActionButtonColor(AppData.InputActionButtonType.OpenProject, projectInfoCallbackResults.data.color);
-            //        else
-            //            Log(projectInfoCallbackResults.resultCode, projectInfoCallbackResults.result, this);
-            //    });
-            //}
+            #endregion
+
+            #region Post Caption
+
+            SetUITextDisplayerValue(post.caption, AppData.ScreenTextType.MessageDisplayer);
+
+            #endregion
+
+            #region Post Date Time
+
+            string postTimeDate = post.GetCreationDateTime().date;
+            SetUITextDisplayerValue(postTimeDate, AppData.ScreenTextType.TimeDateDisplayer);
+
+            #endregion
         }
 
         #endregion
