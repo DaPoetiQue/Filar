@@ -122,7 +122,6 @@ namespace Com.RedicalGames.Filar
                                 callback.Invoke(callbackResults);
 
                                 #endregion
-
                             }
                             else if (screenLoadInfoInstance.InitialScreen() && !OnShowSplashScreen)
                             {
@@ -183,9 +182,6 @@ namespace Com.RedicalGames.Filar
                                             await Task.Delay(loadingScreenExitDelay);
 
                                             await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenData());
-
-                                            int initialScreenDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
-                                            await Task.Delay(initialScreenDelay);
                                         }
                                         else
                                             Log(callbackResults.resultCode, callbackResults.result, this);

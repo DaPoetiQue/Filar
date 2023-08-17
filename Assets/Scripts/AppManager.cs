@@ -180,8 +180,6 @@ namespace Com.RedicalGames.Filar
 
                                                                                     screenUIManager.Refresh();
 
-                                                                                    await Task.Delay(3000);
-
                                                                                     screen.value.HideScreenWidget(AppData.WidgetType.LoadingWidget);
 
                                                                                     await Task.Delay(1000);
