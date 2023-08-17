@@ -2818,7 +2818,7 @@ namespace Com.RedicalGames.Filar
                                                             postWidget.name = post.name;
                                                             contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false); ;
 
-                                                            postDatas.Add(post.data);
+                                                            postDatas.Add(post.content);
 
                                                             callbackResults.result = $"Post Widget : { postWidget.name} Created.";
                                                             callbackResults.resultCode = AppData.Helpers.SuccessCode;
