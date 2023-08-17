@@ -14532,7 +14532,7 @@ namespace Com.RedicalGames.Filar
         [RequireComponent(typeof(LayoutElement))]
         [RequireComponent(typeof(Button))]
 
-        public abstract class UIScreenWidget : AppMonoBaseClass, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
+        public abstract class UIScreenWidget : AppMonoBaseClass, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler, IScrollHandler
         {
             #region Components
 
@@ -14846,7 +14846,7 @@ namespace Com.RedicalGames.Filar
 
             #region Get Data
 
-            public T GetData<T>(AppData.SelectableWidgetType type) where T : SerializableData
+            public T GetData<T>(SelectableWidgetType type) where T : SerializableData
             {
                 T data = null;
 
@@ -15179,6 +15179,9 @@ namespace Com.RedicalGames.Filar
 
             void OnSelectionUpdate()
             {
+                if (!GetSelectionStateData().Selectable)
+                    return;
+
                 if (GetActive())
                 {
                     if (SelectableManager.Instance != null)
@@ -15456,6 +15459,12 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Scroll
+
+            public void OnScroll(PointerEventData eventData) => OnScrollExecuted(eventData);
+
+            #endregion
+
             #region Pointer Callbacks
 
             public void OnPointerDown(PointerEventData eventData) => OnPointerDownExecuted(eventData);
@@ -15544,6 +15553,11 @@ namespace Com.RedicalGames.Filar
                         else
                             LogWarning($"On Begin Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                     }
+                    else
+                    {
+                        EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().GetDragViewPort().gameObject);
+                        GetWidgetContainer().GetUIScroller().value.OnBeginDrag(eventData);
+                    }
                 }
                 catch(Exception exception)
                 {
@@ -15614,6 +15628,11 @@ namespace Com.RedicalGames.Filar
                         else
                             LogWarning($"On Drag Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                     }
+                    else
+                    {
+                        EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().GetDragViewPort().gameObject);
+                        GetWidgetContainer().GetUIScroller().value.OnDrag(eventData);
+                    }
                 }
                 catch(Exception execption)
                 {
@@ -15676,12 +15695,27 @@ namespace Com.RedicalGames.Filar
                         else
                             LogWarning($"On Drag End Unsuccessful - Widget : {this.name} Is Not A Draggable Widget.", this);
                     }
+                   else
+                    {
+                        EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().GetDragViewPort().gameObject);
+                        GetWidgetContainer().GetUIScroller().value.OnEndDrag(eventData);
+                    }
                 }
                 catch(Exception exception)
                 {
-                    LogError(exception.Message, this, () => OnEndDragExecuted(eventData));
+                    LogError(exception.Message);
                     throw exception;
                 }
+            }
+
+            #endregion
+
+            #region Scroll
+
+            void OnScrollExecuted(PointerEventData eventData)
+            {
+                EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetUIScroller().GetDragViewPort().gameObject);
+                GetWidgetContainer().GetUIScroller().value.OnScroll(eventData);
             }
 
             #endregion
@@ -15738,6 +15772,8 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                     }
+                    else
+                        EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetScrollerDragViewPort().gameObject);
                 }
                 catch(Exception exception)
                 {
@@ -15798,7 +15834,7 @@ namespace Com.RedicalGames.Filar
                 try
                 {
                     if (GetSelectionStateData().Selectable)
-                    { 
+                    {
                         if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
                         {
                             GetWidgetContainer().SetFingerUpEvent();
@@ -15844,8 +15880,8 @@ namespace Com.RedicalGames.Filar
                                                             else
                                                                 LogError("Selectable Manager Instance Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
 
-                                                        // Reload Screen
-                                                        ScreenUIManager.Instance.Refresh();
+                                                            // Reload Screen
+                                                            ScreenUIManager.Instance.Refresh();
 
                                                             if (notification.showNotifications)
                                                             {
@@ -15863,9 +15899,9 @@ namespace Com.RedicalGames.Filar
                                                                     buttonComponent.CancelInvoke();
 
                                                                     widgetRect.localScale = Vector3.one;
-                                                                //OnSelectionFrameState(false, InputUIState.Normal, false);
+                                                                    //OnSelectionFrameState(false, InputUIState.Normal, false);
 
-                                                                ResetFolderWidgets();
+                                                                    ResetFolderWidgets();
 
                                                                     GetWidgetContainer().GetPlaceHolder(placeholder =>
                                                                     {
@@ -15942,10 +15978,12 @@ namespace Com.RedicalGames.Filar
                             OnReset();
                         }
                     }
+                    else
+                        EventSystem.current.SetSelectedGameObject(GetWidgetContainer().GetScrollerDragViewPort().gameObject);
                 }
                 catch(Exception exception)
                 {
-                    LogError(exception.Message, this, () => OnPointerUpExecuted(eventData));
+                    LogError(exception.Message, this);
                     throw exception;
                 }
             }
