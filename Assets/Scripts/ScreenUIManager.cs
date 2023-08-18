@@ -884,111 +884,6 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        #region Delete Data
-
-        //async Task ShowLoadingScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.Callback> callback = null)
-        //{
-        //    AppData.Callback callbackResults = new AppData.Callback();
-
-        //    try
-        //    {
-        //        if (SceneAssetsManager.Instance)
-        //        {
-        //            SceneAssetsManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, async dataPacketsCallbackResults => 
-        //            {
-        //                callbackResults.results = dataPacketsCallbackResults.results;
-        //                callbackResults.resultsCode = dataPacketsCallbackResults.resultsCode;
-
-        //                if(callbackResults.Success())
-        //                {
-        //                    await OnCheckIfScreenLoadedAsync(dataPacketsCallbackResults.data.dataPackets, async screenLoadedCallbackResults =>
-        //                    {
-        //                        callbackResults.results = screenLoadedCallbackResults.results;
-        //                        callbackResults.resultsCode = screenLoadedCallbackResults.resultsCode;
-
-        //                        if (callbackResults.Success())
-        //                        {
-        //                            await AppData.Helpers.GetWaitUntilAsync(HasRequiredComponentsAssigned());
-
-        //                            AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
-
-        //                            if (HasRequiredComponentsAssigned())
-        //                            {
-        //                                GetScreenData(dataPacketsCallbackResults.data.dataPackets, async screenFoundCallbackResults =>
-        //                                {
-        //                                    callbackResults.results = screenFoundCallbackResults.results;
-        //                                    callbackResults.resultsCode = screenFoundCallbackResults.resultsCode;
-
-        //                                    if (callbackResults.Success())
-        //                                    {
-        //                                        callbackResults = await HideScreen(GetCurrentUIScreenType());
-
-        //                                        LogInfo($" <<<< Hidding Screen Ended : Code {callbackResults.resultsCode} - .", this);
-
-        //                                        if (callbackResults.Success())
-        //                                        {
-        //                                            //await OnShowSelectedScreenView(screenFoundCallbackResults.data, showScreenViewCallbackResults =>
-        //                                            //{
-        //                                            //    callbackResults.results = showScreenViewCallbackResults.results;
-        //                                            //    callbackResults.resultsCode = showScreenViewCallbackResults.resultsCode;
-
-        //                                            //    if (callbackResults.Success())
-        //                                            //    {
-        //                                            //        screenFoundCallbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, screenFoundCallbackResults.data.value.GetScreenTitle());
-
-        //                                            //    #region Trigger Loading Manager
-
-        //                                            //    AppData.Helpers.GetComponent(ContentLoadingManager.Instance, validComponentCallback =>
-        //                                            //        {
-        //                                            //            callbackResults.resultsCode = validComponentCallback.resultsCode;
-
-        //                                            //            if (callbackResults.Success())
-        //                                            //            {
-        //                                            //                SetCurrentScreenData(screenFoundCallbackResults.data);
-        //                                            //                ContentLoadingManager.Instance.LoadScreen(dataPackets);
-        //                                            //                callbackResults.results = $" Triggered Loading Screen For : {dataPackets.screenType}";
-        //                                            //            }
-        //                                            //            else
-        //                                            //                callbackResults.results = "Content Loading Manager Is Not Yet Initialized.";
-        //                                            //        });
-
-        //                                            //    #endregion
-        //                                            //}
-        //                                            //});
-        //                                        }
-        //                                    }
-        //                                });
-        //                            }
-        //                            else
-        //                            {
-        //                                callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
-        //                                callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-        //                            }
-
-        //                            callbackResults.results = $"Screen Of Type : {dataPackets.screenType} Has Been Loaded Successfully";
-        //                            callbackResults.resultsCode = AppData.Helpers.SuccessCode;
-        //                        }
-        //                    });
-        //                }
-        //            });
-        //        }
-        //        else
-        //        {
-        //            callbackResults.results = $"Couldn't Show Screen Of Type : {dataPackets.screenType} - Possible Issue - Screens Are Missing / Not Found.";
-        //            callbackResults.resultsCode = AppData.Helpers.ErrorCode;
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        ThrowException(AppData.LogExceptionType.NullReference, exception, this, "ShowScreen(AppData.SceneDataPackets dataPackets)");
-        //        //throw new Exception($"--> RG_Unity - Unity - Failed To Show Screen Type : {dataPackets.ToString()} - With Exception Results : {exception}");
-        //    }
-
-        //    callback?.Invoke(callbackResults);
-        //}
-
-        #endregion
-
         void OnUpdateUIScreenOnEnter(AppData.UIScreenViewComponent screen, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
@@ -1092,15 +987,16 @@ namespace Com.RedicalGames.Filar
                 LogWarning($"Couldn't Execute : {loadingItemType}. Current Screen Missing.", this, () => ShowLoadingItem(loadingItemType, status));
         }
 
-        public void Refresh()
+        #region Screen Refresh
+
+        public async Task<AppData.Callback> RefreshAsync(int refreshDuration = 0)
         {
-            AppData.Helpers.GetComponent(DatabaseManager.Instance, hasComponentCallbackResults =>
-            {
-                if (hasComponentCallbackResults.Success())
-                    OnScreenRefresh(currentScreen.value.GetScreenData());
-                else
-                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
-            });
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+                callbackResults.SetResult(await OnScreenRefreshAsync(currentScreen.value.GetScreenData(), refreshDuration));
+
+            return callbackResults;
         }
 
         public void ScreenRefresh()
@@ -1184,8 +1080,10 @@ namespace Com.RedicalGames.Filar
                 LogError("Refresh Button Failed : Scene Assets Manager Instance Is Not Yet Initialized", this);
         }
 
-        async void OnScreenRefresh(AppData.SceneDataPackets dataPackets)
+        async Task<AppData.Callback> OnScreenRefreshAsync(AppData.SceneDataPackets dataPackets, int refreshDuration = 0)
         {
+            AppData.Callback callbackResults = new AppData.Callback();
+
             if (dataPackets.blurScreen)
                 currentScreen.value.Blur(dataPackets);
 
@@ -1265,7 +1163,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (currentScreen.value.GetScreenData().refreshSceneAssets)
                 {
-                    var refreshTask = await DatabaseManager.Instance.Refreshed(DatabaseManager.Instance.GetCurrentFolder(), container, dataPackets); // Wait For Assets To Be Refreshed.
+                    var refreshTask = await DatabaseManager.Instance.RefreshedAsync(GetCurrentScreenData().value, DatabaseManager.Instance.GetCurrentFolder(), container, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
 
                     if (currentScreen.value != null)
                         currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
@@ -1279,7 +1177,11 @@ namespace Com.RedicalGames.Filar
             }
             else
                 LogError("Failed To Refresh Screen - Content Container Null / Missing.", this);
+
+            return callbackResults;
         }
+
+        #endregion
 
         public void UpdateInfoDisplayer(AppData.UIScreenViewComponent screen)
         {
@@ -1883,44 +1785,42 @@ namespace Com.RedicalGames.Filar
 
                                             callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
 
-                                            while (!callbackResults.Success())
+                                            foreach (var post in posts)
                                             {
-                                                foreach (var post in posts)
+                                                GameObject postWidget = Instantiate(widget);
+
+                                                if (postWidget != null)
                                                 {
-                                                    GameObject postWidget = Instantiate(widget);
+                                                    AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
 
-                                                    if (postWidget != null)
+                                                    if (widgetComponent != null)
                                                     {
-                                                        AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
+                                                        widgetComponent.SetPost(post);
 
-                                                        if (widgetComponent != null)
-                                                        {
-                                                            widgetComponent.SetPost(post);
+                                                        postWidget.name = post.name;
+                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
 
-                                                            postWidget.name = post.name;
-                                                            contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                        postDatas.Add(post);
 
-                                                            postDatas.Add(post);
-
-                                                            callbackResults.result = $"Post Widget : { postWidget.name} Created.";
-                                                        }
-                                                        else
-                                                        {
-                                                            callbackResults.result = "Post Widget Component Is Null.";
-                                                            callbackResults.data = default;
-                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                        }
+                                                        callbackResults.result = $"Post Widget : { postWidget.name} Created.";
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                        callbackResults.result = "Post Widget Component Is Null.";
                                                         callbackResults.data = default;
                                                         callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                     }
                                                 }
-
-                                                await Task.Yield();
+                                                else
+                                                {
+                                                    callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                    callbackResults.data = default;
+                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                }
                                             }
+
+                                            while (!callbackResults.Success())
+                                                await Task.Yield();
 
                                             AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, hasEqualValueCallbackResults =>
                                             {

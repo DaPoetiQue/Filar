@@ -2197,7 +2197,7 @@ namespace Com.RedicalGames.Filar
             currentPaginationView = paginationView;
         }
 
-        public void OnPaginationActionButtonPressed(AppData.PaginationNavigationActionType actionType)
+        public async void OnPaginationActionButtonPressed(AppData.PaginationNavigationActionType actionType)
         {
             switch (actionType)
             {
@@ -2216,7 +2216,7 @@ namespace Com.RedicalGames.Filar
 
             UpdatedContainerSize();
 
-            ScreenUIManager.Instance.Refresh();
+            await ScreenUIManager.Instance.RefreshAsync();
         }
 
         public void Pagination_GoToPage(int pageNumber)

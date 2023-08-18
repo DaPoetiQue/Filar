@@ -173,16 +173,8 @@ namespace Com.RedicalGames.Filar
                                                                                 {
                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
-
-                                                                                    // Show Loading Spinner
-
-                                                                                    screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
-
-                                                                                    screenUIManager.Refresh();
-
-                                                                                    screen.value.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-
-                                                                                    await Task.Delay(1000);
+                           
+                                                                                    await screenUIManager.RefreshAsync(1000);
 
                                                                                     screen.value.ShowWidget(widget);
 

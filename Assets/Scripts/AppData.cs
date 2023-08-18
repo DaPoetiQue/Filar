@@ -3315,7 +3315,10 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public Post() => identifier = Helpers.GenerateUniqueIdentifier();
+            public Post()
+            {
+
+            }
 
             public Post(string title, string caption, Profile profile, PostContent data, string postID = null)
             {
@@ -3323,7 +3326,6 @@ namespace Com.RedicalGames.Filar
                 this.caption = caption;
                 this.profile = profile;
                 this.content = data;
-                this.identifier = postID ?? Helpers.GenerateUniqueIdentifier();
             }
 
             #endregion
@@ -16726,7 +16728,7 @@ namespace Com.RedicalGames.Filar
                                                     StorageDirectoryData sourceDirectoryData = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? GetFolderData().storageData : GetAssetData().storageData;
                                                     StorageDirectoryData targetStorageData = GetTargetDirectoryFromSourceStorageDirectoryData(sourceDirectoryData, hoveredFolderData.storageData);
 
-                                                    OnDragInsideFolderEvent(sourceDirectoryData, targetStorageData, widgetMovedCallback =>
+                                                    OnDragInsideFolderEvent(sourceDirectoryData, targetStorageData, async widgetMovedCallback =>
                                                     {
                                                         if (Helpers.IsSuccessCode(widgetMovedCallback.resultCode))
                                                         {
@@ -16751,7 +16753,7 @@ namespace Com.RedicalGames.Filar
                                                                 LogError("Selectable Manager Instance Not Yet Initialized.", this, () => OnPointerUpExecuted(eventData));
 
                                                             // Reload Screen
-                                                            ScreenUIManager.Instance.Refresh();
+                                                            await ScreenUIManager.Instance.RefreshAsync();
 
                                                             if (notification.showNotifications)
                                                             {
@@ -18655,7 +18657,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            protected void OnScreenChangedEvent(UIScreenType screenType)
+            protected async void OnScreenChangedEvent(UIScreenType screenType)
             {
                 if (screenType == UIScreenType.ARViewScreen)
                 {
@@ -18669,7 +18671,7 @@ namespace Com.RedicalGames.Filar
                 OnScreenTogglableStateEvent(AppData.TogglableWidgetType.ResetAssetModelRotationButton, false);
 
                 if (this.screenType == screenType)
-                    ScreenUIManager.Instance.Refresh();
+                    await ScreenUIManager.Instance.RefreshAsync();
             }
 
             protected void OnScreenTogglableStateEvent(TogglableWidgetType widgetType, bool state = false, bool useInteractability = false)
@@ -22350,7 +22352,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         if (contentLoadedCallback.Success())
                                                         {
-                                                            DatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, widgetsSortedCallbackResults =>
+                                                            DatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, async widgetsSortedCallbackResults =>
                                                             {
                                                                 if (widgetsSortedCallbackResults.Success())
                                                                 {
@@ -22363,7 +22365,7 @@ namespace Com.RedicalGames.Filar
                                                                         else
                                                                             LogError("Last Selected Widget Missing / Not Found", this);
 
-                                                                        ScreenUIManager.Instance.Refresh();
+                                                                        await ScreenUIManager.Instance.RefreshAsync();
 
                                                                         if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
                                                                             StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
@@ -22441,20 +22443,20 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
 
-            void OnHideScreenWidget_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
+            async void OnHideScreenWidget_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
             {
                 try
                 {
                     if (widgetType == WidgetType.SceneAssetPreviewWidget)
                     {
-                        DatabaseManager.Instance.OnClearPreviewedContent(false, contentClrearedCallback =>
+                        DatabaseManager.Instance.OnClearPreviewedContent(false, async contentClrearedCallback =>
                         {
                             if (Helpers.IsSuccessCode(contentClrearedCallback.resultCode))
                             {
                                 DatabaseManager.Instance.SetCurrentSceneAsset(DatabaseManager.Instance.GetSceneAssets()[0]);
                                 ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
 
-                                ScreenUIManager.Instance.Refresh();
+                                await ScreenUIManager.Instance.RefreshAsync();
                             }
                             else
                                 LogError(contentClrearedCallback.result, this);
@@ -22525,7 +22527,7 @@ namespace Com.RedicalGames.Filar
                     }
 
                     if (widgetType == WidgetType.CreateNewProjectWidget)
-                        ScreenUIManager.Instance.Refresh();
+                        await ScreenUIManager.Instance.RefreshAsync();
                 }
                 catch (Exception exception)
                 {
@@ -22597,7 +22599,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnConfirm_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets)
+            async void OnConfirm_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets)
             {
                 switch (dataPackets.widgetType)
                 {
@@ -22649,7 +22651,7 @@ namespace Com.RedicalGames.Filar
                         else
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
 
-                        ScreenUIManager.Instance.Refresh();
+                        await ScreenUIManager.Instance.RefreshAsync();
 
                         break;
                 }
@@ -22760,7 +22762,7 @@ namespace Com.RedicalGames.Filar
                                 deletedFileCount = selectedWidgets.Count;
 
                                 if (deletedFileCount > 0)
-                                    DatabaseManager.Instance.OnDelete(selectedWidgets, deletedAssetsCallback =>
+                                    DatabaseManager.Instance.OnDelete(selectedWidgets, async deletedAssetsCallback =>
                                     {
                                         if (Helpers.IsSuccessCode(deletedAssetsCallback.resultCode))
                                         {
@@ -22769,7 +22771,7 @@ namespace Com.RedicalGames.Filar
                                             else
                                                 LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnDeleteAssetWidget_ActionEvent(dataPackets));
 
-                                            ScreenUIManager.Instance.Refresh();
+                                            await ScreenUIManager.Instance.RefreshAsync();
 
                                             if (dataPackets.notification.showNotifications)
                                             {
@@ -22818,7 +22820,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (SelectableManager.Instance)
                             {
-                                SelectableManager.Instance.OnSetFocusedWidgetSelectionInfo(folderCreated.data, true, selectionInfoSet =>
+                                SelectableManager.Instance.OnSetFocusedWidgetSelectionInfo(folderCreated.data, true, async selectionInfoSet =>
                                 {
                                     if (Helpers.IsSuccessCode(selectionInfoSet.resultCode))
                                     {
@@ -22827,7 +22829,7 @@ namespace Com.RedicalGames.Filar
                                         if(widgetsContainer != null)
                                         {
                                             // Reload Screen
-                                            ScreenUIManager.Instance.Refresh();
+                                            await ScreenUIManager.Instance.RefreshAsync();
 
                                             if(widgetsContainer.GetPaginationViewType() == PaginationViewType.Scroller)
                                             {

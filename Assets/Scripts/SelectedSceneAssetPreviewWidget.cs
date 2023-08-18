@@ -199,11 +199,11 @@ namespace Com.RedicalGames.Filar
                 LogWarning("Scene Assets Manager Not Yet Initialized.", this, () => OnShowScreenWidget(dataPackets));
         }
 
-        protected override void OnHideScreenWidget()
+        protected override async void OnHideScreenWidget()
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            ScreenUIManager.Instance.Refresh();
+            await ScreenUIManager.Instance.RefreshAsync();
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)

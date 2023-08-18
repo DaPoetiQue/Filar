@@ -539,7 +539,7 @@ namespace Com.RedicalGames.Filar
         {
             if (valueChangedEvent.DatabaseError == null)
             {
-                AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
+                AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, async screenUIManagerCallbackResults => 
                 {
                     if(screenUIManagerCallbackResults.Success())
                     {
@@ -569,7 +569,7 @@ namespace Com.RedicalGames.Filar
                                     if(!IsServerPostsDatabaseInitialized)
                                         IsServerPostsDatabaseInitialized = true;
 
-                                    screenUIManager.Refresh();
+                                    await screenUIManager.RefreshAsync();
                                 }
                                 else
                                     LogError("Failed To Get Posts From Database.", this);
@@ -2384,7 +2384,7 @@ namespace Com.RedicalGames.Filar
             return callbackResuts;
         }
 
-        public void OpenUIFolderStructure(AppData.Folder folder, AppData.UIWidgetInfo folderWidgetInfo, AppData.FolderStructureType structureType)
+        public async void OpenUIFolderStructure(AppData.Folder folder, AppData.UIWidgetInfo folderWidgetInfo, AppData.FolderStructureType structureType)
         {
             currentViewedFolderStructure = structureType;
 
@@ -2408,7 +2408,7 @@ namespace Com.RedicalGames.Filar
 
                         //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.Return, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ReturnIcon);
                         ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, folder.name);
-                        ScreenUIManager.Instance.Refresh();
+                        await ScreenUIManager.Instance.RefreshAsync();
                     }
                 }
                 else
@@ -2554,7 +2554,7 @@ namespace Com.RedicalGames.Filar
             return assetFormattedName;
         }
 
-        public void ChangeFolderLayoutView(AppData.LayoutViewType viewType, AppData.SceneDataPackets dataPackets)
+        public async void ChangeFolderLayoutView(AppData.LayoutViewType viewType, AppData.SceneDataPackets dataPackets)
         {
             if (GetProjectStructureData().Success())
             {
@@ -2565,7 +2565,7 @@ namespace Com.RedicalGames.Filar
                 else
                     LogWarning("Change Folder Layout View Failed : Selectable Manager Instance Is Not Yet Initialized.", this);
 
-                ScreenUIManager.Instance.Refresh();
+                await ScreenUIManager.Instance.RefreshAsync();
 
                 if (dataPackets.notification.showNotifications)
                     NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
@@ -2581,22 +2581,22 @@ namespace Com.RedicalGames.Filar
             {
                 GetProjectStructureData().data.SetPaginationViewType(paginationView);
 
-                SaveData(GetProjectStructureData().data, (folderStructureDataSaved) =>
+                SaveData(GetProjectStructureData().data, async folderStructureDataSavedCallbackResults =>
                 {
-                    if (AppData.Helpers.IsSuccessCode(folderStructureDataSaved.resultCode))
+                    if (AppData.Helpers.IsSuccessCode(folderStructureDataSavedCallbackResults.resultCode))
                     {
                         if (SelectableManager.Instance != null)
                             SelectableManager.Instance.SmoothTransitionToSelection = false;
                         else
                             Debug.LogWarning("--> OpenUIFolderStructure Failed : SelectableManager.Instance Is Not Yet Initialized.");
 
-                        ScreenUIManager.Instance.Refresh();
+                        await ScreenUIManager.Instance.RefreshAsync();
 
                         if (dataPackets.notification.showNotifications)
                             NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                     }
                     else
-                        Debug.LogWarning($"--> Save Data Failed With Results : {folderStructureDataSaved.result}");
+                        Debug.LogWarning($"--> Save Data Failed With Results : {folderStructureDataSavedCallbackResults.result}");
                 });
             }
             else
@@ -3584,7 +3584,7 @@ namespace Com.RedicalGames.Filar
 
         #region On Refresh Functions
 
-        public async Task<AppData.Callback> Refreshed(AppData.Folder folder, DynamicWidgetsContainer widgetsContainer, AppData.SceneDataPackets dataPackets)
+        public async Task<AppData.Callback> RefreshedAsync(UIScreenHandler refreshedSccreen, AppData.Folder folder, DynamicWidgetsContainer widgetsContainer, AppData.SceneDataPackets dataPackets, int refreshDuration = 0)
         {
             try
             {
@@ -3598,9 +3598,13 @@ namespace Com.RedicalGames.Filar
                     {
                         widgetsContainer.SetAssetsLoaded(false);
 
-                        switch (screenUIManager.GetCurrentUIScreenType())
+                        var currentScreen = screenUIManager.GetCurrentScreenData().value;
+
+                        switch (refreshedSccreen.GetUIScreenType())
                         {
                             case AppData.UIScreenType.LandingPageScreen:
+
+                                refreshedSccreen.ShowWidget(AppData.WidgetType.LoadingWidget);
 
                                 while (!IsServerPostsDatabaseInitialized)
                                     await Task.Yield();
@@ -3611,13 +3615,16 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        GetPosts(async postsCallbackResults => 
+                                        GetPosts(async postsCallbackResults =>
                                         {
                                             callbackResults.SetResult(postsCallbackResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                callbackResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer);
+                                                callbackResults.SetResult(await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer));
+
+                                                if(callbackResults.Success())
+                                                    refreshedSccreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
 
                                                 LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
                                             }
@@ -3815,7 +3822,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         if (loadedDirectoriesCallbackResults.Success())
                                                         {
-                                                            var widgetsLoadTaskCallbackResults =  await screenUIManager.CreateUIScreenFolderWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), loadedDirectoriesCallbackResults.data, widgetsContainer);
+                                                            var widgetsLoadTaskCallbackResults = await screenUIManager.CreateUIScreenFolderWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), loadedDirectoriesCallbackResults.data, widgetsContainer);
 
                                                             // Get Loaded Widgets
                                                             if (widgetsLoadTaskCallbackResults.Success())
@@ -3858,11 +3865,11 @@ namespace Com.RedicalGames.Filar
 
                                                     widgetsContainer.GetUIScroller().ScrollToBottom();
 
-                                                    AppData.Helpers.GetAppComponentsValid(loadedWidgets, "Loaded Widgets", loadedWidgetsCallbackResults => 
+                                                    AppData.Helpers.GetAppComponentsValid(loadedWidgets, "Loaded Widgets", loadedWidgetsCallbackResults =>
                                                     {
                                                         callbackResults.SetResult(loadedWidgetsCallbackResults);
 
-                                                        if(callbackResults.Success())
+                                                        if (callbackResults.Success())
                                                         {
                                                             AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
 
@@ -3913,8 +3920,8 @@ namespace Com.RedicalGames.Filar
 
                                                             ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, selectionOptionImageViewType);
                                                         }
-                                                    
-                                                    
+
+
                                                     }, "Failed To Load Widgets.");
 
                                                 }
@@ -3964,6 +3971,9 @@ namespace Com.RedicalGames.Filar
                         callbackResults.resultCode = AppData.Helpers.ErrorCode;
                     }
                 }
+
+                if (refreshDuration > 0)
+                    await Task.Delay(refreshDuration);
 
                 return callbackResults;
             }
@@ -5326,7 +5336,7 @@ namespace Com.RedicalGames.Filar
 
         #region Searching
 
-        public void SearchScreenWidgetList(string searchValue, Action<AppData.CallbackData<List<string>>> callback = null)
+        public async void SearchScreenWidgetList(string searchValue, Action<AppData.CallbackData<List<string>>> callback = null)
         {
             try
             {
@@ -5792,7 +5802,7 @@ namespace Com.RedicalGames.Filar
                             screenUIManager.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Enabled);
 
                             screenUIManager.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-                            screenUIManager.Refresh();
+                            await screenUIManager.RefreshAsync();
                         }
                     }
                     else
@@ -6619,13 +6629,13 @@ namespace Com.RedicalGames.Filar
                                                     var rootStructureData = GetProjectRootStructureData().data;
                                                     rootStructureData.rootProjectStructure.GetProjectInfo().SetCategoryType(filterType);
 
-                                                    SaveModifiedData(rootStructureData, dataSavedCallbackResults =>
+                                                    SaveModifiedData(rootStructureData, async dataSavedCallbackResults =>
                                                     {
                                                         callbackResults.result = dataSavedCallbackResults.result;
                                                         callbackResults.resultCode = dataSavedCallbackResults.resultCode;
 
                                                         if (callbackResults.Success())
-                                                            screenUIManager.Refresh();
+                                                            await screenUIManager.RefreshAsync();
 
                                                         Log(callbackResults.resultCode, callbackResults.result, this);
                                                     });
@@ -6642,7 +6652,7 @@ namespace Com.RedicalGames.Filar
 
                                 case AppData.UIScreenType.ProjectDashboardScreen:
 
-                                    GetDropdownContentTypeFromIndex<AppData.AssetCategoryType>(filterIndex, enumCallbackResults =>
+                                    GetDropdownContentTypeFromIndex<AppData.AssetCategoryType>(filterIndex, async enumCallbackResults =>
                                     {
                                         if (enumCallbackResults.Success())
                                         {
@@ -6669,7 +6679,7 @@ namespace Com.RedicalGames.Filar
                                                     Log(GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).resultCode, GetAppDirectoryData(rootProjectStructureData.GetProjectStructureData().rootFolder.directoryType).result, this);
                                             }
                                             else
-                                                screenUIManager.Refresh();
+                                                await screenUIManager.RefreshAsync();
                                         }
                                         else
                                             Log(enumCallbackResults.resultCode, enumCallbackResults.result, this);

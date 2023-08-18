@@ -65,11 +65,11 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            float timeOut = DefaultTimeOut();
-
-            await Task.Delay(NetworkConnectionDelay());
+            float timeOut = DefaultTimeOut();  
 
             status = Application.internetReachability;
+
+            await Task.Delay(NetworkConnectionDelay());
 
             while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
             {
@@ -77,8 +77,6 @@ namespace Com.RedicalGames.Filar
 
                 if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
                     break;
-
-                await Task.Yield();
             }
 
             string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";

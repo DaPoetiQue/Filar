@@ -56,7 +56,7 @@ namespace Com.RedicalGames.Filar
                                                 if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                                     ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                                                StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), createdCallbackResults => 
+                                                StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults => 
                                                 {
                                                     if (createdCallbackResults.Success())
                                                     {
@@ -65,7 +65,7 @@ namespace Com.RedicalGames.Filar
                                                         if (dataPackets.notification.showNotifications)
                                                             NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
 
-                                                        ScreenUIManager.Instance.Refresh();
+                                                        await ScreenUIManager.Instance.RefreshAsync();
                                                     }
                                                     else
                                                         Log(createdCallbackResults.resultCode, createdCallbackResults.result, this);
