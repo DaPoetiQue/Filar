@@ -21221,6 +21221,61 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
+            public CallbackData<UIScreenWidget> GetUIScreenWidgetData(SelectableWidgetType assetType, LayoutViewType viewType)
+            {
+                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
+
+                if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
+                {
+                    // Find Asset Type
+                    var foundScreenWidgetsList = screenWidgetPrefabList.FindAll(widgets => widgets.GetSelectableWidgetType() == assetType);
+
+                    if (foundScreenWidgetsList != null && foundScreenWidgetsList.Count > 0)
+                    {
+                        // Find Layout View Type
+                        var foundWidgetOfViewType = foundScreenWidgetsList.FindAll(widgets => widgets.GetLayoutViewType() == viewType);
+
+                        if (foundWidgetOfViewType != null && foundWidgetOfViewType.Count > 0)
+                        {
+                            var widget = foundWidgetOfViewType.FirstOrDefault(widget => widget.GetUIWidgetPresenterScreenType() == screenType);
+
+                            if (widget != null)
+                            {
+                                callbackResults.result = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Found / Loaded.";
+                                callbackResults.data = widget;
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"UI Screen Widgets Prefab Data Of Asset Type : {assetType} With Layout View Type : {viewType} - For UI Widget Presenter Screen Type : {screenType} Null / Missing / Not Found - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of Asset Type : {assetType} And View Type : {viewType} For UI Screen Widget Presenter Of Type : {screenType} In Scene Assets Manager's Editor Panel.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"There Are No UI Screen Widgets Prefab Data Of Layout View Type : {viewType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized With UI Screen Widgets Prefab Data Of View Type : {viewType} In Scene Assets Manager's Editor Panel.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"There Are No UI Screen Widgets Prefab Data Of Selectable Asset Type : {assetType} Found On UI Screen Widgets Prefab Data For UI Screen Type : {screenType} - Please Varify If For UI Screen Widgets Prefab Data Library Is Initialized In Scene Assets Manager's Editor Panel.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Screen Widgets For UI SCreen Widgets Asset Of Screen Type : {screenType} Is Null / Empty / Missing / Not Assigned  In Scene Assets Manager Editor Panel.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             public void GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableWidgetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget>> callback)
             {
                 CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
@@ -30436,6 +30491,26 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
+            public static CallbackData<T> UnityComponentValid<T>(T component, string componentInfo) where T : UnityEngine.Object
+            {
+                CallbackData<T> callbackResults = new CallbackData<T>();
+
+                if (component != null)
+                {
+                    callbackResults.result = $"Component : {component.name} Is Valid.";
+                    callbackResults.data = component;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Component : {componentInfo} Is Not Valid - Not Found / Missing / Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             public static void UnityComponentValid<T>(List<T> components, Action<CallbackDataList<T>> callback) where T : UnityEngine.Object
             {
                 CallbackDataList<T> callbackResults = new CallbackDataList<T>();
@@ -31432,6 +31507,65 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            public static CallbackSizeDataTuple<T, U> ListComponentHasEqualDataSize<T, U>(List<T> valueA, List<U> valueB)
+            {
+                CallbackSizeDataTuple<T, U> callbackResults = new CallbackSizeDataTuple<T, U>();
+                ;
+                if (valueA != null && valueA.Count > 0)
+                {
+                    if (valueB != null && valueB.Count > 0)
+                    {
+                        string valueA_ID = valueA[0].GetType().ToString();
+                        string valueB_ID = valueB[0].GetType().ToString();
+
+                        if (valueA.Count.Equals(valueB.Count))
+                        {
+                            callbackResults.result = $"List Component Value_A Of ID Type : {valueA_ID} Is Equal To List Component Value_B Of ID Type : {valueB_ID} With : {valueA.Count} Item(s).";
+
+                            callbackResults.tuple_A = valueA;
+                            callbackResults.tuple_B = valueB;
+                            callbackResults.size = valueA.Count;
+
+                            callbackResults.resultCode = SuccessCode;
+                        }
+                        else
+                        {
+                            string greaterValue = (valueA.Count > valueB.Count) ? $"Value_A : {valueA_ID} Is Greater Than Value_B" : $"Value_B : {valueB_ID} Is Greater Than Value_A";
+
+                            callbackResults.result = $"List Components Don't Have Equal Values : {greaterValue}. - Value_A : {valueA.Count} - Value B : {valueB.Count}";
+
+                            callbackResults.tuple_A = default;
+                            callbackResults.tuple_B = default;
+                            callbackResults.size = default;
+
+                            callbackResults.resultCode = ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "List Component Value_B Is Null / Empty.";
+
+                        callbackResults.tuple_A = default;
+                        callbackResults.tuple_B = default;
+                        callbackResults.size = default;
+
+                        callbackResults.resultCode = ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "List Component Value_A Is Null / Empty.";
+
+                    callbackResults.tuple_A = default;
+                    callbackResults.tuple_B = default;
+                    callbackResults.size = default;
+
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public static void ListComponentHasEqualDataSize<T>(List<T> valueA, List<T> valueB, Action<CallbackSizeDataTuple<T>> callback)

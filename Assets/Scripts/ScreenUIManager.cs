@@ -1838,6 +1838,823 @@ namespace Com.RedicalGames.Filar
             return screens.Count;
         }
 
+        #region Screen UI Widgets Creation
+
+        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer contentContainer)
+        {
+            try
+            {
+                AppData.CallbackDataList<AppData.PostData> callbackResults = new AppData.CallbackDataList<AppData.PostData>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    if (screenType == GetCurrentUIScreenType())
+                    {
+                        var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+
+                        if (contentContainer != null && contentContainer.IsContainerActive())
+                        {
+                            contentContainer.InitializeContainer();
+
+                            callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
+
+                            if (callbackResults.Success())
+                            {
+                                var widgetsLibraryData = databaseManager.GetWidgetsPrefabDataLibrary(screenType).data;
+
+                                var widgetPrefabData = widgetsLibraryData.Find(x => x.screenType == screenType);
+
+                                if (widgetPrefabData != null)
+                                {
+                                    callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var prefabData = widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType).data;
+                                        var prefab = prefabData.gameObject;
+
+                                        callbackResults.SetResult(AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value"));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var widget = AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value").data;
+
+                                            List<AppData.PostData> postDatas = new List<AppData.PostData>();
+
+                                            callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
+
+                                            while (!callbackResults.Success())
+                                            {
+                                                foreach (var post in posts)
+                                                {
+                                                    GameObject postWidget = Instantiate(widget);
+
+                                                    if (postWidget != null)
+                                                    {
+                                                        AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
+
+                                                        if (widgetComponent != null)
+                                                        {
+                                                            widgetComponent.SetPost(post);
+
+                                                            postWidget.name = post.name;
+                                                            contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+
+                                                            postDatas.Add(post);
+
+                                                            callbackResults.result = $"Post Widget : { postWidget.name} Created.";
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.result = "Post Widget Component Is Null.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                        callbackResults.data = default;
+                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                    }
+                                                }
+
+                                                await Task.Yield();
+                                            }
+
+                                            AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, hasEqualValueCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(hasEqualValueCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.result = "Posts Widgets Loaded.";
+                                                    callbackResults.data = postDatas;
+                                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = "Posts Widgets Counldn't Load.";
+                                                    callbackResults.data = default;
+                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Widget Prefab For Screen Type : {screenType} Missing / Null.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+
+                            LogInfo($" ================++++++ Widgets Loading Completed With Results : {callbackResults.Result}.", this);
+                        }
+                        else
+                        {
+                            callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Current Screen Type : {GetCurrentUIScreenType()} Dosen't Match Requested Screen Type : {screenType} - Operation Is Not Valid.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
+        public async Task<AppData.CallbackDataList<AppData.Project>> CreateUIScreenProjectSelectionWidgetsAsync(AppData.UIScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer contentContainer)
+        {
+            try
+            {
+                AppData.CallbackDataList<AppData.Project> callbackResults = new AppData.CallbackDataList<AppData.Project>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+
+                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    {
+                        contentContainer.InitializeContainer();
+
+                        if (screenType == GetCurrentUIScreenType())
+                        {
+                            bool loadTaskIsRunning = true;
+
+                            while (loadTaskIsRunning)
+                            {
+                                databaseManager.GetSortedProjectWidgetList(projectData, sortedListCallbackResults =>
+                                {
+                                    callbackResults.result = sortedListCallbackResults.result;
+                                    callbackResults.resultCode = sortedListCallbackResults.resultCode;
+
+                                    if (callbackResults.Success())
+                                    {
+                                        databaseManager.GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
+                                        {
+                                            callbackResults.result = widgetsCallback.result;
+                                            callbackResults.resultCode = widgetsCallback.resultCode;
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
+
+                                                if (widgetPrefabData != null)
+                                                {
+                                                    widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType, prefabCallbackResults =>
+                                                    {
+                                                        callbackResults.result = prefabCallbackResults.result;
+                                                        callbackResults.resultCode = prefabCallbackResults.resultCode;
+
+                                                        if (prefabCallbackResults.Success())
+                                                        {
+                                                            AppData.Helpers.UnityComponentValid(prefabCallbackResults.data.gameObject, "Project Widget Prefab Value", hasComponentCallbackResults =>
+                                                            {
+                                                                callbackResults.result = hasComponentCallbackResults.result;
+                                                                callbackResults.resultCode = hasComponentCallbackResults.resultCode;
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    List<AppData.Project> projects = new List<AppData.Project>();
+
+                                                                    foreach (var project in sortedListCallbackResults.data)
+                                                                    {
+                                                                        GameObject projectWidget = Instantiate(hasComponentCallbackResults.data);
+
+                                                                        if (projectWidget != null)
+                                                                        {
+                                                                            AppData.UIScreenWidget widgetComponent = projectWidget.GetComponent<AppData.UIScreenWidget>();
+
+                                                                            if (widgetComponent != null)
+                                                                            {
+                                                                                widgetComponent.SetProjectData(project);
+
+                                                                                projectWidget.name = project.name;
+                                                                                contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+
+                                                                                AppData.Project projectData = new AppData.Project
+                                                                                {
+                                                                                    name = project.name,
+                                                                                    widget = widgetComponent,
+                                                                                    structureData = project
+                                                                                };
+
+                                                                                projects.Add(projectData);
+
+                                                                                callbackResults.result = $"Project Widget : { projectWidget.name} Created.";
+                                                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                callbackResults.result = "Project Widget Component Is Null.";
+                                                                                callbackResults.data = default;
+                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            callbackResults.result = "Project Widget Prefab Data Is Null.";
+                                                                            callbackResults.data = default;
+                                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                        }
+                                                                    }
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        loadTaskIsRunning = false;
+
+                                                                        callbackResults.result = "Project Widgets Loaded.";
+                                                                        callbackResults.data = projects;
+                                                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        callbackResults.result = "Project Widgets Counldn't Load.";
+                                                                        callbackResults.data = default;
+                                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = $"DWidget Prefab For Screen Type : {screenType} Missing / Null.";
+                                                    callbackResults.data = default;
+                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                }
+                                            }
+                                            else
+                                                Log(callbackResults.resultCode, callbackResults.result, this);
+                                        });
+                                    }
+                                    else
+                                        Log(sortedListCallbackResults.resultCode, sortedListCallbackResults.result, this);
+                                });
+
+                                await Task.Yield();
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Current Screen Type : {GetCurrentUIScreenType()} Dosen't Match Requested Screen Type : {screenType} - Operation Is Not Valid.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFolderWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer contentContainer)
+        {
+            try
+            {
+                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+
+                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    {
+                        contentContainer.InitializeContainer();
+
+                        switch (screenType)
+                        {
+                            case AppData.UIScreenType.ProjectDashboardScreen:
+
+                                bool loadTaskIsRunning = true;
+
+                                while (loadTaskIsRunning)
+                                {
+                                    databaseManager.LoadFolderData(foldersDirectoryList, (foldersLoaded) =>
+                                    {
+                                        if (AppData.Helpers.IsSuccessCode(foldersLoaded.resultCode))
+                                        {
+                                            List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
+
+                                            List<AppData.Folder> pinnedFolders = new List<AppData.Folder>();
+
+                                            foreach (var folder in foldersLoaded.data)
+                                                if (folder.defaultWidgetActionState == AppData.DefaultUIWidgetActionState.Pinned)
+                                                    pinnedFolders.Add(folder);
+
+                                            databaseManager.GetSortedWidgetList(foldersLoaded.data, pinnedFolders, sortedList =>
+                                            {
+                                                if (AppData.Helpers.IsSuccessCode(sortedList.resultCode))
+                                                {
+                                                    databaseManager.GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
+                                                    {
+                                                        if (widgetsCallback.Success())
+                                                        {
+                                                            var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
+
+                                                            if (widgetPrefabData != null)
+                                                            {
+                                                                callbackResults.SetResult(databaseManager.GetProjectStructureData());
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Folder, databaseManager.GetProjectStructureData().data.GetLayoutViewType(), prefabCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(prefabCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            pinnedFolders = sortedList.data;
+
+                                                                            foreach (var folder in pinnedFolders)
+                                                                            {
+                                                                                GameObject folderWidget = Instantiate(prefabCallbackResults.data.gameObject);
+
+                                                                                if (folderWidget != null)
+                                                                                {
+                                                                                    AppData.UIScreenWidget widgetComponent = folderWidget.GetComponent<AppData.UIScreenWidget>();
+
+                                                                                    if (widgetComponent != null)
+                                                                                    {
+                                                                                        widgetComponent.SetDefaultUIWidgetActionState(folder.defaultWidgetActionState);
+
+                                                                                        if (databaseManager.GetProjectStructureData().data.paginationViewType == AppData.PaginationViewType.Pager)
+                                                                                            widgetComponent.Hide();
+
+                                                                                        folderWidget.name = folder.name;
+                                                                                        widgetComponent.SetFolderData(folder);
+                                                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                                    }
+
+                                                                                    if (!loadedWidgetsList.Contains(widgetComponent))
+                                                                                        loadedWidgetsList.Add(widgetComponent);
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                            Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.ResultCode, callbackResults.Result, this);
+                                                            }
+                                                            else
+                                                                LogError("Widget Prefab Data Missing.", this);
+                                                        }
+                                                    });
+                                                }
+                                                else
+                                                    Debug.LogWarning($"--> GetSortedWidgetList Failed With Results : {sortedList.result}");
+                                            });
+
+                                            if (loadedWidgetsList.Count > 0)
+                                            {
+                                                loadTaskIsRunning = false;
+
+                                                callbackResults.data = loadedWidgetsList;
+                                            }
+                                            else
+                                                callbackResults.data = default;
+                                        }
+                                        else
+                                            Debug.LogWarning($"--> LoadFolderData Failed With Results : {foldersLoaded.result}");
+
+                                        callbackResults.result = foldersLoaded.result;
+                                        callbackResults.resultCode = foldersLoaded.resultCode;
+                                    });
+
+                                    await Task.Yield();
+                                }
+
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer contentContainer)
+        {
+            try
+            {
+                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+
+                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    {
+                        switch (screenType)
+                        {
+                            case AppData.UIScreenType.ProjectDashboardScreen:
+
+                                bool loadTaskIsRunning = true;
+
+                                while (loadTaskIsRunning)
+                                {
+                                    databaseManager.LoadSceneAssets(folder, (loadedAssetsResults) =>
+                                {
+                                    callbackResults.result = loadedAssetsResults.result;
+                                    callbackResults.resultCode = loadedAssetsResults.resultCode;
+
+                                    if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultCode))
+                                    {
+                                        var sceneAssetList = new List<AppData.SceneAsset>();
+
+                                        if (loadedAssetsResults.data.Count > 0)
+                                        {
+                                            List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
+
+                                            databaseManager.GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
+                                            {
+                                                callbackResults.result = widgetsCallback.result;
+                                                callbackResults.resultCode = widgetsCallback.resultCode;
+
+                                                if (widgetsCallback.Success())
+                                                {
+                                                    var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
+
+                                                    if (widgetPrefabData != null)
+                                                    {
+                                                        if (databaseManager.GetProjectStructureData().Success())
+                                                        {
+                                                            widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Asset, databaseManager.GetProjectStructureData().data.GetLayoutViewType(), prefabCallbackResults =>
+                                                            {
+                                                                callbackResults.result = prefabCallbackResults.result;
+                                                                callbackResults.resultCode = prefabCallbackResults.resultCode;
+
+                                                                if (prefabCallbackResults.Success())
+                                                                {
+                                                                    foreach (AppData.SceneAsset asset in loadedAssetsResults.data)
+                                                                    {
+                                                                        if (!sceneAssetList.Contains(asset))
+                                                                        {
+                                                                            GameObject newWidget = Instantiate(prefabCallbackResults.data.gameObject);
+
+                                                                            if (newWidget != null)
+                                                                            {
+                                                                                AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
+
+                                                                                if (widgetComponent != null)
+                                                                                {
+                                                                                    if (databaseManager.GetProjectStructureData().Success())
+                                                                                    {
+                                                                                        widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
+
+                                                                                        if (databaseManager.GetProjectStructureData().data.paginationViewType == AppData.PaginationViewType.Pager)
+                                                                                            widgetComponent.Hide();
+
+                                                                                        newWidget.name = asset.name;
+
+                                                                                        widgetComponent.SetAssetData(asset);
+                                                                                        widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
+                                                                                        widgetComponent.SetWidgetAssetData(asset);
+
+                                                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+
+                                                                                        sceneAssetList.Add(asset);
+
+                                                                                        AppData.SceneAssetWidget assetWidget = new AppData.SceneAssetWidget();
+                                                                                        assetWidget.name = widgetComponent.GetAssetData().name;
+                                                                                        assetWidget.value = newWidget;
+                                                                                        assetWidget.categoryType = widgetComponent.GetAssetData().categoryType;
+                                                                                        assetWidget.creationDateTime = widgetComponent.GetAssetData().creationDateTime.dateTime;
+
+                                                                                        //screenWidgetList.Add(assetWidget);
+
+                                                                                        //widgetComponent.SetFileData();
+
+                                                                                        if (!loadedWidgetsList.Contains(widgetComponent))
+                                                                                            loadedWidgetsList.Add(widgetComponent);
+
+                                                                                        callbackResults.result = "Widget Prefab Loaded.";
+                                                                                        callbackResults.data = loadedWidgetsList;
+                                                                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        callbackResults.result = databaseManager.GetProjectStructureData().result;
+                                                                                        callbackResults.resultCode = databaseManager.GetProjectStructureData().resultCode;
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    callbackResults.result = "Widget Prefab Component Missing.";
+                                                                                    callbackResults.data = default;
+                                                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                callbackResults.result = "Widget Prefab Failed To Instantiate.";
+                                                                                callbackResults.data = default;
+                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                            Debug.LogWarning($"--> Widget : {asset.modelAsset.name} Already Exists.");
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.ResultCode, callbackResults.Result, this);
+                                                    }
+                                                    else
+                                                        LogError("Widget Prefab Data Missing.", this);
+                                                }
+                                            });
+
+                                            if (loadedWidgetsList.Count >= loadedAssetsResults.data.Count)
+                                            {
+                                                loadTaskIsRunning = false;
+
+                                                callbackResults.result = "Created Screen Widgets";
+                                                callbackResults.data = loadedWidgetsList;
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+                                                // Take A Look
+                                                contentContainer.InitializeContainer();
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = "Failed To Create Screen Widgets";
+                                                callbackResults.data = default;
+                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = "Failed To Create Screen Widgets";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = loadedAssetsResults.result;
+                                        callbackResults.data = default;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                    }
+
+                                });
+
+                                    await Task.Yield();
+                                }
+
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer contentContainer)
+        {
+            try
+            {
+                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+
+                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    {
+                        switch (screenType)
+                        {
+                            case AppData.UIScreenType.ProjectDashboardScreen:
+
+                                bool loadTaskIsRunning = true;
+
+                                while (loadTaskIsRunning)
+                                {
+                                    databaseManager.LoadSceneAssets(filesDirectoryList, (loadedAssetsResults) =>
+                                {
+                                    if (AppData.Helpers.IsSuccessCode(loadedAssetsResults.resultCode))
+                                    {
+                                        var sceneAssetList = new List<AppData.SceneAsset>();
+
+                                        if (loadedAssetsResults.data.Count > 0)
+                                        {
+                                            List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
+
+                                            databaseManager.GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
+                                            {
+                                                callbackResults.result = widgetsCallback.result;
+                                                callbackResults.resultCode = widgetsCallback.resultCode;
+
+                                                if (widgetsCallback.Success())
+                                                {
+                                                    var widgetPrefabData = widgetsCallback.data.Find(x => x.screenType == screenType);
+
+                                                    if (widgetPrefabData != null)
+                                                    {
+                                                        if (databaseManager.GetProjectStructureData().Success())
+                                                        {
+                                                            widgetPrefabData.GetUIScreenWidgetData(AppData.SelectableWidgetType.Folder, databaseManager.GetProjectStructureData().data.GetLayoutViewType(), prefabCallbackResults =>
+                                                            {
+                                                                callbackResults.result = prefabCallbackResults.result;
+                                                                callbackResults.resultCode = prefabCallbackResults.resultCode;
+
+                                                                if (prefabCallbackResults.Success())
+                                                                {
+                                                                    foreach (AppData.SceneAsset asset in loadedAssetsResults.data)
+                                                                    {
+                                                                        if (!sceneAssetList.Contains(asset))
+                                                                        {
+                                                                            GameObject newWidget = Instantiate(prefabCallbackResults.data.gameObject);
+
+                                                                            if (newWidget != null)
+                                                                            {
+                                                                                AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
+
+                                                                                if (widgetComponent != null)
+                                                                                {
+                                                                                    widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
+
+                                                                                    if (databaseManager.GetProjectStructureData().data.paginationViewType == AppData.PaginationViewType.Pager)
+                                                                                        widgetComponent.Hide();
+
+                                                                                    newWidget.name = asset.name;
+
+                                                                                    widgetComponent.SetAssetData(asset);
+                                                                                    widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
+                                                                                    widgetComponent.SetWidgetAssetData(asset);
+
+                                                                                    contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+
+                                                                                    sceneAssetList.Add(asset);
+
+                                                                                    AppData.SceneAssetWidget assetWidget = new AppData.SceneAssetWidget();
+                                                                                    assetWidget.name = widgetComponent.GetAssetData().name;
+                                                                                    assetWidget.value = newWidget;
+                                                                                    assetWidget.categoryType = widgetComponent.GetAssetData().categoryType;
+                                                                                    assetWidget.creationDateTime = widgetComponent.GetAssetData().creationDateTime.dateTime;
+
+                                                                                    //screenWidgetList.Add(assetWidget);
+
+                                                                                    if (!loadedWidgetsList.Contains(widgetComponent))
+                                                                                        loadedWidgetsList.Add(widgetComponent);
+
+                                                                                    callbackResults.result = "Widget Prefab Component Loaded.";
+                                                                                    callbackResults.data = loadedWidgetsList;
+                                                                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    callbackResults.result = "Widget Prefab Component Missing.";
+                                                                                    callbackResults.data = default;
+                                                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                callbackResults.result = $"Failed To Instantiate Prefab For Screen Widget : {asset.modelAsset.name}";
+                                                                                callbackResults.data = default;
+                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            callbackResults.result = $"Widget : {asset.modelAsset.name} Already Exists.";
+                                                                            callbackResults.data = default;
+                                                                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                    Log(prefabCallbackResults.resultCode, prefabCallbackResults.result, this);
+                                                            });
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.result = databaseManager.GetProjectStructureData().result;
+                                                            callbackResults.resultCode = databaseManager.GetProjectStructureData().resultCode;
+                                                        }
+                                                    }
+                                                    else
+                                                        LogError("Widget Prefab Data Missing.", this);
+                                                }
+                                            });
+
+                                            if (loadedWidgetsList.Count >= loadedAssetsResults.data.Count)
+                                            {
+                                                loadTaskIsRunning = false;
+
+                                                callbackResults.result = "Created Screen Widgets";
+                                                callbackResults.data = loadedWidgetsList;
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+                                                // Take A Look
+                                                contentContainer.InitializeContainer();
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = "Failed To Create Screen Widgets";
+                                                callbackResults.data = default;
+                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = "Failed To Create Screen Widgets";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = loadedAssetsResults.result;
+                                        callbackResults.data = default;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                    }
+
+                                });
+
+                                    await Task.Yield();
+                                }
+
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.Message, this);
+                throw exception;
+            }
+        }
+
+        #endregion
+
         #endregion
     }
 }
