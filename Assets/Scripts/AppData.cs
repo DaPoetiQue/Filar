@@ -1110,6 +1110,517 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Container  Data Types
+
+        public enum ContainerViewSpaceType
+        {
+            None,
+            Scene,
+            Screen
+        }
+
+        #endregion
+
+        #region Container Classes
+
+        [Serializable]
+        public class DynamicContainerData : AppComponent
+        {
+            #region Components
+
+            Transform sceneContainer;
+            RectTransform screenContainer;
+
+            #region Dimensions
+
+            [Space(5)]
+            public float width, height, depth;
+
+            [Space(5)]
+            public float xPosition, yPosition, zPosition;
+
+            public float x => width;
+            public float y => height;
+            public float z => depth;
+
+            #endregion
+
+            #endregion
+
+            #region Main
+
+            #region Constructots
+
+            public DynamicContainerData()
+            {
+
+            }
+
+            public DynamicContainerData(Transform sceneContainer)
+            {
+                this.sceneContainer = screenContainer;
+
+                SetWidth(sceneContainer.localScale.x);
+                SetHeight(sceneContainer.localScale.y);
+                SetDepth(sceneContainer.localScale.z);
+            }
+
+            public DynamicContainerData(float width, float height, float depth)
+            {
+                this.width = width;
+                this.height = height;
+                this.depth = depth;
+            }
+
+            #endregion
+
+            #region Data Setters
+
+            #region Size Data
+
+            public void SetWidth(float width) => this.width = width;
+            public void SetHeight(float height) => this.height = height;
+            public void SetDepth(float depth) => this.depth = depth;
+
+            #endregion
+
+            #region Position Data
+
+            public void SetXPosition(float xPosition) => this.xPosition = xPosition;
+            public void SetYPosition(float yPosition) => this.yPosition = yPosition;
+            public void SetZPosition(float zPosition) => this.zPosition = zPosition;
+
+            public void SetScreenPosition(Vector2 position)
+            {
+                xPosition = position.x;
+                yPosition = position.y;
+            }
+
+            public void SetPosition(Vector3 position)
+            {
+                xPosition = position.x;
+                yPosition = position.y;
+                zPosition = position.z;
+            }
+
+            public void SetPosition(RectTransform rect)
+            {
+                xPosition = rect.anchoredPosition.x;
+                yPosition = rect.anchoredPosition.y;
+            }
+
+            public void SetPosition(GameObject go)
+            {
+                xPosition = go.transform.position.x;
+                yPosition = go.transform.position.y;
+                zPosition = go.transform.position.z;
+            }
+
+            #endregion
+
+            #endregion
+
+            #region Data Getters
+
+            #region Container Data
+
+            public CallbackData<T> GetContainer<T>(ContainerViewSpaceType viewSpaceType) where T : Transform
+            {
+                CallbackData<T> callbackResults = new CallbackData<T>();
+
+                if (viewSpaceType != ContainerViewSpaceType.None)
+                {
+                    switch (viewSpaceType)
+                    {
+                        case ContainerViewSpaceType.Screen:
+
+                            callbackResults.result = "Screen Container Found.";
+                            callbackResults.data = sceneContainer as T;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+
+                            break;
+
+                        case ContainerViewSpaceType.Scene:
+
+                            callbackResults.result = "Scene Container Found.";
+                            callbackResults.data = screenContainer as T;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+
+                            break;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Container Request's View Space Is Set To Null - Invalid Operation.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback GetActive()
+            {
+                Callback callbackResults = new Callback();
+
+                if(sceneContainer != null && sceneContainer.gameObject.activeInHierarchy && sceneContainer.gameObject.activeSelf)
+                {
+                    callbackResults.result = $"Scene Container : {name} Is Active";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+
+                    return callbackResults;
+                }
+
+                if (screenContainer != null && screenContainer.gameObject.activeInHierarchy && screenContainer.gameObject.activeSelf)
+                {
+                    callbackResults.result = $"Screen Container : {name} Is Active";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+
+                    return callbackResults;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {name} Is Not Active Or Is Null";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback HasContent()
+            {
+                Callback callbackResults = new Callback();
+
+                if (sceneContainer != null)
+                {
+                    if(sceneContainer.childCount > 0)
+                    {
+                        callbackResults.result = $"Scene Container : {name} Has Content";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Scene Container : {name} Doesn't Have Content";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+
+                    return callbackResults;
+                }
+
+                if (screenContainer != null)
+                {
+                    if (screenContainer.childCount > 0)
+                    {
+                        callbackResults.result = $"Screen Container : {name} Has Content";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Container : {name} Doesn't Have Content";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+
+                    return callbackResults;
+                }
+
+                callbackResults.result = $"Container Is Null / Missing";
+                callbackResults.resultCode = Helpers.ErrorCode;
+
+                return callbackResults;
+            }
+
+            public RectTransform GetScreenContainer() => screenContainer;
+
+            #endregion
+
+            #region Size Data
+
+            public float GetWidth(ContainerViewSpaceType viewSpaceType) => (width != 0)? width : ((viewSpaceType == ContainerViewSpaceType.Screen)? screenContainer.sizeDelta.x : sceneContainer.transform.localScale.x);
+            public float GetHeight(ContainerViewSpaceType viewSpaceType) => (height != 0) ? height : ((viewSpaceType == ContainerViewSpaceType.Screen) ? screenContainer.sizeDelta.y : sceneContainer.transform.localScale.y);
+            public float GetDepth() => (depth != 0)? depth : sceneContainer.transform.localScale.x;
+
+            #endregion
+
+            #region Position Data
+
+            public float GetXPosition(ContainerViewSpaceType viewSpaceType) => (xPosition != 0) ? xPosition : ((viewSpaceType == ContainerViewSpaceType.Screen) ? screenContainer.anchoredPosition.x : sceneContainer.transform.position.x);
+            public float GetYPosition(ContainerViewSpaceType viewSpaceType) => (yPosition != 0) ? yPosition : ((viewSpaceType == ContainerViewSpaceType.Screen) ? screenContainer.anchoredPosition.y : sceneContainer.transform.position.y);
+            public float GetZPosition() => (zPosition != 0)? zPosition : sceneContainer.transform.position.z;
+
+            public Vector3 GetPosition() => new Vector3(xPosition, yPosition, zPosition);
+
+            #endregion
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public abstract class DynamicContainer : AppMonoBaseClass, IContainer
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            protected UIScreenType screenType;
+
+            [Space(5)]
+            [SerializeField]
+            protected ContentContainerType containerType;
+
+            [Space(5)]
+            [SerializeField]
+            protected ContainerViewSpaceType viewSpace;
+
+            [Space(5)]
+            [SerializeField]
+            bool selectableContent;
+
+            #endregion
+
+            #region Main
+
+            #region Initialization
+
+            public void Init() => OnInitialization();
+
+            #endregion
+
+            #region Content Clear
+
+            public async void Clear(bool showSpinner = false, Action<Callback> callback = null)
+            {
+                try
+                {
+                    Callback callbackResults = new Callback(GetContainer());
+
+                    if (callbackResults.Success())
+                    {
+                        var container = GetContainer().data;
+
+                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                        {
+                            if (GetContentCount() > 0)
+                            {
+                                for (int i = 0; i < GetContentCount(); i++)
+                                {
+                                    if (container.GetChild(i).GetComponent<UIScreenWidget>())
+                                    {
+                                        if (container.GetChild(i).GetComponent<UIScreenWidget>().GetSelectableWidgetType() != SelectableWidgetType.PlaceHolder)
+                                            Destroy(container.GetChild(i).gameObject);
+                                        else
+                                            LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                                    }
+                                    else
+                                        LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                                }
+
+                                await Helpers.GetWaitForSecondsAsync(10);
+
+                                if (container.childCount == 0)
+                                {
+                                    DatabaseManager.Instance.UnloadUnusedAssets();
+
+                                    callbackResults.result = "All Widgets Cleared.";
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+
+                    OnClear(showSpinner, onClearCallbackResults => { callback?.Invoke(onClearCallbackResults); });
+
+                    //callback?.Invoke(callbackResults);
+                }
+                catch (Exception exception)
+                {
+                    LogError(exception.Message, this);
+                    throw exception;
+                }
+            }
+
+            public async Task<Callback> ClearAsync(bool showSpinner = false) => await OnClearAsync(showSpinner);
+
+            #endregion
+
+            #region Container States
+
+            public Callback GetActive()
+            {
+                Callback callbackResults = new Callback();
+
+                if(this.gameObject.activeInHierarchy && this.gameObject.activeSelf && this.gameObject != null)
+                {
+                    callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Active";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Not Active";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public bool SelectableContent() => selectableContent;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<Transform> GetContainer()
+            {
+                CallbackData<Transform> callbackResults = new CallbackData<Transform>(GetViewSpace());
+
+                if (callbackResults.Success())
+                {
+                    if (GetViewSpace().data == ContainerViewSpaceType.Screen)
+                    {
+                        callbackResults.result = $"Screen Container : {name} Of Screen Type : {GetContainerScreenType()} Found";
+                        callbackResults.data = GetComponent<RectTransform>();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+
+                        return callbackResults;
+                    }
+
+                    if (GetViewSpace().data == ContainerViewSpaceType.Screen)
+                    {
+                        callbackResults.result = $"Scene Container : {name} Of Screen Type : {GetContainerScreenType()} Found";
+                        callbackResults.data = GetComponent<Transform>();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+
+                        return callbackResults;
+                    }
+                }
+
+
+                return callbackResults;
+            }
+
+            public CallbackData<ContentContainerType> GetContainerType()
+            {
+                CallbackData<ContentContainerType> callbackResults = new CallbackData<ContentContainerType>();
+
+                if(containerType != ContentContainerType.None)
+                {
+                    callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType()}'s Container Type Is Set To : {containerType}";
+                    callbackResults.data = containerType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType()}'s Container Type Is Set To Default : NONE";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<DynamicContainerData> GetScreenViewDimensions()
+            {
+                CallbackData<DynamicContainerData> callbackResults = new CallbackData<DynamicContainerData>(GetViewSpace());
+
+                if (callbackResults.Success())
+                {
+                    switch (GetViewSpace().data)
+                    {
+                        case ContainerViewSpaceType.Screen:
+
+                            break;
+
+                        case ContainerViewSpaceType.Scene:
+
+                            break;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ContainerViewSpaceType> GetViewSpace()
+            {
+                CallbackData<ContainerViewSpaceType> callbackResults = new CallbackData<ContainerViewSpaceType>();
+
+                if(viewSpace != ContainerViewSpaceType.None)
+                {
+                    callbackResults.result = $"Container : {name} Of Screen Type : {GetContainerScreenType()}'s View Space Type Is Set To Default : {viewSpace}";
+                    callbackResults.data = viewSpace;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {name} Of Screen Type : {GetContainerScreenType()}'s View Space Type Is Set To Default : None";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Abstrcat
+
+            protected abstract void OnInitialization();
+            protected abstract void OnClear(bool showSpinner = false, Action<Callback> callback = null);
+            protected abstract Task<Callback> OnClearAsync(bool showSpinner = false);
+
+            public int GetContentCount()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Update()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool HasContent() => GetContentCount() > 0;
+
+            public CallbackData<UIScreenWidget> GetScreenContent(string contentName)
+            {
+                return null;
+            }
+
+            public int GetLastContentIndex() => GetContentCount();
+
+            public bool IsContentActive(string contentName) => gameObject != null && gameObject.activeSelf && gameObject.activeInHierarchy;
+
+            public bool IsContentActive(int contentID)
+            {
+                throw new NotImplementedException();
+            }
+
+            public UIScreenType GetContainerScreenType()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
         #region App Information
 
         [Serializable]
@@ -1291,7 +1802,7 @@ namespace Com.RedicalGames.Filar
         #region Screen Load Data
 
         [Serializable]
-        public class RuntimeInstanceInfo : ProjectData
+        public class RuntimeInstanceInfo : AppComponent
         {
             #region Components
 
@@ -1336,7 +1847,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ScreenLoadInfoInstance : ProjectData
+        public class ScreenLoadInfoInstance : AppComponent
         {
             #region Components
 
@@ -2014,7 +2525,7 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         [Serializable]
-        public class SequenceInstance : ProjectData
+        public class SequenceInstance : AppComponent
         {
             #region Components
 
@@ -3274,7 +3785,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class PostContent : ProjectData
+        public class PostContent : AppComponent
         {
             #region Components
 
@@ -3348,7 +3859,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SerializableAsset : ProjectData
+        public class SerializableAsset : AppComponent
         {
             #region Components
 
@@ -3373,7 +3884,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class  SerializableMeshData : ProjectData
+        public class  SerializableMeshData : AppComponent
         {
             #region Components
 
@@ -3513,7 +4024,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SerializableVector : ProjectData
+        public class SerializableVector : AppComponent
         {
             #region Components
 
@@ -3586,7 +4097,7 @@ namespace Com.RedicalGames.Filar
         #region Permissions
 
         [Serializable]
-        public class PermissionInfo : ProjectData
+        public class PermissionInfo : AppComponent
         {
             #region Components
 
@@ -4070,7 +4581,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class UIImageData : ProjectData
+        public class UIImageData : AppComponent
         {
             #region Components
 
@@ -4204,7 +4715,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class FileData : ProjectData
+        public class FileData : AppComponent
         {
             #region Components
 
@@ -4287,7 +4798,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ProjectCategoryInfo : ProjectData
+        public class ProjectCategoryInfo : AppComponent
         {
             #region Components
 
@@ -6495,7 +7006,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ProjectData
+        public class AppComponent
         {
             #region Component
 
@@ -6635,7 +7146,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ProjectStructureSelectionSystem : ProjectData
+        public class ProjectStructureSelectionSystem : AppComponent
         {
             #region Components
 
@@ -8079,7 +8590,7 @@ namespace Com.RedicalGames.Filar
         #region Messaging System
 
         [Serializable]
-        public class LoadingSequenceMessage : ProjectData
+        public class LoadingSequenceMessage : AppComponent
         {
             #region Components
 
@@ -9011,7 +9522,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class StorageDirectoryData : ProjectData
+        public class StorageDirectoryData : AppComponent
         {
             #region Components
 
@@ -21035,7 +21546,7 @@ namespace Com.RedicalGames.Filar
 
 
         [Serializable]
-        public class UIScreenWidgetsPrefabData : ProjectData
+        public class UIScreenWidgetsPrefabData : AppComponent
         {
             #region Components
 
@@ -26130,7 +26641,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class AppDataStorageSourceLibrary : ProjectData
+        public class AppDataStorageSourceLibrary : AppComponent
         {
             #region Components
 
@@ -26216,7 +26727,7 @@ namespace Com.RedicalGames.Filar
 
 
         [Serializable]
-        public class StorageSourceInfo : ProjectData
+        public class StorageSourceInfo : AppComponent
         {
             #region Components
 
@@ -30788,9 +31299,9 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void GetAppComponentsValid(List<ProjectData> components, string listIdentifier = null, Action<CallbackDataList<ProjectData>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            public static void GetAppComponentsValid(List<AppComponent> components, string listIdentifier = null, Action<CallbackDataList<AppComponent>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
-                CallbackDataList<ProjectData> callbackResults = new CallbackDataList<ProjectData>();
+                CallbackDataList<AppComponent> callbackResults = new CallbackDataList<AppComponent>();
 
                 if (components != null && components.Count > 0)
                 {
@@ -30924,7 +31435,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public static void ProjectDataComponentValid<T>(T component, Action<Callback> callback) where T : ProjectData
+            public static void ProjectDataComponentValid<T>(T component, Action<Callback> callback) where T : AppComponent
             {
                 Callback callbackResults = new Callback();
 
@@ -30942,7 +31453,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void ProjectDataComponentValid<T>(List<T> components, Action<CallbackDataList<T>> callback) where T : ProjectData
+            public static void ProjectDataComponentValid<T>(List<T> components, Action<CallbackDataList<T>> callback) where T : AppComponent
             {
                 CallbackDataList<T> callbackResults = new CallbackDataList<T>();
 
@@ -31783,6 +32294,43 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Interfaces
+
+        public interface IContainer
+        {
+            void Init();
+
+            void Clear(bool showSpinner = false, Action<Callback> callback = null);
+
+            Task<Callback> ClearAsync(bool showSpinner = false);
+
+            CallbackData<Transform> GetContainer();
+
+            CallbackData<ContainerViewSpaceType> GetViewSpace();
+
+            CallbackData<ContentContainerType> GetContainerType();
+
+            Callback GetActive();
+
+            CallbackData<DynamicContainerData> GetScreenViewDimensions();
+
+            bool SelectableContent();
+
+            int GetContentCount();
+
+            void Update();
+
+            bool HasContent();
+
+            CallbackData<UIScreenWidget> GetScreenContent(string contentName);
+
+            int GetLastContentIndex();
+
+            bool IsContentActive(string contentName);
+
+            bool IsContentActive(int contentID);
+
+            UIScreenType GetContainerScreenType();
+        }
 
         public interface IDebugger
         {

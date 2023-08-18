@@ -1,27 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Com.RedicalGames.Filar
 {
     [RequireComponent(typeof(GridLayoutGroup))]
-    public class DynamicWidgetsContainer : AppMonoBaseClass
+    public class DynamicWidgetsContainer : AppData.DynamicContainer
     {
-
         #region Components
-
-        [SerializeField]
-        AppData.ContentContainerType containerType;
 
         [Space(5)]
         [SerializeField]
         AppData.SelectableWidgetType selectableWidgetType;
-
-        [Space(5)]
-        [SerializeField]
-        AppData.UIScreenType screenType;
 
         [Space(5)]
         [SerializeField]
@@ -106,8 +99,6 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Start() => Init();
-
         void OnEnable() => ActionEventsSubscriptions(true);
 
         void OnDisable() => ActionEventsSubscriptions(false);
@@ -117,8 +108,6 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Main
-
-        void Init() => InitializeContainer();
 
         void ActionEventsSubscriptions(bool subscribe)
         {
@@ -135,48 +124,12 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents._OnNavigateAndFocusToSelectionEvent -= ActionEvents__OnNavigateAndFocusToSelectionEvent;
             }
 
-            ClearWidgets();
+            Clear();
         }
 
         private void ActionEvents__OnNavigateAndFocusToSelectionEvent(string widgetName) => OnFocusToSelection(widgetName);
 
         private void ActionEvents__ScrollAndFocusToSelectionEvent(Vector2 position, bool transition) => OnFocusToSelection(position, transition);
-
-        public void InitializeContainer()
-        {
-            container = GetComponent<RectTransform>();
-            layoutComponent = GetComponent<GridLayoutGroup>();
-
-            Vector2 containerSize = container.sizeDelta;
-
-            switch (orientation)
-            {
-                case AppData.OrientationType.Vertical:
-
-                    containerSize.y = 0.0f;
-
-                    break;
-
-                case AppData.OrientationType.Horizontal:
-
-                    containerSize.x = 0.0f;
-
-                    break;
-            }
-
-            container.sizeDelta = containerSize;
-
-            scroller.Initialized(scrollerInitializedCallback =>
-            {
-                if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
-                {
-                    if (scroller.GetFadeUIScrollBar())
-                        scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilityState.Hidden);
-                }
-                else
-                    LogWarning(scrollerInitializedCallback.result, this);
-            });
-        }
 
         public void ScrollToTop()
         {
@@ -234,10 +187,10 @@ namespace Com.RedicalGames.Filar
 
         void OnAssetDeleteRefreshEvent()
         {
-            ClearWidgets(false, onScreenWigetsCleared =>
+            Clear(false, onScreenWigetsCleared =>
             {
                 if (AppData.Helpers.IsSuccessCode(onScreenWigetsCleared.resultCode))
-                    InitializeContainer();
+                    Init();
                 else
                     Debug.LogWarning($"---> Clear Widgets Results : {onScreenWigetsCleared.result}.");
             });
@@ -1326,81 +1279,9 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        public async void ClearWidgets(bool showSpinner = false, Action<AppData.Callback> callback = null)
-        {
-            try
-            {
-                AppData.Callback callbackResults = new AppData.Callback();
-
-                if (container != null)
-                {
-                    if (ScreenUIManager.Instance.HasCurrentScreen().Success())
-                    {
-                        if (GetContentCount() > 0)
-                        {
-                            for (int i = 0; i < GetContentCount(); i++)
-                            {
-                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
-                                {
-                                    if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
-                                        Destroy(container.GetChild(i).gameObject);
-                                    else
-                                        LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
-                                }
-                                else
-                                    LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
-                            }
-
-                            await AppData.Helpers.GetWaitForSecondsAsync(10);
-
-                            if (container.childCount == 0)
-                            {
-                                DatabaseManager.Instance.UnloadUnusedAssets();
-
-                                callbackResults.result = "All Widgets Cleared.";
-                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                            }
-                            else
-                            {
-                                callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
-                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                            }
-                        }
-                        else
-                        {
-                            callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-            catch (Exception exception)
-            {
-                LogError(exception.Message, this);
-                throw exception;
-            }
-        }
-
         public AppData.ContentContainerType GetContentContainerType()
         {
             return containerType;
-        }
-
-        public int GetContentCount()
-        {
-            return container.childCount;
-        }
-
-        public bool HasContent()
-        {
-            return GetContentCount() > 0;
         }
 
         public void GetContent(Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
@@ -2628,10 +2509,55 @@ namespace Com.RedicalGames.Filar
             return GetLayout().layout.itemViewSize;
         }
 
-        public int GetLastContentIndex()
+        #region Overrides
+
+        protected override void OnInitialization()
         {
-            return GetContentCount();
+            container = GetComponent<RectTransform>();
+            layoutComponent = GetComponent<GridLayoutGroup>();
+
+            Vector2 containerSize = container.sizeDelta;
+
+            switch (orientation)
+            {
+                case AppData.OrientationType.Vertical:
+
+                    containerSize.y = 0.0f;
+
+                    break;
+
+                case AppData.OrientationType.Horizontal:
+
+                    containerSize.x = 0.0f;
+
+                    break;
+            }
+
+            container.sizeDelta = containerSize;
+
+            scroller.Initialized(scrollerInitializedCallback =>
+            {
+                if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
+                {
+                    if (scroller.GetFadeUIScrollBar())
+                        scroller.GetUIScrollBarComponent().SetVisibilityState(AppData.UIScreenWidgetVisibilityState.Hidden);
+                }
+                else
+                    LogWarning(scrollerInitializedCallback.result, this);
+            });
         }
+
+        protected override void OnClear(bool showSpinner = false, Action<AppData.Callback> callback = null)
+        {
+
+        }
+
+        protected override Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
+        {
+            return null;
+        }
+
+        #endregion
 
         #endregion
     }

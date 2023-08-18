@@ -1229,7 +1229,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (foundContainersCallbackResults.Success())
                 {
-                    foundContainersCallbackResults.data.ClearWidgets(true, widgetsClearedCallbackResults =>
+                    foundContainersCallbackResults.data.Clear(true, widgetsClearedCallbackResults =>
                     {
                         if(widgetsClearedCallbackResults.Success())
                         {
@@ -3499,6 +3499,8 @@ namespace Com.RedicalGames.Filar
 
             if(container != null && container.IsContainerActive())
             {
+                container.Init();
+
                 callbackResults.result = $"Widgets Container : {container.name} Found.";
                 callbackResults.data = container;
                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -3609,7 +3611,7 @@ namespace Com.RedicalGames.Filar
                                 while (!IsServerPostsDatabaseInitialized)
                                     await Task.Yield();
 
-                                widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
+                                widgetsContainer.Clear(false, widgetsClearedCallback =>
                                 {
                                     callbackResults.SetResult(widgetsClearedCallback);
 
@@ -3648,7 +3650,7 @@ namespace Com.RedicalGames.Filar
                                 while (!IsLocalStorageInitialized)
                                     await Task.Yield();
 
-                                widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
+                                widgetsContainer.Clear(false, widgetsClearedCallback =>
                                 {
                                     callbackResults.SetResult(widgetsClearedCallback);
 
@@ -3784,7 +3786,7 @@ namespace Com.RedicalGames.Filar
                                 while (!IsLocalStorageInitialized)
                                     await Task.Yield();
 
-                                widgetsContainer.ClearWidgets(false, widgetsClearedCallback =>
+                                widgetsContainer.Clear(false, widgetsClearedCallback =>
                                 {
                                     callbackResults.SetResult(widgetsClearedCallback);
 
@@ -5385,7 +5387,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (DirectoryFound(searchDirectory))
                                                     {
-                                                        GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
+                                                        GetWidgetsRefreshData().widgetsContainer.Clear();
 
                                                         var searchedProjects = Directory.GetFileSystemEntries(searchDirectory, "*.json", SearchOption.TopDirectoryOnly);
 
@@ -5529,7 +5531,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     DirectoryFound(searchFolder.storageData.projectDirectory, async foundDirectoriesCallback =>
                                                     {
-                                                        GetWidgetsRefreshData().widgetsContainer.ClearWidgets();
+                                                        GetWidgetsRefreshData().widgetsContainer.Clear();
 
                                                         if (foundDirectoriesCallback.Success())
                                                         {
@@ -6412,7 +6414,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                container.ClearWidgets(false, widgetsClearedCallbackResults =>
+                                                                container.Clear(false, widgetsClearedCallbackResults =>
                                                                 {
                                                                     #region Filter Content 
 

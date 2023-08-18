@@ -1756,8 +1756,6 @@ namespace Com.RedicalGames.Filar
 
                         if (contentContainer != null && contentContainer.IsContainerActive())
                         {
-                            contentContainer.InitializeContainer();
-
                             callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
 
                             if (callbackResults.Success())
@@ -1891,8 +1889,6 @@ namespace Com.RedicalGames.Filar
 
                     if (contentContainer != null && contentContainer.IsContainerActive())
                     {
-                        contentContainer.InitializeContainer();
-
                         if (screenType == GetCurrentUIScreenType())
                         {
                             bool loadTaskIsRunning = true;
@@ -2050,8 +2046,6 @@ namespace Com.RedicalGames.Filar
 
                     if (contentContainer != null && contentContainer.IsContainerActive())
                     {
-                        contentContainer.InitializeContainer();
-
                         switch (screenType)
                         {
                             case AppData.UIScreenType.ProjectDashboardScreen:
@@ -2318,9 +2312,6 @@ namespace Com.RedicalGames.Filar
                                                 callbackResults.result = "Created Screen Widgets";
                                                 callbackResults.data = loadedWidgetsList;
                                                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                                                // Take A Look
-                                                contentContainer.InitializeContainer();
                                             }
                                             else
                                             {
@@ -2504,9 +2495,6 @@ namespace Com.RedicalGames.Filar
                                                 callbackResults.result = "Created Screen Widgets";
                                                 callbackResults.data = loadedWidgetsList;
                                                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                                                // Take A Look
-                                                contentContainer.InitializeContainer();
                                             }
                                             else
                                             {
