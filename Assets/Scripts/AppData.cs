@@ -20277,7 +20277,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (DatabaseManager.Instance != null)
                 {
-                    DatabaseManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, contentContainer =>
+                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, contentContainer =>
                     {
                         if (contentContainer.Success())
                         {
@@ -20374,7 +20374,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (DatabaseManager.Instance != null)
                 {
-                    DatabaseManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, contentContainer =>
+                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, contentContainer =>
                     {
                         if (Helpers.IsSuccessCode(contentContainer.resultCode))
                         {
@@ -20415,7 +20415,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (DatabaseManager.Instance != null)
                     {
-                        DatabaseManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, contentContainer =>
+                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, contentContainer =>
                         {
                             if (Helpers.IsSuccessCode(contentContainer.resultCode))
                             {
@@ -23523,7 +23523,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                     {
-                        DatabaseManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
+                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
                         {
                             if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
                                 dynamicWidgetsContainer.data.ScrollToTop();
@@ -23544,7 +23544,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                     {
-                        DatabaseManager.Instance.GetDynamicWidgetsContainer(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
+                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
                         {
                             if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
                                 dynamicWidgetsContainer.data.ScrollToBottom();

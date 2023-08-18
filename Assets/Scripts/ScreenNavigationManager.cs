@@ -89,7 +89,7 @@ namespace Com.RedicalGames.Filar
                     SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
                 }
 
-                DatabaseManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, folder =>
+                DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(AppData.ContentContainerType.FolderStuctureContent, folder =>
                 {
                     if (AppData.Helpers.IsSuccessCode(folder.resultCode))
                     {

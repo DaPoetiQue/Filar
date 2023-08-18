@@ -70,7 +70,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        List<DynamicWidgetsContainer> dynamicWidgetsContainersList = new List<DynamicWidgetsContainer>();
+        List<AppData.DynamicContainer> dynamicContainersList = new List<AppData.DynamicContainer>();
 
         [Space(5)]
         [SerializeField]
@@ -773,9 +773,9 @@ namespace Com.RedicalGames.Filar
 
                     #region Content Container
 
-                    if (dynamicWidgetsContainersList.Count > 0)
+                    if (dynamicContainersList.Count > 0)
                     {
-                        foreach (var assetContainer in dynamicWidgetsContainersList)
+                        foreach (var assetContainer in dynamicContainersList)
                         {
                             AppData.Helpers.GetComponent(assetContainer, objectValidCallbackResults =>
                             {
@@ -1225,7 +1225,7 @@ namespace Com.RedicalGames.Filar
 
         private void ActionEvents__OnScreenExitEvent(AppData.UIScreenType screenType)
         {
-            GetDynamicWidgetsContainerForScreen(screenType, foundContainersCallbackResults => 
+            GetDynamicContainer<DynamicWidgetsContainer>(screenType, foundContainersCallbackResults => 
             {
                 if (foundContainersCallbackResults.Success())
                 {
@@ -1699,7 +1699,7 @@ namespace Com.RedicalGames.Filar
 
         public void AddContentToDynamicWidgetContainer(AppData.UIScreenWidget contentWidget, AppData.ContentContainerType containerType, AppData.OrientationType orientation)
         {
-            DynamicWidgetsContainer container = dynamicWidgetsContainersList.Find((x) => x.GetContentContainerType() == containerType);
+            DynamicWidgetsContainer container = dynamicContainersList.Find(containerData => containerData.GetContainerType().Success() && containerData.GetContainerType().data == containerType) as DynamicWidgetsContainer;
 
             if (container != null && container.IsContainerActive())
                 container.AddDynamicWidget(contentWidget, orientation, false);
@@ -2651,115 +2651,112 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void GetDynamicWidgetsContainer(AppData.ContentContainerType containerType, Action<AppData.CallbackData<DynamicWidgetsContainer>> callback)
+        public void GetDynamicContainer<T>(AppData.ContentContainerType containerType, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainer
         {
-            AppData.CallbackData<DynamicWidgetsContainer> callbackResults = new AppData.CallbackData<DynamicWidgetsContainer>();
+            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
-            if (dynamicWidgetsContainersList.Count > 0)
+            GetAllDynamicContainers(hasContentCallbackResults => 
             {
-                DynamicWidgetsContainer container = dynamicWidgetsContainersList.Find(container => container.GetContentContainerType() == containerType);
+                callbackResults.SetResult(hasContentCallbackResults);
 
-                if (container != null)
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = "Success";
-                    callbackResults.data = container;
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerType().data == containerType) as T;
+
+                    if (container != null)
+                    {
+                        callbackResults.result = "Success";
+                        callbackResults.data = container;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
                 }
-                else
-                {
-                    callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
-            }
-            else
-            {
-                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+            });
 
             callback?.Invoke(callbackResults);
         }
 
-        public void GetDynamicWidgetsContainerForScreen(AppData.UIScreenType screenType, Action<AppData.CallbackData<DynamicWidgetsContainer>> callback)
+        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainer
         {
-            AppData.CallbackData<DynamicWidgetsContainer> callbackResults = new AppData.CallbackData<DynamicWidgetsContainer>();
+            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
-            if (dynamicWidgetsContainersList.Count > 0)
+            GetAllDynamicContainers(hasContentCallbackResults => 
             {
-                DynamicWidgetsContainer container = dynamicWidgetsContainersList.Find(container => container.GetUIScreenType() == screenType);
+                callbackResults.SetResult(hasContentCallbackResults);
 
-                if (container != null)
+                if(callbackResults.Success())
                 {
-                    callbackResults.result = $"Container For Screen Type : {screenType} Found.";
-                    callbackResults.data = container;
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType() == screenType) as T;
+
+                    if (container != null)
+                    {
+                        callbackResults.result = $"Container For Screen Type : {screenType} Found.";
+                        callbackResults.data = container;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Container For Screen Type : {screenType} Doesn't Exist In The Dynamic Widgets Container List - Not Found.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
                 }
-                else
-                {
-                    callbackResults.result = $"Container For Screen Type : {screenType} Doesn't Exist In The Dynamic Widgets Container List - Not Found.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
-            }
-            else
-            {
-                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+
+            });
 
             callback?.Invoke(callbackResults);
         }
 
-        public void GetAllDynamicWidgetsContainers(Action<AppData.CallbackDataList<DynamicWidgetsContainer>> callback)
+        public void GetAllDynamicContainers(Action<AppData.CallbackDataList<AppData.DynamicContainer>> callback)
         {
-            AppData.CallbackDataList<DynamicWidgetsContainer> callbackResults = new AppData.CallbackDataList<DynamicWidgetsContainer>();
+            AppData.CallbackDataList<AppData.DynamicContainer> callbackResults = new AppData.CallbackDataList<AppData.DynamicContainer>();
 
-            if (dynamicWidgetsContainersList.Count > 0)
+            AppData.Helpers.GetAppComponentsValid(dynamicContainersList, "Dynamic Container List", hasContentCallbackResults => 
             {
-                callbackResults.result = $"{dynamicWidgetsContainersList.Count} Containers Found.";
-                callbackResults.data = dynamicWidgetsContainersList;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+                callbackResults.SetResult(hasContentCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{dynamicContainersList.Count} Containers Found.";
+                    callbackResults.data = dynamicContainersList;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+            }, "Failed : dynamicWidgetsContainersList Is Null / Empty.");
 
             callback?.Invoke(callbackResults);
         }
 
-        public void GetAllDynamicWidgetsContainerExcludingFromScreen(AppData.UIScreenType screenType, Action<AppData.CallbackDataList<DynamicWidgetsContainer>> callback)
+        public void GetAllDynamicContainersExcludingFromScreen(AppData.UIScreenType screenType, Action<AppData.CallbackDataList<AppData.DynamicContainer>> callback)
         {
-            AppData.CallbackDataList<DynamicWidgetsContainer> callbackResults = new AppData.CallbackDataList<DynamicWidgetsContainer>();
+            AppData.CallbackDataList<AppData.DynamicContainer> callbackResults = new AppData.CallbackDataList<AppData.DynamicContainer>();
 
-            if (dynamicWidgetsContainersList.Count > 0)
+            GetAllDynamicContainers(hasContentCallbackResults =>
             {
-                List<DynamicWidgetsContainer> containers = dynamicWidgetsContainersList.FindAll(container => container.GetUIScreenType() != screenType);
+                callbackResults.SetResult(hasContentCallbackResults);
 
-                if (containers != null && containers.Count > 0)
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"{containers.Count} Containers Found.";
-                    callbackResults.data = containers;
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    List<AppData.DynamicContainer> containers = dynamicContainersList.FindAll(container => container.GetContainerScreenType() != screenType);
+
+                    if (containers != null && containers.Count > 0)
+                    {
+                        callbackResults.result = $"{containers.Count} Containers Found.";
+                        callbackResults.data = containers;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed : There Are No Containers Found.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
                 }
-                else
-                {
-                    callbackResults.result = $"Failed : There Are No Containers Found.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
-            }
-            else
-            {
-                callbackResults.result = "Failed : dynamicWidgetsContainersList Is Null / Empty.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+            });
 
             callback?.Invoke(callbackResults);
         }

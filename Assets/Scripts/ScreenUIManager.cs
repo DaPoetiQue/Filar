@@ -1020,7 +1020,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         case AppData.UIScreenType.LandingPageScreen:
 
-                                            DatabaseManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.LandingPageSelectionContent, widgetsContentContainer =>
+                                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(AppData.ContentContainerType.LandingPageSelectionContent, widgetsContentContainer =>
                                             {
                                                 if (widgetsContentContainer.Success())
                                                 {
@@ -1042,7 +1042,7 @@ namespace Com.RedicalGames.Filar
 
                                         case AppData.UIScreenType.ProjectDashboardScreen:
 
-                                            DatabaseManager.Instance.GetDynamicWidgetsContainer(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
+                                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
                                             {
                                                 if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultCode))
                                                 {
@@ -1090,7 +1090,7 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            DatabaseManager.Instance.GetDynamicWidgetsContainer(dataPackets.containerType, containerCallbackResults =>
+            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.containerType, containerCallbackResults =>
             {
                 if (containerCallbackResults.Success())
                 {
