@@ -3619,18 +3619,27 @@ namespace Com.RedicalGames.Filar
                                         {
                                             callbackResults.SetResult(postsCallbackResults);
 
+                                            Log(callbackResults.ResultCode,$" =============+++++++++ Getting Posts : {callbackResults.Result}", this);
+
                                             if (callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer));
+                                                Log(callbackResults.ResultCode, $" =============+++++++++ Creating Posts : {callbackResults.Result}", this);
 
-                                                if(callbackResults.Success())
-                                                    refreshedSccreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer);
+
+                                                callbackResults.SetResult(widgetsLoadTaskCallbacResults);
 
                                                 LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
+
+                                                if (callbackResults.Success())
+                                                    refreshedSccreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);                          
                                             }
                                         });
                                     }
                                 });
+
+                                while (!callbackResults.Success())
+                                    await Task.Yield();
 
                                 break;
 

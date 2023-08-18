@@ -1817,12 +1817,11 @@ namespace Com.RedicalGames.Filar
                                                     callbackResults.data = default;
                                                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                 }
+
+                                                await Task.Yield();
                                             }
 
-                                            while (!callbackResults.Success())
-                                                await Task.Yield();
-
-                                            AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, hasEqualValueCallbackResults =>
+                                            AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, async hasEqualValueCallbackResults =>
                                             {
                                                 callbackResults.SetResult(hasEqualValueCallbackResults);
 
@@ -1837,6 +1836,8 @@ namespace Com.RedicalGames.Filar
                                                     callbackResults.result = "Posts Widgets Counldn't Load.";
                                                     callbackResults.data = default;
                                                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                                                    await Task.Yield();
                                                 }
                                             });
                                         }
