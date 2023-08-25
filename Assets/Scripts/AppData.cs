@@ -1659,12 +1659,12 @@ namespace Com.RedicalGames.Filar
 
             public int GetContentCount()
             {
-                throw new NotImplementedException();
+                return 0;
             }
 
             public void Update()
             {
-                throw new NotImplementedException();
+              
             }
 
             public bool HasContent() => GetContentCount() > 0;
@@ -1680,13 +1680,10 @@ namespace Com.RedicalGames.Filar
 
             public bool IsContentActive(int contentID)
             {
-                throw new NotImplementedException();
+                return false;
             }
 
-            public UIScreenType GetContainerScreenType()
-            {
-                throw new NotImplementedException();
-            }
+            public UIScreenType GetContainerScreenType() => screenType;
 
             #endregion
 
@@ -10433,16 +10430,9 @@ namespace Com.RedicalGames.Filar
 
             #region UI States
 
-            public void SetSelectableInputUIState(InputUIState state)
-            {
-                LogInfo($"================>>>>>>>>>>>>>>>>> Setting : {name} Of Input Type : {inputType} To Selection State : {state}", this);
-                GetSelectionStateInfo().SetInputState(state);
-            }
+            public void SetSelectableInputUIState(InputUIState state) => GetSelectionStateInfo().SetInputState(state);
 
-            public InputUIState GetInputUIState()
-            {
-                return GetSelectionStateInfo().GetInputUIState();
-            }
+            public InputUIState GetInputUIState() => GetSelectionStateInfo().GetInputUIState();
 
             #endregion
 
@@ -28907,9 +28897,6 @@ namespace Com.RedicalGames.Filar
                 {
                     AddToSelectedContainer(layerType, addedToContainerCallback => 
                     {
-
-                        Debug.Log($"===> Blur Screen With Layer Type : {layerType} - Success : {addedToContainerCallback.resultCode} - Results : {addedToContainerCallback.result}");
-
                         bool isVisible = addedToContainerCallback.resultCode == Helpers.SuccessCode;
 
                         OnSetBlurObjectVisibilityState(isVisible);
@@ -29456,8 +29443,6 @@ namespace Com.RedicalGames.Filar
                     canFade = true;
                     fadeDirection = fadeOut;
 
-                    LogInfo($" <-------------------------------> [Fade Out - Start] Showing Screen : {GetUIScreenType()} - Code : {callbackResults.resultCode} - Results : {callbackResults.result}", this);
-
                     while (canFade)
                     {
                         await Task.Yield();
@@ -29468,8 +29453,6 @@ namespace Com.RedicalGames.Filar
 
                     callbackResults.result = fadeOutResults;
                     callbackResults.resultCode = fadeOutResultsCode;
-
-                    LogInfo($" <-------------------------------> [Fade Out - Complete] Shown Screen - : {GetUIScreenType()} - Code : {callbackResults.resultCode} - Results : {callbackResults.result}", this);
 
                     if (callbackResults.Success())
                     {

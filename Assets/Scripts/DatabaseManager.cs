@@ -1394,8 +1394,6 @@ namespace Com.RedicalGames.Filar
 
                 #endregion
             }
-            else
-                Debug.Log($"---> Screen : {screenData.value.GetUIScreenType()} Refreshed.");
         }
 
         public void OnNewAssetDataCreated(AppData.AssetData assetData, Action<AppData.SceneAsset, bool> callback)
@@ -3578,6 +3576,11 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                     refreshData.SetValue(screenContainer);
+                else
+                {
+                    callbackResults.result = "Couldn't Set Screen Widgets Container On Screen Refresh - Screen Widgets Container Is Not Required.";
+                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
+                }
 
             }, "Screen Container is Not Assigned");
 
@@ -3591,6 +3594,11 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                     refreshData.SetValue(sceneContainer);
+                else
+                {
+                    callbackResults.result = "Couldn't Set Scene Container On Screen Refresh - Scene Content Container Is Not Required.";
+                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
+                }
 
             }, "Scene Container is Not Assigned");
 
@@ -3604,6 +3612,11 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                     refreshData.SetValue(folder);
+                else
+                {
+                    callbackResults.result = "Couldn't Set Folder On Screen Refresh - Folder Is Not Required.";
+                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
+                }
 
             }, "Folder Not Assigned"); 
 
@@ -3616,7 +3629,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                return (GetRefreshData());
+                return (refreshData.value_A, refreshData.value_B, refreshData.value_C);
             }
             catch (Exception exception)
             {
@@ -3753,164 +3766,195 @@ namespace Com.RedicalGames.Filar
 
         #region On Refresh Functions
 
-        public async Task<AppData.Callback> RefreshedAsync(UIScreenHandler refreshedSccreen, AppData.Folder folder, DynamicWidgetsContainer widgetsContainer, AppData.SceneDataPackets dataPackets, int refreshDuration = 0)
+        public async Task<AppData.Callback> RefreshedAsync(UIScreenHandler refreshedScreen, AppData.Folder folder = null, DynamicWidgetsContainer widgetsContainer = null, DynamicContentContainer contentContainer = null, AppData.SceneDataPackets dataPackets = null, int refreshDuration = 0)
         {
             try
             {
-                AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
+                AppData.Callback callbackResults = new AppData.Callback();
+
+                callbackResults.resultCode = (refreshedScreen != null) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                callbackResults.result = (callbackResults.Success()) ? $"Refreshed Screen Of Type : {refreshedScreen.GetUIScreenType()} Has Been Loaded Successfully." : "There Is No Screen To Refresh : Refreshed Screen Is Null / Not Assigned From Screen UI Manager.";
 
                 if (callbackResults.Success())
                 {
-                    var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized"));
 
-                    if (screenUIManager.GetCurrentUIScreenType() != AppData.UIScreenType.None)
+                    if (callbackResults.Success())
                     {
-                        widgetsContainer.SetAssetsLoaded(false);
+                        var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
 
-                        var currentScreen = screenUIManager.GetCurrentScreenData().value;
-
-                        switch (refreshedSccreen.GetUIScreenType())
+                        if (refreshedScreen.GetUIScreenType() != AppData.UIScreenType.None)
                         {
-                            case AppData.UIScreenType.LandingPageScreen:
+                            //widgetsContainer.SetAssetsLoaded(false);
 
-                                refreshedSccreen.ShowWidget(AppData.WidgetType.LoadingWidget);
+                            //var currentScreen = screenUIManager.GetCurrentScreenData().value;
 
-                                while (!IsServerPostsDatabaseInitialized)
-                                    await Task.Yield();
+                            switch (refreshedScreen.GetUIScreenType())
+                            {
+                                case AppData.UIScreenType.LandingPageScreen:
 
-                                widgetsContainer.Clear(false, widgetsClearedCallback =>
-                                {
-                                    callbackResults.SetResult(widgetsClearedCallback);
+                                    refreshedScreen.ShowWidget(AppData.WidgetType.LoadingWidget);
 
-                                    if (callbackResults.Success())
+                                    while (!IsServerPostsDatabaseInitialized)
+                                        await Task.Yield();
+
+                                    LogInfo($" =============+++++++++ Clearing Container : {widgetsContainer?.name} - Of Type : {widgetsContainer?.GetContainerType()}", this);
+
+                                    widgetsContainer.Clear(false, widgetsClearedCallback =>
                                     {
-                                        GetPosts(async postsCallbackResults =>
+                                        callbackResults.SetResult(widgetsClearedCallback);
+
+                                        Log(callbackResults.ResultCode, $" =============+++++++++ Clear Posts Widgets : {callbackResults.Result}", this);
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(postsCallbackResults);
-
-                                            Log(callbackResults.ResultCode,$" =============+++++++++ Getting Posts : {callbackResults.Result}", this);
-
-                                            if (callbackResults.Success())
+                                            GetPosts(async postsCallbackResults =>
                                             {
-                                                Log(callbackResults.ResultCode, $" =============+++++++++ Creating Posts : {callbackResults.Result}", this);
+                                                callbackResults.SetResult(postsCallbackResults);
 
-                                                var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer);
-
-                                                callbackResults.SetResult(widgetsLoadTaskCallbacResults);
-
-                                                LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
+                                                Log(callbackResults.ResultCode, $" =============+++++++++ Getting Posts : {callbackResults.Result}", this);
 
                                                 if (callbackResults.Success())
-                                                    refreshedSccreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);                          
-                                            }
-                                        });
-                                    }
-                                });
+                                                {
+                                                    Log(callbackResults.ResultCode, $" =============+++++++++ Creating Posts : {callbackResults.Result}", this);
 
-                                while (!callbackResults.Success())
-                                    await Task.Yield();
+                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer);
 
-                                break;
+                                                    callbackResults.SetResult(widgetsLoadTaskCallbacResults);
 
-                            case AppData.UIScreenType.ProjectCreationScreen:
+                                                    LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
 
-                                while (!IsLocalStorageInitialized)
-                                    await Task.Yield();
+                                                    if (callbackResults.Success())
+                                                        refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                }
+                                            });
+                                        }
+                                    });
 
-                                widgetsContainer.Clear(false, widgetsClearedCallback =>
-                                {
-                                    callbackResults.SetResult(widgetsClearedCallback);
+                                    while (!callbackResults.Success())
+                                        await Task.Yield();
 
-                                    if (callbackResults.Success())
+                                    break;
+
+                                case AppData.UIScreenType.ProjectCreationScreen:
+
+                                    while (!IsLocalStorageInitialized)
+                                        await Task.Yield();
+
+                                    widgetsContainer.Clear(false, widgetsClearedCallback =>
                                     {
-                                        LoadProjectStructureData(async structureLoadedCallbackResults =>
+                                        callbackResults.SetResult(widgetsClearedCallback);
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(structureLoadedCallbackResults);
+                                            LoadProjectStructureData(async structureLoadedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(structureLoadedCallbackResults);
 
                                             #region Screen UI Params
 
                                             var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
-                                            var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
-                                            var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
-                                            var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
+                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
+                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
+                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
 
                                             #endregion
 
                                             #region Setup Project Structure
 
                                             if (callbackResults.Success())
-                                            {
-                                                loadedProjectData = new List<AppData.Project>();
-
-                                                SetCurrentFolder(folder);
-
-                                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectCreationScreen)
                                                 {
+                                                    loadedProjectData = new List<AppData.Project>();
 
+                                                    SetCurrentFolder(folder);
 
-                                                    var loadWidgetsTaskCallbackResults = await screenUIManager.CreateUIScreenProjectSelectionWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), structureLoadedCallbackResults.data, widgetsContainer);
-
-                                                    if (loadWidgetsTaskCallbackResults.Success())
+                                                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectCreationScreen)
                                                     {
-                                                        loadedProjectData = loadWidgetsTaskCallbackResults.data;
 
-                                                        GetFilterTypesFromContent(structureLoadedCallbackResults.data, filterContentCallbackResults =>
+
+                                                        var loadWidgetsTaskCallbackResults = await screenUIManager.CreateUIScreenProjectSelectionWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), structureLoadedCallbackResults.data, widgetsContainer);
+
+                                                        if (loadWidgetsTaskCallbackResults.Success())
                                                         {
-                                                            callbackResults.SetResult(filterContentCallbackResults);
+                                                            loadedProjectData = loadWidgetsTaskCallbackResults.data;
+
+                                                            GetFilterTypesFromContent(structureLoadedCallbackResults.data, filterContentCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(filterContentCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var sortedFilterList = filterContentCallbackResults.data;
+                                                                    sortedFilterList.Sort((x, y) => x.CompareTo(y));
+                                                                    sortedFilterList.Insert(0, "All");
+                                                                    filterListParam.SetContent(sortedFilterList);
+                                                                }
+
+                                                            }, "Project_");
+
+                                                            callbackResults.SetResult(GetProjectRootStructureData());
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                var sortedFilterList = filterContentCallbackResults.data;
-                                                                sortedFilterList.Sort((x, y) => x.CompareTo(y));
-                                                                sortedFilterList.Insert(0, "All");
-                                                                filterListParam.SetContent(sortedFilterList);
-                                                            }
+                                                                var filterType = GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                                var sortingContents = GetDropdownContent<AppData.SortType>().data;
 
-                                                        }, "Project_");
-
-                                                        callbackResults.SetResult(GetProjectRootStructureData());
-
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            var filterType = GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
-                                                            var sortingContents = GetDropdownContent<AppData.SortType>().data;
-
-                                                            if (filterType != AppData.ProjectCategoryType.Project_All)
-                                                            {
-                                                                AppData.Helpers.StringValueValid(isValidCallbackResults =>
+                                                                if (filterType != AppData.ProjectCategoryType.Project_All)
                                                                 {
-                                                                    if (isValidCallbackResults.Success())
-                                                                        sortingContents.Remove(sortingContents.Find(content => content.Contains("Category")));
-                                                                    else
-                                                                        Log(isValidCallbackResults.resultCode, isValidCallbackResults.result, this);
-                                                                }, AppData.Helpers.GetArray(sortingContents));
-                                                            }
+                                                                    AppData.Helpers.StringValueValid(isValidCallbackResults =>
+                                                                    {
+                                                                        if (isValidCallbackResults.Success())
+                                                                            sortingContents.Remove(sortingContents.Find(content => content.Contains("Category")));
+                                                                        else
+                                                                            Log(isValidCallbackResults.resultCode, isValidCallbackResults.result, this);
+                                                                    }, AppData.Helpers.GetArray(sortingContents));
+                                                                }
 
-                                                            sortingListParam.SetContent(sortingContents);
-                                                        }
+                                                                sortingListParam.SetContent(sortingContents);
+                                                            }
 
                                                         #region Enable UI Screen Group COntent
 
                                                         paginationButtonParam.SetUIInputState(widgetsContainer.CanPaginate() ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled);
-                                                        searchFieldParam.SetUIInputState(AppData.InputUIState.Enabled);
-                                                        filterListParam.SetUIInputState(AppData.InputUIState.Enabled);
-                                                        sortingListParam.SetUIInputState(AppData.InputUIState.Enabled);
+                                                            searchFieldParam.SetUIInputState(AppData.InputUIState.Enabled);
+                                                            filterListParam.SetUIInputState(AppData.InputUIState.Enabled);
+                                                            sortingListParam.SetUIInputState(AppData.InputUIState.Enabled);
 
                                                         #endregion
                                                     }
+                                                    }
+                                                    else
+                                                        LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
+
+                                                    if (refreshAsyncRoutine != null)
+                                                    {
+                                                        StopCoroutine(refreshAsyncRoutine);
+                                                        refreshAsyncRoutine = null;
+                                                    }
+
+                                                    if (refreshAsyncRoutine == null)
+                                                    {
+                                                        if (GetProjectRootStructureData().Success())
+                                                        {
+                                                            StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.result = "Failed To Refresh Async";
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                        }
+                                                    }
+
                                                 }
                                                 else
-                                                    LogError($"Folder Structure Screen : {ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType()}", this);
-
-                                                if (refreshAsyncRoutine != null)
                                                 {
-                                                    StopCoroutine(refreshAsyncRoutine);
-                                                    refreshAsyncRoutine = null;
-                                                }
+                                                    if (refreshAsyncRoutine != null)
+                                                    {
+                                                        StopCoroutine(refreshAsyncRoutine);
+                                                        refreshAsyncRoutine = null;
+                                                    }
 
-                                                if (refreshAsyncRoutine == null)
-                                                {
-                                                    if (GetProjectRootStructureData().Success())
+                                                    if (refreshAsyncRoutine == null)
                                                     {
                                                         StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
                                                     }
@@ -3921,71 +3965,51 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                 }
 
-                                            }
-                                            else
-                                            {
-                                                if (refreshAsyncRoutine != null)
-                                                {
-                                                    StopCoroutine(refreshAsyncRoutine);
-                                                    refreshAsyncRoutine = null;
-                                                }
-
-                                                if (refreshAsyncRoutine == null)
-                                                {
-                                                    StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.result = "Failed To Refresh Async";
-                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                }
-                                            }
-
                                             #endregion
                                         });
-                                    }
-                                });
+                                        }
+                                    });
 
-                                break;
+                                    break;
 
-                            case AppData.UIScreenType.ProjectDashboardScreen:
+                                case AppData.UIScreenType.ProjectDashboardScreen:
 
-                                while (!IsLocalStorageInitialized)
-                                    await Task.Yield();
+                                    while (!IsLocalStorageInitialized)
+                                        await Task.Yield();
 
-                                widgetsContainer.Clear(false, widgetsClearedCallback =>
-                                {
-                                    callbackResults.SetResult(widgetsClearedCallback);
-
-                                    if (callbackResults.Success())
+                                    widgetsContainer.Clear(false, widgetsClearedCallback =>
                                     {
-                                        if (GetProjectStructureData().Success())
+                                        callbackResults.SetResult(widgetsClearedCallback);
+
+                                        if (callbackResults.Success())
                                         {
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetProjectStructureData().data.projectInfo.name);
+                                            if (GetProjectStructureData().Success())
+                                            {
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetProjectStructureData().data.projectInfo.name);
 
-                                            SetCurrentFolder(folder);
+                                                SetCurrentFolder(folder);
 
-                                            GetRefreshData().screenContainer.SetViewLayout(GetProjectStructureData().data.GetFolderLayoutView(GetProjectStructureData().data.GetLayoutViewType()));
+                                                GetRefreshData().screenContainer.SetViewLayout(GetProjectStructureData().data.GetFolderLayoutView(GetProjectStructureData().data.GetLayoutViewType()));
 
                                             #region Screen UI Params
 
                                             var clipBoardButtonParam = GetUIScreenGroupContentTemplate("Clip Board Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.ClipboardButton, state: AppData.InputUIState.Disabled);
-                                            var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
-                                            var layoutViewButtonParam = GetUIScreenGroupContentTemplate("Layout View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.LayoutViewButton, state: AppData.InputUIState.Disabled);
-                                            var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
-                                            var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled, contents: new List<string>());
-                                            var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled, contents: new List<string>());
+                                                var paginationButtonParam = GetUIScreenGroupContentTemplate("Pagination View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.PaginationButton, state: AppData.InputUIState.Disabled);
+                                                var layoutViewButtonParam = GetUIScreenGroupContentTemplate("Layout View Button", AppData.InputType.Button, buttonActionType: AppData.InputActionButtonType.LayoutViewButton, state: AppData.InputUIState.Disabled);
+                                                var searchFieldParam = GetUIScreenGroupContentTemplate("Search Field", AppData.InputType.InputField, inputFieldActionType: AppData.InputFieldActionType.AssetSearchField, placeHolder: "Search", state: AppData.InputUIState.Disabled);
+                                                var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled, contents: new List<string>());
+                                                var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled, contents: new List<string>());
 
                                             #endregion
 
                                             //RefreshLayoutViewButtonIcon();
 
                                             FolderHasContentToLoad(folder, async hasContentCallbackResults =>
-                                            {
-                                                callbackResults.SetResult(hasContentCallbackResults);
-
-                                                if (callbackResults.Success())
                                                 {
+                                                    callbackResults.SetResult(hasContentCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
                                                     #region Pegination
 
                                                     OnPaginationViewRefreshed(widgetsContainer);
@@ -3994,159 +4018,160 @@ namespace Com.RedicalGames.Filar
 
                                                     loadedWidgets = new List<AppData.UIScreenWidget>();
 
-                                                    int contentCount = 0;
+                                                        int contentCount = 0;
 
-                                                    GetProjectFolderDirectoryEntries(AppData.SelectableWidgetType.Folder, folder.storageData, async loadedDirectoriesCallbackResults =>
-                                                    {
-                                                        if (loadedDirectoriesCallbackResults.Success())
+                                                        GetProjectFolderDirectoryEntries(AppData.SelectableWidgetType.Folder, folder.storageData, async loadedDirectoriesCallbackResults =>
                                                         {
-                                                            var widgetsLoadTaskCallbackResults = await screenUIManager.CreateUIScreenFolderWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), loadedDirectoriesCallbackResults.data, widgetsContainer);
+                                                            if (loadedDirectoriesCallbackResults.Success())
+                                                            {
+                                                                var widgetsLoadTaskCallbackResults = await screenUIManager.CreateUIScreenFolderWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), loadedDirectoriesCallbackResults.data, widgetsContainer);
 
                                                             // Get Loaded Widgets
                                                             if (widgetsLoadTaskCallbackResults.Success())
-                                                            {
-                                                                var loadedWidgetsData = widgetsLoadTaskCallbackResults.data;
-
-                                                                if (loadedWidgetsData != null)
                                                                 {
-                                                                    contentCount += loadedProjectData.Count;
+                                                                    var loadedWidgetsData = widgetsLoadTaskCallbackResults.data;
+
+                                                                    if (loadedWidgetsData != null)
+                                                                    {
+                                                                        contentCount += loadedProjectData.Count;
 
                                                                     //if (contentCount > 0)
                                                                     //    foreach (var widget in loadedProjectData)
                                                                     //        if (!loadedWidgets.Contains(widget))
                                                                     //            loadedWidgets.Add(widget);
                                                                 }
+                                                                }
                                                             }
-                                                        }
-                                                        else
-                                                            Log(loadedDirectoriesCallbackResults.resultCode, loadedDirectoriesCallbackResults.result, this);
-                                                    });
+                                                            else
+                                                                Log(loadedDirectoriesCallbackResults.resultCode, loadedDirectoriesCallbackResults.result, this);
+                                                        });
 
-                                                    var widgetsLoadTaskCallbackResults = await screenUIManager.CreateUIScreenFileWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer);
+                                                        var widgetsLoadTaskCallbackResults = await screenUIManager.CreateUIScreenFileWidgetsAsync(ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType(), folder, widgetsContainer);
 
                                                     // Get Loaded Widgets
                                                     if (widgetsLoadTaskCallbackResults.Success())
-                                                    {
-                                                        var loadedWidgetsData = widgetsLoadTaskCallbackResults.data;
-
-                                                        if (loadedWidgetsData != null)
                                                         {
-                                                            contentCount += loadedWidgetsData.Count;
+                                                            var loadedWidgetsData = widgetsLoadTaskCallbackResults.data;
 
-                                                            if (contentCount > 0)
-                                                                foreach (var widget in loadedWidgetsData)
-                                                                    if (!loadedWidgets.Contains(widget))
-                                                                        loadedWidgets.Add(widget);
+                                                            if (loadedWidgetsData != null)
+                                                            {
+                                                                contentCount += loadedWidgetsData.Count;
+
+                                                                if (contentCount > 0)
+                                                                    foreach (var widget in loadedWidgetsData)
+                                                                        if (!loadedWidgets.Contains(widget))
+                                                                            loadedWidgets.Add(widget);
+                                                            }
                                                         }
+
+
+                                                        widgetsContainer.GetUIScroller().ScrollToBottom();
+
+                                                        AppData.Helpers.GetAppComponentsValid(loadedWidgets, "Loaded Widgets", loadedWidgetsCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(loadedWidgetsCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
+
+                                                                GetLayoutViewType(layoutViewCallbackResults =>
+                                                                {
+                                                                    if (layoutViewCallbackResults.Success())
+                                                                    {
+                                                                        switch (layoutViewCallbackResults.data)
+                                                                        {
+                                                                            case AppData.LayoutViewType.ItemView:
+
+                                                                                if (SelectableManager.Instance.HasActiveSelection())
+                                                                                {
+                                                                                    widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                                    {
+                                                                                        if (selectedAllCallback.Success())
+                                                                                            selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
+                                                                                        else
+                                                                                            selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
+
+                                                                                break;
+
+                                                                            case AppData.LayoutViewType.ListView:
+
+                                                                                if (SelectableManager.Instance.HasActiveSelection())
+                                                                                {
+                                                                                    widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
+                                                                                    {
+                                                                                        if (selectedAllCallback.Success())
+                                                                                            selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
+                                                                                        else
+                                                                                            selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
+
+                                                                                break;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                        Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
+                                                                });
+
+                                                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, selectionOptionImageViewType);
+                                                            }
+
+
+                                                        }, "Failed To Load Widgets.");
+
                                                     }
 
-
-                                                    widgetsContainer.GetUIScroller().ScrollToBottom();
-
-                                                    AppData.Helpers.GetAppComponentsValid(loadedWidgets, "Loaded Widgets", loadedWidgetsCallbackResults =>
+                                                    if (refreshAsyncRoutine != null)
                                                     {
-                                                        callbackResults.SetResult(loadedWidgetsCallbackResults);
+                                                        StopCoroutine(refreshAsyncRoutine);
+                                                        refreshAsyncRoutine = null;
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Failed To Refresh Async";
+                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                    }
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            AppData.UIImageType selectionOptionImageViewType = AppData.UIImageType.Null_TransparentIcon;
-
-                                                            GetLayoutViewType(layoutViewCallbackResults =>
-                                                            {
-                                                                if (layoutViewCallbackResults.Success())
-                                                                {
-                                                                    switch (layoutViewCallbackResults.data)
-                                                                    {
-                                                                        case AppData.LayoutViewType.ItemView:
-
-                                                                            if (SelectableManager.Instance.HasActiveSelection())
-                                                                            {
-                                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                                {
-                                                                                    if (selectedAllCallback.Success())
-                                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewDeselectionIcon;
-                                                                                    else
-                                                                                        selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                                selectionOptionImageViewType = AppData.UIImageType.ItemViewSelectionIcon;
-
-                                                                            break;
-
-                                                                        case AppData.LayoutViewType.ListView:
-
-                                                                            if (SelectableManager.Instance.HasActiveSelection())
-                                                                            {
-                                                                                widgetsContainer.HasAllWidgetsSelected(selectedAllCallback =>
-                                                                                {
-                                                                                    if (selectedAllCallback.Success())
-                                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewDeselectionIcon;
-                                                                                    else
-                                                                                        selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                                selectionOptionImageViewType = AppData.UIImageType.ListViewSelectionIcon;
-
-                                                                            break;
-                                                                    }
-                                                                }
-                                                                else
-                                                                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
-                                                            });
-
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, selectionOptionImageViewType);
-                                                        }
-
-
-                                                    }, "Failed To Load Widgets.");
-
-                                                }
-
-                                                if (refreshAsyncRoutine != null)
-                                                {
-                                                    StopCoroutine(refreshAsyncRoutine);
-                                                    refreshAsyncRoutine = null;
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.result = "Failed To Refresh Async";
-                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                }
-
-                                                if (refreshAsyncRoutine == null)
-                                                {
-                                                    refreshAsyncRoutine = StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetCurrentFolder(), refreshedCallbackResults => { }, clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.result = "Failed To Refresh Async";
-                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                }
-                                            });
+                                                    if (refreshAsyncRoutine == null)
+                                                    {
+                                                        refreshAsyncRoutine = StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetCurrentFolder(), refreshedCallbackResults => { }, clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Failed To Refresh Async";
+                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
                                         }
                                         else
-                                            Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
-                                    }
-                                    else
-                                        Log(widgetsClearedCallback.resultCode, widgetsClearedCallback.result, this);
-                                });
+                                            Log(widgetsClearedCallback.resultCode, widgetsClearedCallback.result, this);
+                                    });
 
-                                break;
+                                    break;
 
-                            case AppData.UIScreenType.ContentImportExportScreen:
+                                case AppData.UIScreenType.ContentImportExportScreen:
 
-                                while (!IsLocalStorageInitialized)
-                                    await Task.Yield();
+                                    while (!IsLocalStorageInitialized)
+                                        await Task.Yield();
 
-                                break;
+                                    break;
+                            }
                         }
-                    }
-                    else
-                    {
-                        callbackResults.result = "Refresh Failed : Current Screen Is Set To Default : None.";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        else
+                        {
+                            callbackResults.result = "Refresh Failed : Current Screen Is Set To Default : None.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
                     }
                 }
 

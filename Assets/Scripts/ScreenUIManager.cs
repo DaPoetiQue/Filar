@@ -1060,26 +1060,29 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
-            switch (GetCurrentUIScreenType())
+            if (callbackResults.Success())
             {
-                case AppData.UIScreenType.LandingPageScreen:
+                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    #region Get Content Container
+                switch (dataPackets.GetUIScreenType())
+                {
+                    case AppData.UIScreenType.LandingPageScreen:
 
-                    if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
-                    {
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                        #region Get Content Container
+
+                        if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                         {
-                            callbackResults.SetResult(screenContainerCallbackResults);
-
-                            if (callbackResults.Success())
+                            databaseManager.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
                             {
-                                #region Get Scene Content Container
+                                callbackResults.SetResult(screenContainerCallbackResults);
 
-                                if (dataPackets.GetSceneContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetSceneContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
+                                if (callbackResults.Success())
                                 {
-                                    DatabaseManager.Instance.GetDynamicContainer<DynamicContentContainer>(dataPackets.GetUIScreenType(), dataPackets.GetSceneContainerData(), sceneContainerCallbackResults =>
+                                    #region Get Scene Content Container
+
+                                    databaseManager.GetDynamicContainer<DynamicContentContainer>(dataPackets.GetUIScreenType(), dataPackets.GetSceneContainerData().GetContainerType(), dataPackets.GetSceneContainerData().GetContainerViewSpaceType(), sceneContainerCallbackResults =>
                                     {
                                         callbackResults.SetResult(sceneContainerCallbackResults);
 
@@ -1087,7 +1090,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             #region Set Refresh Data
 
-                                            DatabaseManager.Instance.SetRefreshData(null, screenContainerCallbackResults.data, sceneContainerCallbackResults.data, dataSetupCallbackResults =>
+                                            databaseManager.SetRefreshData(null, screenContainerCallbackResults.data, sceneContainerCallbackResults.data, dataSetupCallbackResults =>
                                             {
                                                 Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
                                             });
@@ -1106,89 +1109,81 @@ namespace Com.RedicalGames.Filar
                                             #endregion
                                         }
                                     });
+
+                                    #endregion
                                 }
+                            });
+                        }
 
-                                #endregion
-                            }
-                        });
-                    }
+                        #endregion
 
-                    #endregion
+                        break;
 
-                    break;
+                    case AppData.UIScreenType.ProjectCreationScreen:
 
-                case AppData.UIScreenType.ProjectCreationScreen:
+                        #region Get Content Container
 
-                    #region Get Content Container
-
-                    if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
-                    {
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                        if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                         {
-                            callbackResults.SetResult(screenContainerCallbackResults);
-
-                            if (callbackResults.Success())
+                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
                             {
-                                if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
-                                {
-                                    if (DatabaseManager.Instance.GetProjectStructureData().Success())
-                                    {
-                                        var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : DatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
-                                        var container = screenContainerCallbackResults.data;
+                                callbackResults.SetResult(screenContainerCallbackResults);
 
-                                        DatabaseManager.Instance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
+                                if (callbackResults.Success())
+                                {
+                                    if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                    {
+                                        if (DatabaseManager.Instance.GetProjectStructureData().Success())
                                         {
-                                            if (dataSetupCallbackResults.Success())
+                                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : DatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
+                                            var container = screenContainerCallbackResults.data;
+
+                                            DatabaseManager.Instance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
                                             {
-                                                DatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                                if (dataSetupCallbackResults.Success())
                                                 {
-                                                    Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
-                                                });
-                                            }
-                                        });
+                                                    DatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                                    {
+                                                        Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+                                                    });
+                                                }
+                                            });
+                                        }
+                                        else
+                                            Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
                                     }
                                     else
-                                        Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                        Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
                                 }
-                                else
-                                    Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
-                            }
-                        });
-                    }
+                            });
+                        }
 
-                    #endregion
+                        #endregion
 
-                    break;
+                        break;
 
-                case AppData.UIScreenType.ProjectDashboardScreen:
+                    case AppData.UIScreenType.ProjectDashboardScreen:
 
-                    break;
+                        break;
 
-                case AppData.UIScreenType.ContentImportExportScreen:
+                    case AppData.UIScreenType.ContentImportExportScreen:
 
-                    break;
-            }
-
-            var container = DatabaseManager.Instance.GetRefreshData().screenContainer;
-
-            if (container != null)
-            {
-                if (currentScreen.value.GetScreenData().refreshSceneAssets)
-                {
-                    var refreshTask = await DatabaseManager.Instance.RefreshedAsync(GetCurrentScreenData().value, DatabaseManager.Instance.GetCurrentFolder(), container, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
-
-                    if (currentScreen.value != null)
-                        currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
-
-                    currentScreen.value.Focus();
-
-                    AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+                        break;
                 }
-                else
-                    LogWarning($"Screen Refresh Not Enabled For Screen : {currentScreen.value.GetUIScreenType()}", this);
+
+                #region On Screen Refresh
+
+                var refreshTask = await databaseManager.RefreshedAsync(GetCurrentScreenData()?.value, databaseManager?.GetCurrentFolder(), databaseManager?.GetRefreshData().screenContainer, databaseManager?.GetRefreshData().sceneContainer, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
+
+                if (currentScreen.value != null)
+                    currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
+
+                currentScreen.value.Focus();
+
+                AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+
+                #endregion
             }
-            else
-                LogError("Failed To Refresh Screen - Content Container Null / Missing.", this);
 
             return callbackResults;
         }
