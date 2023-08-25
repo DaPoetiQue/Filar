@@ -150,7 +150,7 @@ namespace Com.RedicalGames.Filar
 
         public override void OnSelect(bool isInitialSelection)
         {
-            if (GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+            if (GetWidgetContainer() != null && GetWidgetContainer().GetActive().Success())
             {
                 if (GetActive())
 

@@ -547,7 +547,10 @@ namespace Com.RedicalGames.Filar
             SkyboxContent,
             FolderStuctureContent,
             ProjectSelectionContent,
-            LandingPageSelectionContent,
+            ScreenWidgetsContainer,
+            CachedWidgetsContainer,
+            SceneContentsContainer,
+            CachedContentsContainer,
             None
         }
 
@@ -1098,6 +1101,77 @@ namespace Com.RedicalGames.Filar
             ProfileSynchronization,
             SigningApp
         }
+
+        #region Refresh Data
+
+        [Serializable]
+        public class RefreshDataTupil<T, U, V> where T : SerializableData where U : DynamicContainer where V : DynamicContainer
+        {
+            #region Components
+
+            public T value_A;
+            public U value_B;
+            public V value_C;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public RefreshDataTupil()
+            {
+
+            }
+
+            public RefreshDataTupil(T value_A = null, U value_B = null, V value_C = null)
+            {
+                this.value_A = value_A;
+                this.value_B = value_B;
+                this.value_C = value_C;
+            }
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetValue(T value_A = null, U value_B = null, V value_C = null)
+            {
+                this.value_A = value_A;
+                this.value_B = value_B;
+                this.value_C = value_C;
+            }
+
+            public void SetValue(T value_A) => this.value_A = value_A;
+            public void SetValue(U value_B) => this.value_B = value_B;
+            public void SetValue(V value_C) => this.value_C = value_C;
+
+            #endregion
+
+            #region Data Getters
+
+            public T Value_A => value_A;
+            public U Value_B => value_B;
+            public V Value_C => value_C;
+
+            public T GetValue_A() => value_A;
+            public U GetValue_B() => value_B;
+            public V GetValue_C() => value_C;
+
+            public (T value_A, U value_B, V value_C) GetValues() => (GetValue_A(), GetValue_B(), GetValue_C());
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ContainerData<T, U> where T : DynamicContainer where U : DynamicContainer
+        {
+            #region 
+        }
+
+        #endregion
 
         #region Post Data Types
 
@@ -7313,7 +7387,7 @@ namespace Com.RedicalGames.Filar
 
             void OnSelected()
             {
-                var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                 if (widgetsContainer != null)
                 {
@@ -7439,7 +7513,7 @@ namespace Com.RedicalGames.Filar
 
                 if(selections != null && selections.Count > 0)
                 {
-                    var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                    var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                     if(widgetsContainer != null)
                         widgetsContainer.OnWidgetSelectionState(selections, selectionCallback => { callbackResults = selectionCallback; });
@@ -7464,7 +7538,7 @@ namespace Com.RedicalGames.Filar
 
                 if (selections != null && selections.Count > 0)
                 {
-                    var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                    var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                     if (widgetsContainer != null)
                     {
@@ -7501,7 +7575,7 @@ namespace Com.RedicalGames.Filar
 
                     foreach (var widget in focusedSelectionData?.selections)
                     {
-                        UIScreenWidget screenWidget = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(widget.name);
+                        UIScreenWidget screenWidget = DatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widget.name);
 
                         if (screenWidget != null)
                         {
@@ -7678,7 +7752,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (selectionRemovedCallback.Success())
                                         {
-                                            var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                                            var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                                             if(widgetsContainer != null)
                                             {
@@ -7874,7 +7948,7 @@ namespace Com.RedicalGames.Filar
 
                     if (HasActiveSelections())
                     {
-                        var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                        var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                         if (widgetsContainer.GetAssetsLoaded())
                         {
@@ -7959,7 +8033,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (focusedSelectionData.selections.Count > 0)
                         {
-                            var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                            var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                             bool cleared = false;
 
@@ -17036,7 +17110,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (SelectableManager.Instance.GetCurrentSelectionType() != FocusedSelectionType.SelectedItem)
                                 {
-                                    if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                                    if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().GetActive().Success())
                                     {
                                         if (!IsSelected())
                                         {
@@ -17113,7 +17187,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (GetWidgetContainer())
                         {
-                            if (GetActive() && GetWidgetContainer().IsContainerActive())
+                            if (GetActive() && GetWidgetContainer().GetActive().Success())
                             {
                                 GetWidgetContainer().SetFingerDown(true);
 
@@ -17202,13 +17276,24 @@ namespace Com.RedicalGames.Filar
                 {
                     SelectableManager.Instance.Select(name, FocusedSelectionType.InteractedItem);
 
-                    DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
+                    Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
                     {
-                        if (containerCallbackResults.Success())
-                            containerCallbackResults.data.OnFocusedSelectionStateUpdate();
-                        else
-                            Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-                    });
+                    
+                        if(screenUIManagerCallbackResults.Success())
+                        {
+                            var screenUIManager = screenUIManagerCallbackResults.data;
+
+                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.ScreenWidgetsContainer, ContainerViewSpaceType.Screen, containerCallbackResults =>
+                            {
+                                if (containerCallbackResults.Success())
+                                    containerCallbackResults.data.OnFocusedSelectionStateUpdate();
+                                else
+                                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
+
+                            });
+                        }
+                    
+                    }, "Screen UI Manager Is Not Yet Initialized.");
                 }
             }
 
@@ -17218,7 +17303,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (GetSelectionStateData().Selectable)
                     {
-                        if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                        if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().GetActive().Success())
                         {
                             GetWidgetContainer().SetFingerUpEvent();
 
@@ -17276,7 +17361,7 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             if (widgetMovedCallback.data.dataAlreadyExistsInTargetDirectory)
                                                             {
-                                                                if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                                                                if (GetActive() && GetWidgetContainer() != null && GetWidgetContainer().GetActive().Success())
                                                                 {
                                                                     buttonComponent.interactable = false;
                                                                     buttonComponent.CancelInvoke();
@@ -18013,7 +18098,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (this != null && GetActive())
                 {
-                    if (GetWidgetContainer() != null && GetWidgetContainer().IsContainerActive())
+                    if (GetWidgetContainer() != null && GetWidgetContainer().GetActive().Success())
                     {
                         if (GetActive())
                         {
@@ -20225,59 +20310,63 @@ namespace Com.RedicalGames.Filar
 
             void OnCreateNewFolder_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (ScreenUIManager.Instance != null)
+                Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                    if (screenUIManagerCallbackResults.Success())
                     {
-                        if (DatabaseManager.Instance)
-                        {
-                            DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
-                            {
-                                if (containerCallbackResults.Success())
-                                {
-                                    containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
-                                    {
-                                        if (placeholderCallbackResults.Success())
-                                        {
-                                            containerCallbackResults.data.OnCreateNewPageWidget(onCreateNewCallbackResults =>
-                                            {
-                                                if (onCreateNewCallbackResults.Success())
-                                                {
-                                                    if (!placeholderCallbackResults.data.IsActive())
-                                                    {
-                                                        placeholderCallbackResults.data.ShowPlaceHolder(containerCallbackResults.data.GetContentContainer(), containerCallbackResults.data.GetCurrentLayoutWidgetDimensions(), containerCallbackResults.data.GetLastContentIndex(), true);
+                        var screenUIManager = screenUIManagerCallbackResults.data;
 
-                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
-                                                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                        if (screenUIManager.GetCurrentScreenData().value != null)
+                        {
+                            if (DatabaseManager.Instance)
+                            {
+                                DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
+                                {
+                                    if (containerCallbackResults.Success())
+                                    {
+                                        containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
+                                        {
+                                            if (placeholderCallbackResults.Success())
+                                            {
+                                                containerCallbackResults.data.OnCreateNewPageWidget(onCreateNewCallbackResults =>
+                                                {
+                                                    if (onCreateNewCallbackResults.Success())
+                                                    {
+                                                        if (!placeholderCallbackResults.data.IsActive())
+                                                        {
+                                                            placeholderCallbackResults.data.ShowPlaceHolder(containerCallbackResults.data.GetContentContainer(), containerCallbackResults.data.GetCurrentLayoutWidgetDimensions(), containerCallbackResults.data.GetLastContentIndex(), true);
+
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
+                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                                        }
                                                     }
-                                                }
-                                                else
-                                                    Log(onCreateNewCallbackResults.resultCode, onCreateNewCallbackResults.result, this);
-                                            });
-                                        }
-                                        else
-                                            Log(placeholderCallbackResults.resultCode, placeholderCallbackResults.result, this);
-                                    });
-                                }
-                                else
-                                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-                            });
+                                                    else
+                                                        Log(onCreateNewCallbackResults.resultCode, onCreateNewCallbackResults.result, this);
+                                                });
+                                            }
+                                            else
+                                                Log(placeholderCallbackResults.resultCode, placeholderCallbackResults.result, this);
+                                        });
+                                    }
+                                    else
+                                        Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
+                                });
+                            }
+                            else
+                                LogWarning("SceneAssetsManager.Instance Is Not Yet Initialized", this);
                         }
                         else
-                            LogWarning("SceneAssetsManager.Instance Is Not Yet Initialized", this);
+                            LogWarning("Value Is Missing / Null.", this);
                     }
-                    else
-                        LogWarning("Value Is Missing / Null.", this);
-                }
-                else
-                    LogWarning("ScreenUIManager.Instance Is Not Yet Initialized", this);
+
+                }, "Screen UI Manager Is Not Yet Initialized.");
             }
 
             void OnChangeLayoutView_ActionEvent(SceneDataPackets dataPackets)
             {
                 if (DatabaseManager.Instance != null)
                 {
-                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, contentContainer =>
+                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), contentContainer =>
                     {
                         if (contentContainer.Success())
                         {
@@ -20372,75 +20461,93 @@ namespace Com.RedicalGames.Filar
 
             void OnPagination_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (DatabaseManager.Instance != null)
+                Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, databaseManagerCallbackResults => 
                 {
-                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, contentContainer =>
+                    var databaseManager = databaseManagerCallbackResults.data;
+
+                    Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
                     {
-                        if (Helpers.IsSuccessCode(contentContainer.resultCode))
+                        if (screenUIManagerCallbackResults.Success())
                         {
-                            DatabaseManager.Instance.GetPaginationViewType(paginationViewCallbackResults => 
+                            var screenUIManager = screenUIManagerCallbackResults.data;
+
+                            databaseManager.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, contentContainerCallbackResults =>
                             {
-                                if (paginationViewCallbackResults.Success())
+                                if (contentContainerCallbackResults.Success())
                                 {
-                                    switch (paginationViewCallbackResults.data)
+                                    databaseManager.GetPaginationViewType(paginationViewCallbackResults =>
                                     {
-                                        case PaginationViewType.Pager:
+                                        if (paginationViewCallbackResults.Success())
+                                        {
+                                            switch (paginationViewCallbackResults.data)
+                                            {
+                                                case PaginationViewType.Pager:
 
-                                            DatabaseManager.Instance.ChangePaginationView(PaginationViewType.Scroller, dataPackets);
+                                                    databaseManager.ChangePaginationView(PaginationViewType.Scroller, dataPackets);
 
-                                            break;
+                                                    break;
 
-                                        case PaginationViewType.Scroller:
+                                                case PaginationViewType.Scroller:
 
-                                            DatabaseManager.Instance.ChangePaginationView(PaginationViewType.Pager, dataPackets); ;
+                                                    databaseManager.ChangePaginationView(PaginationViewType.Pager, dataPackets); ;
 
-                                            break;
-                                    }
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                            Log(paginationViewCallbackResults.resultCode, paginationViewCallbackResults.result, this);
+                                    });
                                 }
                                 else
-                                    Log(paginationViewCallbackResults.resultCode, paginationViewCallbackResults.result, this);
+                                    LogWarning(contentContainerCallbackResults.result, this, () => OnPagination_ActionEvent(dataPackets));
                             });
                         }
-                        else
-                            LogWarning(contentContainer.result, this, () => OnPagination_ActionEvent(dataPackets));
-                    });
-                }
-                else
-                    LogWarning("SceneAssetsManager.Instance Is Not Yet Initialized.", this, () => OnPagination_ActionEvent(dataPackets));
+
+                    }, "Screen UI Manager Instance Is Not Yet Initialized.");
+
+                }, "Database Manager Instance Is Not Yet Initialized.");
             }
 
             void OnRefresh_ActionEvent()
             {
-                if (ScreenUIManager.Instance != null)
+                Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, databaseManagerCallbackResults =>
                 {
-                    if (DatabaseManager.Instance != null)
+                    if (databaseManagerCallbackResults.Success())
                     {
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, contentContainer =>
-                        {
-                            if (Helpers.IsSuccessCode(contentContainer.resultCode))
-                            {
-                                Debug.LogError("==> On Screen Refresh - Check Here - Has Something To Do With Ambushed Data.");
+                        var databaseManager = databaseManagerCallbackResults.data;
 
-                                //if (contentContainer.data.HasCurrentFocusedWidgetInfo())
-                                //{
-                                //    Debug.LogError("==> HasCurrentFocusedWidgetInfo - ScreenRefresh");
-                                //    ScreenUIManager.Instance.ScreenRefresh();
-                                //}
-                                //else
-                                //{
-                                //    Debug.LogError("==> HasNoCurrentFocusedWidgetInfo - Refresh");
-                                //    ScreenUIManager.Instance.Refresh();
-                                //}
+                        Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
+                        {
+                            if (screenUIManagerCallbackResults.Success())
+                            {
+                                var screenUIManager = screenUIManagerCallbackResults.data;
+
+                                databaseManager.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, contentContainerCallbackResults =>
+                                {
+                                    if (contentContainerCallbackResults.Success())
+                                    {
+                                        Debug.LogError("==> On Screen Refresh - Check Here - Has Something To Do With Ambushed Data.");
+
+                                        //if (contentContainer.data.HasCurrentFocusedWidgetInfo())
+                                        //{
+                                        //    Debug.LogError("==> HasCurrentFocusedWidgetInfo - ScreenRefresh");
+                                        //    ScreenUIManager.Instance.ScreenRefresh();
+                                        //}
+                                        //else
+                                        //{
+                                        //    Debug.LogError("==> HasNoCurrentFocusedWidgetInfo - Refresh");
+                                        //    ScreenUIManager.Instance.Refresh();
+                                        //}
+                                    }
+                                    else
+                                        LogWarning(contentContainerCallbackResults.result, this, () => OnRefresh_ActionEvent());
+                                });
                             }
-                            else
-                                LogWarning(contentContainer.result, this, () => OnRefresh_ActionEvent());
-                        });
+
+                        }, "Screen UI Manager Instance Is Not Yet Initialized.");
                     }
-                    else
-                        LogWarning("--> ScreenUIManager.Instance Is Not Yet Initialized", this, () => OnRefresh_ActionEvent());
-                }
-                else
-                    LogWarning("ScreenUIManager.Instance Is Not Yet Initialized", this, () => OnRefresh_ActionEvent());
+
+                }, "Database Manager Instance Is Not Yet Initialized.");
             }
 
             void OnClipboard_ActionEvent(SceneDataPackets dataPackets)
@@ -22549,7 +22656,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (DatabaseManager.Instance != null)
                         {
-                            DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(allWidgetsSelectedCallback => 
+                            DatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(allWidgetsSelectedCallback => 
                             {
                                 if(allWidgetsSelectedCallback.Success())
                                 {
@@ -22576,7 +22683,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (DatabaseManager.Instance != null && ScreenUIManager.Instance != null)
                 {
-                    var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                    var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                     if (widgetsContainer != null)
                     {
@@ -22674,9 +22781,9 @@ namespace Com.RedicalGames.Filar
                         {
                             if (projectSelectionCallbackResults.Success())
                             {
-                                if (DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == PaginationViewType.Pager)
+                                if (DatabaseManager.Instance.GetRefreshData().screenContainer.GetPaginationViewType() == PaginationViewType.Pager)
                                 {
-                                    List<UIScreenWidget> currentPage = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetCurrentPage();
+                                    List<UIScreenWidget> currentPage = DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetCurrentPage();
 
                                     if (currentPage != null && currentPage.Count > 0)
                                     {
@@ -22702,7 +22809,7 @@ namespace Com.RedicalGames.Filar
                                                                 UIScreenWidget lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
 
                                                                 if (lastSelectedWidget != null)
-                                                                    DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GoToItemPage(lastSelectedWidget);
+                                                                    DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToItemPage(lastSelectedWidget);
                                                                 else
                                                                     LogWarning("Show Delete Asset Widget Failed - Last Selected Widget Not Found.", this, () => OnDelete_ActionEvent(dataPackets));
                                                             }
@@ -22842,64 +22949,74 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (Helpers.IsSuccessCode(assetsPinnedCallback.resultCode))
                                     {
-                                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.InputIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
-
-                                        if (dataPackets.notification.showNotifications)
+                                        Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
                                         {
-                                            if (pinItemsCount == 1)
-                                            {
-                                                string assetName = DatabaseManager.Instance.GetFormattedName(currentSelection[0].name, currentSelection[0].GetSelectableWidgetType());
-                                                dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{assetName} Pinned" : $"{assetName} Removed From Pinned Items";
-                                            }
 
-                                            if (pinItemsCount > 1)
-                                                dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{pinItemsCount} Items Pinned" : $"{pinItemsCount} Items Removed From Pinned";
-
-                                            DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
+                                            if (screenUIManagerCallbackResults.Success())
                                             {
-                                                if (containerCallbackResults.Success())
+                                                var screenUIManager = screenUIManagerCallbackResults.data;
+
+                                                screenUIManager.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.InputIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
+
+                                                if (dataPackets.notification.showNotifications)
                                                 {
-                                                    containerCallbackResults.data.GetContent(contentLoadedCallback =>
+                                                    if (pinItemsCount == 1)
                                                     {
-                                                        if (contentLoadedCallback.Success())
+                                                        string assetName = DatabaseManager.Instance.GetFormattedName(currentSelection[0].name, currentSelection[0].GetSelectableWidgetType());
+                                                        dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{assetName} Pinned" : $"{assetName} Removed From Pinned Items";
+                                                    }
+
+                                                    if (pinItemsCount > 1)
+                                                        dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{pinItemsCount} Items Pinned" : $"{pinItemsCount} Items Removed From Pinned";
+
+                                                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
+                                                    {
+                                                        if (containerCallbackResults.Success())
                                                         {
-                                                            DatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, async widgetsSortedCallbackResults =>
+                                                            containerCallbackResults.data.GetContent(contentLoadedCallback =>
                                                             {
-                                                                if (widgetsSortedCallbackResults.Success())
+                                                                if (contentLoadedCallback.Success())
                                                                 {
-                                                                    if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                                                    DatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, async widgetsSortedCallbackResults =>
                                                                     {
-                                                                        var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
+                                                                        if (widgetsSortedCallbackResults.Success())
+                                                                        {
+                                                                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                                                            {
+                                                                                var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
 
-                                                                        if (lastSelectionWidget != null)
-                                                                            SelectableManager.Instance.Select(lastSelectionWidget.name, FocusedSelectionType.SelectedItem);
+                                                                                if (lastSelectionWidget != null)
+                                                                                    SelectableManager.Instance.Select(lastSelectionWidget.name, FocusedSelectionType.SelectedItem);
+                                                                                else
+                                                                                    LogError("Last Selected Widget Missing / Not Found", this);
+
+                                                                                await ScreenUIManager.Instance.RefreshAsync();
+
+                                                                                if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
+                                                                                    StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
+                                                                                else if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
+                                                                                    StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
+
+                                                                                NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+                                                                            }
+                                                                            else
+                                                                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                                                        }
                                                                         else
-                                                                            LogError("Last Selected Widget Missing / Not Found", this);
-
-                                                                        await ScreenUIManager.Instance.RefreshAsync();
-
-                                                                        if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
-                                                                            StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
-                                                                        else if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
-                                                                            StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
-
-                                                                        NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
-                                                                    }
-                                                                    else
-                                                                        Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                                                            Log(widgetsSortedCallbackResults.resultCode, widgetsSortedCallbackResults.result, this);
+                                                                    });
                                                                 }
                                                                 else
-                                                                    Log(widgetsSortedCallbackResults.resultCode, widgetsSortedCallbackResults.result, this);
+                                                                    LogWarning(contentLoadedCallback.result, this);
                                                             });
                                                         }
                                                         else
-                                                            LogWarning(contentLoadedCallback.result, this);
+                                                            Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
                                                     });
                                                 }
-                                                else
-                                                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-                                            });
-                                        }
+                                            }
+
+                                        }, "Screen UI Manager Is Not Yet Initialized.");
                                     }
                                     else
                                         LogWarning(assetsPinnedCallback.result, this);
@@ -23335,7 +23452,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (Helpers.IsSuccessCode(selectionInfoSet.resultCode))
                                     {
-                                        var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                                        var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                                         if(widgetsContainer != null)
                                         {
@@ -23507,59 +23624,66 @@ namespace Com.RedicalGames.Filar
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
                             }
                             else
-                                LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
+                                LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
                         }
                         else
                             LogWarning(onScreenCaptured.result, this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
                     });
                 }
                 else
-                    LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
+                    LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
             void OnScrollToTop_ActionEvent()
             {
-                if (ScreenUIManager.Instance != null)
+                AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
+                    if(screenUIManagerCallbackResults.Success())
                     {
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
+                        var screenUIManager = screenUIManagerCallbackResults.data;
+
+                        if(screenUIManager.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                         {
-                            if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
-                                dynamicWidgetsContainer.data.ScrollToTop();
-                            else
-                                LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToTop_ActionEvent());
-                        });
+                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenData().value.GetUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
+                            {
+                                if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
+                                    dynamicWidgetsContainer.data.ScrollToTop();
+                                else
+                                    LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToTop_ActionEvent());
+                            });
+                        }
                     }
-                    else
-                        LogWarning("Not Asset Screen.", this, () => OnScrollToTop_ActionEvent());
-                }
-                else
-                    LogError("Screen UI Manager Instance Is Not Yet Initialized", this, () => OnScrollToTop_ActionEvent());
+                
+                }, "Screen UI Manager Instance Is Not Yet Initialized.");
             }
 
             void OnScrollToBottom_ActionEvent()
             {
-                if (ScreenUIManager.Instance != null)
+                Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
+
+                    if (screenUIManagerCallbackResults.Success())
                     {
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ContentContainerType.FolderStuctureContent, dynamicWidgetsContainer =>
+                        var screenUIManager = screenUIManagerCallbackResults.data;
+
+                        if (screenUIManager.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                         {
-                            if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
-                                dynamicWidgetsContainer.data.ScrollToBottom();
-                            else
-                                LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToBottom_ActionEvent());
-                        });
+                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
+                            {
+                                if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
+                                    dynamicWidgetsContainer.data.ScrollToBottom();
+                                else
+                                    LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToBottom_ActionEvent());
+                            });
+                        }
+                        else
+                            LogWarning("Not Asset Screen.", this, () => OnScrollToBottom_ActionEvent());
                     }
-                    else
-                        LogWarning("Not Asset Screen.", this, () => OnScrollToBottom_ActionEvent());
-                }
-                else
-                    LogError("Screen UI Manager Instance Is Not Yet Initialized", this, () => OnScrollToBottom_ActionEvent());
+
+                }, "Screen UI Manager Is Not Yet Initialized.");
             }
 
-            void OnPaginationNavigation_ActionEvent(PaginationNavigationActionType actionType) => DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnPaginationActionButtonPressed(actionType);
+            void OnPaginationNavigation_ActionEvent(PaginationNavigationActionType actionType) => DatabaseManager.Instance.GetRefreshData().screenContainer.OnPaginationActionButtonPressed(actionType);
 
             void OnProject_FolderActions_ActionEvent(SceneDataPackets dataPackets)
             {
@@ -23600,7 +23724,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (DatabaseManager.Instance)
                                         {
-                                            var widgetContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                                            var widgetContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                                             if (widgetContainer != null)
                                             {
@@ -23692,7 +23816,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (selectionInfo != null)
                                     {
-                                        var selection = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(selectionInfo.name);
+                                        var selection = DatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(selectionInfo.name);
 
                                         if (selection != null)
                                         {
@@ -24162,18 +24286,18 @@ namespace Com.RedicalGames.Filar
             {
                 yield return new WaitForEndOfFrame();
 
-                int widgetPageIndex = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GetItemPageIndex(widgetName);
-                DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GoToPage(widgetPageIndex);
+                int widgetPageIndex = DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetItemPageIndex(widgetName);
+                DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToPage(widgetPageIndex);
             }
 
             IEnumerator SctollToItemAsync(string widgetName)
             {
                 yield return new WaitForEndOfFrame();
 
-                UIScreenWidget widget = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetWidgetNamed(widgetName);
+                UIScreenWidget widget = DatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widgetName);
 
                 if (widget != null)
-                    DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.OnFocusToWidget(widget, true);
+                    DatabaseManager.Instance.GetRefreshData().screenContainer.OnFocusToWidget(widget, true);
                 else
                     LogWarning("Widget Is Null.", this, () => SctollToItemAsync(widgetName));
             }
@@ -29608,8 +29732,31 @@ namespace Com.RedicalGames.Filar
         #region Data Packets
 
         [Serializable]
+        public class ContainerData : AppComponent
+        {
+            #region Components
+
+            [Space(5)]
+            public ContentContainerType type;
+
+            [Space(5)]
+            public ContainerViewSpaceType viewSpace;
+
+            #endregion
+
+            #region Components
+
+            public ContentContainerType GetContainerType() => type;
+            public ContainerViewSpaceType GetContainerViewSpaceType() => viewSpace;
+
+            #endregion
+        }
+
+        [Serializable]
         public class DataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("External Link URL")]
 
@@ -29626,16 +29773,43 @@ namespace Com.RedicalGames.Filar
             public UIScreenType screenType;
 
             [Space(5)]
-            public LayoutViewType layoutViewType = LayoutViewType.Default;
+            public ContainerData screenContainerData, sceneContainerData;
 
             [Space(5)]
-            public ContentContainerType containerType;
+            public LayoutViewType layoutViewType = LayoutViewType.Default;
+
+            #endregion
+
+            #region Delete This
+
+            //[Space(5)]
+            //public ContentContainerType containerType = ContentContainerType.None;
+
+            #endregion
 
             [Space(5)]
             public UIStateType stateType;
 
             [Space(5)]
             public Notification notification;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public string GetExternalLinkURL() => externalLinkURL;
+            public UIScreenType GetUIScreenType() => screenType;
+            public UIStateType GetStateType() => stateType;
+
+
+            public ContainerData GetScreenContainerData() => screenContainerData;
+            public ContainerData GetSceneContainerData() => sceneContainerData;
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
@@ -30110,7 +30284,6 @@ namespace Com.RedicalGames.Filar
 
         public static class Helpers
         {
-
             public static DeviceInfo GetDeviceInfo()
             {
                 return new DeviceInfo

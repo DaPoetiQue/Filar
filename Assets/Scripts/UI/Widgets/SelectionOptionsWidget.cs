@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
                 else
                     Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
 
-                var widgetsContainer = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
                 if (widgetsContainer != null)
                 {

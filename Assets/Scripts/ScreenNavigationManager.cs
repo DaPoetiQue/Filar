@@ -72,73 +72,78 @@ namespace Com.RedicalGames.Filar
 
         public void ReturnFromFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
 
-            if (folderNavigationCommands.Count > 0)
+            if (callbackResults.Success())
             {
-                // Get Previous Folder
-                AppData.FolderNavigationCommand folderNavigation = folderNavigationCommands.Pop();
+                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
 
-                if (folderNavigationNameList.Count > 0)
+                if (folderNavigationCommands.Count > 0)
                 {
-                    string folderName = folderNavigation.folderWidgetInfo.GetWidgetName().Replace("_FolderData", "");
+                    // Get Previous Folder
+                    AppData.FolderNavigationCommand folderNavigation = folderNavigationCommands.Pop();
 
-                    if (!string.IsNullOrEmpty(folderName) && folderNavigationNameList.Contains(folderName))
-                        folderNavigationNameList.Remove(folderName);
-
-                    SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
-                }
-
-                DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(AppData.ContentContainerType.FolderStuctureContent, folder =>
-                {
-                    if (AppData.Helpers.IsSuccessCode(folder.resultCode))
+                    if (folderNavigationNameList.Count > 0)
                     {
-                        if (SelectableManager.Instance != null)
-                            SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
+                        string folderName = folderNavigation.folderWidgetInfo.GetWidgetName().Replace("_FolderData", "");
+
+                        if (!string.IsNullOrEmpty(folderName) && folderNavigationNameList.Contains(folderName))
+                            folderNavigationNameList.Remove(folderName);
+
+                        SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
+                    }
+
+                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen , folder =>
+                   {
+                       if (AppData.Helpers.IsSuccessCode(folder.resultCode))
+                       {
+                           if (SelectableManager.Instance != null)
+                               SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
+                           else
+                           {
+                               callbackResults.result = "Selectable Manager Instance Not Yet Initialized.";
+                               callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                               callbackResults.data = default;
+                           }
+                       }
+                       else
+                           LogWarning(folder.result, this);
+                   });
+
+                    folderNavigation.Execute();
+
+                    callbackResults.result = "Success : Returning From Folder";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+                    if (ScreenUIManager.Instance != null)
+                    {
+                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                        {
+                            if (folderNavigationCommands.Count == 0)
+                            {
+                                //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FolderNavigationWidget);
+                                UpdateNavigationRootTitleDisplayer();
+
+                                if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                    folderNavigationDataPackets.widgetTitle = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
+                                else
+                                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                            }
+                        }
                         else
-                        {
-                            callbackResults.result = "Selectable Manager Instance Not Yet Initialized.";
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                            callbackResults.data = default;
-                        }
+                            Debug.LogWarning("--> ReturnFromFolder's hide Screen Widget Failed : ScreenUIManager.Instance Current Screen Value Is Missing / Not Found.");
                     }
                     else
-                        LogWarning(folder.result, this);
-                });
+                        Debug.LogWarning("--> ReturnFromFolder's hide Screen Widget Failed : ScreenUIManager.Instance Is Not Yet Initialized.");
 
-                folderNavigation.Execute();
-
-                callbackResults.result = "Success : Returning From Folder";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                if (ScreenUIManager.Instance != null)
-                {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                    {
-                        if (folderNavigationCommands.Count == 0)
-                        {
-                            //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FolderNavigationWidget);
-                            UpdateNavigationRootTitleDisplayer();
-
-                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
-                                folderNavigationDataPackets.widgetTitle = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
-                            else
-                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
-                        }
-                    }
-                    else
-                        Debug.LogWarning("--> ReturnFromFolder's hide Screen Widget Failed : ScreenUIManager.Instance Current Screen Value Is Missing / Not Found.");
+                    //if(folderNavigationCommands.Count == 0)
+                    //    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.Return, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.HomeIcon);
                 }
                 else
-                    Debug.LogWarning("--> ReturnFromFolder's hide Screen Widget Failed : ScreenUIManager.Instance Is Not Yet Initialized.");
-
-                //if(folderNavigationCommands.Count == 0)
-                //    ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.Return, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.HomeIcon);
-            }
-            else
-            {
-                callbackResults.result = "Failed : There Are No Commands In folderNavigationCommands";
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                {
+                    callbackResults.result = "Failed : There Are No Commands In folderNavigationCommands";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
             }
 
             callback?.Invoke(callbackResults);

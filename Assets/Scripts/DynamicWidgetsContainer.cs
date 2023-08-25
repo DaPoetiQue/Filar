@@ -780,11 +780,6 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public bool IsContainerActive()
-        {
-            return gameObject.activeSelf && gameObject.activeInHierarchy;
-        }
-
         public void UpdateContentOnRefresh()
         {
             if (container.childCount > 0)

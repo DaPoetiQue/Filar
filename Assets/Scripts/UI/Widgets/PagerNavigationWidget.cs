@@ -41,7 +41,7 @@ namespace Com.RedicalGames.Filar
 
             int pageNumber = goToPage - 1;
 
-            DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.Pagination_GoToPage(pageNumber);
+            DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToPage(pageNumber);
         }
 
         protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)

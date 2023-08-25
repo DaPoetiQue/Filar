@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
         {
             yield return new WaitForEndOfFrame();
 
-            DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
+            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
             {
                 if (containerCallbackResults.Success())
                 {
@@ -87,7 +87,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (DatabaseManager.Instance)
                     {
-                        DatabaseManager.Instance.GetContentContainer(containerCallbackResults => 
+                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
                         {
                             if (containerCallbackResults.Success())
                             {

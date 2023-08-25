@@ -1016,48 +1016,18 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (hasContentCallbackResults.Success())
                                 {
-                                    switch (hasContentCallbackResults.data)
+                                    DatabaseManager.Instance.GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
                                     {
-                                        case AppData.UIScreenType.LandingPageScreen:
+                                        if (widgetsContentContainers.Success())
+                                        {
+                                            LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
 
-                                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(AppData.ContentContainerType.LandingPageSelectionContent, widgetsContentContainer =>
-                                            {
-                                                if (widgetsContentContainer.Success())
-                                                {
-                                                    LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
-
-                                                    //widgetsContentContainer.data.DeselectAllContentWidgets();
-
-                                                    //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
-                                                }
-                                                else
-                                                    Log(widgetsContentContainer.ResultCode, widgetsContentContainer.Result, this);
-                                            });
-
-                                            break;
-
-                                        case AppData.UIScreenType.ProjectCreationScreen:
-
-                                            break;
-
-                                        case AppData.UIScreenType.ProjectDashboardScreen:
-
-                                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(AppData.ContentContainerType.FolderStuctureContent, widgetsContentContainer =>
-                                            {
-                                                if (AppData.Helpers.IsSuccessCode(widgetsContentContainer.resultCode))
-                                                {
-                                                    LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
-
-                                                    //widgetsContentContainer.data.DeselectAllContentWidgets();
-
-                                                    //widgetsContentContainer.data.ClearAllFocusedWidgetInfo();
-                                                }
-                                                else
-                                                    LogError(widgetsContentContainer.result, this, () => ScreenRefresh());
-                                            });
-
-                                            break;
-                                    }
+                                            foreach (var container in widgetsContentContainers.data)
+                                                container.DeselectAllContentWidgets();
+                                        }
+                                        else
+                                            Log(widgetsContentContainers.ResultCode, widgetsContentContainers.Result, this);
+                                    });
                                 }
                                 else
                                     Log(hasContentCallbackResults.resultCode, hasContentCallbackResults.result, this);
@@ -1090,74 +1060,116 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.containerType, containerCallbackResults =>
+
+            switch (GetCurrentUIScreenType())
             {
-                if (containerCallbackResults.Success())
-                {
-                    switch(GetCurrentUIScreenType())
+                case AppData.UIScreenType.LandingPageScreen:
+
+                    #region Get Content Container
+
+                    if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                     {
-                        case AppData.UIScreenType.LandingPageScreen:
+                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                        {
+                            callbackResults.SetResult(screenContainerCallbackResults);
 
-                            DatabaseManager.Instance.SetWidgetsRefreshData(null, containerCallbackResults.data, dataSetupCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
-                            });
+                                #region Get Scene Content Container
 
-                            break;
-
-                        case AppData.UIScreenType.ProjectCreationScreen:
-
-                            if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
-                            {
-                                if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                if (dataPackets.GetSceneContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetSceneContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                                 {
-                                    var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : DatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
-                                    var container = containerCallbackResults.data;
-
-                                    DatabaseManager.Instance.SetWidgetsRefreshData(rootFolder, container, dataSetupCallbackResults =>
+                                    DatabaseManager.Instance.GetDynamicContainer<DynamicContentContainer>(dataPackets.GetUIScreenType(), dataPackets.GetSceneContainerData(), sceneContainerCallbackResults =>
                                     {
-                                        if (dataSetupCallbackResults.Success())
+                                        callbackResults.SetResult(sceneContainerCallbackResults);
+
+                                        if (callbackResults.Success())
                                         {
-                                            DatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                            #region Set Refresh Data
+
+                                            DatabaseManager.Instance.SetRefreshData(null, screenContainerCallbackResults.data, sceneContainerCallbackResults.data, dataSetupCallbackResults =>
                                             {
-                                                Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+                                                Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
                                             });
+
+                                            #endregion
+                                        }
+                                        else
+                                        {
+                                            #region Set Refresh Data
+
+                                            DatabaseManager.Instance.SetRefreshData(null, screenContainerCallbackResults.data, null, dataSetupCallbackResults =>
+                                            {
+                                                Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
+                                            });
+
+                                            #endregion
                                         }
                                     });
                                 }
-                                else
-                                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+
+                                #endregion
                             }
-                            else
-                                Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
-
-                            break;
-
-                        case AppData.UIScreenType.ProjectDashboardScreen:
-
-                            break;
-
-                        case AppData.UIScreenType.ContentImportExportScreen:
-
-                            break;
+                        });
                     }
-                }
-                else
-                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-            });
 
-            var container = DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer;
+                    #endregion
 
-            if (container == null)
-            {
-                DatabaseManager.Instance.GetContentContainer(containerCallbackResults =>
-                {
-                    if (containerCallbackResults.Success())
-                        container = containerCallbackResults.data;
-                    else
-                        Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-                });
+                    break;
+
+                case AppData.UIScreenType.ProjectCreationScreen:
+
+                    #region Get Content Container
+
+                    if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
+                    {
+                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                        {
+                            callbackResults.SetResult(screenContainerCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                {
+                                    if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                    {
+                                        var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : DatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
+                                        var container = screenContainerCallbackResults.data;
+
+                                        DatabaseManager.Instance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
+                                        {
+                                            if (dataSetupCallbackResults.Success())
+                                            {
+                                                DatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                                {
+                                                    Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+                                                });
+                                            }
+                                        });
+                                    }
+                                    else
+                                        Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                }
+                                else
+                                    Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                            }
+                        });
+                    }
+
+                    #endregion
+
+                    break;
+
+                case AppData.UIScreenType.ProjectDashboardScreen:
+
+                    break;
+
+                case AppData.UIScreenType.ContentImportExportScreen:
+
+                    break;
             }
+
+            var container = DatabaseManager.Instance.GetRefreshData().screenContainer;
 
             if (container != null)
             {
@@ -1754,7 +1766,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                        if (contentContainer != null && contentContainer.IsContainerActive())
+                        if (contentContainer != null && contentContainer.GetActive().Success())
                         {
                             callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
 
@@ -1887,7 +1899,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    if (contentContainer != null && contentContainer.GetActive().Success())
                     {
                         if (screenType == GetCurrentUIScreenType())
                         {
@@ -2044,7 +2056,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    if (contentContainer != null && contentContainer.GetActive().Success())
                     {
                         switch (screenType)
                         {
@@ -2180,7 +2192,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    if (contentContainer != null && contentContainer.GetActive().Success())
                     {
                         switch (screenType)
                         {
@@ -2369,7 +2381,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.IsContainerActive())
+                    if (contentContainer != null && contentContainer.GetActive().Success())
                     {
                         switch (screenType)
                         {

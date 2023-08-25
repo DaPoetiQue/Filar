@@ -176,7 +176,7 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.LayoutViewType.ItemView:
 
-                            DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
+                            DatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(selectionCallback =>
                             {
                                 if (selectionCallback.Success())
                                     ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewDeselectionIcon);
@@ -188,7 +188,7 @@ namespace Com.RedicalGames.Filar
 
                         case AppData.LayoutViewType.ListView:
 
-                            DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.HasAllWidgetsSelected(selectionCallback =>
+                            DatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(selectionCallback =>
                             {
                                 if (selectionCallback.Success())
                                     ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewDeselectionIcon);
@@ -1414,7 +1414,7 @@ namespace Com.RedicalGames.Filar
         IEnumerator OnSelection(List<AppData.UIScreenWidget> widgets)
         {
             yield return new WaitForEndOfFrame();
-            yield return new WaitUntil(() => DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.ContainerRefreshed() == true);
+            yield return new WaitUntil(() => DatabaseManager.Instance.GetRefreshData().screenContainer.ContainerRefreshed() == true);
 
             projectStructureSelectionSystem.AddSelectables(widgets);
         }
@@ -1459,7 +1459,7 @@ namespace Com.RedicalGames.Filar
             //if (folderStructureSelection.currentSelections.Count > 0)
             //    SceneAssetsManager.Instance.GetWidgetsRefreshData().widgetsContainer.ClearAllFocusedWidgetInfo();
 
-            if (DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == AppData.PaginationViewType.Pager)
+            if (DatabaseManager.Instance.GetRefreshData().screenContainer.GetPaginationViewType() == AppData.PaginationViewType.Pager)
             {
                 GetNewPageItemSelectedWidget(onNewPageItemSelectedWidgetCallback =>
                 {
@@ -1468,7 +1468,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            if (DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
+            if (DatabaseManager.Instance.GetRefreshData().screenContainer.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
             {
                 if (HasActiveSelection())
                 {
@@ -1477,7 +1477,7 @@ namespace Com.RedicalGames.Filar
                         Vector2 widgetsPosition = Vector2.zero;
                         List<float> positions = new List<float>();
 
-                        switch (DatabaseManager.Instance.GetWidgetsRefreshData().widgetsContainer.GetContainerOrientation())
+                        switch (DatabaseManager.Instance.GetRefreshData().screenContainer.GetContainerOrientation())
                         {
                             case AppData.OrientationType.Vertical:
 

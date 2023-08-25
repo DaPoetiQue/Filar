@@ -807,7 +807,7 @@ namespace Com.RedicalGames.Filar
 
             DynamicWidgetsContainer container = dynamicWidgetsContainersList.Find((x) => x.GetContentContainerType() == containerType);
 
-            if (container != null && container.IsContainerActive())
+            if (container != null && container.GetActive().Success())
             {
                 if (skyboxUIHandlerPrefab != null)
                 {
