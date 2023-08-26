@@ -30,22 +30,9 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
-        //[SerializeField]
-        //AppData.SceneDataPackets networkInitializationData = new AppData.SceneDataPackets();
-
-        //Coroutine networkRoutine;
-
-        [SerializeField]
-        GameObject assetToPublish = null;
-
         #endregion
 
         #region Unity Callbacks
-
-        private void Start()
-        {
-            
-        }
 
         #endregion
 
@@ -64,12 +51,7 @@ namespace Com.RedicalGames.Filar
             //    callback.Invoke(callbackResults);
         }
 
-        //private async Task<AppData.Callback> CreatingSerializableMeshDataAsync()
-        //{
-
-        //}
-
-        public void PublishTest(GameObject asset)
+        public async void OnPublish(GameObject obj, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -81,9 +63,13 @@ namespace Com.RedicalGames.Filar
 
             profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
 
-            var content = AppData.Helpers.GetSerializableMeshData(asset);
+            var serializedMeshDataTaskResults = await AppData.Helpers.GetSerializableMeshDataAsync(obj);
 
-            LogSuccess($" <<<<<<=================>>>>>> A New Serializable Mesh Data Has Been Created With : {content.vertices.Length} Vertices : {content.triangles.Length} Triangles : {content.normals.Length} Normals : {content.uvs.Length} UVs And : {content.tangents.Length} Tangengs.", this);
+            callbackResults.SetResult(serializedMeshDataTaskResults);
+
+            Log(callbackResults.ResultCode, $" <<<<<<=================>>>>>> On Publish Results : {callbackResults.Result}", this);
+
+            callback?.Invoke(callbackResults);
         }
 
         #endregion

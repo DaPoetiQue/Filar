@@ -31212,7 +31212,7 @@ namespace Com.RedicalGames.Filar
             {
                 var serializableMeshData = new SerializableMeshData();
 
-                AppData.Helpers.GetMeshInfo(obj, meshInfoCallbackResults =>
+                GetMeshInfo(obj, meshInfoCallbackResults =>
                 {
                     if (meshInfoCallbackResults.Success())
                     {
@@ -31223,7 +31223,7 @@ namespace Com.RedicalGames.Filar
 
                         var filtersArray = meshData.ToArray();
 
-                        var combinedMesh = AppData.Helpers.GetCombinedMesh(filtersArray, obj);
+                        var combinedMesh = GetCombinedMesh(filtersArray, obj);
 
                         combinedMesh.Optimize();
                         combinedMesh.OptimizeIndexBuffers();
@@ -31239,11 +31239,79 @@ namespace Com.RedicalGames.Filar
                         var uvs = combinedMesh.uv.ToList().Select(x => x.ToSerializableVector()).ToArray();
                         var tangents = combinedMesh.tangents.ToList().Select(x => x.ToSerializableVector()).ToArray();
 
-                        serializableMeshData = new AppData.SerializableMeshData(verts, tris, norms, uvs, tangents);
+                        serializableMeshData = new SerializableMeshData(verts, tris, norms, uvs, tangents);
                     }
                 });
 
                 return serializableMeshData;
+            }
+
+            public static async Task<CallbackData<SerializableMeshData>> GetSerializableMeshDataAsync(GameObject obj)
+            {
+                CallbackData<SerializableMeshData> callbackResults = new CallbackData<SerializableMeshData>();
+
+                if(obj == null)
+                {
+                    callbackResults.result = $"There Is No Object Assigned To Convert Its Mesh To Serializable Mesh Data - Returning Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+
+                    return callbackResults;
+                }
+
+                var serializableMeshData = new SerializableMeshData();
+
+                List<Mesh> meshData = new List<Mesh>();
+
+                GetMeshInfo(obj, async meshInfoCallbackResults =>
+                {
+                    if (meshInfoCallbackResults.Success())
+                    {
+                        for (int i = 0; i < meshInfoCallbackResults.data.Length; i++)
+                        {
+                            meshData.Add(meshInfoCallbackResults.data[i].mesh);
+                            await Task.Yield();
+                        }
+                    }
+                });
+
+                if(meshData.Count > 0)
+                {
+                    var filtersArray = meshData.ToArray();
+
+                    var combinedMesh = GetCombinedMesh(filtersArray, obj);
+
+                    combinedMesh.Optimize();
+                    combinedMesh.OptimizeIndexBuffers();
+                    combinedMesh.OptimizeReorderVertexBuffer();
+
+                    combinedMesh.RecalculateNormals();
+                    combinedMesh.RecalculateBounds();
+                    combinedMesh.RecalculateTangents();
+
+                    var verts = combinedMesh.vertices.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                    var tris = combinedMesh.triangles;
+                    var norms = combinedMesh.normals.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                    var uvs = combinedMesh.uv.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                    var tangents = combinedMesh.tangents.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                 
+                    serializableMeshData = new SerializableMeshData(verts, tris, norms, uvs, tangents);
+
+                    while(serializableMeshData.vertices != verts || serializableMeshData.triangles != tris || serializableMeshData.normals != norms || serializableMeshData.uvs != uvs || serializableMeshData.tangents != tangents)
+                        await Task.Yield();
+
+                    callbackResults.result = $"A New Serializable Mesh Data Has Been Successfully Created With : {serializableMeshData.vertices.Length} Vertices : {serializableMeshData.triangles.Length} Triangles : {serializableMeshData.normals.Length} Normals : {serializableMeshData.uvs.Length} UVs And : {serializableMeshData.tangents.Length} Tangents.";
+                    callbackResults.data = serializableMeshData;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Serializable Mesh Data For : {obj?.name}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             #endregion

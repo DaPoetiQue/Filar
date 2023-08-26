@@ -160,8 +160,6 @@ namespace Com.RedicalGames.Filar
                                                         Log(callbackResults.resultCode, callbackResults.result, this);
                                                 });
                                             }
-                                            else
-                                                Log(callbackResults.resultCode, callbackResults.result, this);
 
                                         }, screenLoadInfoInstance.GetSequenceInstanceArray());
 
