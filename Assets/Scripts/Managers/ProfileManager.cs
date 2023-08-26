@@ -140,14 +140,9 @@ namespace Com.RedicalGames.Filar
         private void AuthenticationStateChangeEvent(object sender, EventArgs state)
         {
             if(!AuthenticationInitialized)
-            {
                 AuthenticationInitialized = true;
-                LogInfo(" >>>>>>>>>>>>>>> Authentication Initialized.", this);
-            }
             else
-            {
                 LogInfo(" >>>>>>>>>>>>>>> Sign In State Changed.", this);
-            }
         }
 
         public async Task<AppData.CallbackData<AuthError>> AppSignInAsync()

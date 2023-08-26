@@ -596,7 +596,7 @@ namespace Com.RedicalGames.Filar
             Horizontal,
             VerticalGrid,
             HorizontalGrid,
-            Default,
+            None
         }
 
         public enum StorageType
@@ -1488,17 +1488,20 @@ namespace Com.RedicalGames.Filar
 
             public Callback GetActive()
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetContainerScreenType());
 
-                if(gameObject.activeInHierarchy && gameObject.activeSelf && gameObject != null && GetContainerScreenType() != UIScreenType.None && GetContainerType().Success())
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Active";
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Container : {name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Not Active";
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    if (gameObject.activeInHierarchy && gameObject.activeSelf && gameObject != null && GetContainerScreenType().data != UIScreenType.None && GetContainerType().Success())
+                    {
+                        callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Active";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Container : {name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Not Active";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
                 }
 
                 return callbackResults;
@@ -1524,14 +1527,76 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public bool HasContent() => GetContentCount().data > 0;
+            public CallbackData<bool> ContainerHasContent()
+            {
+                CallbackData<bool> callbackResults = new CallbackData<bool>(GetContentCount());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetContainerType());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetContainerScreenType());
+
+                        if (callbackResults.Success())
+                        {
+                            if (GetContentCount().data > 0)
+                            {
+                                callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has : {GetContentCount().data} Content(s).";
+                                callbackResults.data = true;
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has No Content.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
 
             public CallbackData<UIScreenWidget> GetScreenContent(string contentName)
             {
                 return null;
             }
 
-            public int GetLastContentIndex() => GetContentCount().data;
+            public CallbackData<int> GetLastContentIndex()
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>(GetContainer());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetContainerType());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetContainerScreenType());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetContentCount());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(ContainerHasContent());
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen Type : {GetContainerScreenType().data}'s Last Content Index Is At : {GetContentCount().data}";
+                                    callbackResults.data = GetContentCount().data;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
 
             public bool IsContentActive(string contentName) => gameObject != null && gameObject.activeSelf && gameObject.activeInHierarchy;
 
@@ -1540,7 +1605,33 @@ namespace Com.RedicalGames.Filar
                 return false;
             }
 
-            public UIScreenType GetContainerScreenType() => screenType;
+            public CallbackData<UIScreenType> GetContainerScreenType()
+            {
+                CallbackData<UIScreenType> callbackResults = new CallbackData<UIScreenType>(GetContainer());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetContainerType());
+
+                    if(callbackResults.Success())
+                    {
+                        if (screenType != UIScreenType.None)
+                        {
+                            callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {screenType}";
+                            callbackResults.data = screenType;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
 
             #endregion
 
@@ -1577,19 +1668,27 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<ContentContainerType> GetContainerType()
             {
-                CallbackData<ContentContainerType> callbackResults = new CallbackData<ContentContainerType>();
+                CallbackData<ContentContainerType> callbackResults = new CallbackData<ContentContainerType>(GetContainer());
 
-                if(containerType != ContentContainerType.None)
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType()}'s Container Type Is Set To : {containerType}";
-                    callbackResults.data = containerType;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType()}'s Container Type Is Set To Default : NONE";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    callbackResults.SetResult(GetContainerScreenType());
+
+                    if (callbackResults.Success())
+                    {
+                        if (containerType != ContentContainerType.None)
+                        {
+                            callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType().data}'s Container Type Is Set To : {containerType}";
+                            callbackResults.data = containerType;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType().data}'s Container Type Is Set To Default : NONE";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
                 }
 
                 return callbackResults;
@@ -1757,7 +1856,7 @@ namespace Com.RedicalGames.Filar
                     }
 
                     if (updateContainer)
-                        await OnContainerUpdateAsync();
+                        await OnUpdatedContainerSizeAsync();
 
                     return callbackResults;
                 }
@@ -2106,18 +2205,12 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (runtimeInstanceInfo?.GetScreenDelayTime() != null)
                                 {
-                                    Debug.Log($" <++++++++++++> Oh, It Worksh : {runtimeInstanceInfo?.GetScreenDelayTime()}");
-
                                     await Task.Delay(runtimeInstanceInfo.GetScreenDelayTime());
 
                                     callbackResults.result = $"Screen Of Type : {GetScreenType()} On Loaded Delay Completed.";
                                     callbackResults.data = runtimeInstanceInfo.GetScreenDelayTime();
                                 }
-                                else
-                                    Debug.Log(" <++++++++++++> Broken Too");
                             }
-                            else
-                                Debug.Log(" <++++++++++++> Broken Here");
                         }
                     }
                 }
@@ -20490,10 +20583,15 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         if (!placeholderCallbackResults.data.IsActive())
                                                         {
-                                                            placeholderCallbackResults.data.ShowPlaceHolder(containerCallbackResults.data.GetContentContainer(), containerCallbackResults.data.GetCurrentLayoutWidgetDimensions(), containerCallbackResults.data.GetLastContentIndex(), true);
+                                                            if (containerCallbackResults.data.GetLastContentIndex().Success())
+                                                            {
+                                                                placeholderCallbackResults.data.ShowPlaceHolder(containerCallbackResults.data.GetContentContainer(), containerCallbackResults.data.GetCurrentLayoutWidgetDimensions(), containerCallbackResults.data.GetLastContentIndex().data, true);
 
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                                                ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.UITextDisplayerWidget);
+                                                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                                                            }
+                                                            else
+                                                                Log(containerCallbackResults.data.GetLastContentIndex().ResultCode, containerCallbackResults.data.GetLastContentIndex().Result, this);
                                                         }
                                                     }
                                                     else
@@ -23895,10 +23993,14 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         if (!placeholder.data.IsActive())
                                                         {
-                                                            placeholder.data.ShowPlaceHolder(widgetContainer.GetContentContainer(), widgetContainer.GetCurrentLayoutWidgetDimensions(), widgetContainer.GetLastContentIndex(), true);
-
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(packets);
-                                                            //StartCoroutine(OnShowWidgetAsync(WidgetType.UITextDisplayerWidget, actionButton.dataPackets));
+                                                            if (widgetContainer.GetLastContentIndex().Success())
+                                                            {
+                                                                placeholder.data.ShowPlaceHolder(widgetContainer.GetContentContainer(), widgetContainer.GetCurrentLayoutWidgetDimensions(), widgetContainer.GetLastContentIndex().data, true);
+                                                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(packets);
+                                                                //StartCoroutine(OnShowWidgetAsync(WidgetType.UITextDisplayerWidget, actionButton.dataPackets));
+                                                            }
+                                                            else
+                                                                Log(widgetContainer.GetLastContentIndex().ResultCode, widgetContainer.GetLastContentIndex().Result, this);
                                                         }
                                                     }
                                                     else
@@ -32645,17 +32747,17 @@ namespace Com.RedicalGames.Filar
 
             void UpdateContainer();
 
-            bool HasContent();
+            CallbackData<bool> ContainerHasContent();
 
             CallbackData<UIScreenWidget> GetScreenContent(string contentName);
 
-            int GetLastContentIndex();
+            CallbackData<int> GetLastContentIndex();
 
             bool IsContentActive(string contentName);
 
             bool IsContentActive(int contentID);
 
-            UIScreenType GetContainerScreenType();
+            CallbackData<UIScreenType> GetContainerScreenType();
 
             void AddContent<T>(T content, bool keepWorldPosition = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
 

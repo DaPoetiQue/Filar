@@ -2340,6 +2340,26 @@ namespace Com.RedicalGames.Filar
             return GetLayout().layout.itemViewSize;
         }
 
+        public AppData.CallbackData<AppData.OrientationType> GetContainerOrientationType()
+        {
+            AppData.CallbackData<AppData.OrientationType> callbackResults = new AppData.CallbackData<AppData.OrientationType>();
+
+            if(orientation != AppData.OrientationType.None)
+            {
+                callbackResults.result = $"Container Orientation Is Set To {orientation}";
+                callbackResults.data = orientation;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = "Container Orientation Is Set To None - Invalid Opertaion";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
+        }
+
         #region Overrides
 
         protected override void OnInitialization()
@@ -2694,138 +2714,52 @@ namespace Com.RedicalGames.Filar
 
         protected override async Task<AppData.CallbackData<Vector2>> OnUpdatedContainerSizeAsync()
         {
-            AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>();
+            AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>(GetContainerOrientationType());
 
-            GetContent(async contentFoundCallbackResults =>
+            if (callbackResults.Success())
             {
-                callbackResults.SetResult(contentFoundCallbackResults);
+                callbackResults.SetResult(GetContentCount());
 
                 if (callbackResults.Success())
                 {
-                    containerRefreshed = false;
+                    callbackResults.SetResult(ContainerHasContent());
 
-                    await Task.Yield();
-
-                    #region Pager
-
-                    if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                    if (callbackResults.Success())
                     {
-                        paginationComponent.Initialize();
-                        paginationComponent.Paginate(contentFoundCallbackResults.data, Pagination_GetItemPerPageCount());
-                        paginationComponent.GoToPage(paginationComponent.CurrentPageIndex);
-                        var currentPage = paginationComponent.GetCurrentPage();
-
-                        Vector2 sizeDelta = container.sizeDelta;
-                        int contentCount = currentPage.Count + 1;
-
-                        if (orientation == AppData.OrientationType.Vertical)
+                        if (ContainerHasContent().data)
                         {
-                            if (layout.viewType == AppData.LayoutViewType.ItemView)
-                            {
-                                for (int i = 1; i < contentCount; i++)
-                                {
-                                    if (i % 2 == 0)
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-                                    }
-                                    else
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
+                            Vector2 sizeDelta = Vector2.zero;
 
-                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
-                                    }
-                                }
+                            switch (GetContainerOrientationType().data)
+                            {
+                                case AppData.OrientationType.Vertical:
+
+                                    break;
+
+                                case AppData.OrientationType.Horizontal:
+
+                                    sizeDelta.x = layout.layout.itemViewSize.x * GetContentCount().data;
+                                    sizeDelta.y = layout.layout.itemViewSize.y;
+
+                                    break;
+
+                                case AppData.OrientationType.VerticalGrid:
+
+                                    break;
+
+                                case AppData.OrientationType.HorizontalGrid:
+
+                                    break;
                             }
 
-                            if (layout.viewType == AppData.LayoutViewType.ListView)
-                            {
-                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFoundCallbackResults.data.Count - 1;
-                            }
+                            while (sizeDelta == Vector2.zero)
+                                await Task.Yield();
+
+                            container.sizeDelta = sizeDelta;
                         }
-
-                        if (orientation == AppData.OrientationType.Horizontal)
-                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFoundCallbackResults.data.Count;
-
-                        container.sizeDelta = sizeDelta;
-
-                        OnFocusedSelectionStateUpdate();
                     }
-
-                    #endregion
-
-                    #region Scroller
-
-                    if (GetPaginationViewType() == AppData.PaginationViewType.Scroller)
-                    {
-                        Vector2 sizeDelta = container.sizeDelta;
-                        int contentCount = contentFoundCallbackResults.data.Count + 1;
-
-                        if (orientation == AppData.OrientationType.Vertical)
-                        {
-                            if (layout.viewType == AppData.LayoutViewType.ItemView)
-                            {
-                                for (int i = 1; i < contentCount; i++)
-                                {
-                                    if (i % 2 == 0)
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-                                    }
-                                    else
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-
-                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
-                                    }
-                                }
-                            }
-
-                            if (layout.viewType == AppData.LayoutViewType.ListView)
-                            {
-                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFoundCallbackResults.data.Count - 1;
-                            }
-                        }
-
-                        if (orientation == AppData.OrientationType.Horizontal)
-                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFoundCallbackResults.data.Count;
-
-                        container.sizeDelta = sizeDelta;
-
-                        scroller.Initialized(scrollerInitializedCallback =>
-                        {
-                            if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
-                            {
-                                if (scroller.GetFadeUIScrollBar())
-                                    scroller.GetUIScrollBarComponent().Show();
-                            }
-                            else
-                                LogWarning(scrollerInitializedCallback.result, this);
-                        });
-
-                        ResetScrollerState();
-
-                        OnFocusedSelectionStateUpdate();
-
-                        if (scroller.value != null)
-                        {
-                            if (scroller.IsScrollBarEnabled())
-                                if (scroller.GetFadeUIScrollBar())
-                                    scroller.Initialize();
-                        }
-                        else
-                            LogWarning("Scroller.value Is Missing / Null.", this);
-                    }
-
-                    #endregion
                 }
-                else
-                    LogWarning(contentFoundCallbackResults.result, this);
-            });
-
-            await Task.Yield();
+            }
 
             return callbackResults;
         }

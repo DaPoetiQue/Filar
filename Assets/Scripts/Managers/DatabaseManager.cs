@@ -2696,7 +2696,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType() == screenType) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType().data == screenType) as T;
 
                     if (container != null)
                     {
@@ -2726,7 +2726,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType() == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType().data == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
 
                     if (container != null)
                     {
@@ -2756,7 +2756,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType() == screenType && container.GetContainerType().data == containerType && container.GetViewSpace().data == viewSpaceType) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType().data == screenType && container.GetContainerType().data == containerType && container.GetViewSpace().data == viewSpaceType) as T;
 
                     if (container != null)
                     {
@@ -2786,7 +2786,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var containers = hasContentCallbackResults.data.FindAll(container => container.GetContainerScreenType() == screenType) as List<T>;
+                    var containers = hasContentCallbackResults.data.FindAll(container => container.GetContainerScreenType().data == screenType) as List<T>;
 
                     AppData.Helpers.GetAppComponentsValid(containers, "Container", hasContainersCallbackResults => 
                     {
@@ -2890,7 +2890,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    List<AppData.DynamicContainer> containers = dynamicContainerLibrary.FindAll(container => container.GetContainerScreenType() != screenType);
+                    List<AppData.DynamicContainer> containers = dynamicContainerLibrary.FindAll(container => container.GetContainerScreenType().data != screenType);
 
                     if (containers != null && containers.Count > 0)
                     {
@@ -7409,7 +7409,7 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        public void CreateColorInfoContent(AppData.ColorInfo colorInfo, string swatchName, AppData.ContentContainerType containerType = AppData.ContentContainerType.ColorSwatches, AppData.OrientationType containerOrientation = AppData.OrientationType.Default, Action<AppData.Callback> callback = null)
+        public void CreateColorInfoContent(AppData.ColorInfo colorInfo, string swatchName, AppData.ContentContainerType containerType = AppData.ContentContainerType.ColorSwatches, AppData.OrientationType containerOrientation = AppData.OrientationType.None, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -7492,7 +7492,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void CreateColorSwatchContent(string swatchName, AppData.ContentContainerType containerType = AppData.ContentContainerType.ColorSwatches, AppData.OrientationType containerOrientation = AppData.OrientationType.Default, Action<AppData.Callback> callback = null)
+        public void CreateColorSwatchContent(string swatchName, AppData.ContentContainerType containerType = AppData.ContentContainerType.ColorSwatches, AppData.OrientationType containerOrientation = AppData.OrientationType.None, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 

@@ -1804,7 +1804,9 @@ namespace Com.RedicalGames.Filar
 
                                                         postWidget.name = post.name;
 
-                                                        callbackResults.SetResult(await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true));
+                                                        var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+
+                                                        callbackResults.SetResult(addContentAsyncTaskResults);
 
                                                         postDatas.Add(post);
 
