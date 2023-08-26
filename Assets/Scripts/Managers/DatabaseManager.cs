@@ -141,7 +141,7 @@ namespace Com.RedicalGames.Filar
 
         #region Container
 
-        [Space(15)]
+        [Space(10)]
         [Header("Containers")]
 
         [Space(5)]
@@ -152,7 +152,7 @@ namespace Com.RedicalGames.Filar
 
         #region Library Data
 
-        [Space(15)]
+        [Space(10)]
         [Header("Libraries")]
 
         [Space(5)]
@@ -169,11 +169,9 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.DataPacketsLibrary dataPacketsLibrary = new AppData.DataPacketsLibrary();
 
-
         #endregion
 
         #region Assets
-
 
         [Space(15)]
         [Header("Assets")]

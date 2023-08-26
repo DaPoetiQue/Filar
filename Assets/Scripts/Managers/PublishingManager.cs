@@ -1,10 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class PublishingManager : MonoBehaviour
+    public class PublishingManager : AppMonoBaseClass
     {
         #region Static
 
@@ -26,14 +30,22 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
-        [SerializeField]
-        AppData.SceneDataPackets networkInitializationData = new AppData.SceneDataPackets();
+        //[SerializeField]
+        //AppData.SceneDataPackets networkInitializationData = new AppData.SceneDataPackets();
 
-        Coroutine networkRoutine;
+        //Coroutine networkRoutine;
+
+        [SerializeField]
+        GameObject assetToPublish = null;
 
         #endregion
 
         #region Unity Callbacks
+
+        private void Start()
+        {
+            
+        }
 
         #endregion
 
@@ -41,27 +53,37 @@ namespace Com.RedicalGames.Filar
 
         public void Publish(Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            //AppData.Callback callbackResults = new AppData.Callback();
 
-            if (networkRoutine != null)
-                StopCoroutine(networkRoutine);
+            //if (networkRoutine != null)
+            //    StopCoroutine(networkRoutine);
 
-            networkRoutine = StartCoroutine(CheckNetworkStatus());
+            //networkRoutine = StartCoroutine(CheckNetworkStatus());
 
-            if (callback != null)
-                callback.Invoke(callbackResults);
+            //if (callback != null)
+            //    callback.Invoke(callbackResults);
         }
 
-        IEnumerator CheckNetworkStatus()
+        //private async Task<AppData.Callback> CreatingSerializableMeshDataAsync()
+        //{
+
+        //}
+
+        public void PublishTest(GameObject asset)
         {
-            yield return new WaitForSeconds(5.0f);
+            AppData.Callback callbackResults = new AppData.Callback();
 
-            Debug.LogError("--> Network Not Found.");
+            AppData.Profile profile = new AppData.Profile();
 
-            if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(networkInitializationData);
-            else
-                Debug.LogWarning("--> RG_Unity - Check Network Status Failed : Screen UI Manager Instance Is Not Yet Initialized.");
+            profile.userName = "Billie";
+            profile.userEmail = "Billie@home.com";
+            profile.userPassword = "19470302";
+
+            profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+
+            var content = AppData.Helpers.GetSerializableMeshData(asset);
+
+            LogSuccess($" <<<<<<=================>>>>>> A New Serializable Mesh Data Has Been Created With : {content.vertices.Length} Vertices : {content.triangles.Length} Triangles : {content.normals.Length} Normals : {content.uvs.Length} UVs And : {content.tangents.Length} Tangengs.", this);
         }
 
         #endregion

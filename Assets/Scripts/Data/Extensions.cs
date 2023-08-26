@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -43,6 +44,14 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         public static AppData.SerializableMeshData ToSerializableMeshData(this Mesh mesh) => new AppData.SerializableMeshData(mesh);
+
+        public static async Task<AppData.SerializableMeshData> ToSerializableMeshDataAsync(this Mesh mesh)
+        {
+            var data = new AppData.SerializableMeshData();
+            var results = await data.ConvertToSerializableMeshDataAsync(mesh);
+
+            return results;
+        }
 
         #endregion
     }

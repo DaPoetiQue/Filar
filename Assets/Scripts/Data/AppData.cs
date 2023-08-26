@@ -2850,14 +2850,7 @@ namespace Com.RedicalGames.Filar
                                 if (callbackResults.Success())
                                 {
                                     sequenceInstances[i].SetSequenceData(sequenceDataCallbackResults.data);
-
-                                    AddStagedSequenceInstance(sequenceInstances[i], i, sequenceInstanceStagedCallbackResults => 
-                                    {
-                                        callbackResults.SetResult(sequenceInstanceStagedCallbackResults);
-
-                                        if (!callbackResults.Success())
-                                            Log(callbackResults.resultCode, callbackResults.result, this);
-                                    });
+                                    AddStagedSequenceInstance(sequenceInstances[i], i, sequenceInstanceStagedCallbackResults => { callbackResults.SetResult(sequenceInstanceStagedCallbackResults); });
                                 }
                                 else
                                     callbackResults.result = $"Failed To Assign Sequence Data For : {sequenceInstances[i].name} At Index : {i}.";
@@ -2943,27 +2936,27 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                if (Helpers.HasContents(GetSequenceDataQueue()))
+                if (Helpers.HasContents(Helpers.GetList(GetSequenceDataQueue())))
                 {
                     callbackResults.SetResults(Helpers.GetAppComponentsValid(GetSequenceDataQueue(), "Sequence Data Queue", "Staging Loading Sequence Failed - Sequence Data Queue Is Not Yet Initialized - Sequence Data Queue Contents Are Not Valid", $"Staging Loading Sequence Success - Sequence Data Queue Is Valid With  {GetSequenceDataCount()} Sequence Instances Already Staged And Is Ready To Stage : {sequenceInstance.name} With ID : {sequenceInstance.GetSequenceID()}."));
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(Helpers.ComponentDoesntHaveContent(GetSequenceDataQueue(), sequenceInstance, "Sequence Data Queue", $"Component Validation Failed - Couldn't Add  Loading Sequence Instance : {sequenceInstance.name} With Sequence ID : {sequenceInstance.GetSequenceID()} At Index : {index} - This Has Been Added To The Queue But It's Missing For Some Unknown Reason - Please Check Here."));
+                        callbackResults.SetResult(Helpers.ComponentDoesntHaveContent(Helpers.GetList(GetSequenceDataQueue()), sequenceInstance, "Sequence Data Queue", $"Component Validation Failed - Couldn't Add  Loading Sequence Instance : {sequenceInstance.name} With Sequence ID : {sequenceInstance.GetSequenceID()} At Index : {index} - This Has Been Added To The Queue But It's Missing For Some Unknown Reason - Please Check Here."));
 
                         if(callbackResults.Success())
                         {
                             GetSequenceDataQueue().Enqueue(sequenceInstance);
-                            callbackResults.SetResult(Helpers.ComponentHasContent(GetSequenceDataQueue(), sequenceInstance, "Sequence Data Queue", sequenceInstance.name, $"Stage Sequence Instance Failed - Sequence Data Queue Doesn't Contain Sequance Instance : {sequenceInstance.name}", $"Stage Sequence Instance Success - Sequence Data Queue Is Valid With : {GetSequenceDataCount()} Content(s) And Contain Sequance Instance : {sequenceInstance.name}."));
+                            callbackResults.SetResult(Helpers.ComponentHasContent(Helpers.GetList(GetSequenceDataQueue()), sequenceInstance, "Sequence Data Queue", sequenceInstance.name, $"Stage Sequence Instance Failed - Sequence Data Queue Doesn't Contain Sequance Instance : {sequenceInstance.name}", $"Stage Sequence Instance Success - Sequence Data Queue Is Valid With : {GetSequenceDataCount()} Content(s) And Contain Sequance Instance : {sequenceInstance.name}."));
                         }
                     }
                 }
                 else
                 {
                     GetSequenceDataQueue().Enqueue(sequenceInstance);
-                    if (Helpers.HasContents(GetSequenceDataQueue()))
+                    if (Helpers.HasContents(Helpers.GetList(GetSequenceDataQueue())))
                     {
-                        callbackResults.SetResult(Helpers.ComponentHasContent(GetSequenceDataQueue(), sequenceInstance, "Sequence Data Queue", sequenceInstance.name, $"Stage Sequence Instance Failed - Sequence Data Queue Doesn't Contain Sequance Instance : {sequenceInstance.name}", $"Stage Sequence Instance Success - Sequence Data Queue Is Valid With : {GetSequenceDataCount()} Content(s) And Contain Sequance Instance : {sequenceInstance.name}."));
+                        callbackResults.SetResult(Helpers.ComponentHasContent(Helpers.GetList(GetSequenceDataQueue()), sequenceInstance, "Sequence Data Queue", sequenceInstance.name, $"Stage Sequence Instance Failed - Sequence Data Queue Doesn't Contain Sequance Instance : {sequenceInstance.name}", $"Stage Sequence Instance Success - Sequence Data Queue Is Valid With : {GetSequenceDataCount()} Content(s) And Contain Sequance Instance : {sequenceInstance.name}."));
 
                         if (callbackResults.Success())
                             callbackResults.result = $" {sequenceInstance.name} With Sequence ID : {sequenceInstance.GetSequenceID()} At Index : {index}";
@@ -4139,9 +4132,79 @@ namespace Com.RedicalGames.Filar
                 this.tangents = tangents;
             }
 
-            public SerializableMeshData(Mesh mesh)
+            public SerializableMeshData(List<SerializableVector> vertices = null, List<int> triangles = null, List<SerializableVector> normals = null, List<SerializableVector> uvs = null, List<SerializableVector> tangents = null)
+            {
+                this.vertices = vertices.ToArray();
+                this.triangles = triangles.ToArray();
+                this.normals = normals.ToArray();
+                this.uvs = uvs.ToArray();
+                this.tangents = tangents.ToArray();
+            }
+
+            //public SerializableMeshData(Mesh mesh)
+            //{
+            //    #region Vertices
+
+            //    mesh.MarkDynamic();
+            //    mesh.Optimize();
+            //    mesh.OptimizeIndexBuffers();
+            //    mesh.OptimizeReorderVertexBuffer();
+
+            //    vertices = new SerializableVector[mesh.vertexCount];
+
+            //    for (int i = 0; i < mesh.vertexCount; i++)
+            //        vertices[i] = mesh.vertices[i].ToSerializableVector();
+
+            //    #endregion
+
+            //    #region Triangles
+
+            //    triangles = new int[mesh.triangles.Length];
+
+            //    for (int i = 0; i < mesh.triangles.Length; i++)
+            //        triangles[i] = mesh.triangles[i];
+
+            //    #endregion
+
+            //    #region Normals
+
+            //    normals = new SerializableVector[mesh.normals.Length];
+
+            //    for (int i = 0; i < mesh.normals.Length; i++)
+            //        normals[i] = mesh.normals[i].ToSerializableVector();
+
+            //    #endregion
+
+            //    #region UVs
+
+            //    uvs = new SerializableVector[mesh.uv.Length];
+
+            //    for (int i = 0; i < mesh.normals.Length; i++)
+            //        normals[i] = mesh.normals[i].ToSerializableVector();
+
+            //    #endregion
+
+            //    #region Tangents
+
+            //    tangents = new SerializableVector[mesh.tangents.Length];
+
+            //    for (int i = 0; i < mesh.tangents.Length; i++)
+            //        tangents[i] = mesh.tangents[i].ToSerializableVector();
+
+            //    #endregion
+
+            //}
+
+            public SerializableMeshData(Mesh mesh) => ConvertToSerializableMeshData(mesh);
+
+            public async void ConvertToSerializableMeshData(Mesh mesh)
             {
                 #region Vertices
+
+                mesh.MarkDynamic();
+                mesh.Optimize();
+                mesh.OptimizeIndexBuffers();
+                mesh.OptimizeReorderVertexBuffer();
 
                 vertices = new SerializableVector[mesh.vertexCount];
 
@@ -4185,8 +4248,78 @@ namespace Com.RedicalGames.Filar
                     tangents[i] = mesh.tangents[i].ToSerializableVector();
 
                 #endregion
+            }
 
+            public async Task<SerializableMeshData> ConvertToSerializableMeshDataAsync(Mesh targetMesh)
+            {
+                #region Vertices
 
+                var mesh = Helpers.GetReadableMesh(targetMesh);
+
+                mesh.MarkDynamic();
+                mesh.Optimize();
+                mesh.OptimizeIndexBuffers();
+                mesh.OptimizeReorderVertexBuffer();
+
+                vertices = new SerializableVector[mesh.vertexCount];
+
+                for (int i = 0; i < mesh.vertexCount; i++)
+                {
+                    vertices[i] = mesh.vertices[i].ToSerializableVector();
+                    await Task.Yield();
+                }
+
+                #endregion
+
+                #region Triangles
+
+                triangles = new int[mesh.triangles.Length];
+
+                for (int i = 0; i < mesh.triangles.Length; i++)
+                {
+                    triangles[i] = mesh.triangles[i];
+                    await Task.Yield();
+                }
+
+                #endregion
+
+                #region Normals
+
+                normals = new SerializableVector[mesh.normals.Length];
+
+                for (int i = 0; i < mesh.normals.Length; i++)
+                {
+                    normals[i] = mesh.normals[i].ToSerializableVector();
+                    await Task.Yield();
+                }
+
+                #endregion
+
+                #region UVs
+
+                uvs = new SerializableVector[mesh.uv.Length];
+
+                for (int i = 0; i < mesh.normals.Length; i++)
+                {
+                    uvs[i] = mesh.uv[i].ToSerializableVector();
+                    await Task.Yield();
+                }
+
+                #endregion
+
+                #region Tangents
+
+                tangents = new SerializableVector[mesh.tangents.Length];
+
+                for (int i = 0; i < mesh.tangents.Length; i++)
+                {
+                    tangents[i] = mesh.tangents[i].ToSerializableVector();
+                    await Task.Yield();
+                }
+
+                return this;
+
+                #endregion
             }
 
             public Mesh GetMesh()
@@ -30514,6 +30647,73 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [Serializable]
+        public class MaterialInfo
+        {
+            #region Components
+
+            [Space(5)]
+            public string name;
+
+            [Space(5)]
+            public string shaderName;
+
+            [Space(5)]
+            public Color color;
+
+            [Space(5)]
+            public byte[] mainTexture;
+
+            [Space(5)]
+            public SerializableVector textureOffset;
+
+            #endregion
+        }
+
+        [Serializable]
+        public class MeshInfo
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public Mesh mesh;
+
+            [Space(5)]
+            public List<Material> materials;
+
+            [Space(5)]
+            public int index;
+
+            [Space(5)]
+            public string parentName;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public MeshInfo()
+            {
+
+            }
+
+            public MeshInfo(string name, Mesh mesh, List<Material> materials, int index = 0, string parentName = null)
+            {
+                this.name = name;
+                this.mesh = mesh;
+                this.materials = materials;
+                this.index = index;
+                this.parentName = parentName;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
         public static class Helpers
         {
             public static DeviceInfo GetDeviceInfo()
@@ -30529,7 +30729,6 @@ namespace Com.RedicalGames.Filar
                     deviceMemorySize = SystemInfo.systemMemorySize
                 };
             }
-
 
             public static WaitForSeconds GetWaitForSeconds(float seconds)
             {
@@ -30833,6 +31032,221 @@ namespace Com.RedicalGames.Filar
                 return "#" + ((Int32)(r * 255)).ToString("X2") + ((Int32)(g * 255)).ToString("X2") + ((Int32)(b * 255)).ToString("X2");
             }
 
+            #region Mesh Data
+
+            public static Mesh GetReadableMesh(Mesh unreadableMesh)
+            {
+                Mesh mesh = new Mesh();
+
+                mesh.indexFormat = unreadableMesh.indexFormat;
+
+                #region Vertices
+
+                GraphicsBuffer verticesBuffer = unreadableMesh.GetVertexBuffer(0);
+                int vertsCount = verticesBuffer.stride * verticesBuffer.count;
+                byte[] data = new byte[vertsCount];
+                verticesBuffer.GetData(data);
+
+                mesh.SetVertexBufferParams(unreadableMesh.vertexCount, unreadableMesh.GetVertexAttributes());
+                mesh.SetVertexBufferData(data, 0, 0, vertsCount);
+                verticesBuffer.Release();
+
+                #endregion
+
+                #region Triangles
+
+                mesh.subMeshCount = mesh.subMeshCount;
+                GraphicsBuffer trianglesBuffer = unreadableMesh.GetIndexBuffer();
+                int trianglesCount = trianglesBuffer.stride * trianglesBuffer.count;
+                byte[] trianglesData = new byte[trianglesCount];
+                trianglesBuffer.GetData(trianglesData);
+
+                mesh.SetIndexBufferParams(trianglesBuffer.count, unreadableMesh.indexFormat);
+                mesh.SetIndexBufferData(trianglesData, 0, 0, trianglesCount);
+                trianglesBuffer.Release();
+
+                #endregion
+
+                #region Mesh Structure
+
+                uint indexOffset = 0;
+
+                for (int i = 0; i < mesh.subMeshCount; i++)
+                {
+                    uint subMeshCount = unreadableMesh.GetIndexCount(i);
+                    mesh.SetSubMesh(i, new UnityEngine.Rendering.SubMeshDescriptor((int)indexOffset, (int)subMeshCount));
+                    indexOffset += subMeshCount;
+                }
+
+                #endregion
+
+                #region Recalculated Normals & Bounds
+
+                mesh.RecalculateNormals();
+                mesh.RecalculateBounds();
+
+                #endregion
+
+                return mesh;
+            }
+
+            public static CallbackDataArray<MeshFilter> GetMeshInfo(GameObject gameObject)
+            {
+                CallbackDataArray<MeshFilter> callbackResults = new CallbackDataArray<MeshFilter>();
+
+                List<MeshFilter> meshFilters = new List<MeshFilter>();
+
+                if (gameObject.GetComponents<MeshFilter>().Length > 0)
+                    for (int i = 0; i < gameObject.GetComponents<MeshFilter>().Length; i++)
+                        meshFilters.Add(gameObject.GetComponents<MeshFilter>()[i]);
+
+                if(gameObject.GetComponentsInChildren<MeshFilter>().Length > 0)
+                    for (int i = 0; i < gameObject.GetComponentsInChildren<MeshFilter>().Length; i++)
+                        meshFilters.Add(gameObject.GetComponentsInChildren<MeshFilter>()[i]);
+
+                if(meshFilters.Count > 0)
+                {
+                    callbackResults.result = $"{meshFilters.Count} Mesh Filters Found For Game Object : {gameObject.name}";
+                    callbackResults.data = meshFilters.ToArray();
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"There Were No Mesh Filters Found For Game Object : {gameObject.name}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static void GetMeshInfo(GameObject gameObject, Action<CallbackDataArray<MeshInfo>> callback)
+            {
+                CallbackDataArray<MeshInfo> callbackResults = new CallbackDataArray<MeshInfo>();
+
+                if (gameObject != null)
+                {
+                    List<MeshInfo> meshFilters = new List<MeshInfo>();
+
+                    if (gameObject.transform.childCount > 0)
+                    {
+                        if (gameObject.GetComponentsInChildren<MeshFilter>().Length > 0)
+                        {
+                            foreach (var meshFilter in gameObject.GetComponentsInChildren<MeshFilter>())
+                            {
+                                List<Material> materials = new List<Material>();
+
+                                for (int i = 0; i < meshFilter.GetComponent<MeshRenderer>().sharedMaterials.Length; i++)
+                                    if (!materials.Contains(meshFilter.GetComponent<MeshRenderer>().sharedMaterials[i]))
+                                        materials.Add(meshFilter.GetComponent<MeshRenderer>().sharedMaterials[i]);
+
+                                var mesh = meshFilter.sharedMesh;
+
+                                MeshInfo meshInfo = new MeshInfo(meshFilter.name, mesh, materials, gameObject.GetComponentsInChildren<MeshFilter>().ToList().IndexOf(meshFilter), meshFilter.transform.parent.name);
+
+                                if (!meshFilters.Contains(meshInfo))
+                                    meshFilters.Add(meshInfo);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (gameObject.GetComponent<MeshFilter>())
+                        {
+                            List<Material> materials = new List<Material>();
+
+                            for (int i = 0; i < gameObject.GetComponent<MeshRenderer>().sharedMaterials.Length; i++)
+                                if (!materials.Contains(gameObject.GetComponent<MeshRenderer>().sharedMaterials[i]))
+                                    materials.Add(gameObject.GetComponent<MeshRenderer>().sharedMaterials[i]);
+
+                            var mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
+
+                            MeshInfo meshInfo = new MeshInfo(gameObject.name, mesh, materials, 0, gameObject.name);
+
+                            if (!meshFilters.Contains(meshInfo))
+                                meshFilters.Add(meshInfo);
+                        }
+                    }
+
+                    if (meshFilters.Count > 0)
+                    {
+                        callbackResults.result = $"{meshFilters.Count} Mesh Filters Found For Game Object : {gameObject.name}";
+                        callbackResults.data = meshFilters.ToArray();
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"There Were No Mesh Filters Found For Game Object : {gameObject.name}";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"There Is No Game Object Assigned.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public static Mesh GetCombinedMesh(Mesh[] meshes, GameObject meshObject)
+            {
+                Mesh combinedMesh = new Mesh();
+
+                CombineInstance[] meshInstances = new CombineInstance[meshes.Length];
+
+                for (int i = 0; i < meshes.Length; i++)
+                {
+                    meshInstances[i].mesh = meshes[i];
+                    meshInstances[i].transform = meshObject.transform.localToWorldMatrix;
+                }
+
+                combinedMesh.CombineMeshes(meshInstances);
+
+                return combinedMesh;
+            }
+
+            public static SerializableMeshData GetSerializableMeshData(GameObject obj)
+            {
+                var serializableMeshData = new SerializableMeshData();
+
+                AppData.Helpers.GetMeshInfo(obj, meshInfoCallbackResults =>
+                {
+                    if (meshInfoCallbackResults.Success())
+                    {
+                        List<Mesh> meshData = new List<Mesh>();
+
+                        for (int i = 0; i < meshInfoCallbackResults.data.Length; i++)
+                            meshData.Add(meshInfoCallbackResults.data[i].mesh);
+
+                        var filtersArray = meshData.ToArray();
+
+                        var combinedMesh = AppData.Helpers.GetCombinedMesh(filtersArray, obj);
+
+                        combinedMesh.Optimize();
+                        combinedMesh.OptimizeIndexBuffers();
+                        combinedMesh.OptimizeReorderVertexBuffer();
+
+                        combinedMesh.RecalculateNormals();
+                        combinedMesh.RecalculateBounds();
+                        combinedMesh.RecalculateTangents();
+
+                        var verts = combinedMesh.vertices.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                        var tris = combinedMesh.triangles;
+                        var norms = combinedMesh.normals.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                        var uvs = combinedMesh.uv.ToList().Select(x => x.ToSerializableVector()).ToArray();
+                        var tangents = combinedMesh.tangents.ToList().Select(x => x.ToSerializableVector()).ToArray();
+
+                        serializableMeshData = new AppData.SerializableMeshData(verts, tris, norms, uvs, tangents);
+                    }
+                });
+
+                return serializableMeshData;
+            }
+
+            #endregion
 
             #region Load Formatted Scene Asset Model 
 
@@ -30848,7 +31262,6 @@ namespace Com.RedicalGames.Filar
 
                 return new OBJLoader().Load(path);
             }
-
 
             public static SceneObject LoadFormattedSceneAssetModel(string path, string mtlPath = null, bool addColliders = true)
             {
@@ -31076,7 +31489,6 @@ namespace Com.RedicalGames.Filar
 
                 return key;
             }
-
 
             public static CallbackData<string> Encrypt(EncrptionObject encrptionObject)
             {
