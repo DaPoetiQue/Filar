@@ -41,12 +41,12 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnUpdatedContainerSize(Action<AppData.CallbackData<Vector2>> callback = null)
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override Task<AppData.CallbackData<Vector2>> OnUpdatedContainerSizeAsync()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         #endregion

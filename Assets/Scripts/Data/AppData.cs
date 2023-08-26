@@ -1511,12 +1511,12 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<int> GetContentCount()
             {
-                CallbackData<int> callbackResults = new CallbackData<int>(GetContainer());
+                CallbackData<int> callbackResults = new CallbackData<int>(GetContainer<Transform>());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"There Are : {GetContainer().data.childCount} Contents Inside Container : {name} - Of Type {GetContainerType().data} For Screen : {GetContainerScreenType()}";
-                    callbackResults.data = GetContainer().data.childCount;
+                    callbackResults.result = $"There Are : {GetContainer<Transform>().data.childCount} Contents Inside Container : {name} - Of Type {GetContainerType().data} For Screen : {GetContainerScreenType()}";
+                    callbackResults.data = GetContainer<Transform>().data.childCount;
                 }
 
                 return callbackResults;
@@ -1531,29 +1531,19 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<bool> callbackResults = new CallbackData<bool>(GetContentCount());
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetContainerType());
-
-                    if (callbackResults.Success())
+                    if (GetContentCount().data > 0)
                     {
-                        callbackResults.SetResult(GetContainerScreenType());
-
-                        if (callbackResults.Success())
-                        {
-                            if (GetContentCount().data > 0)
-                            {
-                                callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has : {GetContentCount().data} Content(s).";
-                                callbackResults.data = true;
-                                callbackResults.resultCode = Helpers.SuccessCode;
-                            }
-                            else
-                            {
-                                callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has No Content.";
-                                callbackResults.data = default;
-                                callbackResults.resultCode = Helpers.WarningCode;
-                            }
-                        }
+                        callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has : {GetContentCount().data} Content(s).";
+                        callbackResults.data = true;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has No Content.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
 
@@ -1567,33 +1557,10 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<int> GetLastContentIndex()
             {
-                CallbackData<int> callbackResults = new CallbackData<int>(GetContainer());
+                CallbackData<int> callbackResults = new CallbackData<int>();
 
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetContainerType());
-
-                    if (callbackResults.Success())
-                    {
-                        callbackResults.SetResult(GetContainerScreenType());
-
-                        if (callbackResults.Success())
-                        {
-                            callbackResults.SetResult(GetContentCount());
-
-                            if (callbackResults.Success())
-                            {
-                                callbackResults.SetResult(ContainerHasContent());
-
-                                if (callbackResults.Success())
-                                {
-                                    callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen Type : {GetContainerScreenType().data}'s Last Content Index Is At : {GetContentCount().data}";
-                                    callbackResults.data = GetContentCount().data;
-                                }
-                            }
-                        }
-                    }
-                }
+                callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen Type : {GetContainerScreenType().data}'s Last Content Index Is At : {GetContentCount().data}";
+                callbackResults.data = GetContentCount().data;
 
                 return callbackResults;
             }
@@ -1607,27 +1574,19 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<UIScreenType> GetContainerScreenType()
             {
-                CallbackData<UIScreenType> callbackResults = new CallbackData<UIScreenType>(GetContainer());
+                CallbackData<UIScreenType> callbackResults = new CallbackData<UIScreenType>();
 
-                if (callbackResults.Success())
+                if (screenType != UIScreenType.None)
                 {
-                    callbackResults.SetResult(GetContainerType());
-
-                    if(callbackResults.Success())
-                    {
-                        if (screenType != UIScreenType.None)
-                        {
-                            callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {screenType}";
-                            callbackResults.data = screenType;
-                            callbackResults.resultCode = Helpers.SuccessCode;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
-                            callbackResults.data = default;
-                            callbackResults.resultCode = Helpers.WarningCode;
-                        }
-                    }
+                    callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {screenType}";
+                    callbackResults.data = screenType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 return callbackResults;
@@ -1637,25 +1596,25 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<Transform> GetContainer()
+            public CallbackData<T> GetContainer<T>() where T : Transform
             {
-                CallbackData<Transform> callbackResults = new CallbackData<Transform>(GetViewSpace());
+                CallbackData<T> callbackResults = new CallbackData<T>(GetViewSpace());
 
                 if (callbackResults.Success())
                 {
                     if (GetViewSpace().data == ContainerViewSpaceType.Screen)
                     {
-                        callbackResults.result = $"Screen Container : {name} Of Screen Type : {GetContainerScreenType()} Found";
-                        callbackResults.data = GetComponent<RectTransform>();
+                        callbackResults.result = $"Screen Container : {name} Of Screen Type : {screenType} Found";
+                        callbackResults.data = GetComponent<RectTransform>() as T;
                         callbackResults.resultCode = Helpers.SuccessCode;
 
                         return callbackResults;
                     }
 
-                    if (GetViewSpace().data == ContainerViewSpaceType.Screen)
+                    if (GetViewSpace().data == ContainerViewSpaceType.Scene)
                     {
-                        callbackResults.result = $"Scene Container : {name} Of Screen Type : {GetContainerScreenType()} Found";
-                        callbackResults.data = GetComponent<Transform>();
+                        callbackResults.result = $"Scene Container : {name} Of Screen Type : {screenType} Found";
+                        callbackResults.data = GetComponent<Transform>() as T;
                         callbackResults.resultCode = Helpers.SuccessCode;
 
                         return callbackResults;
@@ -1668,27 +1627,19 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<ContentContainerType> GetContainerType()
             {
-                CallbackData<ContentContainerType> callbackResults = new CallbackData<ContentContainerType>(GetContainer());
+                CallbackData<ContentContainerType> callbackResults = new CallbackData<ContentContainerType>();
 
-                if (callbackResults.Success())
+                if (containerType != ContentContainerType.None)
                 {
-                    callbackResults.SetResult(GetContainerScreenType());
-
-                    if (callbackResults.Success())
-                    {
-                        if (containerType != ContentContainerType.None)
-                        {
-                            callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType().data}'s Container Type Is Set To : {containerType}";
-                            callbackResults.data = containerType;
-                            callbackResults.resultCode = Helpers.SuccessCode;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Container : {name} - Of Screen Type : {GetContainerScreenType().data}'s Container Type Is Set To Default : NONE";
-                            callbackResults.data = default;
-                            callbackResults.resultCode = Helpers.WarningCode;
-                        }
-                    }
+                    callbackResults.result = $"Container : {name} - Of Screen Type : {screenType}'s Container Type Is Set To : {containerType}";
+                    callbackResults.data = containerType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {name} - Of Screen Type : {screenType}'s Container Type Is Set To Default : NONE";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 return callbackResults;
@@ -1721,13 +1672,13 @@ namespace Com.RedicalGames.Filar
 
                 if(viewSpace != ContainerViewSpaceType.None)
                 {
-                    callbackResults.result = $"Container : {name} Of Screen Type : {GetContainerScreenType()}'s View Space Type Is Set To Default : {viewSpace}";
+                    callbackResults.result = $"Container : {name} Of Screen Type : {screenType}'s View Space Type Is Set To Default : {viewSpace}";
                     callbackResults.data = viewSpace;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Container : {name} Of Screen Type : {GetContainerScreenType()}'s View Space Type Is Set To Default : None";
+                    callbackResults.result = $"Container : {name} Of Screen Type : {screenType}'s View Space Type Is Set To Default : None";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -1765,7 +1716,7 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    Callback callbackResults = new Callback(GetContainer());
+                    Callback callbackResults = new Callback(GetContainer<Transform>());
 
                     if (callbackResults.Success())
                     {
@@ -1779,7 +1730,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(GetContainer());
+                                    callbackResults.SetResult(GetContainer<Transform>());
 
                                     if (callbackResults.Success())
                                     {
@@ -1787,7 +1738,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            content.gameObject.transform.SetParent(GetContainer().data, keepWorldPosition);
+                                            content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
 
                                             if (updateContainer)
                                                 OnUpdatedContainerSize();
@@ -1821,7 +1772,7 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    Callback callbackResults = new Callback(GetContainer());
+                    Callback callbackResults = new Callback(GetContainer<Transform>());
 
                     if (callbackResults.Success())
                     {
@@ -1835,14 +1786,14 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(GetContainer());
+                                    callbackResults.SetResult(GetContainer<Transform>());
 
                                     if (callbackResults.Success())
                                     {
                                         callbackResults.SetResult(GetViewSpace());
 
                                         if (callbackResults.Success())
-                                            content.gameObject.transform.SetParent(GetContainer().data, keepWorldPosition);
+                                            content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
                                     }
                                 }
                                 else
@@ -1858,7 +1809,7 @@ namespace Com.RedicalGames.Filar
                     if (updateContainer)
                         await OnUpdatedContainerSizeAsync();
 
-                    return callbackResults;
+                        return callbackResults;
                 }
                 catch (NullReferenceException exception)
                 {
@@ -1869,6 +1820,31 @@ namespace Com.RedicalGames.Filar
                 {
                     throw exception;
                 }
+            }
+
+            public void SetContainerSize(Vector3 size, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback(GetViewSpace());
+
+                if(callbackResults.Success())
+                {
+                    switch (GetViewSpace().data)
+                    {
+                        case ContainerViewSpaceType.Screen:
+
+                            GetContainer<RectTransform>().data.sizeDelta = (Vector2)size;
+
+                                break;
+
+                        case ContainerViewSpaceType.Scene:
+
+                            GetContainer<Transform>().data.localScale = size;
+
+                            break;
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -32731,7 +32707,7 @@ namespace Com.RedicalGames.Filar
 
             Task<Callback> ClearAsync(bool showSpinner = false);
 
-            CallbackData<Transform> GetContainer();
+            CallbackData<T> GetContainer<T>() where T : Transform;
 
             CallbackData<ContainerViewSpaceType> GetViewSpace();
 
@@ -32762,6 +32738,8 @@ namespace Com.RedicalGames.Filar
             void AddContent<T>(T content, bool keepWorldPosition = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
 
             Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool updateContainer = false) where T : SelectableDynamicContent;
+
+            void SetContainerSize(Vector3 size, Action<Callback> callback = null);
         }
 
         public interface IDebugger

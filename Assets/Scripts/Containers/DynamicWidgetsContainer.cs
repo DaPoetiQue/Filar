@@ -1923,7 +1923,7 @@ namespace Com.RedicalGames.Filar
                     break;
             }
 
-            await OnUpdatedContainerSizeAsync();
+            //await OnUpdatedContainerSizeAsync();
 
             await ScreenUIManager.Instance.RefreshAsync();
         }
@@ -1934,7 +1934,7 @@ namespace Com.RedicalGames.Filar
 
             paginationComponent.GoToPage(pageNumber, true);
 
-            await OnUpdatedContainerSizeAsync();
+            //await OnUpdatedContainerSizeAsync();
 
             //ScreenUIManager.Instance.Refresh();
         }
@@ -1946,7 +1946,7 @@ namespace Com.RedicalGames.Filar
             if (!fromInput)
                 paginationComponent.CurrentPageIndex = pageNumber;
 
-            await OnUpdatedContainerSizeAsync();
+            //await OnUpdatedContainerSizeAsync();
         }
 
         public AppData.PaginationViewType GetPaginationViewType()
@@ -2344,7 +2344,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.OrientationType> callbackResults = new AppData.CallbackData<AppData.OrientationType>();
 
-            if(orientation != AppData.OrientationType.None)
+            if (orientation != AppData.OrientationType.None)
             {
                 callbackResults.result = $"Container Orientation Is Set To {orientation}";
                 callbackResults.data = orientation;
@@ -2400,11 +2400,11 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnClear(bool showSpinner = false, Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback(GetContainer());
+            AppData.Callback callbackResults = new AppData.Callback(GetContainer<Transform>());
 
             if (callbackResults.Success())
             {
-                var container = GetContainer().data;
+                var container = GetContainer<Transform>().data;
 
                 if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                 {
@@ -2454,11 +2454,11 @@ namespace Com.RedicalGames.Filar
 
         protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
         {
-            AppData.Callback callbackResults = new AppData.Callback(GetContainer());
+            AppData.Callback callbackResults = new AppData.Callback(GetContainer<Transform>());
 
             if (callbackResults.Success())
             {
-                var container = GetContainer().data;
+                var container = GetContainer<Transform>().data;
 
                 if (ScreenUIManager.Instance.HasCurrentScreen().Success())
                 {
@@ -2734,6 +2734,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.OrientationType.Vertical:
 
+                                    sizeDelta.x = layout.layout.itemViewSize.x;
+                                    sizeDelta.y = layout.layout.itemViewSize.y * GetContentCount().data;
+
                                     break;
 
                                 case AppData.OrientationType.Horizontal:
@@ -2755,7 +2758,10 @@ namespace Com.RedicalGames.Filar
                             while (sizeDelta == Vector2.zero)
                                 await Task.Yield();
 
-                            container.sizeDelta = sizeDelta;
+                            SetContainerSize(sizeDelta, setContainerSizeCallbackResults => 
+                            {
+                            
+                            });
                         }
                     }
                 }
