@@ -855,7 +855,7 @@ namespace Com.RedicalGames.Filar
         {
             if (contentWidget != null)
             {
-                container.AddDynamicWidget(contentWidget, orientation, false);
+                container.AddContent(content: contentWidget, keepWorldPosition: false, updateContainer: true);
                 container.UpdateContentOnRefresh();
             }
             else

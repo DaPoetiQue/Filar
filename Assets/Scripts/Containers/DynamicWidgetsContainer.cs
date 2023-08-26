@@ -297,72 +297,6 @@ namespace Com.RedicalGames.Filar
                 scroller.value.content.localPosition = container.sizeDelta;
         }
 
-        void OnContainerUpdate()
-        {
-            if (transitionToFocusPosition)
-            {
-                if (scroller.value != null)
-                {
-                    float scrollDistance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
-
-                    if (scrollDistance > 0.5f)
-                    {
-                        #region Vertical Scroller
-
-                        if (orientation == AppData.OrientationType.Vertical)
-                        {
-                            if (scroller.value.normalizedPosition.y > 0.0f && scroller.value.normalizedPosition.y <= 1.0f)
-                            {
-                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
-                                scroller.value.content.localPosition = focusedPosition;
-
-                                float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
-
-                                if (distance < 0.1f)
-                                {
-                                    transitionToFocusPosition = false;
-                                    scroller.value.content.localPosition = focusedPosition;
-                                }
-                            }
-                            else
-                                transitionToFocusPosition = false;
-                        }
-
-                        #endregion
-
-                        #region Horizontal Scroller
-
-                        if (orientation == AppData.OrientationType.Horizontal)
-                        {
-                            if (scroller.value.normalizedPosition.x > 0.0f && scroller.value.normalizedPosition.x <= 1.0f)
-                            {
-                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
-                                scroller.value.content.localPosition = focusedPosition;
-
-                                float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
-
-                                if (distance < 0.1f)
-                                {
-                                    transitionToFocusPosition = false;
-                                    scroller.value.content.localPosition = focusedPosition;
-                                }
-                            }
-                            else
-                                transitionToFocusPosition = false;
-                        }
-
-                        #endregion
-                    }
-                    else
-                        transitionToFocusPosition = false;
-                }
-                else
-                    Debug.LogWarning("--> OnContainerUpdate Failed : Scroller Value Missing / Null.");
-            }
-            else
-                return;
-        }
-
         void OnEdgeScrollingUpdate()
         {
             if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
@@ -704,71 +638,75 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public void AddDynamicWidget(AppData.UIScreenWidget screenWidget, AppData.OrientationType orientation, bool keepWorldPosition, Action<AppData.Callback> callback = null)
-        {
-            try
-            {
-                AppData.Callback callbackResults = new AppData.Callback();
+        #region Old Dynamic Content Add - Remove When Done Updating
 
-                AppData.LogInfoChannel screenTypeResultsCode = (GetUIScreenType() != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
-                string screenTypeResults = (screenTypeResultsCode == AppData.LogInfoChannel.Success) ? $"Adding Screen Widget To Container : {name} For Screen : {GetUIScreenType()}" : $"Couldn't Add Screen Widget To Container : {name} - Containers Screen Reference Type Is Set To Default : {GetUIScreenType()}";
+        //public void AddDynamicWidget(AppData.UIScreenWidget screenWidget, AppData.OrientationType orientation, bool keepWorldPosition, Action<AppData.Callback> callback = null)
+        //{
+        //    try
+        //    {
+        //        AppData.Callback callbackResults = new AppData.Callback();
 
-                callbackResults.result = screenTypeResults;
-                callbackResults.resultCode = screenTypeResultsCode;
+        //        AppData.LogInfoChannel screenTypeResultsCode = (GetUIScreenType() != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+        //        string screenTypeResults = (screenTypeResultsCode == AppData.LogInfoChannel.Success) ? $"Adding Screen Widget To Container : {name} For Screen : {GetUIScreenType()}" : $"Couldn't Add Screen Widget To Container : {name} - Containers Screen Reference Type Is Set To Default : {GetUIScreenType()}";
 
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetActive());
+        //        callbackResults.result = screenTypeResults;
+        //        callbackResults.resultCode = screenTypeResultsCode;
 
-                    if (callbackResults.Success())
-                    {
-                        AppData.Helpers.GetAppComponentValid(screenWidget, screenWidget?.name, hasScreenWidgetCallbackResults =>
-                        {
-                            callbackResults.SetResult(hasScreenWidgetCallbackResults);
+        //        if (callbackResults.Success())
+        //        {
+        //            callbackResults.SetResult(GetActive());
 
-                            if (callbackResults.Success())
-                            {
-                                callbackResults.SetResult(GetContainer());
+        //            if (callbackResults.Success())
+        //            {
+        //                AppData.Helpers.GetAppComponentValid(screenWidget, screenWidget?.name, hasScreenWidgetCallbackResults =>
+        //                {
+        //                    callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
-                                if (callbackResults.Success())
-                                {
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-                                    screenWidget.gameObject.transform.SetParent(GetContainer().data, keepWorldPosition);
+        //                    if (callbackResults.Success())
+        //                    {
+        //                        callbackResults.SetResult(GetContainer());
 
-                                    if (containerUpdateRoutine != null)
-                                    {
-                                        StopCoroutine(containerUpdateRoutine);
-                                        containerUpdateRoutine = null;
-                                    }
+        //                        if (callbackResults.Success())
+        //                        {
+        //                            ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
+        //                            screenWidget.gameObject.transform.SetParent(GetContainer().data, keepWorldPosition);
 
-                                    if (containerUpdateRoutine == null)
-                                        containerUpdateRoutine = StartCoroutine(UpdatedContainerSizeAsync());
+        //                            if (containerUpdateRoutine != null)
+        //                            {
+        //                                StopCoroutine(containerUpdateRoutine);
+        //                                containerUpdateRoutine = null;
+        //                            }
 
-                                    callbackResults.result = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
-                                }
-                            }
-                            else
-                            {
-                                callbackResults.result = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
-                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                            }
+        //                            if (containerUpdateRoutine == null)
+        //                                containerUpdateRoutine = StartCoroutine(UpdatedContainerSizeAsync());
 
-                        }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
-                    }
-                }
+        //                            callbackResults.result = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        callbackResults.result = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
+        //                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+        //                    }
 
-                callback?.Invoke(callbackResults);
-            }
-            catch(NullReferenceException exception)
-            {
-                LogError($"Adding Dynamic Widgets To Container : {name} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
-                return;
-            }
-            catch(Exception exception)
-            {
-                throw exception;
-            }
-        }
+        //                }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
+        //            }
+        //        }
+
+        //        callback?.Invoke(callbackResults);
+        //    }
+        //    catch(NullReferenceException exception)
+        //    {
+        //        LogError($"Adding Dynamic Widgets To Container : {name} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
+        //        return;
+        //    }
+        //    catch(Exception exception)
+        //    {
+        //        throw exception;
+        //    }
+        //}
+
+        #endregion
 
         public AppData.CallbackData<RectTransform> GetActiveContainer()
         {
@@ -826,12 +764,12 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> UpdateContentOnRefresh Failed : Container Content Is Empty / Null.");
         }
 
-        IEnumerator UpdatedContainerSizeAsync()
-        {
-            yield return new WaitForEndOfFrame();
+        //IEnumerator UpdatedContainerSizeAsync()
+        //{
+        //    yield return new WaitForEndOfFrame();
 
-            UpdatedContainerSize();
-        }
+        //    UpdatedContainerSize();
+        //}
 
         void ResetScrollerState()
         {
@@ -871,137 +809,10 @@ namespace Com.RedicalGames.Filar
             return GetContentCount().data >= Pagination_GetItemPerPageCount();
         }
 
-        void UpdatedContainerSize(Action<AppData.CallbackData<Vector2>> callback = null)
-        {
-            AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>();
-
-            GetContent(contentFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(contentFound.resultCode))
-                {
-                    containerRefreshed = false;
-
-                #region Pager
-
-                    if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
-                    {
-                        paginationComponent.Initialize();
-                        paginationComponent.Paginate(contentFound.data, Pagination_GetItemPerPageCount());
-                        paginationComponent.GoToPage(paginationComponent.CurrentPageIndex);
-                        var currentPage = paginationComponent.GetCurrentPage();
-
-                        Vector2 sizeDelta = container.sizeDelta;
-                        int contentCount = currentPage.Count + 1;
-
-                        if (orientation == AppData.OrientationType.Vertical)
-                        {
-                            if (layout.viewType == AppData.LayoutViewType.ItemView)
-                            {
-                                for (int i = 1; i < contentCount; i++)
-                                {
-                                    if (i % 2 == 0)
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-                                    }
-                                    else
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-
-                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
-                                    }
-                                }
-                            }
-
-                            if (layout.viewType == AppData.LayoutViewType.ListView)
-                            {
-                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFound.data.Count - 1;
-                            }
-                        }
-
-                        if (orientation == AppData.OrientationType.Horizontal)
-                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFound.data.Count;
-
-                        container.sizeDelta = sizeDelta;
-
-                        OnFocusedSelectionStateUpdate();
-                    }
-
-                #endregion
-
-                #region Scroller
-
-                if (GetPaginationViewType() == AppData.PaginationViewType.Scroller)
-                    {
-                        Vector2 sizeDelta = container.sizeDelta;
-                        int contentCount = contentFound.data.Count + 1;
-
-                        if (orientation == AppData.OrientationType.Vertical)
-                        {
-                            if (layout.viewType == AppData.LayoutViewType.ItemView)
-                            {
-                                for (int i = 1; i < contentCount; i++)
-                                {
-                                    if (i % 2 == 0)
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-                                    }
-                                    else
-                                    {
-                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
-                                        sizeDelta.y /= 2;
-
-                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
-                                    }
-                                }
-                            }
-
-                            if (layout.viewType == AppData.LayoutViewType.ListView)
-                            {
-                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFound.data.Count - 1;
-                            }
-                        }
-
-                        if (orientation == AppData.OrientationType.Horizontal)
-                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFound.data.Count;
-
-                        container.sizeDelta = sizeDelta;
-
-                        scroller.Initialized(scrollerInitializedCallback =>
-                        {
-                            if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
-                            {
-                                if (scroller.GetFadeUIScrollBar())
-                                    scroller.GetUIScrollBarComponent().Show();
-                            }
-                            else
-                                LogWarning(scrollerInitializedCallback.result, this);
-                        });
-
-                        ResetScrollerState();
-
-                        OnFocusedSelectionStateUpdate();
-
-                        if (scroller.value != null)
-                        {
-                            if (scroller.IsScrollBarEnabled())
-                                if (scroller.GetFadeUIScrollBar())
-                                    scroller.Initialize();
-                        }
-                        else
-                            LogWarning("Scroller.value Is Missing / Null.", this);
-                    }
-
-                #endregion
-            }
-                else
-                    LogWarning(contentFound.result, this);
-            });
-
-            callback?.Invoke(callbackResults);
-        }
+        //void UpdatedContainerSize(Action<AppData.CallbackData<Vector2>> callback = null)
+        //{
+           
+        //}
 
         public void SetAssetsLoaded(bool loaded) => assetsLoaded = loaded;
 
@@ -2112,30 +1923,30 @@ namespace Com.RedicalGames.Filar
                     break;
             }
 
-            UpdatedContainerSize();
+            await OnUpdatedContainerSizeAsync();
 
             await ScreenUIManager.Instance.RefreshAsync();
         }
 
-        public void Pagination_GoToPage(int pageNumber)
+        public async void Pagination_GoToPage(int pageNumber)
         {
             LogSuccess($"Page Has Active Selection - Go To Page :#{pageNumber}", this, () => Pagination_GoToPage(pageNumber));
 
             paginationComponent.GoToPage(pageNumber, true);
 
-            UpdatedContainerSize();
+            await OnUpdatedContainerSizeAsync();
 
             //ScreenUIManager.Instance.Refresh();
         }
 
-        public void Pagination_SelectPage(int pageNumber, bool fromInput)
+        public async void Pagination_SelectPage(int pageNumber, bool fromInput)
         {
             paginationComponent.GoToPage(pageNumber, fromInput);
 
             if (!fromInput)
                 paginationComponent.CurrentPageIndex = pageNumber;
 
-            UpdatedContainerSize();
+            await OnUpdatedContainerSizeAsync();
         }
 
         public AppData.PaginationViewType GetPaginationViewType()
@@ -2674,6 +2485,347 @@ namespace Com.RedicalGames.Filar
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
+
+            return callbackResults;
+        }
+
+        protected override void OnContainerUpdate()
+        {
+            if (transitionToFocusPosition)
+            {
+                if (scroller.value != null)
+                {
+                    float scrollDistance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
+
+                    if (scrollDistance > 0.5f)
+                    {
+                        #region Vertical Scroller
+
+                        if (orientation == AppData.OrientationType.Vertical)
+                        {
+                            if (scroller.value.normalizedPosition.y > 0.0f && scroller.value.normalizedPosition.y <= 1.0f)
+                            {
+                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
+                                scroller.value.content.localPosition = focusedPosition;
+
+                                float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
+
+                                if (distance < 0.1f)
+                                {
+                                    transitionToFocusPosition = false;
+                                    scroller.value.content.localPosition = focusedPosition;
+                                }
+                            }
+                            else
+                                transitionToFocusPosition = false;
+                        }
+
+                        #endregion
+
+                        #region Horizontal Scroller
+
+                        if (orientation == AppData.OrientationType.Horizontal)
+                        {
+                            if (scroller.value.normalizedPosition.x > 0.0f && scroller.value.normalizedPosition.x <= 1.0f)
+                            {
+                                Vector2 focusedPosition = Vector2.Lerp(scroller.value.content.localPosition, currentFocusPosition, DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToFocusedPositionSpeedValue).value * Time.smoothDeltaTime);
+                                scroller.value.content.localPosition = focusedPosition;
+
+                                float distance = ((Vector2)scroller.value.content.localPosition - currentFocusPosition).sqrMagnitude;
+
+                                if (distance < 0.1f)
+                                {
+                                    transitionToFocusPosition = false;
+                                    scroller.value.content.localPosition = focusedPosition;
+                                }
+                            }
+                            else
+                                transitionToFocusPosition = false;
+                        }
+
+                        #endregion
+                    }
+                    else
+                        transitionToFocusPosition = false;
+                }
+                else
+                    Debug.LogWarning("--> OnContainerUpdate Failed : Scroller Value Missing / Null.");
+            }
+            else
+                return; ;
+        }
+
+        protected override Task<AppData.Callback> OnContainerUpdateAsync()
+        {
+            return null;
+        }
+
+        protected override void OnUpdatedContainerSize(Action<AppData.CallbackData<Vector2>> callback = null)
+        {
+            AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>();
+
+            GetContent(contentFound =>
+            {
+                if (AppData.Helpers.IsSuccessCode(contentFound.resultCode))
+                {
+                    containerRefreshed = false;
+
+                    #region Pager
+
+                    if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                    {
+                        paginationComponent.Initialize();
+                        paginationComponent.Paginate(contentFound.data, Pagination_GetItemPerPageCount());
+                        paginationComponent.GoToPage(paginationComponent.CurrentPageIndex);
+                        var currentPage = paginationComponent.GetCurrentPage();
+
+                        Vector2 sizeDelta = container.sizeDelta;
+                        int contentCount = currentPage.Count + 1;
+
+                        if (orientation == AppData.OrientationType.Vertical)
+                        {
+                            if (layout.viewType == AppData.LayoutViewType.ItemView)
+                            {
+                                for (int i = 1; i < contentCount; i++)
+                                {
+                                    if (i % 2 == 0)
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+                                    }
+                                    else
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+
+                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
+                                    }
+                                }
+                            }
+
+                            if (layout.viewType == AppData.LayoutViewType.ListView)
+                            {
+                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFound.data.Count - 1;
+                            }
+                        }
+
+                        if (orientation == AppData.OrientationType.Horizontal)
+                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFound.data.Count;
+
+                        container.sizeDelta = sizeDelta;
+
+                        OnFocusedSelectionStateUpdate();
+                    }
+
+                    #endregion
+
+                    #region Scroller
+
+                    if (GetPaginationViewType() == AppData.PaginationViewType.Scroller)
+                    {
+                        Vector2 sizeDelta = container.sizeDelta;
+                        int contentCount = contentFound.data.Count + 1;
+
+                        if (orientation == AppData.OrientationType.Vertical)
+                        {
+                            if (layout.viewType == AppData.LayoutViewType.ItemView)
+                            {
+                                for (int i = 1; i < contentCount; i++)
+                                {
+                                    if (i % 2 == 0)
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+                                    }
+                                    else
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+
+                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
+                                    }
+                                }
+                            }
+
+                            if (layout.viewType == AppData.LayoutViewType.ListView)
+                            {
+                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFound.data.Count - 1;
+                            }
+                        }
+
+                        if (orientation == AppData.OrientationType.Horizontal)
+                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFound.data.Count;
+
+                        container.sizeDelta = sizeDelta;
+
+                        scroller.Initialized(scrollerInitializedCallback =>
+                        {
+                            if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
+                            {
+                                if (scroller.GetFadeUIScrollBar())
+                                    scroller.GetUIScrollBarComponent().Show();
+                            }
+                            else
+                                LogWarning(scrollerInitializedCallback.result, this);
+                        });
+
+                        ResetScrollerState();
+
+                        OnFocusedSelectionStateUpdate();
+
+                        if (scroller.value != null)
+                        {
+                            if (scroller.IsScrollBarEnabled())
+                                if (scroller.GetFadeUIScrollBar())
+                                    scroller.Initialize();
+                        }
+                        else
+                            LogWarning("Scroller.value Is Missing / Null.", this);
+                    }
+
+                    #endregion
+                }
+                else
+                    LogWarning(contentFound.result, this);
+            });
+
+            callback?.Invoke(callbackResults);
+        }
+
+        protected override async Task<AppData.CallbackData<Vector2>> OnUpdatedContainerSizeAsync()
+        {
+            AppData.CallbackData<Vector2> callbackResults = new AppData.CallbackData<Vector2>();
+
+            GetContent(async contentFoundCallbackResults =>
+            {
+                callbackResults.SetResult(contentFoundCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    containerRefreshed = false;
+
+                    await Task.Yield();
+
+                    #region Pager
+
+                    if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                    {
+                        paginationComponent.Initialize();
+                        paginationComponent.Paginate(contentFoundCallbackResults.data, Pagination_GetItemPerPageCount());
+                        paginationComponent.GoToPage(paginationComponent.CurrentPageIndex);
+                        var currentPage = paginationComponent.GetCurrentPage();
+
+                        Vector2 sizeDelta = container.sizeDelta;
+                        int contentCount = currentPage.Count + 1;
+
+                        if (orientation == AppData.OrientationType.Vertical)
+                        {
+                            if (layout.viewType == AppData.LayoutViewType.ItemView)
+                            {
+                                for (int i = 1; i < contentCount; i++)
+                                {
+                                    if (i % 2 == 0)
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+                                    }
+                                    else
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+
+                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
+                                    }
+                                }
+                            }
+
+                            if (layout.viewType == AppData.LayoutViewType.ListView)
+                            {
+                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFoundCallbackResults.data.Count - 1;
+                            }
+                        }
+
+                        if (orientation == AppData.OrientationType.Horizontal)
+                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFoundCallbackResults.data.Count;
+
+                        container.sizeDelta = sizeDelta;
+
+                        OnFocusedSelectionStateUpdate();
+                    }
+
+                    #endregion
+
+                    #region Scroller
+
+                    if (GetPaginationViewType() == AppData.PaginationViewType.Scroller)
+                    {
+                        Vector2 sizeDelta = container.sizeDelta;
+                        int contentCount = contentFoundCallbackResults.data.Count + 1;
+
+                        if (orientation == AppData.OrientationType.Vertical)
+                        {
+                            if (layout.viewType == AppData.LayoutViewType.ItemView)
+                            {
+                                for (int i = 1; i < contentCount; i++)
+                                {
+                                    if (i % 2 == 0)
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+                                    }
+                                    else
+                                    {
+                                        sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * i;
+                                        sizeDelta.y /= 2;
+
+                                        sizeDelta.y += (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) / 2;
+                                    }
+                                }
+                            }
+
+                            if (layout.viewType == AppData.LayoutViewType.ListView)
+                            {
+                                sizeDelta.y = (layout.layout.itemViewSize.y + layout.layout.itemViewSpacing.y) * contentFoundCallbackResults.data.Count - 1;
+                            }
+                        }
+
+                        if (orientation == AppData.OrientationType.Horizontal)
+                            sizeDelta.x = (layout.layout.itemViewSize.x + layout.layout.itemViewSpacing.x) * contentFoundCallbackResults.data.Count;
+
+                        container.sizeDelta = sizeDelta;
+
+                        scroller.Initialized(scrollerInitializedCallback =>
+                        {
+                            if (AppData.Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
+                            {
+                                if (scroller.GetFadeUIScrollBar())
+                                    scroller.GetUIScrollBarComponent().Show();
+                            }
+                            else
+                                LogWarning(scrollerInitializedCallback.result, this);
+                        });
+
+                        ResetScrollerState();
+
+                        OnFocusedSelectionStateUpdate();
+
+                        if (scroller.value != null)
+                        {
+                            if (scroller.IsScrollBarEnabled())
+                                if (scroller.GetFadeUIScrollBar())
+                                    scroller.Initialize();
+                        }
+                        else
+                            LogWarning("Scroller.value Is Missing / Null.", this);
+                    }
+
+                    #endregion
+                }
+                else
+                    LogWarning(contentFoundCallbackResults.result, this);
+            });
+
+            await Task.Yield();
 
             return callbackResults;
         }

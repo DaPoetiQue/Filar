@@ -1749,7 +1749,7 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer widgetsContainer)
+        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1761,7 +1761,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                        if (widgetsContainer != null && widgetsContainer.GetActive().Success())
+                        if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                         {
                             callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
 
@@ -1773,11 +1773,11 @@ namespace Com.RedicalGames.Filar
 
                                 if (widgetPrefabData != null)
                                 {
-                                    callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(widgetsContainer.GetSelectableWidgetType(), widgetsContainer.GetLayout().viewType));
+                                    callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType));
 
                                     if (callbackResults.Success())
                                     {
-                                        var prefabData = widgetPrefabData.GetUIScreenWidgetData(widgetsContainer.GetSelectableWidgetType(), widgetsContainer.GetLayout().viewType).data;
+                                        var prefabData = widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType).data;
                                         var prefab = prefabData.gameObject;
 
                                         callbackResults.SetResult(AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value"));
@@ -1804,9 +1804,7 @@ namespace Com.RedicalGames.Filar
 
                                                         postWidget.name = post.name;
 
-                                                        LogInfo($" =============+++++++++ Adding Post Widget : {postWidget?.name} Component", this);
-
-                                                        widgetsContainer.AddDynamicWidget(widgetComponent, widgetsContainer.GetContainerOrientation(), false);
+                                                        callbackResults.SetResult(await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true));
 
                                                         postDatas.Add(post);
 
@@ -1829,7 +1827,7 @@ namespace Com.RedicalGames.Filar
                                                 await Task.Yield();
                                             }
 
-                                            while(widgetsContainer.GetContentCount().data != posts.Count)
+                                            while(screenContentContainer.GetContentCount().data != posts.Count)
                                                 await Task.Yield();
 
                                             AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, async hasEqualValueCallbackResults =>
@@ -1890,7 +1888,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.Project>> CreateUIScreenProjectSelectionWidgetsAsync(AppData.UIScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer contentContainer)
+        public async Task<AppData.CallbackDataList<AppData.Project>> CreateUIScreenProjectSelectionWidgetsAsync(AppData.UIScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1900,7 +1898,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.GetActive().Success())
+                    if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
                         if (screenType == GetCurrentUIScreenType())
                         {
@@ -1926,7 +1924,7 @@ namespace Com.RedicalGames.Filar
 
                                                 if (widgetPrefabData != null)
                                                 {
-                                                    widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType, prefabCallbackResults =>
+                                                    widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType, prefabCallbackResults =>
                                                     {
                                                         callbackResults.result = prefabCallbackResults.result;
                                                         callbackResults.resultCode = prefabCallbackResults.resultCode;
@@ -1955,7 +1953,7 @@ namespace Com.RedicalGames.Filar
                                                                                 widgetComponent.SetProjectData(project);
 
                                                                                 projectWidget.name = project.name;
-                                                                                contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                                screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
                                                                                 AppData.Project projectData = new AppData.Project
                                                                                 {
@@ -2047,7 +2045,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFolderWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer contentContainer)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFolderWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -2057,7 +2055,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.GetActive().Success())
+                    if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
                         switch (screenType)
                         {
@@ -2120,7 +2118,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                         folderWidget.name = folder.name;
                                                                                         widgetComponent.SetFolderData(folder);
-                                                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                                        screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
                                                                                     }
 
                                                                                     if (!loadedWidgetsList.Contains(widgetComponent))
@@ -2183,7 +2181,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer contentContainer)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -2193,7 +2191,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.GetActive().Success())
+                    if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
                         switch (screenType)
                         {
@@ -2261,7 +2259,7 @@ namespace Com.RedicalGames.Filar
                                                                                         widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
                                                                                         widgetComponent.SetWidgetAssetData(asset);
 
-                                                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                                        screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
                                                                                         sceneAssetList.Add(asset);
 
@@ -2372,7 +2370,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer contentContainer)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -2382,7 +2380,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                    if (contentContainer != null && contentContainer.GetActive().Success())
+                    if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
                         switch (screenType)
                         {
@@ -2445,7 +2443,7 @@ namespace Com.RedicalGames.Filar
                                                                                     widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
                                                                                     widgetComponent.SetWidgetAssetData(asset);
 
-                                                                                    contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+                                                                                    screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
                                                                                     sceneAssetList.Add(asset);
 

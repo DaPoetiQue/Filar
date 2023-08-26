@@ -1735,7 +1735,7 @@ namespace Com.RedicalGames.Filar
             DynamicWidgetsContainer container = dynamicContainerLibrary.Find(containerData => containerData.GetContainerType().Success() && containerData.GetContainerType().data == containerType) as DynamicWidgetsContainer;
 
             if (container != null && container.GetActive().Success())
-                container.AddDynamicWidget(contentWidget, orientation, false);
+                container.AddContent(content: contentWidget, keepWorldPosition: false, updateContainer: true);
             else
                 Debug.LogWarning("--> AddContentToDynamicWidgetContainer Failed : DynamicWidgetsContainer Is Null.");
         }
@@ -3586,71 +3586,6 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        #region Refresh Data
-
-        public void SetRefreshData(AppData.Folder folder = null, DynamicWidgetsContainer screenContainer = null, DynamicContentContainer sceneContainer = null, Action<AppData.CallbackData<AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>>> callback = null)
-        {
-            AppData.CallbackData<AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>> callbackResults = new AppData.CallbackData<AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>>();
-
-            refreshData = new AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>();
-
-            #region Scene Container
-
-            AppData.Helpers.GetAppComponentValid(screenContainer, "Screen Container", screenContainerCallbackResults =>
-            {
-                callbackResults.SetResult(screenContainerCallbackResults);
-
-                if (callbackResults.Success())
-                    refreshData.SetValue(screenContainer);
-                else
-                {
-                    callbackResults.result = "Couldn't Set Screen Widgets Container On Screen Refresh - Screen Widgets Container Is Not Required.";
-                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
-                }
-
-            }, "Screen Container is Not Assigned");
-
-            #endregion
-
-            #region Scene Container
-
-            AppData.Helpers.GetAppComponentValid(sceneContainer, "Scene Container", sceneContainerCallbackResults =>
-            {
-                callbackResults.SetResult(sceneContainerCallbackResults);
-
-                if (callbackResults.Success())
-                    refreshData.SetValue(sceneContainer);
-                else
-                {
-                    callbackResults.result = "Couldn't Set Scene Container On Screen Refresh - Scene Content Container Is Not Required.";
-                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
-                }
-
-            }, "Scene Container is Not Assigned");
-
-            #endregion
-
-            #region Folder
-
-            AppData.Helpers.GetAppComponentValid(folder, "Folder", folderCallbackResults => 
-            {
-                callbackResults.SetResult(folderCallbackResults);
-
-                if (callbackResults.Success())
-                    refreshData.SetValue(folder);
-                else
-                {
-                    callbackResults.result = "Couldn't Set Folder On Screen Refresh - Folder Is Not Required.";
-                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
-                }
-
-            }, "Folder Not Assigned"); 
-
-            callback?.Invoke(callbackResults);
-        }
-
-        #endregion
-
         public (AppData.Folder folder, DynamicWidgetsContainer screenContainer, DynamicContentContainer sceneContainer) GetRefreshData()
         {
             try
@@ -3791,6 +3726,73 @@ namespace Com.RedicalGames.Filar
         }
 
         #region On Refresh Functions
+
+        #region Refresh Data
+
+        public void SetRefreshData(AppData.Folder folder = null, DynamicWidgetsContainer screenContainer = null, DynamicContentContainer sceneContainer = null, Action<AppData.CallbackData<AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>>> callback = null)
+        {
+            AppData.CallbackData<AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>> callbackResults = new AppData.CallbackData<AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>>();
+
+            refreshData = new AppData.RefreshDataTupil<AppData.Folder, DynamicWidgetsContainer, DynamicContentContainer>();
+
+            #region Scene Container
+
+            AppData.Helpers.GetAppComponentValid(screenContainer, "Screen Container", screenContainerCallbackResults =>
+            {
+                callbackResults.SetResult(screenContainerCallbackResults);
+
+                if (callbackResults.Success())
+                    refreshData.SetValue(screenContainer);
+                else
+                {
+                    callbackResults.result = "Couldn't Set Screen Widgets Container On Screen Refresh - Screen Widgets Container Is Not Required.";
+                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
+                }
+
+            }, "Screen Container is Not Assigned");
+
+            #endregion
+
+            #region Scene Container
+
+            AppData.Helpers.GetAppComponentValid(sceneContainer, "Scene Container", sceneContainerCallbackResults =>
+            {
+                callbackResults.SetResult(sceneContainerCallbackResults);
+
+                if (callbackResults.Success())
+                    refreshData.SetValue(sceneContainer);
+                else
+                {
+                    callbackResults.result = "Couldn't Set Scene Container On Screen Refresh - Scene Content Container Is Not Required.";
+                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
+                }
+
+            }, "Scene Container is Not Assigned");
+
+            #endregion
+
+            #region Folder
+
+            AppData.Helpers.GetAppComponentValid(folder, "Folder", folderCallbackResults =>
+            {
+                callbackResults.SetResult(folderCallbackResults);
+
+                if (callbackResults.Success())
+                    refreshData.SetValue(folder);
+                else
+                {
+                    callbackResults.result = "Couldn't Set Folder On Screen Refresh - Folder Is Not Required.";
+                    callbackResults.resultCode = AppData.LogInfoChannel.Success;
+                }
+
+            }, "Folder Not Assigned");
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Refresh
 
         public async Task<AppData.Callback> RefreshedAsync(UIScreenHandler refreshedScreen, AppData.Folder folder = null, DynamicWidgetsContainer widgetsContainer = null, DynamicContentContainer contentContainer = null, AppData.SceneDataPackets dataPackets = null, int refreshDuration = 0)
         {
@@ -3951,9 +3953,7 @@ namespace Com.RedicalGames.Filar
                                                     if (refreshAsyncRoutine == null)
                                                     {
                                                         if (GetProjectRootStructureData().Success())
-                                                        {
-                                                            StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                        }
+                                                            callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
                                                         else
                                                         {
                                                             callbackResults.result = "Failed To Refresh Async";
@@ -3971,9 +3971,7 @@ namespace Com.RedicalGames.Filar
                                                     }
 
                                                     if (refreshAsyncRoutine == null)
-                                                    {
-                                                        StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, refreshedCallbackResults => { }, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                    }
+                                                        callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
                                                     else
                                                     {
                                                         callbackResults.result = "Failed To Refresh Async";
@@ -4156,9 +4154,7 @@ namespace Com.RedicalGames.Filar
                                                     }
 
                                                     if (refreshAsyncRoutine == null)
-                                                    {
-                                                        refreshAsyncRoutine = StartCoroutine(RefreshAssetsAsync(dataPackets.screenType, GetCurrentFolder(), refreshedCallbackResults => { }, clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                    }
+                                                        callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.screenType, GetCurrentFolder(), clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
                                                     else
                                                     {
                                                         callbackResults.result = "Failed To Refresh Async";
@@ -4203,10 +4199,8 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        IEnumerator RefreshAssetsAsync(AppData.UIScreenType screenType, AppData.Folder refreshFolder, Action<AppData.Callback> callback = null, params AppData.UIScreenGroupContent[] actions)
+        async Task<AppData.Callback> RefreshAssetsAsync(AppData.UIScreenType screenType, AppData.Folder refreshFolder, params AppData.UIScreenGroupContent[] actions)
         {
-            yield return new WaitForEndOfFrame();
-
             try
             {
                 AppData.Callback callbackResults = new AppData.Callback();
@@ -4259,9 +4253,11 @@ namespace Com.RedicalGames.Filar
                     #endregion
                 }
 
+                await Task.Yield();
+
                 //ScreenUIManager.Instance.ScreenRefresh();
 
-                callback?.Invoke(callbackResults);
+                return callbackResults;
             }
             catch (Exception exception)
             {
@@ -4269,6 +4265,8 @@ namespace Com.RedicalGames.Filar
                 throw exception;
             }
         }
+
+        #endregion
 
         #endregion
 
