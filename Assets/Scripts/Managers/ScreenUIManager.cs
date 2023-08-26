@@ -1749,7 +1749,7 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer contentContainer)
+        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer widgetsContainer)
         {
             try
             {
@@ -1761,7 +1761,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
 
-                        if (contentContainer != null && contentContainer.GetActive().Success())
+                        if (widgetsContainer != null && widgetsContainer.GetActive().Success())
                         {
                             callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
 
@@ -1773,11 +1773,11 @@ namespace Com.RedicalGames.Filar
 
                                 if (widgetPrefabData != null)
                                 {
-                                    callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType));
+                                    callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(widgetsContainer.GetSelectableWidgetType(), widgetsContainer.GetLayout().viewType));
 
                                     if (callbackResults.Success())
                                     {
-                                        var prefabData = widgetPrefabData.GetUIScreenWidgetData(contentContainer.GetSelectableWidgetType(), contentContainer.GetLayout().viewType).data;
+                                        var prefabData = widgetPrefabData.GetUIScreenWidgetData(widgetsContainer.GetSelectableWidgetType(), widgetsContainer.GetLayout().viewType).data;
                                         var prefab = prefabData.gameObject;
 
                                         callbackResults.SetResult(AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value"));
@@ -1803,7 +1803,10 @@ namespace Com.RedicalGames.Filar
                                                         widgetComponent.SetPost(post);
 
                                                         postWidget.name = post.name;
-                                                        contentContainer.AddDynamicWidget(widgetComponent, contentContainer.GetContainerOrientation(), false);
+
+                                                        LogInfo($" =============+++++++++ Adding Post Widget : {postWidget?.name} Component", this);
+
+                                                        widgetsContainer.AddDynamicWidget(widgetComponent, widgetsContainer.GetContainerOrientation(), false);
 
                                                         postDatas.Add(post);
 
@@ -1825,6 +1828,9 @@ namespace Com.RedicalGames.Filar
 
                                                 await Task.Yield();
                                             }
+
+                                            while(widgetsContainer.GetContentCount().data != posts.Count)
+                                                await Task.Yield();
 
                                             AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, async hasEqualValueCallbackResults =>
                                             {

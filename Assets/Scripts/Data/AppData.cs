@@ -1467,56 +1467,7 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    Callback callbackResults = new Callback(GetContainer());
-
-                    if (callbackResults.Success())
-                    {
-                        var container = GetContainer().data;
-
-                        if (ScreenUIManager.Instance.HasCurrentScreen().Success())
-                        {
-                            if (GetContentCount() > 0)
-                            {
-                                for (int i = 0; i < GetContentCount(); i++)
-                                {
-                                    if (container.GetChild(i).GetComponent<UIScreenWidget>())
-                                    {
-                                        if (container.GetChild(i).GetComponent<UIScreenWidget>().GetSelectableWidgetType() != SelectableWidgetType.PlaceHolder)
-                                            Destroy(container.GetChild(i).gameObject);
-                                        else
-                                            LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
-                                    }
-                                    else
-                                        LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
-                                }
-
-                                await Helpers.GetWaitForSecondsAsync(10);
-
-                                if (container.childCount == 0)
-                                {
-                                    DatabaseManager.Instance.UnloadUnusedAssets();
-
-                                    callbackResults.result = "All Widgets Cleared.";
-                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                }
-                                else
-                                {
-                                    callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
-                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                }
-                            }
-                            else
-                            {
-                                callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
-                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                            }
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                        }
-                    }
+                  
 
                     OnClear(showSpinner, onClearCallbackResults => { callback?.Invoke(onClearCallbackResults); });
 
@@ -1539,14 +1490,14 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                if(this.gameObject.activeInHierarchy && this.gameObject.activeSelf && this.gameObject != null)
+                if(gameObject.activeInHierarchy && gameObject.activeSelf && gameObject != null && GetContainerScreenType() != UIScreenType.None && GetContainerType().Success())
                 {
                     callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Active";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Not Active";
+                    callbackResults.result = $"Container : {name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Not Active";
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
@@ -1657,9 +1608,17 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnClear(bool showSpinner = false, Action<Callback> callback = null);
             protected abstract Task<Callback> OnClearAsync(bool showSpinner = false);
 
-            public int GetContentCount()
+            public CallbackData<int> GetContentCount()
             {
-                return 0;
+                CallbackData<int> callbackResults = new CallbackData<int>(GetContainer());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"There Are : {GetContainer().data.childCount} Contents Inside Container : {name} - Of Type {GetContainerType().data} For Screen : {GetContainerScreenType()}";
+                    callbackResults.data = GetContainer().data.childCount;
+                }
+
+                return callbackResults;
             }
 
             public void Update()
@@ -1667,14 +1626,14 @@ namespace Com.RedicalGames.Filar
               
             }
 
-            public bool HasContent() => GetContentCount() > 0;
+            public bool HasContent() => GetContentCount().data > 0;
 
             public CallbackData<UIScreenWidget> GetScreenContent(string contentName)
             {
                 return null;
             }
 
-            public int GetLastContentIndex() => GetContentCount();
+            public int GetLastContentIndex() => GetContentCount().data;
 
             public bool IsContentActive(string contentName) => gameObject != null && gameObject.activeSelf && gameObject.activeInHierarchy;
 
@@ -16843,7 +16802,7 @@ namespace Com.RedicalGames.Filar
 
             void GetFolderWidgets()
             {
-                if (GetWidgetContainer().GetContentCount() > 0)
+                if (GetWidgetContainer().GetContentCount().data > 0)
                 {
                     containerFolderWidgetsReferenceList = new List<UIScreenWidget>();
 
@@ -22653,20 +22612,20 @@ namespace Com.RedicalGames.Filar
                                     if(SelectableManager.Instance)
                                         SelectableManager.Instance.DeselectAll();
                                     else
-                                        LogError("Selectable Manager Instance Is Not Yet Initialized.", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+                                        LogError("Selectable Manager Instance Is Not Yet Initialized.", this);
                                 }
                                 else
                                     ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
                             });
                         }
                         else
-                            LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+                            LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                     }
                     else
-                        LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+                        LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this);
                 }
                 else
-                    LogError("Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnSelectionOptions_ActionEvents(dataPackets));
+                    LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
             void OnSelection_ActionEvents(SceneDataPackets dataPackets)
@@ -22692,14 +22651,14 @@ namespace Com.RedicalGames.Filar
                                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.SelectionOptionsWidget);
                                         else
-                                            LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this, () => OnSelection_ActionEvents(dataPackets));
+                                            LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this);
 
 
                                         //Check This Man And Below
                                         widgetsContainer.OnFocusedSelectionStateUpdate();
                                     }
                                     else
-                                        LogError(selectionCallback.result, this, () => OnSelection_ActionEvents(dataPackets));
+                                        LogError(selectionCallback.result, this);
                                 });
 
                                 break;
@@ -22710,40 +22669,45 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (selectionCallback.Success())
                                     {
-                                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                                            ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.SelectionOptionsWidget);
-                                        else
-                                            LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this, () => OnSelection_ActionEvents(dataPackets));
-
-                                        if (widgetsContainer.GetContentCount() == SelectableManager.Instance.GetFocusedSelectionDataCount())
+                                        if (widgetsContainer.GetContentCount().Success())
                                         {
-                                            DatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults => 
+                                            if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                                                ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(WidgetType.SelectionOptionsWidget);
+                                            else
+                                                LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this);
+
+                                            if (widgetsContainer.GetContentCount().data == SelectableManager.Instance.GetFocusedSelectionDataCount())
                                             {
-                                                if (layoutViewCallbackResults.Success())
+                                                DatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                                                 {
-                                                    switch (layoutViewCallbackResults.data)
+                                                    if (layoutViewCallbackResults.Success())
                                                     {
-                                                        case LayoutViewType.ItemView:
+                                                        switch (layoutViewCallbackResults.data)
+                                                        {
+                                                            case LayoutViewType.ItemView:
 
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
+                                                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
 
-                                                            break;
+                                                                break;
 
-                                                        case LayoutViewType.ListView:
+                                                            case LayoutViewType.ListView:
 
-                                                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
+                                                                ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
 
-                                                            break;
+                                                                break;
+                                                        }
+
                                                     }
+                                                    else
+                                                        Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
+                                                });
+                                            }
 
-                                                }
-                                                else
-                                                    Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
-                                            });
+                                            //Check This Man And Above
+                                            widgetsContainer.OnFocusedSelectionStateUpdate();
                                         }
-
-                                        //Check This Man And Above
-                                        widgetsContainer.OnFocusedSelectionStateUpdate();
+                                        else
+                                            Log(widgetsContainer.GetContentCount().ResultCode, widgetsContainer.GetContentCount().Result, this);
                                     }
                                     else
                                         LogError(selectionCallback.result, this, () => OnSelection_ActionEvents(dataPackets));
@@ -22753,10 +22717,10 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                        LogError("Widgets Container Not Found", this, () => OnSelection_ActionEvents(dataPackets));
+                        LogError("Widgets Container Not Found", this);
                 }
                 else
-                    LogError("Scene Assets Manager / Screen UI Manager Instance Is Not Yet Initialized", this, () => OnSelection_ActionEvents(dataPackets));
+                    LogError("Scene Assets Manager / Screen UI Manager Instance Is Not Yet Initialized", this);
             }
 
             void OnDelete_ActionEvent(SceneDataPackets dataPackets)
@@ -32471,7 +32435,7 @@ namespace Com.RedicalGames.Filar
 
             bool SelectableContent();
 
-            int GetContentCount();
+            CallbackData<int> GetContentCount();
 
             void Update();
 

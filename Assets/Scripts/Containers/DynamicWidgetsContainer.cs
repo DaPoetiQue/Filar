@@ -239,7 +239,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 {
-                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / (GetContentCount() / 2))) * Time.smoothDeltaTime);
+                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, Vector2.zero, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount().data / (GetContentCount().data / 2))) * Time.smoothDeltaTime);
                     scroller.value.content.localPosition = scrollPosition;
 
                     float distance = ((Vector2)scroller.value.content.localPosition - Vector2.zero).sqrMagnitude;
@@ -270,7 +270,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value > 0)
                 {
-                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, container.sizeDelta, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount() / 2)) * Time.smoothDeltaTime);
+                    Vector2 scrollPosition = Vector2.Lerp(scroller.value.content.localPosition, container.sizeDelta, (DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScrollToTopSpeedValue).value / (GetContentCount().data / 2)) * Time.smoothDeltaTime);
                     scroller.value.content.localPosition = scrollPosition;
 
                     float distance = (orientation == AppData.OrientationType.Vertical) ? scroller.value.verticalNormalizedPosition : scroller.value.horizontalNormalizedPosition;
@@ -718,31 +718,34 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = GetActiveContainer().result;
-                    callbackResults.resultCode = GetActiveContainer().resultCode;
+                    callbackResults.SetResult(GetActive());
 
                     if (callbackResults.Success())
                     {
                         AppData.Helpers.GetAppComponentValid(screenWidget, screenWidget?.name, hasScreenWidgetCallbackResults =>
                         {
-                            callbackResults.result = hasScreenWidgetCallbackResults.result;
-                            callbackResults.resultCode = hasScreenWidgetCallbackResults.resultCode;
+                            callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
                             if (callbackResults.Success())
                             {
-                                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
-                                screenWidget.gameObject.transform.SetParent(container, keepWorldPosition);
+                                callbackResults.SetResult(GetContainer());
 
-                                callbackResults.result = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
-
-                                if (containerUpdateRoutine != null)
+                                if (callbackResults.Success())
                                 {
-                                    StopCoroutine(containerUpdateRoutine);
-                                    containerUpdateRoutine = null;
-                                }
+                                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
+                                    screenWidget.gameObject.transform.SetParent(GetContainer().data, keepWorldPosition);
 
-                                if (containerUpdateRoutine == null)
-                                    containerUpdateRoutine = StartCoroutine(UpdatedContainerSizeAsync());
+                                    if (containerUpdateRoutine != null)
+                                    {
+                                        StopCoroutine(containerUpdateRoutine);
+                                        containerUpdateRoutine = null;
+                                    }
+
+                                    if (containerUpdateRoutine == null)
+                                        containerUpdateRoutine = StartCoroutine(UpdatedContainerSizeAsync());
+
+                                    callbackResults.result = $"Added Screen Widget : {screenWidget.name} To Container : {name}.";
+                                }
                             }
                             else
                             {
@@ -865,7 +868,7 @@ namespace Com.RedicalGames.Filar
 
         public bool CanPaginate()
         {
-            return GetContentCount() >= Pagination_GetItemPerPageCount();
+            return GetContentCount().data >= Pagination_GetItemPerPageCount();
         }
 
         void UpdatedContainerSize(Action<AppData.CallbackData<Vector2>> callback = null)
@@ -1079,45 +1082,48 @@ namespace Com.RedicalGames.Filar
 
         public void GetSelectedWidgetList(AppData.FocusedSelectionData selectionData, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
+            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>(GetContentCount());
 
-            if(GetContentCount() > 0)
+            if (callbackResults.Success())
             {
-                GetContent(contentCallback =>
+                if (GetContentCount().data > 0)
                 {
-                    if (contentCallback.Success())
+                    GetContent(contentCallback =>
                     {
-                        List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
-
-                        foreach (var selection in selectionData.selections)
-                            widgets.Add(contentCallback.data.Find(widget => widget.name == selection.name));
-
-                        if (widgets.Count == selectionData.selections.Count)
+                        if (contentCallback.Success())
                         {
-                            callbackResults.result = $"Found : {widgets.Count} Selected Widget(s).";
-                            callbackResults.data = widgets;
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                            List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
+
+                            foreach (var selection in selectionData.selections)
+                                widgets.Add(contentCallback.data.Find(widget => widget.name == selection.name));
+
+                            if (widgets.Count == selectionData.selections.Count)
+                            {
+                                callbackResults.result = $"Found : {widgets.Count} Selected Widget(s).";
+                                callbackResults.data = widgets;
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Could'nt Find All Selected Widgets - {widgets.Count} Of {selectionData.selections.Count}.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            }
                         }
                         else
                         {
-                            callbackResults.result = $"Could'nt Find All Selected Widgets - {widgets.Count} Of {selectionData.selections.Count}.";
+                            callbackResults.result = contentCallback.result;
                             callbackResults.data = default;
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = contentCallback.resultCode;
                         }
-                    }
-                    else
-                    {
-                        callbackResults.result = contentCallback.result;
-                        callbackResults.data = default;
-                        callbackResults.resultCode = contentCallback.resultCode;
-                    }
-                });
-            }
-            else
-            {
-                callbackResults.result = "There Are No Contents Loaded Yet. Possible Race Condition.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    });
+                }
+                else
+                {
+                    callbackResults.result = "There Are No Contents Loaded Yet. Possible Race Condition.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
             }
 
             callback.Invoke(callbackResults);
@@ -1283,11 +1289,11 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
 
-            if (GetContentCount() > 0)
+            if (GetContentCount().data > 0)
             {
                 List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
 
-                for (int i = 0; i < GetContentCount(); i++)
+                for (int i = 0; i < GetContentCount().data; i++)
                 {
                     AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
 
@@ -1383,47 +1389,50 @@ namespace Com.RedicalGames.Filar
 
         public void GetContent(AppData.UIScreenWidget widgetToExcludeFromList, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
+            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>(GetContentCount());
 
-            if (GetContentCount() > 0)
+            if (callbackResults.Success())
             {
-                List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
-
-                for (int i = 0; i < GetContentCount(); i++)
+                if (GetContentCount().data > 0)
                 {
-                    AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
+                    List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
 
-                    if (widget != null && widget.GetActive() && widget != widgetToExcludeFromList)
+                    for (int i = 0; i < GetContentCount().data; i++)
                     {
-                        if (widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.Folder || widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.PlaceHolder)
+                        AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
 
-                            if (!widgetsList.Contains(widget))
-                                widgetsList.Add(widget);
-                            else
-                                LogWarning("Container Widget List Already Contains Widget.", this);
+                        if (widget != null && widget.GetActive() && widget != widgetToExcludeFromList)
+                        {
+                            if (widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.Folder || widget.GetSelectableWidgetType() == AppData.SelectableWidgetType.PlaceHolder)
+
+                                if (!widgetsList.Contains(widget))
+                                    widgetsList.Add(widget);
+                                else
+                                    LogWarning("Container Widget List Already Contains Widget.", this);
+                        }
+                        else
+                            LogWarning("Widget component not found", this);
+                    }
+
+                    if (widgetsList.Count > 0)
+                    {
+                        callbackResults.result = $"GetContent Success : {GetContentCount().data} - Content Widgets Found Successfully.";
+                        callbackResults.data = widgetsList;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
                     }
                     else
-                        LogWarning("Widget component not found", this);
-                }
-
-                if (widgetsList.Count > 0)
-                {
-                    callbackResults.result = $"GetContent Success : {GetContentCount()} - Content Widgets Found Successfully.";
-                    callbackResults.data = widgetsList;
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    {
+                        callbackResults.result = $"GetContent Failed : {GetContentCount().data} - Content Widgets Couldn't Be Added To Widgets List. - Status Unknown.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
                 }
                 else
                 {
-                    callbackResults.result = $"GetContent Failed : {GetContentCount()} - Content Widgets Couldn't Be Added To Widgets List. - Status Unknown.";
+                    callbackResults.result = "GetContent Failed : No Content Found.";
                     callbackResults.data = default;
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
-            }
-            else
-            {
-                callbackResults.result = "GetContent Failed : No Content Found.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -1723,20 +1732,22 @@ namespace Com.RedicalGames.Filar
 
         public void HasAllWidgetsSelected(Action<AppData.CallbackData<int>> callback)
         {
-            AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
+            AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>(GetContentCount());
 
-             
-            if(SelectableManager.Instance.GetFocusedSelectionDataCount() == GetContentCount())
+            if (callbackResults.Success())
             {
-                callbackResults.result = $"All : {GetContentCount()} Widgets Are Selected";
-                callbackResults.data = GetContentCount();
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = "Not All Widgets Are Selected";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                if (SelectableManager.Instance.GetFocusedSelectionDataCount() == GetContentCount().data)
+                {
+                    callbackResults.result = $"All : {GetContentCount()} Widgets Are Selected";
+                    callbackResults.data = GetContentCount().data;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Not All Widgets Are Selected";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
             }
 
             callback.Invoke(callbackResults);
@@ -1816,139 +1827,150 @@ namespace Com.RedicalGames.Filar
         {
             AppData.UIScreenWidget widgetFound = null;
 
-            if (GetContentCount() > 0)
+            if (GetContentCount().Success())
             {
-                GetContent(contentCallback =>
+                if (GetContentCount().data > 0)
                 {
-                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
+                    GetContent(contentCallback =>
                     {
-                        if (contentCallback.data != null && contentCallback.data.Count > 0)
+                        if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
                         {
-                            foreach (var widget in contentCallback.data)
+                            if (contentCallback.data != null && contentCallback.data.Count > 0)
                             {
-                                if (widgetFound == null && widget.name.Equals(widgetName))
+                                foreach (var widget in contentCallback.data)
                                 {
-                                    widgetFound = widget;
-                                    break;
-                                }
+                                    if (widgetFound == null && widget.name.Equals(widgetName))
+                                    {
+                                        widgetFound = widget;
+                                        break;
+                                    }
 
-                                continue;
+                                    continue;
+                                }
                             }
+                            else
+                                LogError(contentCallback.result, this);
                         }
-                        else
-                            LogError(contentCallback.result, this);
-                    }
-                });
+                    });
+                }
+                else
+                    LogError("There Are No Contents Found In Dynamic Container.", this);
+
+                if (widgetFound == null)
+                    LogError($"Couldn't Find Widget Named : {widgetName}", this);
             }
             else
-                LogError("There Are No Contents Found In Dynamic Container.", this);
-
-            if(widgetFound == null)
-                LogError($"Couldn't Find Widget Named : {widgetName}", this);
+                Log(GetContentCount().ResultCode, GetContentCount().Result, this);
 
             return widgetFound;
         }
 
         public void GetItem<T>(string itemName, Action<AppData.CallbackData<AppData.PageItem<T>>> callback) where T : AppData.UIScreenWidget
         {
-            AppData.CallbackData<AppData.PageItem<T>> callbackResults = new AppData.CallbackData<AppData.PageItem<T>>();
+            AppData.CallbackData<AppData.PageItem<T>> callbackResults = new AppData.CallbackData<AppData.PageItem<T>>(GetContentCount());
 
-            if (GetContentCount() > 0)
+            if (callbackResults.Success())
             {
-                GetContent(contentCallback =>
+                if (GetContentCount().data > 0)
                 {
-                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
+                    GetContent(contentCallback =>
                     {
-                        if (contentCallback.data != null && contentCallback.data.Count > 0)
+                        if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
                         {
-                            foreach (var widget in contentCallback.data)
+                            if (contentCallback.data != null && contentCallback.data.Count > 0)
                             {
-                                if (widget.name.Equals(itemName))
+                                foreach (var widget in contentCallback.data)
                                 {
-                                    AppData.PageItem<T> foundWidget = new AppData.PageItem<T>()
+                                    if (widget.name.Equals(itemName))
                                     {
-                                        name = itemName,
-                                        item = widget as T,
-                                        pageID = Pagination_GetItemPageIndex(itemName)
-                                    };
+                                        AppData.PageItem<T> foundWidget = new AppData.PageItem<T>()
+                                        {
+                                            name = itemName,
+                                            item = widget as T,
+                                            pageID = Pagination_GetItemPageIndex(itemName)
+                                        };
 
-                                    callbackResults.result = $"Item Named : {itemName} Found.";
-                                    callbackResults.data = foundWidget;
-                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                        callbackResults.result = $"Item Named : {itemName} Found.";
+                                        callbackResults.data = foundWidget;
+                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
-                                    break;
+                                        break;
+                                    }
+
+                                    continue;
                                 }
-
-                                continue;
+                            }
+                            else
+                            {
+                                callbackResults.result = "There Are No Content Found - Please Check Code Here Above";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.result = "There Are No Content Found - Please Check Code Here Above";
+                            callbackResults.result = contentCallback.result;
                             callbackResults.data = default;
                             callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
-                    }
-                    else
-                    {
-                        callbackResults.result = contentCallback.result;
-                        callbackResults.data = default;
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                });
+                    });
+                }
+                else
+                    LogError("There Are No Contents Found In Dynamic Container.", this);
             }
-            else
-                LogError("There Are No Contents Found In Dynamic Container.", this);
 
             callback.Invoke(callbackResults);
         }
 
         public void GetWidgetNamed(string widgetName, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
+            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>(GetContentCount());
 
-            if (GetContentCount() > 0)
+            if (callbackResults.Success())
             {
-                GetContent(contentCallback =>
+                if (GetContentCount().data > 0)
                 {
-                    if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
+                    GetContent(contentCallback =>
                     {
-                        bool widgetFound = false;
-
-                        foreach (var widget in contentCallback.data)
+                        if (AppData.Helpers.IsSuccessCode(contentCallback.resultCode))
                         {
-                            if (widget.name == widgetName)
+                            bool widgetFound = false;
+
+                            foreach (var widget in contentCallback.data)
                             {
-                                widgetFound = true;
+                                if (widget.name == widgetName)
+                                {
+                                    widgetFound = true;
 
-                                callbackResults.result = $"GetWidgetNamed : {widgetName} Success With Results : {contentCallback.result}.";
-                                callbackResults.data = widget;
-                                callbackResults.resultCode = (widgetFound)? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                                    callbackResults.result = $"GetWidgetNamed : {widgetName} Success With Results : {contentCallback.result}.";
+                                    callbackResults.data = widget;
+                                    callbackResults.resultCode = (widgetFound) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
 
-                                break;
+                                    break;
+                                }
+                            }
+
+                            if (!widgetFound)
+                            {
+                                callbackResults.result = $"GetWidgetNamed : {widgetName} Failed - Widget : {widgetName} Not Found.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
                         }
-
-                        if (!widgetFound)
+                        else
                         {
-                            callbackResults.result = $"GetWidgetNamed : {widgetName} Failed - Widget : {widgetName} Not Found.";
+                            callbackResults.result = $"GetWidgetNamed : {widgetName} Failed With Results : {contentCallback.result}.";
                             callbackResults.data = default;
                             callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
-                    }
-                    else
-                    {
-                        callbackResults.result = $"GetWidgetNamed : {widgetName} Failed With Results : {contentCallback.result}.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                });
-            }
-            else
-            {
-                callbackResults.result = $"GetWidgetNamed : {widgetName} Failed : There Are No Contents Found.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    });
+                }
+                else
+                {
+                    callbackResults.result = $"GetWidgetNamed : {widgetName} Failed : There Are No Contents Found.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
             }
 
             callback.Invoke(callbackResults);
@@ -2324,55 +2346,75 @@ namespace Com.RedicalGames.Filar
 
         public void OnCreateNewPageWidget(Action<AppData.Callback> callback)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.Callback callbackResults = new AppData.Callback(GetContentCount());
 
-            int itemsPerPage = (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
-
-            if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
+            if (callbackResults.Success())
             {
-                paginationComponent.GetSlotAvailablePageNumber(itemsPerPage, slotAvailable =>
+                int itemsPerPage = (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
+
+                if (GetPaginationViewType() == AppData.PaginationViewType.Pager)
                 {
-                    if (AppData.Helpers.IsSuccessCode(slotAvailable.resultCode))
+                    paginationComponent.GetSlotAvailablePageNumber(itemsPerPage, slotAvailable =>
                     {
-                        Pagination_GoToPage(slotAvailable.data);
-
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                        callbackResults.result = "Can Create New Widget Successfully.";
-                    }
-                    else
-                    {
-                        OnSetWidgetsVisibilityState(false);
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                    }
-                });
-
-
-                callback?.Invoke(callbackResults);
-            }
-
-            if (GetPaginationViewType() == AppData.PaginationViewType.Scroller)
-            {
-                if (GetContentCount() > 0)
-                {
-                    GetContent(loadedContent =>
-                    {
-                        if (AppData.Helpers.IsSuccessCode(loadedContent.resultCode))
+                        if (AppData.Helpers.IsSuccessCode(slotAvailable.resultCode))
                         {
-                            int itemsPerPage = (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
+                            Pagination_GoToPage(slotAvailable.data);
 
-                            if (loadedContent.data.Count >= itemsPerPage)
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                            callbackResults.result = "Can Create New Widget Successfully.";
+                        }
+                        else
+                        {
+                            OnSetWidgetsVisibilityState(false);
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                    });
+
+
+                    callback?.Invoke(callbackResults);
+                }
+
+                if (GetPaginationViewType() == AppData.PaginationViewType.Scroller)
+                {
+                    if (GetContentCount().data > 0)
+                    {
+                        GetContent(loadedContent =>
+                        {
+                            if (AppData.Helpers.IsSuccessCode(loadedContent.resultCode))
                             {
-                                paginationComponent.GetSlotAvailableOnScroller(loadedContent.data, isLoadAvailableCallback =>
-                                {
-                                    if (GetLayout().viewType == AppData.LayoutViewType.ItemView)
-                                    {
-                                        if (AppData.Helpers.IsSuccessCode(isLoadAvailableCallback.resultCode))
-                                        {
-                                            OnSnapToBottom();
+                                int itemsPerPage = (GetLayout().viewType == AppData.LayoutViewType.ItemView) ? paginationComponent.itemView_ItemsPerPage : paginationComponent.listView_ItemsPerPage;
 
-                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                if (loadedContent.data.Count >= itemsPerPage)
+                                {
+                                    paginationComponent.GetSlotAvailableOnScroller(loadedContent.data, isLoadAvailableCallback =>
+                                    {
+                                        if (GetLayout().viewType == AppData.LayoutViewType.ItemView)
+                                        {
+                                            if (AppData.Helpers.IsSuccessCode(isLoadAvailableCallback.resultCode))
+                                            {
+                                                OnSnapToBottom();
+
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                            }
+                                            else
+                                            {
+                                                Vector2 newContainerSize = container.sizeDelta;
+
+                                                if (orientation == AppData.OrientationType.Horizontal)
+                                                    newContainerSize.x += GetLayout().layout.itemViewSize.x + (GetLayout().layout.itemViewSpacing.x * 2);
+
+                                                if (orientation == AppData.OrientationType.Vertical)
+                                                    newContainerSize.y += GetLayout().layout.itemViewSize.y + (GetLayout().layout.itemViewSpacing.y * 2);
+
+                                                container.sizeDelta = newContainerSize;
+
+                                                OnSnapToBottom();
+
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                            }
                                         }
-                                        else
+
+                                        if (GetLayout().viewType == AppData.LayoutViewType.ListView)
                                         {
                                             Vector2 newContainerSize = container.sizeDelta;
 
@@ -2388,47 +2430,30 @@ namespace Com.RedicalGames.Filar
 
                                             callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
-                                    }
-
-                                    if (GetLayout().viewType == AppData.LayoutViewType.ListView)
-                                    {
-                                        Vector2 newContainerSize = container.sizeDelta;
-
-                                        if (orientation == AppData.OrientationType.Horizontal)
-                                            newContainerSize.x += GetLayout().layout.itemViewSize.x + (GetLayout().layout.itemViewSpacing.x * 2);
-
-                                        if (orientation == AppData.OrientationType.Vertical)
-                                            newContainerSize.y += GetLayout().layout.itemViewSize.y + (GetLayout().layout.itemViewSpacing.y * 2);
-
-                                        container.sizeDelta = newContainerSize;
-
-                                        OnSnapToBottom();
-
-                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                    }
-                                }); ;
+                                    }); ;
+                                }
+                                else
+                                {
+                                    callbackResults.result = "Slot Available, No Need To Snap To Bottom.";
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                }
                             }
                             else
                             {
-                                callbackResults.result = "Slot Available, No Need To Snap To Bottom.";
-                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                callbackResults.result = loadedContent.result;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
-                        }
-                        else
-                        {
-                            callbackResults.result = loadedContent.result;
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                        }
 
-                    });
-                }
-                else
-                {
-                    callbackResults.result = "No Content Fount.";
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
+                        });
+                    }
+                    else
+                    {
+                        callbackResults.result = "No Content Fount.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
 
-                callback?.Invoke(callbackResults);
+                    callback?.Invoke(callbackResults);
+                }
             }
         }
 
@@ -2544,12 +2569,113 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnClear(bool showSpinner = false, Action<AppData.Callback> callback = null)
         {
+            AppData.Callback callbackResults = new AppData.Callback(GetContainer());
 
+            if (callbackResults.Success())
+            {
+                var container = GetContainer().data;
+
+                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                {
+                    if (GetContentCount().data > 0)
+                    {
+                        for (int i = 0; i < GetContentCount().data; i++)
+                        {
+                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                            {
+                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                                    Destroy(container.GetChild(i).gameObject);
+                                else
+                                    LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                            }
+                            else
+                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                        }
+
+                        if (container.childCount == 0)
+                        {
+                            DatabaseManager.Instance.UnloadUnusedAssets();
+
+                            callbackResults.result = "All Widgets Cleared.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+
+            callback?.Invoke(callbackResults);
         }
 
-        protected override Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
+        protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
         {
-            return null;
+            AppData.Callback callbackResults = new AppData.Callback(GetContainer());
+
+            if (callbackResults.Success())
+            {
+                var container = GetContainer().data;
+
+                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                {
+                    if (GetContentCount().data > 0)
+                    {
+                        for (int i = 0; i < GetContentCount().data; i++)
+                        {
+                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                            {
+                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                                    Destroy(container.GetChild(i).gameObject);
+                                else
+                                    LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                            }
+                            else
+                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                        }
+
+                        while(container.childCount > 0)
+                            await Task.Yield();
+
+                        if (container.childCount == 0)
+                        {
+                            DatabaseManager.Instance.UnloadUnusedAssets();
+
+                            callbackResults.result = "All Widgets Cleared.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+
+            return callbackResults;
         }
 
         #endregion

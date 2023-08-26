@@ -58,7 +58,7 @@ namespace Com.RedicalGames.Filar
                     if (widgetsContainer.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
                     {
                         int itemsPerView = (widgetsContainer.GetLayout().viewType == AppData.LayoutViewType.ItemView) ? widgetsContainer.GetPaginationComponent().itemView_ItemsPerPage : widgetsContainer.GetPaginationComponent().listView_ItemsPerPage;
-                        enableSelectionButton = widgetsContainer.GetContentCount() > itemsPerView;
+                        enableSelectionButton = widgetsContainer.GetContentCount().data > itemsPerView;
                     }
 
                     widgetsContainer.WidgetsInCurrentPageSelected(widgetsSelectionCallback =>

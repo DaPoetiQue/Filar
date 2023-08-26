@@ -621,6 +621,32 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        public async Task<AppData.CallbackDataList<AppData.Post>> GetPostsAsync()
+        {
+            AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>();
+
+            AppData.Helpers.GetAppComponentsValid(postsDatabase, "Database Posts", databasePostsValidationCallbackResults =>
+            {
+                callbackResults.SetResult(databasePostsValidationCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{postsDatabase.Count} Posts Found.";
+                    callbackResults.data = postsDatabase;
+                }
+                else
+                {
+                    callbackResults.result = "There Were No Posts Found.";
+                    callbackResults.data = default;
+                }
+
+            }, "Database Posts Are Not Yet Initialized.", $"{postsDatabase.Count} Database Post(s) Have Been Initialized Successfully.");
+
+            await Task.Yield();
+
+            return callbackResults;
+        }
+
         #endregion
 
         public void InitializeStorage(Action<AppData.Callback> callback = null)
@@ -3798,41 +3824,31 @@ namespace Com.RedicalGames.Filar
                                     while (!IsServerPostsDatabaseInitialized)
                                         await Task.Yield();
 
-                                    LogInfo($" =============+++++++++ Clearing Container : {widgetsContainer?.name} - Of Type : {widgetsContainer?.GetContainerType()}", this);
+                                    var clearWidgetsTaskResults = await widgetsContainer.ClearAsync();
 
-                                    widgetsContainer.Clear(false, widgetsClearedCallback =>
+                                    callbackResults.SetResult(clearWidgetsTaskResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(widgetsClearedCallback);
+                                        var getPostsTaskResults = await GetPostsAsync();
 
-                                        Log(callbackResults.ResultCode, $" =============+++++++++ Clear Posts Widgets : {callbackResults.Result}", this);
+                                        callbackResults.SetResult(getPostsTaskResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            GetPosts(async postsCallbackResults =>
-                                            {
-                                                callbackResults.SetResult(postsCallbackResults);
+                                            var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), getPostsTaskResults.data, widgetsContainer);
 
-                                                Log(callbackResults.ResultCode, $" =============+++++++++ Getting Posts : {callbackResults.Result}", this);
+                                            callbackResults.SetResult(widgetsLoadTaskCallbacResults);
 
-                                                if (callbackResults.Success())
-                                                {
-                                                    Log(callbackResults.ResultCode, $" =============+++++++++ Creating Posts : {callbackResults.Result}", this);
+                                            LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
 
-                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), postsCallbackResults.data, widgetsContainer);
+                                            if (callbackResults.Success())
+                                                refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
 
-                                                    callbackResults.SetResult(widgetsLoadTaskCallbacResults);
-
-                                                    LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
-
-                                                    if (callbackResults.Success())
-                                                        refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-                                                }
-                                            });
+                                            while (!callbackResults.Success())
+                                                await Task.Yield();
                                         }
-                                    });
-
-                                    while (!callbackResults.Success())
-                                        await Task.Yield();
+                                    }
 
                                     break;
 
@@ -4324,7 +4340,7 @@ namespace Com.RedicalGames.Filar
 
         public int GetWidgetsContentCount()
         {
-           return GetRefreshData().screenContainer.GetContentCount();
+           return GetRefreshData().screenContainer.GetContentCount().data;
         }
 
         public List<AppData.UIScreenWidget> GetLoadedSceneAssetsList()
