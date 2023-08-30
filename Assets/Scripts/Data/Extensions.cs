@@ -43,7 +43,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public static AppData.SerializableMeshData ToSerializableMeshData(this Mesh mesh) => new AppData.SerializableMeshData(mesh);
+        //public static AppData.SerializableMeshData ToSerializableMeshData(this Mesh mesh) => new AppData.SerializableMeshData(mesh);
 
         public static async Task<AppData.SerializableMeshData> ToSerializableMeshDataAsync(this Mesh mesh)
         {

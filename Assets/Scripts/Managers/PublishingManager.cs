@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -55,17 +53,20 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            AppData.Profile profile = new AppData.Profile();
+            var results = await AppData.Helpers.GetSerializableMeshDataAsync(obj);
 
-            profile.userName = "Billie";
-            profile.userEmail = "Billie@home.com";
-            profile.userPassword = "19470302";
+            var mesh = results.data.GetMesh();
 
-            profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
+            mesh.RecalculateBounds();
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
 
-            var serializedMeshDataTaskResults = await AppData.Helpers.GetSerializableMeshDataAsync(obj);
+            GameObject test = new GameObject("Test Object");
+            MeshFilter filter = test.AddComponent<MeshFilter>();
+            MeshRenderer renderer = test.AddComponent<MeshRenderer>();
+            filter.mesh = mesh;
 
-            callbackResults.SetResult(serializedMeshDataTaskResults);
+            callbackResults.SetResult(results);
 
             Log(callbackResults.ResultCode, $" <<<<<<=================>>>>>> On Publish Results : {callbackResults.Result}", this);
 

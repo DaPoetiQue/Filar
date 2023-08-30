@@ -316,7 +316,11 @@ namespace Com.RedicalGames.Filar
 
                 //profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
 
-                //AppData.PostData postData = new AppData.PostData(new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>()));
+                AppData.PostData postData = new AppData.PostData();
+
+                //var assetData = new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>());
+
+                //assetData.subMeshData[0].GetMesh();
 
                 //AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile: profile, data: postData);
                 //string post = JsonUtility.ToJson(newPost);
