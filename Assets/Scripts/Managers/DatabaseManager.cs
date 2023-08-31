@@ -239,7 +239,7 @@ namespace Com.RedicalGames.Filar
         DatabaseReference databaseReference;
 
         List<AppData.AppInfo> appInfoDatabase = new List<AppData.AppInfo>();
-        List<AppData.Post> postsDatabase = new List<AppData.Post>();
+        List<AppData.PostHandler> postsDatabase = new List<AppData.PostHandler>();
 
         #endregion
 
@@ -363,6 +363,25 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
+
+        #region Publishing
+
+        public async void OnPublish(AppData.PostHandler post, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            var postData = JsonUtility.ToJson(post);
+
+            Dictionary<string, object> childs = new Dictionary<string, object>();
+            childs.Add(post.GetProfile().GetUserName(), post);
+
+            await databaseReference.Child("Posts").UpdateChildrenAsync(childs);
+            await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
 
         #region App Info Database
 
@@ -562,14 +581,14 @@ namespace Com.RedicalGames.Filar
                         {
                             if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                             {
-                                postsDatabase = new List<AppData.Post>();
+                                postsDatabase = new List<AppData.PostHandler>();
 
                                 var postsSnapshots = valueChangedEvent.Snapshot.Children;
 
                                 foreach (var postSnapshot in postsSnapshots)
                                 {
                                     var resultsJson = (string)postSnapshot.GetValue(true);
-                                    AppData.Post post = JsonUtility.FromJson<AppData.Post>(resultsJson);
+                                    AppData.PostHandler post = JsonUtility.FromJson<AppData.PostHandler>(resultsJson);
 
                                     if (!postsDatabase.Contains(post))
                                         postsDatabase.Add(post);
@@ -599,9 +618,9 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void GetPosts(Action<AppData.CallbackDataList<AppData.Post>> callback)
+        public void GetPosts(Action<AppData.CallbackDataList<AppData.PostHandler>> callback)
         {
-            AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>();
+            AppData.CallbackDataList<AppData.PostHandler> callbackResults = new AppData.CallbackDataList<AppData.PostHandler>();
 
             AppData.Helpers.GetAppComponentsValid(postsDatabase, "Database Posts", databasePostsValidationCallbackResults => 
             {
@@ -623,9 +642,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public async Task<AppData.CallbackDataList<AppData.Post>> GetPostsAsync()
+        public async Task<AppData.CallbackDataList<AppData.PostHandler>> GetPostsAsync()
         {
-            AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>();
+            AppData.CallbackDataList<AppData.PostHandler> callbackResults = new AppData.CallbackDataList<AppData.PostHandler>();
 
             AppData.Helpers.GetAppComponentsValid(postsDatabase, "Database Posts", databasePostsValidationCallbackResults =>
             {

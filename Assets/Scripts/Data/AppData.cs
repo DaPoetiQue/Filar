@@ -14,6 +14,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Newtonsoft.Json;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace Com.RedicalGames.Filar
@@ -3173,13 +3174,13 @@ namespace Com.RedicalGames.Filar
 
             #region Content Setters
 
-            void SetContent(PostContent data);
+            void SetContent(ModelMeshData data);
 
             #endregion
 
             #region Content Getters
 
-            PostContent GetContent();
+            ModelMeshData GetContent();
 
             #endregion
 
@@ -3253,14 +3254,107 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class PostData : DataDebugger, IPostData
+        public class PostDataAttributes
+        {
+            #region Components
+
+            public string identifier;
+
+            #endregion
+
+            #region Main
+
+            public void SetIdentifier(string identifier) => this.identifier = identifier;
+            public string GetIdentifier() => identifier;
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ModelMeshData : PostDataAttributes
+        {
+            #region Components
+
+            public string mesh;
+            public string GetMeshString
+                => mesh;
+
+            #endregion
+
+            #region Main
+
+            public string Vector3ArrayToString(VectorData[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (var data in arrayData)
+                    stringBuilder.Append(data.x).Append(" ").Append(data.y).Append(" ").Append(data.z).Append(seperator);
+
+                if(stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                return stringBuilder.ToString();
+            }
+
+            public string IntArrayToString(int[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (var data in arrayData)
+                    stringBuilder.Append(data).Append(" ");
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
+
+                return stringBuilder.ToString();
+            }
+
+            public string MeshDataToString(MeshData meshData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                stringBuilder.Append(Vector3ArrayToString(meshData.vertices, "v|")).Append(seperator).
+                    Append(IntArrayToString(meshData.triangles, "t|")).Append(seperator).
+                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector3ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector3ArrayToString(meshData.tangents, "tn|"));
+
+                return stringBuilder.ToString();
+            }
+
+            public void SetVertices(VectorData[] verticesData)
+            {
+               
+            }
+
+            public void SetTriangles(int[] trianglesData)
+            {
+                //triangles = new int[trianglesData.Length];
+
+                //for (int i = 0; i < triangles.Length; i++)
+                //    triangles[i] = trianglesData[i];
+            }
+
+            public override string ToString()
+            {
+                return GetMeshString;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class PostData : IPostData
         {
             #region Components
 
             #region Post Data
 
-            public Profile profile = new Profile();
-            public PostContent content = new PostContent();
+            public string name;
+
+            public Post post;
+            public Profile profile;
+            public ModelMeshData content;
+
+            //public PostContent content = new PostContent();
 
             public string identifier = string.Empty;
             public int viewPositionID = 0;
@@ -3278,7 +3372,7 @@ namespace Com.RedicalGames.Filar
 
             #region Post Reports
 
-            public List<Report<Post>> reports = new List<Report<Post>>();
+            public List<Report<PostHandler>> reports = new List<Report<PostHandler>>();
             public PostDataContentStatus status = PostDataContentStatus.None;
 
             #endregion
@@ -3298,18 +3392,26 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
+            public void SetPost(Post post) => this.post = post;
             public void SetProfile(Profile profile) => this.profile = profile;
-            public void SetContent(PostContent content) => this.content = content;
+            public void SetContent(ModelMeshData content) => this.content = content;
 
             public void SetIdentifier(string identifier) => this.identifier = identifier;
             public void SetViewPositionID(int viewPositionID) => this.viewPositionID = viewPositionID;
             public void SetStatus(PostDataContentStatus status) => this.status = status;
 
+            public void SetModelMeshData(MeshData meshData)
+            {
+                content = new ModelMeshData();
+                content.mesh = content.MeshDataToString(meshData, "m|");
+            }
+
             #endregion
 
             #region Data Getters
+            public Post GetPost() => post;
             public Profile GetProfile() => profile;
-            public PostContent GetContent() => content;
+            public ModelMeshData GetContent() => content;
 
 
             public string GetIdentifier() => identifier ?? Helpers.GenerateUniqueIdentifier();
@@ -3643,9 +3745,9 @@ namespace Com.RedicalGames.Filar
 
             #region Reports
 
-            public void AddReport(Report<Post> report, Action<CallbackData<Report<Post>>> callback = null)
+            public void AddReport(Report<PostHandler> report, Action<CallbackData<Report<PostHandler>>> callback = null)
             {
-                CallbackData<Report<Post>> callbackResults = new CallbackData<Report<Post>>();
+                CallbackData<Report<PostHandler>> callbackResults = new CallbackData<Report<PostHandler>>();
 
                 if (!GetReports().Contains(report))
                 {
@@ -3674,7 +3776,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void RemoveReport(Report<Post> report, Action<Callback> callback = null)
+            public void RemoveReport(Report<PostHandler> report, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -3725,7 +3827,7 @@ namespace Com.RedicalGames.Filar
 
             #region Reports Getters
 
-            public List<Report<Post>> GetReports() => reports;
+            public List<Report<PostHandler>> GetReports() => reports;
             public int GetReportsCount() => GetReports().Count;
             public bool IsReported() => GetReportsCount() > 0 && GetStatus() == PostDataContentStatus.Reported;
 
@@ -4009,27 +4111,55 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public SerializableAsset serializableAsset = new SerializableAsset();
+            public MeshData meshData = new MeshData();
 
             #endregion
 
             #region Main
+
+            #region Constructors
 
             public PostContent()
             {
 
             }
 
-            public PostContent(SerializableAsset serializableAsset)
+            public PostContent(MeshData meshData)
             {
-                this.serializableAsset = serializableAsset;
+                this.meshData = meshData;
             }
+
+            #endregion
+
+            #region Mesh Data
+
+            public void SetMeshData(MeshData meshData) => this.meshData = meshData;
+
+            public MeshData GetMeshData() => meshData;
+
+            #endregion
+
+            #region Model
+
+            public GameObject Model(Transform parent = null, bool worldPositionStays = false)
+            {
+                GameObject model = new GameObject(name);
+                model.AddComponent<MeshFilter>().mesh = GetMeshData().GetMesh();
+                model.AddComponent<MeshRenderer>();
+
+                if (parent != null)
+                    model.transform.SetParent(parent, worldPositionStays);
+
+                return model;
+            }
+
+            #endregion
 
             #endregion
         }
 
         [Serializable]
-        public class Post : PostData
+        public class Post : PostDataAttributes
         {
             #region Components
 
@@ -4044,6 +4174,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
+
             #region Constructors
 
             public Post()
@@ -4051,27 +4182,67 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public Post(string title, string caption, Profile profile, PostContent data, string postID = null)
+            public Post(string title, string caption)
             {
                 this.title = title;
                 this.caption = caption;
+            }
+
+            #endregion
+
+            public void SetTitle(string title) => this.title = title;
+            public void SetCaption(string caption) => this.caption = caption;
+
+            public string GetTitle() => title;
+            public string GetCaption() => caption;
+
+            #endregion
+        }
+
+        [Serializable]
+        public class PostHandler : PostData
+        {
+            #region Components
+
+            #region User App Info
+
+            public Telemetry telemetry = new Telemetry();
+
+            #endregion
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public PostHandler()
+            {
+
+            }
+
+            public PostHandler(Post post, Profile profile, ModelMeshData contnet, ProfileType userProfileType, string postID = null)
+            {
+                this.post = post;
                 this.profile = profile;
-                this.content = data;
+                this.content = contnet;
+                this.telemetry.SetProfileType(userProfileType);
             }
 
             #endregion
 
             #region Data Setters
 
-            public void SetTitle(string title) => this.title = title;
-            public void SetCaption(string caption) => this.caption = caption;
+            public void SetUserProfileType(ProfileType userProfileType) => telemetry.SetProfileType(userProfileType);
 
             #endregion
 
             #region Data Getters
 
-            public string GetTitle() => title;
-            public string GetCaption() => caption;
+            public ProfileType GetUserProfileType()
+            {
+                return telemetry.GetProfileType();
+            }
 
             #endregion
 
@@ -4083,7 +4254,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public List<SerializableMeshData> subMeshData = new List<SerializableMeshData>();
+            public List<MeshData> subMeshData = new List<MeshData>();
 
             #endregion
 
@@ -4099,26 +4270,32 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class  SerializableMeshData : AppComponent
+        public class  MeshData
         {
             #region Components
 
-            public SerializableVector[] vertices;
-            public SerializableVector[] normals;
-            public SerializableVector[] uvs;
+            public VectorData[] vertices;
             public int[] triangles;
-            public SerializableVector[] tangents;
+            public VectorData[] normals;
+            public VectorData[] uvs;   
+            public VectorData[] tangents;
+            public int[] indices;
+
+            public MeshTopology topology;
+
+            public int topologyInt;
+            public string topologyString;
 
             #endregion
 
             #region Main
 
-            public SerializableMeshData()
+            public MeshData()
             {
 
             }
 
-            public SerializableMeshData(SerializableVector[] vertices = null, int[] triangles = null, SerializableVector[] normals = null, SerializableVector[] uvs = null, SerializableVector[] tangents = null)
+            public MeshData(VectorData[] vertices = null, int[] triangles = null, VectorData[] normals = null, VectorData[] uvs = null, VectorData[] tangents = null)
             {
                 this.vertices = vertices;
                 this.triangles = triangles;
@@ -4127,7 +4304,7 @@ namespace Com.RedicalGames.Filar
                 this.tangents = tangents;
             }
 
-            public SerializableMeshData(List<SerializableVector> vertices = null, List<int> triangles = null, List<SerializableVector> normals = null, List<SerializableVector> uvs = null, List<SerializableVector> tangents = null)
+            public MeshData(List<VectorData> vertices = null, List<int> triangles = null, List<VectorData> normals = null, List<VectorData> uvs = null, List<VectorData> tangents = null)
             {
                 this.vertices = vertices.ToArray();
                 this.triangles = triangles.ToArray();
@@ -4192,39 +4369,39 @@ namespace Com.RedicalGames.Filar
 
             //public SerializableMeshData(Mesh mesh) => ConvertToSerializableMeshData(mesh);
 
-            async Task<List<SerializableVector>> GetSerializableVectorDataAsync(List<Vector2> data)
+            async Task<List<VectorData>> GetSerializableVectorDataAsync(List<Vector2> data)
             {
-                var serializableVectors = new List<SerializableVector>();
+                var serializableVectors = new List<VectorData>();
 
                 for (int i = 0; i < data.Count; i++)
                 {
-                    serializableVectors.Add(new SerializableVector(data[i]));
+                    serializableVectors.Add(new VectorData(data[i]));
                     await Task.Yield();
                 }
 
                 return serializableVectors;
             }
 
-            async Task<List<SerializableVector>> GetSerializableVectorDataAsync(List<Vector3> data)
+            async Task<List<VectorData>> GetSerializableVectorDataAsync(List<Vector3> data)
             {
-                var serializableVectors = new List<SerializableVector>();
+                var serializableVectors = new List<VectorData>();
 
                 for (int i = 0; i < data.Count; i++)
                 {
-                    serializableVectors.Add(new SerializableVector(data[i]));
+                    serializableVectors.Add(new VectorData(data[i]));
                     await Task.Yield();
                 }
 
                 return serializableVectors;
             }
 
-            async Task<List<SerializableVector>> GetSerializableVectorDataAsync(List<Vector4> data)
+            async Task<List<VectorData>> GetSerializableVectorDataAsync(List<Vector4> data)
             {
-                var serializableVectors = new List<SerializableVector>();
+                var serializableVectors = new List<VectorData>();
 
                 for (int i = 0; i < data.Count; i++)
                 {
-                    serializableVectors.Add(new SerializableVector(data[i]));
+                    serializableVectors.Add(new VectorData(data[i]));
                     await Task.Yield();
                 }
 
@@ -4268,11 +4445,11 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(intSubListResults).ToArray();
             }
 
-            async Task<SerializableVector[]> CreateSerializableVectorDataAsync(Vector2[] vectorData, int iterations, IProgress<int> progress)
+            async Task<VectorData[]> CreateSerializableVectorDataAsync(Vector2[] vectorData, int iterations, IProgress<int> progress)
             {
                 var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
 
-                var vectorDataTasks = new List<Task<List<SerializableVector>>>();
+                var vectorDataTasks = new List<Task<List<VectorData>>>();
 
                 for (int i = 0; i < vectorSublist.Count; i++)
                 {
@@ -4284,7 +4461,7 @@ namespace Com.RedicalGames.Filar
 
                 await Task.WhenAll(vectorDataTasks);
 
-                var vectorSubListResults = new List<List<SerializableVector>>();
+                var vectorSubListResults = new List<List<VectorData>>();
 
                 for (int i = 0; i < vectorDataTasks.Count; i++)
                     vectorSubListResults.Add(vectorDataTasks[i].Result);
@@ -4292,11 +4469,11 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(vectorSubListResults).ToArray();
             }
 
-            async Task<SerializableVector[]> CreateSerializableVectorDataAsync(Vector3[] vectorData, int iterations, IProgress<int> progress)
+            async Task<VectorData[]> CreateSerializableVectorDataAsync(Vector3[] vectorData, int iterations, IProgress<int> progress)
             {
                 var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
 
-                var vectorDataTasks = new List<Task<List<SerializableVector>>>();
+                var vectorDataTasks = new List<Task<List<VectorData>>>();
 
                 for (int i = 0; i < vectorSublist.Count; i++)
                 {
@@ -4307,7 +4484,7 @@ namespace Com.RedicalGames.Filar
 
                 await Task.WhenAll(vectorDataTasks);
 
-                var vectorSubListResults = new List<List<SerializableVector>>();
+                var vectorSubListResults = new List<List<VectorData>>();
 
                 for (int i = 0; i < vectorDataTasks.Count; i++)
                     vectorSubListResults.Add(vectorDataTasks[i].Result);
@@ -4315,11 +4492,11 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(vectorSubListResults).ToArray();
             }
 
-            async Task<SerializableVector[]> CreateSerializableVectorDataAsync(Vector4[] vectorData, int iterations, IProgress<int> progress)
+            async Task<VectorData[]> CreateSerializableVectorDataAsync(Vector4[] vectorData, int iterations, IProgress<int> progress)
             {
                 var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
 
-                var vectorDataTasks = new List<Task<List<SerializableVector>>>();
+                var vectorDataTasks = new List<Task<List<VectorData>>>();
 
                 for (int i = 0; i < vectorSublist.Count; i++)
                 {
@@ -4330,7 +4507,7 @@ namespace Com.RedicalGames.Filar
 
                 await Task.WhenAll(vectorDataTasks);
 
-                var vectorSubListResults = new List<List<SerializableVector>>();
+                var vectorSubListResults = new List<List<VectorData>>();
 
                 for (int i = 0; i < vectorDataTasks.Count; i++)
                     vectorSubListResults.Add(vectorDataTasks[i].Result);
@@ -4340,19 +4517,8 @@ namespace Com.RedicalGames.Filar
 
 
 
-            public async Task<SerializableMeshData> ConvertToSerializableMeshDataAsync(Mesh targetMesh)
+            public async Task<MeshData> ConvertToSerializableMeshDataAsync(Mesh targetMesh)
             {
-                #region Mesh Config
-
-                var mesh = Helpers.GetReadableMesh(targetMesh);
-
-                mesh.MarkDynamic();
-                mesh.Optimize();
-                mesh.OptimizeIndexBuffers();
-                mesh.OptimizeReorderVertexBuffer();
-
-                #endregion
-
                 #region Mesh Data
 
                 var sw = new System.Diagnostics.Stopwatch();
@@ -4396,11 +4562,23 @@ namespace Com.RedicalGames.Filar
 
                 tangentsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
 
-                var verticesData = CreateSerializableVectorDataAsync(mesh.vertices, 1000, vertsProgress);
-                var trianglesData = CreateSerializableIntDataAsync(mesh.triangles, 2000, trisProgress);
-                var normalsData = CreateSerializableVectorDataAsync(mesh.normals, 1000, normalsProgress);
-                var uvsData = CreateSerializableVectorDataAsync(mesh.uv, 1000, uvsProgress);
-                var tangentsData = CreateSerializableVectorDataAsync(mesh.tangents, 1000, tangentsProgress);
+                var indicesProgress = new Progress<int>(progress =>
+                {
+
+                });
+
+                indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var verticesData = CreateSerializableVectorDataAsync(targetMesh.vertices, 1000, vertsProgress);
+                var trianglesData = CreateSerializableIntDataAsync(targetMesh.triangles, 2000, trisProgress);
+                var normalsData = CreateSerializableVectorDataAsync(targetMesh.normals, 1000, normalsProgress);
+                var uvsData = CreateSerializableVectorDataAsync(targetMesh.uv, 1000, uvsProgress);
+                var tangentsData = CreateSerializableVectorDataAsync(targetMesh.tangents, 1000, tangentsProgress);
+                var indicesData = CreateSerializableIntDataAsync(targetMesh.GetIndices(0), 2000, indicesProgress);
+
+                topology = targetMesh.GetTopology(0);
+                topologyInt = (int)targetMesh.GetTopology(0);
+                topologyString = targetMesh.GetTopology(0).ToString();
 
                 await Task.WhenAll(verticesData, trianglesData, normalsData, uvsData, tangentsData);
 
@@ -4426,7 +4604,7 @@ namespace Com.RedicalGames.Filar
             {
                 Mesh mesh = new Mesh();
 
-                mesh.name = name;
+                //mesh.name = name;
 
                 #region Vertices
 
@@ -4484,7 +4662,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SerializableVector : AppComponent
+        public class VectorData
         {
             #region Components
 
@@ -4494,25 +4672,25 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public SerializableVector()
+            public VectorData()
             {
 
             }
 
-            public SerializableVector(float x, float y)
+            public VectorData(float x, float y)
             {
                 this.x = x;
                 this.y = y;
             }
 
-            public SerializableVector(float x, float y, float z)
+            public VectorData(float x, float y, float z)
             {
                 this.x = x;
                 this.y = y;
                 this.z = z;
             }
 
-            public SerializableVector(float x, float y, float z, float w)
+            public VectorData(float x, float y, float z, float w)
             {
                 this.x = x;
                 this.y = y;
@@ -4520,20 +4698,20 @@ namespace Com.RedicalGames.Filar
                 this.w = w;
             }
 
-            public SerializableVector(Vector2 vector)
+            public VectorData(Vector2 vector)
             {
                 x = vector.x;
                 y = vector.y;
             }
 
-            public SerializableVector(Vector3 vector)
+            public VectorData(Vector3 vector)
             {
                 x = vector.x;
                 y = vector.y;
                 z = vector.z;
             }
 
-            public SerializableVector(Vector4 vector)
+            public VectorData(Vector4 vector)
             {
                 x = vector.x;
                 y = vector.y;
@@ -4541,13 +4719,18 @@ namespace Com.RedicalGames.Filar
                 w = vector.w;
             }
 
+            public override string ToString()
+            {
+                return $"{x}:{y}:{z}";
+            }
+
             public Vector2 ToVector2() => new Vector2(x, y);
             public Vector3 ToVector3() => new Vector3(x, y, z);
             public Vector4 ToVector4() => new Vector4(x, y, z, w);
 
-            public SerializableVector FromVector(Vector2 vector) => new SerializableVector(vector.x, vector.y);
-            public SerializableVector FromVector(Vector3 vector) => new SerializableVector(vector.x, vector.y, vector.z);
-            public SerializableVector FromVector(Vector4 vector) => new SerializableVector(vector.x, vector.y, vector.z, vector.w);
+            public VectorData FromVector(Vector2 vector) => new VectorData(vector.x, vector.y);
+            public VectorData FromVector(Vector3 vector) => new VectorData(vector.x, vector.y, vector.z);
+            public VectorData FromVector(Vector4 vector) => new VectorData(vector.x, vector.y, vector.z, vector.w);
 
             #endregion
         }
@@ -4601,7 +4784,7 @@ namespace Com.RedicalGames.Filar
         #region Profile
 
         [Serializable]
-        public class Profile : SerializableData
+        public class Profile : PostDataAttributes
         {
             #region Components
 
@@ -4615,12 +4798,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region User App Info
-
-            public Telemetry telemetry = new Telemetry();
-
-            #endregion
-
             #endregion
 
             #region Main
@@ -4629,12 +4806,11 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public Profile(string userName, string userEmail, string userPassword, ProfileType userProfileType, string userProfilePictureURL = null)
+            public Profile(string userName, string userEmail, string userPassword, string userProfilePictureURL = null)
             {
                 this.userName = userName;
                 this.userEmail = userEmail;
                 this.userPassword = userPassword;
-                this.telemetry.SetProfileType(userProfileType);
                 this.userProfilePictureURL = userProfilePictureURL;
             }
 
@@ -4644,7 +4820,6 @@ namespace Com.RedicalGames.Filar
             public void SetUserEmail(string userEmail) => this.userEmail = userEmail;
             public void SetUserPassword(string userPassword) => this.userPassword = userPassword;
             public void SetUserProfilePictureURL(string userProfilePictureURL) => this.userProfilePictureURL = userProfilePictureURL;
-            public void SetUserProfileType(ProfileType userProfileType) => telemetry.SetProfileType(userProfileType);
 
             #endregion
 
@@ -4668,11 +4843,6 @@ namespace Com.RedicalGames.Filar
             public string GetUserProfilePictureURL()
             {
                 return userProfilePictureURL;
-            }
-
-            public ProfileType GetUserProfileType()
-            {
-                return telemetry.GetProfileType();
             }
 
             #endregion
@@ -16421,7 +16591,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data
 
-            protected Post post;
+            protected PostHandler post;
             protected ProjectStructureData structureData;
             protected SceneAsset assetData;
             protected Folder folderData;
@@ -16637,13 +16807,13 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnActionButtonInputs(UIButton<ButtonDataPackets> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetUIWidgetData(ProjectStructureData structureData);
-            protected abstract void OnSetUIWidgetData(Post post);
+            protected abstract void OnSetUIWidgetData(PostHandler post);
             protected abstract void OnSetAssetData(SceneAsset assetData);
             protected abstract void OnScreenUIRefreshed();
 
             #region Set Data
 
-            public void SetPost(Post post)
+            public void SetPost(PostHandler post)
             {
                 this.post = post;
                 OnSetUIWidgetData(post);
@@ -30765,7 +30935,7 @@ namespace Com.RedicalGames.Filar
             public byte[] mainTexture;
 
             [Space(5)]
-            public SerializableVector textureOffset;
+            public VectorData textureOffset;
 
             #endregion
         }
@@ -31303,7 +31473,7 @@ namespace Com.RedicalGames.Filar
 
                     for (int i = 0; i < meshFilters.Length; i++)
                     {
-                        meshInstances[i].mesh = meshFilters[i].sharedMesh;
+                        meshInstances[i].mesh = GetReadableMesh(meshFilters[i].sharedMesh);
                         meshInstances[i].transform = meshFilters[i].transform.localToWorldMatrix;
                         await Task.Yield();
                     }
@@ -31327,9 +31497,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public static async Task<CallbackData<SerializableMeshData>> GetSerializableMeshDataAsync(GameObject obj)
+            public static async Task<CallbackData<MeshData>> GetMeshDataAsync(GameObject obj)
             {
-                CallbackData<SerializableMeshData> callbackResults = new CallbackData<SerializableMeshData>();
+                CallbackData<MeshData> callbackResults = new CallbackData<MeshData>();
 
                 if(obj == null)
                 {
@@ -31352,7 +31522,7 @@ namespace Com.RedicalGames.Filar
                     {
                         Debug.Log(" ====================>>>>>>>>>>>> Begin Convertion.....");
 
-                        var serializableMeshData = new SerializableMeshData();
+                        var serializableMeshData = new MeshData();
                         var serializableMeshTaskResults = await serializableMeshData.ConvertToSerializableMeshDataAsync(meshDataTaskResults.data);
 
                         Debug.Log(" ====================>>>>>>>>>>>> End Convertion.....");

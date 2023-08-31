@@ -9,18 +9,18 @@ namespace Com.RedicalGames.Filar
 
         #region Extension Methods
 
-        public static AppData.SerializableVector ToSerializableVector(this Vector2 vector)
+        public static AppData.VectorData ToSerializableVector(this Vector2 vector)
         {
-            return new AppData.SerializableVector
+            return new AppData.VectorData
             {
                 x = vector.x,
                 y = vector.y
             };
         }
 
-        public static AppData.SerializableVector ToSerializableVector(this Vector3 vector)
+        public static AppData.VectorData ToSerializableVector(this Vector3 vector)
         {
-            return new AppData.SerializableVector
+            return new AppData.VectorData
             {
                 x = vector.x,
                 y = vector.y,
@@ -28,9 +28,9 @@ namespace Com.RedicalGames.Filar
             };
         }
 
-        public static AppData.SerializableVector ToSerializableVector(this Vector4 vector)
+        public static AppData.VectorData ToSerializableVector(this Vector4 vector)
         {
-            return new AppData.SerializableVector
+            return new AppData.VectorData
             {
                 x = vector.x,
                 y = vector.y,
@@ -45,9 +45,9 @@ namespace Com.RedicalGames.Filar
 
         //public static AppData.SerializableMeshData ToSerializableMeshData(this Mesh mesh) => new AppData.SerializableMeshData(mesh);
 
-        public static async Task<AppData.SerializableMeshData> ToSerializableMeshDataAsync(this Mesh mesh)
+        public static async Task<AppData.MeshData> ToSerializableMeshDataAsync(this Mesh mesh)
         {
-            var data = new AppData.SerializableMeshData();
+            var data = new AppData.MeshData();
             var results = await data.ConvertToSerializableMeshDataAsync(mesh);
 
             return results;

@@ -1749,7 +1749,7 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.PostHandler> posts, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {

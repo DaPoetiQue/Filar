@@ -1,8 +1,9 @@
+using Firebase.Database;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace Com.RedicalGames.Filar
 {
@@ -28,6 +29,8 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
+        DatabaseReference databaseReference;
+
         #endregion
 
         #region Unity Callbacks
@@ -49,28 +52,63 @@ namespace Com.RedicalGames.Filar
             //    callback.Invoke(callbackResults);
         }
 
-        public async void OnPublish(GameObject obj, Action<AppData.Callback> callback = null)
+        public async void OnPublish(AppData.PostHandler postHandler, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            var results = await AppData.Helpers.GetSerializableMeshDataAsync(obj);
+            if (postHandler != null)
+            {
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
 
-            var mesh = results.data.GetMesh();
+                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
-            mesh.RecalculateBounds();
-            mesh.RecalculateNormals();
-            mesh.RecalculateTangents();
+                while (databaseReference == null)
+                    await Task.Yield();
 
-            GameObject test = new GameObject("Test Object");
-            MeshFilter filter = test.AddComponent<MeshFilter>();
-            MeshRenderer renderer = test.AddComponent<MeshRenderer>();
-            filter.mesh = mesh;
+                await Task.Delay(1000);
 
-            callbackResults.SetResult(results);
+                FirebaseDatabase.DefaultInstance.GetReference("App Info").ValueChanged += PublishingManager_ValueChanged;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts").ValueChanged += PublishingManager_ValueChanged;
 
-            Log(callbackResults.ResultCode, $" <<<<<<=================>>>>>> On Publish Results : {callbackResults.Result}", this);
+                // var postData = JsonConvert.SerializeObject(post, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+
+                var post = JsonUtility.ToJson(postHandler.post);
+                var postProfileData = JsonUtility.ToJson(postHandler.profile);
+                var postContentData = JsonUtility.ToJson(postHandler.content);
+
+                LogInfo($" Post Identifier : {postHandler.GetIdentifier()} - Post Data : {postProfileData}", this);
+
+                Dictionary<string, object> postObject = new Dictionary<string, object>();
+                postObject.Add(postHandler.GetIdentifier(), post);
+
+                Dictionary<string, object> postProfileDataObject = new Dictionary<string, object>();
+                postProfileDataObject.Add(postHandler.GetIdentifier(), postProfileData);
+
+                Dictionary<string, object> postContentObject = new Dictionary<string, object>();
+                postContentObject.Add(postHandler.GetIdentifier(), postContentData);
+
+                await databaseReference.Child("Posts Runtime Data").Child("Posts").UpdateChildrenAsync(postObject);
+                await databaseReference.Child("Posts Runtime Data").Child("Profiles").UpdateChildrenAsync(postProfileDataObject);
+                await databaseReference.Child("Posts Runtime Data").Child("Contents").UpdateChildrenAsync(postContentObject);
+
+                sw.Stop();
+                LogSuccess($" Post Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+            }
+            else
+                LogError("Post Is Missing - Null", this);
 
             callback?.Invoke(callbackResults);
+        }
+
+        private void PublishingManager_ValueChanged1(object sender, ValueChangedEventArgs e)
+        {
+      
+        }
+
+        private void PublishingManager_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+           
         }
 
         #endregion
