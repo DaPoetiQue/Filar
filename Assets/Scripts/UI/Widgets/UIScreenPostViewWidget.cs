@@ -83,26 +83,24 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnSetUIWidgetData(AppData.PostHandler postHandler)
+        protected override void OnSetUIWidgetData(AppData.Post postHandler)
         {
             #region Post 
 
-            LogInfo($" -- Assigning Post : {postHandler.name} - Caption : {postHandler.post.GetCaption()}", this);
+            LogInfo($" -- Assigning Post : {postHandler.GetTitle()} - Caption : {postHandler.GetCaption()}", this);
 
-            SetUITextDisplayerValue(postHandler.post.GetTitle(), AppData.ScreenTextType.TitleDisplayer);
+            SetUITextDisplayerValue(postHandler.GetTitle(), AppData.ScreenTextType.TitleDisplayer);
 
             #endregion
 
             #region Post Caption
 
-            SetUITextDisplayerValue(postHandler.post.GetCaption(), AppData.ScreenTextType.MessageDisplayer);
+            SetUITextDisplayerValue(postHandler.GetCaption(), AppData.ScreenTextType.MessageDisplayer);
 
             #endregion
 
             #region Post Date Time
 
-            string postTimeDate = postHandler.GetCreationDateTime().date;
-            SetUITextDisplayerValue(postTimeDate, AppData.ScreenTextType.TimeDateDisplayer);
 
             #endregion
         }

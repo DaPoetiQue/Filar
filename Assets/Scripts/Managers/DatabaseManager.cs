@@ -239,7 +239,9 @@ namespace Com.RedicalGames.Filar
         DatabaseReference databaseReference;
 
         List<AppData.AppInfo> appInfoDatabase = new List<AppData.AppInfo>();
-        List<AppData.PostHandler> postsDatabase = new List<AppData.PostHandler>();
+        List<AppData.Post> postsDatabase = new List<AppData.Post>();
+        List<AppData.Profile> profilesDatabase = new List<AppData.Profile>();
+        List<AppData.ModelMeshData> contentsDatabase = new List<AppData.ModelMeshData>();
 
         #endregion
 
@@ -257,6 +259,8 @@ namespace Com.RedicalGames.Filar
 
         public bool IsServerAppInfoDatabaseInitialized { get; private set; }
         public bool IsServerPostsDatabaseInitialized { get; private set; }
+        public bool IsServerProfilesDatabaseInitialized { get; private set; }
+        public bool IsServerContentsDatabaseInitialized { get; private set; }
         public bool IsLocalStorageInitialized { get; private set; }
 
         #endregion
@@ -294,7 +298,9 @@ namespace Com.RedicalGames.Filar
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
                 FirebaseDatabase.DefaultInstance.GetReference("App Info").ValueChanged += OnAppInfoDatabaseUpdate;
-                FirebaseDatabase.DefaultInstance.GetReference("Posts").ValueChanged += OnPostsDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Posts").ValueChanged += OnPostsDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Profiles").ValueChanged += OnPostsDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Contents").ValueChanged += OnPostsDatabaseUpdate;
 
                 #region Test Add Data
 
@@ -365,21 +371,6 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Publishing
-
-        public async void OnPublish(AppData.PostHandler post, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            var postData = JsonUtility.ToJson(post);
-
-            Dictionary<string, object> childs = new Dictionary<string, object>();
-            childs.Add(post.GetProfile().GetUserName(), post);
-
-            await databaseReference.Child("Posts").UpdateChildrenAsync(childs);
-            await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
-
-            callback?.Invoke(callbackResults);
-        }
 
         #endregion
 
@@ -581,14 +572,14 @@ namespace Com.RedicalGames.Filar
                         {
                             if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                             {
-                                postsDatabase = new List<AppData.PostHandler>();
+                                postsDatabase = new List<AppData.Post>();
 
                                 var postsSnapshots = valueChangedEvent.Snapshot.Children;
 
                                 foreach (var postSnapshot in postsSnapshots)
                                 {
                                     var resultsJson = (string)postSnapshot.GetValue(true);
-                                    AppData.PostHandler post = JsonUtility.FromJson<AppData.PostHandler>(resultsJson);
+                                    AppData.Post post = JsonUtility.FromJson<AppData.Post>(resultsJson);
 
                                     if (!postsDatabase.Contains(post))
                                         postsDatabase.Add(post);
@@ -607,6 +598,68 @@ namespace Com.RedicalGames.Filar
                                     LogError("Failed To Get Posts From Database.", this);
                             }
                         }
+
+                        if (valueChangedEvent.Snapshot.Key == "Profiles")
+                        {
+                            if (valueChangedEvent.Snapshot.ChildrenCount > 0)
+                            {
+                                profilesDatabase = new List<AppData.Profile>();
+
+                                var profilesSnapshots = valueChangedEvent.Snapshot.Children;
+
+                                foreach (var profileSnapshot in profilesSnapshots)
+                                {
+                                    var resultsJson = (string)profileSnapshot.GetValue(true);
+                                    AppData.Profile profile = JsonUtility.FromJson<AppData.Profile>(resultsJson);
+
+                                    if (!profilesDatabase.Contains(profile))
+                                        profilesDatabase.Add(profile);
+                                    else
+                                        LogWarning("Server Profile Already Exists In Local Database", this);
+                                }
+
+                                if (profilesDatabase.Count > 0)
+                                {
+                                    if (!IsServerProfilesDatabaseInitialized)
+                                        IsServerProfilesDatabaseInitialized = true;
+
+                                    await screenUIManager.RefreshAsync();
+                                }
+                                else
+                                    LogError("Failed To Get Profile From Database.", this);
+                            }
+                        }
+
+                        if (valueChangedEvent.Snapshot.Key == "Contents")
+                        {
+                            if (valueChangedEvent.Snapshot.ChildrenCount > 0)
+                            {
+                                contentsDatabase = new List<AppData.ModelMeshData>();
+
+                                var contentsSnapshots = valueChangedEvent.Snapshot.Children;
+
+                                foreach (var contentSnapshot in contentsSnapshots)
+                                {
+                                    var resultsJson = (string)contentSnapshot.GetValue(true);
+                                    AppData.ModelMeshData content = JsonUtility.FromJson<AppData.ModelMeshData>(resultsJson);
+
+                                    if (!contentsDatabase.Contains(content))
+                                        contentsDatabase.Add(content);
+                                    else
+                                        LogWarning("Server Content Already Exists In Local Database", this);
+                                }
+
+                                if (contentsDatabase.Count > 0)
+                                {
+                                    if (!IsServerContentsDatabaseInitialized)
+                                        IsServerContentsDatabaseInitialized = true;
+
+                                    await screenUIManager.RefreshAsync();
+                                }
+                                else
+                                    LogError("Failed To Get Content From Database.", this);
+                            }
+                        }
                     }
                 
                 }, "Screen UI Manager Is Not Yet Initialized.");
@@ -618,9 +671,9 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void GetPosts(Action<AppData.CallbackDataList<AppData.PostHandler>> callback)
+        public void GetPosts(Action<AppData.CallbackDataList<AppData.Post>> callback)
         {
-            AppData.CallbackDataList<AppData.PostHandler> callbackResults = new AppData.CallbackDataList<AppData.PostHandler>();
+            AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>();
 
             AppData.Helpers.GetAppComponentsValid(postsDatabase, "Database Posts", databasePostsValidationCallbackResults => 
             {
@@ -642,9 +695,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public async Task<AppData.CallbackDataList<AppData.PostHandler>> GetPostsAsync()
+        public async Task<AppData.CallbackDataList<AppData.Post>> GetPostsAsync()
         {
-            AppData.CallbackDataList<AppData.PostHandler> callbackResults = new AppData.CallbackDataList<AppData.PostHandler>();
+            AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>();
 
             AppData.Helpers.GetAppComponentsValid(postsDatabase, "Database Posts", databasePostsValidationCallbackResults =>
             {

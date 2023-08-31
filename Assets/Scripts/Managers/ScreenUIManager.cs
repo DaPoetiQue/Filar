@@ -1749,11 +1749,11 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataList<AppData.PostData>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.PostHandler> posts, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.Post>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
-                AppData.CallbackDataList<AppData.PostData> callbackResults = new AppData.CallbackDataList<AppData.PostData>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -1786,7 +1786,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var widget = AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value").data;
 
-                                            List<AppData.PostData> postDatas = new List<AppData.PostData>();
+                                            List<AppData.Post> postDatas = new List<AppData.Post>();
 
                                             callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
 
@@ -1802,7 +1802,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         widgetComponent.SetPost(post);
 
-                                                        postWidget.name = post.name;
+                                                        postWidget.name = post.GetIdentifier();
 
                                                         var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
@@ -1832,25 +1832,9 @@ namespace Com.RedicalGames.Filar
                                             while(screenContentContainer.GetContentCount().data != posts.Count)
                                                 await Task.Yield();
 
-                                            AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts, async hasEqualValueCallbackResults =>
-                                            {
-                                                callbackResults.SetResult(hasEqualValueCallbackResults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    callbackResults.result = "Posts Widgets Loaded.";
-                                                    callbackResults.data = postDatas;
-                                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.result = "Posts Widgets Counldn't Load.";
-                                                    callbackResults.data = default;
-                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-
-                                                    await Task.Yield();
-                                                }
-                                            });
+                                            callbackResults.result = "Posts Widgets Loaded.";
+                                            callbackResults.data = postDatas;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
                                     }
                                 }

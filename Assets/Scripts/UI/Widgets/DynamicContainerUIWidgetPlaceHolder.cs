@@ -63,7 +63,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnSetUIWidgetData(AppData.PostHandler post)
+        protected override void OnSetUIWidgetData(AppData.Post post)
         {
             throw new System.NotImplementedException();
         }

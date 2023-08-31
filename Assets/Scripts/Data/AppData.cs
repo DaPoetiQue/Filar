@@ -16591,7 +16591,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data
 
-            protected PostHandler post;
+            protected Post post;
             protected ProjectStructureData structureData;
             protected SceneAsset assetData;
             protected Folder folderData;
@@ -16807,13 +16807,13 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnActionButtonInputs(UIButton<ButtonDataPackets> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetUIWidgetData(ProjectStructureData structureData);
-            protected abstract void OnSetUIWidgetData(PostHandler post);
+            protected abstract void OnSetUIWidgetData(Post post);
             protected abstract void OnSetAssetData(SceneAsset assetData);
             protected abstract void OnScreenUIRefreshed();
 
             #region Set Data
 
-            public void SetPost(PostHandler post)
+            public void SetPost(Post post)
             {
                 this.post = post;
                 OnSetUIWidgetData(post);
