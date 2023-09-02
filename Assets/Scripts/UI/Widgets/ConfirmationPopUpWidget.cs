@@ -51,7 +51,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var screenUIManager = screenUIManagerCallbackResults.data;
 
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), containerCallbackResults =>
+                        AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), containerCallbackResults =>
                         {
                             if (containerCallbackResults.Success())
                             {
@@ -86,7 +86,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     if (valueAssignedCallbackResults.Success())
                                                     {
-                                                        DatabaseManager.Instance.GetSortedWidgetsFromList(selectedWidgets, GetSelectableAssetType(), getFolderStructureSelectionData =>
+                                                        AppDatabaseManager.Instance.GetSortedWidgetsFromList(selectedWidgets, GetSelectableAssetType(), getFolderStructureSelectionData =>
                                                         {
                                                             if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                                             {
@@ -123,7 +123,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (currentSelections != null && currentSelections.Count > 0)
                                             {
-                                                DatabaseManager.Instance.GetSortedWidgetsFromList(currentSelections, GetSelectableAssetType(), getFolderStructureSelectionData =>
+                                                AppDatabaseManager.Instance.GetSortedWidgetsFromList(currentSelections, GetSelectableAssetType(), getFolderStructureSelectionData =>
                                                 {
                                                     if (AppData.Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                                     {
@@ -135,7 +135,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (widget != null)
                                                             {
-                                                                DatabaseManager.Instance.GetRefreshData().screenContainer.OnFocusToWidget(widget);
+                                                                AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnFocusToWidget(widget);
                                                                 UpdateWidgetSelection(widget);
                                                             }
                                                             else
@@ -191,11 +191,11 @@ namespace Com.RedicalGames.Filar
 
         void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)
         {
-            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
             {
-                if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Pager)
+                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Pager)
                 {
-                    if (DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_ItemExistInCurrentPage(selectedWidget))
+                    if (AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_ItemExistInCurrentPage(selectedWidget))
                     {
                         Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
                         SetWidgetPosition(widgetPosition);
@@ -203,17 +203,17 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
-                if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
+                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == AppData.PaginationViewType.Scroller)
                 {
                     Vector3 widgetPosition = new Vector3(selectedWidget.GetWidgetPosition().x, selectedWidget.GetWidgetPosition().y, widgetRect.position.z);
                     SetWidgetPosition(widgetPosition);
                     SetWidgetSizeDelta(selectedWidget.GetWidgetSizeDelta());
                 }
 
-                DatabaseManager.Instance.GetRefreshData().screenContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
+                AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
             }
             else
-                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
         }
 
         void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
@@ -221,7 +221,7 @@ namespace Com.RedicalGames.Filar
             int focusedIndex = Mathf.RoundToInt(selectedWidgets.Count / 2);
             var selectedWidget = selectedWidgets[focusedIndex];
 
-            if (DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayout().viewType == AppData.LayoutViewType.ItemView)
+            if (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayout().viewType == AppData.LayoutViewType.ItemView)
             {
                 float positionX = selectedWidget.GetWidgetPosition().x - selectedWidget.GetWidgetPosition().x;
                 float positionY = selectedWidget.GetWidgetPosition().y;
@@ -229,26 +229,26 @@ namespace Com.RedicalGames.Filar
 
                 Vector3 widgetPosition = new Vector3(positionX, positionY, positionZ);
 
-                float width = (selectedWidget.GetWidgetSizeDelta().x * 2) + (DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().x * 2);
-                float height = selectedWidget.GetWidgetSizeDelta().y + (DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y * 2);
+                float width = (selectedWidget.GetWidgetSizeDelta().x * 2) + (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().x * 2);
+                float height = selectedWidget.GetWidgetSizeDelta().y + (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y * 2);
                 Vector2 sizeDelta = new Vector2(width, height);
 
                 SetWidgetSizeDelta(sizeDelta);
                 SetWidgetPosition(widgetPosition);
             }
 
-            if (DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayout().viewType == AppData.LayoutViewType.ListView)
+            if (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayout().viewType == AppData.LayoutViewType.ListView)
             {
-                float widgetHeight = selectedWidget.GetWidgetSizeDelta().y + DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y;
+                float widgetHeight = selectedWidget.GetWidgetSizeDelta().y + AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y;
 
                 float positionX = selectedWidget.GetWidgetPosition().x;
-                float positionY = selectedWidget.GetWidgetPosition().y + ((widgetHeight + DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y) * 2);
+                float positionY = selectedWidget.GetWidgetPosition().y + ((widgetHeight + AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y) * 2);
                 float positionZ = widgetRect.position.z;
 
                 Vector3 widgetPosition = new Vector3(positionX, positionY, positionZ);
 
-                float width = selectedWidget.GetWidgetSizeDelta().x + (DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().x * 2);
-                float height = (selectedWidget.GetWidgetSizeDelta().y * 2) + (DatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y * 2);
+                float width = selectedWidget.GetWidgetSizeDelta().x + (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().x * 2);
+                float height = (selectedWidget.GetWidgetSizeDelta().y * 2) + (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetLayoutSpacing().y * 2);
 
                 Vector2 sizeDelta = new Vector2(width, height);
 
@@ -256,7 +256,7 @@ namespace Com.RedicalGames.Filar
                 SetWidgetPosition(widgetPosition);
             }
 
-            DatabaseManager.Instance.GetRefreshData().screenContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
+            AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnUpdateSelectedWidgets(true, AppData.InputUIState.Selected, true);
         }
 
         protected override void OnHideScreenWidget()

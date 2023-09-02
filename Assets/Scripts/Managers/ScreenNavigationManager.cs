@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
         public void NavigateToFolder(AppData.Folder folder, AppData.UIWidgetInfo folderWidgetInfo, AppData.FolderStructureType structureType)
         {
             // Store Previous Folder
-            AppData.FolderNavigationCommand previousFolderCommand = new AppData.FolderNavigationCommand(DatabaseManager.Instance.GetCurrentFolder(), folderWidgetInfo, structureType);
+            AppData.FolderNavigationCommand previousFolderCommand = new AppData.FolderNavigationCommand(AppDatabaseManager.Instance.GetCurrentFolder(), folderWidgetInfo, structureType);
 
             if (!folderNavigationCommands.Contains(previousFolderCommand))
             {
@@ -93,7 +93,7 @@ namespace Com.RedicalGames.Filar
                         SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
                     }
 
-                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen , folder =>
+                    AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen , folder =>
                    {
                        if (AppData.Helpers.IsSuccessCode(folder.resultCode))
                        {
@@ -124,10 +124,10 @@ namespace Com.RedicalGames.Filar
                                 //ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FolderNavigationWidget);
                                 UpdateNavigationRootTitleDisplayer();
 
-                                if (DatabaseManager.Instance.GetProjectStructureData().Success())
-                                    folderNavigationDataPackets.widgetTitle = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
+                                if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
+                                    folderNavigationDataPackets.widgetTitle = AppDatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
                                 else
-                                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                    Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
                             }
                         }
                         else
@@ -156,9 +156,9 @@ namespace Com.RedicalGames.Filar
 
         public void UpdateNavigationRootTitleDisplayer()
         {
-            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
             {
-                string rootFolderName = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name + "/";
+                string rootFolderName = AppDatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name + "/";
                 string formattedTitle = string.Empty;
 
                 if (folderNavigationNameList.Count == 1)
@@ -174,7 +174,7 @@ namespace Com.RedicalGames.Filar
                     formattedTitle = folderDirectoryIndexedWidgetName;
                 }
                 else
-                    formattedTitle = DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
+                    formattedTitle = AppDatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name;
 
                 if (formattedTitle.Length > folderNavigationDataPackets.widgetTitleCharacterLimit)
                 {
@@ -196,7 +196,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
             }
             else
-                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
         }
 
         public AppData.SceneDataPackets GetEmptyFolderDataPackets()

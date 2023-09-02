@@ -11,18 +11,18 @@ using Firebase.Database;
 
 namespace Com.RedicalGames.Filar
 {
-    public class DatabaseManager : AppMonoBaseClass
+    public class AppDatabaseManager : AppMonoBaseClass
     {
         #region Static
 
-        static DatabaseManager _instance;
+        static AppDatabaseManager _instance;
 
-        public static DatabaseManager Instance
+        public static AppDatabaseManager Instance
         {
             get
             {
                 if (_instance == null)
-                    _instance = FindObjectOfType<DatabaseManager>();
+                    _instance = FindObjectOfType<AppDatabaseManager>();
 
                 return _instance;
             }
@@ -259,7 +259,6 @@ namespace Com.RedicalGames.Filar
 
         public bool IsServerAppInfoDatabaseInitialized { get; private set; }
         public bool IsServerPostsDatabaseInitialized { get; private set; }
-        public bool IsServerProfilesDatabaseInitialized { get; private set; }
         public bool IsServerContentsDatabaseInitialized { get; private set; }
         public bool IsLocalStorageInitialized { get; private set; }
 
@@ -298,9 +297,8 @@ namespace Com.RedicalGames.Filar
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
                 FirebaseDatabase.DefaultInstance.GetReference("App Info").ValueChanged += OnAppInfoDatabaseUpdate;
-                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Posts").ValueChanged += OnPostsDatabaseUpdate;
-                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Profiles").ValueChanged += OnPostsDatabaseUpdate;
-                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Contents").ValueChanged += OnPostsDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Info Database").ValueChanged += OnPostsDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Content Database").ValueChanged += OnPostsDatabaseUpdate;
 
                 #region Test Add Data
 
@@ -568,7 +566,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var screenUIManager = screenUIManagerCallbackResults.data;
 
-                        if (valueChangedEvent.Snapshot.Key == "Posts")
+                        if (valueChangedEvent.Snapshot.Key == "Post Info Database")
                         {
                             if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                             {
@@ -599,38 +597,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
 
-                        if (valueChangedEvent.Snapshot.Key == "Profiles")
-                        {
-                            if (valueChangedEvent.Snapshot.ChildrenCount > 0)
-                            {
-                                profilesDatabase = new List<AppData.Profile>();
-
-                                var profilesSnapshots = valueChangedEvent.Snapshot.Children;
-
-                                foreach (var profileSnapshot in profilesSnapshots)
-                                {
-                                    var resultsJson = (string)profileSnapshot.GetValue(true);
-                                    AppData.Profile profile = JsonUtility.FromJson<AppData.Profile>(resultsJson);
-
-                                    if (!profilesDatabase.Contains(profile))
-                                        profilesDatabase.Add(profile);
-                                    else
-                                        LogWarning("Server Profile Already Exists In Local Database", this);
-                                }
-
-                                if (profilesDatabase.Count > 0)
-                                {
-                                    if (!IsServerProfilesDatabaseInitialized)
-                                        IsServerProfilesDatabaseInitialized = true;
-
-                                    await screenUIManager.RefreshAsync();
-                                }
-                                else
-                                    LogError("Failed To Get Profile From Database.", this);
-                            }
-                        }
-
-                        if (valueChangedEvent.Snapshot.Key == "Contents")
+                        if (valueChangedEvent.Snapshot.Key == "Post Content Database")
                         {
                             if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                             {
@@ -3912,17 +3879,21 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), getPostsTaskResults.data, widgetsContainer);
-
-                                            callbackResults.SetResult(widgetsLoadTaskCallbacResults);
-
-                                            LogInfo($" =============+++++++++ Widgets Load Completed With Results : {callbackResults.Result}", this);
+                                            callbackResults.SetResult(GetSortedWidgetList(getPostsTaskResults.data, AppData.SortType.DateModified));
 
                                             if (callbackResults.Success())
-                                                refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                            {
+                                                var sortedWidgets = GetSortedWidgetList(getPostsTaskResults.data, AppData.SortType.DateModified).data;
+                                                var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), sortedWidgets, widgetsContainer);
 
-                                            while (!callbackResults.Success())
-                                                await Task.Yield();
+                                                callbackResults.SetResult(widgetsLoadTaskCallbacResults);
+
+                                                if (callbackResults.Success())
+                                                    refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                while (!callbackResults.Success())
+                                                    await Task.Yield();
+                                            }
                                         }
                                     }
 
@@ -6296,6 +6267,55 @@ namespace Com.RedicalGames.Filar
                 LogError(exception.Message, this);
                 throw exception;
             }
+        }
+
+        public AppData.CallbackDataList<T> GetSortedWidgetList<T>(List<T> widgets, AppData.SortType sortType) where T : AppData.Post
+        {
+            AppData.CallbackDataList<T> callbackResults = new AppData.CallbackDataList<T>();
+
+            if (widgets != null)
+            {
+
+                switch (sortType)
+                {
+                    case AppData.SortType.Ascending:
+
+                        widgets.Sort((firstWidget, secondWidget) => firstWidget.name.CompareTo(secondWidget.name));
+
+                        break;
+
+                    case AppData.SortType.Category:
+
+                        //serializableDataList.Sort((firstWidget, secondWidget) => firstWidget.categoryType.CompareTo(secondWidget.categoryType));
+
+                        break;
+
+
+                    case AppData.SortType.Descending:
+
+                        widgets.Sort((firstWidget, secondWidget) => secondWidget.name.CompareTo(firstWidget.name));
+
+                        break;
+
+                    case AppData.SortType.DateModified:
+
+                        widgets.Sort((firstWidget, secondWidget) => secondWidget.GetCreationDateTime().GetDateTime().CompareTo(firstWidget.GetCreationDateTime().GetDateTime()));
+
+                        break;
+                }
+
+                callbackResults.result = $"Get Sorted : {sortType}";
+                callbackResults.data = widgets;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Get Sorted : {sortType} Failed.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            }
+
+            return callbackResults;
         }
 
         public void GetSortedWidgetList<T>(List<T> serializableDataList, List<T> pinnedList, Action<AppData.CallbackDataList<T>> callback) where T : AppData.SerializableData

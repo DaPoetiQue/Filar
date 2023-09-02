@@ -113,7 +113,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
                     {
                         callbackResults.SetResults(sceneAssetsManagerCallbackResults);
 
@@ -348,7 +348,7 @@ namespace Com.RedicalGames.Filar
 
         void OnLoadAppInitializationBootScreen()
         {
-            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
             {
                 if (sceneAssetsManagerCallbackResults.Success())
                 {
@@ -512,11 +512,11 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.CallbackData<AppData.AppInfo>> SynchronizingAppInfo()
         {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
 
             if(callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
                 await databaseManager.InitializeDatabase();
             }
 
@@ -535,11 +535,11 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.CallbackData<AppData.AppInfo>> CheckEntryPointAsync()
         {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
+            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                 while (!databaseManager.IsServerAppInfoDatabaseInitialized)
                     await Task.Yield();

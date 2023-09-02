@@ -39,10 +39,10 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputActionButtonType.Delete:
 
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
-                        DatabaseManager.Instance.AddToSelectedSceneAsseList(assetData);
-                        DatabaseManager.Instance.SetCurrentSceneAsset(assetData);
+                        AppDatabaseManager.Instance.AddToSelectedSceneAsseList(assetData);
+                        AppDatabaseManager.Instance.SetCurrentSceneAsset(assetData);
                     }
                     else
                         Debug.LogWarning("--> Assets Manager Not Initialized.");
@@ -60,8 +60,8 @@ namespace Com.RedicalGames.Filar
 
                         actionButton.dataPackets.sceneAsset = assetData;
 
-                        if (DatabaseManager.Instance != null)
-                            DatabaseManager.Instance.OnSceneAssetEditMode(actionButton.dataPackets);
+                        if (AppDatabaseManager.Instance != null)
+                            AppDatabaseManager.Instance.OnSceneAssetEditMode(actionButton.dataPackets);
                         else
                             Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
 
@@ -128,8 +128,8 @@ namespace Com.RedicalGames.Filar
                         assetData.assetMode = AppData.AssetModeType.ARMode;
                         actionButton.dataPackets.sceneAsset = assetData;
 
-                        if (DatabaseManager.Instance != null)
-                            DatabaseManager.Instance.OnSceneAssetPreviewMode(actionButton.dataPackets);
+                        if (AppDatabaseManager.Instance != null)
+                            AppDatabaseManager.Instance.OnSceneAssetPreviewMode(actionButton.dataPackets);
                         else
                             Debug.LogWarning("--> RG_Unity - OnActionButtonInputs Failed : Scene Assets Manager Instance Is Not Yet Initialized.");
 
@@ -192,7 +192,7 @@ namespace Com.RedicalGames.Filar
                 // Set Info
                 SetUITextDisplayerValue(assetData.name, AppData.ScreenTextType.TitleDisplayer);
                 SetUITextDisplayerValue(assetData.description, AppData.ScreenTextType.InfoDisplayer);
-                SetUITextDisplayerValue(assetData.creationDateTime.dateTime, AppData.ScreenTextType.TimeDateDisplayer);
+                SetUITextDisplayerValue(assetData.creationDateTime.dateTime, AppData.ScreenTextType.DateTimeDisplayer);
             }
         }
 

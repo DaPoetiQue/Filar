@@ -86,7 +86,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
                     {
                         callbackResults.result = sceneAssetsManagerCallbackResults.result;
                         callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;

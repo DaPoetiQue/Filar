@@ -310,7 +310,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (HasRequiredComponentsAssigned())
                 {
-                    if (DatabaseManager.Instance)
+                    if (AppDatabaseManager.Instance)
                     {
                         foreach (var screen in screens)
                         {
@@ -328,7 +328,7 @@ namespace Com.RedicalGames.Filar
 
                                 // Title Info
                                 AppData.AssetInfoField titleInfoField = new AppData.AssetInfoField();
-                                titleInfoField.name = DatabaseManager.Instance.GetDefaultAssetName();
+                                titleInfoField.name = AppDatabaseManager.Instance.GetDefaultAssetName();
                                 titleInfoField.type = AppData.InfoDisplayerFieldType.Title;
 
                                 // Vertices Info
@@ -349,8 +349,8 @@ namespace Com.RedicalGames.Filar
                                 sceneAsset.info = info;
 
                                 sceneAsset.assetMode = AppData.AssetModeType.CreateMode;
-                                DatabaseManager.Instance.SetCurrentSceneAsset(sceneAsset);
-                                DatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
+                                AppDatabaseManager.Instance.SetCurrentSceneAsset(sceneAsset);
+                                AppDatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
                                 //if (SceneAssetsManager.Instance.GetCurrentSceneAsset().info.fields != null)
                                 //    screen.value.DisplaySceneAssetInfo(SceneAssetsManager.Instance.GetCurrentSceneAsset());
@@ -431,14 +431,14 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, hasAssetsManagerCallbackResults =>
+                                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, hasAssetsManagerCallbackResults =>
                                 {
                                     callbackResults.result = hasAssetsManagerCallbackResults.result;
                                     callbackResults.resultCode = hasAssetsManagerCallbackResults.resultCode;
 
                                     if (callbackResults.Success())
                                     {
-                                        DatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(bootScreenType, bootScreenDataPacketsCallbackResults =>
+                                        AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(bootScreenType, bootScreenDataPacketsCallbackResults =>
                                         {
                                             callbackResults.result = bootScreenDataPacketsCallbackResults.result;
                                             callbackResults.resultCode = bootScreenDataPacketsCallbackResults.resultCode;
@@ -615,11 +615,11 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized."));
+                        callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet Initialized."));
 
                         if (callbackResults.Success())
                         {
-                            var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                            var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                             callbackResults.SetResults(sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(dataPackets.screenType));
 
@@ -890,24 +890,24 @@ namespace Com.RedicalGames.Filar
 
             if (HasRequiredComponentsAssigned())
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
                     switch(screen.value.GetUIScreenType())
                     {
                         case AppData.UIScreenType.ProjectDashboardScreen:
 
-                            if(DatabaseManager.Instance.GetWidgetsContentCount() == 0)
+                            if(AppDatabaseManager.Instance.GetWidgetsContentCount() == 0)
                                 screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
 
-                            DatabaseManager.Instance.GetFolderContentCount(DatabaseManager.Instance.GetCurrentFolder(), folderFound =>
+                            AppDatabaseManager.Instance.GetFolderContentCount(AppDatabaseManager.Instance.GetCurrentFolder(), folderFound =>
                             {
                                 if (!AppData.Helpers.IsSuccessCode(folderFound.resultCode))
-                                    DatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                                    AppDatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
                             });
 
-                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
                             {
-                                if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
+                                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                                 {
                                     screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
                                     {
@@ -916,7 +916,7 @@ namespace Com.RedicalGames.Filar
                                     });
                                 }
 
-                                if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
+                                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
                                 {
                                     screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
                                     {
@@ -926,20 +926,20 @@ namespace Com.RedicalGames.Filar
                                 }
                             }
                             else
-                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
 
-                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
-                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, DatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
+                            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
+                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, AppDatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
                             else
-                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
 
                             screen.value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
 
-                            DatabaseManager.Instance.GetFolderContentCount(DatabaseManager.Instance.GetCurrentFolder(), folderFound =>
+                            AppDatabaseManager.Instance.GetFolderContentCount(AppDatabaseManager.Instance.GetCurrentFolder(), folderFound =>
                             {
                                 if (!AppData.Helpers.IsSuccessCode(folderFound.resultCode))
                                 {
-                                    DatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                                    AppDatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
 
                                     callbackResults.result = $"UI Scene View Of Type {screen.value.GetUIScreenType()} Has Been Updated - UI Disabled On Enter.";
                                     callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -991,7 +991,7 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.Callback> RefreshAsync(int refreshDuration = 0)
         {
-            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
                 callbackResults.SetResult(await OnScreenRefreshAsync(currentScreen.value.GetScreenData(), refreshDuration));
@@ -1001,7 +1001,7 @@ namespace Com.RedicalGames.Filar
 
         public void ScreenRefresh()
         {
-            if (DatabaseManager.Instance != null)
+            if (AppDatabaseManager.Instance != null)
             {
                 if (SelectableManager.Instance != null)
                 {
@@ -1010,13 +1010,13 @@ namespace Com.RedicalGames.Filar
 
                     if (HasCurrentScreen().Success())
                     {
-                        if (DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
+                        if (AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
                         {
-                            DatabaseManager.Instance.HasContentToLoadForSelectedScreen(DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
+                            AppDatabaseManager.Instance.HasContentToLoadForSelectedScreen(AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
                             {
                                 if (hasContentCallbackResults.Success())
                                 {
-                                    DatabaseManager.Instance.GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
+                                    AppDatabaseManager.Instance.GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
                                     {
                                         if (widgetsContentContainers.Success())
                                         {
@@ -1034,7 +1034,7 @@ namespace Com.RedicalGames.Filar
                             });
                         }
                         else
-                            Log(DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultCode, DatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).result, this);
+                            Log(AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultCode, AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).result, this);
                     }
                     else
                         Log(HasCurrentScreen().resultCode, HasCurrentScreen().result, this);
@@ -1060,11 +1060,11 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                 switch (dataPackets.GetUIScreenType())
                 {
@@ -1101,7 +1101,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             #region Set Refresh Data
 
-                                            DatabaseManager.Instance.SetRefreshData(null, screenContainerCallbackResults.data, null, dataSetupCallbackResults =>
+                                            AppDatabaseManager.Instance.SetRefreshData(null, screenContainerCallbackResults.data, null, dataSetupCallbackResults =>
                                             {
                                                 Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
                                             });
@@ -1125,24 +1125,24 @@ namespace Com.RedicalGames.Filar
 
                         if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                         {
-                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
                             {
                                 callbackResults.SetResult(screenContainerCallbackResults);
 
                                 if (callbackResults.Success())
                                 {
-                                    if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                    if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
                                     {
-                                        if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                        if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
                                         {
-                                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : DatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
+                                            var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? AppDatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().rootFolder : AppDatabaseManager.Instance.GetProjectStructureData().data.rootFolder;
                                             var container = screenContainerCallbackResults.data;
 
-                                            DatabaseManager.Instance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
+                                            AppDatabaseManager.Instance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
                                             {
                                                 if (dataSetupCallbackResults.Success())
                                                 {
-                                                    DatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
+                                                    AppDatabaseManager.Instance.Init(rootFolder, container, assetsInitializedCallback =>
                                                     {
                                                         Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
                                                     });
@@ -1150,10 +1150,10 @@ namespace Com.RedicalGames.Filar
                                             });
                                         }
                                         else
-                                            Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                            Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
                                     }
                                     else
-                                        Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                                        Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
                                 }
                             });
                         }
@@ -1753,13 +1753,13 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
                     if (screenType == GetCurrentUIScreenType())
                     {
-                        var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                        var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                         if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                         {
@@ -1878,11 +1878,11 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                AppData.CallbackDataList<AppData.Project> callbackResults = new AppData.CallbackDataList<AppData.Project>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.Project> callbackResults = new AppData.CallbackDataList<AppData.Project>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                     if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
@@ -2035,11 +2035,11 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                     if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
@@ -2171,11 +2171,11 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                     if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
@@ -2360,11 +2360,11 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                     if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {

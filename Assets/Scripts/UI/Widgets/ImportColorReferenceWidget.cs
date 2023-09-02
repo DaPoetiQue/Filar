@@ -191,7 +191,7 @@ namespace Com.RedicalGames.Filar
                 loadingSpinner.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Enabled);
 
                 AppData.ScreenLoadingInitializationData loadingData = new AppData.ScreenLoadingInitializationData();
-                loadingData.duration = DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultScreenRefreshDuration).value;
+                loadingData.duration = AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultScreenRefreshDuration).value;
                 loadingData.isLargeFileSize = isLargeFileSize;
 
                 loadingSpinner.AddLoadingData(loadingData);
@@ -242,7 +242,7 @@ namespace Com.RedicalGames.Filar
         void OnCreateGeneratedColorInfo()
         {
             for (int i = 0; i < generatedColorInfoList.Count; i++)
-                DatabaseManager.Instance.GetHexidecimalFromColor(generatedColorInfoList[i].color, (getHexCallbackResults) =>
+                AppDatabaseManager.Instance.GetHexidecimalFromColor(generatedColorInfoList[i].color, (getHexCallbackResults) =>
                 {
                     if (AppData.Helpers.IsSuccessCode(getHexCallbackResults.resultCode))
                         generatedColorInfoList[i] = getHexCallbackResults.data;
@@ -252,7 +252,7 @@ namespace Com.RedicalGames.Filar
 
             loadingSpinner.SetScreenTextContent("Please Wait - Populating Color Swatch...", AppData.ScreenTextType.MessageDisplayer);
             loadingSpinner.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Disabled);
-            loadingData.duration = DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultScreenRefreshDuration).value;
+            loadingData.duration = AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultScreenRefreshDuration).value;
             loadingData.isLargeFileSize = false;
 
             loadingSpinner.AddLoadingData(loadingData);

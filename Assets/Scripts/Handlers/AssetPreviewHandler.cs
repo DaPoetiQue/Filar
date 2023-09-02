@@ -18,7 +18,7 @@ namespace Com.RedicalGames.Filar
 
         void Init()
         {
-            assetsManager = DatabaseManager.Instance;
+            assetsManager = AppDatabaseManager.Instance;
 
             if (initialVisibilityState == false)
                 Hide();

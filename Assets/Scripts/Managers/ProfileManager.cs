@@ -51,7 +51,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();
 
-            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
             {
                 callbackResults.result = sceneAssetsManagerCallbackResults.result;
                 callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
@@ -70,7 +70,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();
 
-            AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
             {
 
                 callbackResults.SetResults(sceneAssetsManagerCallbackResults);
@@ -87,11 +87,11 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.Callback> SynchronizingProfile()
         {
-            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Database Manager Is Not Yet Initialized."));
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Is Not Yet Initialized."));
 
             if(callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                 await FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
                 {

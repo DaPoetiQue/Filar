@@ -46,9 +46,9 @@ namespace Com.RedicalGames.Filar
                             if (SelectableManager.Instance.HasActiveSelection())
                                 SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.SetCurrentProjectStructureData(structureData);
+                                AppDatabaseManager.Instance.SetCurrentProjectStructureData(structureData);
                                 //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "New Project Name");
 
                                 AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
@@ -117,12 +117,12 @@ namespace Com.RedicalGames.Filar
                 SetUITextDisplayerValue(structureData?.projectInfo?.name, AppData.ScreenTextType.TitleDisplayer);
 
                 string lastModified = structureData?.creationDateTime.date;
-                SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.TimeDateDisplayer);
+                SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.DateTimeDisplayer);
 
                 string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
                 SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
 
-                DatabaseManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
+                AppDatabaseManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
                 {
                     if (projectInfoCallbackResults.Success())
                         SetActionButtonColor(AppData.InputActionButtonType.OpenProject, projectInfoCallbackResults.data.color);

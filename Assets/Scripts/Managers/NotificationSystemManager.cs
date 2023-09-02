@@ -123,10 +123,10 @@ namespace Com.RedicalGames.Filar
             {
                 notificationWidget.GetTransform().anchoredPosition = (onShow) ? Vector2.Lerp(notificationWidget.GetTransform().anchoredPosition,
                     notificationWidget.GetVisibleScreenMountPoint().anchoredPosition,
-                    DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationTransitionalSpeed).value * Time.smoothDeltaTime) :
+                    AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationTransitionalSpeed).value * Time.smoothDeltaTime) :
                     Vector2.Lerp(notificationWidget.GetTransform().anchoredPosition,
                     notificationWidget.GetHiddenScreenMountPoint().anchoredPosition,
-                    DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationTransitionalSpeed).value * Time.smoothDeltaTime);
+                    AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.NotificationTransitionalSpeed).value * Time.smoothDeltaTime);
 
                 float mountDistance = (onShow) ? (notificationWidget.GetTransform().anchoredPosition - notificationWidget.GetVisibleScreenMountPoint().anchoredPosition).sqrMagnitude :
                     (notificationWidget.GetTransform().anchoredPosition - notificationWidget.GetHiddenScreenMountPoint().anchoredPosition).sqrMagnitude;

@@ -103,7 +103,7 @@ namespace Com.RedicalGames.Filar
 
                         Color selectedColor = gradientColoredBG.GetPixel(x, y);
 
-                        DatabaseManager.Instance.GetHexidecimalFromColor(selectedColor, (getHexadecimalCallbackResults) =>
+                        AppDatabaseManager.Instance.GetHexidecimalFromColor(selectedColor, (getHexadecimalCallbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
@@ -139,7 +139,7 @@ namespace Com.RedicalGames.Filar
 
                         Color selectedColor = gradientColoredBG.GetPixel(x, y);
 
-                        DatabaseManager.Instance.GetHexidecimalFromColor(selectedColor, (getHexadecimalCallbackResults) =>
+                        AppDatabaseManager.Instance.GetHexidecimalFromColor(selectedColor, (getHexadecimalCallbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(getHexadecimalCallbackResults.resultCode))
                             {
@@ -186,7 +186,7 @@ namespace Com.RedicalGames.Filar
             if (gradientDisplayer)
             {
                 int pixelCount = gradientResolution.width * gradientResolution.height;
-                gradientColors = DatabaseManager.Instance.GetColorSpectrum(pixelCount);
+                gradientColors = AppDatabaseManager.Instance.GetColorSpectrum(pixelCount);
 
                 if (tex == null)
                     tex = new Texture2D(gradientResolution.width, gradientResolution.height, TextureFormat.RGBA32, true, true);

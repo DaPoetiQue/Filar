@@ -9,7 +9,7 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         Color wirefarmeColor = Color.white;
 
-        DatabaseManager assetsManager;
+        AppDatabaseManager assetsManager;
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace Com.RedicalGames.Filar
 
         void Init()
         {
-            assetsManager = DatabaseManager.Instance;
+            assetsManager = AppDatabaseManager.Instance;
         }
 
         //void OnPreRender()

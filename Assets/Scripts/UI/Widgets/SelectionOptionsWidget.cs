@@ -38,14 +38,14 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-            if (DatabaseManager.Instance != null)
+            if (AppDatabaseManager.Instance != null)
             {
-                if (DatabaseManager.Instance.GetProjectStructureData().Success())
-                    SetCheckboxValue(DatabaseManager.Instance.GetProjectStructureData().data.InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
+                if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
+                    SetCheckboxValue(AppDatabaseManager.Instance.GetProjectStructureData().data.InverseSelect(), AppData.CheckboxInputActionType.InverseSelection);
                 else
-                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                    Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
 
-                var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                 if (widgetsContainer != null)
                 {
@@ -135,12 +135,12 @@ namespace Com.RedicalGames.Filar
         {
            if(actionType == AppData.CheckboxInputActionType.InverseSelection)
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    if (DatabaseManager.Instance.GetProjectStructureData().Success())
-                        DatabaseManager.Instance.GetProjectStructureData().data.SetInverseSelect(value);
+                    if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
+                        AppDatabaseManager.Instance.GetProjectStructureData().data.SetInverseSelect(value);
                     else
-                        Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                        Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
                 }
                 else
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);

@@ -198,8 +198,8 @@ namespace Com.RedicalGames.Filar
 
                 Debug.Log($"RG_Unity : SetPermissionGrantedState Called In Unity - Screen Type : {userPermissionsDataPackets.screenType}");
 
-                if (DatabaseManager.Instance)
-                    DatabaseManager.Instance.SetCurrentSceneMode(userPermissionsDataPackets.sceneMode);
+                if (AppDatabaseManager.Instance)
+                    AppDatabaseManager.Instance.SetCurrentSceneMode(userPermissionsDataPackets.sceneMode);
                 else
                     Debug.LogWarning("--> Scene Assets Not Yet Initialized.");
 
@@ -225,8 +225,8 @@ namespace Com.RedicalGames.Filar
 
                 Debug.Log($"RG_Unity : SetPermissionGrantedState Called In Unity - Screen Type : {userPermissionsDataPackets.screenType}");
 
-                if (DatabaseManager.Instance)
-                    DatabaseManager.Instance.SetCurrentSceneMode(userPermissionsDataPackets.sceneMode);
+                if (AppDatabaseManager.Instance)
+                    AppDatabaseManager.Instance.SetCurrentSceneMode(userPermissionsDataPackets.sceneMode);
                 else
                     Debug.LogWarning("--> Scene Assets Not Yet Initialized.");
 
@@ -294,14 +294,14 @@ namespace Com.RedicalGames.Filar
                         if (results)
                         {
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.OnNewAssetDataCreated(assetData, (createdAsset, results) =>
+                                AppDatabaseManager.Instance.OnNewAssetDataCreated(assetData, (createdAsset, results) =>
                                 {
                                     if (results)
                                     {
                                         createdAsset.assetMode = AppData.AssetModeType.CreateMode;
-                                        DatabaseManager.Instance.UpdateCurrentSceneAsset(createdAsset);
+                                        AppDatabaseManager.Instance.UpdateCurrentSceneAsset(createdAsset);
 
                                     // Update Button Field Widgets.
                                     AppData.ActionEvents.OnActionButtonFieldUploadedEvent(AppData.InputActionButtonType.OpenFilePicker_OBJ, true, true);
@@ -436,9 +436,9 @@ namespace Com.RedicalGames.Filar
                     return;
                 }
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    var sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
+                    var sceneAsset = AppDatabaseManager.Instance.GetCurrentSceneAsset();
 
                     AppData.AssetField field = new AppData.AssetField();
 
@@ -464,7 +464,7 @@ namespace Com.RedicalGames.Filar
 
                     sceneAsset.AddAssetField(field);
 
-                    DatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
+                    AppDatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
                     // Update Button Field Widgets.
                     AppData.ActionEvents.OnActionButtonFieldUploadedEvent(AppData.InputActionButtonType.OpenFilePicker_Thumbnail, true, true);
@@ -490,9 +490,9 @@ namespace Com.RedicalGames.Filar
                     return;
                 }
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    var sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
+                    var sceneAsset = AppDatabaseManager.Instance.GetCurrentSceneAsset();
 
                     AppData.AssetField field = new AppData.AssetField();
 
@@ -531,7 +531,7 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Rendering Manager Not Yet Initialized.");
 
-                    DatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
+                    AppDatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
                     // Update Button Field Widgets.
                     AppData.ActionEvents.OnActionButtonFieldUploadedEvent(AppData.InputActionButtonType.OpenFilePicker_MainTexture, true, true);
@@ -557,9 +557,9 @@ namespace Com.RedicalGames.Filar
                     return;
                 }
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    var sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
+                    var sceneAsset = AppDatabaseManager.Instance.GetCurrentSceneAsset();
 
                     AppData.AssetField field = new AppData.AssetField();
 
@@ -598,7 +598,7 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Rendering Manager Not Yet Initialized.");
 
-                    DatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
+                    AppDatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
                     // Update Button Field Widgets.
                     AppData.ActionEvents.OnActionButtonFieldUploadedEvent(AppData.InputActionButtonType.OpenFilePicker_NormalMap, true, true);
@@ -623,9 +623,9 @@ namespace Com.RedicalGames.Filar
                     return;
                 }
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    var sceneAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
+                    var sceneAsset = AppDatabaseManager.Instance.GetCurrentSceneAsset();
 
                     AppData.AssetField field = new AppData.AssetField();
 
@@ -664,7 +664,7 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Rendering Manager Not Yet Initialized.");
 
-                    DatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
+                    AppDatabaseManager.Instance.UpdateCurrentSceneAsset(sceneAsset);
 
                     // Update Button Field Widgets.
                     AppData.ActionEvents.OnActionButtonFieldUploadedEvent(AppData.InputActionButtonType.OpenFilePicker_AOMap, true, true);
@@ -847,7 +847,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
 #if UNITY_EDITOR
 
@@ -919,7 +919,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
 #if UNITY_EDITOR
 
@@ -990,7 +990,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
 
 #if UNITY_EDITOR
@@ -1063,7 +1063,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
 
 #if UNITY_EDITOR
@@ -1136,7 +1136,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
 #if UNITY_EDITOR
 
@@ -1208,7 +1208,7 @@ namespace Com.RedicalGames.Filar
         {
             try
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
 #if UNITY_EDITOR
 

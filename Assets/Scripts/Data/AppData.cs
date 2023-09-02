@@ -465,7 +465,7 @@ namespace Com.RedicalGames.Filar
             TitleDisplayer,
             MessageDisplayer,
             FileCountDisplayer,
-            TimeDateDisplayer,
+            DateTimeDisplayer,
             InfoDisplayer,
             NavigationRootTitleDisplayer,
             PageCountDisplayer,
@@ -931,7 +931,8 @@ namespace Com.RedicalGames.Filar
             ListViewSelectionIcon,
             ListViewDeselectionIcon,
             LockedIcon,
-            UnlockedIcon
+            UnlockedIcon,
+            ImagePlaceholder
         }
 
         public enum SelectableWidgetType
@@ -2060,13 +2061,13 @@ namespace Com.RedicalGames.Filar
 
             public int GetScreenDelayTime()
             {
-                var sceneAssetsManagerCallbackResults = Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name);
+                var sceneAssetsManagerCallbackResults = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name);
 
                 int delayTime = 0; 
 
                 if(sceneAssetsManagerCallbackResults.Success())
                 {
-                    var sceneAssetsManager = Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                    var sceneAssetsManager = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
                     delayTime = Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(runtimeReference).value);
                 }
 
@@ -2160,11 +2161,11 @@ namespace Com.RedicalGames.Filar
 
             public async Task<CallbackData<int>> OnScreenLoadExecutionTime(RuntimeExecution runtimeReference)
             {
-                CallbackData<int> callbackResults = new CallbackData<int>(Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager instance Is Not Yet Initialized."));
+                CallbackData<int> callbackResults = new CallbackData<int>(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Scene Assets Manager instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var sceneAssetsManager = Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name).data;
+                    var sceneAssetsManager = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                     callbackResults.SetResults(GetRuntimeInstanceInfo(runtimeReference));
 
@@ -3165,38 +3166,28 @@ namespace Com.RedicalGames.Filar
 
         public interface IPostData
         {
-            #region Profile
-
-            void SetProfile(Profile profile);
-            Profile GetProfile();
-
-            #endregion
-
-            #region Content Setters
-
-            void SetContent(ModelMeshData data);
-
-            #endregion
-
-            #region Content Getters
-
-            ModelMeshData GetContent();
-
-            #endregion
-
             #region Data Setters
 
-            void SetIdentifier(string postID);
+            void SetTitle(string title);
+            void SetCaption(string caption);
+
+            void SetThumbnail(Sprite thumbnail, Helpers.ImageEncoderType encoderType);
+            void SetThumbnail(Texture2D thumbnail, Helpers.ImageEncoderType encoderType);
+
             void SetStatus(PostDataContentStatus status);
-            void SetViewPositionID(int viewPositionID);
 
             #endregion
 
             #region Data Getters
 
-            string GetIdentifier();
-            int GetViewPositionID();
+            string GetTitle();
+            string GetCaption();
+            Sprite GetSpriteThumbnail(int minWidth, int minHeight);
+            Texture2D GetTexture2DThumbnail(int minWidth, int minHeight);
+
             PostDataContentStatus GetStatus();
+
+            bool ThumbnailAssigned();
 
             #endregion
 
@@ -3206,7 +3197,7 @@ namespace Com.RedicalGames.Filar
 
             void GetIsLiked(Action<Callback> callback);
 
-            List<Profile> GetLikes();
+            List<string> GetLikes();
 
             int GetLikeCount();
 
@@ -3218,7 +3209,7 @@ namespace Com.RedicalGames.Filar
 
             void GetIsDisiked(Action<Callback> callback);
 
-            List<Profile> GetDislikes();
+            List<string> GetDislikes();
 
             int GetDislikeCount();
 
@@ -3228,7 +3219,7 @@ namespace Com.RedicalGames.Filar
 
             void Comment(Profile profile, Comment comment, Action<Callback> callback = null);
 
-            Dictionary<Profile, PostCommentData> GetComments();
+            Dictionary<string, PostCommentData> GetComments();
 
             void DeleteComment(Profile profile, Comment comment, Action<Callback> callback = null);
 
@@ -3239,39 +3230,41 @@ namespace Com.RedicalGames.Filar
             #region Reports Contract
 
             #endregion
-
-            #region Date Time
-
-            void SetCreationDateTime(DateTimeComponent dateTime);
-            void SetExpiryDateTime(DateTimeComponent expiryDateTime);
-
-            DateTimeComponent GetCreationDateTime();
-            DateTimeComponent GetExpiryDateTime();
-
-            #endregion
-
-            #endregion
         }
 
         [Serializable]
-        public class PostDataAttributes
+        public class PostDataIdentifier : AppWidget
         {
             #region Components
 
-            public string identifier;
+            public string uniqueIdentifier, 
+                          rootIdentifier;
 
             #endregion
 
             #region Main
 
-            public void SetIdentifier(string identifier) => this.identifier = identifier;
-            public string GetIdentifier() => identifier;
+            public void SetUniqueIdentifier(string uniqueIdentifier) => this.uniqueIdentifier = uniqueIdentifier;
+            public void SetRootdentifier(string rootIdentifier) => this.rootIdentifier = rootIdentifier;
+
+            public string GetUniqueIdentifier() => uniqueIdentifier;
+            public string GetRootIdentifier() => rootIdentifier;
 
             #endregion
         }
 
         [Serializable]
-        public class ModelMeshData : PostDataAttributes
+        public class AppWidget
+        {
+            #region Components
+
+            public string name;
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ModelMeshData : PostDataIdentifier
         {
             #region Components
 
@@ -3342,7 +3335,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class PostData : IPostData
+        public class PostData
         {
             #region Components
 
@@ -3351,36 +3344,8 @@ namespace Com.RedicalGames.Filar
             public string name;
 
             public Post post;
-            public Profile profile;
             public ModelMeshData content;
-
-            //public PostContent content = new PostContent();
-
-            public string identifier = string.Empty;
-            public int viewPositionID = 0;
-
-            #endregion
-
-
-            #region Content Data
-
-            public Dictionary<Profile, PostCommentData> comments = new Dictionary<Profile, PostCommentData>();
-            public List<Profile> likes = new List<Profile>();
-            public List<Profile> dislikes = new List<Profile>();
-
-            #endregion
-
-            #region Post Reports
-
-            public List<Report<PostHandler>> reports = new List<Report<PostHandler>>();
-            public PostDataContentStatus status = PostDataContentStatus.None;
-
-            #endregion
-
-            #region Date Time
-
-            public DateTimeComponent creationDateTime = new DateTimeComponent();
-            public DateTimeComponent expiryDateTime = new DateTimeComponent();
+            public Telemetry telemetry = new Telemetry();
 
             #endregion
 
@@ -3388,17 +3353,10 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            #region 
-
             #region Data Setters
 
             public void SetPost(Post post) => this.post = post;
-            public void SetProfile(Profile profile) => this.profile = profile;
             public void SetContent(ModelMeshData content) => this.content = content;
-
-            public void SetIdentifier(string identifier) => this.identifier = identifier;
-            public void SetViewPositionID(int viewPositionID) => this.viewPositionID = viewPositionID;
-            public void SetStatus(PostDataContentStatus status) => this.status = status;
 
             public void SetModelMeshData(MeshData meshData)
             {
@@ -3410,426 +3368,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
             public Post GetPost() => post;
-            public Profile GetProfile() => profile;
             public ModelMeshData GetContent() => content;
-
-
-            public string GetIdentifier() => identifier ?? Helpers.GenerateUniqueIdentifier();
-            public int GetViewPositionID() => viewPositionID;
-            public PostDataContentStatus GetStatus() => status;
-
-            #endregion
-
-            #region Date Time Setters
-
-            public void SetCreationDateTime(DateTimeComponent creationDateTime) => this.creationDateTime = creationDateTime;
-            public void SetExpiryDateTime(DateTimeComponent expiryDateTime) => this.expiryDateTime = expiryDateTime;
-
-            #endregion
-
-            #region Date Time Getters
-
-            public DateTimeComponent GetCreationDateTime() => creationDateTime;
-            public DateTimeComponent GetExpiryDateTime() => creationDateTime;
-
-            #endregion
-
-            #endregion
-
-            #region Likes
-
-            public void Like(Profile profile, Action<CallbackData<int>> callback = null)
-            {
-                CallbackData<int> callbackResults = new CallbackData<int>();
-
-                GetIsLiked(likedCallbackResults =>
-                {
-                    callbackResults.SetResult(likedCallbackResults);
-
-                    if (callbackResults.Success())
-                        RemoveLike(profile, dislikedCallbackResults => { callbackResults.SetResultsData(dislikedCallbackResults); });
-                    else
-                        AddLike(profile, likedCallbackResults => { callbackResults.SetResultsData(likedCallbackResults); });
-                });
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void GetIsLiked(Action<Callback> callback)
-            {
-                Callback callbackResults = new Callback();
-
-                callback.Invoke(callbackResults);
-            }
-
-            public List<Profile> GetLikes() => likes;
-
-            public int GetLikeCount() => likes.Count;
-
-            protected void AddLike(Profile profile, Action<CallbackData<int>> callback = null)
-            {
-                CallbackData<int> callbackResults = new CallbackData<int>();
-
-                if (!GetLikes().Contains(profile))
-                {
-                    GetLikes().Add(profile);
-
-                    if (GetLikes().Contains(profile))
-                    {
-                        callbackResults.result = "Post Liked. Like Added To Likes List.";
-                        callbackResults.data = GetLikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = "Failed To Like Post. Couldn't Add Like - Please Check Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = "Post Already Liked. Couldn't Add Like.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void RemoveLike(Profile profile, Action<CallbackData<int>> callback = null)
-            {
-                CallbackData<int> callbackResults = new CallbackData<int>();
-
-                if (GetLikes().Contains(profile))
-                {
-                    GetLikes().Remove(profile);
-
-                    if (!GetLikes().Contains(profile))
-                    {
-                        callbackResults.result = "Like Removed. Like Removed From Likes List.";
-                        callbackResults.data = GetLikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = "Failed To Remove Like From Post. Couldn't Remove Like - Please Check Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = "Profile Not Found In Liked List.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            #endregion
-
-            #region Dislikes
-
-            public void Dislike(Profile profile, Action<CallbackData<int>> callback = null)
-            {
-                CallbackData<int> callbackResults = new CallbackData<int>();
-
-                GetIsDisiked(dislikedCallbackResults =>
-                {
-                    callbackResults.SetResult(dislikedCallbackResults);
-
-                    if (callbackResults.Success())
-                        RemoveDisike(profile, dislikedCallbackResults => { callbackResults.SetResultsData(dislikedCallbackResults); });
-                    else
-                        AddDislike(profile, likedCallbackResults => { callbackResults.SetResultsData(likedCallbackResults); });
-                });
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void GetIsDisiked(Action<Callback> callback)
-            {
-                Callback callbackResults = new Callback();
-
-                callback.Invoke(callbackResults);
-            }
-
-            public List<Profile> GetDislikes() => dislikes;
-
-            public int GetDislikeCount() => dislikes.Count;
-
-            protected void AddDislike(Profile profile, Action<CallbackData<int>> callback = null)
-            {
-                CallbackData<int> callbackResults = new CallbackData<int>();
-
-                if (!GetDislikes().Contains(profile))
-                {
-                    GetDislikes().Add(profile);
-
-                    if (GetDislikes().Contains(profile))
-                    {
-                        callbackResults.result = "Post Disliked. Dislike Added To Dislikes List.";
-                        callbackResults.data = GetLikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = "Failed To Dislike Post. Couldn't Add Dislike - Please Check Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = "Post Already Disliked. Couldn't Dislike Post.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void RemoveDisike(Profile profile, Action<CallbackData<int>> callback = null)
-            {
-                CallbackData<int> callbackResults = new CallbackData<int>();
-
-                if (GetDislikes().Contains(profile))
-                {
-                    GetDislikes().Remove(profile);
-
-                    if (!GetDislikes().Contains(profile))
-                    {
-                        callbackResults.result = "Dislike Removed. Dislike Removed From Dislikes List.";
-                        callbackResults.data = GetDislikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = "Failed To Remove A Dislike From Post. Couldn't Remove Dislike - Please Check Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = "Profile Not Found In Disliked List.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            #endregion
-
-            #region Comments
-
-            public Dictionary<Profile, PostCommentData> GetComments() => comments;
-
-            public int GetCommentCount() => comments.Count;
-
-            protected void AddNewCommentData(Profile profile, Comment comment, Action<CallbackData<PostCommentData>> callback = null)
-            {
-                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
-
-                if (comment != null)
-                {
-                    PostCommentData commentData = new PostCommentData(comment);
-
-                    GetComments().Add(profile, commentData);
-                    GetHasCommented(hasCommentedCallbackResults => { callbackResults.SetResult(hasCommentedCallbackResults); });
-                }
-                else
-                {
-                    callbackResults.result = "Failed To Add New Comment Data - Comment Value Is Null.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void RemoveCommentData(Profile profile, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                GetHasCommented(hasCommentedCallbackResults =>
-                {
-                    callbackResults.SetResult(hasCommentedCallbackResults);
-
-                    if (callbackResults.Success())
-                        GetComments().Remove(profile);
-
-                    if (!GetComments().Keys.Contains(profile))
-                        callbackResults.result = "Comment Data Has Been Removed Successfully.";
-                    else
-                    {
-                        callbackResults.result = "Failed To Remove Comment Data - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                });
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void GetHasCommented(Action<CallbackData<PostCommentData>> callback)
-            {
-                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
-
-                if (GetComments().Keys.Contains(profile))
-                {
-                    if (GetComments().TryGetValue(profile, out PostCommentData commentData))
-                    {
-                        callbackResults.result = $"Profile Has Commented To Post ID : {GetIdentifier()}";
-                        callbackResults.data = commentData;
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Couldn't Find Post Comment Data - Please Chec Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Profile Has Not Commented To Post ID : {GetIdentifier()}";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback.Invoke(callbackResults);
-            }
-
-            public void Comment(Profile profile, Comment comment, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                GetHasCommented(hasCommentedCallbackResults =>
-                {
-                    callbackResults.SetResult(hasCommentedCallbackResults);
-
-                    if (callbackResults.Success())
-                    {
-                        var commentsData = hasCommentedCallbackResults.data;
-                        commentsData.AddComment(comment, commentAddedCallbackResults => { callbackResults.SetResult(commentAddedCallbackResults); });
-                    }
-                    else
-                        AddNewCommentData(profile, comment, newCommentAddedCallbackResults => { callbackResults.SetResult(newCommentAddedCallbackResults); });
-                });
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void DeleteComment(Profile profile, Comment comment, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                GetHasCommented(hasCommentedCallbackResults =>
-                {
-                    callbackResults.SetResult(hasCommentedCallbackResults);
-
-                    if (callbackResults.Success())
-                    {
-                        var commentsData = hasCommentedCallbackResults.data;
-                        commentsData.RemoveComment(comment, commentRemovedCallbackResults => { callbackResults.SetResult(commentRemovedCallbackResults); });
-                    }
-                });
-
-                callback?.Invoke(callbackResults);
-            }
-
-            #endregion
-
-            #region Reports
-
-            public void AddReport(Report<PostHandler> report, Action<CallbackData<Report<PostHandler>>> callback = null)
-            {
-                CallbackData<Report<PostHandler>> callbackResults = new CallbackData<Report<PostHandler>>();
-
-                if (!GetReports().Contains(report))
-                {
-                    GetReports().Add(report);
-
-                    if (GetReports().Contains(report))
-                    {
-                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Added Successfully.";
-                        callbackResults.data = report;
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Please Check Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Report Already Exists In Reports List.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void RemoveReport(Report<PostHandler> report, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                if (GetReports().Contains(report))
-                {
-                    GetReports().Remove(report);
-
-                    if (!GetReports().Contains(report))
-                    {
-                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Removed Successfully.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Report Doesn't Exists In Reports List.";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void ClearReports(Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                GetReports().Clear();
-                SetStatus(PostDataContentStatus.None);
-
-                if (!IsReported())
-                {
-                    callbackResults.result = $"Reports Cleared Successfully.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Clear Reports - Please Check Here.";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            #region Reports Getters
-
-            public List<Report<PostHandler>> GetReports() => reports;
-            public int GetReportsCount() => GetReports().Count;
-            public bool IsReported() => GetReportsCount() > 0 && GetStatus() == PostDataContentStatus.Reported;
 
             #endregion
 
@@ -3897,7 +3436,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class Comment : PostData
+        public class Comment : Post
         {
             #region Components
 
@@ -4159,7 +3698,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class Post : PostDataAttributes
+        public class Post : PostDataIdentifier, IPostData
         {
             #region Components
 
@@ -4167,6 +3706,30 @@ namespace Com.RedicalGames.Filar
 
             public string title = string.Empty;
             public string caption = string.Empty;
+
+            public string thumbnail;
+
+            public long creationDateTime;
+            public long creationExpireyDateTime;
+
+            #endregion
+
+            #region Content Data
+
+            public string likesDataString;
+            public string deslikesDataString;
+            public string commentsDataString;
+
+            private Dictionary<string, PostCommentData> comments = new Dictionary<string, PostCommentData>();
+            private List<string> likes = new List<string>();
+            private List<string> dislikes = new List<string>();
+
+            #endregion
+
+            #region Post Reports
+
+            private List<Report<PostData>> reports = new List<Report<PostData>>();
+            private PostDataContentStatus status = PostDataContentStatus.None;
 
             #endregion
 
@@ -4192,57 +3755,441 @@ namespace Com.RedicalGames.Filar
 
             public void SetTitle(string title) => this.title = title;
             public void SetCaption(string caption) => this.caption = caption;
+            public void SetStatus(PostDataContentStatus status) => this.status = status;
+            public void InitializeCreationDateTime() => creationDateTime = DateTime.UtcNow.Ticks;
+            public void SetCreationExpireyDateTime(DateTime dateTime) => creationExpireyDateTime = dateTime.Ticks;
+
+            #region Thumbnail
+
+            #region Setters
+
+            public void SetThumbnail(Sprite thumbnail, Helpers.ImageEncoderType encoderType)
+            { 
+                var bytes = Helpers.ImageToBytesArray(thumbnail, encoderType);
+                this.thumbnail = Convert.ToBase64String(bytes);
+            }
+
+            public void SetThumbnail(Texture2D thumbnail, Helpers.ImageEncoderType encoderType)
+            { 
+                var bytes = Helpers.ImageToBytesArray(thumbnail, encoderType);
+                this.thumbnail = Convert.ToBase64String(bytes);
+            }
+
+            #endregion
+
+            #endregion
 
             public string GetTitle() => title;
             public string GetCaption() => caption;
 
-            #endregion
-        }
+            public string GetIdentifier() => uniqueIdentifier ?? Helpers.GenerateUniqueIdentifier();
+            public PostDataContentStatus GetStatus() => status;
 
-        [Serializable]
-        public class PostHandler : PostData
-        {
-            #region Components
+            public DateTimeComponent GetCreationDateTime() => new DateTimeComponent(new DateTime(creationDateTime));
+            public DateTimeComponent GetCreationExpireyDateTime() => new DateTimeComponent(new DateTime(creationExpireyDateTime));
 
-            #region User App Info
+            public bool ThumbnailAssigned() => !string.IsNullOrEmpty(thumbnail);
 
-            public Telemetry telemetry = new Telemetry();
+            public Sprite GetSpriteThumbnail(int minWidth, int minHeight) => Helpers.BytesArrayToSprite(Convert.FromBase64String(thumbnail), minWidth, minHeight);
 
-            #endregion
+            public Texture2D GetTexture2DThumbnail(int minWidth, int minHeight) => Helpers.BytesArrayToTexture2D(Convert.FromBase64String(thumbnail), minWidth, minHeight);
 
-            #endregion
+            #region Likes
 
-            #region Main
-
-            #region Constructors
-
-            public PostHandler()
+            public void Like(Profile profile, Action<CallbackData<int>> callback = null)
             {
+                CallbackData<int> callbackResults = new CallbackData<int>();
 
+                GetIsLiked(likedCallbackResults =>
+                {
+                    callbackResults.SetResult(likedCallbackResults);
+
+                    if (callbackResults.Success())
+                        RemoveLike(profile, dislikedCallbackResults => { callbackResults.SetResultsData(dislikedCallbackResults); });
+                    else
+                        AddLike(profile, likedCallbackResults => { callbackResults.SetResultsData(likedCallbackResults); });
+                });
+
+                callback?.Invoke(callbackResults);
             }
 
-            public PostHandler(Post post, Profile profile, ModelMeshData contnet, ProfileType userProfileType, string postID = null)
+            public void GetIsLiked(Action<Callback> callback)
             {
-                this.post = post;
-                this.profile = profile;
-                this.content = contnet;
-                this.telemetry.SetProfileType(userProfileType);
+                Callback callbackResults = new Callback();
+
+                callback.Invoke(callbackResults);
+            }
+
+            public List<string> GetLikes() => likes;
+
+            public int GetLikeCount() => likes.Count;
+
+            protected void AddLike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (!GetLikes().Contains(profile.GetUniqueIdentifier()))
+                {
+                    GetLikes().Add(profile.GetUniqueIdentifier());
+
+                    if (GetLikes().Contains(profile.GetUniqueIdentifier()))
+                    {
+                        callbackResults.result = "Post Liked. Like Added To Likes List.";
+                        callbackResults.data = GetLikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Like Post. Couldn't Add Like - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Post Already Liked. Couldn't Add Like.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void RemoveLike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (GetLikes().Contains(profile.GetUniqueIdentifier()))
+                {
+                    GetLikes().Remove(profile.GetUniqueIdentifier());
+
+                    if (!GetLikes().Contains(profile.GetUniqueIdentifier()))
+                    {
+                        callbackResults.result = "Like Removed. Like Removed From Likes List.";
+                        callbackResults.data = GetLikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Remove Like From Post. Couldn't Remove Like - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Profile Not Found In Liked List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
 
-            #region Data Setters
+            #region Dislikes
 
-            public void SetUserProfileType(ProfileType userProfileType) => telemetry.SetProfileType(userProfileType);
+            public void Dislike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                GetIsDisiked(dislikedCallbackResults =>
+                {
+                    callbackResults.SetResult(dislikedCallbackResults);
+
+                    if (callbackResults.Success())
+                        RemoveDisike(profile, dislikedCallbackResults => { callbackResults.SetResultsData(dislikedCallbackResults); });
+                    else
+                        AddDislike(profile, likedCallbackResults => { callbackResults.SetResultsData(likedCallbackResults); });
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetIsDisiked(Action<Callback> callback)
+            {
+                Callback callbackResults = new Callback();
+
+                callback.Invoke(callbackResults);
+            }
+
+            public List<string> GetDislikes() => dislikes;
+
+            public int GetDislikeCount() => dislikes.Count;
+
+            protected void AddDislike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (!GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                {
+                    GetDislikes().Add(profile.GetUniqueIdentifier());
+
+                    if (GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                    {
+                        callbackResults.result = "Post Disliked. Dislike Added To Dislikes List.";
+                        callbackResults.data = GetLikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Dislike Post. Couldn't Add Dislike - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Post Already Disliked. Couldn't Dislike Post.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void RemoveDisike(Profile profile, Action<CallbackData<int>> callback = null)
+            {
+                CallbackData<int> callbackResults = new CallbackData<int>();
+
+                if (GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                {
+                    GetDislikes().Remove(profile.GetUniqueIdentifier());
+
+                    if (!GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                    {
+                        callbackResults.result = "Dislike Removed. Dislike Removed From Dislikes List.";
+                        callbackResults.data = GetDislikeCount();
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Failed To Remove A Dislike From Post. Couldn't Remove Dislike - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Profile Not Found In Disliked List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
 
             #endregion
 
-            #region Data Getters
+            #region Comments
 
-            public ProfileType GetUserProfileType()
+            public Dictionary<string, PostCommentData> GetComments() => comments;
+
+            public int GetCommentCount() => comments.Count;
+
+            protected void AddNewCommentData(Profile profile, Comment comment, Action<CallbackData<PostCommentData>> callback = null)
             {
-                return telemetry.GetProfileType();
+                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
+
+                if (comment != null)
+                {
+                    PostCommentData commentData = new PostCommentData(comment);
+
+                    GetComments().Add(profile.GetUniqueIdentifier(), commentData);
+                    GetHasCommented(profile, hasCommentedCallbackResults => { callbackResults.SetResult(hasCommentedCallbackResults); });
+                }
+                else
+                {
+                    callbackResults.result = "Failed To Add New Comment Data - Comment Value Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
+
+            protected void RemoveCommentData(Profile profile, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(profile, hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                        GetComments().Remove(profile.GetUniqueIdentifier());
+
+                    if (!GetComments().Keys.Contains(profile.GetUniqueIdentifier()))
+                        callbackResults.result = "Comment Data Has Been Removed Successfully.";
+                    else
+                    {
+                        callbackResults.result = "Failed To Remove Comment Data - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void GetHasCommented(Profile profile, Action<CallbackData<PostCommentData>> callback)
+            {
+                CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
+
+                if (GetComments().Keys.Contains(profile.GetUniqueIdentifier()))
+                {
+                    if (GetComments().TryGetValue(profile.GetUniqueIdentifier(), out PostCommentData commentData))
+                    {
+                        callbackResults.result = $"Profile Has Commented To Post ID : {GetIdentifier()}";
+                        callbackResults.data = commentData;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Find Post Comment Data - Please Chec Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Profile Has Not Commented To Post ID : {GetIdentifier()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void Comment(Profile profile, Comment comment, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(profile, hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentsData = hasCommentedCallbackResults.data;
+                        commentsData.AddComment(comment, commentAddedCallbackResults => { callbackResults.SetResult(commentAddedCallbackResults); });
+                    }
+                    else
+                        AddNewCommentData(profile, comment, newCommentAddedCallbackResults => { callbackResults.SetResult(newCommentAddedCallbackResults); });
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void DeleteComment(Profile profile, Comment comment, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetHasCommented(profile, hasCommentedCallbackResults =>
+                {
+                    callbackResults.SetResult(hasCommentedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var commentsData = hasCommentedCallbackResults.data;
+                        commentsData.RemoveComment(comment, commentRemovedCallbackResults => { callbackResults.SetResult(commentRemovedCallbackResults); });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Reports
+
+            public void AddReport(Report<PostData> report, Action<CallbackData<Report<PostData>>> callback = null)
+            {
+                CallbackData<Report<PostData>> callbackResults = new CallbackData<Report<PostData>>();
+
+                if (!GetReports().Contains(report))
+                {
+                    GetReports().Add(report);
+
+                    if (GetReports().Contains(report))
+                    {
+                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Added Successfully.";
+                        callbackResults.data = report;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Add Report Id : {report.GetReportID()} - Report Already Exists In Reports List.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveReport(Report<PostData> report, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (GetReports().Contains(report))
+                {
+                    GetReports().Remove(report);
+
+                    if (!GetReports().Contains(report))
+                    {
+                        callbackResults.result = $"Report Id : {report.GetReportID()} - Has Been Removed Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Remove Report Id : {report.GetReportID()} - Report Doesn't Exists In Reports List.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ClearReports(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                GetReports().Clear();
+                SetStatus(PostDataContentStatus.None);
+
+                if (!IsReported())
+                {
+                    callbackResults.result = $"Reports Cleared Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Clear Reports - Please Check Here.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #region Reports Getters
+
+            public List<Report<PostData>> GetReports() => reports;
+            public int GetReportsCount() => GetReports().Count;
+            public bool IsReported() => GetReportsCount() > 0 && GetStatus() == PostDataContentStatus.Reported;
+
+            #endregion
 
             #endregion
 
@@ -4784,7 +4731,7 @@ namespace Com.RedicalGames.Filar
         #region Profile
 
         [Serializable]
-        public class Profile : PostDataAttributes
+        public class Profile : PostDataIdentifier
         {
             #region Components
 
@@ -5161,9 +5108,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if (initializationCallback.Success())
                     {
-                        value.sprite = DatabaseManager.Instance.GetImageFromLibrary(imageType).value;
+                        value.sprite = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value;
 
-                        if (value?.sprite == DatabaseManager.Instance.GetImageFromLibrary(imageType).value)
+                        if (value?.sprite == AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value)
                         {
                             callbackResults.result = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Has Been Set Successfully";
                             callbackResults.resultCode = Helpers.SuccessCode;
@@ -5233,9 +5180,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if(initializationCallback.Success())
                     {
-                        value = DatabaseManager.Instance.GetImageFromLibrary(imageType).value;
+                        value = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value;
 
-                        if(value == DatabaseManager.Instance.GetImageFromLibrary(imageType).value)
+                        if(value == AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value)
                         {
                             callbackResults.result = $"UI Image Data Set Successfully";
                             callbackResults.resultCode = Helpers.SuccessCode;
@@ -5919,7 +5866,7 @@ namespace Com.RedicalGames.Filar
 
                                         };
 
-                                        DatabaseManager.Instance.LoadData<AssetData>(storageData, assetsLoadedCallbackResults => 
+                                        AppDatabaseManager.Instance.LoadData<AssetData>(storageData, assetsLoadedCallbackResults => 
                                         {
                                             if(assetsLoadedCallbackResults.Success())
                                             {
@@ -6075,7 +6022,7 @@ namespace Com.RedicalGames.Filar
                 this.folderWidgetInfo = folderWidgetInfo;
             }
 
-            public void Execute() => DatabaseManager.Instance.OpenUIFolderStructure(folder, folderWidgetInfo, structureType);
+            public void Execute() => AppDatabaseManager.Instance.OpenUIFolderStructure(folder, folderWidgetInfo, structureType);
 
             public void Undo()
             {
@@ -6809,7 +6756,7 @@ namespace Com.RedicalGames.Filar
                     if (isFading)
                     {
                         float fadeValue = scrollBarUIFaderComponent.GetFaderAlphaValue();
-                        fadeValue = Mathf.Lerp(fadeValue, visibleStateValue, DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
+                        fadeValue = Mathf.Lerp(fadeValue, visibleStateValue, AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
 
                         scrollBarUIFaderComponent.SetFaderAlphaValue(fadeValue);
 
@@ -6834,7 +6781,7 @@ namespace Com.RedicalGames.Filar
                     if (isFading)
                     {
                         float fadeValue = scrollBarUIFaderComponent.GetFaderAlphaValue();
-                        fadeValue = Mathf.Lerp(fadeValue, hiddenStateValue, DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
+                        fadeValue = Mathf.Lerp(fadeValue, hiddenStateValue, AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScrollbarFadeInSpeed).value * Time.smoothDeltaTime);
 
                         scrollBarUIFaderComponent.SetFaderAlphaValue(fadeValue);
 
@@ -7943,7 +7890,7 @@ namespace Com.RedicalGames.Filar
 
             void OnSelected()
             {
-                var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                 if (widgetsContainer != null)
                 {
@@ -8069,7 +8016,7 @@ namespace Com.RedicalGames.Filar
 
                 if(selections != null && selections.Count > 0)
                 {
-                    var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                    var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                     if(widgetsContainer != null)
                         widgetsContainer.OnWidgetSelectionState(selections, selectionCallback => { callbackResults = selectionCallback; });
@@ -8094,7 +8041,7 @@ namespace Com.RedicalGames.Filar
 
                 if (selections != null && selections.Count > 0)
                 {
-                    var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                    var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                     if (widgetsContainer != null)
                     {
@@ -8131,7 +8078,7 @@ namespace Com.RedicalGames.Filar
 
                     foreach (var widget in focusedSelectionData?.selections)
                     {
-                        UIScreenWidget screenWidget = DatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widget.name);
+                        UIScreenWidget screenWidget = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widget.name);
 
                         if (screenWidget != null)
                         {
@@ -8308,7 +8255,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (selectionRemovedCallback.Success())
                                         {
-                                            var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                                            var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                                             if(widgetsContainer != null)
                                             {
@@ -8504,7 +8451,7 @@ namespace Com.RedicalGames.Filar
 
                     if (HasActiveSelections())
                     {
-                        var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                        var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                         if (widgetsContainer.GetAssetsLoaded())
                         {
@@ -8589,7 +8536,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (focusedSelectionData.selections.Count > 0)
                         {
-                            var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                            var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                             bool cleared = false;
 
@@ -10057,7 +10004,7 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<AssetInfoField> callbackResults = new CallbackData<AssetInfoField>();
 
-                Helpers.GetComponentsNotNullOrEmpty<AssetInfoField>(fields, checkComponentsCallback =>
+                Helpers.GetComponentsNotNullOrEmpty(fields, checkComponentsCallback =>
                 {
                     if(checkComponentsCallback.Success())
                     {
@@ -14088,15 +14035,15 @@ namespace Com.RedicalGames.Filar
                                     //if(SceneAssetsManager.Instance.GetCurrentSceneAsset().assetImportPosition == Vector3.zero)
                                     //    SceneAssetsManager.Instance.GetCurrentSceneAsset().assetImportPosition = center;
 
-                                    if (DatabaseManager.Instance != null)
+                                    if (AppDatabaseManager.Instance != null)
                                     {
-                                        if (DatabaseManager.Instance.GetCurrentSceneAsset() != null)
+                                        if (AppDatabaseManager.Instance.GetCurrentSceneAsset() != null)
                                         {
 
-                                            DatabaseManager.Instance.GetCurrentSceneAsset().assetImportPosition = center;
+                                            AppDatabaseManager.Instance.GetCurrentSceneAsset().assetImportPosition = center;
 
 
-                                            Debug.Log($"--------------> Imported Asset : {DatabaseManager.Instance.GetCurrentSceneAsset().name}'s Position Set To : {DatabaseManager.Instance.GetCurrentSceneAsset().assetImportPosition}");
+                                            Debug.Log($"--------------> Imported Asset : {AppDatabaseManager.Instance.GetCurrentSceneAsset().name}'s Position Set To : {AppDatabaseManager.Instance.GetCurrentSceneAsset().assetImportPosition}");
                                         }
                                         else
                                             Debug.LogWarning("--> Add Asset To Container Failed - Scene Assets Manager Instance's Get Current Scene Asset Is Null / Not Found.");
@@ -16515,7 +16462,7 @@ namespace Com.RedicalGames.Filar
                             if (field.type != InfoDisplayerFieldType.None && field.type.Equals(widget.type))
                             {
                                 if (field.type == InfoDisplayerFieldType.Title)
-                                    widget.title.text = DatabaseManager.Instance.GetDefaultAssetName();
+                                    widget.title.text = AppDatabaseManager.Instance.GetDefaultAssetName();
                                 else
                                 {
                                     widget.title.text = 0.ToString();
@@ -16903,6 +16850,173 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetUIImageDisplayerValue Failed : imageDisplayerList Is Null / Empty.");
             }
 
+            public void SetUIImageDisplayerValue(Sprite value, ScreenImageType imageType)
+            {
+                if (GetActive())
+                {
+                    if (actionGroup != null && actionGroup.Count > 0)
+                    {
+                        var initialized = actionGroup.FindAll(widget => widget.initialize);
+
+                        if (initialized != null && initialized.Count > 0)
+                        {
+                            foreach (var item in initialized)
+                            {
+                                foreach (var widgetData in item.screenActionGroup)
+                                {
+                                    if (widgetData.inputType == InputType.Image)
+                                    {
+                                        widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        {
+
+                                            LogInfo($" +++++==============>>>> Found Image Data - Code : {dataPacketsCallback.ResultCode} - Results : {dataPacketsCallback.Result}", this);
+
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var widget = widgetData.GetImageComponent();
+
+                                                LogInfo($" +++++==============>>>> Found Image Displayer : {widget.name} - Of Type : {widget.imageType}", this);
+
+                                                if (widget != null && widget.imageType == imageType)
+                                                {
+                                                    if (widget.value)
+                                                        widget.SetImageData(value);
+                                                    else
+                                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
+                                                }
+                                                else
+                                                    LogError("Action Group Button Component Not Found", this);
+                                            }
+                                            else
+                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                                        });
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
+            public void SetUIImageDisplayerValue(Texture2D value, ScreenImageType imageType)
+            {
+                if (GetActive())
+                {
+                    if (actionGroup != null && actionGroup.Count > 0)
+                    {
+                        var initialized = actionGroup.FindAll(widget => widget.initialize);
+
+                        if (initialized != null && initialized.Count > 0)
+                        {
+                            foreach (var item in initialized)
+                            {
+                                foreach (var widgetData in item.screenActionGroup)
+                                {
+                                    if (widgetData.inputType == InputType.Image)
+                                    {
+                                        widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var widget = widgetData.GetImageComponent();
+
+                                                if (widget != null && widget.imageType == imageType)
+                                                {
+                                                    if (widget.value)
+                                                        widget.SetImageData(value);
+                                                    else
+                                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
+                                                }
+                                                else
+                                                    LogError("Action Group Button Component Not Found", this);
+                                            }
+                                            else
+                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                                        });
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
+            public void GetUIImageDisplayer(ScreenImageType imageType, Action<CallbackData<Image>> callback)
+            {
+                CallbackData<Image> callbackResults = new CallbackData<Image>();
+
+                if (GetActive())
+                {
+                    if (actionGroup != null && actionGroup.Count > 0)
+                    {
+                        var initialized = actionGroup.FindAll(widget => widget.initialize);
+
+                        if (initialized != null && initialized.Count > 0)
+                        {
+                            foreach (var item in initialized)
+                            {
+                                foreach (var widgetData in item.screenActionGroup)
+                                {
+                                    if (widgetData.HasComponent(InputType.Image))
+                                    {
+                                        widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var widget = widgetData.GetImageComponent();
+
+                                                if (widget != null && widget.imageType == imageType)
+                                                {
+                                                    if (widget.value)
+                                                    {
+                                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {widget.name} Of Type : {imageType} Found - For Screen Widget : {name}.";
+                                                        callbackResults.data = widget.value;
+                                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.data = default;
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = "Action Group Button Component Not Found";
+                                                    callbackResults.data = default;
+                                                    callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                }
+                                            }
+                                            else
+                                                callbackResults.SetResult(dataPacketsCallback);
+                                        });
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
             public GameObject GetSceneAssetObject()
             {
                 return this.gameObject;
@@ -16975,7 +17089,7 @@ namespace Com.RedicalGames.Filar
                 {
                     case DefaultUIWidgetActionState.Default:
 
-                        SetUIImageDisplayerValue(DatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.PinnedIcon);
+                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.PinnedIcon);
 
                         break;
 
@@ -16984,13 +17098,13 @@ namespace Com.RedicalGames.Filar
                         Debug.LogError("==> Asset Hidden.");
 
 
-                        SetUIImageDisplayerValue(DatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.PinnedIcon);
+                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.PinnedIcon);
 
                         break;
 
                     case DefaultUIWidgetActionState.Pinned:
 
-                        SetUIImageDisplayerValue(DatabaseManager.Instance.GetImageFromLibrary(UIImageType.PinEnabledIcon).value, UIImageDisplayerType.PinnedIcon);
+                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.PinEnabledIcon).value, UIImageDisplayerType.PinnedIcon);
 
                         break;
                 }
@@ -17160,7 +17274,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (displayer.value)
                             {
-                                displayer.value.sprite = DatabaseManager.Instance.GetImageFromLibrary(imageType).value;
+                                displayer.value.sprite = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value;
                                 break;
                             }
                             else
@@ -17803,7 +17917,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var screenUIManager = screenUIManagerCallbackResults.data;
 
-                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.ScreenWidgetsContainer, ContainerViewSpaceType.Screen, containerCallbackResults =>
+                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.ScreenWidgetsContainer, ContainerViewSpaceType.Screen, containerCallbackResults =>
                             {
                                 if (containerCallbackResults.Success())
                                     containerCallbackResults.data.OnFocusedSelectionStateUpdate();
@@ -17831,13 +17945,13 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (hoveredWidget.IsHovered())
                                 {
-                                    if (DatabaseManager.Instance != null)
+                                    if (AppDatabaseManager.Instance != null)
                                     {
                                         Folder hoveredFolderData = hoveredWidget.GetFolderData();
 
                                         if (!string.IsNullOrEmpty(hoveredFolderData.storageData.projectDirectory))
                                         {
-                                            DatabaseManager.Instance.DirectoryFound(hoveredFolderData.storageData.projectDirectory, directoryCheckCallback =>
+                                            AppDatabaseManager.Instance.DirectoryFound(hoveredFolderData.storageData.projectDirectory, directoryCheckCallback =>
                                             {
                                                 if (Helpers.IsSuccessCode(directoryCheckCallback.resultCode))
                                                 {
@@ -17993,21 +18107,21 @@ namespace Com.RedicalGames.Filar
                     Vector2 dragPosition = Vector2.zero;
                     Vector2 dragPos = pos + dragOffSet;
 
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
-                        if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                        if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
                         {
-                            if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
+                            if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
                             {
                                 dragPosition.x = widgetRect.anchoredPosition.x;
                                 dragPosition.y = dragPos.y;
                             }
 
-                            if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
+                            if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
                                 dragPosition = dragPos;
                         }
                         else
-                            Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                            Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
                     }
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
@@ -18111,7 +18225,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 OnWidgetScaleEvent(Vector3.one);
                                 OnSelectionFrameState(true, InputUIState.Hovered, true);
-                                SetUIImageDisplayerValue(DatabaseManager.Instance.GetImageFromLibrary(UIImageType.UIWidget_MoveIcon).value, UIImageDisplayerType.ActionIcon);
+                                SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.UIWidget_MoveIcon).value, UIImageDisplayerType.ActionIcon);
                                 hoveredWidget.SetIsHovered(true);
                                 break;
                             }
@@ -18120,7 +18234,7 @@ namespace Com.RedicalGames.Filar
 
                                 OnWidgetScaleEvent(selectionButtonScaleVect);
                                 OnSelectionFrameState(true, InputUIState.Highlighted, true);
-                                SetUIImageDisplayerValue(DatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.ActionIcon);
+                                SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.ActionIcon);
 
                                 if (hoveredWidget != null)
                                     hoveredWidget = null;
@@ -18161,10 +18275,10 @@ namespace Com.RedicalGames.Filar
                 else
                     directionAxis = DirectionAxisType.Vertical;
 
-                if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
                 {
 
-                    if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
+                    if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ItemView)
                     {
                         if (directionAxis == DirectionAxisType.Horizontal)
                         {
@@ -18185,7 +18299,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
 
-                    if (DatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
+                    if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == LayoutViewType.ListView)
                     {
                         if (directionAxis == DirectionAxisType.Vertical)
                         {
@@ -18199,7 +18313,7 @@ namespace Com.RedicalGames.Filar
 
                 }
                 else
-                    Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                    Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
 
                #endregion 
 
@@ -18217,7 +18331,7 @@ namespace Com.RedicalGames.Filar
                 float distance = dragDistance / 100.0f;
                 distance = Mathf.Clamp(distance, 0.0f, 1.0f);
 
-                snap = distance <= DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.SnapDraggedWidgetToHoveredFolderDistance).value;
+                snap = distance <= AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.SnapDraggedWidgetToHoveredFolderDistance).value;
 
                 return snap;
             }
@@ -18244,8 +18358,8 @@ namespace Com.RedicalGames.Filar
                                 float targetDistanceDevided = targetDistance / 100.0f;
                                 float targetDistanceClampled = Mathf.Clamp(targetDistanceDevided, 0.0f, 1.0f);
 
-                                highlight = targetDistanceClampled <= DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.HighlightHoveredFolderDistance).value;
-                                snap = targetDistanceClampled <= DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.SnapDraggedWidgetToHoveredFolderDistance).value;
+                                highlight = targetDistanceClampled <= AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.HighlightHoveredFolderDistance).value;
+                                snap = targetDistanceClampled <= AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.SnapDraggedWidgetToHoveredFolderDistance).value;
                                 targetScreenPosition = targetPos;
                                 targetWorldPosition = eventData.enterEventCamera.ScreenToWorldPoint(targetScreenPosition);
                             }
@@ -18283,7 +18397,7 @@ namespace Com.RedicalGames.Filar
 
                             if (hasStorageData)
                             {
-                                DatabaseManager.Instance.OnMoveToDirectory(sourceDirectoryData, targetDirectoryData, widget.GetSelectableWidgetType(), fileMoveCallback =>
+                                AppDatabaseManager.Instance.OnMoveToDirectory(sourceDirectoryData, targetDirectoryData, widget.GetSelectableWidgetType(), fileMoveCallback =>
                                 {
                                     if (Helpers.IsSuccessCode(fileMoveCallback.resultCode))
                                     {
@@ -18387,7 +18501,7 @@ namespace Com.RedicalGames.Filar
                 #region Target Directory
 
                 // Get Source Folder Directory info
-                string folderTargetDirectoryPath = Path.Combine(targetStorageData.projectDirectory, DatabaseManager.Instance.GetAssetNameFormatted(sourceStorageData.name, selectableComponent.GetSelectableAssetType()));
+                string folderTargetDirectoryPath = Path.Combine(targetStorageData.projectDirectory, AppDatabaseManager.Instance.GetAssetNameFormatted(sourceStorageData.name, selectableComponent.GetSelectableAssetType()));
                 targetStorageData.projectDirectory = Helpers.GetFormattedDirectoryPath(folderTargetDirectoryPath); ;
 
                 #endregion
@@ -18646,7 +18760,8 @@ namespace Com.RedicalGames.Filar
 
                             SetFingerDown(false);
 
-                            GetWidgetRect().localScale = Vector3.one;
+                            if(GetWidgetRect() != null)
+                                GetWidgetRect().localScale = Vector3.one;
                         }
                         else
                         {
@@ -18800,7 +18915,7 @@ namespace Com.RedicalGames.Filar
 
             Coroutine showContentRoutine;
 
-            public DatabaseManager assetsManager;
+            public AppDatabaseManager assetsManager;
             ScreenUIManager screenManager;
 
             [SerializeField]
@@ -18820,11 +18935,11 @@ namespace Com.RedicalGames.Filar
                     return;
                 }
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    if (DatabaseManager.Instance.GetCurrentSceneAsset() != null)
+                    if (AppDatabaseManager.Instance.GetCurrentSceneAsset() != null)
                     {
-                        if (DatabaseManager.Instance.GetCurrentSceneAsset().modelAsset != null)
+                        if (AppDatabaseManager.Instance.GetCurrentSceneAsset().modelAsset != null)
                         {
                             Debug.Log("==> Scene Asset Found");
                             //screenDependency = dataPackets.screenType;
@@ -18837,7 +18952,7 @@ namespace Com.RedicalGames.Filar
                             //    Debug.LogWarning($"-->OnScreenChangeEvent Content Container For Screen type : {screenDependency} Missing / Not Found ");
 
                             currentDataPackets = dataPackets;
-                            OnSceneAssetScreenPreviewEvent(DatabaseManager.Instance.GetCurrentSceneAsset());
+                            OnSceneAssetScreenPreviewEvent(AppDatabaseManager.Instance.GetCurrentSceneAsset());
                         }
                         else
                             LogWarning("SceneAssetsManager.Instance.GetCurrentSceneAsset().modelAsset Is Null.", this, () => OnScreenChangeEvent(dataPackets));
@@ -18904,11 +19019,11 @@ namespace Com.RedicalGames.Filar
 
             public void Hide()
             {
-                if (DatabaseManager.Instance)
+                if (AppDatabaseManager.Instance)
                 {
-                    if (DatabaseManager.Instance.GetSceneAssetDynamicContentContainer().Count > 0)
+                    if (AppDatabaseManager.Instance.GetSceneAssetDynamicContentContainer().Count > 0)
                     {
-                        foreach (var container in DatabaseManager.Instance.GetSceneAssetDynamicContentContainer())
+                        foreach (var container in AppDatabaseManager.Instance.GetSceneAssetDynamicContentContainer())
                         {
                             if (container.value != null)
                                 container.Hide(currentDataPackets.resetContentContainerPose, false);
@@ -18928,7 +19043,7 @@ namespace Com.RedicalGames.Filar
                 try
                 {
                     if (assetsManager == null)
-                        assetsManager = DatabaseManager.Instance;
+                        assetsManager = AppDatabaseManager.Instance;
 
                     if (screenManager != null)
                     {
@@ -19612,7 +19727,7 @@ namespace Com.RedicalGames.Filar
                                 }
                             }
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
                                 if (screenActionDropDownList.Count > 0)
                                 {
@@ -19644,7 +19759,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 case InputDropDownActionType.SceneAssetRenderMode:
 
-                                                    var rendererContent = DatabaseManager.Instance.GetDropdownContent<SceneAssetRenderMode>();
+                                                    var rendererContent = AppDatabaseManager.Instance.GetDropdownContent<SceneAssetRenderMode>();
 
                                                     if (rendererContent.data != null)
                                                     {
@@ -20020,7 +20135,7 @@ namespace Com.RedicalGames.Filar
                             UIButton<ButtonDataPackets> button = screenActionButtonList.Find(button => button.dataPackets.action == actionType);
 
                             if (button != null)
-                                button.SetUIImageValue(DatabaseManager.Instance.GetImageFromLibrary(imageType), displayerType);
+                                button.SetUIImageValue(AppDatabaseManager.Instance.GetImageFromLibrary(imageType), displayerType);
                             else
                                 LogWarning($"Button Of Type : {actionType} With Displayer : {displayerType} & Image Type : {imageType} Not Found In Screen Type : {screenType} With Action Button List With : {screenActionButtonList.Count} Buttons.", this, () => SetActionButtonUIImageValue(actionType, displayerType, imageType));
                         }
@@ -20180,7 +20295,7 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     if (value <= dropdown.value.options.Count - 1)
                                                                     {
-                                                                        DatabaseManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                                                                        AppDatabaseManager.Instance.GetDropdownContentIndex<ProjectCategoryType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
                                                                         {
                                                                             if (contentIndexCallbackResults.Success())
                                                                                 OnDropDownFilterOptions(contentIndexCallbackResults.data);
@@ -20198,10 +20313,10 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         case UIScreenType.ProjectCreationScreen:
 
-                                                                            if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
-                                                                                dropdown.value.value = (int)DatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
+                                                                            if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                                                                dropdown.value.value = (int)AppDatabaseManager.Instance.GetProjectRootStructureData().data.GetProjectStructureData().GetProjectInfo().GetCategoryType();
                                                                             else
-                                                                                Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                                                                                Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
 
                                                                             break;
                                                                     }
@@ -20209,14 +20324,14 @@ namespace Com.RedicalGames.Filar
                                                                 else
                                                                     Log(ScreenUIManager.Instance.HasCurrentScreen().resultCode, ScreenUIManager.Instance.HasCurrentScreen().result, this);
 
-                                                                DatabaseManager.Instance.SetCanFilterContent(true);
+                                                                AppDatabaseManager.Instance.SetCanFilterContent(true);
                                                             }
                                                             else
                                                             {
                                                                 dropdown.SetContent(new List<string> { contentGroup?.placeHolder });
                                                                 dropdown.SetUIInputState(InputUIState.Disabled);
 
-                                                                DatabaseManager.Instance.SetCanFilterContent(false);
+                                                                AppDatabaseManager.Instance.SetCanFilterContent(false);
                                                             }
                                                         });
 
@@ -20226,9 +20341,9 @@ namespace Com.RedicalGames.Filar
 
                                                         Helpers.StringValueValid(hasContentsCallbackResults =>
                                                         {
-                                                            if (hasContentsCallbackResults.Success() && DatabaseManager.Instance.CanSortContents())
+                                                            if (hasContentsCallbackResults.Success() && AppDatabaseManager.Instance.CanSortContents())
                                                             {
-                                                                if (!DatabaseManager.Instance.CanFilterContents())
+                                                                if (!AppDatabaseManager.Instance.CanFilterContents())
                                                                     if (contentGroup.contents.Contains("Category"))
                                                                         contentGroup?.contents.Remove("Category");
 
@@ -20246,7 +20361,7 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     if (value <= dropdown.value.options.Count - 1)
                                                                     {
-                                                                        DatabaseManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
+                                                                        AppDatabaseManager.Instance.GetDropdownContentIndex<SortType>(dropdown.value.options[value].text, contentIndexCallbackResults =>
                                                                         {
                                                                             if (contentIndexCallbackResults.Success())
                                                                                 OnDropDownSortingOptions(contentIndexCallbackResults.data);
@@ -20264,12 +20379,12 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         case UIScreenType.ProjectCreationScreen:
 
-                                                                            if (DatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                                                            if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
                                                                             {
-                                                                                var rootData = DatabaseManager.Instance.GetProjectRootStructureData().data;
+                                                                                var rootData = AppDatabaseManager.Instance.GetProjectRootStructureData().data;
                                                                                 var filterType = rootData.GetProjectStructureData().GetProjectInfo().GetCategoryType();
                                                                                 var sortType = rootData.GetProjectStructureData().GetProjectInfo().GetSortType();
-                                                                                var index = DatabaseManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
+                                                                                var index = AppDatabaseManager.Instance.GetDropdownContentOptionRelativeIndex(sortType, dropdown.value.options);
 
                                                                                 if (filterType != ProjectCategoryType.Project_All)
                                                                                 {
@@ -20278,10 +20393,10 @@ namespace Com.RedicalGames.Filar
                                                                                         sortType = SortType.Ascending;
                                                                                         rootData.GetProjectStructureData().GetProjectInfo().SetSortType(sortType);
 
-                                                                                        DatabaseManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
+                                                                                        AppDatabaseManager.Instance.SaveModifiedData(rootData, dataSavedCallbackResults =>
                                                                                         {
                                                                                             if (dataSavedCallbackResults.Success())
-                                                                                                dropdown.value.value = DatabaseManager.Instance.GetDropdownContentTypeIndex(sortType);
+                                                                                                dropdown.value.value = AppDatabaseManager.Instance.GetDropdownContentTypeIndex(sortType);
                                                                                             else
                                                                                                 Log(dataSavedCallbackResults.resultCode, dataSavedCallbackResults.result, this);
                                                                                         });
@@ -20293,7 +20408,7 @@ namespace Com.RedicalGames.Filar
                                                                                     dropdown.value.value = index;
                                                                             }
                                                                             else
-                                                                                Log(DatabaseManager.Instance.GetProjectRootStructureData().resultCode, DatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                                                                                Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
 
                                                                             break;
                                                                     }
@@ -20718,8 +20833,8 @@ namespace Com.RedicalGames.Filar
 
                 ShowWidget(dataPackets);
 
-                if (DatabaseManager.Instance)
-                    DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                if (AppDatabaseManager.Instance)
+                    AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
             }
 
             void OnBuildNewAsset_ActionEvent(SceneDataPackets dataPackets)
@@ -20728,8 +20843,8 @@ namespace Com.RedicalGames.Filar
 
                 try
                 {
-                    if (DatabaseManager.Instance)
-                        if (DatabaseManager.Instance.GetCurrentSceneAsset().modelAsset != null)
+                    if (AppDatabaseManager.Instance)
+                        if (AppDatabaseManager.Instance.GetCurrentSceneAsset().modelAsset != null)
                         {
                             // This needs to be checked. Can't remember what it does.
                             //if (screenManager)
@@ -20750,8 +20865,8 @@ namespace Com.RedicalGames.Filar
 
                                             if (!ScreenUIManager.Instance.GetCurrentScreenData().value.GeWidget(dataPackets.widgetType).GetAlwaysShowWidget())
                                             {
-                                                if (DatabaseManager.Instance)
-                                                    DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                                                if (AppDatabaseManager.Instance)
+                                                    AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                                                 else
                                                     LogWarning("Scene Assets Not Yet Initialized.", this, () => OnBuildNewAsset_ActionEvent(dataPackets));
 
@@ -20764,17 +20879,17 @@ namespace Com.RedicalGames.Filar
                                             }
                                             else
                                             {
-                                                if (DatabaseManager.Instance != null)
+                                                if (AppDatabaseManager.Instance != null)
                                                 {
-                                                    Folder currentFolder = DatabaseManager.Instance.GetCurrentFolder();
+                                                    Folder currentFolder = AppDatabaseManager.Instance.GetCurrentFolder();
 
                                                     if (!string.IsNullOrEmpty(currentFolder.storageData.projectDirectory))
                                                     {
-                                                        DatabaseManager.Instance.DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
+                                                        AppDatabaseManager.Instance.DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
                                                         {
                                                             if (Helpers.IsSuccessCode(directoryFoundCallback.resultCode))
                                                             {
-                                                                DatabaseManager.Instance.BuildSceneAsset(currentFolder.storageData, (assetBuiltCallback) =>
+                                                                AppDatabaseManager.Instance.BuildSceneAsset(currentFolder.storageData, (assetBuiltCallback) =>
                                                                 {
                                                                     if (Helpers.IsSuccessCode(assetBuiltCallback.resultCode))
                                                                     {
@@ -20844,8 +20959,8 @@ namespace Com.RedicalGames.Filar
                             else
                                 LogWarning("Screen Manager Missing.", this, () => OnCreateNewAsset_ActionEvent(dataPackets));
 
-                            if (DatabaseManager.Instance)
-                                DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                            if (AppDatabaseManager.Instance)
+                                AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                             else
                                 LogWarning("Scene Assets Not Yet Initialized.", this, () => OnCreateNewAsset_ActionEvent(dataPackets));
                         }
@@ -20873,8 +20988,8 @@ namespace Com.RedicalGames.Filar
                         else
                             LogWarning("Screen Manager Missing.", this, () => OnCreateNewAsset_ActionEvent(dataPackets));
 
-                        if (DatabaseManager.Instance)
-                            DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                        if (AppDatabaseManager.Instance)
+                            AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                         else
                             LogWarning("Scene Assets Not Yet Initialized.", this, () => OnCreateNewAsset_ActionEvent(dataPackets));
                     }
@@ -20898,7 +21013,7 @@ namespace Com.RedicalGames.Filar
 
             void OnReturn_ActionEvent()
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
                     if (ScreenNavigationManager.Instance != null)
                     {
@@ -20946,9 +21061,9 @@ namespace Com.RedicalGames.Filar
 
                         if (screenUIManager.GetCurrentScreenData().value != null)
                         {
-                            if (DatabaseManager.Instance)
+                            if (AppDatabaseManager.Instance)
                             {
-                                DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
+                                AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
                                 {
                                     if (containerCallbackResults.Success())
                                     {
@@ -20997,9 +21112,9 @@ namespace Com.RedicalGames.Filar
 
             void OnChangeLayoutView_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), contentContainer =>
+                    AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), contentContainer =>
                     {
                         if (contentContainer.Success())
                         {
@@ -21027,7 +21142,7 @@ namespace Com.RedicalGames.Filar
 
                                     }
 
-                                    DatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
+                                    AppDatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                                     {
                                         if (layoutViewCallbackResults.Success())
                                         {
@@ -21035,13 +21150,13 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 case LayoutViewType.ListView:
 
-                                                    DatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
+                                                    AppDatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
 
                                                     break;
 
                                                 case LayoutViewType.ItemView:
 
-                                                    DatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
+                                                    AppDatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
 
                                                     break;
                                             }
@@ -21055,7 +21170,7 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    DatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
+                                    AppDatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                                     {
                                         if (layoutViewCallbackResults.Success())
                                         {
@@ -21063,13 +21178,13 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 case LayoutViewType.ListView:
 
-                                                    DatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
+                                                    AppDatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ItemView, dataPackets);
 
                                                     break;
 
                                                 case LayoutViewType.ItemView:
 
-                                                    DatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
+                                                    AppDatabaseManager.Instance.ChangeFolderLayoutView(LayoutViewType.ListView, dataPackets);
 
                                                     break;
                                             }
@@ -21094,7 +21209,7 @@ namespace Com.RedicalGames.Filar
 
             void OnPagination_ActionEvent(SceneDataPackets dataPackets)
             {
-                Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, databaseManagerCallbackResults => 
+                Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults => 
                 {
                     var databaseManager = databaseManagerCallbackResults.data;
 
@@ -21143,7 +21258,7 @@ namespace Com.RedicalGames.Filar
 
             void OnRefresh_ActionEvent()
             {
-                Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, databaseManagerCallbackResults =>
+                Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults =>
                 {
                     if (databaseManagerCallbackResults.Success())
                     {
@@ -21210,10 +21325,10 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownFilterOptions(int dropdownIndex)
             {
-                Helpers.GetComponent(DatabaseManager.Instance, validComponentCallbackResults =>
+                Helpers.GetComponent(AppDatabaseManager.Instance, validComponentCallbackResults =>
                 {
                     if (validComponentCallbackResults.Success())
-                        DatabaseManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
+                        AppDatabaseManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.FilterList, dropdownIndex);
                     else
                         LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                 });
@@ -21221,13 +21336,13 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownSortingOptions(int dropdownIndex)
             {
-                Helpers.GetComponent(DatabaseManager.Instance, validComponentCallbackResults => 
+                Helpers.GetComponent(AppDatabaseManager.Instance, validComponentCallbackResults => 
                 {
 
                     LogInfo($"=========================>>>>>>>>>>>> Sort Type : {(SortType)dropdownIndex} - Index : {dropdownIndex}");
 
                     if (validComponentCallbackResults.Success())
-                        DatabaseManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
+                        AppDatabaseManager.Instance.OnSetFilterAndSortActionEvent(InputDropDownActionType.SortingList, dropdownIndex);
                     else
                                 LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                 });
@@ -21235,10 +21350,10 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownSceneAssetRenderModeOptions(int dropdownIndex)
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
                     SceneAssetRenderMode renderMode = (SceneAssetRenderMode)dropdownIndex;
-                    DatabaseManager.Instance.SetSceneAssetRenderMode(renderMode);
+                    AppDatabaseManager.Instance.SetSceneAssetRenderMode(renderMode);
                 }
                 else
                    LogWarning("Assets Manager Not Yet Initialized.", this, () => OnDropDownSceneAssetRenderModeOptions(dropdownIndex));
@@ -21296,8 +21411,8 @@ namespace Com.RedicalGames.Filar
                 {
                     case InputFieldActionType.AssetSearchField:
 
-                        if (DatabaseManager.Instance != null)
-                            DatabaseManager.Instance.SearchScreenWidgetList(inputValue);
+                        if (AppDatabaseManager.Instance != null)
+                            AppDatabaseManager.Instance.SearchScreenWidgetList(inputValue);
                         else
                             LogWarning("Assets Manager Not Yet Initialized.", this, () => OnInputFieldAction( inputField, inputValue));
 
@@ -21317,8 +21432,8 @@ namespace Com.RedicalGames.Filar
                     {
                         case InputFieldActionType.AssetSearchField:
 
-                            if (DatabaseManager.Instance != null)
-                                DatabaseManager.Instance.SearchScreenWidgetList(string.Empty);
+                            if (AppDatabaseManager.Instance != null)
+                                AppDatabaseManager.Instance.SearchScreenWidgetList(string.Empty);
                             else
                                 LogWarning("Assets Manager Not Yet Initialized.", this,  () => OnClearInputFieldAction(inputField));
 
@@ -21421,7 +21536,7 @@ namespace Com.RedicalGames.Filar
                         if (componentCheckCallback.data.assetMode == AssetModeType.CreateMode)
                         {
                             AssetInfoField titleField = info.GetInfoField(InfoDisplayerFieldType.Title);
-                            titleField.name = DatabaseManager.Instance.GetDefaultAssetName();
+                            titleField.name = AppDatabaseManager.Instance.GetDefaultAssetName();
 
                             AssetInfoField verticesField = info.GetInfoField(InfoDisplayerFieldType.VerticesCounter);
                             verticesField.value = 0;
@@ -23051,7 +23166,7 @@ namespace Com.RedicalGames.Filar
 
             public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
-                Helpers.GetComponent(DatabaseManager.Instance, validComponentCallbackResults => 
+                Helpers.GetComponent(AppDatabaseManager.Instance, validComponentCallbackResults => 
                 {
                     if (validComponentCallbackResults.Success())
                     {
@@ -23287,9 +23402,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                     {
-                        if (DatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance != null)
                         {
-                            DatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(allWidgetsSelectedCallback => 
+                            AppDatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(allWidgetsSelectedCallback => 
                             {
                                 if(allWidgetsSelectedCallback.Success())
                                 {
@@ -23314,9 +23429,9 @@ namespace Com.RedicalGames.Filar
 
             void OnSelection_ActionEvents(SceneDataPackets dataPackets)
             {
-                if (DatabaseManager.Instance != null && ScreenUIManager.Instance != null)
+                if (AppDatabaseManager.Instance != null && ScreenUIManager.Instance != null)
                 {
-                    var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                    var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                     if (widgetsContainer != null)
                     {
@@ -23362,7 +23477,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (widgetsContainer.GetContentCount().data == SelectableManager.Instance.GetFocusedSelectionDataCount())
                                             {
-                                                DatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
+                                                AppDatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                                                 {
                                                     if (layoutViewCallbackResults.Success())
                                                     {
@@ -23419,9 +23534,9 @@ namespace Com.RedicalGames.Filar
                         {
                             if (projectSelectionCallbackResults.Success())
                             {
-                                if (DatabaseManager.Instance.GetRefreshData().screenContainer.GetPaginationViewType() == PaginationViewType.Pager)
+                                if (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetPaginationViewType() == PaginationViewType.Pager)
                                 {
-                                    List<UIScreenWidget> currentPage = DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetCurrentPage();
+                                    List<UIScreenWidget> currentPage = AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetCurrentPage();
 
                                     if (currentPage != null && currentPage.Count > 0)
                                     {
@@ -23439,7 +23554,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     if (projectSelectionSystemCallbackResults.Success())
                                                     {
-                                                        DatabaseManager.Instance.GetSortedWidgetsFromList(projectSelectionSystemCallbackResults.data.GetCurrentSelections(), dataPackets.selectableAssetType, getFolderStructureSelectionData =>
+                                                        AppDatabaseManager.Instance.GetSortedWidgetsFromList(projectSelectionSystemCallbackResults.data.GetCurrentSelections(), dataPackets.selectableAssetType, getFolderStructureSelectionData =>
                                                         {
                                                             if (Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                                             {
@@ -23447,7 +23562,7 @@ namespace Com.RedicalGames.Filar
                                                                 UIScreenWidget lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
 
                                                                 if (lastSelectedWidget != null)
-                                                                    DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToItemPage(lastSelectedWidget);
+                                                                    AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToItemPage(lastSelectedWidget);
                                                                 else
                                                                     LogWarning("Show Delete Asset Widget Failed - Last Selected Widget Not Found.", this, () => OnDelete_ActionEvent(dataPackets));
                                                             }
@@ -23563,7 +23678,7 @@ namespace Com.RedicalGames.Filar
 
             void OnPinItem_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
                     SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionCallbackResults => 
                     {
@@ -23583,7 +23698,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 var currentSelection = projectSelectionCallbackResults.data.GetCurrentSelections();
 
-                                DatabaseManager.Instance.SetDefaultUIWidgetActionState(currentSelection, widgetActionState, assetsPinnedCallback =>
+                                AppDatabaseManager.Instance.SetDefaultUIWidgetActionState(currentSelection, widgetActionState, assetsPinnedCallback =>
                                 {
                                     if (Helpers.IsSuccessCode(assetsPinnedCallback.resultCode))
                                     {
@@ -23600,14 +23715,14 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     if (pinItemsCount == 1)
                                                     {
-                                                        string assetName = DatabaseManager.Instance.GetFormattedName(currentSelection[0].name, currentSelection[0].GetSelectableWidgetType());
+                                                        string assetName = AppDatabaseManager.Instance.GetFormattedName(currentSelection[0].name, currentSelection[0].GetSelectableWidgetType());
                                                         dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{assetName} Pinned" : $"{assetName} Removed From Pinned Items";
                                                     }
 
                                                     if (pinItemsCount > 1)
                                                         dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{pinItemsCount} Items Pinned" : $"{pinItemsCount} Items Removed From Pinned";
 
-                                                    DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
+                                                    AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
                                                     {
                                                         if (containerCallbackResults.Success())
                                                         {
@@ -23615,11 +23730,11 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 if (contentLoadedCallback.Success())
                                                                 {
-                                                                    DatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, async widgetsSortedCallbackResults =>
+                                                                    AppDatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, async widgetsSortedCallbackResults =>
                                                                     {
                                                                         if (widgetsSortedCallbackResults.Success())
                                                                         {
-                                                                            if (DatabaseManager.Instance.GetProjectStructureData().Success())
+                                                                            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
                                                                             {
                                                                                 var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
 
@@ -23630,15 +23745,15 @@ namespace Com.RedicalGames.Filar
 
                                                                                 await ScreenUIManager.Instance.RefreshAsync();
 
-                                                                                if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
+                                                                                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
                                                                                     StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
-                                                                                else if (DatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
+                                                                                else if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
                                                                                     StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
 
                                                                                 NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
                                                                             }
                                                                             else
-                                                                                Log(DatabaseManager.Instance.GetProjectStructureData().resultCode, DatabaseManager.Instance.GetProjectStructureData().result, this);
+                                                                                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
                                                                         }
                                                                         else
                                                                             Log(widgetsSortedCallbackResults.resultCode, widgetsSortedCallbackResults.result, this);
@@ -23675,15 +23790,15 @@ namespace Com.RedicalGames.Filar
             {
                 #region Double Check
 
-                Folder currentFolder = DatabaseManager.Instance.GetCurrentFolder();
+                Folder currentFolder = AppDatabaseManager.Instance.GetCurrentFolder();
 
                 if (!string.IsNullOrEmpty(currentFolder.storageData.projectDirectory))
                 {
-                    DatabaseManager.Instance.DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
+                    AppDatabaseManager.Instance.DirectoryFound(currentFolder.storageData.projectDirectory, directoryFoundCallback =>
                     {
                         if (Helpers.IsSuccessCode(directoryFoundCallback.resultCode))
                         {
-                            DatabaseManager.Instance.BuildSceneAsset(currentFolder.storageData, (assetBuiltCallback) =>
+                            AppDatabaseManager.Instance.BuildSceneAsset(currentFolder.storageData, (assetBuiltCallback) =>
                             {
                                 if (Helpers.IsSuccessCode(assetBuiltCallback.resultCode))
                                 {
@@ -23715,11 +23830,11 @@ namespace Com.RedicalGames.Filar
                 {
                     if (widgetType == WidgetType.SceneAssetPreviewWidget)
                     {
-                        DatabaseManager.Instance.OnClearPreviewedContent(false, async contentClrearedCallback =>
+                        AppDatabaseManager.Instance.OnClearPreviewedContent(false, async contentClrearedCallback =>
                         {
                             if (Helpers.IsSuccessCode(contentClrearedCallback.resultCode))
                             {
-                                DatabaseManager.Instance.SetCurrentSceneAsset(DatabaseManager.Instance.GetSceneAssets()[0]);
+                                AppDatabaseManager.Instance.SetCurrentSceneAsset(AppDatabaseManager.Instance.GetSceneAssets()[0]);
                                 ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
 
                                 await ScreenUIManager.Instance.RefreshAsync();
@@ -23758,8 +23873,8 @@ namespace Com.RedicalGames.Filar
                             screenType = UIScreenType.ProjectDashboardScreen,
                             screenPosition = SceneAssetPivot.TopCenter,
                             blurScreen = true,
-                            delay = DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.NotificationDelay).value,
-                            duration = DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.NotificationDuration).value // Get From Value List In Scene Assets Manager.
+                            delay = AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.NotificationDelay).value,
+                            duration = AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.NotificationDuration).value // Get From Value List In Scene Assets Manager.
                         };
 
                         NotificationSystemManager.Instance.ScheduleNotification(notification);
@@ -23767,7 +23882,7 @@ namespace Com.RedicalGames.Filar
 
                     if (widgetType == WidgetType.FolderCreationWidget)
                     {
-                        if (DatabaseManager.Instance.GetLoadedSceneAssetsList().Count == 0)
+                        if (AppDatabaseManager.Instance.GetLoadedSceneAssetsList().Count == 0)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(ScreenNavigationManager.Instance.GetEmptyFolderDataPackets());
                     }
 
@@ -23816,8 +23931,8 @@ namespace Com.RedicalGames.Filar
 
                             ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
 
-                            if (DatabaseManager.Instance)
-                                DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                            if (AppDatabaseManager.Instance)
+                                AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                             else
                                 LogWarning("Scene Assets Not Yet Initialized.", this, () => OnOpenARView_ActionEvent(dataPackets));
                         }
@@ -23840,7 +23955,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (AssetImportContentManager.Instance.ShowPermissionDialogue())
                         {
-                            DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                            AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
 
                             if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
                                 ActionEvents.OnTransitionSceneEventCamera(dataPackets);
@@ -23857,7 +23972,7 @@ namespace Com.RedicalGames.Filar
                         else
                         {
                             ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
-                            DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                            AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                         }
                     }
                     else
@@ -23956,9 +24071,9 @@ namespace Com.RedicalGames.Filar
             void OnSceneAssetExport_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets)
             {
                 if (AssetImportContentManager.Instance != null)
-                    if (DatabaseManager.Instance != null)
-                        if (DatabaseManager.Instance.GetCurrentAssetExportData().value != null)
-                            AssetImportContentManager.Instance.ExportAsset(DatabaseManager.Instance.GetCurrentAssetExportData());
+                    if (AppDatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance.GetCurrentAssetExportData().value != null)
+                            AssetImportContentManager.Instance.ExportAsset(AppDatabaseManager.Instance.GetCurrentAssetExportData());
                         else
                             LogWarning("Export Asset Failed : Scene Assets Manager Instance's Get Current Asset Export Data Value Is Missing / Null.", this, () => OnSceneAssetExport_ActionEvent(popUpType, dataPackets));
                     else
@@ -23988,19 +24103,19 @@ namespace Com.RedicalGames.Filar
                     else
                         LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnPermissionsReques_ActionEvents(popUpType, dataPackets));
 
-                    DatabaseManager.Instance.SetCurrentSceneAsset(DatabaseManager.Instance.GetSceneAssets()[0]);
+                    AppDatabaseManager.Instance.SetCurrentSceneAsset(AppDatabaseManager.Instance.GetSceneAssets()[0]);
 
                    await  ScreenUIManager.Instance.ShowScreenAsync(AssetImportContentManager.Instance.GetRequestedPermissionData());
 
-                    DatabaseManager.Instance.SetCurrentSceneMode(AssetImportContentManager.Instance.GetRequestedPermissionData().sceneMode);
+                    AppDatabaseManager.Instance.SetCurrentSceneMode(AssetImportContentManager.Instance.GetRequestedPermissionData().sceneMode);
 
                     #if UNITY_EDITOR
 
                     if (AssetImportContentManager.Instance.ShowPermissionDialogue())
                     {
-                        DatabaseManager.Instance.SetCurrentSceneAsset(DatabaseManager.Instance.GetSceneAssets()[0]);
+                        AppDatabaseManager.Instance.SetCurrentSceneAsset(AppDatabaseManager.Instance.GetSceneAssets()[0]);
                         ScreenUIManager.Instance.ShowScreenAsync(AssetImportContentManager.Instance.GetRequestedPermissionData());
-                        DatabaseManager.Instance.SetCurrentSceneMode(AssetImportContentManager.Instance.GetRequestedPermissionData().sceneMode);
+                        AppDatabaseManager.Instance.SetCurrentSceneMode(AssetImportContentManager.Instance.GetRequestedPermissionData().sceneMode);
                     }
 
                     #endif
@@ -24028,7 +24143,7 @@ namespace Com.RedicalGames.Filar
                                 deletedFileCount = selectedWidgets.Count;
 
                                 if (deletedFileCount > 0)
-                                    DatabaseManager.Instance.OnDelete(selectedWidgets, async deletedAssetsCallback =>
+                                    AppDatabaseManager.Instance.OnDelete(selectedWidgets, async deletedAssetsCallback =>
                                     {
                                         if (Helpers.IsSuccessCode(deletedAssetsCallback.resultCode))
                                         {
@@ -24043,7 +24158,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 if (deletedFileCount == 1)
                                                 {
-                                                    string assetName = DatabaseManager.Instance.GetAssetNameFormatted(selectedWidgets[0].name, selectedWidgets[0].GetSelectableWidgetType());
+                                                    string assetName = AppDatabaseManager.Instance.GetAssetNameFormatted(selectedWidgets[0].name, selectedWidgets[0].GetSelectableWidgetType());
                                                     dataPackets.notification.message = $"{assetName} Deleted";
                                                 }
 
@@ -24080,7 +24195,7 @@ namespace Com.RedicalGames.Filar
                 {
                     ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                    DatabaseManager.Instance.CreateNewProjectFolder((folderCreated) =>
+                    AppDatabaseManager.Instance.CreateNewProjectFolder((folderCreated) =>
                     {
                         if (Helpers.IsSuccessCode(folderCreated.resultCode))
                         {
@@ -24090,7 +24205,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (Helpers.IsSuccessCode(selectionInfoSet.resultCode))
                                     {
-                                        var widgetsContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                                        var widgetsContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                                         if(widgetsContainer != null)
                                         {
@@ -24282,7 +24397,7 @@ namespace Com.RedicalGames.Filar
 
                         if(screenUIManager.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                         {
-                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenData().value.GetUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
+                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenData().value.GetUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
                             {
                                 if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
                                     dynamicWidgetsContainer.data.ScrollToTop();
@@ -24306,7 +24421,7 @@ namespace Com.RedicalGames.Filar
 
                         if (screenUIManager.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                         {
-                            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
+                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
                             {
                                 if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
                                     dynamicWidgetsContainer.data.ScrollToBottom();
@@ -24321,7 +24436,7 @@ namespace Com.RedicalGames.Filar
                 }, "Screen UI Manager Is Not Yet Initialized.");
             }
 
-            void OnPaginationNavigation_ActionEvent(PaginationNavigationActionType actionType) => DatabaseManager.Instance.GetRefreshData().screenContainer.OnPaginationActionButtonPressed(actionType);
+            void OnPaginationNavigation_ActionEvent(PaginationNavigationActionType actionType) => AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnPaginationActionButtonPressed(actionType);
 
             void OnProject_FolderActions_ActionEvent(SceneDataPackets dataPackets)
             {
@@ -24335,7 +24450,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
                                 {
-                                    DatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(WidgetType.CreateNewProjectWidget, dataPacketCallbackResults => 
+                                    AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(WidgetType.CreateNewProjectWidget, dataPacketCallbackResults => 
                                     {
                                         if (dataPacketCallbackResults.Success())
                                         {
@@ -24360,9 +24475,9 @@ namespace Com.RedicalGames.Filar
 
                                     if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                     {
-                                        if (DatabaseManager.Instance)
+                                        if (AppDatabaseManager.Instance)
                                         {
-                                            var widgetContainer = DatabaseManager.Instance.GetRefreshData().screenContainer;
+                                            var widgetContainer = AppDatabaseManager.Instance.GetRefreshData().screenContainer;
 
                                             if (widgetContainer != null)
                                             {
@@ -24430,7 +24545,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                     {
-                        if (DatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
                         else
                             LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this, () => OnSelectionOptions_ActionEvents(dataPackets));
@@ -24444,7 +24559,7 @@ namespace Com.RedicalGames.Filar
 
             void OnEdit_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
                     if (SelectableManager.Instance != null)
                     {
@@ -24458,7 +24573,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (selectionInfo != null)
                                     {
-                                        var selection = DatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(selectionInfo.name);
+                                        var selection = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(selectionInfo.name);
 
                                         if (selection != null)
                                         {
@@ -24482,8 +24597,8 @@ namespace Com.RedicalGames.Filar
                                                                     else
                                                                         LogWarning("Screen Manager Missing.", this);
 
-                                                                    if (DatabaseManager.Instance)
-                                                                        DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                                                                    if (AppDatabaseManager.Instance)
+                                                                        AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                                                                     else
                                                                         LogWarning("Scene Assets Not Yet Initialized.", this);
                                                                 }
@@ -24503,8 +24618,8 @@ namespace Com.RedicalGames.Filar
                                                             else
                                                                 LogWarning("Screen Manager Missing.", this);
 
-                                                            if (DatabaseManager.Instance)
-                                                                DatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
+                                                            if (AppDatabaseManager.Instance)
+                                                                AppDatabaseManager.Instance.SetCurrentSceneMode(dataPackets.sceneMode);
                                                             else
                                                                 LogWarning("Scene Assets Not Yet Initialized.", this);
                                                         }
@@ -24688,7 +24803,7 @@ namespace Com.RedicalGames.Filar
 
             void OnWidgetSelectionEvent()
             {
-                DatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
+                AppDatabaseManager.Instance.GetLayoutViewType(layoutViewCallbackResults =>
                 {
                     if (layoutViewCallbackResults.Success())
                     {
@@ -24773,30 +24888,30 @@ namespace Com.RedicalGames.Filar
 
                             if (sliderWidget.slider)
                             {
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    if (DatabaseManager.Instance.GetCurrentSceneAsset().modelAsset)
+                                    if (AppDatabaseManager.Instance.GetCurrentSceneAsset().modelAsset)
                                     {
                                         switch (dataPackets.assetFieldConfiguration)
                                         {
                                             case AssetFieldSettingsType.MainTextureSettings:
 
-                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {DatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness}");
-                                                sliderWidget.SetSliderValue(DatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness, SliderValueType.MaterialGlossinessValue);
+                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness}");
+                                                sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness, SliderValueType.MaterialGlossinessValue);
 
                                                 break;
 
                                             case AssetFieldSettingsType.NormalMapSettings:
 
-                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {DatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale}");
-                                                sliderWidget.SetSliderValue(DatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale, SliderValueType.MaterialBumpScaleValue);
+                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale}");
+                                                sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale, SliderValueType.MaterialBumpScaleValue);
 
                                                 break;
 
                                             case AssetFieldSettingsType.AOMapSettings:
 
-                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {DatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength}");
-                                                sliderWidget.SetSliderValue(DatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength, SliderValueType.MaterialOcclusionIntensityValue);
+                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength}");
+                                                sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength, SliderValueType.MaterialOcclusionIntensityValue);
 
                                                 break;
                                         }
@@ -24928,18 +25043,18 @@ namespace Com.RedicalGames.Filar
             {
                 yield return new WaitForEndOfFrame();
 
-                int widgetPageIndex = DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetItemPageIndex(widgetName);
-                DatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToPage(widgetPageIndex);
+                int widgetPageIndex = AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetItemPageIndex(widgetName);
+                AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToPage(widgetPageIndex);
             }
 
             IEnumerator SctollToItemAsync(string widgetName)
             {
                 yield return new WaitForEndOfFrame();
 
-                UIScreenWidget widget = DatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widgetName);
+                UIScreenWidget widget = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widgetName);
 
                 if (widget != null)
-                    DatabaseManager.Instance.GetRefreshData().screenContainer.OnFocusToWidget(widget, true);
+                    AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnFocusToWidget(widget, true);
                 else
                     LogWarning("Widget Is Null.", this, () => SctollToItemAsync(widgetName));
             }
@@ -25244,11 +25359,11 @@ namespace Com.RedicalGames.Filar
 
                             if (widgetContainer.hiddenScreenPoint != null && widgetContainer.visibleScreenPoint != null)
                             {
-                                if (DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value > 0)
+                                if (AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value > 0)
                                 {
                                     Vector2 screenPoint = widgetRect.anchoredPosition;
 
-                                    screenPoint = Vector2.Lerp(screenPoint, widgetContainer.visibleScreenPoint.anchoredPosition, DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
+                                    screenPoint = Vector2.Lerp(screenPoint, widgetContainer.visibleScreenPoint.anchoredPosition, AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
                                     widgetRect.anchoredPosition = screenPoint;
 
                                     float distance = (widgetRect.anchoredPosition - widgetContainer.visibleScreenPoint.anchoredPosition).sqrMagnitude;
@@ -25262,7 +25377,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    LogWarning($"Scene Assets Manager Instance Get Default Execution Times Is Not Set - Currently {DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value}.", this, () => OnWidgetTransition());
+                                    LogWarning($"Scene Assets Manager Instance Get Default Execution Times Is Not Set - Currently {AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value}.", this, () => OnWidgetTransition());
 
                             }
                             else
@@ -25282,7 +25397,7 @@ namespace Com.RedicalGames.Filar
                             if (widgetContainer.hiddenScreenPoint != null && widgetContainer.visibleScreenPoint != null)
                             {
                                 Vector2 screenPoint = widgetRect.anchoredPosition;
-                                screenPoint = Vector2.Lerp(screenPoint, widgetContainer.hiddenScreenPoint.anchoredPosition, DatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
+                                screenPoint = Vector2.Lerp(screenPoint, widgetContainer.hiddenScreenPoint.anchoredPosition, AppDatabaseManager.Instance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value * Time.smoothDeltaTime);
 
                                 widgetRect.anchoredPosition = screenPoint;
 
@@ -25319,11 +25434,11 @@ namespace Com.RedicalGames.Filar
                 dontShowAgain = state;
                 dontShowAgainToggleField.isOn = state;
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    var updatedCurrentAsset = DatabaseManager.Instance.GetCurrentSceneAsset();
+                    var updatedCurrentAsset = AppDatabaseManager.Instance.GetCurrentSceneAsset();
                     updatedCurrentAsset.dontShowMetadataWidget = state;
-                    DatabaseManager.Instance.SetCurrentSceneAsset(updatedCurrentAsset);
+                    AppDatabaseManager.Instance.SetCurrentSceneAsset(updatedCurrentAsset);
                 }
             }
 
@@ -25413,7 +25528,7 @@ namespace Com.RedicalGames.Filar
                     UIButton<ButtonDataPackets> button = buttons.Find(button => button.dataPackets.action == actionType);
 
                     if (button != null)
-                        button.SetUIImageValue(DatabaseManager.Instance.GetImageFromLibrary(imageType), displayerType);
+                        button.SetUIImageValue(AppDatabaseManager.Instance.GetImageFromLibrary(imageType), displayerType);
                     else
                         LogWarning($"Button Of Type : {actionType} With Displayer : {displayerType} & Image Type : {imageType} Not Found In Widget Type : {widgetType} With Action Button List With : {buttons.Count} Buttons.", this, () => SetActionButtonUIImageValue(actionType, displayerType, imageType));
                 }
@@ -27267,7 +27382,7 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<T> callbackResults = new CallbackData<T>();
 
-                Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
                 {
                     callbackResults.result = sceneAssetsManagerCallbackResults.result;
                     callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
@@ -27385,7 +27500,7 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<FileExtensionType> callbackResults = new CallbackData<FileExtensionType>();
 
-                Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
+                Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
                 {
                     callbackResults.result = sceneAssetsManagerCallbackResults.result;
                     callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
@@ -27765,15 +27880,15 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataList<string> callbackResults = new CallbackDataList<string>();
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    if (DatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).Success())
+                    if (AppDatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).Success())
                     {
-                        StorageDirectoryData directoryData = DatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).data;
+                        StorageDirectoryData directoryData = AppDatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).data;
 
-                        if (DatabaseManager.Instance.DirectoryFound(directoryData))
+                        if (AppDatabaseManager.Instance.DirectoryFound(directoryData))
                         {
-                            DatabaseManager.Instance.LoadData<SwatchData>(fileName, directoryData, (loadedDataResults) =>
+                            AppDatabaseManager.Instance.LoadData<SwatchData>(fileName, directoryData, (loadedDataResults) =>
                             {
                                 if (Helpers.IsSuccessCode(loadedDataResults.resultCode))
                                 {
@@ -27800,7 +27915,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         SwatchData swatchData = new SwatchData(fileName, swatches);
 
-                                        DatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                        AppDatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                         {
                                             if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                             {
@@ -27904,7 +28019,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (swatch.colorSpectrumSize > 0)
                         {
-                            var data = DatabaseManager.Instance.GetColorInfoSpectrum(swatch.colorSpectrumSize);
+                            var data = AppDatabaseManager.Instance.GetColorInfoSpectrum(swatch.colorSpectrumSize);
 
                             foreach (var colorInfo in data)
                             {
@@ -27933,9 +28048,9 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataList<string> callbackResults = new CallbackDataList<string>();
 
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    DatabaseManager.Instance.GetColorSwatchData((swatchDataResults) =>
+                    AppDatabaseManager.Instance.GetColorSwatchData((swatchDataResults) =>
                     {
                         if (Helpers.IsSuccessCode(swatchDataResults.resultCode))
                         {
@@ -27973,14 +28088,14 @@ namespace Com.RedicalGames.Filar
                                                                 callbackResults.resultCode = Helpers.ErrorCode;
                                                             }
 
-                                                            DatabaseManager.Instance.CreateColorInfoContent(colorInfo, swatchName, ContentContainerType.ColorSwatches, OrientationType.HorizontalGrid, (callbackDataResults) =>
+                                                            AppDatabaseManager.Instance.CreateColorInfoContent(colorInfo, swatchName, ContentContainerType.ColorSwatches, OrientationType.HorizontalGrid, (callbackDataResults) =>
                                                             {
                                                                 callbackResults.result = callbackDataResults.result;
                                                                 callbackResults.resultCode = callbackDataResults.resultCode;
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    DatabaseManager.Instance.GetColorSwatchData((colorSwatchDataResults) =>
+                                                                    AppDatabaseManager.Instance.GetColorSwatchData((colorSwatchDataResults) =>
                                                                     {
                                                                         callbackResults.result = colorSwatchDataResults.result;
                                                                         callbackResults.resultCode = colorSwatchDataResults.resultCode;
@@ -27994,13 +28109,13 @@ namespace Com.RedicalGames.Filar
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    if (DatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).Success())
+                                                                                    if (AppDatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).Success())
                                                                                     {
                                                                                         SwatchData swatchData = new SwatchData(fileName, swatches);
 
-                                                                                        StorageDirectoryData directoryData = DatabaseManager.Instance.GetAppDirectoryData(directoryType).data;
+                                                                                        StorageDirectoryData directoryData = AppDatabaseManager.Instance.GetAppDirectoryData(directoryType).data;
 
-                                                                                        DatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                                                                        AppDatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                                                         {
                                                                                             if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                                                                             {
@@ -28027,7 +28142,7 @@ namespace Com.RedicalGames.Filar
                                                                                         });
                                                                                     }
                                                                                     else
-                                                                                        Debug.LogError($"{DatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).result}");
+                                                                                        Debug.LogError($"{AppDatabaseManager.Instance.GetAppDirectoryData(StorageType.Settings_Storage).result}");
                                                                                 }
                                                                                 else
                                                                                     Debug.LogError($"Create Color In Custom Swatch Failed With Results : {callbackResults.result}");
@@ -28068,13 +28183,13 @@ namespace Com.RedicalGames.Filar
                                                             callbackResults.resultCode = Helpers.ErrorCode;
                                                         }
 
-                                                        if (DatabaseManager.Instance.GetAppDirectoryData(directoryType).Success())
+                                                        if (AppDatabaseManager.Instance.GetAppDirectoryData(directoryType).Success())
                                                         {
                                                             SwatchData swatchData = new SwatchData(fileName, swatches);
 
-                                                            StorageDirectoryData directoryData = DatabaseManager.Instance.GetAppDirectoryData(directoryType).data;
+                                                            StorageDirectoryData directoryData = AppDatabaseManager.Instance.GetAppDirectoryData(directoryType).data;
 
-                                                            DatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                                            AppDatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                             {
                                                                 if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                                                 {
@@ -28101,7 +28216,7 @@ namespace Com.RedicalGames.Filar
                                                             });
                                                         }
                                                         else
-                                                            Debug.LogError($"Results : {DatabaseManager.Instance.GetAppDirectoryData(directoryType)}");
+                                                            Debug.LogError($"Results : {AppDatabaseManager.Instance.GetAppDirectoryData(directoryType)}");
                                                     }
                                                 });
 
@@ -28132,13 +28247,13 @@ namespace Com.RedicalGames.Filar
                                             if (!swatches.Contains(swatch))
                                                 swatches.Add(swatch);
 
-                                            if (DatabaseManager.Instance.GetAppDirectoryData(directoryType).Success())
+                                            if (AppDatabaseManager.Instance.GetAppDirectoryData(directoryType).Success())
                                             {
                                                 SwatchData swatchData = new SwatchData(fileName, swatches);
 
-                                                StorageDirectoryData directoryData = DatabaseManager.Instance.GetAppDirectoryData(directoryType).data;
+                                                StorageDirectoryData directoryData = AppDatabaseManager.Instance.GetAppDirectoryData(directoryType).data;
 
-                                                DatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
+                                                AppDatabaseManager.Instance.CreateData(swatchData, directoryData, (createDataCallback) =>
                                                 {
                                                     if (Helpers.IsSuccessCode(createDataCallback.resultCode))
                                                     {
@@ -28165,7 +28280,7 @@ namespace Com.RedicalGames.Filar
                                                 });
                                             }
                                             else
-                                                Debug.LogError($"Results : {DatabaseManager.Instance.GetAppDirectoryData(directoryType)}");
+                                                Debug.LogError($"Results : {AppDatabaseManager.Instance.GetAppDirectoryData(directoryType)}");
                                         }
                                         else
                                         {
@@ -29037,9 +29152,9 @@ namespace Com.RedicalGames.Filar
 
                         if (RenderingSettingsManager.Instance != null)
                         {
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(RenderingSettingsManager.Instance.GetRenderingSettingsData().GetLightingSettingsData().GetLightColor(), (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(RenderingSettingsManager.Instance.GetRenderingSettingsData().GetLightingSettingsData().GetLightColor(), (callbackResults) =>
                                 {
                                     if (Helpers.IsSuccessCode(callbackResults.resultCode))
                                         ActionEvents.OnSwatchColorPickedEvent(callbackResults.data, false, true);
@@ -29071,9 +29186,9 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (dataPackets.tabID == navigationID)
                                     {
-                                        if (DatabaseManager.Instance != null)
+                                        if (AppDatabaseManager.Instance != null)
                                         {
-                                            DatabaseManager.Instance.Duplicate((duplicateCallback) =>
+                                            AppDatabaseManager.Instance.Duplicate((duplicateCallback) =>
                                             {
                                                 if (Helpers.IsSuccessCode(duplicateCallback.resultCode))
                                                     Debug.Log($"-------------------> RG_Unity: {duplicateCallback.result}");
@@ -29109,9 +29224,9 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (dataPackets.tabID == navigationID)
                                     {
-                                        if (DatabaseManager.Instance != null)
+                                        if (AppDatabaseManager.Instance != null)
                                         {
-                                            DatabaseManager.Instance.ClearAllRenderProfiles((clearAllCallback) =>
+                                            AppDatabaseManager.Instance.ClearAllRenderProfiles((clearAllCallback) =>
                                             {
                                                 if (Helpers.IsSuccessCode(clearAllCallback.resultCode))
                                                     Debug.Log($"-------------------> RG_Unity: {clearAllCallback.result}");
@@ -29336,10 +29451,10 @@ namespace Com.RedicalGames.Filar
                             {
                                 case InputDropDownActionType.RenderingProfileType:
 
-                                    if (DatabaseManager.Instance != null)
+                                    if (AppDatabaseManager.Instance != null)
                                     {
 
-                                        List<string> profileTypeList = DatabaseManager.Instance.GetFormatedDropDownContentList(DatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.RenderProfiles).data);
+                                        List<string> profileTypeList = AppDatabaseManager.Instance.GetFormatedDropDownContentList(AppDatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.RenderProfiles).data);
 
                                         if (profileTypeList != null)
                                         {
@@ -29412,9 +29527,9 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (dataPackets.tabID == NavigationTabID.PostProcessingSettings)
                                             {
-                                                if (DatabaseManager.Instance != null)
+                                                if (AppDatabaseManager.Instance != null)
                                                 {
-                                                    DatabaseManager.Instance.CreateNewRenderProfile(dataPackets, (createRendererCallback) =>
+                                                    AppDatabaseManager.Instance.CreateNewRenderProfile(dataPackets, (createRendererCallback) =>
                                                     {
                                                         if (Helpers.IsSuccessCode(createRendererCallback.resultCode))
                                                             ActionEvents.OnNavigationTabWidgetEvent(dataPackets);
@@ -29460,8 +29575,8 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownExtensionsOptions(int dropdownIndex)
             {
-                if (DatabaseManager.Instance)
-                    DatabaseManager.Instance.SetNewRenderProfileID((NavigationRenderSettingsProfileID)dropdownIndex);
+                if (AppDatabaseManager.Instance)
+                    AppDatabaseManager.Instance.SetNewRenderProfileID((NavigationRenderSettingsProfileID)dropdownIndex);
                 else
                     Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
             }
@@ -29983,7 +30098,7 @@ namespace Com.RedicalGames.Filar
 
                 if (fadeDirection == fadeOut)
                 {
-                    Helpers.GetValue(DatabaseManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), DatabaseManager.UIScreenFadeDirection.FadeOut).value, fadeOutDuractionCallbackResults =>
+                    Helpers.GetValue(AppDatabaseManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), AppDatabaseManager.UIScreenFadeDirection.FadeOut).value, fadeOutDuractionCallbackResults =>
                     {
                         if (fadeOutDuractionCallbackResults.Success())
                         {
@@ -30005,7 +30120,7 @@ namespace Com.RedicalGames.Filar
                 
                 if (fadeDirection == fadeIn)
                 {
-                    Helpers.GetValue(DatabaseManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), DatabaseManager.UIScreenFadeDirection.FadeIn).value, fadeInDuractionCallbackResults => 
+                    Helpers.GetValue(AppDatabaseManager.Instance.GetDefaultScreenFadeExecutionValue(GetUIScreenType(), AppDatabaseManager.UIScreenFadeDirection.FadeIn).value, fadeInDuractionCallbackResults => 
                     {
                         if (fadeInDuractionCallbackResults.Success())
                         {
@@ -31021,6 +31136,61 @@ namespace Com.RedicalGames.Filar
                 return Sprite.Create(texture, newRect, Vector2.zero);
             }
 
+            public enum ImageEncoderType
+            {
+                JPG,
+                EXR,
+                TGA,
+                PNG,
+            }
+
+            public static byte[] ImageToBytesArray(Sprite source, ImageEncoderType encoderType)
+            {
+                if(encoderType == ImageEncoderType.JPG)
+                    return source.texture.EncodeToJPG();
+
+                if (encoderType == ImageEncoderType.PNG)
+                    return source.texture.EncodeToPNG();
+
+                if (encoderType == ImageEncoderType.TGA)
+                    return source.texture.EncodeToTGA();
+
+                if (encoderType == ImageEncoderType.EXR)
+                    return source.texture.EncodeToTGA();
+
+                return null;
+            }
+
+            public static Sprite BytesArrayToSprite(byte[] source, int minWidth, int minHeight) => Sprite.Create(BytesArrayToTexture2D(source, minWidth, minHeight), new Rect(Vector2.zero, new Vector2(minWidth, minHeight)), Vector2.zero);
+
+            public static byte[] ImageToBytesArray(Texture2D source, ImageEncoderType encoderType)
+            {
+                if (encoderType == ImageEncoderType.JPG)
+                    return source.EncodeToJPG();
+
+                if (encoderType == ImageEncoderType.PNG)
+                    return source.EncodeToPNG();
+
+                if (encoderType == ImageEncoderType.TGA)
+                    return source.EncodeToTGA();
+
+                if (encoderType == ImageEncoderType.EXR)
+                    return source.EncodeToTGA();
+
+                return null;
+            }
+
+            public static Texture2D BytesArrayToTexture2D(byte[] source, int width, int height)
+            {
+                Debug.Log($" +++++++++++++===========<<<< Image Width : {width} - Height : {height}");
+
+                var texture2D = new Texture2D(width, height, TextureFormat.PVRTC_RGBA4, false);
+                texture2D.LoadImage(source, false);
+                texture2D.Apply();
+
+                return texture2D;
+            }
+
             /// <summary>
             /// Returns A Position To Scroll To.
             /// </summary>
@@ -31195,14 +31365,14 @@ namespace Com.RedicalGames.Filar
                 {
                     if (FileIsValid(asset.GetAssetField(AssetFieldType.Thumbnail).path))
                     {
-                        if (DatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance != null)
                         {
-                            if (DatabaseManager.Instance.GetAssetsLibrary().ImageAssetExists(asset.GetAssetField(AssetFieldType.Thumbnail).path))
-                                imageDisplayer.sprite = DatabaseManager.Instance.GetAssetsLibrary().GetImageAsset(asset.GetAssetField(AssetFieldType.Thumbnail).path);
+                            if (AppDatabaseManager.Instance.GetAssetsLibrary().ImageAssetExists(asset.GetAssetField(AssetFieldType.Thumbnail).path))
+                                imageDisplayer.sprite = AppDatabaseManager.Instance.GetAssetsLibrary().GetImageAsset(asset.GetAssetField(AssetFieldType.Thumbnail).path);
                             else
                             {
                                 imageDisplayer.sprite = Texture2DToSprite(LoadTextureFile(asset.GetAssetField(AssetFieldType.Thumbnail).path));
-                                DatabaseManager.Instance.GetAssetsLibrary().AddImageAsset(imageDisplayer.sprite, asset.GetAssetField(AssetFieldType.Thumbnail).path);
+                                AppDatabaseManager.Instance.GetAssetsLibrary().AddImageAsset(imageDisplayer.sprite, asset.GetAssetField(AssetFieldType.Thumbnail).path);
                             }
                         }
                         else
@@ -31210,10 +31380,10 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        if (DatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance != null)
                         {
                             if (imageDisplayer != null)
-                                imageDisplayer.sprite = DatabaseManager.Instance.GetDefaultFallbackSceneAssetIcon();
+                                imageDisplayer.sprite = AppDatabaseManager.Instance.GetDefaultFallbackSceneAssetIcon();
                             else
                                 Debug.LogWarning("--> Show Image Failed : Image Displayer Is Null.");
 
@@ -31224,10 +31394,10 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
                         if (imageDisplayer != null)
-                            imageDisplayer.sprite = DatabaseManager.Instance.GetDefaultFallbackSceneAssetIcon();
+                            imageDisplayer.sprite = AppDatabaseManager.Instance.GetDefaultFallbackSceneAssetIcon();
                         else
                             Debug.LogWarning("--> Show Image Failed : Image Displayer Is Null.");
 
@@ -31990,25 +32160,6 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = (callbackFailFallbackResults != null)? callbackFailFallbackResults : "The Assigned Value Is Set To Default : 0.";
                     callbackResults.data = default;
-                    callbackResults.resultCode = ErrorCode;
-                }
-
-                callback.Invoke(callbackResults);
-            }
-
-            public static async Task GetComponentAsync<T>(T component, Action<CallbackData<T>> callback) where T : AppMonoBaseClass
-            {
-                CallbackData<T> callbackResults = new CallbackData<T>();
-
-                if (component != null)
-                {
-                    callbackResults.result = $"Component : {component.name} Is Valid.";
-                    callbackResults.data = component;
-                    callbackResults.resultCode = SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = "Component Is Not Valid - Not Found / Missing / Null.";
                     callbackResults.resultCode = ErrorCode;
                 }
 

@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
         {
             yield return new WaitForEndOfFrame();
 
-            DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
+            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
             {
                 if (containerCallbackResults.Success())
                 {
@@ -67,8 +67,8 @@ namespace Com.RedicalGames.Filar
                             Log(placeHolderCallbackResults.resultCode, placeHolderCallbackResults.result, this);
                     });
 
-                    DatabaseManager.Instance.CreateNewFolderName = DatabaseManager.Instance.GetCreateNewFolderTempName();
-                    SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, DatabaseManager.Instance.CreateNewFolderName);
+                    AppDatabaseManager.Instance.CreateNewFolderName = AppDatabaseManager.Instance.GetCreateNewFolderTempName();
+                    SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, AppDatabaseManager.Instance.CreateNewFolderName);
 
                     HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
 
@@ -85,9 +85,9 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                 {
-                    if (DatabaseManager.Instance)
+                    if (AppDatabaseManager.Instance)
                     {
-                        DatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
+                        AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
                         {
                             if (containerCallbackResults.Success())
                             {
@@ -122,7 +122,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
         {
-            DatabaseManager.Instance.CreateNewFolderName = value;
+            AppDatabaseManager.Instance.CreateNewFolderName = value;
         }
 
         protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)

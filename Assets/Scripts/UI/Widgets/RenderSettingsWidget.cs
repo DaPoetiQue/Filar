@@ -134,8 +134,8 @@ namespace Com.RedicalGames.Filar
                 widgetsInitialized = true;
             }
 
-            if (DatabaseManager.Instance)
-                SetWidgetAssetData(DatabaseManager.Instance.GetCurrentSceneAsset());
+            if (AppDatabaseManager.Instance)
+                SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
             else
                 Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
         }

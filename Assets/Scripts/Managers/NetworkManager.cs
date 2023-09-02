@@ -87,7 +87,7 @@ namespace Com.RedicalGames.Filar
 
         int NetworkConnectionDelay()
         {
-            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
+            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
 
             if (sceneAssetsManagerCallbackResults.Success())
             {
@@ -106,7 +106,7 @@ namespace Com.RedicalGames.Filar
 
         float DefaultTimeOut()
         {
-            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
+            var sceneAssetsManagerCallbackResults = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Scene Assets Manager Instance Is Not Yet initialized.");
 
             if (sceneAssetsManagerCallbackResults.Success())
             {

@@ -45,7 +45,7 @@ namespace Com.RedicalGames.Filar
                             if (SelectableManager.Instance.HasActiveSelection())
                                 SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
                                 AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
                                 {
@@ -77,7 +77,7 @@ namespace Com.RedicalGames.Filar
                 string fileCountString = folder.GetFileCount().ToString() + " Files";
                 SetUITextDisplayerValue(fileCountString, AppData.ScreenTextType.FileCountDisplayer);
 
-                SetUITextDisplayerValue(folder?.creationDateTime?.dateTime, AppData.ScreenTextType.TimeDateDisplayer);
+                SetUITextDisplayerValue(folder?.creationDateTime?.dateTime, AppData.ScreenTextType.DateTimeDisplayer);
 
                 if (folder.GetFileCount() == 0)
                     SetUIImageDisplayerValue(AppData.UIImageDisplayerType.ItemThumbnail, AppData.UIImageType.EmptyFolderIcon);

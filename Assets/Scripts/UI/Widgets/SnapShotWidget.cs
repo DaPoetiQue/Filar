@@ -43,8 +43,8 @@ namespace Com.RedicalGames.Filar
             AppData.ImageData captureData = ScreenCaptureManager.Instance.GetScreenCaptureData();
             imageDisplayer.SetImageData(captureData, imageDisplayer.dataPackets);
 
-            if (DatabaseManager.Instance)
-                SetWidgetAssetData(DatabaseManager.Instance.GetCurrentSceneAsset());
+            if (AppDatabaseManager.Instance)
+                SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
             else
                 Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
         }

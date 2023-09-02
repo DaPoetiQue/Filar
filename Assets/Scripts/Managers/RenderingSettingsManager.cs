@@ -59,7 +59,7 @@ namespace Com.RedicalGames.Filar
 
         AppData.SceneAssetRenderMode currentRenderMode;
 
-        DatabaseManager assetsManager;
+        AppDatabaseManager assetsManager;
         SkyboxUIHandler skyboxUIHandlerPrefab = null;
 
         List<SkyboxUIHandler> skyboxUIHandlerComponentsList = new List<SkyboxUIHandler>();
@@ -94,7 +94,7 @@ namespace Com.RedicalGames.Filar
 
         void Init()
         {
-            assetsManager = DatabaseManager.Instance;
+            assetsManager = AppDatabaseManager.Instance;
 
             if (rendererMaterialList.Count > 0)
             {

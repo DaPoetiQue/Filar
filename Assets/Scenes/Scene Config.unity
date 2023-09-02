@@ -799,7 +799,21 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  obj: {fileID: 919132149155446097, guid: fc9760a90125fd34b9d144dc9b75a21b, type: 3}
+  post:
+    uniqueIdentifier: 
+    rootIdentifier: 
+    title: Gomma Gomma
+    caption: Gang gang or bang bang for ben ten who went zen and killos and ten grand
+      ye zinto usmindo ke grand grand
+    thumbnail: 
+    creationDateTime: 0
+    creationExpireyDateTime: 0
+    likesDataString: 
+    deslikesDataString: 
+    commentsDataString: 
+  obj: {fileID: 919132149155446097, guid: fca77c6555e8d47479a0dcfdb184f90c, type: 3}
+  thumbnail: {fileID: 21300000, guid: 6cad10f3a3956a6459550a79216fea12, type: 3}
+  imageEncoderType: 0
 --- !u!4 &1921894487
 Transform:
   m_ObjectHideFlags: 0

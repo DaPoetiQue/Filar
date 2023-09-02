@@ -106,7 +106,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         case AppData.InputDropDownActionType.ColorModeSelection:
 
-                                            List<string> colorModeList = DatabaseManager.Instance.GetFormatedDropDownContentList(DatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorSpaces).data);
+                                            List<string> colorModeList = AppDatabaseManager.Instance.GetFormatedDropDownContentList(AppDatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorSpaces).data);
 
                                             if (colorModeList != null)
                                             {
@@ -119,7 +119,7 @@ namespace Com.RedicalGames.Filar
 
                                         case AppData.InputDropDownActionType.ColorPickerSelection:
 
-                                            List<string> colorPickerList = DatabaseManager.Instance.GetFormatedDropDownContentList(DatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorPickers).data);
+                                            List<string> colorPickerList = AppDatabaseManager.Instance.GetFormatedDropDownContentList(AppDatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorPickers).data);
 
                                             if (colorPickerList != null)
                                                 OnInitializeDropDown(dropdown, colorPickerList, false);
@@ -171,7 +171,7 @@ namespace Com.RedicalGames.Filar
 
                             Debug.LogError($"--> OnActionDropdownInitialized Type : {dropdown.dataPackets.action}.");
 
-                            List<string> colorPickerList = DatabaseManager.Instance.GetFormatedDropDownContentList(DatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorPickers).data);
+                            List<string> colorPickerList = AppDatabaseManager.Instance.GetFormatedDropDownContentList(AppDatabaseManager.Instance.GetDropDownContentData(AppData.DropDownContentType.ColorPickers).data);
 
                             Debug.LogError($"--> OnActionDropdownInitialized Success : Color Picker List Found : {colorPickerList.Count}.");
 
@@ -234,12 +234,12 @@ namespace Com.RedicalGames.Filar
             {
                 if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                 {
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
                         if (onOpenColourSettings)
-                            DatabaseManager.Instance.OnInitializeColorSwatchData(storageDirectoryData.name);
+                            AppDatabaseManager.Instance.OnInitializeColorSwatchData(storageDirectoryData.name);
 
-                        DatabaseManager.Instance.GetColorSwatchData((callbackResults) =>
+                        AppDatabaseManager.Instance.GetColorSwatchData((callbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
@@ -361,9 +361,9 @@ namespace Com.RedicalGames.Filar
 
                 if (isRefreshed)
                 {
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
-                        DatabaseManager.Instance.GetColorSwatchData((callbackResults) =>
+                        AppDatabaseManager.Instance.GetColorSwatchData((callbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                             {
@@ -398,9 +398,9 @@ namespace Com.RedicalGames.Filar
 
             if (onOpenColourSettings && !settingsOpen)
             {
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
-                    DatabaseManager.Instance.GetColorSwatchData((callbackResults) =>
+                    AppDatabaseManager.Instance.GetColorSwatchData((callbackResults) =>
                     {
                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         {
@@ -538,8 +538,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (AppData.Helpers.IsSuccessCode(createActionCallbackResults.resultCode))
                         {
-                            if (DatabaseManager.Instance != null)
-                                DatabaseManager.Instance.GetColorSwatchData((swatchDataResults) =>
+                            if (AppDatabaseManager.Instance != null)
+                                AppDatabaseManager.Instance.GetColorSwatchData((swatchDataResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(swatchDataResults.resultCode))
                                         swatchDataResults.data.OnSwatchColorSelection(currentColorInfo);
@@ -584,12 +584,12 @@ namespace Com.RedicalGames.Filar
         protected override void OnActionInputFieldValueChangedEvent(string value, AppData.InputFieldDataPackets dataPackets)
         {
             if (dataPackets.action == AppData.InputFieldActionType.ColorHexidecimalField)
-                if (DatabaseManager.Instance != null)
+                if (AppDatabaseManager.Instance != null)
                 {
                     if (value.Length < (colorValueInputCharacterLimit / 2) || value.Length > (colorValueInputCharacterLimit / 2) && value.Length < colorValueInputCharacterLimit)
                         return;
 
-                    DatabaseManager.Instance.GetColorFromHexidecimal(value, (callback) =>
+                    AppDatabaseManager.Instance.GetColorFromHexidecimal(value, (callback) =>
                     {
                         if (AppData.Helpers.IsSuccessCode(callback.resultCode))
                             UpdateActionInputs(callback.data);
@@ -617,9 +617,9 @@ namespace Com.RedicalGames.Filar
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        if (DatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance != null)
                         {
-                            DatabaseManager.Instance.SelectColorSwatchPallet(storageDirectoryData.name, value, (showPalledResults) =>
+                            AppDatabaseManager.Instance.SelectColorSwatchPallet(storageDirectoryData.name, value, (showPalledResults) =>
                             {
                                 if (AppData.Helpers.IsSuccessCode(showPalledResults.resultCode))
                                 {
@@ -813,13 +813,13 @@ namespace Com.RedicalGames.Filar
                     break;
             }
 
-            if (DatabaseManager.Instance != null)
+            if (AppDatabaseManager.Instance != null)
             {
 
                 if (currentColorMode == AppData.ColorSpaceType.HSV)
                     currentColorInfo.color = Color.HSVToRGB(colorHSVData.hue, colorHSVData.saturation, colorHSVData.value);
 
-                DatabaseManager.Instance.GetHexidecimalFromColor(currentColorInfo.color, (callbackResults) =>
+                AppDatabaseManager.Instance.GetHexidecimalFromColor(currentColorInfo.color, (callbackResults) =>
                 {
                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         UpdateActionInputs(callbackResults.data);
@@ -849,9 +849,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 Color color = new Color((float)redValue / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.g, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.b, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.a, rgbColorValueMultiplier) / rgbColorValueMultiplier);
 
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                    AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
                                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
@@ -874,9 +874,9 @@ namespace Com.RedicalGames.Filar
 
                                 Color color = Color.HSVToRGB(colorHSVData.hue, colorHSVData.saturation, colorHSVData.value);
 
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                    AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
                                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
@@ -902,9 +902,9 @@ namespace Com.RedicalGames.Filar
                             Color color;
                             color = new Color(0.0f, (float)GetColorValueInt(currentColorInfo.color.g, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.b, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.a, rgbColorValueMultiplier) / rgbColorValueMultiplier);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -926,9 +926,9 @@ namespace Com.RedicalGames.Filar
                             color = Color.HSVToRGB(0.0f, colorHSVData.saturation, colorHSVData.value);
                             Color.RGBToHSV(color, out colorHSVData.hue, out colorHSVData.saturation, out colorHSVData.value);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -960,9 +960,9 @@ namespace Com.RedicalGames.Filar
                                 Color color;
                                 color = new Color((float)GetColorValueInt(currentColorInfo.color.r, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)greenValue / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.b, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.a, rgbColorValueMultiplier) / rgbColorValueMultiplier);
 
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                    AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
                                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
@@ -985,9 +985,9 @@ namespace Com.RedicalGames.Filar
 
                                 Color color = Color.HSVToRGB(colorHSVData.hue, colorHSVData.saturation, colorHSVData.value);
 
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                    AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
                                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
@@ -1013,9 +1013,9 @@ namespace Com.RedicalGames.Filar
                             Color color;
                             color = new Color((float)GetColorValueInt(currentColorInfo.color.r, rgbColorValueMultiplier) / rgbColorValueMultiplier, 0.0f, (float)GetColorValueInt(currentColorInfo.color.b, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.a, rgbColorValueMultiplier) / rgbColorValueMultiplier);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -1037,9 +1037,9 @@ namespace Com.RedicalGames.Filar
                             color = Color.HSVToRGB(colorHSVData.hue, 0.0f, colorHSVData.value);
                             Color.RGBToHSV(color, out colorHSVData.hue, out colorHSVData.saturation, out colorHSVData.value);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -1071,9 +1071,9 @@ namespace Com.RedicalGames.Filar
                                 Color color;
                                 color = new Color((float)GetColorValueInt(currentColorInfo.color.r, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.g, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)blueValue / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.a, rgbColorValueMultiplier) / rgbColorValueMultiplier);
 
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                    AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
                                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
@@ -1096,9 +1096,9 @@ namespace Com.RedicalGames.Filar
 
                                 Color color = Color.HSVToRGB(colorHSVData.hue, colorHSVData.saturation, colorHSVData.value);
 
-                                if (DatabaseManager.Instance != null)
+                                if (AppDatabaseManager.Instance != null)
                                 {
-                                    DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                    AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                     {
                                         if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                             UpdateActionInputs(callbackResults.data, false, false);
@@ -1124,9 +1124,9 @@ namespace Com.RedicalGames.Filar
                             Color color;
                             color = new Color((float)GetColorValueInt(currentColorInfo.color.r, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.g, rgbColorValueMultiplier) / rgbColorValueMultiplier, 0.0f, (float)GetColorValueInt(currentColorInfo.color.a, rgbColorValueMultiplier) / rgbColorValueMultiplier);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -1148,9 +1148,9 @@ namespace Com.RedicalGames.Filar
                             color = Color.HSVToRGB(colorHSVData.hue, colorHSVData.saturation, 0.0f);
                             Color.RGBToHSV(color, out colorHSVData.hue, out colorHSVData.saturation, out colorHSVData.value);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -1179,9 +1179,9 @@ namespace Com.RedicalGames.Filar
 
                             Color color = new Color((float)GetColorValueInt(currentColorInfo.color.r, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.g, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.b, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)alphaValue / rgbColorValueMultiplier);
 
-                            if (DatabaseManager.Instance != null)
+                            if (AppDatabaseManager.Instance != null)
                             {
-                                DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                                AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                                 {
                                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                         UpdateActionInputs(callbackResults.data);
@@ -1203,9 +1203,9 @@ namespace Com.RedicalGames.Filar
 
                         Color color = new Color((float)GetColorValueInt(currentColorInfo.color.r, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.g, rgbColorValueMultiplier) / rgbColorValueMultiplier, (float)GetColorValueInt(currentColorInfo.color.b, rgbColorValueMultiplier) / rgbColorValueMultiplier, 0.0f);
 
-                        if (DatabaseManager.Instance != null)
+                        if (AppDatabaseManager.Instance != null)
                         {
-                            DatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
+                            AppDatabaseManager.Instance.GetHexidecimalFromColor(color, (callbackResults) =>
                             {
                                 if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                                     UpdateActionInputs(callbackResults.data);
@@ -1261,9 +1261,9 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            if (DatabaseManager.Instance != null)
+            if (AppDatabaseManager.Instance != null)
             {
-                DatabaseManager.Instance.GetColorSwatchData((getSwatchDataCallbackResults) =>
+                AppDatabaseManager.Instance.GetColorSwatchData((getSwatchDataCallbackResults) =>
                 {
                     if (AppData.Helpers.IsSuccessCode(getSwatchDataCallbackResults.resultCode))
                     {
@@ -1308,9 +1308,9 @@ namespace Com.RedicalGames.Filar
 
                 for (int i = 0; i < colorInfoList.Count; i++)
                 {
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
-                        DatabaseManager.Instance.GetColorSwatchData((getSwatchDataCallbackResults) =>
+                        AppDatabaseManager.Instance.GetColorSwatchData((getSwatchDataCallbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(getSwatchDataCallbackResults.resultCode))
                             {

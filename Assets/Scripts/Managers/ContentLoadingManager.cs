@@ -37,13 +37,13 @@ namespace Com.RedicalGames.Filar
 
         public async Task LoadScreen(AppData.SceneDataPackets dataPackets)
         {
-            var sceneAssetsManagerInstanceCallbackResults = AppData.Helpers.GetAppComponentValid(DatabaseManager.Instance, DatabaseManager.Instance.name, "Scene Assets Manager instance Is Not Yet Initialized.");
+            var sceneAssetsManagerInstanceCallbackResults = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Scene Assets Manager instance Is Not Yet Initialized.");
 
             if (sceneAssetsManagerInstanceCallbackResults.Success())
             {
                 AppData.CallbackData<AppData.SceneDataPackets> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
 
-                DatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
+                AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                 {
                     loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.Result;
                     loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.Data.dataPackets;
@@ -70,7 +70,7 @@ namespace Com.RedicalGames.Filar
                         {
                             await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
 
-                            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(DatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
+                            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
                             await Task.Delay(loadingScreenExitDelay);
 
                             await ScreenUIManager.Instance.ShowScreenAsync(dataPackets);

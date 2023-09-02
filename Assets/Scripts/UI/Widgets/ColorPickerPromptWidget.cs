@@ -90,9 +90,9 @@ namespace Com.RedicalGames.Filar
 
                 case AppData.InputActionButtonType.ColorPickerButton:
 
-                    if (DatabaseManager.Instance != null)
+                    if (AppDatabaseManager.Instance != null)
                     {
-                        DatabaseManager.Instance.GetHexidecimalFromColor(colorInfo.color, (newColorCallbackResults) =>
+                        AppDatabaseManager.Instance.GetHexidecimalFromColor(colorInfo.color, (newColorCallbackResults) =>
                         {
                             if (AppData.Helpers.IsSuccessCode(newColorCallbackResults.resultCode))
                             {

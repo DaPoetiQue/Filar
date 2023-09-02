@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -83,24 +84,56 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnSetUIWidgetData(AppData.Post postHandler)
+        protected override void OnSetUIWidgetData(AppData.Post post)
         {
             #region Post 
 
-            LogInfo($" -- Assigning Post : {postHandler.GetTitle()} - Caption : {postHandler.GetCaption()}", this);
-
-            SetUITextDisplayerValue(postHandler.GetTitle(), AppData.ScreenTextType.TitleDisplayer);
+            SetUITextDisplayerValue(post.GetTitle(), AppData.ScreenTextType.TitleDisplayer);
 
             #endregion
 
             #region Post Caption
 
-            SetUITextDisplayerValue(postHandler.GetCaption(), AppData.ScreenTextType.MessageDisplayer);
+            SetUITextDisplayerValue(post.GetCaption(), AppData.ScreenTextType.MessageDisplayer);
 
             #endregion
 
             #region Post Date Time
 
+            LogInfo($" =>>>>>> Date Time : {new DateTime(post.creationDateTime)}");
+
+            var postCreationDateTime = AppData.Helpers.GetElapsedTime(new AppData.DateTimeComponent(new DateTime(post.creationDateTime)));
+            SetUITextDisplayerValue(postCreationDateTime, AppData.ScreenTextType.DateTimeDisplayer);
+
+            #endregion
+
+            #region Thumbnail
+
+
+            if (post.ThumbnailAssigned())
+            {
+                GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail, thumbnailCallbackResults =>
+                {
+                    if (thumbnailCallbackResults.Success())
+                        SetUIImageDisplayerValue(post.GetTexture2DThumbnail(thumbnailCallbackResults.data.mainTexture.width, thumbnailCallbackResults.data.mainTexture.width), AppData.ScreenImageType.Thumbnail);
+                    else
+                        Log(thumbnailCallbackResults.ResultCode, thumbnailCallbackResults.Result, this);
+                });
+            }
+            else
+            {
+                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults => 
+                {
+                    if(appDatabaseManagerCallbackResults.Success())
+                    {
+                        var appDatabaseManager = appDatabaseManagerCallbackResults.data;
+                        SetUIImageDisplayerValue(appDatabaseManager.GetImageFromLibrary(AppData.UIImageType.ImagePlaceholder).value, AppData.ScreenImageType.Thumbnail);
+                    }
+                    else
+                        Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
+
+                },  "App Database Manager Is Not Yet Initialized.");
+            }
 
             #endregion
         }

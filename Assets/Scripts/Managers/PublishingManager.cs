@@ -52,11 +52,11 @@ namespace Com.RedicalGames.Filar
             //    callback.Invoke(callbackResults);
         }
 
-        public async void OnPublish(AppData.PostHandler postHandler, Action<AppData.Callback> callback = null)
+        public async void OnPublish(AppData.Post post, AppData.ModelMeshData content, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            if (postHandler != null)
+            if (post != null)
             {
                 var sw = new System.Diagnostics.Stopwatch();
                 sw.Start();
@@ -68,29 +68,22 @@ namespace Com.RedicalGames.Filar
 
                 await Task.Delay(1000);
 
-                FirebaseDatabase.DefaultInstance.GetReference("App Info").ValueChanged += PublishingManager_ValueChanged;
-                FirebaseDatabase.DefaultInstance.GetReference("Posts").ValueChanged += PublishingManager_ValueChanged;
+                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").ValueChanged += PublishingManager_ValueChanged;
 
-                // var postData = JsonConvert.SerializeObject(post, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+                var postData = JsonUtility.ToJson(post);
+                var postContentData = JsonUtility.ToJson(content);
 
-                var post = JsonUtility.ToJson(postHandler.post);
-                var postProfileData = JsonUtility.ToJson(postHandler.profile);
-                var postContentData = JsonUtility.ToJson(postHandler.content);
-
-                LogInfo($" Post Identifier : {postHandler.GetIdentifier()} - Post Data : {postProfileData}", this);
+                string postKey = post.GetTitle() + $"_{post.GetUniqueIdentifier()}";
+                string contentKey = post.GetTitle() + $"_{content.GetUniqueIdentifier()}";
 
                 Dictionary<string, object> postObject = new Dictionary<string, object>();
-                postObject.Add(postHandler.GetIdentifier(), post);
-
-                Dictionary<string, object> postProfileDataObject = new Dictionary<string, object>();
-                postProfileDataObject.Add(postHandler.GetIdentifier(), postProfileData);
+                postObject.Add(postKey, postData);
 
                 Dictionary<string, object> postContentObject = new Dictionary<string, object>();
-                postContentObject.Add(postHandler.GetIdentifier(), postContentData);
+                postContentObject.Add(contentKey, postContentData);
 
-                await databaseReference.Child("Posts Runtime Data").Child("Posts").UpdateChildrenAsync(postObject);
-                await databaseReference.Child("Posts Runtime Data").Child("Profiles").UpdateChildrenAsync(postProfileDataObject);
-                await databaseReference.Child("Posts Runtime Data").Child("Contents").UpdateChildrenAsync(postContentObject);
+                await databaseReference.Child("Posts Runtime Data").Child("Post Info Database").UpdateChildrenAsync(postObject);
+                await databaseReference.Child("Posts Runtime Data").Child("Post Content Database").UpdateChildrenAsync(postContentObject);
 
                 sw.Stop();
                 LogSuccess($" Post Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
