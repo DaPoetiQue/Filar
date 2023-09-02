@@ -3406,7 +3406,7 @@ namespace Com.RedicalGames.Filar
 
                 stringBuilder.Append(Vector3ArrayToString(meshData.vertices, "v|")).Append(seperator).
                     Append(IntArrayToString(meshData.triangles, "t|")).Append(seperator).
-                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector2ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector4ArrayToString(meshData.tangents, "tn|"));
+                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector2ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector4ArrayToString(meshData.tangents, "tn|")).Append(IntArrayToString(meshData.indices, "in|"));
 
                 return stringBuilder.ToString();
             }
@@ -3417,17 +3417,24 @@ namespace Com.RedicalGames.Filar
 
                 var splitMeshString = meshString.Split(seperator).ToList();
 
-                var results = new List<List<string>>();
-
-                if (splitMeshString.Count >= 5)
+                if (splitMeshString.Count >= 6)
                 {
                     var vertices = StringToVector3Array(splitMeshString[0], "v|");
                     var triangles = StringToIntArray(splitMeshString[1]);
                     var normals = StringToVector3Array(splitMeshString[2], "n|");
                     var uvs = StringToVector2Array(splitMeshString[3], "uv|");
                     var tangents = StringToVector4Array(splitMeshString[4], "tn|");
+                    var indices = StringToIntArray(splitMeshString[5]);
 
-                    callbackResults.result = $"{vertices.Length} : Vertices : {triangles.Length} Triangles";
+                    var meshData = new MeshData();
+                    meshData.vertices = vertices;
+                    meshData.triangles = triangles;
+                    meshData.normals = normals;
+                    meshData.uvs = uvs;
+                    meshData.tangents = tangents;
+                    meshData.indices = indices;
+
+                    callbackResults.result = $"Mesh With : {vertices.Length} Vetices Loaded Successfully.";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
@@ -4444,6 +4451,8 @@ namespace Com.RedicalGames.Filar
 
             //public SerializableMeshData(Mesh mesh) => ConvertToSerializableMeshData(mesh);
 
+            #region Vector To Data
+
             async Task<List<VectorData>> GetSerializableVectorDataAsync(List<Vector2> data)
             {
                 var serializableVectors = new List<VectorData>();
@@ -4483,6 +4492,51 @@ namespace Com.RedicalGames.Filar
                 return serializableVectors;
             }
 
+            #endregion
+
+            #region Data To Vector
+
+            async Task<List<Vector2>> GetVector2ListFromVectorDataListAsync(List<VectorData> data)
+            {
+                var results = new List<Vector2>();
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    results.Add(new Vector2(data[i].x, data[i].y));
+                    await Task.Yield();
+                }
+
+                return results;
+            }
+
+            async Task<List<Vector3>> GetVector3ListFromVectorDataListAsync(List<VectorData> data)
+            {
+                var results = new List<Vector3>();
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    results.Add(new Vector3(data[i].x, data[i].y, data[i].z));
+                    await Task.Yield();
+                }
+
+                return results;
+            }
+
+            async Task<List<Vector4>> GetVector4ListFromVectorDataListAsync(List<VectorData> data)
+            {
+                var results = new List<Vector4>();
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    results.Add(new Vector4(data[i].x, data[i].y, data[i].z, data[i].w));
+                    await Task.Yield();
+                }
+
+                return results;
+            }
+
+            #endregion
+
             async Task<List<int>> GetIntDataAsync(List<int> data)
             {
                 var results = new List<int>();
@@ -4520,7 +4574,9 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(intSubListResults).ToArray();
             }
 
-            async Task<VectorData[]> CreateSerializableVectorDataAsync(Vector2[] vectorData, int iterations, IProgress<int> progress)
+            #region Vector To Data
+
+            async Task<VectorData[]> Vector2ArrayToVector2DataArrayAsync(Vector2[] vectorData, int iterations, IProgress<int> progress)
             {
                 var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
 
@@ -4544,7 +4600,7 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(vectorSubListResults).ToArray();
             }
 
-            async Task<VectorData[]> CreateSerializableVectorDataAsync(Vector3[] vectorData, int iterations, IProgress<int> progress)
+            async Task<VectorData[]> Vector3ArrayToVector3DataArrayAsync(Vector3[] vectorData, int iterations, IProgress<int> progress)
             {
                 var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
 
@@ -4567,7 +4623,7 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(vectorSubListResults).ToArray();
             }
 
-            async Task<VectorData[]> CreateSerializableVectorDataAsync(Vector4[] vectorData, int iterations, IProgress<int> progress)
+            async Task<VectorData[]> Vector4ArrayToVector4DataArrayAsync(Vector4[] vectorData, int iterations, IProgress<int> progress)
             {
                 var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
 
@@ -4590,7 +4646,158 @@ namespace Com.RedicalGames.Filar
                 return Helpers.MergeSubListData(vectorSubListResults).ToArray();
             }
 
+            #endregion
 
+            #region Data To Vector
+
+            async Task<Vector2[]> Vector2DataArrayToVector2ArrayAsync(VectorData[] vectorData, int iterations, IProgress<int> progress)
+            {
+                var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
+
+                var vectorDataTasks = new List<Task<List<Vector2>>>();
+
+                for (int i = 0; i < vectorSublist.Count; i++)
+                {
+                    vectorDataTasks.Add(GetVector2ListFromVectorDataListAsync(vectorSublist[i]));
+                    var percentageCompleted = (i * 100) / vectorSublist.Count;
+                    progress.Report(percentageCompleted);
+                }
+
+                await Task.WhenAll(vectorDataTasks);
+
+                var vectorSubListResults = new List<List<Vector2>>();
+
+                for (int i = 0; i < vectorDataTasks.Count; i++)
+                    vectorSubListResults.Add(vectorDataTasks[i].Result);
+
+                return Helpers.MergeSubListData(vectorSubListResults).ToArray();
+            }
+
+            async Task<Vector3[]> Vector3DataArrayToVector3ArrayAsync(VectorData[] vectorData, int iterations, IProgress<int> progress)
+            {
+                var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
+
+                var vectorDataTasks = new List<Task<List<Vector3>>>();
+
+                for (int i = 0; i < vectorSublist.Count; i++)
+                {
+                    vectorDataTasks.Add(GetVector3ListFromVectorDataListAsync(vectorSublist[i]));
+                    var percentageCompleted = (i * 100) / vectorSublist.Count;
+                    progress.Report(percentageCompleted);
+                }
+
+                await Task.WhenAll(vectorDataTasks);
+
+                var vectorSubListResults = new List<List<Vector3>>();
+
+                for (int i = 0; i < vectorDataTasks.Count; i++)
+                    vectorSubListResults.Add(vectorDataTasks[i].Result);
+
+                return Helpers.MergeSubListData(vectorSubListResults).ToArray();
+            }
+
+
+            async Task<Vector4[]> Vector4DataArrayToVector4ArrayAsync(VectorData[] vectorData, int iterations, IProgress<int> progress)
+            {
+                var vectorSublist = Helpers.CreateSubListData(vectorData, iterations);
+
+                var vectorDataTasks = new List<Task<List<Vector4>>>();
+
+                for (int i = 0; i < vectorSublist.Count; i++)
+                {
+                    vectorDataTasks.Add(GetVector4ListFromVectorDataListAsync(vectorSublist[i]));
+                    var percentageCompleted = (i * 100) / vectorSublist.Count;
+                    progress.Report(percentageCompleted);
+                }
+
+                await Task.WhenAll(vectorDataTasks);
+
+                var vectorSubListResults = new List<List<Vector4>>();
+
+                for (int i = 0; i < vectorDataTasks.Count; i++)
+                    vectorSubListResults.Add(vectorDataTasks[i].Result);
+
+                return Helpers.MergeSubListData(vectorSubListResults).ToArray();
+            }
+
+            #endregion
+
+            public async Task<Mesh> ConvertMeshDataToMesh(MeshData meshData)
+            {
+                Mesh mesh = new Mesh();
+
+                var sw = new System.Diagnostics.Stopwatch();
+
+                sw.Start();
+
+                Debug.Log($"============>>>>>>>>> Getting Mesh Data");
+
+                var vertsProgress = new Progress<int>(progress =>
+                {
+                    Debug.Log($"============>>>>>>>>> Verts Progress : {progress}");
+                });
+
+                vertsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var trisProgress = new Progress<int>(progress =>
+                {
+                    Debug.Log($"============>>>>>>>>> Tris Progress : {progress}");
+                });
+
+                trisProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var normalsProgress = new Progress<int>(progress =>
+                {
+                    Debug.Log($"============>>>>>>>>> Normals Progress : {progress}");
+                });
+
+                normalsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var uvsProgress = new Progress<int>(progress =>
+                {
+                    Debug.Log($"============>>>>>>>>> UVs Progress : {progress}");
+                });
+
+                uvsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var tangentsProgress = new Progress<int>(progress =>
+                {
+
+                });
+
+                tangentsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var indicesProgress = new Progress<int>(progress =>
+                {
+
+                });
+
+                indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+
+                var verticesData = Vector3DataArrayToVector3ArrayAsync(meshData.vertices, 1000, vertsProgress);
+                var trianglesData = CreateSerializableIntDataAsync(meshData.triangles, 2000, trisProgress);
+                var normalsData = Vector3DataArrayToVector3ArrayAsync(meshData.normals, 1000, normalsProgress);
+                var uvsData = Vector2DataArrayToVector2ArrayAsync(meshData.uvs, 1000, uvsProgress);
+                var tangentsData = Vector4DataArrayToVector4ArrayAsync(meshData.tangents, 1000, tangentsProgress);
+                var indicesData = CreateSerializableIntDataAsync(meshData.indices, 2000, indicesProgress);
+
+                await Task.WhenAll(verticesData, trianglesData, normalsData, uvsData, tangentsData);
+
+                Debug.Log($" ==================>>>>>>>>>>>> Load Completed - Creating Mesh");
+
+                mesh.SetVertices(verticesData.Result);
+                mesh.SetTriangles(triangles, 0);
+                mesh.SetNormals(normalsData.Result);
+                mesh.SetUVs(0, uvsData.Result);
+                mesh.SetTangents(tangentsData.Result);
+                mesh.SetIndices(indicesData.Result, (MeshTopology)topologyInt, 0);
+
+                mesh.RecalculateNormals();
+                mesh.RecalculateBounds();
+                mesh.RecalculateTangents();
+
+                return mesh;
+            }
 
             public async Task<MeshData> ConvertToSerializableMeshDataAsync(Mesh targetMesh)
             {
@@ -4644,11 +4851,11 @@ namespace Com.RedicalGames.Filar
 
                 indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
 
-                var verticesData = CreateSerializableVectorDataAsync(targetMesh.vertices, 1000, vertsProgress);
+                var verticesData = Vector3ArrayToVector3DataArrayAsync(targetMesh.vertices, 1000, vertsProgress);
                 var trianglesData = CreateSerializableIntDataAsync(targetMesh.triangles, 2000, trisProgress);
-                var normalsData = CreateSerializableVectorDataAsync(targetMesh.normals, 1000, normalsProgress);
-                var uvsData = CreateSerializableVectorDataAsync(targetMesh.uv, 1000, uvsProgress);
-                var tangentsData = CreateSerializableVectorDataAsync(targetMesh.tangents, 1000, tangentsProgress);
+                var normalsData = Vector3ArrayToVector3DataArrayAsync(targetMesh.normals, 1000, normalsProgress);
+                var uvsData = Vector2ArrayToVector2DataArrayAsync(targetMesh.uv, 1000, uvsProgress);
+                var tangentsData = Vector4ArrayToVector4DataArrayAsync(targetMesh.tangents, 1000, tangentsProgress);
                 var indicesData = CreateSerializableIntDataAsync(targetMesh.GetIndices(0), 2000, indicesProgress);
 
                 topology = targetMesh.GetTopology(0);
@@ -31737,8 +31944,20 @@ namespace Com.RedicalGames.Filar
                     return callbackResults;
                 }
 
-                var meshData = new MeshData();
+                ModelMeshData content = new ModelMeshData();
 
+                var meshDataFromStringResults = content.StringToMeshData(obj, "m|");
+
+                callbackResults.SetResult(meshDataFromStringResults);
+
+                if(callbackResults.Success())
+                {
+                    var meshData = new MeshData();
+                    var getMeshTaskResults = await meshData.ConvertMeshDataToMesh(meshDataFromStringResults.data);
+
+                    callbackResults.result = $"Mesh Loaded Successfully : {callbackResults.Result}";
+                    callbackResults.data = getMeshTaskResults;
+                }
 
                 return callbackResults;
             }
