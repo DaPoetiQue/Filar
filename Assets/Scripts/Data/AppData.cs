@@ -253,6 +253,7 @@ namespace Com.RedicalGames.Filar
             GoToWebsiteLinkButton,
             ShowPostsButton,
             HidePostsButton,
+            SelectPostButton,
             None
         }
 
@@ -3276,6 +3277,19 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
+            public string Vector2ArrayToString(VectorData[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (var data in arrayData)
+                    stringBuilder.Append(data.x).Append(" ").Append(data.y).Append(seperator);
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                return stringBuilder.ToString();
+            }
+
             public string Vector3ArrayToString(VectorData[] arrayData, string seperator)
             {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -3287,6 +3301,79 @@ namespace Com.RedicalGames.Filar
                     stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
 
                 return stringBuilder.ToString();
+            }
+
+            public string Vector4ArrayToString(VectorData[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (var data in arrayData)
+                    stringBuilder.Append(data.x).Append(" ").Append(data.y).Append(" ").Append(data.z).Append(" ").Append(data.w).Append(seperator);
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                return stringBuilder.ToString();
+            }
+
+            public VectorData[] StringToVector2Array(string stringData, string seperator)
+            {
+                var splitStringResults = stringData.Split(seperator);
+                var results = new VectorData[splitStringResults.Length];
+
+                for (int i = 0; i < results.Length; i++)
+                {
+                    var stringDataResults = splitStringResults[i].Split(" ");
+
+                    if(stringDataResults.Length != 3)
+                    {
+                        Debug.Log($" =>>>>>> Inalid Operation - String Length : {stringDataResults.Length}");
+                    }
+
+                    results[i] = new VectorData(float.Parse(stringDataResults[0]), float.Parse(stringDataResults[1]));
+                }
+
+                return results;
+            }
+
+            public VectorData[] StringToVector3Array(string stringData, string seperator)
+            {
+                var splitStringResults = stringData.Split(seperator);
+                var results = new VectorData[splitStringResults.Length];
+
+                for (int i = 0; i < results.Length; i++)
+                {
+                    var stringDataResults = splitStringResults[i].Split(" ");
+
+                    if (stringDataResults.Length != 3)
+                    {
+                        Debug.Log($" =>>>>>> Inalid Operation - String Length : {stringDataResults.Length}");
+                    }
+
+                    results[i] = new VectorData(float.Parse(stringDataResults[0]), float.Parse(stringDataResults[1]), float.Parse(stringDataResults[2]));
+                }
+
+                return results;
+            }
+
+            public VectorData[] StringToVector4Array(string stringData, string seperator)
+            {
+                var splitStringResults = stringData.Split(seperator);
+                var results = new VectorData[splitStringResults.Length];
+
+                for (int i = 0; i < results.Length; i++)
+                {
+                    var stringDataResults = splitStringResults[i].Split(" ");
+
+                    if (stringDataResults.Length != 3)
+                    {
+                        Debug.Log($" =>>>>>> Inalid Operation - String Length : {stringDataResults.Length}");
+                    }
+
+                    results[i] = new VectorData(float.Parse(stringDataResults[0]), float.Parse(stringDataResults[1]), float.Parse(stringDataResults[2]), float.Parse(stringDataResults[3]));
+                }
+
+                return results;
             }
 
             public string IntArrayToString(int[] arrayData, string seperator)
@@ -3302,15 +3389,56 @@ namespace Com.RedicalGames.Filar
                 return stringBuilder.ToString();
             }
 
+            public int[] StringToIntArray(string stringData)
+            {
+                var splitStringResults = stringData.Split(" ");
+                var results = new int[splitStringResults.Length];
+
+                for (int i = 0; i < results.Length; i++)
+                    results[i] = int.Parse(splitStringResults[i]);
+
+                return results;
+            }
+
             public string MeshDataToString(MeshData meshData, string seperator)
             {
                 StringBuilder stringBuilder = new StringBuilder();
 
                 stringBuilder.Append(Vector3ArrayToString(meshData.vertices, "v|")).Append(seperator).
                     Append(IntArrayToString(meshData.triangles, "t|")).Append(seperator).
-                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector3ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector3ArrayToString(meshData.tangents, "tn|"));
+                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector2ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector4ArrayToString(meshData.tangents, "tn|"));
 
                 return stringBuilder.ToString();
+            }
+
+            public CallbackData<MeshData> StringToMeshData(string meshString, string seperator)
+            {
+                CallbackData<MeshData> callbackResults = new CallbackData<MeshData>();
+
+                var splitMeshString = meshString.Split(seperator).ToList();
+
+                var results = new List<List<string>>();
+
+                if (splitMeshString.Count >= 5)
+                {
+                    var vertices = StringToVector3Array(splitMeshString[0], "v|");
+                    var triangles = StringToIntArray(splitMeshString[1]);
+                    var normals = StringToVector3Array(splitMeshString[2], "n|");
+                    var uvs = StringToVector2Array(splitMeshString[3], "uv|");
+                    var tangents = StringToVector4Array(splitMeshString[4], "tn|");
+
+                    callbackResults.result = $"{vertices.Length} : Vertices : {triangles.Length} Triangles";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Split Mesh String Using : {seperator}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public void SetVertices(VectorData[] verticesData)
@@ -31560,77 +31688,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public static void GetMeshInfo(GameObject gameObject, Action<CallbackDataArray<MeshInfo>> callback)
-            {
-                CallbackDataArray<MeshInfo> callbackResults = new CallbackDataArray<MeshInfo>();
-
-                if (gameObject != null)
-                {
-                    List<MeshInfo> meshFilters = new List<MeshInfo>();
-
-                    if (gameObject.transform.childCount > 0)
-                    {
-                        if (gameObject.GetComponentsInChildren<MeshFilter>().Length > 0)
-                        {
-                            foreach (var meshFilter in gameObject.GetComponentsInChildren<MeshFilter>())
-                            {
-                                List<Material> materials = new List<Material>();
-
-                                for (int i = 0; i < meshFilter.GetComponent<MeshRenderer>().sharedMaterials.Length; i++)
-                                    if (!materials.Contains(meshFilter.GetComponent<MeshRenderer>().sharedMaterials[i]))
-                                        materials.Add(meshFilter.GetComponent<MeshRenderer>().sharedMaterials[i]);
-
-                                var mesh = meshFilter.sharedMesh;
-
-                                MeshInfo meshInfo = new MeshInfo(meshFilter.name, mesh, materials, gameObject.GetComponentsInChildren<MeshFilter>().ToList().IndexOf(meshFilter), meshFilter.transform.parent.name);
-
-                                if (!meshFilters.Contains(meshInfo))
-                                    meshFilters.Add(meshInfo);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (gameObject.GetComponent<MeshFilter>())
-                        {
-                            List<Material> materials = new List<Material>();
-
-                            for (int i = 0; i < gameObject.GetComponent<MeshRenderer>().sharedMaterials.Length; i++)
-                                if (!materials.Contains(gameObject.GetComponent<MeshRenderer>().sharedMaterials[i]))
-                                    materials.Add(gameObject.GetComponent<MeshRenderer>().sharedMaterials[i]);
-
-                            var mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
-
-                            MeshInfo meshInfo = new MeshInfo(gameObject.name, mesh, materials, 0, gameObject.name);
-
-                            if (!meshFilters.Contains(meshInfo))
-                                meshFilters.Add(meshInfo);
-                        }
-                    }
-
-                    if (meshFilters.Count > 0)
-                    {
-                        callbackResults.result = $"{meshFilters.Count} Mesh Filters Found For Game Object : {gameObject.name}";
-                        callbackResults.data = meshFilters.ToArray();
-                        callbackResults.resultCode = SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"There Were No Mesh Filters Found For Game Object : {gameObject.name}";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"There Is No Game Object Assigned.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = ErrorCode;
-                }
-
-                callback.Invoke(callbackResults);
-            }
-
             public static async Task<CallbackData<Mesh>> GetCombinedMeshAsync(MeshFilter[] meshFilters)
             {
                 CallbackData<Mesh> callbackResults = new CallbackData<Mesh>();
@@ -31666,6 +31723,26 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
+
+            public static async Task<CallbackData<Mesh>> GetMeshDataAsync(string obj)
+            {
+                CallbackData<Mesh> callbackResults = new CallbackData<Mesh>();
+
+                if (obj == null)
+                {
+                    callbackResults.result = $"There Is No Object Assigned To Convert To Mesh Data - Returning Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+
+                    return callbackResults;
+                }
+
+                var meshData = new MeshData();
+
+
+                return callbackResults;
+            }
+
 
             public static async Task<CallbackData<MeshData>> GetMeshDataAsync(GameObject obj)
             {

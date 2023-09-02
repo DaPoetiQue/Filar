@@ -34,13 +34,22 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
-            LogInfo($"===> Button Action : {actionButton.dataPackets.action}");
-
             switch (actionButton.dataPackets.action)
             {
-                case AppData.InputActionButtonType.OpenProject:
+                case AppData.InputActionButtonType.SelectPostButton:
 
-                    
+                    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults =>
+                    {
+                        if (appDatabaseManagerCallbackResults.Success())
+                        {
+                            var appDatabaseManager = appDatabaseManagerCallbackResults.data;
+                            appDatabaseManager.LoadSelectedPostContent(post.GetUniqueIdentifier());
+                        }
+                        else
+                            Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
+
+                    }, "App Database Manager Is Not Yet Initialized.");
+
                     break;
             }
         }

@@ -243,6 +243,8 @@ namespace Com.RedicalGames.Filar
         List<AppData.Profile> profilesDatabase = new List<AppData.Profile>();
         List<AppData.ModelMeshData> contentsDatabase = new List<AppData.ModelMeshData>();
 
+        Dictionary<string, GameObject> loadedPostContent = new Dictionary<string, GameObject>();
+
         #endregion
 
         #region Filter And Sort Data
@@ -636,6 +638,52 @@ namespace Com.RedicalGames.Filar
                 // Show Pop Up
                 LogError("Show Database Failed Pop Up.", this);
             }
+        }
+
+        public AppData.CallbackDataList<AppData.ModelMeshData> GetPostContentDatabase()
+        {
+            AppData.CallbackDataList<AppData.ModelMeshData> callbackResults = new AppData.CallbackDataList<AppData.ModelMeshData>();
+
+            if(IsServerContentsDatabaseInitialized)
+            {
+                callbackResults.result = $"{contentsDatabase.Count} : Server Contents Found.";
+                callbackResults.data = contentsDatabase;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = "Server Contents Are Not Available Yet.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            }
+
+            return callbackResults;
+        }
+
+        public async Task<AppData.CallbackDataList<AppData.ModelMeshData>> GetPostsContentsAsync()
+        {
+            AppData.CallbackDataList<AppData.ModelMeshData> callbackResults = new AppData.CallbackDataList<AppData.ModelMeshData>();
+
+            AppData.Helpers.GetAppComponentsValid(contentsDatabase, "Database Posts", databasePostsValidationCallbackResults =>
+            {
+                callbackResults.SetResult(databasePostsValidationCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{contentsDatabase.Count} Posts Found.";
+                    callbackResults.data = contentsDatabase;
+                }
+                else
+                {
+                    callbackResults.result = "There Were No Posts Found.";
+                    callbackResults.data = default;
+                }
+
+            }, "Database Posts Contents Are Not Yet Initialized.", $"{contentsDatabase.Count} Database Posts Content(s) Have Been Initialized Successfully.");
+
+            await Task.Yield();
+
+            return callbackResults;
         }
 
         public void GetPosts(Action<AppData.CallbackDataList<AppData.Post>> callback)
@@ -4309,6 +4357,50 @@ namespace Com.RedicalGames.Filar
                 LogError(exception.Message, this);
                 throw exception;
             }
+        }
+
+        #endregion
+
+        #region Post Content
+
+        public async void LoadSelectedPostContent(string postID, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            var postsContentsTaskResults = await GetPostsContentsAsync();
+
+            callbackResults.SetResult(postsContentsTaskResults);
+
+            if(callbackResults.Success())
+            {
+                var postContent = postsContentsTaskResults.data.Find(post => post.GetRootIdentifier() == postID);
+
+                if(postContent != null)
+                {
+                    if(!loadedPostContent.ContainsKey(postContent.GetUniqueIdentifier()))
+                    {
+                        AppData.ModelMeshData content = new AppData.ModelMeshData();
+
+                        var meshDataFromStringResults = content.StringToMeshData(postContent.GetMeshString, "m|");
+
+                        Log(meshDataFromStringResults.ResultCode, $" <<<<=============>>>> Mesh DataResults : {meshDataFromStringResults.Result}", this);
+                    }
+                    else
+                    {
+                        GameObject content = new GameObject("");
+                        loadedPostContent.Add(postContent.GetUniqueIdentifier(), content);
+                    }
+
+                    LogInfo($" =============<<<<<<<<< Show Content : {postContent.name} With ID : {postContent.GetUniqueIdentifier()}", this);
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Load Post Data For ID : {postID}";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+
+            callback?.Invoke(callbackResults);
         }
 
         #endregion
