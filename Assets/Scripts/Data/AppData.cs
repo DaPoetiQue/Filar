@@ -3380,11 +3380,17 @@ namespace Com.RedicalGames.Filar
             {
                 StringBuilder stringBuilder = new StringBuilder();
 
-                foreach (var data in arrayData)
-                    stringBuilder.Append(data).Append(" ");
+                if (arrayData != null)
+                {
 
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
+                    foreach (var data in arrayData)
+                        stringBuilder.Append(data).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - 1, 1);
+                }
+                else
+                    Debug.LogError("Int Array To String Failed- Array Data Is Null.");
 
                 return stringBuilder.ToString();
             }
@@ -3404,9 +3410,15 @@ namespace Com.RedicalGames.Filar
             {
                 StringBuilder stringBuilder = new StringBuilder();
 
-                stringBuilder.Append(Vector3ArrayToString(meshData.vertices, "v|")).Append(seperator).
-                    Append(IntArrayToString(meshData.triangles, "t|")).Append(seperator).
-                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector2ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector4ArrayToString(meshData.tangents, "tn|")).Append(IntArrayToString(meshData.indices, "in|"));
+                if (meshData.indices != null)
+                {
+                    Debug.Log($"{meshData.indices.Length} Indices Found.");
+                }
+                else
+                    Debug.Log("Indices Null Or Empty");
+
+                stringBuilder.Append(Vector3ArrayToString(meshData.vertices, "v|")).Append(seperator).Append(IntArrayToString(meshData.triangles, " ")).Append(seperator).
+                    Append(Vector3ArrayToString(meshData.normals, "n|")).Append(seperator).Append(Vector2ArrayToString(meshData.uvs, "uv|")).Append(seperator).Append(Vector4ArrayToString(meshData.tangents, "tn|"));
 
                 return stringBuilder.ToString();
             }
@@ -4767,19 +4779,19 @@ namespace Com.RedicalGames.Filar
 
                 tangentsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
 
-                var indicesProgress = new Progress<int>(progress =>
-                {
+                //var indicesProgress = new Progress<int>(progress =>
+                //{
 
-                });
+                //});
 
-                indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+                //indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
 
                 var verticesData = Vector3DataArrayToVector3ArrayAsync(meshData.vertices, 1000, vertsProgress);
                 var trianglesData = CreateSerializableIntDataAsync(meshData.triangles, 2000, trisProgress);
                 var normalsData = Vector3DataArrayToVector3ArrayAsync(meshData.normals, 1000, normalsProgress);
                 var uvsData = Vector2DataArrayToVector2ArrayAsync(meshData.uvs, 1000, uvsProgress);
                 var tangentsData = Vector4DataArrayToVector4ArrayAsync(meshData.tangents, 1000, tangentsProgress);
-                var indicesData = CreateSerializableIntDataAsync(meshData.indices, 2000, indicesProgress);
+                //var indicesData = CreateSerializableIntDataAsync(meshData.indices, 2000, indicesProgress);
 
                 await Task.WhenAll(verticesData, trianglesData, normalsData, uvsData, tangentsData);
 
@@ -4790,7 +4802,7 @@ namespace Com.RedicalGames.Filar
                 mesh.SetNormals(normalsData.Result);
                 mesh.SetUVs(0, uvsData.Result);
                 mesh.SetTangents(tangentsData.Result);
-                mesh.SetIndices(indicesData.Result, (MeshTopology)topologyInt, 0);
+               // mesh.SetIndices(indicesData.Result, (MeshTopology)topologyInt, 0);
 
                 mesh.RecalculateNormals();
                 mesh.RecalculateBounds();
@@ -4844,19 +4856,19 @@ namespace Com.RedicalGames.Filar
 
                 tangentsProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
 
-                var indicesProgress = new Progress<int>(progress =>
-                {
+                //var indicesProgress = new Progress<int>(progress =>
+                //{
 
-                });
+                //});
 
-                indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
+                //indicesProgress.ProgressChanged += SerializableMeshData_ProgressChanged;
 
                 var verticesData = Vector3ArrayToVector3DataArrayAsync(targetMesh.vertices, 1000, vertsProgress);
                 var trianglesData = CreateSerializableIntDataAsync(targetMesh.triangles, 2000, trisProgress);
                 var normalsData = Vector3ArrayToVector3DataArrayAsync(targetMesh.normals, 1000, normalsProgress);
                 var uvsData = Vector2ArrayToVector2DataArrayAsync(targetMesh.uv, 1000, uvsProgress);
                 var tangentsData = Vector4ArrayToVector4DataArrayAsync(targetMesh.tangents, 1000, tangentsProgress);
-                var indicesData = CreateSerializableIntDataAsync(targetMesh.GetIndices(0), 2000, indicesProgress);
+                //var indicesData = CreateSerializableIntDataAsync(targetMesh.GetIndices(0), 2000, indicesProgress);
 
                 topology = targetMesh.GetTopology(0);
                 topologyInt = (int)targetMesh.GetTopology(0);
@@ -31991,7 +32003,7 @@ namespace Com.RedicalGames.Filar
                         var serializableMeshData = new MeshData();
                         var serializableMeshTaskResults = await serializableMeshData.ConvertToSerializableMeshDataAsync(meshDataTaskResults.data);
 
-                        Debug.Log(" ====================>>>>>>>>>>>> End Convertion.....");
+                        Debug.Log($" ====================>>>>>>>>>>>> Mesh Generated Successfully.....");
 
                         callbackResults.result = $"{obj.name} : Has Been Successfully Converted To Serializable Data.";
                         callbackResults.data = serializableMeshTaskResults;

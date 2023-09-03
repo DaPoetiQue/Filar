@@ -4379,11 +4379,20 @@ namespace Com.RedicalGames.Filar
                 {
                     if(!loadedPostContent.ContainsKey(postContent.GetUniqueIdentifier()))
                     {
-                        var getContentMeshTaskResults = AppData.Helpers.GetMeshDataAsync(postContent.GetMeshString);
+                        var getContentMeshTaskResults = await AppData.Helpers.GetMeshDataAsync(postContent.GetMeshString);
 
-                        if(getContentMeshTaskResults.Result != null)
+                        callbackResults.SetResult(getContentMeshTaskResults);
+
+                        if(callbackResults.Result != null)
                         {
+                            GameObject content = new GameObject(postID);
 
+                             var filter = content.AddComponent<MeshFilter>();
+                            var renderer = content.AddComponent<MeshRenderer>();
+
+                            filter.sharedMesh = getContentMeshTaskResults.data;
+
+                            loadedPostContent.Add(postContent.GetUniqueIdentifier(), content);
 
                             LogInfo($" =============<<<<<<<<< Show Content : {postContent.name} With ID : {postContent.GetUniqueIdentifier()} - Mesh Data Loaded Successfully.", this);
                         }
@@ -4392,8 +4401,8 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        GameObject content = new GameObject("");
-                        loadedPostContent.Add(postContent.GetUniqueIdentifier(), content);
+                        //GameObject content = new GameObject("");
+                        //loadedPostContent.Add(postContent.GetUniqueIdentifier(), content);
                     }
                 }
                 else
