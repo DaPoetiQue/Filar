@@ -3185,9 +3185,6 @@ namespace Com.RedicalGames.Filar
             void SetTitle(string title);
             void SetCaption(string caption);
 
-            void SetThumbnail(Sprite thumbnail, Helpers.ImageEncoderType encoderType);
-            void SetThumbnail(Texture2D thumbnail, Helpers.ImageEncoderType encoderType);
-
             void SetStatus(PostDataContentStatus status);
 
             #endregion
@@ -3196,12 +3193,8 @@ namespace Com.RedicalGames.Filar
 
             string GetTitle();
             string GetCaption();
-            Sprite GetSpriteThumbnail(int minWidth, int minHeight);
-            Texture2D GetTexture2DThumbnail(int minWidth, int minHeight);
 
             PostDataContentStatus GetStatus();
-
-            bool ThumbnailAssigned();
 
             #endregion
 
@@ -3278,6 +3271,61 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ContentHierachyObject
+        {
+            #region Components
+
+            public string objectName;
+            public string parentName;
+            public List<string> childNames;
+
+            public bool isRoot;
+
+            #endregion
+
+            #region Construtors
+
+            public ContentHierachyObject()
+            {
+
+            }
+
+            public ContentHierachyObject(string objectName, string parentName, List<string> childNames, bool isRoot)
+            {
+                this.objectName = objectName;
+                this.parentName = parentName;
+                this.childNames = childNames;
+                this.isRoot = isRoot;
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetObjectName(string objectName) => this.objectName = objectName;
+
+            public void SetParentName(string parentName) => this.parentName = parentName;
+            public void SetChildNames(List<string> childNames) => this.childNames = childNames;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetObjectName() => objectName;
+            public string GetParentName() => parentName;
+            public List<string> GetChildNames() => childNames;
+            public bool GetIsRoot() => isRoot;
+            public bool HasParent() => !string.IsNullOrEmpty(parentName);
+            public bool HasChild() => childNames != null && childNames.Count > 0;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class ContentGenerator
         {
             #region Components
@@ -3325,13 +3373,13 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var meshFilters = Helpers.GetMeshPropertiesData(value).data;
+                    var meshProperties = Helpers.GetMeshPropertiesData(value).data;
 
                     var subMeshStringList = new List<string>();
 
-                    for (int i = 0; i < meshFilters.Length; i++)
+                    for (int i = 0; i < meshProperties.Length; i++)
                     {
-                        var readableMesh = Helpers.GetReadableMesh(meshFilters[i].GetFilter().sharedMesh);
+                        var readableMesh = Helpers.GetReadableMesh(meshProperties[i].GetFilter().sharedMesh);
 
                         var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
                         var triangles = Helpers.IntArrayToString(readableMesh.triangles);
@@ -3341,12 +3389,24 @@ namespace Com.RedicalGames.Filar
                         var indices = Helpers.IntArrayToString(readableMesh.GetIndices(0));
                         var topology = ((int)readableMesh.GetTopology(0)).ToString();
 
-                        var serializableMaterialData = new SerializableMaterial(meshFilters[i].GetRenderer().sharedMaterial);
+                        var serializableMaterialData = new SerializableMaterial(meshProperties[i].GetRenderer().sharedMaterial);
                         var material = serializableMaterialData.GetMaterialDataString();
+
+                        var childNameList = new List<string>();
+
+                        if(meshProperties[i].GetFilter().gameObject.transform.childCount > 0)
+                            for (int j = 0; j < meshProperties[i].GetFilter().gameObject.transform.childCount; j++)
+                                childNameList.Add(meshProperties[i].GetFilter().gameObject.transform.GetChild(j).name);
+
+                        var hierachyObject = new ContentHierachyObject(meshProperties[i].GetFilter().gameObject?.name, meshProperties[i].GetFilter().gameObject.transform?.parent?.name, childNameList, (i == 0)? true : false);
+                        var hierachyObjectString = JsonUtility.ToJson(hierachyObject);
 
                         StringBuilder subMeshString = new StringBuilder();
 
-                        subMeshString.Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material);
+                        subMeshString.Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).
+                            Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).
+                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material).Append(subMeshSplit).Append(hierachyObjectString);
+
                         subMeshStringList.Add(subMeshString.ToString());
 
                         await Task.Yield();
@@ -3702,8 +3762,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_MainTex");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.AlbedoMap, textureMap.width, textureMap.height);
@@ -3714,8 +3773,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_MetallicGlossMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.MetallicGlossMap, textureMap.width, textureMap.height);
@@ -3726,8 +3784,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_BumpMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.NormalMap, textureMap.width, textureMap.height);
@@ -3738,8 +3795,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_ParallaxMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.HeightMap, textureMap.width, textureMap.height);
@@ -3750,8 +3806,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_EmissionMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.EmissionMap, textureMap.width, textureMap.height);
@@ -3762,8 +3817,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_DetailMask");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailMask, textureMap.width, textureMap.height);
@@ -3775,8 +3829,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_DetailAlbedoMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailAlbedoMap, textureMap.width, textureMap.height);
@@ -3787,8 +3840,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_DetailNormalMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailNormalMap, textureMap.width, textureMap.height);
@@ -3799,8 +3851,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var textureMap = material.GetTexture("_OcclusionMap");
 
-                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
-                    Graphics.CopyTexture(textureMap, texture);
+                    var texture = textureMap as Texture2D;
                     var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
 
                     var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.OcclusionMap, textureMap.width, textureMap.height);
@@ -4038,6 +4089,59 @@ namespace Com.RedicalGames.Filar
 
             public List<string> GetMeshStringList() => meshStringList;
             public byte[] GetMeshBytesArray() => meshBytesArray;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SerializableImage
+        {
+            #region Components
+
+            public byte[] imageData;
+
+            #endregion
+
+            #region Constructors
+
+            public SerializableImage()
+            {
+
+            }
+
+            public SerializableImage(byte[] imageData) => SetImageData(imageData);
+
+            public SerializableImage(Sprite imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, encoderType));
+
+            public SerializableImage(Texture imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray((Texture2D)imageData, encoderType));
+        
+
+            public SerializableImage(Texture2D imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, encoderType));
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetImageData(byte[] imageData) => this.imageData = imageData;
+
+            #endregion
+
+            #region Data Getters
+
+            public byte[] GetImageData() => imageData;
+
+            public Sprite GetSpriteImage(int width = 100, int height = 100) => 
+                Helpers.BytesArrayToSprite(imageData, width, height);
+
+            public Texture GetTextureImage(int width = 100, int height = 100) => 
+                Helpers.BytesArrayToTexture2D(imageData, width, height);
+
+            public Texture2D GetTexture2DImage(int width = 100, int height = 100) =>
+                Helpers.BytesArrayToTexture2D(imageData, width, height);
 
             #endregion
 
@@ -4636,8 +4740,6 @@ namespace Com.RedicalGames.Filar
             public string title = string.Empty;
             public string caption = string.Empty;
 
-            public string thumbnail;
-
             public long creationDateTime;
             public long creationExpireyDateTime;
 
@@ -4688,26 +4790,6 @@ namespace Com.RedicalGames.Filar
             public void InitializeCreationDateTime() => creationDateTime = DateTime.UtcNow.Ticks;
             public void SetCreationExpireyDateTime(DateTime dateTime) => creationExpireyDateTime = dateTime.Ticks;
 
-            #region Thumbnail
-
-            #region Setters
-
-            public void SetThumbnail(Sprite thumbnail, Helpers.ImageEncoderType encoderType)
-            { 
-                var bytes = Helpers.ImageToBytesArray(thumbnail, encoderType);
-                this.thumbnail = Convert.ToBase64String(bytes);
-            }
-
-            public void SetThumbnail(Texture2D thumbnail, Helpers.ImageEncoderType encoderType)
-            { 
-                var bytes = Helpers.ImageToBytesArray(thumbnail, encoderType);
-                this.thumbnail = Convert.ToBase64String(bytes);
-            }
-
-            #endregion
-
-            #endregion
-
             public string GetTitle() => title;
             public string GetCaption() => caption;
 
@@ -4716,12 +4798,6 @@ namespace Com.RedicalGames.Filar
 
             public DateTimeComponent GetCreationDateTime() => new DateTimeComponent(new DateTime(creationDateTime));
             public DateTimeComponent GetCreationExpireyDateTime() => new DateTimeComponent(new DateTime(creationExpireyDateTime));
-
-            public bool ThumbnailAssigned() => !string.IsNullOrEmpty(thumbnail);
-
-            public Sprite GetSpriteThumbnail(int minWidth, int minHeight) => Helpers.BytesArrayToSprite(Convert.FromBase64String(thumbnail), minWidth, minHeight);
-
-            public Texture2D GetTexture2DThumbnail(int minWidth, int minHeight) => Helpers.BytesArrayToTexture2D(Convert.FromBase64String(thumbnail), minWidth, minHeight);
 
             #region Likes
 

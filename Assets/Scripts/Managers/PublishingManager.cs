@@ -54,7 +54,7 @@ namespace Com.RedicalGames.Filar
             //    callback.Invoke(callbackResults);
         }
 
-        public async void OnPublish(AppData.Post post, AppData.SerializableGameObject content, string postContentKey, Action<AppData.Callback> callback = null)
+        public async void OnPublish(AppData.Post post, AppData.SerializableImage thumbnailData, AppData.SerializableGameObject content, string postContentKey, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -86,7 +86,12 @@ namespace Com.RedicalGames.Filar
 
                 if (content.GetMeshBytesArray() != null && content.GetMeshBytesArray().Length > 0)
                 {
-                    await storageReference.Child("User Post Runtime Content").Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
+                    await storageReference.Child("User Post Data").Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
+
+                    if (thumbnailData.GetImageData() != null && thumbnailData.GetImageData().Length > 0)
+                        await storageReference.Child("User Post Data").Child(post.GetRootIdentifier()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageData());
+                    else
+                        LogError("Thumbnail Data Not Assigned", this);
 
                     sw.Stop();
 

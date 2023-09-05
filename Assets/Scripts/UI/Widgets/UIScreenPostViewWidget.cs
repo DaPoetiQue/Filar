@@ -119,30 +119,30 @@ namespace Com.RedicalGames.Filar
             #region Thumbnail
 
 
-            if (post.ThumbnailAssigned())
-            {
-                GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail, thumbnailCallbackResults =>
-                {
-                    if (thumbnailCallbackResults.Success())
-                        SetUIImageDisplayerValue(post.GetTexture2DThumbnail(thumbnailCallbackResults.data.mainTexture.width, thumbnailCallbackResults.data.mainTexture.width), AppData.ScreenImageType.Thumbnail);
-                    else
-                        Log(thumbnailCallbackResults.ResultCode, thumbnailCallbackResults.Result, this);
-                });
-            }
-            else
-            {
-                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults => 
-                {
-                    if(appDatabaseManagerCallbackResults.Success())
-                    {
-                        var appDatabaseManager = appDatabaseManagerCallbackResults.data;
-                        SetUIImageDisplayerValue(appDatabaseManager.GetImageFromLibrary(AppData.UIImageType.ImagePlaceholder).value, AppData.ScreenImageType.Thumbnail);
-                    }
-                    else
-                        Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
+            //if (post.ThumbnailAssigned())
+            //{
+            //    GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail, thumbnailCallbackResults =>
+            //    {
+            //        if (thumbnailCallbackResults.Success())
+            //            SetUIImageDisplayerValue(post.GetTexture2DThumbnail(thumbnailCallbackResults.data.mainTexture.width, thumbnailCallbackResults.data.mainTexture.width), AppData.ScreenImageType.Thumbnail);
+            //        else
+            //            Log(thumbnailCallbackResults.ResultCode, thumbnailCallbackResults.Result, this);
+            //    });
+            //}
+            //else
+            //{
+            //    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults => 
+            //    {
+            //        if(appDatabaseManagerCallbackResults.Success())
+            //        {
+            //            var appDatabaseManager = appDatabaseManagerCallbackResults.data;
+            //            SetUIImageDisplayerValue(appDatabaseManager.GetImageFromLibrary(AppData.UIImageType.ImagePlaceholder).value, AppData.ScreenImageType.Thumbnail);
+            //        }
+            //        else
+            //            Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
 
-                },  "App Database Manager Is Not Yet Initialized.");
-            }
+            //    },  "App Database Manager Is Not Yet Initialized.");
+            //}
 
             #endregion
         }

@@ -28,18 +28,19 @@ namespace Com.RedicalGames.Filar
         {
             #region Post Handler
 
-            string profileIdentifier = AppData.Helpers.GenerateAppKey(5); // This Will Come Publishing User Profile Identifier
+            //string profileIdentifier = AppData.Helpers.GenerateAppKey(5); // This Will Come Publishing User Profile Identifier
             string postIdentifier = AppData.Helpers.GenerateUniqueIdentifier(5);
             string contentIdentifier = AppData.Helpers.GenerateUniqueIdentifier(5);
+
+            string profileIdentifier = "17G6 16S6 27I4 20K3 67M7";
 
             #endregion
 
             #region Post
 
-            post.SetUniqueIdentifier(postIdentifier);
+           post.SetUniqueIdentifier(postIdentifier);
             post.SetRootdentifier(profileIdentifier);
             post.InitializeCreationDateTime();
-            post.SetThumbnail(thumbnail, imageEncoderType);
 
             #endregion
 
@@ -58,6 +59,8 @@ namespace Com.RedicalGames.Filar
             {
                 AppData.SerializableGameObject content = new AppData.SerializableGameObject(getObjectStringTaskResults.data);
 
+                AppData.SerializableImage thumbnail = new AppData.SerializableImage();
+
                 Log(getObjectStringTaskResults.ResultCode, getObjectStringTaskResults.Result, this);
 
                 //var path = Path.Combine(Application.streamingAssetsPath, $"{post.GetTitle()}.json").Replace("\\", "/");
@@ -67,7 +70,7 @@ namespace Com.RedicalGames.Filar
 
                 #region Publish
 
-                PublishingManager.Instance.OnPublish(post, content, contentIdentifier, publishCallbackResults =>
+                PublishingManager.Instance.OnPublish(post, thumbnail, content, contentIdentifier, publishCallbackResults =>
                 {
                     Log(publishCallbackResults.ResultCode, publishCallbackResults.Result, this);
                 });
