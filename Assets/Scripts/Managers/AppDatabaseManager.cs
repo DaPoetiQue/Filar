@@ -169,6 +169,10 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.DataPacketsLibrary dataPacketsLibrary = new AppData.DataPacketsLibrary();
 
+        [Space(5)]
+        [SerializeField]
+        AppData.ShaderLibrabry shaderLibrabry = new AppData.ShaderLibrabry();
+
         #endregion
 
         #region Assets
@@ -4379,25 +4383,11 @@ namespace Com.RedicalGames.Filar
                 {
                     if(!loadedPostContent.ContainsKey(postContent.GetUniqueIdentifier()))
                     {
-                        var getContentMeshTaskResults = await AppData.Helpers.GetMeshDataAsync(postContent.GetMeshString);
+                        AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(postContent.GetMeshString);
 
-                        callbackResults.SetResult(getContentMeshTaskResults);
+                        var getGameObjectFromStringTaskResults = await contentGenerator.StringToGameObject();
 
-                        if(callbackResults.Result != null)
-                        {
-                            GameObject content = new GameObject(postID);
-
-                             var filter = content.AddComponent<MeshFilter>();
-                            var renderer = content.AddComponent<MeshRenderer>();
-
-                            filter.sharedMesh = getContentMeshTaskResults.data;
-
-                            loadedPostContent.Add(postContent.GetUniqueIdentifier(), content);
-
-                            LogInfo($" =============<<<<<<<<< Show Content : {postContent.name} With ID : {postContent.GetUniqueIdentifier()} - Mesh Data Loaded Successfully.", this);
-                        }
-
-                        //Log(meshDataFromStringResults.ResultCode, $" <<<<=============>>>> Mesh DataResults : {meshDataFromStringResults.Result}", this);
+                        LogInfo($" =============<<<<<<<<< Show Content : {postContent.name} Code : {getGameObjectFromStringTaskResults.ResultCode} - Result : {getGameObjectFromStringTaskResults.Result}.", this);
                     }
                     else
                     {
@@ -8462,6 +8452,28 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Libraries
+
+        #region Shader Lab
+
+        public void GetShaderAssetFromLibrary(string name, AppData.ShaderType type, Action<AppData.CallbackData<AppData.ShaderAsset>> callback)
+        {
+            if (shaderLibrabry.HasAssets().Success())
+                shaderLibrabry.GetShaderAsset(name, type, shaderAssetCallbackResults => { callback.Invoke(shaderAssetCallbackResults); });
+            else
+                Log(shaderLibrabry.HasAssets().ResultCode, shaderLibrabry.HasAssets().Result, this);
+        }
+
+        public AppData.CallbackData<AppData.ShaderAsset> GetShaderAssetFromLibrary(string name, AppData.ShaderType type)
+        {
+            AppData.CallbackData<AppData.ShaderAsset> callbackResults = new AppData.CallbackData<AppData.ShaderAsset>(shaderLibrabry.HasAssets());
+
+            if (callbackResults.Success())
+                shaderLibrabry.GetShaderAsset(name, type, shaderAssetCallbackResults => { callbackResults.SetResultsData(shaderAssetCallbackResults); });
+
+            return callbackResults;
+        }
+
+        #endregion
 
         #region Screen Load Info Library
 

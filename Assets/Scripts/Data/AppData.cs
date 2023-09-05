@@ -14,7 +14,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using Newtonsoft.Json;
+using System.IO.Compression;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace Com.RedicalGames.Filar
@@ -3265,13 +3265,643 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ContentGenerator
+        {
+            #region Components
+
+            public GameObject obj;
+            public string objString;
+
+            public string vertexSplit = " v|", normalSplit = " n|", uvSplit = " u|", tangentSplit = " t|", subMeshSplit = " s|", meshSplit = " m|";
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public ContentGenerator()
+            {
+
+            }
+
+            public ContentGenerator(GameObject obj) => this.obj = obj;
+            public ContentGenerator(string objString) => this.objString = objString;
+
+            #endregion
+
+            public async Task<CallbackData<string>> GameObjectToString(GameObject value = null)
+            {
+                CallbackData<string> callbackResults = new CallbackData<string>();
+
+                if(value == null)
+                {
+                    if (obj != null)
+                        value = obj;
+                    else
+                    {
+                        callbackResults.result = "There Is No Game Object Assigned To Convert To String - Operation Invalid.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+
+                        return callbackResults;
+                    }
+                }
+
+                callbackResults.SetResult(Helpers.GetMeshPropertiesData(value));
+
+                if (callbackResults.Success())
+                {
+                    var meshFilters = Helpers.GetMeshPropertiesData(value).data;
+
+                    var subMeshStringList = new List<string>();
+
+                    for (int i = 0; i < meshFilters.Length; i++)
+                    {
+                        var readableMesh = Helpers.GetReadableMesh(meshFilters[i].GetFilter().sharedMesh);
+
+                        var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
+                        var triangles = Helpers.IntArrayToString(readableMesh.triangles);
+                        var normals = Helpers.Vector3ArrayToString(readableMesh.normals, normalSplit);
+                        var uvs = Helpers.Vector2ArrayToString(readableMesh.uv, uvSplit);
+                        var tangents = Helpers.Vector4ArrayToString(readableMesh.tangents, tangentSplit);
+                        var indices = Helpers.IntArrayToString(readableMesh.GetIndices(0));
+                        var topology = ((int)readableMesh.GetTopology(0)).ToString();
+
+                        StringBuilder subMeshString = new StringBuilder();
+
+                        subMeshString.Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).Append(subMeshSplit).Append(topology);
+                        subMeshStringList.Add(subMeshString.ToString());
+
+                        await Task.Yield();
+                    }
+
+                    if(subMeshStringList.Count > 0)
+                    {
+                        StringBuilder meshString = new StringBuilder();
+
+                        for (int i = 0; i < subMeshStringList.Count; i++)
+                        {
+                            meshString.Append(subMeshStringList[i]).Append(meshSplit);
+                            await Task.Yield();
+                        }
+
+                        meshString.Remove(meshString.Length - meshSplit.Length, meshSplit.Length);
+
+                        if(!string.IsNullOrEmpty(meshString.ToString()))
+                        {
+                            callbackResults.result = $"Mesh String Successfully Created From : {subMeshStringList.Count} Sub Meshes.";
+                            callbackResults.data = meshString.ToString();
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Create Mesh String From : {subMeshStringList.Count} Sub Meshes. Mesh String Is Null.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Create Mesh String. Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public async Task<CallbackDataArray<byte>> GameObjectToBytesArray(GameObject value = null, System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.NoCompression)
+            {
+                CallbackDataArray<byte> callbackResults = new CallbackDataArray<byte>();
+
+                if (value == null)
+                {
+                    if (obj != null)
+                        value = obj;
+                    else
+                    {
+                        callbackResults.result = "There Is No Game Object Assigned To Convert To String - Operation Invalid.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+
+                        return callbackResults;
+                    }
+                }
+
+                callbackResults.SetResult(Helpers.GetMeshPropertiesData(value));
+
+                if (callbackResults.Success())
+                {
+                    var meshFilters = Helpers.GetMeshPropertiesData(value).data;
+
+                    var subMeshStringList = new List<string>();
+
+                    for (int i = 0; i < meshFilters.Length; i++)
+                    {
+                        var readableMesh = Helpers.GetReadableMesh(meshFilters[i].GetFilter().sharedMesh);
+
+                        var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
+                        var triangles = Helpers.IntArrayToString(readableMesh.triangles);
+                        var normals = Helpers.Vector3ArrayToString(readableMesh.normals, normalSplit);
+                        var uvs = Helpers.Vector2ArrayToString(readableMesh.uv, uvSplit);
+                        var tangents = Helpers.Vector4ArrayToString(readableMesh.tangents, tangentSplit);
+                        var indices = Helpers.IntArrayToString(readableMesh.GetIndices(0));
+                        var topology = ((int)readableMesh.GetTopology(0)).ToString();
+
+                        var serializableMaterialData = new SerializableMaterial(meshFilters[i].GetRenderer().sharedMaterial);
+                        var material = serializableMaterialData.GetMaterialDataString();
+
+                        StringBuilder subMeshString = new StringBuilder();
+
+                        subMeshString.Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material);
+                        subMeshStringList.Add(subMeshString.ToString());
+
+                        await Task.Yield();
+                    }
+
+                    if (subMeshStringList.Count > 0)
+                    {
+                        StringBuilder meshString = new StringBuilder();
+
+                        for (int i = 0; i < subMeshStringList.Count; i++)
+                        {
+                            meshString.Append(subMeshStringList[i]).Append(meshSplit);
+                            await Task.Yield();
+                        }
+
+                        meshString.Remove(meshString.Length - meshSplit.Length, meshSplit.Length);
+
+                        if (!string.IsNullOrEmpty(meshString.ToString()))
+                        {
+                            var meshStringToBytesArray = (compressionLevel == System.IO.Compression.CompressionLevel.NoCompression)? Convert.FromBase64String(meshString.ToString()) : Convert.FromBase64String(Helpers.GetCompressedString(meshString.ToString(), compressionLevel));
+
+                            callbackResults.result = $"Mesh String Successfully Created From : {subMeshStringList.Count} Sub Meshes.";
+                            callbackResults.data = meshStringToBytesArray;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Create Mesh String From : {subMeshStringList.Count} Sub Meshes. Mesh String Is Null.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Create Mesh String. Please Check Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public async Task<CallbackData<GameObject>> StringToGameObject(string value = null)
+            {
+                CallbackData<GameObject> callbackResults = new CallbackData<GameObject>();
+
+                if (value == null)
+                {
+                    if (objString != null)
+                        value = objString;
+                    else
+                    {
+                        callbackResults.result = "There Is No  String Value Assigned To Convert To Game Object - Operation Invalid.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+
+                        return callbackResults;
+                    }
+                }
+
+                if(value != null)
+                {
+                    var meshStringList = value.Split(meshSplit);
+
+                    for (int i = 0; i < meshStringList.Length; i++)
+                    {
+                        Debug.Log($"Mesh {i} Length : {meshStringList[i].Length}");
+                    }
+
+                    callbackResults.result = $"Game Object Has Been Loaded Successfully From String With : {meshStringList.Length} Meshes.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SerializableColor
+        {
+            #region Components
+
+            public float r, g, b, a;
+
+            #endregion
+
+            #region Constructors
+
+            public SerializableColor()
+            {
+
+            }
+
+            public SerializableColor(Color color)
+            {
+                r = color.r;
+                g = color.g;
+                b = color.b;
+                a = color.a;
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SerializeColor(Color color)
+            {
+                r = color.r;
+                g = color.g;
+                b = color.b;
+                a = color.a;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public Color GetColor() => new Color(r, g, b, a);
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class MaterialData
+        {
+            #region Components
+
+            public string name;
+            public string shaderName;
+            public int shaderType;
+            public string colorData;
+            public byte[] mainTextureData;
+            public int mainTextureWidth, mainTextureHeight;
+            public float glossiness;
+            public float bumpScale;
+            public float aoStrength;
+            public bool enableGPUInstancing;
+
+            #endregion
+
+            #region Constructors
+
+            public MaterialData()
+            {
+
+            }
+
+            public MaterialData(string name, string shaderName, ShaderType shaderType, string colorData, byte[] mainTextureData, int mainTextureWidth, int mainTextureHeight, float glossiness, float bumpScale, float aoStrength, bool enableGPUInstancing)
+            {
+                this.name = name;
+                this.shaderName = shaderName;
+                this.shaderType = (int)shaderType;
+                this.colorData = colorData;
+                this.mainTextureData = mainTextureData;
+                this.mainTextureWidth = mainTextureWidth;
+                this.mainTextureHeight = mainTextureHeight;
+                this.glossiness = glossiness;
+                this.bumpScale = bumpScale;
+                this.aoStrength = aoStrength;
+                this.enableGPUInstancing = enableGPUInstancing;
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetName(string name) => this.name = name;
+
+            public void SetShaderName(string shaderName) => this.shaderName = shaderName;
+            public void SetShaderType(ShaderType shaderType) => this.shaderType = (int)shaderType;
+            public void SetColorData(string colorData) => this.colorData = colorData;
+            public void SetMainTextureData(byte[] mainTextureData) => this.mainTextureData = mainTextureData;
+            public void SetMainTextureSize(int mainTextureWidth, int mainTextureHeight)
+            {
+                this.mainTextureWidth = mainTextureWidth;
+                this.mainTextureHeight = mainTextureHeight;
+            }
+
+            public void SetGlossiness(float glossiness) => this.glossiness = glossiness;
+            public void SetBumpScale(float bumpScale) => this.bumpScale = bumpScale;
+            public void SetAOStrength(float aoStrength) => this.aoStrength = aoStrength;
+            public void SetEnableGPUInstancing(bool enableGPUInstancing) => this.enableGPUInstancing = enableGPUInstancing;
+
+            #endregion
+
+            #region Data Getters
+
+            public string Name => name ?? "Material Name Is Not Assigned";
+
+            public string GetShaderName() => shaderName;
+            public ShaderType GetShaderType() => (ShaderType)shaderType;
+            public string GetColorData() => colorData;
+            public byte[] GetMainTextureData() => mainTextureData;
+            public float GetGlossiness() => glossiness;
+            public float GetBumpScale() => bumpScale;
+            public float GetAOStrength() => aoStrength;
+            public (int mainTextureWidth, int mainTextureHeight) GetMainTextureSize() => (mainTextureWidth, mainTextureHeight);
+            public bool GetEnableGPUInstancing() => enableGPUInstancing;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SerializableMaterial
+        {
+            #region Components
+
+            public string materialDataString;
+
+            #endregion
+
+            #region Constructors
+
+            public SerializableMaterial()
+            {
+
+            }
+
+            public SerializableMaterial(string materialDataString) => this.materialDataString = materialDataString;
+            public SerializableMaterial(Material material, ShaderType shaderType = ShaderType.Default) => SetMaterial(material, shaderType);
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetMaterial(Material material, ShaderType shaderType)
+            {
+                var materialColor = new SerializableColor(material.color);
+                var materialColorString = JsonUtility.ToJson(materialColor);
+
+                var mainTexture = Helpers.ImageToBytesArray((Texture2D)material.mainTexture, Helpers.ImageEncoderType.JPG);
+
+                var materialData = new MaterialData(material.name, material.shader.name, shaderType, materialColorString, mainTexture, material.mainTexture.width, material.mainTexture.height, material.GetFloat("_Glossiness"), material.GetFloat("_BumpScale"), material.GetFloat("_OcclusionStrength"), material.enableInstancing);
+                materialDataString = JsonUtility.ToJson(materialData);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetMaterialDataString() => materialDataString;
+
+            public CallbackData<Material> GetMaterial()
+            {
+                CallbackData<Material> callbackResults = new CallbackData<Material>(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized"));
+
+                if (callbackResults.Success())
+                {
+                    var appDataBaseManager = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+
+                    if (string.IsNullOrEmpty(materialDataString))
+                    {
+                        var materialData = JsonUtility.FromJson<MaterialData>(materialDataString);
+
+                        callbackResults.SetResult(appDataBaseManager.GetShaderAssetFromLibrary(materialData.GetShaderName(), materialData.GetShaderType()));
+
+                        if (callbackResults.Success())
+                        {
+                            var shaderAsset = appDataBaseManager.GetShaderAssetFromLibrary(materialData.GetShaderName(), materialData.GetShaderType()).data;
+
+                            var material = new Material(shaderAsset.GetShader());
+
+                            var materialColor = JsonUtility.FromJson<SerializableColor>(materialData.GetColorData()).GetColor();
+                            var mainTexture = (Texture)Helpers.BytesArrayToTexture2D(materialData.GetMainTextureData(), materialData.GetMainTextureSize().mainTextureWidth, materialData.GetMainTextureSize().mainTextureHeight);
+
+                            material.name = materialData.Name;
+                            material.SetColor("_Color", materialColor);
+                            material.SetTexture("_MainTex", mainTexture);
+
+                            material.SetFloat("_Glossiness", materialData.GetGlossiness());
+                            material.SetFloat("_BumpScale", materialData.GetBumpScale());
+                            material.SetFloat("_OcclusionStrength", materialData.GetAOStrength());
+
+                            material.enableInstancing = materialData.GetEnableGPUInstancing();
+
+                            callbackResults.result = $"Material : {materialData.Name} With Shader Type : {materialData.GetShaderType()} Loaded Successfully.";
+                            callbackResults.data = material;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Get Material Failed - Material Data String Is Null - Operation Invalid.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ShaderAsset
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public Shader shader;
+
+            [Space(5)]
+            public ShaderType type;
+
+            #endregion
+
+            #region Constructors
+
+            public ShaderAsset()
+            {
+
+            }
+
+            public ShaderAsset(string name, Shader shader, ShaderType type)
+            {
+                this.name = name;
+                this.shader = shader;
+                this.type = type;
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetName(string name) => this.name = name;
+            public void SetShader(Shader shader) => this.shader = shader;
+            public void SetShaderType(ShaderType type) => this.type = type;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName() => name;
+            public Shader GetShader() => shader;
+            public ShaderType GetShaderType() => type;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ShaderLibrabry
+        {
+            #region Components
+
+            public List<ShaderAsset> shaders = new List<ShaderAsset>();
+
+            #endregion
+
+            #region Components
+
+            public void GetShaderAsset(string name, ShaderType type, Action<CallbackData<ShaderAsset>> callback)
+            {
+                CallbackData<ShaderAsset> callbackResults = new CallbackData<ShaderAsset>();
+
+                if(shaders != null && shaders.Count > 0)
+                {
+                    var shaderAssetsOfType = shaders.FindAll(shader => shader.GetShaderType() == type);
+                    
+                    if(shaderAssetsOfType != null && shaderAssetsOfType.Count > 0)
+                    {
+                        var shaderAsset = shaderAssetsOfType.Find(shader => shader.GetName() == name);
+
+                        if(shaderAsset != null)
+                        {
+                            callbackResults.result = $"Found Shader Asset : {name} Of Type : {type}";
+                            callbackResults.data = shaderAsset;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Find Shader Asset : {name} Of Type : {type} - Shader Asset Missing.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Find Shader Assets Of Type : {type} - Shader Assets Not Initialized.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Find Shader Assets - Shader Assets Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public Callback HasAssets()
+            {
+                Callback callbackResults = new Callback();
+
+                if(shaders != null && shaders.Count > 0)
+                {
+                    callbackResults.result = $"Shader Asset Library Contains : {shaders.Count} Assets.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "There Are No Shader Assets Initialized Yet.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SerializableGameObject
+        {
+            #region Components
+
+            public List<string> meshStringList = new List<string>();
+            public byte[] meshBytesArray;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public SerializableGameObject()
+            {
+
+            }
+
+            public SerializableGameObject(List<string> meshStringList) => this.meshStringList = meshStringList;
+            public SerializableGameObject(byte[] meshBytesDataList) => this.meshBytesArray = meshBytesDataList;
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetMeshStringList(List<string> meshStringList) => this.meshStringList = meshStringList;
+            public void SetMeshBytesArray(byte[] meshBytesDataList) => this.meshBytesArray = meshBytesDataList;
+
+            #endregion
+
+            #region Data Getters
+
+            public List<string> GetMeshStringList() => meshStringList;
+            public byte[] GetMeshBytesArray() => meshBytesArray;
+
+            #endregion
+
+            #endregion
+        }
+
+
+        [Serializable]
         public class ModelMeshData : PostDataIdentifier
         {
             #region Components
 
-            public string mesh;
+            public string gameObject;
+
             public string GetMeshString
-                => mesh;
+                => gameObject;
 
             #endregion
 
@@ -3429,7 +4059,7 @@ namespace Com.RedicalGames.Filar
 
                 var splitMeshString = meshString.Split(seperator).ToList();
 
-                if (splitMeshString.Count >= 6)
+                if (splitMeshString.Count > 0)
                 {
                     var vertices = StringToVector3Array(splitMeshString[0], "v|");
                     var triangles = StringToIntArray(splitMeshString[1]);
@@ -3508,7 +4138,7 @@ namespace Com.RedicalGames.Filar
             public void SetModelMeshData(MeshData meshData)
             {
                 content = new ModelMeshData();
-                content.mesh = content.MeshDataToString(meshData, "m|");
+                content.gameObject = content.MeshDataToString(meshData, "m|");
             }
 
             #endregion
@@ -31380,6 +32010,50 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class MeshProperties
+        {
+            #region Components
+
+            public MeshFilter filter;
+            public MeshRenderer renderer;
+
+            #endregion
+
+            #region Constructors
+
+            public MeshProperties()
+            {
+
+            }
+
+            public MeshProperties(MeshFilter filter, MeshRenderer renderer)
+            {
+                this.filter = filter;
+                this.renderer = renderer;
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetFilter(MeshFilter filter) => this.filter = filter;
+            public void SetRenderer(MeshRenderer renderer) => this.renderer = renderer;
+
+            #endregion
+
+            #region Data Getters
+
+            public MeshFilter GetFilter() => filter;
+            public MeshRenderer GetRenderer() => renderer;
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class MaterialInfo
         {
             #region Components
@@ -31821,6 +32495,194 @@ namespace Com.RedicalGames.Filar
 
             #region Mesh Data
 
+            #region Data To String
+
+            public static string Vector2ArrayToString(Vector2[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i].x).Append(" ").Append(arrayData[i].y).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+                }
+                else
+                    throw new ArgumentException("Vector 2 Array To String Failed - Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static async Task<string> Vector2ArrayToStringAsync(Vector2[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    await Task.Yield();
+
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i].x).Append(" ").Append(arrayData[i].y).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+                }
+                else
+                    throw new ArgumentException("Vector 2 Array To String Async Failed - Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static string Vector3ArrayToString(Vector3[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i].x).Append(" ").Append(arrayData[i].y).Append(" ").Append(arrayData[i].z).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+                }
+                else
+                    throw new ArgumentException("Vector 3 Array To String Failed - Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static async Task<string> Vector3ArrayToStringAsync(Vector3[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    await Task.Yield();
+
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i].x).Append(" ").Append(arrayData[i].y).Append(" ").Append(arrayData[i].z).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+                }
+                else
+                    throw new ArgumentException("Vector 3 Array To String Async Failed - Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static string Vector4ArrayToString(Vector4[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i].x).Append(" ").Append(arrayData[i].y).Append(" ").Append(arrayData[i].z).Append(" ").Append(arrayData[i].w).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+                }
+                else
+                    throw new ArgumentException("Vector 4 Array To String Failed - Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static async Task<string> Vector4ArrayToStringAsync(Vector4[] arrayData, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    await Task.Yield();
+
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i].x).Append(" ").Append(arrayData[i].y).Append(" ").Append(arrayData[i].z).Append(" ").Append(arrayData[i].w).Append(seperator);
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+                }
+                else
+                    throw new ArgumentException("Vector 4 Array To String Async Failed - Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static string IntArrayToString(int[] arrayData)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i]).Append(" ");
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - 1, 1);
+                }
+                else
+                    throw new ArgumentException("Int Array To String Failed- Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            public static async Task<string> IntArrayToStringAsync(int[] arrayData)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    await Task.Yield();
+
+                    for (int i = 0; i < arrayData.Length; i++)
+                        stringBuilder.Append(arrayData[i]).Append(" ");
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - 1, 1);
+                }
+                else
+                    throw new ArgumentException("Int Array To String Async Failed- Array Data Is Null.");
+
+                return stringBuilder.ToString();
+            }
+
+            #endregion
+
+            #region String Compression
+
+            public static string GetCompressedString(string source, System.IO.Compression.CompressionLevel compressionLevel) => Convert.ToBase64String(CompressStringToBytesArray(source, compressionLevel));
+
+            public static byte[] CompressStringToBytesArray(string source, System.IO.Compression.CompressionLevel compressionLevel)
+            {
+                var data = Encoding.UTF8.GetBytes(source);
+
+                using(var msi = new MemoryStream(data))
+                {
+                    using (var mso = new MemoryStream())
+                    {
+                        using(var zip = new GZipStream(mso, compressionLevel, true))
+                            CopyByteArrayData(msi, zip);
+
+                        return mso.ToArray();
+                    }
+                }
+            }
+
+            private static void CopyByteArrayData(Stream source, Stream target)
+            {
+                byte[] data = new byte[source.Length];
+
+                int dataLength;
+                
+                while((dataLength = source.Read(data, 0, data.Length)) != 0)
+                    target.Write(data, 0, dataLength);
+            }
+
+            #endregion
+
             public static Mesh GetReadableMesh(Mesh unreadableMesh)
             {
                 Mesh mesh = new Mesh();
@@ -31877,24 +32739,34 @@ namespace Com.RedicalGames.Filar
                 return mesh;
             }
 
-            public static CallbackDataArray<MeshFilter> GetMeshFilterData(GameObject gameObject)
+            public static CallbackDataArray<MeshProperties> GetMeshPropertiesData(GameObject gameObject)
             {
-                CallbackDataArray<MeshFilter> callbackResults = new CallbackDataArray<MeshFilter>();
+                CallbackDataArray<MeshProperties> callbackResults = new CallbackDataArray<MeshProperties>();
 
-                List<MeshFilter> meshFilters = new List<MeshFilter>();
+                var meshPropertiesList = new List<MeshProperties>();
 
                 if (gameObject.GetComponents<MeshFilter>().Length > 0)
-                    for (int i = 0; i < gameObject.GetComponents<MeshFilter>().Length; i++)
-                        meshFilters.Add(gameObject.GetComponents<MeshFilter>()[i]);
-
-                if(gameObject.GetComponentsInChildren<MeshFilter>().Length > 0)
-                    for (int i = 0; i < gameObject.GetComponentsInChildren<MeshFilter>().Length; i++)
-                        meshFilters.Add(gameObject.GetComponentsInChildren<MeshFilter>()[i]);
-
-                if(meshFilters.Count > 0)
                 {
-                    callbackResults.result = $"{meshFilters.Count} Mesh Filters Found For Game Object : {gameObject.name}";
-                    callbackResults.data = meshFilters.ToArray();
+                    for (int i = 0; i < gameObject.GetComponents<MeshFilter>().Length; i++)
+                    {
+                        var meshProperties = new MeshProperties(gameObject.GetComponents<MeshFilter>()[i], gameObject.GetComponents<MeshRenderer>()[i]);
+                        meshPropertiesList.Add(meshProperties);
+                    }
+                }
+
+                if (gameObject.GetComponentsInChildren<MeshFilter>().Length > 0)
+                {
+                    for (int i = 0; i < gameObject.GetComponentsInChildren<MeshFilter>().Length; i++)
+                    {
+                        var meshProperties = new MeshProperties(gameObject.GetComponents<MeshFilter>()[i], gameObject.GetComponents<MeshRenderer>()[i]);
+                        meshPropertiesList.Add(meshProperties);
+                    }
+                }
+
+                if(meshPropertiesList.Count > 0)
+                {
+                    callbackResults.result = $"{meshPropertiesList.Count} Mesh Filters Found For Game Object : {gameObject.name}";
+                    callbackResults.data = meshPropertiesList.ToArray();
                     callbackResults.resultCode = SuccessCode;
                 }
                 else
@@ -31943,9 +32815,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public static async Task<CallbackData<Mesh>> GetMeshDataAsync(string obj)
+            public static async Task<CallbackData<GameObject>> GetMeshDataAsync(string obj, string name = "New Content Object")
             {
-                CallbackData<Mesh> callbackResults = new CallbackData<Mesh>();
+                CallbackData<GameObject> callbackResults = new CallbackData<GameObject>();
 
                 if (obj == null)
                 {
@@ -31967,51 +32839,66 @@ namespace Com.RedicalGames.Filar
                     var meshData = new MeshData();
                     var getMeshTaskResults = await meshData.ConvertMeshDataToMesh(meshDataFromStringResults.data);
 
-                    callbackResults.result = $"Mesh Loaded Successfully : {callbackResults.Result}";
-                    callbackResults.data = getMeshTaskResults;
-                }
-
-                return callbackResults;
-            }
-
-
-            public static async Task<CallbackData<MeshData>> GetMeshDataAsync(GameObject obj)
-            {
-                CallbackData<MeshData> callbackResults = new CallbackData<MeshData>();
-
-                if(obj == null)
-                {
-                    callbackResults.result = $"There Is No Object Assigned To Convert Its Mesh To Serializable Mesh Data - Returning Null.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = ErrorCode;
-
-                    return callbackResults;
-                }
-
-                callbackResults.SetResult(GetMeshFilterData(obj));
-
-                if(callbackResults.Success())
-                {
-                    var meshDataTaskResults = await GetCombinedMeshAsync(GetMeshFilterData(obj).data);
-
-                    callbackResults.SetResult(meshDataTaskResults);
-
-                    if (callbackResults.Success())
+                    if (getMeshTaskResults != null)
                     {
-                        Debug.Log(" ====================>>>>>>>>>>>> Begin Convertion.....");
+                        GameObject loadedObj = new GameObject(name);
 
-                        var serializableMeshData = new MeshData();
-                        var serializableMeshTaskResults = await serializableMeshData.ConvertToSerializableMeshDataAsync(meshDataTaskResults.data);
+                        var filter = loadedObj.AddComponent<MeshFilter>();
+                        var renderer = loadedObj.AddComponent<MeshRenderer>();
 
-                        Debug.Log($" ====================>>>>>>>>>>>> Mesh Generated Successfully.....");
+                        filter.mesh = getMeshTaskResults;
 
-                        callbackResults.result = $"{obj.name} : Has Been Successfully Converted To Serializable Data.";
-                        callbackResults.data = serializableMeshTaskResults;
+                        callbackResults.result = $"Mesh Loaded Successfully : {callbackResults.Result}";
+                        callbackResults.data = loadedObj;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Mesh Failed To Load After : {callbackResults.Result}";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = ErrorCode;
                     }
                 }
 
                 return callbackResults;
             }
+
+            //public static async Task<CallbackData<MeshData>> GetMeshDataAsync(GameObject obj)
+            //{
+            //    CallbackData<MeshData> callbackResults = new CallbackData<MeshData>();
+
+            //    if(obj == null)
+            //    {
+            //        callbackResults.result = $"There Is No Object Assigned To Convert Its Mesh To Serializable Mesh Data - Returning Null.";
+            //        callbackResults.data = default;
+            //        callbackResults.resultCode = ErrorCode;
+
+            //        return callbackResults;
+            //    }
+
+            //    callbackResults.SetResult(GetMeshPropertiesData(obj));
+
+            //    if(callbackResults.Success())
+            //    {
+            //        var meshDataTaskResults = await GetCombinedMeshAsync(GetMeshPropertiesData(obj).data);
+
+            //        callbackResults.SetResult(meshDataTaskResults);
+
+            //        if (callbackResults.Success())
+            //        {
+            //            Debug.Log(" ====================>>>>>>>>>>>> Begin Convertion.....");
+
+            //            var serializableMeshData = new MeshData();
+            //            var serializableMeshTaskResults = await serializableMeshData.ConvertToSerializableMeshDataAsync(meshDataTaskResults.data);
+
+            //            Debug.Log($" ====================>>>>>>>>>>>> Mesh Generated Successfully.....");
+
+            //            callbackResults.result = $"{obj.name} : Has Been Successfully Converted To Serializable Data.";
+            //            callbackResults.data = serializableMeshTaskResults;
+            //        }
+            //    }
+
+            //    return callbackResults;
+            //}
 
             #endregion
 

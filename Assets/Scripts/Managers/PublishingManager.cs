@@ -1,4 +1,5 @@
 using Firebase.Database;
+using Firebase.Storage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         DatabaseReference databaseReference;
+        StorageReference storageReference;
 
         #endregion
 
@@ -52,7 +54,7 @@ namespace Com.RedicalGames.Filar
             //    callback.Invoke(callbackResults);
         }
 
-        public async void OnPublish(AppData.Post post, AppData.ModelMeshData content, Action<AppData.Callback> callback = null)
+        public async void OnPublish(AppData.Post post, AppData.SerializableGameObject content, string postContentKey, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -62,31 +64,39 @@ namespace Com.RedicalGames.Filar
                 sw.Start();
 
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+                storageReference = FirebaseStorage.DefaultInstance.RootReference;
 
                 while (databaseReference == null)
                     await Task.Yield();
 
                 await Task.Delay(1000);
 
-                FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").ValueChanged += PublishingManager_ValueChanged;
+                databaseReference.Database.GetReference("User Post Runtime Content").ValueChanged += PublishingManager_ValueChanged;
 
                 var postData = JsonUtility.ToJson(post);
-                var postContentData = JsonUtility.ToJson(content);
 
-                string postKey = post.GetTitle() + $"_{post.GetUniqueIdentifier()}";
-                string contentKey = post.GetTitle() + $"_{content.GetUniqueIdentifier()}";
+                string postKey = post.GetUniqueIdentifier();
 
                 Dictionary<string, object> postObject = new Dictionary<string, object>();
                 postObject.Add(postKey, postData);
 
-                Dictionary<string, object> postContentObject = new Dictionary<string, object>();
-                postContentObject.Add(contentKey, postContentData);
-
                 await databaseReference.Child("Posts Runtime Data").Child("Post Info Database").UpdateChildrenAsync(postObject);
-                await databaseReference.Child("Posts Runtime Data").Child("Post Content Database").UpdateChildrenAsync(postContentObject);
 
-                sw.Stop();
-                LogSuccess($" Post Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+                Dictionary<string, object> postContentObject = new Dictionary<string, object>();
+
+                if (content.GetMeshBytesArray() != null && content.GetMeshBytesArray().Length > 0)
+                {
+                    await storageReference.Child("User Post Runtime Content").Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
+
+                    sw.Stop();
+
+                    LogSuccess($"Post With : {content.GetMeshStringList().Count} Meshes Has Been Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+                }
+                else
+                {
+                    sw.Stop();
+                    LogError($"Failed To Published Post With :{content.GetMeshStringList().Count} Meshes In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+                }
             }
             else
                 LogError("Post Is Missing - Null", this);

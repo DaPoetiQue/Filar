@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -25,8 +26,6 @@ namespace Com.RedicalGames.Filar
 
         public async void Publish()
         {
-            AppData.ModelMeshData content = new AppData.ModelMeshData();
-
             #region Post Handler
 
             string profileIdentifier = AppData.Helpers.GenerateAppKey(5); // This Will Come Publishing User Profile Identifier
@@ -46,20 +45,33 @@ namespace Com.RedicalGames.Filar
 
             #region Content
 
-            var results = await AppData.Helpers.GetMeshDataAsync(obj);
+            //var results = await AppData.Helpers.GetMeshDataAsync(obj);
 
-            content.SetUniqueIdentifier(contentIdentifier);
-            content.SetRootdentifier(postIdentifier);
-            content.mesh = content.MeshDataToString(results.data, "m|");
+            AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(obj);
 
-            #endregion
+            //content.SetUniqueIdentifier(contentIdentifier);
+            //content.SetRootdentifier(postIdentifier);
 
-            #region Publish
+            var getObjectStringTaskResults = await contentGenerator.GameObjectToBytesArray(compressionLevel: System.IO.Compression.CompressionLevel.Optimal);
 
-            PublishingManager.Instance.OnPublish(post, content, publishCallbackResults => 
+            if (getObjectStringTaskResults.Success())
             {
-                Log(publishCallbackResults.ResultCode, publishCallbackResults.Result, this);
-            });
+                AppData.SerializableGameObject content = new AppData.SerializableGameObject(getObjectStringTaskResults.data);
+
+                Log(getObjectStringTaskResults.ResultCode, getObjectStringTaskResults.Result, this);
+
+                //var path = Path.Combine(Application.streamingAssetsPath, $"{post.GetTitle()}.json").Replace("\\", "/");
+                //File.WriteAllText(path, getObjectStringTaskResults.data);
+
+                #endregion
+
+                #region Publish
+
+                PublishingManager.Instance.OnPublish(post, content, contentIdentifier, publishCallbackResults =>
+                {
+                    Log(publishCallbackResults.ResultCode, publishCallbackResults.Result, this);
+                });
+            }
 
             #endregion
         }
