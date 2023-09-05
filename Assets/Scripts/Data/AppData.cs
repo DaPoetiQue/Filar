@@ -1105,6 +1105,19 @@ namespace Com.RedicalGames.Filar
             SigningApp
         }
 
+        public enum TextureMapType
+        {
+            AlbedoMap,
+            MetallicGlossMap,
+            NormalMap,
+            OcclusionMap,
+            HeightMap,
+            EmissionMap,
+            DetailMask,
+            DetailAlbedoMap,
+            DetailNormalMap
+        }
+
         #region Refresh Data
 
         [Serializable]
@@ -3290,88 +3303,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public async Task<CallbackData<string>> GameObjectToString(GameObject value = null)
-            {
-                CallbackData<string> callbackResults = new CallbackData<string>();
-
-                if(value == null)
-                {
-                    if (obj != null)
-                        value = obj;
-                    else
-                    {
-                        callbackResults.result = "There Is No Game Object Assigned To Convert To String - Operation Invalid.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-
-                        return callbackResults;
-                    }
-                }
-
-                callbackResults.SetResult(Helpers.GetMeshPropertiesData(value));
-
-                if (callbackResults.Success())
-                {
-                    var meshFilters = Helpers.GetMeshPropertiesData(value).data;
-
-                    var subMeshStringList = new List<string>();
-
-                    for (int i = 0; i < meshFilters.Length; i++)
-                    {
-                        var readableMesh = Helpers.GetReadableMesh(meshFilters[i].GetFilter().sharedMesh);
-
-                        var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
-                        var triangles = Helpers.IntArrayToString(readableMesh.triangles);
-                        var normals = Helpers.Vector3ArrayToString(readableMesh.normals, normalSplit);
-                        var uvs = Helpers.Vector2ArrayToString(readableMesh.uv, uvSplit);
-                        var tangents = Helpers.Vector4ArrayToString(readableMesh.tangents, tangentSplit);
-                        var indices = Helpers.IntArrayToString(readableMesh.GetIndices(0));
-                        var topology = ((int)readableMesh.GetTopology(0)).ToString();
-
-                        StringBuilder subMeshString = new StringBuilder();
-
-                        subMeshString.Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).Append(subMeshSplit).Append(topology);
-                        subMeshStringList.Add(subMeshString.ToString());
-
-                        await Task.Yield();
-                    }
-
-                    if(subMeshStringList.Count > 0)
-                    {
-                        StringBuilder meshString = new StringBuilder();
-
-                        for (int i = 0; i < subMeshStringList.Count; i++)
-                        {
-                            meshString.Append(subMeshStringList[i]).Append(meshSplit);
-                            await Task.Yield();
-                        }
-
-                        meshString.Remove(meshString.Length - meshSplit.Length, meshSplit.Length);
-
-                        if(!string.IsNullOrEmpty(meshString.ToString()))
-                        {
-                            callbackResults.result = $"Mesh String Successfully Created From : {subMeshStringList.Count} Sub Meshes.";
-                            callbackResults.data = meshString.ToString();
-                            callbackResults.resultCode = Helpers.SuccessCode;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Failed To Create Mesh String From : {subMeshStringList.Count} Sub Meshes. Mesh String Is Null.";
-                            callbackResults.data = default;
-                            callbackResults.resultCode = Helpers.ErrorCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Failed To Create Mesh String. Please Check Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-
-                return callbackResults;
-            }
-
             public async Task<CallbackDataArray<byte>> GameObjectToBytesArray(GameObject value = null, System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.NoCompression)
             {
                 CallbackDataArray<byte> callbackResults = new CallbackDataArray<byte>();
@@ -3546,6 +3477,72 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class TextureData
+        {
+            #region Components
+
+            public string name;
+
+            public byte[] textureData;
+
+            public TextureMapType textureType;
+
+            public int width, height;
+
+            #endregion
+
+            #region Constructors
+
+            public TextureData()
+            {
+
+            }
+
+            public TextureData(string name, byte[] textureData, TextureMapType textureType, int width, int height)
+            {
+                this.name = name;
+                this.textureData = textureData;
+                this.textureType = textureType;
+
+                SetTextureSize(width, height);
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetName(string name) => this.name = name;
+
+            public void SetTextureData(byte[] textureData) => this.textureData = textureData;
+
+            public void SetTextureType(TextureMapType textureType) => this.textureType = textureType;
+
+            public void SetTextureSize(int width, int height)
+            {
+                this.width = width;
+                this.height = height;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public string Name => name ?? "Texture Name Not Assigned.";
+
+            public byte[] GetTextureData() => textureData;
+
+            public TextureMapType GetTextureType() => textureType;
+
+            public (int width, int height) GetTextureSize() => (width, height);
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class MaterialData
         {
             #region Components
@@ -3553,13 +3550,23 @@ namespace Com.RedicalGames.Filar
             public string name;
             public string shaderName;
             public int shaderType;
-            public string colorData;
-            public byte[] mainTextureData;
-            public int mainTextureWidth, mainTextureHeight;
-            public float glossiness;
+            public string mainColorData;
+            public string emissionColorData;
+            public string alphaCutOff;
+            public string textureData;
+            public float smoothness, smoothnessScale, smoothnessTextureChannel;
+            public float metallic;
+            public float specularHighlights;
+            public float glossyReflections;
             public float bumpScale;
+            public float detailNormalMapScale;
             public float aoStrength;
+            public float heightScale;
             public bool enableGPUInstancing;
+
+            public float uvSet, mode, srcBlend, destBlend, zWrite;
+
+            public string splitString;
 
             #endregion
 
@@ -3570,19 +3577,37 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public MaterialData(string name, string shaderName, ShaderType shaderType, string colorData, byte[] mainTextureData, int mainTextureWidth, int mainTextureHeight, float glossiness, float bumpScale, float aoStrength, bool enableGPUInstancing)
+            public MaterialData(string name = null, string shaderName = null, ShaderType shaderType = ShaderType.Default, 
+                string mainColorData = null, string emissionColorData = null,
+                float smoothness = 0, float smoothnessScale = 0, float smoothnessTextureChannel = 0, float metallic = 0, float specularHighlights = 0, float glossyReflections = 0, 
+                float bumpScale = 0, float heightScale = 0, float aoStrength = 0, bool enableGPUInstancing = true, float uvSet = 0, float mode = 0, 
+                float srcBlend = 0, float destBlend = 0, float zWrite = 0, string splitString = " ", params TextureData[] textureData)
             {
                 this.name = name;
                 this.shaderName = shaderName;
                 this.shaderType = (int)shaderType;
-                this.colorData = colorData;
-                this.mainTextureData = mainTextureData;
-                this.mainTextureWidth = mainTextureWidth;
-                this.mainTextureHeight = mainTextureHeight;
-                this.glossiness = glossiness;
+                this.mainColorData = mainColorData;
+                this.emissionColorData = emissionColorData;
+                this.smoothnessTextureChannel = smoothnessTextureChannel;
+                this.smoothness = smoothness;
+                this.smoothnessScale = smoothnessScale;
+                this.metallic = metallic;
+                this.specularHighlights = specularHighlights;
+                this.glossyReflections = glossyReflections;
                 this.bumpScale = bumpScale;
+                this.heightScale = heightScale;
                 this.aoStrength = aoStrength;
                 this.enableGPUInstancing = enableGPUInstancing;
+
+                this.uvSet = uvSet;
+                this.mode = mode;
+                this.srcBlend = srcBlend;
+                this.destBlend = destBlend;
+                this.zWrite = zWrite;
+
+                this.splitString = splitString;
+
+                SetMainTextureData(splitString, textureData);
             }
 
             #endregion
@@ -3595,15 +3620,25 @@ namespace Com.RedicalGames.Filar
 
             public void SetShaderName(string shaderName) => this.shaderName = shaderName;
             public void SetShaderType(ShaderType shaderType) => this.shaderType = (int)shaderType;
-            public void SetColorData(string colorData) => this.colorData = colorData;
-            public void SetMainTextureData(byte[] mainTextureData) => this.mainTextureData = mainTextureData;
-            public void SetMainTextureSize(int mainTextureWidth, int mainTextureHeight)
+            public void SetColorData(string colorData) => this.mainColorData = colorData;
+
+            public void SetMainTextureData(string splitString, params TextureData[] textureData)
             {
-                this.mainTextureWidth = mainTextureWidth;
-                this.mainTextureHeight = mainTextureHeight;
+                if (textureData != null && textureData.Length > 0)
+                {
+                    StringBuilder textureDataStringBuilder = new StringBuilder();
+
+                    for (int i = 0; i < textureData.Length; i++)
+                    {
+                        var texture = JsonUtility.ToJson(textureData[i]);
+                        textureDataStringBuilder.Append(texture).Append(splitString);
+                    }
+
+                    this.textureData = textureDataStringBuilder.ToString();
+                }
             }
 
-            public void SetGlossiness(float glossiness) => this.glossiness = glossiness;
+            public void SetGlossiness(float glossiness) => this.smoothness = glossiness;
             public void SetBumpScale(float bumpScale) => this.bumpScale = bumpScale;
             public void SetAOStrength(float aoStrength) => this.aoStrength = aoStrength;
             public void SetEnableGPUInstancing(bool enableGPUInstancing) => this.enableGPUInstancing = enableGPUInstancing;
@@ -3616,12 +3651,11 @@ namespace Com.RedicalGames.Filar
 
             public string GetShaderName() => shaderName;
             public ShaderType GetShaderType() => (ShaderType)shaderType;
-            public string GetColorData() => colorData;
-            public byte[] GetMainTextureData() => mainTextureData;
-            public float GetGlossiness() => glossiness;
+            public string GetColorData() => mainColorData;
+            public string GetTextureData() => textureData;
+            public float GetGlossiness() => smoothness;
             public float GetBumpScale() => bumpScale;
             public float GetAOStrength() => aoStrength;
-            public (int mainTextureWidth, int mainTextureHeight) GetMainTextureSize() => (mainTextureWidth, mainTextureHeight);
             public bool GetEnableGPUInstancing() => enableGPUInstancing;
 
             #endregion
@@ -3656,12 +3690,130 @@ namespace Com.RedicalGames.Filar
 
             public void SetMaterial(Material material, ShaderType shaderType)
             {
-                var materialColor = new SerializableColor(material.color);
-                var materialColorString = JsonUtility.ToJson(materialColor);
+                var mainColor = new SerializableColor(material.GetColor("_Color"));
+                var mainColorString = JsonUtility.ToJson(mainColor);
 
-                var mainTexture = Helpers.ImageToBytesArray((Texture2D)material.mainTexture, Helpers.ImageEncoderType.JPG);
+                var emissionColor = new SerializableColor(material.GetColor("_EmissionColor"));
+                var emissionColorString = JsonUtility.ToJson(emissionColor);
 
-                var materialData = new MaterialData(material.name, material.shader.name, shaderType, materialColorString, mainTexture, material.mainTexture.width, material.mainTexture.height, material.GetFloat("_Glossiness"), material.GetFloat("_BumpScale"), material.GetFloat("_OcclusionStrength"), material.enableInstancing);
+                var textureDataList = new List<TextureData>();
+
+                if (material.GetTexture("_MainTex"))
+                {
+                    var textureMap = material.GetTexture("_MainTex");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.AlbedoMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_MetallicGlossMap"))
+                {
+                    var textureMap = material.GetTexture("_MetallicGlossMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.MetallicGlossMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_BumpMap"))
+                {
+                    var textureMap = material.GetTexture("_BumpMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.NormalMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_ParallaxMap"))
+                {
+                    var textureMap = material.GetTexture("_ParallaxMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.HeightMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_EmissionMap"))
+                {
+                    var textureMap = material.GetTexture("_EmissionMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.EmissionMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_DetailMask"))
+                {
+                    var textureMap = material.GetTexture("_DetailMask");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailMask, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+
+                if (material.GetTexture("_DetailAlbedoMap"))
+                {
+                    var textureMap = material.GetTexture("_DetailAlbedoMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailAlbedoMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_DetailNormalMap"))
+                {
+                    var textureMap = material.GetTexture("_DetailNormalMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailNormalMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                if (material.GetTexture("_OcclusionMap"))
+                {
+                    var textureMap = material.GetTexture("_OcclusionMap");
+
+                    var texture = new Texture2D(textureMap.width, textureMap.height, TextureFormat.RGBA32, false);
+                    Graphics.CopyTexture(textureMap, texture);
+                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+
+                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.OcclusionMap, textureMap.width, textureMap.height);
+                    textureDataList.Add(textureData);
+                }
+
+                var materialData = new MaterialData(name: material.name, shaderName: material.shader.name, shaderType: shaderType,
+                    mainColorData: mainColorString, emissionColorData: emissionColorString, smoothness: material.GetFloat("_Glossiness"), smoothnessScale: material.GetFloat("_GlossMapScale"), 
+                    smoothnessTextureChannel: material.GetFloat("_SmoothnessTextureChannel"), metallic: material.GetFloat("_Metallic"), specularHighlights: material.GetFloat("_SpecularHighlights"), 
+                    glossyReflections: material.GetFloat("_GlossyReflections"), bumpScale: material.GetFloat("_BumpScale"), heightScale: material.GetFloat("_Parallax"), aoStrength: material.GetFloat("_OcclusionStrength"), 
+                    enableGPUInstancing: material.enableInstancing, uvSet: material.GetFloat("_UVSec"), mode: material.GetFloat("_Mode"), srcBlend: material.GetFloat("_SrcBlend"), destBlend: material.GetFloat("_DstBlend"),
+                    zWrite: material.GetFloat("_ZWrite"), splitString: " ", textureData: textureDataList.ToArray());
+
                 materialDataString = JsonUtility.ToJson(materialData);
             }
 
@@ -3691,12 +3843,12 @@ namespace Com.RedicalGames.Filar
 
                             var material = new Material(shaderAsset.GetShader());
 
-                            var materialColor = JsonUtility.FromJson<SerializableColor>(materialData.GetColorData()).GetColor();
-                            var mainTexture = (Texture)Helpers.BytesArrayToTexture2D(materialData.GetMainTextureData(), materialData.GetMainTextureSize().mainTextureWidth, materialData.GetMainTextureSize().mainTextureHeight);
+                            //var materialColor = JsonUtility.FromJson<SerializableColor>(materialData.GetColorData()).GetColor();
+                            //var mainTexture = (Texture)Helpers.BytesArrayToTexture2D(materialData.GetMainTextureData(), materialData.GetMainTextureSize().mainTextureWidth, materialData.GetMainTextureSize().mainTextureHeight);
 
-                            material.name = materialData.Name;
-                            material.SetColor("_Color", materialColor);
-                            material.SetTexture("_MainTex", mainTexture);
+                            //material.name = materialData.Name;
+                            //material.SetColor("_Color", materialColor);
+                            //material.SetTexture("_MainTex", mainTexture);
 
                             material.SetFloat("_Glossiness", materialData.GetGlossiness());
                             material.SetFloat("_BumpScale", materialData.GetBumpScale());
@@ -32758,7 +32910,9 @@ namespace Com.RedicalGames.Filar
                 {
                     for (int i = 0; i < gameObject.GetComponentsInChildren<MeshFilter>().Length; i++)
                     {
-                        var meshProperties = new MeshProperties(gameObject.GetComponents<MeshFilter>()[i], gameObject.GetComponents<MeshRenderer>()[i]);
+                        var meshFilterObject = gameObject.GetComponentsInChildren<MeshFilter>()[i].gameObject;
+
+                        var meshProperties = new MeshProperties(meshFilterObject.GetComponent<MeshFilter>(), meshFilterObject.GetComponent<MeshRenderer>());
                         meshPropertiesList.Add(meshProperties);
                     }
                 }
