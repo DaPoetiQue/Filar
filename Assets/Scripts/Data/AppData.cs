@@ -3518,17 +3518,18 @@ namespace Com.RedicalGames.Filar
                             mesh.RecalculateTangents();
                             mesh.RecalculateBounds();
 
-                            var serializableMaterial = new SerializableMaterial(materials);
+                            Debug.Log($" ++++++++ Load Serializable Material Shader Name : {materials}");
 
-                            if(serializableMaterial.GetMaterial().Success())
-                            {
-                                Debug.Log($" ++++++++ Load Serializable Material");
-                                meshDataList.Add((mesh, serializableMaterial.GetMaterial().data));
-                            }
-                            else
-                            {
-                                meshDataList.Add((mesh, null));
-                            }
+                            //var materialData = JsonUtility.FromJson<MaterialData>(materials);
+
+                            //if (materialData != null)
+                            //{
+
+                            //}
+                            //else
+                            //{
+                            //    meshDataList.Add((mesh, null));
+                            //}
 
                             //if(serializableMaterialData.GetMaterial().Success())
                             //    meshDataList.Add((mesh, serializableMaterialData.GetMaterial().data));
