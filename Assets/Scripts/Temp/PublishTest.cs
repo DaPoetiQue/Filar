@@ -53,27 +53,29 @@ namespace Com.RedicalGames.Filar
             //content.SetUniqueIdentifier(contentIdentifier);
             //content.SetRootdentifier(postIdentifier);
 
-            var getObjectStringTaskResults = await contentGenerator.GameObjectToBytesArray(compressionLevel: System.IO.Compression.CompressionLevel.Optimal);
+            var getObjectStringTaskResults = await contentGenerator.SetGameObject();
 
             if (getObjectStringTaskResults.Success())
             {
                 AppData.SerializableGameObject content = new AppData.SerializableGameObject(getObjectStringTaskResults.data);
 
-                AppData.SerializableImage thumbnail = new AppData.SerializableImage();
+                AppData.SerializableImage thumbnailData = new AppData.SerializableImage(thumbnail, imageEncoderType);
 
                 Log(getObjectStringTaskResults.ResultCode, getObjectStringTaskResults.Result, this);
 
                 //var path = Path.Combine(Application.streamingAssetsPath, $"{post.GetTitle()}.json").Replace("\\", "/");
                 //File.WriteAllText(path, getObjectStringTaskResults.data);
 
-                #endregion
 
                 #region Publish
 
-                PublishingManager.Instance.OnPublish(post, thumbnail, content, contentIdentifier, publishCallbackResults =>
+                PublishingManager.Instance.OnPublish(post, thumbnailData, content, contentIdentifier, publishCallbackResults =>
                 {
                     Log(publishCallbackResults.ResultCode, publishCallbackResults.Result, this);
                 });
+
+
+                #endregion
             }
 
             #endregion

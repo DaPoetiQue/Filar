@@ -43,7 +43,11 @@ namespace Com.RedicalGames.Filar
                         if (appDatabaseManagerCallbackResults.Success())
                         {
                             var appDatabaseManager = appDatabaseManagerCallbackResults.data;
-                            appDatabaseManager.LoadSelectedPostContent(post.GetUniqueIdentifier());
+
+                            appDatabaseManager.LoadSelectedPostContent(post, postLoadedCallbackResults => 
+                            {
+                                Log(postLoadedCallbackResults.ResultCode, postLoadedCallbackResults.Result, this);
+                            });
                         }
                         else
                             Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
@@ -117,6 +121,33 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Thumbnail
+
+            GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail, thumbnailCallbackResults =>
+            {
+                if (thumbnailCallbackResults.Success())
+                    SetUIImageDisplayerValue(post.GetPostThumbnail(), AppData.ScreenImageType.Thumbnail);
+                else
+                    Log(thumbnailCallbackResults.ResultCode, thumbnailCallbackResults.Result, this);
+            });
+
+            //AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults =>
+            //{
+            //    if (appDatabaseManagerCallbackResults.Success())
+            //    {
+            //        var appDatabaseManager = appDatabaseManagerCallbackResults.data;
+
+            //        LogSuccess($" +++=================>>>>>>>>>> Get Post Results : {appDatabaseManager.GetPostContent(post).Result}", this);
+
+            //        //if (appDatabaseManager.GetPostContent(post).Success())
+            //        //{
+            //        //    LogSuccess($" +++=================>>>>>>>>>> Thumbnail Results : {appDatabaseManager.GetPostContent(post).Result}", this);
+            //        //}
+            //        //else
+            //        //    Log(appDatabaseManager.GetPostContent(post).ResultCode, appDatabaseManager.GetPostContent(post).Result, this);
+            //    }
+            //    else
+            //        Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
+            //});
 
 
             //if (post.ThumbnailAssigned())

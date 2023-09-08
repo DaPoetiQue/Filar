@@ -173,6 +173,8 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  postURL: User Post Runtime Content
+  postContentsURL: User Post Data
 --- !u!1 &1145631956
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,16 +889,17 @@ MonoBehaviour:
     name: 
     uniqueIdentifier: 
     rootIdentifier: 
-    title: Capdel
-    caption: Cap dululu - Set the sun wena san. Sone ofthe gun kwal Magenege Nyeke
-      Manengenengini a dzingitadzongo mhlathi wa dyoko
+    title: Capdell
+    caption: Vender Gendwer Cheddar On The Rader - Set the sun wena san. Sone ofthe
+      gun kwal Magenege Nyeke Manengenengini a dzingitadzongo mhlathi wa dyoko
     creationDateTime: 0
     creationExpireyDateTime: 0
+    postThumbnail: {fileID: 0}
     likesDataString: 
     deslikesDataString: 
     commentsDataString: 
   obj: {fileID: 1203557018}
-  thumbnail: {fileID: 21300000, guid: 51a6677fe0983754e886a36112b8f726, type: 3}
+  thumbnail: {fileID: 21300000, guid: 43ae3d9d79e896b4dacead920eccaf23, type: 3}
   imageEncoderType: 0
 --- !u!4 &1921894487
 Transform:

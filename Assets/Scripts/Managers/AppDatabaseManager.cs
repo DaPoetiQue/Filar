@@ -8,6 +8,7 @@ using System.Linq;
 using static TMPro.TMP_Dropdown;
 using Firebase;
 using Firebase.Database;
+using Firebase.Storage;
 
 namespace Com.RedicalGames.Filar
 {
@@ -251,6 +252,14 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Storage
+
+        StorageReference storageReference;
+
+        Dictionary<AppData.Post, object> postContents = new Dictionary<AppData.Post, object>();
+
+        #endregion
+
         #region Filter And Sort Data
 
         bool canFilterContents = false;
@@ -306,62 +315,6 @@ namespace Com.RedicalGames.Filar
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Info Database").ValueChanged += OnPostsDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Content Database").ValueChanged += OnPostsDatabaseUpdate;
 
-                #region Test Add Data
-
-                //Dictionary<string, object> childs = new Dictionary<string, object>();
-
-                //childs.Add("New Post", "Data Goes Here......");
-
-                //await databaseReference.Child("Posts").UpdateChildrenAsync(childs);
-
-                #endregion
-
-                #region Test Save
-
-                //AppData.Profile profile = new AppData.Profile();
-
-                //profile.userName = "Billie";
-                //profile.userEmail = "Billie@home.com";
-                //profile.userPassword = "19470302";
-
-                //profile.creationDateTime = new AppData.DateTimeComponent(DateTime.Now);
-
-                AppData.PostData postData = new AppData.PostData();
-
-                //var assetData = new AppData.SerializableAsset(testAsset.GetComponent<MeshFilter>());
-
-                //assetData.subMeshData[0].GetMesh();
-
-                //AppData.Post newPost = new AppData.Post(caption: "Roman Thot", profile: profile, data: postData);
-                //string post = JsonUtility.ToJson(newPost);
-
-                //Dictionary<string, object> childs = new Dictionary<string, object>();
-
-                //childs.Add(profile.userName, post);
-
-                //await databaseReference.Child("Posts").UpdateChildrenAsync(childs);
-
-                // await databaseReference.Child("Posts").Child("User").SetValueAsync(post);
-
-                #endregion
-
-                #region Test Load
-
-                //var value = await databaseReference.Child("Posts").Child("User").GetValueAsync();
-
-                //var resultsJson = (string)value.GetValue(true);
-
-                //AppData.Post postData = JsonUtility.FromJson<AppData.Post>(resultsJson);
-
-                //LogInfo($" ======>>>>>>>>><<<<<<<< Loading Mesh With : {postData.data.serializableAsset.subMeshData.Count} - Meshes - Default With {postData.data.serializableAsset.subMeshData[0].vertices.Length} Vertices", this);
-
-                //GameObject gameObject = new GameObject("Loaded Mesh Box");
-                //gameObject.AddComponent<MeshRenderer>();
-                //gameObject.AddComponent<MeshFilter>().sharedMesh = postData.data.serializableAsset.subMeshData[0].GetMesh();
-
-
-                #endregion
-
                 await Task.Delay(1000);
 
                 callbackResults.result = "Database Initialized Successfully";
@@ -372,6 +325,81 @@ namespace Com.RedicalGames.Filar
             while (databaseReference == null);
 
             return callbackResults;
+        }
+
+        public async Task<AppData.CallbackData<AppData.Post>> InitializeStorage(AppData.Post post)
+        {
+            AppData.CallbackData<AppData.Post> callbackResults = new AppData.CallbackData<AppData.Post>();
+
+            do
+            {
+                storageReference = FirebaseStorage.DefaultInstance.RootReference;
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name, "Publishing Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var publishingManager = AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name).data;
+
+                    var postContentsURL = publishingManager.PostContentsURL;
+
+                    var modelBytes = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Model").GetBytesAsync(int.MaxValue);
+                    var profilePictureThumbnail = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Thumbnail").GetBytesAsync(int.MaxValue);
+
+                    StorageContentLoadUpdate(post, modelBytes, profilePictureThumbnail);
+
+                    if (postContents.Count > 0 && postContents.ContainsKey(post))
+                    {
+                        var serializableImage = new AppData.SerializableImage(profilePictureThumbnail);
+                        post.SetPostThumbnail(serializableImage.GetTexture2DImage(100, 100));
+
+                        callbackResults.result = $"Loaded Content For : {post.GetTitle()} Posts.";
+                        callbackResults.data = post;
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Load Content For : {post.GetTitle()} Posts.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+            }
+            while (storageReference == null);
+
+            return callbackResults;
+        }
+
+        public void StorageContentLoadUpdate(AppData.Post post, byte[] model, byte[] thumbnail) => postContents.Add(post, (model, thumbnail));
+
+
+        public AppData.CallbackData<(byte[] model, byte[] thumnail)> GetPostContentData(AppData.Post post)
+        {
+            try
+            {
+                AppData.CallbackData<(byte[] model, byte[] thumbnail)> callbackResults = new AppData.CallbackData<(byte[], byte[])>();
+
+                if (postContents.TryGetValue(post, out object value))
+                {
+                    var postContentData = ((byte[] model, byte[] image))value;
+
+                    callbackResults.result = $" Loaded Post Data : {post.GetTitle()} With : {postContentData.model.Length} Model Data And : {postContentData.image.Length} Image Data.";
+                    callbackResults.data = postContentData;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Find Content Data For Post : {post.GetTitle()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+
+
+                return callbackResults;
+            }
+            catch(Exception exception)
+            {
+                throw new Exception($"Get Post Data Failed : {exception.Message}");
+            }
         }
 
         #region Publishing
@@ -586,51 +614,23 @@ namespace Com.RedicalGames.Filar
                                     AppData.Post post = JsonUtility.FromJson<AppData.Post>(resultsJson);
 
                                     if (!postsDatabase.Contains(post))
+                                    {
+                                        var updatedPostTaskResults = await InitializeStorage(post);
                                         postsDatabase.Add(post);
+                                    }
                                     else
                                         LogWarning("Server Post Already Exists In Local Database", this);
                                 }
 
                                 if (postsDatabase.Count > 0)
                                 {
-                                    if(!IsServerPostsDatabaseInitialized)
+                                    if (!IsServerPostsDatabaseInitialized)
                                         IsServerPostsDatabaseInitialized = true;
 
                                     await screenUIManager.RefreshAsync();
                                 }
                                 else
                                     LogError("Failed To Get Posts From Database.", this);
-                            }
-                        }
-
-                        if (valueChangedEvent.Snapshot.Key == "Post Content Database")
-                        {
-                            if (valueChangedEvent.Snapshot.ChildrenCount > 0)
-                            {
-                                contentsDatabase = new List<AppData.ModelMeshData>();
-
-                                var contentsSnapshots = valueChangedEvent.Snapshot.Children;
-
-                                foreach (var contentSnapshot in contentsSnapshots)
-                                {
-                                    var resultsJson = (string)contentSnapshot.GetValue(true);
-                                    AppData.ModelMeshData content = JsonUtility.FromJson<AppData.ModelMeshData>(resultsJson);
-
-                                    if (!contentsDatabase.Contains(content))
-                                        contentsDatabase.Add(content);
-                                    else
-                                        LogWarning("Server Content Already Exists In Local Database", this);
-                                }
-
-                                if (contentsDatabase.Count > 0)
-                                {
-                                    if (!IsServerContentsDatabaseInitialized)
-                                        IsServerContentsDatabaseInitialized = true;
-
-                                    await screenUIManager.RefreshAsync();
-                                }
-                                else
-                                    LogError("Failed To Get Content From Database.", this);
                             }
                         }
                     }
@@ -742,7 +742,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public void InitializeStorage(Action<AppData.Callback> callback = null)
+        public void InitializeLocalStorage(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -3919,32 +3919,36 @@ namespace Com.RedicalGames.Filar
                                     while (!IsServerPostsDatabaseInitialized)
                                         await Task.Yield();
 
-                                    var clearWidgetsTaskResults = await widgetsContainer.ClearAsync();
-
-                                    callbackResults.SetResult(clearWidgetsTaskResults);
-
-                                    if (callbackResults.Success())
+                                    if (IsServerAppInfoDatabaseInitialized)
                                     {
-                                        var getPostsTaskResults = await GetPostsAsync();
+                                        var clearWidgetsTaskResults = await widgetsContainer.ClearAsync();
 
-                                        callbackResults.SetResult(getPostsTaskResults);
+                                        callbackResults.SetResult(clearWidgetsTaskResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(GetSortedWidgetList(getPostsTaskResults.data, AppData.SortType.DateModified));
+                                            var getPostsTaskResults = await GetPostsAsync();
+
+                                            callbackResults.SetResult(getPostsTaskResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                var sortedWidgets = GetSortedWidgetList(getPostsTaskResults.data, AppData.SortType.DateModified).data;
-                                                var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), sortedWidgets, widgetsContainer);
-
-                                                callbackResults.SetResult(widgetsLoadTaskCallbacResults);
+                                                callbackResults.SetResult(GetSortedWidgetList(getPostsTaskResults.data, AppData.SortType.DateModified));
 
                                                 if (callbackResults.Success())
-                                                    refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-
-                                                while (!callbackResults.Success())
+                                                {
+                                                    var sortedWidgets = GetSortedWidgetList(getPostsTaskResults.data, AppData.SortType.DateModified).data;
                                                     await Task.Yield();
+                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentUIScreenType(), sortedWidgets, widgetsContainer);
+
+                                                    callbackResults.SetResult(widgetsLoadTaskCallbacResults);
+
+                                                    if (callbackResults.Success())
+                                                        refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                    while (!callbackResults.Success())
+                                                        await Task.Yield();
+                                                }
                                             }
                                         }
                                     }
@@ -4367,39 +4371,19 @@ namespace Com.RedicalGames.Filar
 
         #region Post Content
 
-        public async void LoadSelectedPostContent(string postID, Action<AppData.Callback> callback = null)
+        public async void LoadSelectedPostContent(AppData.Post post, Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            var postsContentsTaskResults = await GetPostsContentsAsync();
-
-            callbackResults.SetResult(postsContentsTaskResults);
+            AppData.Callback callbackResults = new AppData.Callback(GetPostContentData(post));
 
             if(callbackResults.Success())
             {
-                var postContent = postsContentsTaskResults.data.Find(post => post.GetRootIdentifier() == postID);
+                var modelData = GetPostContentData(post).data.model;
+                var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
 
-                if(postContent != null)
-                {
-                    if(!loadedPostContent.ContainsKey(postContent.GetUniqueIdentifier()))
-                    {
-                        AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(postContent.GetMeshString);
+                AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
+                var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
 
-                        var getGameObjectFromStringTaskResults = await contentGenerator.StringToGameObject();
-
-                        LogInfo($" =============<<<<<<<<< Show Content : {postContent.name} Code : {getGameObjectFromStringTaskResults.ResultCode} - Result : {getGameObjectFromStringTaskResults.Result}.", this);
-                    }
-                    else
-                    {
-                        //GameObject content = new GameObject("");
-                        //loadedPostContent.Add(postContent.GetUniqueIdentifier(), content);
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Load Post Data For ID : {postID}";
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
+                LogInfo($" +++++++++++++++ Get Model Model - Code : {modelTaskResults.ResultCode} - Results : {modelTaskResults.Result}", this);
             }
 
             callback?.Invoke(callbackResults);

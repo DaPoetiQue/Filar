@@ -30,6 +30,17 @@ namespace Com.RedicalGames.Filar
 
         #region Components
 
+        [SerializeField]
+        string postURL = "User Post Runtime Content";
+
+        [Space(5)]
+        [SerializeField]
+        string postContentsURL = "User Post Data";
+
+        public string PostURL { get { return postURL; } private set { } }
+        public string PostContentsURL { get { return postContentsURL; } private set { } }
+
+
         DatabaseReference databaseReference;
         StorageReference storageReference;
 
@@ -69,9 +80,7 @@ namespace Com.RedicalGames.Filar
                 while (databaseReference == null)
                     await Task.Yield();
 
-                await Task.Delay(1000);
-
-                databaseReference.Database.GetReference("User Post Runtime Content").ValueChanged += PublishingManager_ValueChanged;
+                databaseReference.Database.GetReference(postURL).ValueChanged += PublishingManager_ValueChanged;
 
                 var postData = JsonUtility.ToJson(post);
 
@@ -80,28 +89,28 @@ namespace Com.RedicalGames.Filar
                 Dictionary<string, object> postObject = new Dictionary<string, object>();
                 postObject.Add(postKey, postData);
 
-                await databaseReference.Child("Posts Runtime Data").Child("Post Info Database").UpdateChildrenAsync(postObject);
-
                 Dictionary<string, object> postContentObject = new Dictionary<string, object>();
 
                 if (content.GetMeshBytesArray() != null && content.GetMeshBytesArray().Length > 0)
                 {
-                    await storageReference.Child("User Post Data").Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
+                    await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
 
                     if (thumbnailData.GetImageData() != null && thumbnailData.GetImageData().Length > 0)
-                        await storageReference.Child("User Post Data").Child(post.GetRootIdentifier()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageData());
+                        await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageData());
                     else
                         LogError("Thumbnail Data Not Assigned", this);
-
-                    sw.Stop();
-
-                    LogSuccess($"Post With : {content.GetMeshStringList().Count} Meshes Has Been Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
                 }
                 else
                 {
                     sw.Stop();
                     LogError($"Failed To Published Post With :{content.GetMeshStringList().Count} Meshes In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
                 }
+
+                await databaseReference.Child("Posts Runtime Data").Child("Post Info Database").UpdateChildrenAsync(postObject);
+
+                sw.Stop();
+
+                LogSuccess($"Post With : {content.GetMeshStringList().Count} Meshes Has Been Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
             }
             else
                 LogError("Post Is Missing - Null", this);

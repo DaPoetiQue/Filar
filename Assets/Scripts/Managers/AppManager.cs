@@ -173,8 +173,8 @@ namespace Com.RedicalGames.Filar
                                                                                 {
                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
-                           
-                                                                                    await screenUIManager.RefreshAsync(1000);
+
+                                                                                    await screenUIManager.RefreshAsync();
 
                                                                                     screen.value.ShowWidget(widget);
 

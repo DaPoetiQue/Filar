@@ -1761,100 +1761,109 @@ namespace Com.RedicalGames.Filar
                     {
                         var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
-                        if (screenContentContainer != null && screenContentContainer.GetActive().Success())
+                        if (posts != null && posts.Count > 0)
                         {
-                            callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
-
-                            if (callbackResults.Success())
+                            if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                             {
-                                var widgetsLibraryData = databaseManager.GetWidgetsPrefabDataLibrary(screenType).data;
+                                callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
 
-                                var widgetPrefabData = widgetsLibraryData.Find(x => x.screenType == screenType);
-
-                                if (widgetPrefabData != null)
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType));
+                                    var widgetsLibraryData = databaseManager.GetWidgetsPrefabDataLibrary(screenType).data;
 
-                                    if (callbackResults.Success())
+                                    var widgetPrefabData = widgetsLibraryData.Find(x => x.screenType == screenType);
+
+                                    if (widgetPrefabData != null)
                                     {
-                                        var prefabData = widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType).data;
-                                        var prefab = prefabData.gameObject;
-
-                                        callbackResults.SetResult(AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value"));
+                                        callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType));
 
                                         if (callbackResults.Success())
                                         {
-                                            var widget = AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value").data;
+                                            var prefabData = widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType).data;
+                                            var prefab = prefabData.gameObject;
 
-                                            List<AppData.Post> postDatas = new List<AppData.Post>();
+                                            callbackResults.SetResult(AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value"));
 
-                                            callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
-
-                                            foreach (var post in posts)
+                                            if (callbackResults.Success())
                                             {
-                                                GameObject postWidget = Instantiate(widget);
+                                                var widget = AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value").data;
 
-                                                if (postWidget != null)
+                                                List<AppData.Post> postDatas = new List<AppData.Post>();
+
+                                                callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
+
+                                                foreach (var post in posts)
                                                 {
-                                                    AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
+                                                    GameObject postWidget = Instantiate(widget);
 
-                                                    if (widgetComponent != null)
+                                                    if (postWidget != null)
                                                     {
-                                                        widgetComponent.SetPost(post);
+                                                        AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
 
-                                                        postWidget.name = post.GetIdentifier();
+                                                        if (widgetComponent != null)
+                                                        {
+                                                            widgetComponent.SetPost(post);
 
-                                                        var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                            postWidget.name = post.GetIdentifier();
 
-                                                        callbackResults.SetResult(addContentAsyncTaskResults);
+                                                            var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
-                                                        postDatas.Add(post);
+                                                            callbackResults.SetResult(addContentAsyncTaskResults);
 
-                                                        callbackResults.result = $"Post Widget : { postWidget.name} Created.";
+                                                            postDatas.Add(post);
+
+                                                            callbackResults.result = $"Post Widget : { postWidget.name} Created.";
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.result = "Post Widget Component Is Null.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.result = "Post Widget Component Is Null.";
+                                                        callbackResults.result = "Post Widget Prefab Data Is Null.";
                                                         callbackResults.data = default;
                                                         callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.result = "Post Widget Prefab Data Is Null.";
-                                                    callbackResults.data = default;
-                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                                                    await Task.Yield();
                                                 }
 
-                                                await Task.Yield();
+                                                while (screenContentContainer.GetContentCount().data != posts.Count)
+                                                    await Task.Yield();
+
+                                                callbackResults.result = "Posts Widgets Loaded.";
+                                                callbackResults.data = postDatas;
+                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                             }
-
-                                            while(screenContentContainer.GetContentCount().data != posts.Count)
-                                                await Task.Yield();
-
-                                            callbackResults.result = "Posts Widgets Loaded.";
-                                            callbackResults.data = postDatas;
-                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Widget Prefab For Screen Type : {screenType} Missing / Null.";
+                                        callbackResults.data = default;
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                     }
                                 }
                                 else
-                                {
-                                    callbackResults.result = $"Widget Prefab For Screen Type : {screenType} Missing / Null.";
-                                    callbackResults.data = default;
-                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                }
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                                LogInfo($" ================++++++ Widgets Loading Completed With Results : {callbackResults.Result}.", this);
                             }
                             else
-                                Log(callbackResults.resultCode, callbackResults.result, this);
-
-                            LogInfo($" ================++++++ Widgets Loading Completed With Results : {callbackResults.Result}.", this);
+                            {
+                                callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            }
                         }
                         else
                         {
-                            callbackResults.result = "Dynamic Widgets Content Container Missing / Null.";
+                            callbackResults.result = "No Posts Found To Create Widgets - Posts Missing / Null.";
                             callbackResults.data = default;
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
                         }
                     }
                     else

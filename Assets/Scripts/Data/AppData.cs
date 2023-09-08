@@ -3331,7 +3331,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             public GameObject obj;
-            public string objString;
+            public string objectString;
 
             public string vertexSplit = " v|", normalSplit = " n|", uvSplit = " u|", tangentSplit = " t|", subMeshSplit = " s|", meshSplit = " m|";
 
@@ -3347,11 +3347,11 @@ namespace Com.RedicalGames.Filar
             }
 
             public ContentGenerator(GameObject obj) => this.obj = obj;
-            public ContentGenerator(string objString) => this.objString = objString;
+            public ContentGenerator(string objectString) => this.objectString = objectString;
 
             #endregion
 
-            public async Task<CallbackDataArray<byte>> GameObjectToBytesArray(GameObject value = null, System.IO.Compression.CompressionLevel compressionLevel = System.IO.Compression.CompressionLevel.NoCompression)
+            public async Task<CallbackDataArray<byte>> SetGameObject(GameObject value = null)
             {
                 CallbackDataArray<byte> callbackResults = new CallbackDataArray<byte>();
 
@@ -3426,7 +3426,7 @@ namespace Com.RedicalGames.Filar
 
                         if (!string.IsNullOrEmpty(meshString.ToString()))
                         {
-                            var meshStringToBytesArray = (compressionLevel == System.IO.Compression.CompressionLevel.NoCompression)? Convert.FromBase64String(meshString.ToString()) : Convert.FromBase64String(Helpers.GetCompressedString(meshString.ToString(), compressionLevel));
+                            var meshStringToBytesArray = Helpers.CompressStringToBytesArray(meshString.ToString());
 
                             callbackResults.result = $"Mesh String Successfully Created From : {subMeshStringList.Count} Sub Meshes.";
                             callbackResults.data = meshStringToBytesArray;
@@ -3450,14 +3450,14 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public async Task<CallbackData<GameObject>> StringToGameObject(string value = null)
+            public async Task<CallbackData<GameObject>> GetGameObject(string name, string value = null)
             {
                 CallbackData<GameObject> callbackResults = new CallbackData<GameObject>();
 
                 if (value == null)
                 {
-                    if (objString != null)
-                        value = objString;
+                    if (objectString != null)
+                        value = objectString;
                     else
                     {
                         callbackResults.result = "There Is No  String Value Assigned To Convert To Game Object - Operation Invalid.";
@@ -3468,17 +3468,116 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
-                if(value != null)
-                {
-                    var meshStringList = value.Split(meshSplit);
+                var meshSplitResultsList = value.Split(meshSplit);
 
-                    for (int i = 0; i < meshStringList.Length; i++)
+                await Task.Yield();
+
+                if(meshSplitResultsList != null && meshSplitResultsList.Length > 0)
+                {
+                    var submeshDataList = new List<List<string>>();
+
+                    for (int i = 0; i < meshSplitResultsList.Length; i++)
                     {
-                        Debug.Log($"Mesh {i} Length : {meshStringList[i].Length}");
+                        var meshDataArray = meshSplitResultsList[i].Split(subMeshSplit);
+                        submeshDataList.Add(meshDataArray.ToList());
                     }
 
-                    callbackResults.result = $"Game Object Has Been Loaded Successfully From String With : {meshStringList.Length} Meshes.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                    if(submeshDataList.Count > 0)
+                    {
+                        var meshDataList = new List<(Mesh mesh, Material material)>();
+
+                        for (int i = 0; i < submeshDataList.Count; i++)
+                        {
+                            var vertices = submeshDataList[i][0].Split(vertexSplit);
+                            var triangles = submeshDataList[i][1].Split(" ");
+                            var normals = submeshDataList[i][2].Split(normalSplit);
+                            var uvs = submeshDataList[i][3].Split(uvSplit);
+                            var tangents = submeshDataList[i][4].Split(tangentSplit);
+                            var indices = submeshDataList[i][5].Split(" ");
+                            var materials = submeshDataList[i][7];
+                            var topology = int.Parse(submeshDataList[i][6]);
+
+                            var hierachy = JsonUtility.FromJson<ContentHierachyObject>(submeshDataList[i][8]);
+
+                            var verticesArrary = Helpers.StringArrayToVector3Array(vertices);
+                            var trianglesArray = Helpers.StringArrayToIntArray(triangles);
+                            var normalsArray = Helpers.StringArrayToVector3Array(normals);
+                            var uvsArray = Helpers.StringArrayToVector2Array(uvs);
+                            var tangentsArray = Helpers.StringArrayToVector4Array(tangents);
+                            var indicesArray = Helpers.StringArrayToIntArray(indices);
+
+                            var mesh = new Mesh();
+                            mesh.SetVertices(verticesArrary);
+                            mesh.SetTriangles(trianglesArray, 0);
+                            mesh.SetNormals(normalsArray);
+                            mesh.SetUVs(0, uvsArray);
+                            mesh.SetTangents(tangentsArray);
+                            mesh.SetIndices(indicesArray, (MeshTopology)topology, 0);
+
+                            mesh.RecalculateNormals();
+                            mesh.RecalculateTangents();
+                            mesh.RecalculateBounds();
+
+                            var serializableMaterial = new SerializableMaterial(materials);
+
+                            if(serializableMaterial.GetMaterial().Success())
+                            {
+                                Debug.Log($" ++++++++ Load Serializable Material");
+                                meshDataList.Add((mesh, serializableMaterial.GetMaterial().data));
+                            }
+                            else
+                            {
+                                meshDataList.Add((mesh, null));
+                            }
+
+                            //if(serializableMaterialData.GetMaterial().Success())
+                            //    meshDataList.Add((mesh, serializableMaterialData.GetMaterial().data));
+                            //else
+                            //    throw new ArgumentException($"Failed To Load Mesh Serializable Material At Index : {i}");
+
+                            //Debug.Log($" ++++++++++ Sub Mesh : {i} - Has : {verticesArrary.Length} Vertices : {triangles.Length} Triangles : {normals.Length} Normals : {uvs.Length} UVs : {tangents.Length} Tangents : {indices.Length} Indices : {topology} Topology - Material : {material}");
+                        }
+
+                        if (meshDataList.Count > 0)
+                        {
+                            GameObject loadedGameObjectParent = new GameObject(name);
+
+                            for (int i = 0; i < meshDataList.Count; i++)
+                            {
+                                GameObject loadedGameObject = new GameObject(name + $"_{i}");
+
+                                var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
+                                var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
+
+                                meshFilter.sharedMesh = meshDataList[i].mesh;
+                                meshRenderer.sharedMaterial = meshDataList[i].material;
+
+                                loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
+                            }
+
+                            callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
+                            callbackResults.data = loadedGameObjectParent;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Create Sub Meshes Data. Please Check Here.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Get Sub Meshes Data Using : {subMeshSplit} - Value Is Null / Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Split Mesh Data Using : {meshSplit} - Value Is Null / Empty.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 return callbackResults;
@@ -4132,16 +4231,16 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public byte[] GetImageData() => imageData;
+            public byte[] GetImageData() => Helpers.CompressByteArray(imageData);
 
             public Sprite GetSpriteImage(int width = 100, int height = 100) => 
-                Helpers.BytesArrayToSprite(imageData, width, height);
+                Helpers.BytesArrayToSprite(Helpers.UnCompressByteArray(imageData), width, height);
 
             public Texture GetTextureImage(int width = 100, int height = 100) => 
-                Helpers.BytesArrayToTexture2D(imageData, width, height);
+                Helpers.BytesArrayToTexture2D(Helpers.UnCompressByteArray(imageData), width, height);
 
             public Texture2D GetTexture2DImage(int width = 100, int height = 100) =>
-                Helpers.BytesArrayToTexture2D(imageData, width, height);
+                Helpers.BytesArrayToTexture2D(Helpers.UnCompressByteArray(imageData), width, height);
 
             #endregion
 
@@ -4743,6 +4842,8 @@ namespace Com.RedicalGames.Filar
             public long creationDateTime;
             public long creationExpireyDateTime;
 
+            public Texture2D postThumbnail;
+
             #endregion
 
             #region Content Data
@@ -4790,6 +4891,8 @@ namespace Com.RedicalGames.Filar
             public void InitializeCreationDateTime() => creationDateTime = DateTime.UtcNow.Ticks;
             public void SetCreationExpireyDateTime(DateTime dateTime) => creationExpireyDateTime = dateTime.Ticks;
 
+            public void SetPostThumbnail(Texture2D postThumbnail) => this.postThumbnail = postThumbnail;
+
             public string GetTitle() => title;
             public string GetCaption() => caption;
 
@@ -4798,6 +4901,8 @@ namespace Com.RedicalGames.Filar
 
             public DateTimeComponent GetCreationDateTime() => new DateTimeComponent(new DateTime(creationDateTime));
             public DateTimeComponent GetCreationExpireyDateTime() => new DateTimeComponent(new DateTime(creationExpireyDateTime));
+
+            public Texture2D GetPostThumbnail() => postThumbnail;
 
             #region Likes
 
@@ -5950,6 +6055,13 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Profile Info
+
+            public int width;
+            public int height;
+
+            #endregion
+
             #endregion
 
             #region Main
@@ -5972,6 +6084,12 @@ namespace Com.RedicalGames.Filar
             public void SetUserEmail(string userEmail) => this.userEmail = userEmail;
             public void SetUserPassword(string userPassword) => this.userPassword = userPassword;
             public void SetUserProfilePictureURL(string userProfilePictureURL) => this.userProfilePictureURL = userProfilePictureURL;
+
+            public void SetProfilePictureDimensions(int width, int height)
+            {
+                this.width = width;
+                this.height = height;
+            }
 
             #endregion
 
@@ -5996,6 +6114,8 @@ namespace Com.RedicalGames.Filar
             {
                 return userProfilePictureURL;
             }
+
+            public (int width, int hieght) GetProfilePictureDimensions() => (width, height);
 
             #endregion
 
@@ -11059,7 +11179,7 @@ namespace Com.RedicalGames.Filar
         public struct DirectoryInfo
         {
             public string name;
-            public AppData.SelectableWidgetType assetType;
+            public SelectableWidgetType assetType;
             public StorageDirectoryData storageData;
             public bool dataAlreadyExistsInTargetDirectory;
         }
@@ -32431,9 +32551,7 @@ namespace Com.RedicalGames.Filar
 
             public static Texture2D BytesArrayToTexture2D(byte[] source, int width, int height)
             {
-                Debug.Log($" +++++++++++++===========<<<< Image Width : {width} - Height : {height}");
-
-                var texture2D = new Texture2D(width, height, TextureFormat.PVRTC_RGBA4, false);
+                var texture2D = new Texture2D(width, height, TextureFormat.RGBA32, false);
                 texture2D.LoadImage(source, false);
                 texture2D.Apply();
 
@@ -32725,6 +32843,68 @@ namespace Com.RedicalGames.Filar
 
             #region Data To String
 
+            public static Vector2[] StringArrayToVector2Array(string[] arrayData)
+            {
+                var vectorArray = new Vector2[arrayData.Length];
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                    {
+                        var vectorSplit = arrayData[i].Split(" ");
+                        var vector = new Vector2(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]));
+                        vectorArray[i] = vector;
+                    }
+                }
+
+                return vectorArray;
+            }
+
+            public static Vector3[] StringArrayToVector3Array(string[] arrayData)
+            {
+                var vectorArray = new Vector3[arrayData.Length];
+
+                if(arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                    {
+                        var vectorSplit = arrayData[i].Split(" ");
+                        var vector = new Vector3(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]));
+                        vectorArray[i] = vector;
+                    }
+                }
+
+                return vectorArray;
+            }
+
+            public static Vector4[] StringArrayToVector4Array(string[] arrayData)
+            {
+                var vectorArray = new Vector4[arrayData.Length];
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                    {
+                        var vectorSplit = arrayData[i].Split(" ");
+                        var vector = new Vector4(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]), float.Parse(vectorSplit[3]));
+                        vectorArray[i] = vector;
+                    }
+                }
+
+                return vectorArray;
+            }
+
+            public static int[] StringArrayToIntArray(string[] arrayData)
+            {
+                var intArray = new int[arrayData.Length];
+
+                if (arrayData != null && arrayData.Length > 0)
+                    for (int i = 0; i < arrayData.Length; i++)
+                        intArray[i] = int.Parse(arrayData[i]);
+
+                return intArray;
+            }
+
             public static string Vector2ArrayToString(Vector2[] arrayData, string seperator)
             {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -32881,20 +33061,169 @@ namespace Com.RedicalGames.Filar
 
             #region String Compression
 
-            public static string GetCompressedString(string source, System.IO.Compression.CompressionLevel compressionLevel) => Convert.ToBase64String(CompressStringToBytesArray(source, compressionLevel));
-
-            public static byte[] CompressStringToBytesArray(string source, System.IO.Compression.CompressionLevel compressionLevel)
+            public static byte[] CompressStringToBytesArray(string source)
             {
-                var data = Encoding.UTF8.GetBytes(source);
+                var buffer = Encoding.UTF8.GetBytes(source);
 
-                using(var msi = new MemoryStream(data))
+                var memoryStream = new MemoryStream();
+
+                using (var zip = new GZipStream(memoryStream, CompressionMode.Compress, true))
                 {
-                    using (var mso = new MemoryStream())
-                    {
-                        using(var zip = new GZipStream(mso, compressionLevel, true))
-                            CopyByteArrayData(msi, zip);
+                    zip.Write(buffer, 0, buffer.Length);
+                    zip.Close();
+                }
 
-                        return mso.ToArray();
+                memoryStream.Position = 0;
+
+                var compressedData = new byte[memoryStream.Length];
+                memoryStream.Read(compressedData, 0, compressedData.Length);
+
+                var compressedDataZip = new byte[compressedData.Length + 4];
+
+                Buffer.BlockCopy(compressedData, 0, compressedDataZip, 4, compressedData.Length);
+                Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedDataZip, 0, 4);
+
+                memoryStream.Close();
+
+                return compressedDataZip;
+            }
+
+            public static byte[] CompressByteArray(byte[] buffer)
+            {
+                var memoryStream = new MemoryStream();
+
+                using (var zip = new GZipStream(memoryStream, CompressionMode.Compress, true))
+                {
+                    zip.Write(buffer, 0, buffer.Length);
+                    zip.Close();
+                }
+
+                memoryStream.Position = 0;
+
+                var compressedData = new byte[memoryStream.Length];
+                memoryStream.Read(compressedData, 0, compressedData.Length);
+
+                var compressedDataZip = new byte[compressedData.Length + 4];
+
+                Buffer.BlockCopy(compressedData, 0, compressedDataZip, 4, compressedData.Length);
+                Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedDataZip, 0, 4);
+
+                memoryStream.Close();
+
+                return compressedDataZip;
+            }
+
+            public static string CompressStringToBase64String(string source)
+            {
+                byte[] buffer = Encoding.UTF8.GetBytes(source);
+                var memoryStream = new MemoryStream();
+
+                using (var zip = new GZipStream(memoryStream, CompressionMode.Compress, true))
+                {
+                    zip.Write(buffer, 0, buffer.Length);
+                    zip.Close();
+                }
+
+                memoryStream.Position = 0;
+
+                var compressedData = new byte[memoryStream.Length];
+                memoryStream.Read(compressedData, 0, compressedData.Length);
+
+                var compressedDataZip = new byte[compressedData.Length + 4];
+
+                Buffer.BlockCopy(compressedData, 0, compressedDataZip, 4, compressedData.Length);
+                Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedDataZip, 0, 4);
+
+                memoryStream.Close();
+
+                return Convert.ToBase64String(compressedDataZip);
+            }
+
+            public static string UnCompressStringToBase64String(string source)
+            {
+                byte[] zippedBuffer = Convert.FromBase64String(source);
+               
+                using(var memoryStream = new MemoryStream())
+                {
+                    int dataLength = BitConverter.ToInt32(zippedBuffer, 0);
+                    memoryStream.Write(zippedBuffer, 4, zippedBuffer.Length - 4);
+
+                    var buffer = new byte[dataLength];
+
+                    memoryStream.Position = 0;
+
+                    using (var unzip = new GZipStream(memoryStream, CompressionMode.Decompress, true))
+                    {
+                        unzip.Read(buffer, 0, buffer.Length);
+                        unzip.Close();
+                    }
+
+                    memoryStream.Close();
+
+                    return Encoding.UTF8.GetString(buffer);
+                }
+            }
+
+            public static byte[] UnCompressByteArray(byte[] zippedBuffer)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    int dataLength = BitConverter.ToInt32(zippedBuffer, 0);
+                    memoryStream.Write(zippedBuffer, 4, zippedBuffer.Length - 4);
+
+                    var buffer = new byte[dataLength];
+
+                    memoryStream.Position = 0;
+
+                    using (var unzip = new GZipStream(memoryStream, CompressionMode.Decompress, true))
+                    {
+                        unzip.Read(buffer, 0, buffer.Length);
+                        unzip.Close();
+                    }
+
+                    memoryStream.Close();
+
+                    return buffer;
+                }
+            }
+
+            public static string UnCompressByteArrayToString(byte[] zippedBuffer)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    int dataLength = BitConverter.ToInt32(zippedBuffer, 0);
+                    memoryStream.Write(zippedBuffer, 4, zippedBuffer.Length - 4);
+
+                    var buffer = new byte[dataLength];
+
+                    memoryStream.Position = 0;
+
+                    using (var unzip = new GZipStream(memoryStream, CompressionMode.Decompress, true))
+                    {
+                        unzip.Read(buffer, 0, buffer.Length);
+                        unzip.Close();
+                    }
+
+                    memoryStream.Close();
+
+                    return Encoding.UTF8.GetString(buffer);
+                }
+            }
+
+            public static string GetUnCompressedString(byte[] source) => CompressBytesArrayToString(source);
+
+            public static string CompressBytesArrayToString(byte[] source)
+            {
+                using(var msi = new MemoryStream(source))
+                {
+                    using(var mso = new MemoryStream())
+                    {
+                        using(var unzip = new GZipStream(msi, CompressionMode.Decompress))
+                        {
+                            CopyStringData(unzip, mso);
+                        }
+
+                        return Encoding.UTF8.GetString(mso.ToArray());
                     }
                 }
             }
@@ -32906,6 +33235,16 @@ namespace Com.RedicalGames.Filar
                 int dataLength;
                 
                 while((dataLength = source.Read(data, 0, data.Length)) != 0)
+                    target.Write(data, 0, dataLength);
+            }
+
+            private static void CopyStringData(Stream source, Stream target)
+            {
+                byte[] data = new byte[source.Length];
+
+                int dataLength;
+
+                while ((dataLength = source.Read(data, 0, data.Length)) != 0)
                     target.Write(data, 0, dataLength);
             }
 
