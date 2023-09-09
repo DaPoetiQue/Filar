@@ -4151,10 +4151,6 @@ namespace Com.RedicalGames.Filar
 
                             #endregion
 
-                            #region Surface Attributes
-
-                            #endregion
-
                             #endregion
 
                             callbackResults.SetResult(appDataBaseManager.GetShaderAssetFromLibrary(shaderName, shaderType));
@@ -4430,8 +4426,93 @@ namespace Com.RedicalGames.Filar
 
                                 #endregion
 
+                                #region Glossiness Map Scale
 
-                                Debug.Log($" +++++++++++++ Shader Properties Bump Scale : {bumpScale} - Glossiness : {glossiness}");
+                                var glossinessMapScale = shaderPropertiesArray[2].ToFloat();
+                                material.SetFloat("_GlossMapScale", glossinessMapScale);
+
+                                #endregion
+
+                                #region Specular Highlights
+
+                                var specularHighlights = shaderPropertiesArray[3].ToFloat();
+                                material.SetFloat("_SpecularHighlights", specularHighlights);
+
+                                #endregion
+
+                                #region Glossy Reflections
+
+                                var glossyReflections = shaderPropertiesArray[4].ToFloat();
+                                material.SetFloat("_GlossyReflections", glossyReflections);
+
+                                #endregion
+
+                                #region Smoothness Texture Channel
+
+                                var smoothnessTextureChannel = shaderPropertiesArray[5].ToFloat();
+                                material.SetFloat("_SmoothnessTextureChannel", smoothnessTextureChannel);
+
+                                #endregion
+
+                                #region Metallic
+
+                                var metallic = shaderPropertiesArray[6].ToFloat();
+                                material.SetFloat("_Metallic", metallic);
+
+                                #endregion
+
+                                #region Height
+
+                                var parallax = shaderPropertiesArray[7].ToFloat();
+                                material.SetFloat("_Parallax", parallax);
+
+                                #endregion
+
+                                #region Occlusion Strength
+
+                                var occlusionStrength = shaderPropertiesArray[8].ToFloat();
+                                material.SetFloat("_OcclusionStrength", occlusionStrength);
+
+                                #endregion
+
+                                #region UV Sec
+
+                                var uvSec = shaderPropertiesArray[8].ToFloat();
+                                material.SetFloat("_UVSec", uvSec);
+
+                                #endregion
+
+                                #region Mode
+
+                                var mode = shaderPropertiesArray[8].ToFloat();
+                                material.SetFloat("_Mode", mode);
+
+                                #endregion
+
+                                #region Src Blend
+
+                                var srcBlend = shaderPropertiesArray[9].ToFloat();
+                                material.SetFloat("_SrcBlend", srcBlend);
+
+                                #endregion
+
+
+                                #region Dst Blend
+
+                                var dstBlend = shaderPropertiesArray[10].ToFloat();
+                                material.SetFloat("_DstBlend", dstBlend);
+
+                                #endregion
+
+
+                                #region Z Write
+
+                                var zWrite = shaderPropertiesArray[11].ToFloat();
+                                material.SetFloat("_ZWrite", zWrite);
+
+                                #endregion
+
+                                Debug.Log($" +++++++++++++ Shader Properties Bump Scale : {bumpScale} - Glossiness : {glossiness} - Glossiness Map : {glossinessMapScale} - Specular : {specularHighlights} - Reflections : {glossyReflections} - Smoothness Texture Channel : {smoothnessTextureChannel} - Metallic : {metallic} Height - : {parallax} - Occlusion : {occlusionStrength} - UV - {uvSec}  - Mode - {mode} Src : {srcBlend} - Dest Blend : {dstBlend} Z Wrtite : {zWrite} ");
 
                                 #endregion
 
