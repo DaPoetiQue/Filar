@@ -66,6 +66,9 @@ namespace Com.RedicalGames.Filar
             return Enumerable.Range(0, source.Length / chunkLength).Select(x => source.Substring(x * chunkLength, chunkLength));
         }
 
+        public static float ToFloat(this string source) => AppData.Helpers.StringToFloat(source);
+        public static int ToInt(this string source) => AppData.Helpers.StringToInt(source);
+
         #endregion
     }
 }

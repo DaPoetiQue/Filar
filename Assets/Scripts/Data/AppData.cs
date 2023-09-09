@@ -3486,6 +3486,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var meshDataList = new List<(Mesh mesh, Material material)>();
 
+
                         for (int i = 0; i < submeshDataList.Count; i++)
                         {
                             var vertices = submeshDataList[i][0].Split(vertexSplit);
@@ -3493,9 +3494,9 @@ namespace Com.RedicalGames.Filar
                             var normals = submeshDataList[i][2].Split(normalSplit);
                             var uvs = submeshDataList[i][3].Split(uvSplit);
                             var tangents = submeshDataList[i][4].Split(tangentSplit);
-                            var indices = submeshDataList[i][5].Split(" ");
-                            var materials = submeshDataList[i][7];
+                            var indices = submeshDataList[i][5].Split(" "); ;
                             var topology = int.Parse(submeshDataList[i][6]);
+                            var materials = submeshDataList[i][7];
 
                             var hierachy = JsonUtility.FromJson<ContentHierachyObject>(submeshDataList[i][8]);
 
@@ -3518,53 +3519,45 @@ namespace Com.RedicalGames.Filar
                             mesh.RecalculateTangents();
                             mesh.RecalculateBounds();
 
-                            Debug.Log($" ++++++++ Load Serializable Material Shader Name : {materials}");
+                            var serializableMaterial = new SerializableMaterial(materials);
 
-                            //var materialData = JsonUtility.FromJson<MaterialData>(materials);
+                            callbackResults.SetResult(serializableMaterial.GetMaterial());
 
-                            //if (materialData != null)
-                            //{
-
-                            //}
-                            //else
-                            //{
-                            //    meshDataList.Add((mesh, null));
-                            //}
-
-                            //if(serializableMaterialData.GetMaterial().Success())
-                            //    meshDataList.Add((mesh, serializableMaterialData.GetMaterial().data));
-                            //else
-                            //    throw new ArgumentException($"Failed To Load Mesh Serializable Material At Index : {i}");
-
-                            //Debug.Log($" ++++++++++ Sub Mesh : {i} - Has : {verticesArrary.Length} Vertices : {triangles.Length} Triangles : {normals.Length} Normals : {uvs.Length} UVs : {tangents.Length} Tangents : {indices.Length} Indices : {topology} Topology - Material : {material}");
+                            if (callbackResults.Success())
+                                meshDataList.Add((mesh, serializableMaterial.GetMaterial().data));
+                            else
+                                break;
                         }
 
-                        if (meshDataList.Count > 0)
+                        if (callbackResults.Success())
                         {
-                            GameObject loadedGameObjectParent = new GameObject(name);
-
-                            for (int i = 0; i < meshDataList.Count; i++)
+                            if (meshDataList.Count > 0)
                             {
-                                GameObject loadedGameObject = new GameObject(name + $"_{i}");
+                                GameObject loadedGameObjectParent = new GameObject(name);
 
-                                var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
-                                var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
+                                for (int i = 0; i < meshDataList.Count; i++)
+                                {
+                                    GameObject loadedGameObject = new GameObject(name + $"_{i}");
 
-                                meshFilter.sharedMesh = meshDataList[i].mesh;
-                                meshRenderer.sharedMaterial = meshDataList[i].material;
+                                    var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
+                                    var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
 
-                                loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
+                                    meshFilter.sharedMesh = meshDataList[i].mesh;
+                                    meshRenderer.sharedMaterial = meshDataList[i].material;
+
+                                    loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
+                                }
+
+                                callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
+                                callbackResults.data = loadedGameObjectParent;
+                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
-
-                            callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
-                            callbackResults.data = loadedGameObjectParent;
-                            callbackResults.resultCode = Helpers.SuccessCode;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Failed To Create Sub Meshes Data. Please Check Here.";
-                            callbackResults.data = default;
-                            callbackResults.resultCode = Helpers.ErrorCode;
+                            else
+                            {
+                                callbackResults.result = $"Failed To Create Sub Meshes Data. Please Check Here.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
                         }
                     }
                     else
@@ -3830,6 +3823,8 @@ namespace Com.RedicalGames.Filar
 
             public string materialDataString;
 
+            private string materialSplit = " mt|", textureSplit = " tx|";
+
             #endregion
 
             #region Constructors
@@ -3850,122 +3845,270 @@ namespace Com.RedicalGames.Filar
 
             public void SetMaterial(Material material, ShaderType shaderType)
             {
-                var mainColor = new SerializableColor(material.GetColor("_Color"));
-                var mainColorString = JsonUtility.ToJson(mainColor);
+                StringBuilder materialStringBuilder = new StringBuilder();
 
-                var emissionColor = new SerializableColor(material.GetColor("_EmissionColor"));
-                var emissionColorString = JsonUtility.ToJson(emissionColor);
+                #region Material Info
 
-                var textureDataList = new List<TextureData>();
+                #region Material Name
+
+                materialStringBuilder.Append(material.name).Append(materialSplit);
+
+                #endregion
+
+                #region Shader Name
+
+                materialStringBuilder.Append(material.shader.name).Append(materialSplit);
+
+                #endregion
+
+                #region Shader Type
+
+                materialStringBuilder.Append(((int)shaderType).ToString()).Append(materialSplit);
+
+                #endregion
+
+                #endregion
+
+                #region Colors
+
+                #region Main Color
+
+                var mainColor = material.GetColor("_Color");
+                var mainColorString = new StringBuilder().Append(mainColor.r).Append(" ").Append(mainColor.g).Append(" ").Append(mainColor.b).Append(" ").Append(mainColor.a).ToString();
+
+                materialStringBuilder.Append(mainColorString).Append(materialSplit);
+
+                #endregion
+
+                #region Emission Color
+
+                var emissionColor = material.GetColor("_EmissionColor");
+                var emissionColorString = new StringBuilder().Append(emissionColor.r).Append(" ").Append(emissionColor.g).Append(" ").Append(emissionColor.b).Append(" ").Append(emissionColor.a).ToString();
+
+                materialStringBuilder.Append(emissionColorString).Append(materialSplit);
+
+                #endregion
+
+                #endregion
+
+                #region Textures
+
+                #region Main Texture
+
+                StringBuilder mainTextureStringBuilder = new StringBuilder();
 
                 if (material.GetTexture("_MainTex"))
                 {
                     var textureMap = material.GetTexture("_MainTex");
 
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.AlbedoMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    //var textureString = Helpers.CompressBytesArrayToString(textureData);
+
+                    mainTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
                 }
+                else
+                    mainTextureStringBuilder.Append("NULL");
 
-                if (material.GetTexture("_MetallicGlossMap"))
-                {
-                    var textureMap = material.GetTexture("_MetallicGlossMap");
+                materialStringBuilder.Append(mainTextureStringBuilder).Append(materialSplit);
 
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+                #endregion
 
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.MetallicGlossMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
-                }
+                #region Normal Map Texture
+
+                StringBuilder normalMapTextureStringBuilder = new StringBuilder();
 
                 if (material.GetTexture("_BumpMap"))
                 {
                     var textureMap = material.GetTexture("_BumpMap");
 
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.NormalMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    normalMapTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
                 }
+                else
+                    normalMapTextureStringBuilder.Append("NULL");
 
-                if (material.GetTexture("_ParallaxMap"))
-                {
-                    var textureMap = material.GetTexture("_ParallaxMap");
+                materialStringBuilder.Append(normalMapTextureStringBuilder).Append(materialSplit);
 
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+                #endregion
 
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.HeightMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
-                }
+                #region Occlusion Map Texture
 
-                if (material.GetTexture("_EmissionMap"))
-                {
-                    var textureMap = material.GetTexture("_EmissionMap");
-
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
-
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.EmissionMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
-                }
-
-                if (material.GetTexture("_DetailMask"))
-                {
-                    var textureMap = material.GetTexture("_DetailMask");
-
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
-
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailMask, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
-                }
-
-
-                if (material.GetTexture("_DetailAlbedoMap"))
-                {
-                    var textureMap = material.GetTexture("_DetailAlbedoMap");
-
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
-
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailAlbedoMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
-                }
-
-                if (material.GetTexture("_DetailNormalMap"))
-                {
-                    var textureMap = material.GetTexture("_DetailNormalMap");
-
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
-
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.DetailNormalMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
-                }
+                StringBuilder occlusionMapTextureStringBuilder = new StringBuilder();
 
                 if (material.GetTexture("_OcclusionMap"))
                 {
                     var textureMap = material.GetTexture("_OcclusionMap");
 
-                    var texture = textureMap as Texture2D;
-                    var mainTexture = Helpers.ImageToBytesArray(texture, Helpers.ImageEncoderType.JPG);
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
-                    var textureData = new TextureData(textureMap.name, mainTexture, TextureMapType.OcclusionMap, textureMap.width, textureMap.height);
-                    textureDataList.Add(textureData);
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    occlusionMapTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
                 }
+                else
+                    occlusionMapTextureStringBuilder.Append("NULL");
 
-                var materialData = new MaterialData(name: material.name, shaderName: material.shader.name, shaderType: shaderType,
-                    mainColorData: mainColorString, emissionColorData: emissionColorString, smoothness: material.GetFloat("_Glossiness"), smoothnessScale: material.GetFloat("_GlossMapScale"), 
-                    smoothnessTextureChannel: material.GetFloat("_SmoothnessTextureChannel"), metallic: material.GetFloat("_Metallic"), specularHighlights: material.GetFloat("_SpecularHighlights"), 
-                    glossyReflections: material.GetFloat("_GlossyReflections"), bumpScale: material.GetFloat("_BumpScale"), heightScale: material.GetFloat("_Parallax"), aoStrength: material.GetFloat("_OcclusionStrength"), 
-                    enableGPUInstancing: material.enableInstancing, uvSet: material.GetFloat("_UVSec"), mode: material.GetFloat("_Mode"), srcBlend: material.GetFloat("_SrcBlend"), destBlend: material.GetFloat("_DstBlend"),
-                    zWrite: material.GetFloat("_ZWrite"), splitString: " ", textureData: textureDataList.ToArray());
+                materialStringBuilder.Append(occlusionMapTextureStringBuilder).Append(materialSplit);
 
-                materialDataString = JsonUtility.ToJson(materialData);
+                #endregion
+
+                #region Metallic Gloss Texture
+
+                StringBuilder metallicGlossTextureStringBuilder = new StringBuilder();
+
+                if (material.GetTexture("_MetallicGlossMap"))
+                {
+                    var textureMap = material.GetTexture("_MetallicGlossMap");
+
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    metallicGlossTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
+                }
+                else
+                    metallicGlossTextureStringBuilder.Append("NULL");
+
+                materialStringBuilder.Append(metallicGlossTextureStringBuilder).Append(materialSplit);
+
+                #endregion
+
+                #region Emission Map Texture
+
+                StringBuilder emissionMapTextureStringBuilder = new StringBuilder();
+
+                if (material.GetTexture("_EmissionMap"))
+                {
+                    var textureMap = material.GetTexture("_EmissionMap");
+
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    emissionMapTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
+                }
+                else
+                    emissionMapTextureStringBuilder.Append("NULL");
+
+                materialStringBuilder.Append(emissionMapTextureStringBuilder).Append(materialSplit);
+
+                #endregion
+
+                #region Height Map Texture
+
+                StringBuilder heightMapTextureStringBuilder = new StringBuilder();
+
+                if (material.GetTexture("_ParallaxMap"))
+                {
+                    var textureMap = material.GetTexture("_ParallaxMap");
+
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    heightMapTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
+                }
+                else
+                    heightMapTextureStringBuilder.Append("NULL");
+
+                materialStringBuilder.Append(heightMapTextureStringBuilder).Append(materialSplit);
+
+                #endregion
+
+                #region Detail Mask Texture
+
+                StringBuilder detailMaskTextureStringBuilder = new StringBuilder();
+
+                if (material.GetTexture("_DetailMask"))
+                {
+                    var textureMap = material.GetTexture("_DetailMask");
+
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    detailMaskTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
+                }
+                else
+                    detailMaskTextureStringBuilder.Append("NULL");
+
+                materialStringBuilder.Append(detailMaskTextureStringBuilder).Append(materialSplit);
+
+                #endregion
+
+                #region Detail Albedo Texture
+
+                StringBuilder detailAlbedoTextureStringBuilder = new StringBuilder();
+
+                if (material.GetTexture("_DetailAlbedoMap"))
+                {
+                    var textureMap = material.GetTexture("_DetailAlbedoMap");
+
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    detailAlbedoTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
+                }
+                else
+                    detailAlbedoTextureStringBuilder.Append("NULL");
+
+                materialStringBuilder.Append(detailAlbedoTextureStringBuilder).Append(materialSplit);
+
+                #endregion
+
+                #region Detail Normal Map Texture
+
+                StringBuilder detailNormalMapTextureStringBuilder = new StringBuilder();
+
+                if (material.GetTexture("_DetailNormalMap"))
+                {
+                    var textureMap = material.GetTexture("_DetailNormalMap");
+
+                    var textureToTexture2D = textureMap as Texture2D;
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+
+                    var textureString = Convert.ToBase64String(textureData);
+
+                    detailNormalMapTextureStringBuilder.Append(textureMap.name).Append(textureSplit).Append(textureString).Append(textureSplit).Append(textureMap.width.ToString()).Append(textureSplit).Append(textureMap.height.ToString());
+                }
+                else
+                    detailNormalMapTextureStringBuilder.Append("NULL");
+
+                materialStringBuilder.Append(detailNormalMapTextureStringBuilder).Append(materialSplit);
+
+                #endregion
+
+                #endregion
+
+                #region Shader Properties
+
+                StringBuilder shaderPropertiesStringBuilder = new StringBuilder();
+
+                shaderPropertiesStringBuilder.Append(material.GetFloat("_BumpScale").ToString()).Append(" ").Append(material.GetFloat("_Glossiness").ToString()).Append(" ").Append(material.GetFloat("_GlossMapScale").ToString()).Append(" ").Append(material.GetFloat("_SpecularHighlights").ToString()).
+                    Append(" ").Append(material.GetFloat("_GlossyReflections").ToString()).Append(" ").Append(material.GetFloat("_SmoothnessTextureChannel").ToString()).Append(" ").Append(material.GetFloat("_Metallic").ToString()).Append(" ").Append(material.GetFloat("_Parallax").ToString()).
+                    Append(" ").Append(material.GetFloat("_OcclusionStrength").ToString()).Append(" ").Append(material.GetFloat("_UVSec").ToString()).Append(" ").Append(material.GetFloat("_Mode").ToString()).Append(" ").Append(material.GetFloat("_SrcBlend").ToString()).Append(" ").Append(material.GetFloat("_DstBlend").ToString()).
+                    Append(" ").Append(material.GetFloat("_ZWrite").ToString());
+
+                materialStringBuilder.Append(shaderPropertiesStringBuilder);
+
+                #endregion
+
+                materialDataString = materialStringBuilder.ToString();
             }
 
             #endregion
@@ -3982,34 +4125,329 @@ namespace Com.RedicalGames.Filar
                 {
                     var appDataBaseManager = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
-                    if (string.IsNullOrEmpty(materialDataString))
+                    if (!string.IsNullOrEmpty(materialDataString))
                     {
-                        var materialData = JsonUtility.FromJson<MaterialData>(materialDataString);
+                        var materialParameters = materialDataString.Split(materialSplit);
 
-                        callbackResults.SetResult(appDataBaseManager.GetShaderAssetFromLibrary(materialData.GetShaderName(), materialData.GetShaderType()));
-
-                        if (callbackResults.Success())
+                        if(materialParameters != null && materialParameters.Length > 0)
                         {
-                            var shaderAsset = appDataBaseManager.GetShaderAssetFromLibrary(materialData.GetShaderName(), materialData.GetShaderType()).data;
+                            #region Material Parameters
 
-                            var material = new Material(shaderAsset.GetShader());
+                            #region Info
 
-                            //var materialColor = JsonUtility.FromJson<SerializableColor>(materialData.GetColorData()).GetColor();
-                            //var mainTexture = (Texture)Helpers.BytesArrayToTexture2D(materialData.GetMainTextureData(), materialData.GetMainTextureSize().mainTextureWidth, materialData.GetMainTextureSize().mainTextureHeight);
+                            var materialName = materialParameters[0];
+                            var shaderName = materialParameters[1];
+                            var shaderType = (ShaderType)int.Parse(materialParameters[2]);
 
-                            //material.name = materialData.Name;
-                            //material.SetColor("_Color", materialColor);
-                            //material.SetTexture("_MainTex", mainTexture);
+                            #endregion
 
-                            material.SetFloat("_Glossiness", materialData.GetGlossiness());
-                            material.SetFloat("_BumpScale", materialData.GetBumpScale());
-                            material.SetFloat("_OcclusionStrength", materialData.GetAOStrength());
+                            #region Color
 
-                            material.enableInstancing = materialData.GetEnableGPUInstancing();
+                            var mainColorString = materialParameters[3];
+                            var mainColor = Helpers.ConvertColorStringToColor(mainColorString);
 
-                            callbackResults.result = $"Material : {materialData.Name} With Shader Type : {materialData.GetShaderType()} Loaded Successfully.";
-                            callbackResults.data = material;
-                            callbackResults.resultCode = Helpers.SuccessCode;
+                            var emissionColorString = materialParameters[4];
+                            var emissionColor = Helpers.ConvertColorStringToColor(emissionColorString);
+
+                            #endregion
+
+                            #region Surface Attributes
+
+                            #endregion
+
+                            #endregion
+
+                            callbackResults.SetResult(appDataBaseManager.GetShaderAssetFromLibrary(shaderName, shaderType));
+
+                            if (callbackResults.Success())
+                            {
+                                #region Parameters
+
+                                var shader = appDataBaseManager.GetShaderAssetFromLibrary(shaderName, shaderType).data.GetShader();
+
+                                #endregion
+
+                                #region Binding
+
+                                #region Info
+
+                                var material = new Material(shader);
+                                material.name = materialName;
+
+                                #endregion
+
+                                #region Color
+
+                                material.SetColor("_Color", mainColor);
+                                material.SetColor("_EmissionColor", emissionColor);
+
+                                #endregion
+
+                                #region Textures
+
+                                #region Main Textures
+
+                                if (materialParameters[5] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[5].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_MainTex", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Normal Map Textures
+
+                                if (materialParameters[6] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[6].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_BumpMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Occlusion Map Textures
+
+                                if (materialParameters[7] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[7].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_OcclusionMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Metallic Gloss Map Textures
+
+                                if (materialParameters[8] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[8].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_MetallicGlossMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Emission Map Textures
+
+                                if (materialParameters[9] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[9].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_EmissionMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Height Map Textures
+
+                                if (materialParameters[10] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[10].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_ParallaxMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Detail Mask Textures
+
+                                if (materialParameters[11] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[11].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_DetailMask", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Detail Albedo Mask Textures
+
+                                if (materialParameters[12] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[12].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_DetailAlbedoMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Detail Normal Textures
+
+                                if (materialParameters[13] != "NULL")
+                                {
+                                    var textureSplitStringArray = materialParameters[13].Split(textureSplit);
+
+                                    if (textureSplitStringArray != null && textureSplitStringArray.Length == 4)
+                                    {
+                                        var textureName = textureSplitStringArray[0];
+                                        var textureDataArray = Convert.FromBase64String(textureSplitStringArray[1]);
+                                        var textureWidth = int.Parse(textureSplitStringArray[2]);
+                                        var textureHeight = int.Parse(textureSplitStringArray[3]);
+
+                                        var textureSerializable = new SerializableImage(textureDataArray);
+
+                                        var texture = textureSerializable.GetTexture2DImage(textureWidth, textureHeight);
+                                        texture.name = textureName;
+
+                                        if (texture != null)
+                                            material.SetTexture("_DetailNormalMap", texture);
+                                    }
+                                }
+
+                                #endregion
+
+                                #endregion
+
+                                #region Properties
+
+                                var shaderPropertiesArray = materialParameters[14].Split(" ");
+
+                                #region Bump Scale
+
+                                var bumpScale = shaderPropertiesArray[0].ToFloat();
+                                material.SetFloat("_BumpScale", bumpScale);
+
+                                #endregion
+
+                                #region Glossiness
+
+                                var glossiness = shaderPropertiesArray[1].ToFloat();
+                                material.SetFloat("_Glossiness", glossiness);
+
+                                #endregion
+
+
+                                Debug.Log($" +++++++++++++ Shader Properties Bump Scale : {bumpScale} - Glossiness : {glossiness}");
+
+                                #endregion
+
+                                #endregion
+
+
+                                callbackResults.result = $"Material: {materialName} Of Shader : {shaderName} Type : {shaderType} Created Successfully From : {materialParameters.Length - 3} Parameters.";
+                                callbackResults.data = material;
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Split Material String - Operation Invalid..";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
@@ -4101,7 +4539,7 @@ namespace Com.RedicalGames.Filar
                     
                     if(shaderAssetsOfType != null && shaderAssetsOfType.Count > 0)
                     {
-                        var shaderAsset = shaderAssetsOfType.Find(shader => shader.GetName() == name);
+                        var shaderAsset = shaderAssetsOfType.Find(shader => shader.GetShader().name == name);
 
                         if(shaderAsset != null)
                         {
@@ -4232,16 +4670,35 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public byte[] GetImageData() => Helpers.CompressByteArray(imageData);
+            #region Uncompressed
 
-            public Sprite GetSpriteImage(int width = 100, int height = 100) => 
-                Helpers.BytesArrayToSprite(Helpers.UnCompressByteArray(imageData), width, height);
+            public byte[] GetImageData() => imageData;
 
-            public Texture GetTextureImage(int width = 100, int height = 100) => 
-                Helpers.BytesArrayToTexture2D(Helpers.UnCompressByteArray(imageData), width, height);
+            public Sprite GetSpriteImage(int width = 100, int height = 100) =>
+                Helpers.BytesArrayToSprite(imageData, width, height);
+
+            public Texture GetTextureImage(int width = 100, int height = 100) =>
+                Helpers.BytesArrayToTexture2D(imageData, width, height);
 
             public Texture2D GetTexture2DImage(int width = 100, int height = 100) =>
+                Helpers.BytesArrayToTexture2D(imageData, width, height);
+
+            #endregion
+
+            #region Compressed
+
+            public byte[] GetImageDataFromCompressedData() => Helpers.CompressByteArray(imageData);
+
+            public Sprite GetSpriteImageFromCompressedData(int width = 100, int height = 100) => 
+                Helpers.BytesArrayToSprite(Helpers.UnCompressByteArray(imageData), width, height);
+
+            public Texture GetTextureImageFromCompressedData(int width = 100, int height = 100) => 
                 Helpers.BytesArrayToTexture2D(Helpers.UnCompressByteArray(imageData), width, height);
+
+            public Texture2D GetTexture2DImageFromCompressedData(int width = 100, int height = 100) =>
+                Helpers.BytesArrayToTexture2D(Helpers.UnCompressByteArray(imageData), width, height);
+
+            #endregion
 
             #endregion
 
@@ -32559,6 +33016,9 @@ namespace Com.RedicalGames.Filar
                 return texture2D;
             }
 
+            public static float StringToFloat(string source) => float.Parse(source);
+            public static int StringToInt(string source) => int.Parse(source);
+
             /// <summary>
             /// Returns A Position To Scroll To.
             /// </summary>
@@ -32619,6 +33079,13 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            public static Color ConvertColorStringToColor(string colorString)
+            {
+                var colorStringSplit = colorString.Split(" ");
+
+                return new Color(float.Parse(colorStringSplit[0]), float.Parse(colorStringSplit[1]), float.Parse(colorStringSplit[2]), float.Parse(colorStringSplit[3])); ;
             }
 
             public static Color ConvertNameToColor(string colorName)
@@ -33215,17 +33682,25 @@ namespace Com.RedicalGames.Filar
 
             public static string CompressBytesArrayToString(byte[] source)
             {
-                using(var msi = new MemoryStream(source))
+                if (source != null && source.Length > 0)
                 {
-                    using(var mso = new MemoryStream())
+                    using (var msi = new MemoryStream(source))
                     {
-                        using(var unzip = new GZipStream(msi, CompressionMode.Decompress))
+                        using (var mso = new MemoryStream())
                         {
-                            CopyStringData(unzip, mso);
-                        }
+                            using (var unzip = new GZipStream(msi, CompressionMode.Decompress))
+                            {
+                                CopyStringData(unzip, mso);
+                            }
 
-                        return Encoding.UTF8.GetString(mso.ToArray());
+                            return Encoding.UTF8.GetString(mso.ToArray());
+                        }
                     }
+                }
+                else
+                {
+                    Debug.LogError("Compress Byte Array To String Failed - Bytes Array Is Null Or Empty.");
+                    return null;
                 }
             }
 

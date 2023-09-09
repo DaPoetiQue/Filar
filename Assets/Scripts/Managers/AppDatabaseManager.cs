@@ -332,39 +332,37 @@ namespace Com.RedicalGames.Filar
             AppData.CallbackData<AppData.Post> callbackResults = new AppData.CallbackData<AppData.Post>();
 
             do
-            {
                 storageReference = FirebaseStorage.DefaultInstance.RootReference;
+            while (storageReference == null);
 
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name, "Publishing Manager Instance Is Not Yet Initialized."));
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name, "Publishing Manager Instance Is Not Yet Initialized."));
 
-                if (callbackResults.Success())
+            if (callbackResults.Success())
+            {
+                var publishingManager = AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name).data;
+
+                var postContentsURL = publishingManager.PostContentsURL;
+
+                var modelBytes = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Model").GetBytesAsync(int.MaxValue);
+                var profilePictureThumbnail = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Thumbnail").GetBytesAsync(int.MaxValue);
+
+                StorageContentLoadUpdate(post, modelBytes, profilePictureThumbnail);
+
+                if (postContents.Count > 0 && postContents.ContainsKey(post))
                 {
-                    var publishingManager = AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name).data;
+                    var serializableImage = new AppData.SerializableImage(profilePictureThumbnail);
+                    post.SetPostThumbnail(serializableImage.GetTexture2DImageFromCompressedData(100, 100));
 
-                    var postContentsURL = publishingManager.PostContentsURL;
-
-                    var modelBytes = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Model").GetBytesAsync(int.MaxValue);
-                    var profilePictureThumbnail = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Thumbnail").GetBytesAsync(int.MaxValue);
-
-                    StorageContentLoadUpdate(post, modelBytes, profilePictureThumbnail);
-
-                    if (postContents.Count > 0 && postContents.ContainsKey(post))
-                    {
-                        var serializableImage = new AppData.SerializableImage(profilePictureThumbnail);
-                        post.SetPostThumbnail(serializableImage.GetTexture2DImage(100, 100));
-
-                        callbackResults.result = $"Loaded Content For : {post.GetTitle()} Posts.";
-                        callbackResults.data = post;
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Failed To Load Content For : {post.GetTitle()} Posts.";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
+                    callbackResults.result = $"Loaded Content For : {post.GetTitle()} Posts.";
+                    callbackResults.data = post;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Load Content For : {post.GetTitle()} Posts.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
-            while (storageReference == null);
 
             return callbackResults;
         }

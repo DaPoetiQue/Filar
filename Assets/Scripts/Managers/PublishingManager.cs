@@ -95,8 +95,8 @@ namespace Com.RedicalGames.Filar
                 {
                     await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
 
-                    if (thumbnailData.GetImageData() != null && thumbnailData.GetImageData().Length > 0)
-                        await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageData());
+                    if (thumbnailData.GetImageDataFromCompressedData() != null && thumbnailData.GetImageDataFromCompressedData().Length > 0)
+                        await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageDataFromCompressedData());
                     else
                         LogError("Thumbnail Data Not Assigned", this);
                 }
@@ -110,7 +110,7 @@ namespace Com.RedicalGames.Filar
 
                 sw.Stop();
 
-                LogSuccess($"Post With : {content.GetMeshStringList().Count} Meshes Has Been Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+                LogSuccess($"Post : {postKey} Has Been Published Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
             }
             else
                 LogError("Post Is Missing - Null", this);
