@@ -119,9 +119,9 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var sceneAssetsManager = sceneAssetsManagerCallbackResults.data;
+                            var databaseManager = sceneAssetsManagerCallbackResults.data;
 
-                            sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
+                            databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
                             {
                                 callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
 
@@ -145,11 +145,11 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        callbackResults.SetResult(sceneAssetsManager.GetInitialScreenLoadInfoInstanceFromLibrary());
+                                                        callbackResults.SetResult(databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary());
 
                                                         if (callbackResults.Success())
                                                         {
-                                                            var initialLoadInfo = sceneAssetsManager.GetInitialScreenLoadInfoInstanceFromLibrary().data;
+                                                            var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().data;
 
                                                             await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
                                                             {
@@ -180,6 +180,10 @@ namespace Com.RedicalGames.Filar
 
                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+
+                                                                                    await Task.Delay(1000);
+
+                                                                                    await databaseManager.LoadSelectedPostContent(databaseManager.GetCurrentSelectedPost());
                                                                                 }
                                                                                 else
                                                                                 {

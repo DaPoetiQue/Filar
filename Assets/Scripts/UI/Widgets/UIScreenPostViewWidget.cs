@@ -38,16 +38,17 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputActionButtonType.SelectPostButton:
 
-                    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults =>
+                    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, async appDatabaseManagerCallbackResults =>
                     {
                         if (appDatabaseManagerCallbackResults.Success())
                         {
                             var appDatabaseManager = appDatabaseManagerCallbackResults.data;
 
-                            appDatabaseManager.LoadSelectedPostContent(post, postLoadedCallbackResults => 
-                            {
-                                Log(postLoadedCallbackResults.ResultCode, postLoadedCallbackResults.Result, this);
-                            });
+                            LogInfo(" +++++++++ Pressed Select", this);
+
+                            await appDatabaseManager.LoadSelectedPostContent(post);
+
+                            CancelActionButtonInvoke(AppData.InputActionButtonType.ConfirmationButton);
                         }
                         else
                             Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);

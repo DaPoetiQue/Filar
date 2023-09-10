@@ -3544,6 +3544,7 @@ namespace Com.RedicalGames.Filar
 
                                     meshFilter.sharedMesh = meshDataList[i].mesh;
                                     meshRenderer.sharedMaterial = meshDataList[i].material;
+                                    meshRenderer.UpdateGIMaterials();
 
                                     loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
                                 }
@@ -3823,7 +3824,7 @@ namespace Com.RedicalGames.Filar
 
             public string materialDataString;
 
-            private string materialSplit = " mt|", textureSplit = " tx|";
+            private string materialSplit = " mt|", textureSplit = " tx|", propertiesSplit = " pr|", subPropertiesSplit = " sp|";
 
             #endregion
 
@@ -3902,7 +3903,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_MainTex");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3926,7 +3929,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_BumpMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3948,7 +3953,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_OcclusionMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3970,7 +3977,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_MetallicGlossMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3992,7 +4001,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_EmissionMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4014,7 +4025,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_ParallaxMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4036,7 +4049,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_DetailMask");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4058,7 +4073,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_DetailAlbedoMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4080,7 +4097,9 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_DetailNormalMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
+                    textureToTexture2D.Compress(true);
+                    textureToTexture2D.Apply();
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4099,10 +4118,122 @@ namespace Com.RedicalGames.Filar
 
                 StringBuilder shaderPropertiesStringBuilder = new StringBuilder();
 
-                shaderPropertiesStringBuilder.Append(material.GetFloat("_BumpScale").ToString()).Append(" ").Append(material.GetFloat("_Glossiness").ToString()).Append(" ").Append(material.GetFloat("_GlossMapScale").ToString()).Append(" ").Append(material.GetFloat("_SpecularHighlights").ToString()).
-                    Append(" ").Append(material.GetFloat("_GlossyReflections").ToString()).Append(" ").Append(material.GetFloat("_SmoothnessTextureChannel").ToString()).Append(" ").Append(material.GetFloat("_Metallic").ToString()).Append(" ").Append(material.GetFloat("_Parallax").ToString()).
-                    Append(" ").Append(material.GetFloat("_OcclusionStrength").ToString()).Append(" ").Append(material.GetFloat("_UVSec").ToString()).Append(" ").Append(material.GetFloat("_Mode").ToString()).Append(" ").Append(material.GetFloat("_SrcBlend").ToString()).Append(" ").Append(material.GetFloat("_DstBlend").ToString()).
-                    Append(" ").Append(material.GetFloat("_ZWrite").ToString());
+                #region Bump Scale
+
+                StringBuilder bumpScaleStringBuilder = new StringBuilder();
+
+                bumpScaleStringBuilder.Append("_BumpScale").Append(subPropertiesSplit).Append(material.GetFloat("_BumpScale").ToString());
+
+                #endregion
+
+                #region Glossiness
+
+                StringBuilder glossinessStringBuilder = new StringBuilder();
+
+                glossinessStringBuilder.Append("_Glossiness").Append(subPropertiesSplit).Append(material.GetFloat("_Glossiness").ToString());
+
+                #endregion
+
+                #region Metallic
+
+                StringBuilder metallicStringBuilder = new StringBuilder();
+
+                metallicStringBuilder.Append("_Metallic").Append(subPropertiesSplit).Append(material.GetFloat("_Metallic").ToString());
+
+                #endregion
+
+                #region Occlusion Strength
+
+                StringBuilder occlusionStrengthStringBuilder = new StringBuilder();
+
+                occlusionStrengthStringBuilder.Append("_OcclusionStrength").Append(subPropertiesSplit).Append(material.GetFloat("_OcclusionStrength").ToString());
+
+                #endregion
+
+                #region Gloss Map Scale
+
+                StringBuilder glossMapScaleStringBuilder = new StringBuilder();
+
+                glossMapScaleStringBuilder.Append("_GlossMapScale").Append(subPropertiesSplit).Append(material.GetFloat("_GlossMapScale").ToString());
+
+                #endregion
+
+                #region Specular Highlights
+
+                StringBuilder specularHighlightsStringBuilder = new StringBuilder();
+
+                specularHighlightsStringBuilder.Append("_SpecularHighlights").Append(subPropertiesSplit).Append(material.GetFloat("_SpecularHighlights").ToString());
+
+                #endregion
+
+                #region Glossy Reflections
+
+                StringBuilder glossyReflectionsStringBuilder = new StringBuilder();
+
+                glossyReflectionsStringBuilder.Append("_GlossyReflections").Append(subPropertiesSplit).Append(material.GetFloat("_GlossyReflections").ToString());
+
+                #endregion
+
+                #region Smoothness Texture Channel
+
+                StringBuilder smoothnessTextureChannelStringBuilder = new StringBuilder();
+
+                smoothnessTextureChannelStringBuilder.Append("_SmoothnessTextureChannel").Append(subPropertiesSplit).Append(material.GetFloat("_SmoothnessTextureChannel").ToString());
+
+                #endregion
+
+                #region Parallax
+
+                StringBuilder parallaxStringBuilder = new StringBuilder();
+
+                parallaxStringBuilder.Append("_Parallax").Append(subPropertiesSplit).Append(material.GetFloat("_Parallax").ToString());
+
+                #endregion
+
+                #region UV Section
+
+                StringBuilder uvSecStringBuilder = new StringBuilder();
+
+                uvSecStringBuilder.Append("_UVSec").Append(subPropertiesSplit).Append(material.GetFloat("_UVSec").ToString());
+
+                #endregion
+
+                #region Render Mode
+
+                StringBuilder renderModeStringBuilder = new StringBuilder();
+
+                renderModeStringBuilder.Append("_Mode").Append(subPropertiesSplit).Append(material.GetFloat("_Mode").ToString());
+
+                #endregion
+
+                #region Src Blend
+
+                StringBuilder srcBlendStringBuilder = new StringBuilder();
+
+                srcBlendStringBuilder.Append("_SrcBlend").Append(subPropertiesSplit).Append(material.GetFloat("_SrcBlend").ToString());
+
+                #endregion
+
+                #region Dst Blend
+
+                StringBuilder dstBlendStringBuilder = new StringBuilder();
+
+                dstBlendStringBuilder.Append("_DstBlend").Append(subPropertiesSplit).Append(material.GetFloat("_DstBlend").ToString());
+
+                #endregion
+
+                #region Z Write
+
+                StringBuilder zWriteStringBuilder = new StringBuilder();
+
+                zWriteStringBuilder.Append("_ZWrite").Append(subPropertiesSplit).Append(material.GetFloat("_ZWrite").ToString());
+
+                #endregion
+
+                shaderPropertiesStringBuilder.Append(bumpScaleStringBuilder).Append(propertiesSplit).Append(glossinessStringBuilder).Append(propertiesSplit).Append(glossMapScaleStringBuilder).Append(propertiesSplit).Append(specularHighlightsStringBuilder).
+                    Append(propertiesSplit).Append(glossyReflectionsStringBuilder).Append(propertiesSplit).Append(smoothnessTextureChannelStringBuilder).Append(propertiesSplit).Append(metallicStringBuilder).Append(propertiesSplit).Append(parallaxStringBuilder).
+                    Append(propertiesSplit).Append(occlusionStrengthStringBuilder).Append(propertiesSplit).Append(uvSecStringBuilder).Append(propertiesSplit).Append(renderModeStringBuilder).Append(propertiesSplit).Append(srcBlendStringBuilder).Append(propertiesSplit).Append(dstBlendStringBuilder).
+                    Append(propertiesSplit).Append(zWriteStringBuilder);
 
                 materialStringBuilder.Append(shaderPropertiesStringBuilder);
 
@@ -4410,118 +4541,48 @@ namespace Com.RedicalGames.Filar
 
                                 #region Properties
 
-                                var shaderPropertiesArray = materialParameters[14].Split(" ");
+                                var shaderPropertiesArray = materialParameters[14].Split(propertiesSplit);
 
-                                #region Bump Scale
+                                if (shaderPropertiesArray.Length > 0)
+                                {
+                                    for (int i = 0; i < shaderPropertiesArray.Length - 3; i++)
+                                    {
+                                        var propertyDataArray = shaderPropertiesArray[i].Split(subPropertiesSplit);
 
-                                var bumpScale = shaderPropertiesArray[0].ToFloat();
-                                material.SetFloat("_BumpScale", bumpScale);
+                                        if (propertyDataArray.Length == 2)
+                                        {
+                                            var propertyName = propertyDataArray[0];
+                                            var propertyValue = propertyDataArray[1].ToFloat();
 
-                                #endregion
+                                            material.SetFloat(propertyName, propertyValue);
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Set Material Properties Failed - Property Array Data With Length : {propertyDataArray.Length} Does Not Match Property Count Limit Of 2.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = Helpers.ErrorCode;
 
-                                #region Glossiness
+                                            break;
+                                        }
+                                    }
 
-                                var glossiness = shaderPropertiesArray[1].ToFloat();
-                                material.SetFloat("_Glossiness", glossiness);
+                                    material.doubleSidedGI = true;
+                                    material.enableInstancing = true;
 
-                                #endregion
-
-                                #region Glossiness Map Scale
-
-                                var glossinessMapScale = shaderPropertiesArray[2].ToFloat();
-                                material.SetFloat("_GlossMapScale", glossinessMapScale);
-
-                                #endregion
-
-                                #region Specular Highlights
-
-                                var specularHighlights = shaderPropertiesArray[3].ToFloat();
-                                material.SetFloat("_SpecularHighlights", specularHighlights);
-
-                                #endregion
-
-                                #region Glossy Reflections
-
-                                var glossyReflections = shaderPropertiesArray[4].ToFloat();
-                                material.SetFloat("_GlossyReflections", glossyReflections);
-
-                                #endregion
-
-                                #region Smoothness Texture Channel
-
-                                var smoothnessTextureChannel = shaderPropertiesArray[5].ToFloat();
-                                material.SetFloat("_SmoothnessTextureChannel", smoothnessTextureChannel);
-
-                                #endregion
-
-                                #region Metallic
-
-                                var metallic = shaderPropertiesArray[6].ToFloat();
-                                material.SetFloat("_Metallic", metallic);
-
-                                #endregion
-
-                                #region Height
-
-                                var parallax = shaderPropertiesArray[7].ToFloat();
-                                material.SetFloat("_Parallax", parallax);
-
-                                #endregion
-
-                                #region Occlusion Strength
-
-                                var occlusionStrength = shaderPropertiesArray[8].ToFloat();
-                                material.SetFloat("_OcclusionStrength", occlusionStrength);
-
-                                #endregion
-
-                                #region UV Sec
-
-                                var uvSec = shaderPropertiesArray[8].ToFloat();
-                                material.SetFloat("_UVSec", uvSec);
-
-                                #endregion
-
-                                #region Mode
-
-                                var mode = shaderPropertiesArray[8].ToFloat();
-                                material.SetFloat("_Mode", mode);
-
-                                #endregion
-
-                                #region Src Blend
-
-                                var srcBlend = shaderPropertiesArray[9].ToFloat();
-                                material.SetFloat("_SrcBlend", srcBlend);
-
-                                #endregion
-
-
-                                #region Dst Blend
-
-                                var dstBlend = shaderPropertiesArray[10].ToFloat();
-                                material.SetFloat("_DstBlend", dstBlend);
-
-                                #endregion
-
-
-                                #region Z Write
-
-                                var zWrite = shaderPropertiesArray[11].ToFloat();
-                                material.SetFloat("_ZWrite", zWrite);
-
-                                #endregion
-
-                                Debug.Log($" +++++++++++++ Shader Properties Bump Scale : {bumpScale} - Glossiness : {glossiness} - Glossiness Map : {glossinessMapScale} - Specular : {specularHighlights} - Reflections : {glossyReflections} - Smoothness Texture Channel : {smoothnessTextureChannel} - Metallic : {metallic} Height - : {parallax} - Occlusion : {occlusionStrength} - UV - {uvSec}  - Mode - {mode} Src : {srcBlend} - Dest Blend : {dstBlend} Z Wrtite : {zWrite} ");
+                                    callbackResults.result = $"Material: {materialName} Of Shader : {shaderName} Type : {shaderType} Created Successfully From : {materialParameters.Length - 3} Parameters.";
+                                    callbackResults.data = material;
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = "Failed To Split Material Properties String - Operation Invalid.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
 
                                 #endregion
 
                                 #endregion
-
-
-                                callbackResults.result = $"Material: {materialName} Of Shader : {shaderName} Type : {shaderType} Created Successfully From : {materialParameters.Length - 3} Parameters.";
-                                callbackResults.data = material;
-                                callbackResults.resultCode = Helpers.SuccessCode;
                             }
                         }
                         else
@@ -4734,10 +4795,10 @@ namespace Com.RedicalGames.Filar
 
             public SerializableImage(Sprite imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, encoderType));
 
-            public SerializableImage(Texture imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray((Texture2D)imageData, encoderType));
+            public SerializableImage(Texture imageData) => SetImageData(Helpers.ImageToBytesArray((Texture2D)imageData));
         
 
-            public SerializableImage(Texture2D imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, encoderType));
+            public SerializableImage(Texture2D imageData) => SetImageData(Helpers.ImageToBytesArray(imageData));
 
             #endregion
 
@@ -19037,6 +19098,51 @@ namespace Com.RedicalGames.Filar
                     LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
             }
 
+            protected void CancelActionButtonInvoke(InputActionButtonType buttonType)
+            {
+                if (GetActive())
+                {
+                    if (actionGroup != null && actionGroup.Count > 0)
+                    {
+                        var initialized = actionGroup.FindAll(input => input.initialize);
+
+                        if (initialized != null && initialized.Count > 0)
+                        {
+                            foreach (var item in initialized)
+                            {
+                                foreach (var widget in item.screenActionGroup)
+                                {
+                                    if (widget.inputType == InputType.Button)
+                                    {
+                                        widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var button = widget.GetButtonComponent();
+
+                                                if (button != null)
+                                                {
+                                                    if (button.value)
+                                                        button.value.CancelInvoke();
+                                                    else
+                                                        LogError($"Cancel Action Button Invoke Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
+                                                }
+                                                else
+                                                    LogError("Action Group Button Component Not Found", this);
+                                            }
+                                            else
+                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
             protected void SetActionButtonState(UIButton<ButtonDataPackets> button, InputUIState state)
             {
                 var actionButtons = actionGroup.FindAll(inputs => inputs.screenActionGroup.Find(input => input.inputType == InputType.Button));
@@ -33071,22 +33177,7 @@ namespace Com.RedicalGames.Filar
 
             public static Sprite BytesArrayToSprite(byte[] source, int minWidth, int minHeight) => Sprite.Create(BytesArrayToTexture2D(source, minWidth, minHeight), new Rect(Vector2.zero, new Vector2(minWidth, minHeight)), Vector2.zero);
 
-            public static byte[] ImageToBytesArray(Texture2D source, ImageEncoderType encoderType)
-            {
-                if (encoderType == ImageEncoderType.JPG)
-                    return source.EncodeToJPG();
-
-                if (encoderType == ImageEncoderType.PNG)
-                    return source.EncodeToPNG();
-
-                if (encoderType == ImageEncoderType.TGA)
-                    return source.EncodeToTGA();
-
-                if (encoderType == ImageEncoderType.EXR)
-                    return source.EncodeToTGA();
-
-                return null;
-            }
+            public static byte[] ImageToBytesArray(Texture2D source) => source.GetRawTextureData();
 
             public static Texture2D BytesArrayToTexture2D(byte[] source, int width, int height)
             {
