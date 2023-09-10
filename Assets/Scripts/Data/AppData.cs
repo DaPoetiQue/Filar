@@ -3903,9 +3903,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_MainTex");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3929,9 +3927,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_BumpMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3953,9 +3949,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_OcclusionMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -3977,9 +3971,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_MetallicGlossMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4001,9 +3993,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_EmissionMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4025,9 +4015,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_ParallaxMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4049,9 +4037,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_DetailMask");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4073,9 +4059,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_DetailAlbedoMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4097,9 +4081,7 @@ namespace Com.RedicalGames.Filar
                     var textureMap = material.GetTexture("_DetailNormalMap");
 
                     var textureToTexture2D = textureMap as Texture2D;
-                    textureToTexture2D.Compress(true);
-                    textureToTexture2D.Apply();
-                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D);
+                    var textureData = Helpers.ImageToBytesArray(textureToTexture2D, Helpers.ImageEncoderType.JPG);
 
                     var textureString = Convert.ToBase64String(textureData);
 
@@ -4795,10 +4777,10 @@ namespace Com.RedicalGames.Filar
 
             public SerializableImage(Sprite imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, encoderType));
 
-            public SerializableImage(Texture imageData) => SetImageData(Helpers.ImageToBytesArray((Texture2D)imageData));
+            public SerializableImage(Texture imageData, Helpers.ImageEncoderType imageEncoderType) => SetImageData(Helpers.ImageToBytesArray((Texture2D)imageData, imageEncoderType));
         
 
-            public SerializableImage(Texture2D imageData) => SetImageData(Helpers.ImageToBytesArray(imageData));
+            public SerializableImage(Texture2D imageData, Helpers.ImageEncoderType imageEncoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, imageEncoderType));
 
             #endregion
 
@@ -33177,7 +33159,30 @@ namespace Com.RedicalGames.Filar
 
             public static Sprite BytesArrayToSprite(byte[] source, int minWidth, int minHeight) => Sprite.Create(BytesArrayToTexture2D(source, minWidth, minHeight), new Rect(Vector2.zero, new Vector2(minWidth, minHeight)), Vector2.zero);
 
-            public static byte[] ImageToBytesArray(Texture2D source) => source.GetRawTextureData();
+            public static byte[] ImageToBytesArray(Texture2D source, ImageEncoderType encoderType)
+            {
+                if (source != null)
+                {
+                    var texture = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
+                    texture.SetPixels(0, 0, source.width, source.height, source.GetPixels());
+
+                    if (encoderType == ImageEncoderType.JPG)
+                        return texture.EncodeToJPG();
+
+                    if (encoderType == ImageEncoderType.PNG)
+                        return texture.EncodeToPNG();
+
+                    if (encoderType == ImageEncoderType.TGA)
+                        return texture.EncodeToTGA();
+
+                    if (encoderType == ImageEncoderType.EXR)
+                        return texture.EncodeToTGA();
+                }
+                else
+                    throw new NullReferenceException("Image To Byte Array Conversion Failed - Texture Is Not Assigned");
+
+                return null;
+            }
 
             public static Texture2D BytesArrayToTexture2D(byte[] source, int width, int height)
             {
