@@ -3275,11 +3275,9 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public string objectName;
-            public string parentName;
-            public List<string> childNames;
+            string hierachyString = string.Empty;
 
-            public bool isRoot;
+            string subHierachySplit = " sh|", hierachySplit = " h|";
 
             #endregion
 
@@ -3290,13 +3288,34 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public ContentHierachyObject(string objectName, string parentName, List<string> childNames, bool isRoot)
+            public ContentHierachyObject(GameObject obj, string objName = null)
             {
-                this.objectName = objectName;
-                this.parentName = parentName;
-                this.childNames = childNames;
-                this.isRoot = isRoot;
+                var rootTransformString = obj.transform.TransformToString();
+
+                var rootTransformStringBuilder = new StringBuilder();
+
+                rootTransformStringBuilder.Append(rootTransformString).Append(subHierachySplit).Append((string.IsNullOrEmpty(obj.transform?.parent?.name))? obj.transform?.parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.childCount);
+
+                var hierachyStringBuilder = new StringBuilder();
+
+                hierachyStringBuilder.Append(rootTransformStringBuilder).Append(hierachySplit);
+
+                if (obj.transform.childCount > 0)
+                {
+                    for (int i = 0; i < obj.transform.childCount; i++)
+                    {
+                        var transformString = obj.transform.GetChild(i).TransformToString();
+                        var transformStringBuilder = new StringBuilder();
+
+                        transformStringBuilder.Append(transformString).Append(subHierachySplit).Append((string.IsNullOrEmpty(obj.transform.GetChild(i)?.parent?.name)) ? obj.transform.GetChild(i).parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.GetChild(i).childCount);
+                        hierachyStringBuilder.Append(transformStringBuilder);
+                    }
+                }
+
+                hierachyString = hierachyStringBuilder.ToString();
             }
+
+            public ContentHierachyObject(string hierachyString) => this.hierachyString = hierachyString;
 
             #endregion
 
@@ -3304,21 +3323,13 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetObjectName(string objectName) => this.objectName = objectName;
-
-            public void SetParentName(string parentName) => this.parentName = parentName;
-            public void SetChildNames(List<string> childNames) => this.childNames = childNames;
+            public void SetHierachyString(string hierachyString) => this.hierachyString = hierachyString;
 
             #endregion
 
             #region Data Getters
 
-            public string GetObjectName() => objectName;
-            public string GetParentName() => parentName;
-            public List<string> GetChildNames() => childNames;
-            public bool GetIsRoot() => isRoot;
-            public bool HasParent() => !string.IsNullOrEmpty(parentName);
-            public bool HasChild() => childNames != null && childNames.Count > 0;
+            public string GetHierachyString() => hierachyString;
 
             #endregion
 
@@ -3374,12 +3385,14 @@ namespace Com.RedicalGames.Filar
                 if (callbackResults.Success())
                 {
                     var meshProperties = Helpers.GetMeshPropertiesData(value).data;
+                    var objectHierachy = new ContentHierachyObject();
 
                     var subMeshStringList = new List<string>();
 
                     for (int i = 0; i < meshProperties.Length; i++)
                     {
                         var readableMesh = Helpers.GetReadableMesh(meshProperties[i].GetFilter().sharedMesh);
+                        var meshName = readableMesh.name;
 
                         var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
                         var triangles = Helpers.IntArrayToString(readableMesh.triangles);
@@ -3398,14 +3411,11 @@ namespace Com.RedicalGames.Filar
                             for (int j = 0; j < meshProperties[i].GetFilter().gameObject.transform.childCount; j++)
                                 childNameList.Add(meshProperties[i].GetFilter().gameObject.transform.GetChild(j).name);
 
-                        var hierachyObject = new ContentHierachyObject(meshProperties[i].GetFilter().gameObject?.name, meshProperties[i].GetFilter().gameObject.transform?.parent?.name, childNameList, (i == 0)? true : false);
-                        var hierachyObjectString = JsonUtility.ToJson(hierachyObject);
-
                         StringBuilder subMeshString = new StringBuilder();
 
-                        subMeshString.Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).
+                        subMeshString.Append(meshName).Append(subMeshSplit).Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).
                             Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).
-                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material).Append(subMeshSplit).Append(hierachyObjectString);
+                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material);
 
                         subMeshStringList.Add(subMeshString.ToString());
 
@@ -33588,6 +33598,18 @@ namespace Com.RedicalGames.Filar
                 return stringBuilder.ToString();
             }
 
+            public static string Vector2ToString(Vector2 data, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                return stringBuilder.Append(data.x).Append(seperator).Append(data.y).ToString();
+            }
+
+            public static Vector2 StringToVector2(string data, string seperator)
+            {
+                var vectorSplit = data.Split(seperator);
+                return new Vector2(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]));
+            }
+
             public static string Vector3ArrayToString(Vector3[] arrayData, string seperator)
             {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -33604,6 +33626,18 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentException("Vector 3 Array To String Failed - Array Data Is Null.");
 
                 return stringBuilder.ToString();
+            }
+
+            public static string Vector3ToString(Vector3 data, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                return stringBuilder.Append(data.x).Append(seperator).Append(data.y).Append(seperator).Append(data.z).ToString();
+            }
+
+            public static Vector3 StringToVector3(string data, string seperator)
+            {
+                var vectorSplit = data.Split(seperator);
+                return new Vector3(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]));
             }
 
             public static async Task<string> Vector3ArrayToStringAsync(Vector3[] arrayData, string seperator)
@@ -33664,6 +33698,18 @@ namespace Com.RedicalGames.Filar
                 return stringBuilder.ToString();
             }
 
+            public static string Vector4ToString(Vector4 data, string seperator)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                return stringBuilder.Append(data.x).Append(seperator).Append(data.y).Append(seperator).Append(data.z).Append(seperator).Append(data.w).ToString();
+            }
+
+            public static Vector4 StringToVector4(string data, string seperator)
+            {
+                var vectorSplit = data.Split(seperator);
+                return new Vector4(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]), float.Parse(vectorSplit[3]));
+            }
+
             public static string IntArrayToString(int[] arrayData)
             {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -33700,6 +33746,27 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentException("Int Array To String Async Failed- Array Data Is Null.");
 
                 return stringBuilder.ToString();
+            }
+
+            public static string TransformToString(Transform source, string seperator)
+            {
+                StringBuilder transformDataStringBuilder = new StringBuilder();
+
+                transformDataStringBuilder.Append(source.name).Append(seperator).Append(source.transform.localPosition.ToStringVector()).Append(seperator).Append(source.localScale.ToStringVector()).Append(seperator).Append(source.localEulerAngles.ToStringVector());
+
+                return transformDataStringBuilder.ToString();
+            }
+
+            public static (string name, Vector3 localPosition, Vector3 localScale, Vector3 localEularAngles) StringToTransformInfo(string source, string seperator)
+            {
+                var dataArray = source.Split(seperator);
+
+                var name = dataArray[0];
+                var position = dataArray[1].ToVector3();
+                var scale = dataArray[2].ToVector3();
+                var eular = dataArray[3].ToVector3();
+
+                return (name, position, scale, eular);
             }
 
             #endregion

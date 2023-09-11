@@ -69,6 +69,18 @@ namespace Com.RedicalGames.Filar
         public static float ToFloat(this string source) => AppData.Helpers.StringToFloat(source);
         public static int ToInt(this string source) => AppData.Helpers.StringToInt(source);
 
+        public static Vector2 ToVector2(this string source) => AppData.Helpers.StringToVector2(source, " v2|");
+        public static string ToStringVector(this Vector2 source) => AppData.Helpers.Vector2ToString(source, " v2|");
+
+        public static Vector3 ToVector3(this string source) => AppData.Helpers.StringToVector3(source, " v3|");
+        public static string ToStringVector(this Vector3 source) => AppData.Helpers.Vector3ToString(source, " v3|");
+
+        public static Vector2 ToVector4(this string source) => AppData.Helpers.StringToVector4(source, " v4|");
+        public static string ToStringVector(this Vector4 source) => AppData.Helpers.Vector4ToString(source, " v4|");
+
+        public static string TransformToString(this Transform source) => AppData.Helpers.TransformToString(source, " trn|");
+        public static (string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) ToTransformInfo(this string source) => AppData.Helpers.StringToTransformInfo(source, " strn|");
+
         #endregion
     }
 }
