@@ -3331,6 +3331,88 @@ namespace Com.RedicalGames.Filar
 
             public string GetHierachyString() => hierachyString;
 
+            public CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles),(string parentName, int childCount))> GetHierachyTransformInfo()
+            {
+                CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles), (string parentName, int childCount))> callbackResults = 
+                    new CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles), (string parentName, int childCount))>();
+
+               var hierachyList = new List<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles), (string parentName, int childCount))>();
+
+                if (!string.IsNullOrEmpty(hierachyString))
+                {
+                    var hierachyStringArray = hierachyString.Split(hierachySplit);
+
+                    if(hierachyStringArray != null && hierachyStringArray.Length > 0)
+                    {
+                        for (int i = 0; i < hierachyStringArray.Length; i++)
+                        {
+                            var transformStringArray = hierachyStringArray[i].Split(subHierachySplit);
+
+                            if(transformStringArray != null && transformStringArray.Length > 0)
+                            {
+                                var transform = transformStringArray[0].ToTransformInfo();
+                                var parentName = transformStringArray[1];
+                                var childCount = int.Parse(transformStringArray[2]);
+
+                                var parentData = (parentName, childCount);
+
+                                if (!string.IsNullOrEmpty(transform.name))
+                                {
+                                    var data = (transform, parentData);
+
+                                    if (!hierachyList.Contains(data))
+                                    {
+                                        hierachyList.Add(data);
+
+                                        callbackResults.result = $"Added Object : {transform.name} To Hierachy List At Index : {i}.";
+                                        callbackResults.data = hierachyList;
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Add Hierach Info : {data} - Content Already Exist At Index : {i}.";
+                                        callbackResults.data = default;
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Parse String : {transformStringArray[0]} To Transform Info At Index : {i}.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed To Split Transfor String : { hierachyStringArray[i]} To Array List Using Split String : {subHierachySplit}";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = Helpers.ErrorCode;
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Split Hierachy String : {hierachyString} To Array List Using Split String : {hierachySplit}";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Hierachy String Is Null Or Empty.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             #endregion
 
             #endregion
@@ -3385,7 +3467,8 @@ namespace Com.RedicalGames.Filar
                 if (callbackResults.Success())
                 {
                     var meshProperties = Helpers.GetMeshPropertiesData(value).data;
-                    var objectHierachy = new ContentHierachyObject();
+                    var objectHierachy = new ContentHierachyObject(value);
+                    var objectHierachyString = objectHierachy.GetHierachyString();
 
                     var subMeshStringList = new List<string>();
 
@@ -3415,7 +3498,7 @@ namespace Com.RedicalGames.Filar
 
                         subMeshString.Append(meshName).Append(subMeshSplit).Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).
                             Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).
-                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material);
+                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material).Append(subMeshSplit).Append(objectHierachyString);
 
                         subMeshStringList.Add(subMeshString.ToString());
 
@@ -3496,7 +3579,6 @@ namespace Com.RedicalGames.Filar
                     {
                         var meshDataList = new List<(Mesh mesh, Material material)>();
 
-
                         for (int i = 0; i < submeshDataList.Count; i++)
                         {
                             var vertices = submeshDataList[i][0].Split(vertexSplit);
@@ -3507,6 +3589,7 @@ namespace Com.RedicalGames.Filar
                             var indices = submeshDataList[i][5].Split(" "); ;
                             var topology = int.Parse(submeshDataList[i][6]);
                             var materials = submeshDataList[i][7];
+                            var hierachy = submeshDataList[i][8];
 
                             var hierachy = JsonUtility.FromJson<ContentHierachyObject>(submeshDataList[i][8]);
 
@@ -3543,6 +3626,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (meshDataList.Count > 0)
                             {
+                                var loadedGameObjectsList = new List<GameObject>();
+
                                 GameObject loadedGameObjectParent = new GameObject(name);
 
                                 for (int i = 0; i < meshDataList.Count; i++)
@@ -3556,12 +3641,26 @@ namespace Com.RedicalGames.Filar
                                     meshRenderer.sharedMaterial = meshDataList[i].material;
                                     meshRenderer.UpdateGIMaterials();
 
-                                    loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
+                                    if (!loadedGameObjectsList.Contains(loadedGameObject))
+                                        loadedGameObjectsList.Add(loadedGameObject);
+
+                                    //loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
                                 }
 
-                                callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
-                                callbackResults.data = loadedGameObjectParent;
-                                callbackResults.resultCode = Helpers.SuccessCode;
+                                if(loadedGameObjectsList.Count > 0)
+                                {
+
+
+                                    callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
+                                    callbackResults.data = loadedGameObjectParent;
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Add Loaded Game Objects To List. Please Check Here.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
                             }
                             else
                             {
