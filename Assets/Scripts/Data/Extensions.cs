@@ -79,7 +79,7 @@ namespace Com.RedicalGames.Filar
         public static string ToStringVector(this Vector4 source) => AppData.Helpers.Vector4ToString(source, " v4|");
 
         public static string TransformToString(this Transform source) => AppData.Helpers.TransformToString(source, " trn|");
-        public static (string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) ToTransformInfo(this string source) => AppData.Helpers.StringToTransformInfo(source, " strn|");
+        public static (string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) ToTransformInfo(this string source) => AppData.Helpers.StringToTransformInfo(source, " trn|");
 
         #endregion
     }

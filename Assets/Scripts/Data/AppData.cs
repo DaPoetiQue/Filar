@@ -3277,7 +3277,7 @@ namespace Com.RedicalGames.Filar
 
             string hierachyString = string.Empty;
 
-            string subHierachySplit = " sh|", hierachySplit = " h|";
+            string subHierachySplit = " s_h|", hierachySplit = " m_h|";
 
             #endregion
 
@@ -3294,21 +3294,26 @@ namespace Com.RedicalGames.Filar
 
                 var rootTransformStringBuilder = new StringBuilder();
 
-                rootTransformStringBuilder.Append(rootTransformString).Append(subHierachySplit).Append((string.IsNullOrEmpty(obj.transform?.parent?.name))? obj.transform?.parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.childCount);
+                rootTransformStringBuilder.Append(rootTransformString).Append(subHierachySplit).Append(!string.IsNullOrEmpty(obj.transform?.parent?.name)? obj.transform?.parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.childCount).Append(subHierachySplit);
 
                 var hierachyStringBuilder = new StringBuilder();
 
-                hierachyStringBuilder.Append(rootTransformStringBuilder).Append(hierachySplit);
+                hierachyStringBuilder.Append(rootTransformStringBuilder);
 
-                if (obj.transform.childCount > 0)
+                if (obj.transform.GetComponentsInChildren<Transform>().Length > 0)
                 {
-                    for (int i = 0; i < obj.transform.childCount; i++)
-                    {
-                        var transformString = obj.transform.GetChild(i).TransformToString();
-                        var transformStringBuilder = new StringBuilder();
+                    var transforms = obj.transform.GetComponentsInChildren<Transform>();
 
-                        transformStringBuilder.Append(transformString).Append(subHierachySplit).Append((string.IsNullOrEmpty(obj.transform.GetChild(i)?.parent?.name)) ? obj.transform.GetChild(i).parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.GetChild(i).childCount);
-                        hierachyStringBuilder.Append(transformStringBuilder);
+                    for (int i = 0; i < transforms.Length; i++)
+                    {
+                        if (transforms[i] != obj.transform)
+                        {
+                            var transformString = transforms[i].TransformToString();
+                            var transformStringBuilder = new StringBuilder();
+
+                            transformStringBuilder.Append(transformString).Append(subHierachySplit).Append(!string.IsNullOrEmpty(transforms[i].parent?.name) ? transforms[i].parent?.name : "NULL").Append(subHierachySplit).Append(transforms[i].childCount);
+                            hierachyStringBuilder.Append(hierachySplit).Append(transformStringBuilder);
+                        }
                     }
                 }
 
@@ -3331,7 +3336,7 @@ namespace Com.RedicalGames.Filar
 
             public string GetHierachyString() => hierachyString;
 
-            public CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles),(string parentName, int childCount))> GetHierachyTransformInfo()
+            public CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) transform,(string parentName, int childCount) transformInfo)> GetHierachyTransformInfo()
             {
                 CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles), (string parentName, int childCount))> callbackResults = 
                     new CallbackDataList<((string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles), (string parentName, int childCount))>();
@@ -3342,7 +3347,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var hierachyStringArray = hierachyString.Split(hierachySplit);
 
-                    if(hierachyStringArray != null && hierachyStringArray.Length > 0)
+                    if (hierachyStringArray != null && hierachyStringArray.Length > 0)
                     {
                         for (int i = 0; i < hierachyStringArray.Length; i++)
                         {
@@ -3426,7 +3431,7 @@ namespace Com.RedicalGames.Filar
             public GameObject obj;
             public string objectString;
 
-            public string vertexSplit = " v|", normalSplit = " n|", uvSplit = " u|", tangentSplit = " t|", subMeshSplit = " s|", meshSplit = " m|";
+            public string vertexSplit = " v|", normalSplit = " n|", uvSplit = " u|", tangentSplit = " t|", subMeshSplit = " s|", meshSplit = " m|", objSplit = " obj|";
 
             #endregion
 
@@ -3475,7 +3480,7 @@ namespace Com.RedicalGames.Filar
                     for (int i = 0; i < meshProperties.Length; i++)
                     {
                         var readableMesh = Helpers.GetReadableMesh(meshProperties[i].GetFilter().sharedMesh);
-                        var meshName = readableMesh.name;
+                        var meshName = meshProperties[i].GetFilter().gameObject.name;
 
                         var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
                         var triangles = Helpers.IntArrayToString(readableMesh.triangles);
@@ -3498,7 +3503,7 @@ namespace Com.RedicalGames.Filar
 
                         subMeshString.Append(meshName).Append(subMeshSplit).Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).
                             Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).
-                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material).Append(subMeshSplit).Append(objectHierachyString);
+                            Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material);
 
                         subMeshStringList.Add(subMeshString.ToString());
 
@@ -3517,9 +3522,12 @@ namespace Com.RedicalGames.Filar
 
                         meshString.Remove(meshString.Length - meshSplit.Length, meshSplit.Length);
 
-                        if (!string.IsNullOrEmpty(meshString.ToString()))
+                        if (!string.IsNullOrEmpty(meshString.ToString()) && !string.IsNullOrEmpty(objectHierachyString))
                         {
-                            var meshStringToBytesArray = Helpers.CompressStringToBytesArray(meshString.ToString());
+                            StringBuilder objectString = new StringBuilder();
+                            objectString.Append(meshString.ToString()).Append(objSplit).Append(objectHierachyString);
+
+                            var meshStringToBytesArray = Helpers.CompressStringToBytesArray(objectString.ToString());
 
                             callbackResults.result = $"Mesh String Successfully Created From : {subMeshStringList.Count} Sub Meshes.";
                             callbackResults.data = meshStringToBytesArray;
@@ -3561,125 +3569,230 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
-                var meshSplitResultsList = value.Split(meshSplit);
+                var objectSplitResultsList = value.Split(objSplit);
 
-                await Task.Yield();
-
-                if(meshSplitResultsList != null && meshSplitResultsList.Length > 0)
+                if (objectSplitResultsList != null && objectSplitResultsList.Length == 2)
                 {
-                    var submeshDataList = new List<List<string>>();
 
-                    for (int i = 0; i < meshSplitResultsList.Length; i++)
+                    var meshResults = objectSplitResultsList[0];
+                    var hierachy = objectSplitResultsList[1];
+
+                    var meshSplitResultsList = meshResults.Split(meshSplit);
+
+                    await Task.Yield();
+
+                    if (meshSplitResultsList != null && meshSplitResultsList.Length > 0)
                     {
-                        var meshDataArray = meshSplitResultsList[i].Split(subMeshSplit);
-                        submeshDataList.Add(meshDataArray.ToList());
-                    }
+                        var submeshDataList = new List<List<string>>();
 
-                    if(submeshDataList.Count > 0)
-                    {
-                        var meshDataList = new List<(Mesh mesh, Material material)>();
-
-                        for (int i = 0; i < submeshDataList.Count; i++)
+                        for (int i = 0; i < meshSplitResultsList.Length; i++)
                         {
-                            var vertices = submeshDataList[i][0].Split(vertexSplit);
-                            var triangles = submeshDataList[i][1].Split(" ");
-                            var normals = submeshDataList[i][2].Split(normalSplit);
-                            var uvs = submeshDataList[i][3].Split(uvSplit);
-                            var tangents = submeshDataList[i][4].Split(tangentSplit);
-                            var indices = submeshDataList[i][5].Split(" "); ;
-                            var topology = int.Parse(submeshDataList[i][6]);
-                            var materials = submeshDataList[i][7];
-                            var hierachy = submeshDataList[i][8];
-
-                            var hierachy = JsonUtility.FromJson<ContentHierachyObject>(submeshDataList[i][8]);
-
-                            var verticesArrary = Helpers.StringArrayToVector3Array(vertices);
-                            var trianglesArray = Helpers.StringArrayToIntArray(triangles);
-                            var normalsArray = Helpers.StringArrayToVector3Array(normals);
-                            var uvsArray = Helpers.StringArrayToVector2Array(uvs);
-                            var tangentsArray = Helpers.StringArrayToVector4Array(tangents);
-                            var indicesArray = Helpers.StringArrayToIntArray(indices);
-
-                            var mesh = new Mesh();
-                            mesh.SetVertices(verticesArrary);
-                            mesh.SetTriangles(trianglesArray, 0);
-                            mesh.SetNormals(normalsArray);
-                            mesh.SetUVs(0, uvsArray);
-                            mesh.SetTangents(tangentsArray);
-                            mesh.SetIndices(indicesArray, (MeshTopology)topology, 0);
-
-                            mesh.RecalculateNormals();
-                            mesh.RecalculateTangents();
-                            mesh.RecalculateBounds();
-
-                            var serializableMaterial = new SerializableMaterial(materials);
-
-                            callbackResults.SetResult(serializableMaterial.GetMaterial());
-
-                            if (callbackResults.Success())
-                                meshDataList.Add((mesh, serializableMaterial.GetMaterial().data));
-                            else
-                                break;
+                            var meshDataArray = meshSplitResultsList[i].Split(subMeshSplit);
+                            submeshDataList.Add(meshDataArray.ToList());
                         }
 
-                        if (callbackResults.Success())
+                        if (submeshDataList.Count > 0)
                         {
-                            if (meshDataList.Count > 0)
+                            var meshDataList = new List<(string name, Mesh mesh, Material material)>();
+
+                            for (int i = 0; i < submeshDataList.Count; i++)
                             {
-                                var loadedGameObjectsList = new List<GameObject>();
+                                var  meshName = submeshDataList[i][0];
 
-                                GameObject loadedGameObjectParent = new GameObject(name);
+                                var vertices = submeshDataList[i][1].Split(vertexSplit);
+                                var triangles = submeshDataList[i][2].Split(" ");
+                                var normals = submeshDataList[i][3].Split(normalSplit);
+                                var uvs = submeshDataList[i][4].Split(uvSplit);
+                                var tangents = submeshDataList[i][5].Split(tangentSplit);
+                                var indices = submeshDataList[i][6].Split(" "); ;
+                                var topology = int.Parse(submeshDataList[i][7]);
+                                var materials = submeshDataList[i][8];
 
-                                for (int i = 0; i < meshDataList.Count; i++)
+                                var verticesArrary = Helpers.StringArrayToVector3Array(vertices);
+                                var trianglesArray = Helpers.StringArrayToIntArray(triangles);
+                                var normalsArray = Helpers.StringArrayToVector3Array(normals);
+                                var uvsArray = Helpers.StringArrayToVector2Array(uvs);
+                                var tangentsArray = Helpers.StringArrayToVector4Array(tangents);
+                                var indicesArray = Helpers.StringArrayToIntArray(indices);
+
+                                var mesh = new Mesh();
+                                mesh.name = meshName;
+                                mesh.SetVertices(verticesArrary);
+                                mesh.SetTriangles(trianglesArray, 0);
+                                mesh.SetNormals(normalsArray);
+                                mesh.SetUVs(0, uvsArray);
+                                mesh.SetTangents(tangentsArray);
+                                mesh.SetIndices(indicesArray, (MeshTopology)topology, 0);
+
+                                mesh.RecalculateNormals();
+                                mesh.RecalculateTangents();
+                                mesh.RecalculateBounds();
+
+                                var serializableMaterial = new SerializableMaterial(materials);
+
+                                callbackResults.SetResult(serializableMaterial.GetMaterial());
+
+                                if (callbackResults.Success())
+                                    meshDataList.Add((meshName, mesh, serializableMaterial.GetMaterial().data));
+                                else
+                                    break;
+                            }
+
+                            if (callbackResults.Success())
+                            {
+                                if (meshDataList.Count > 0)
                                 {
-                                    GameObject loadedGameObject = new GameObject(name + $"_{i}");
+                                    var objectHierachy = new ContentHierachyObject(hierachy);
 
-                                    var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
-                                    var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
+                                    callbackResults.SetResult(objectHierachy.GetHierachyTransformInfo());
 
-                                    meshFilter.sharedMesh = meshDataList[i].mesh;
-                                    meshRenderer.sharedMaterial = meshDataList[i].material;
-                                    meshRenderer.UpdateGIMaterials();
+                                    if (callbackResults.Success())
+                                    {
+                                        var hierachList = objectHierachy.GetHierachyTransformInfo().data;
 
-                                    if (!loadedGameObjectsList.Contains(loadedGameObject))
-                                        loadedGameObjectsList.Add(loadedGameObject);
+                                        var loadedGameObjectsList = new List<GameObject>();
 
-                                    //loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
-                                }
+                                        GameObject loadedGameObjectParent = new GameObject(hierachList[0].transform.name);
 
-                                if(loadedGameObjectsList.Count > 0)
-                                {
+                                        var meshData = meshDataList.Find(mesh => mesh.name == loadedGameObjectParent.name);
 
+                                        if (meshData.mesh != null && meshData.material != null)
+                                        {
+                                            var gameObjectTransformData = hierachList[0];
 
-                                    callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
-                                    callbackResults.data = loadedGameObjectParent;
-                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                            loadedGameObjectParent.transform.localPosition = gameObjectTransformData.transform.localPosition;
+                                            loadedGameObjectParent.transform.localScale = gameObjectTransformData.transform.localScale;
+                                            loadedGameObjectParent.transform.eulerAngles = gameObjectTransformData.transform.localEulerAngles;
+
+                                            var meshFilter = loadedGameObjectParent.AddComponent<MeshFilter>();
+                                            var meshRenderer = loadedGameObjectParent.AddComponent<MeshRenderer>();
+
+                                            meshFilter.sharedMesh = meshData.mesh;
+                                            meshRenderer.sharedMaterial = meshData.material;
+                                            meshRenderer.UpdateGIMaterials();
+
+                                            if (!loadedGameObjectsList.Contains(loadedGameObjectParent))
+                                                loadedGameObjectsList.Add(loadedGameObjectParent);
+                                            else
+                                            {
+                                                callbackResults.result = $"Adding Loaded Parent Game Object : {loadedGameObjectParent.name} - Please Check Here.";
+                                                callbackResults.data = default;
+                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                            }
+                                        }
+
+                                        if(hierachList.Count > 1)
+                                        {
+                                            for (int i = 0; i < hierachList.Count; i++)
+                                            {
+                                                if (i != 0)
+                                                {
+                                                    var gameObjectTransformData = hierachList[i];
+                                                    var meshAndMaterialData = meshDataList.Find(mesh => mesh.name == hierachList[i].Item1.name);
+
+                                                    if (meshAndMaterialData.mesh != null)
+                                                    {
+                                                        GameObject loadedGameObject = new GameObject(gameObjectTransformData.transform.name);
+                                                        loadedGameObject.transform.localPosition = gameObjectTransformData.transform.localPosition;
+                                                        loadedGameObject.transform.localScale = gameObjectTransformData.transform.localScale;
+                                                        loadedGameObject.transform.eulerAngles = gameObjectTransformData.transform.localEulerAngles;
+
+                                                        var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
+                                                        var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
+
+                                                        meshFilter.sharedMesh = meshAndMaterialData.mesh;
+                                                        meshRenderer.sharedMaterial = meshAndMaterialData.material;
+                                                        meshRenderer.UpdateGIMaterials();
+
+                                                        if (!loadedGameObjectsList.Contains(loadedGameObject))
+                                                            loadedGameObjectsList.Add(loadedGameObject);
+                                                        else
+                                                        {
+                                                            callbackResults.result = $"Adding Loaded Game Object : {loadedGameObject.name} - At Index : {i} - Failed : Please Check Here.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                            break;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        GameObject loadedGameObject = new GameObject(gameObjectTransformData.transform.name);
+                                                        Debug.Log($" +++++++++ Creating Game Object : {hierachList[i].Item1.name} Withiout Mesh");
+
+                                                        if (!loadedGameObjectsList.Contains(loadedGameObject))
+                                                            loadedGameObjectsList.Add(loadedGameObject);
+                                                        else
+                                                        {
+                                                            callbackResults.result = $"Adding Loaded Game Object : {loadedGameObject.name} - At Index : {i} - Failed : Please Check Here.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        //for (int i = 0; i < meshDataList.Count; i++)
+                                        //{
+                                        //    GameObject loadedGameObject = new GameObject(name + $"_{i}");
+
+                                        //    var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
+                                        //    var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
+
+                                        //    meshFilter.sharedMesh = meshDataList[i].mesh;
+                                        //    meshRenderer.sharedMaterial = meshDataList[i].material;
+                                        //    meshRenderer.UpdateGIMaterials();
+
+                                        //    if (!loadedGameObjectsList.Contains(loadedGameObject))
+                                        //        loadedGameObjectsList.Add(loadedGameObject);
+
+                                        //    //loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
+                                        //}
+
+                                        if (loadedGameObjectsList.Count > 0)
+                                        {
+                                            Debug.Log($" ************ Loaded : {loadedGameObjectsList.Count} Sub Game Objects");
+
+                                            callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
+                                            callbackResults.data = loadedGameObjectParent;
+                                            callbackResults.resultCode = Helpers.SuccessCode;
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Failed To Add Loaded Game Objects To List. Please Check Here.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    callbackResults.result = $"Failed To Add Loaded Game Objects To List. Please Check Here.";
+                                    callbackResults.result = $"Failed To Create Sub Meshes Data. Please Check Here.";
                                     callbackResults.data = default;
                                     callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             }
-                            else
-                            {
-                                callbackResults.result = $"Failed To Create Sub Meshes Data. Please Check Here.";
-                                callbackResults.data = default;
-                                callbackResults.resultCode = Helpers.ErrorCode;
-                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Get Sub Meshes Data Using : {subMeshSplit} - Value Is Null / Empty.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
                     else
                     {
-                        callbackResults.result = $"Failed To Get Sub Meshes Data Using : {subMeshSplit} - Value Is Null / Empty.";
+                        callbackResults.result = $"Failed To Split Mesh Data Using : {meshSplit} - Value Is Null / Empty.";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.result = $"Failed To Split Mesh Data Using : {meshSplit} - Value Is Null / Empty.";
+                    callbackResults.result = $"Failed To Split Object String Data Using : {objectString} - Value Is Null / Empty.";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
@@ -33860,12 +33973,17 @@ namespace Com.RedicalGames.Filar
             {
                 var dataArray = source.Split(seperator);
 
-                var name = dataArray[0];
-                var position = dataArray[1].ToVector3();
-                var scale = dataArray[2].ToVector3();
-                var eular = dataArray[3].ToVector3();
+                if (dataArray != null && dataArray.Length > 0)
+                {
+                    var name = dataArray[0];
+                    var position = dataArray[1].ToVector3();
+                    var scale = dataArray[2].ToVector3();
+                    var eular = dataArray[3].ToVector3();
 
-                return (name, position, scale, eular);
+                    return (name, position, scale, eular);
+                }
+                else
+                    throw new ArgumentException("String To Transform Info Failed. String Data Is Null.");
             }
 
             #endregion
