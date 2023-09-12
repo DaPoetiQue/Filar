@@ -3652,9 +3652,13 @@ namespace Com.RedicalGames.Filar
 
                                         var rootGameObjectTransformData = hierachList[0];
 
-                                        var loadedGameObjectsList = new List<(string name, GameObject gameObject, string parentName)>();
+                                        var loadedGameObjectsList = new List<((string name, GameObject gameObject, string parentName) gameObject, (Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) gameObjectTransform)>();
 
                                         GameObject loadedRootParentGameObject = new GameObject(rootGameObjectTransformData.transform.name);
+
+                                        loadedRootParentGameObject.transform.position = rootGameObjectTransformData.transform.localPosition;
+                                        loadedRootParentGameObject.transform.localScale = rootGameObjectTransformData.transform.localScale;
+                                        loadedRootParentGameObject.transform.rotation = Quaternion.Euler(rootGameObjectTransformData.transform.localEulerAngles);
 
                                         var meshData = meshDataList.Find(mesh => mesh.name == loadedRootParentGameObject.name);
 
@@ -3674,10 +3678,6 @@ namespace Com.RedicalGames.Filar
 
                                         if (meshData.mesh != null && meshData.material != null)
                                         {
-                                            loadedRootParentGameObject.transform.localPosition = rootGameObjectTransformData.transform.localPosition;
-                                            loadedRootParentGameObject.transform.localScale = rootGameObjectTransformData.transform.localScale;
-                                            loadedRootParentGameObject.transform.eulerAngles = rootGameObjectTransformData.transform.localEulerAngles;
-
                                             var meshFilter = loadedRootParentGameObject.AddComponent<MeshFilter>();
                                             var meshRenderer = loadedRootParentGameObject.AddComponent<MeshRenderer>();
 
@@ -3686,9 +3686,10 @@ namespace Com.RedicalGames.Filar
                                             meshRenderer.UpdateGIMaterials();
 
                                             var loadedRootTransformData = (rootGameObjectTransformData.transform.name, loadedRootParentGameObject, rootGameObjectTransformData.transformInfo.parentName);
+                                            var loadedRootTransform = (rootGameObjectTransformData.transform.localPosition, rootGameObjectTransformData.transform.localScale, rootGameObjectTransformData.transform.localEulerAngles);
 
-                                            if (!loadedGameObjectsList.Contains(loadedRootTransformData))
-                                                loadedGameObjectsList.Add(loadedRootTransformData);
+                                            if (!loadedGameObjectsList.Contains((loadedRootTransformData, loadedRootTransform)))
+                                                loadedGameObjectsList.Add((loadedRootTransformData, loadedRootTransform));
                                             else
                                             {
                                                 callbackResults.result = $"Adding Loaded Parent Game Object : {loadedRootParentGameObject.name} - Please Check Here.";
@@ -3709,9 +3710,6 @@ namespace Com.RedicalGames.Filar
                                                     if (meshAndMaterialData.mesh != null)
                                                     {
                                                         GameObject loadedGameObject = new GameObject(gameObjectTransformData.transform.name);
-                                                        loadedGameObject.transform.localPosition = gameObjectTransformData.transform.localPosition;
-                                                        loadedGameObject.transform.localScale = gameObjectTransformData.transform.localScale;
-                                                        loadedGameObject.transform.eulerAngles = gameObjectTransformData.transform.localEulerAngles;
 
                                                         var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
                                                         var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
@@ -3733,9 +3731,10 @@ namespace Com.RedicalGames.Filar
                                                         }
 
                                                         var loadedTransformData = (gameObjectTransformData.transform.name, loadedGameObject, gameObjectTransformData.transformInfo.parentName);
+                                                        var loadedTransform = (gameObjectTransformData.transform.localPosition, gameObjectTransformData.transform.localScale, gameObjectTransformData.transform.localEulerAngles);
 
-                                                        if (!loadedGameObjectsList.Contains(loadedTransformData))
-                                                            loadedGameObjectsList.Add(loadedTransformData);
+                                                        if (!loadedGameObjectsList.Contains((loadedTransformData, loadedTransform)))
+                                                            loadedGameObjectsList.Add((loadedTransformData, loadedTransform));
                                                         else
                                                         {
                                                             callbackResults.result = $"Adding Loaded Game Object : {loadedGameObject.name} - At Index : {i} - Failed : Please Check Here.";
@@ -3762,9 +3761,10 @@ namespace Com.RedicalGames.Filar
                                                         }
 
                                                         var loadedTransformData = (gameObjectTransformData.transform.name, loadedGameObject, gameObjectTransformData.transformInfo.parentName);
+                                                        var loadedTransform = (gameObjectTransformData.transform.localPosition, gameObjectTransformData.transform.localScale, gameObjectTransformData.transform.localEulerAngles);
 
-                                                        if (!loadedGameObjectsList.Contains(loadedTransformData))
-                                                            loadedGameObjectsList.Add(loadedTransformData);
+                                                        if (!loadedGameObjectsList.Contains((loadedTransformData, loadedTransform)))
+                                                            loadedGameObjectsList.Add((loadedTransformData, loadedTransform));
                                                         else
                                                         {
                                                             callbackResults.result = $"Adding Loaded Game Object : {loadedGameObject.name} - At Index : {i} - Failed : Please Check Here.";
@@ -3782,19 +3782,27 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (loadedGameObjectsList.Count > 1 && objectParentsList.Count > 0)
                                             {
-                                                Debug.Log($" +++++++ Parents : {objectParentsList.Count}");
-
                                                 for (int i = 0; i < loadedGameObjectsList.Count; i++)
                                                 {
-                                                    if (loadedGameObjectsList[i].parentName != "NULL")
-                                                    {
-                                                        var parentTransform = objectParentsList.Find(parent => parent.name == loadedGameObjectsList[i].parentName);
+                                                    var parentName = loadedGameObjectsList[i].gameObject.parentName;
 
-                                                        if(parentTransform != null)
-                                                            loadedGameObjectsList[i].gameObject.transform.SetParent(parentTransform, true);
+                                                    if (parentName != "NULL")
+                                                    {
+                                                        var gameObjectTransform = loadedGameObjectsList[i].gameObject.gameObject.transform;
+                                                        var transform = loadedGameObjectsList[i].gameObjectTransform;
+                                                        var parentTransform = objectParentsList.Find(parent => parent.name == parentName);
+
+                                                        if (parentTransform != null)
+                                                        {
+                                                            gameObjectTransform.SetParent(parentTransform, false);
+
+                                                            gameObjectTransform.localPosition = transform.localPosition;
+                                                            gameObjectTransform.localScale = transform.localScale;
+                                                            gameObjectTransform.localEulerAngles = transform.localEulerAngles;
+                                                        }
                                                         else
                                                         {
-                                                            callbackResults.result = $"Game Object : {loadedGameObjectsList[i].gameObject.name}'s Parent Name : {loadedGameObjectsList[i].parentName} Missing / Not Found - Please Check Here.";
+                                                            callbackResults.result = $"Game Object : {loadedGameObjectsList[i].gameObject.name}'s Parent Name : {loadedGameObjectsList[i].gameObject.parentName} Missing / Not Found - Please Check Here.";
                                                             callbackResults.data = default;
                                                             callbackResults.resultCode = Helpers.ErrorCode;
 
