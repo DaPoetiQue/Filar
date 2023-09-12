@@ -3650,32 +3650,48 @@ namespace Com.RedicalGames.Filar
                                     {
                                         var hierachList = objectHierachy.GetHierachyTransformInfo().data;
 
-                                        var loadedGameObjectsList = new List<GameObject>();
+                                        var rootGameObjectTransformData = hierachList[0];
 
-                                        GameObject loadedGameObjectParent = new GameObject(hierachList[0].transform.name);
+                                        var loadedGameObjectsList = new List<(string name, GameObject gameObject, string parentName)>();
 
-                                        var meshData = meshDataList.Find(mesh => mesh.name == loadedGameObjectParent.name);
+                                        GameObject loadedRootParentGameObject = new GameObject(rootGameObjectTransformData.transform.name);
+
+                                        var meshData = meshDataList.Find(mesh => mesh.name == loadedRootParentGameObject.name);
+
+                                        var objectParentsList = new List<Transform>();
+
+                                        if (rootGameObjectTransformData.transformInfo.childCount > 0)
+                                        {
+                                            if (!objectParentsList.Contains(loadedRootParentGameObject.transform))
+                                                objectParentsList.Add(loadedRootParentGameObject.transform);
+                                            else
+                                            {
+                                                callbackResults.result = $"Adding Parent Game Object As Parent Transform : {loadedRootParentGameObject.name} - Please Check Here.";
+                                                callbackResults.data = default;
+                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                            }
+                                        }
 
                                         if (meshData.mesh != null && meshData.material != null)
                                         {
-                                            var gameObjectTransformData = hierachList[0];
+                                            loadedRootParentGameObject.transform.localPosition = rootGameObjectTransformData.transform.localPosition;
+                                            loadedRootParentGameObject.transform.localScale = rootGameObjectTransformData.transform.localScale;
+                                            loadedRootParentGameObject.transform.eulerAngles = rootGameObjectTransformData.transform.localEulerAngles;
 
-                                            loadedGameObjectParent.transform.localPosition = gameObjectTransformData.transform.localPosition;
-                                            loadedGameObjectParent.transform.localScale = gameObjectTransformData.transform.localScale;
-                                            loadedGameObjectParent.transform.eulerAngles = gameObjectTransformData.transform.localEulerAngles;
-
-                                            var meshFilter = loadedGameObjectParent.AddComponent<MeshFilter>();
-                                            var meshRenderer = loadedGameObjectParent.AddComponent<MeshRenderer>();
+                                            var meshFilter = loadedRootParentGameObject.AddComponent<MeshFilter>();
+                                            var meshRenderer = loadedRootParentGameObject.AddComponent<MeshRenderer>();
 
                                             meshFilter.sharedMesh = meshData.mesh;
                                             meshRenderer.sharedMaterial = meshData.material;
                                             meshRenderer.UpdateGIMaterials();
 
-                                            if (!loadedGameObjectsList.Contains(loadedGameObjectParent))
-                                                loadedGameObjectsList.Add(loadedGameObjectParent);
+                                            var loadedRootTransformData = (rootGameObjectTransformData.transform.name, loadedRootParentGameObject, rootGameObjectTransformData.transformInfo.parentName);
+
+                                            if (!loadedGameObjectsList.Contains(loadedRootTransformData))
+                                                loadedGameObjectsList.Add(loadedRootTransformData);
                                             else
                                             {
-                                                callbackResults.result = $"Adding Loaded Parent Game Object : {loadedGameObjectParent.name} - Please Check Here.";
+                                                callbackResults.result = $"Adding Loaded Parent Game Object : {loadedRootParentGameObject.name} - Please Check Here.";
                                                 callbackResults.data = default;
                                                 callbackResults.resultCode = Helpers.ErrorCode;
                                             }
@@ -3704,8 +3720,22 @@ namespace Com.RedicalGames.Filar
                                                         meshRenderer.sharedMaterial = meshAndMaterialData.material;
                                                         meshRenderer.UpdateGIMaterials();
 
-                                                        if (!loadedGameObjectsList.Contains(loadedGameObject))
-                                                            loadedGameObjectsList.Add(loadedGameObject);
+                                                        if (gameObjectTransformData.transformInfo.childCount > 0)
+                                                        {
+                                                            if (!objectParentsList.Contains(loadedGameObject.transform))
+                                                                objectParentsList.Add(loadedGameObject.transform);
+                                                            else
+                                                            {
+                                                                callbackResults.result = $"Adding Parent Game Object As Parent Transform : {loadedGameObject.name} - Please Check Here.";
+                                                                callbackResults.data = default;
+                                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                                            }
+                                                        }
+
+                                                        var loadedTransformData = (gameObjectTransformData.transform.name, loadedGameObject, gameObjectTransformData.transformInfo.parentName);
+
+                                                        if (!loadedGameObjectsList.Contains(loadedTransformData))
+                                                            loadedGameObjectsList.Add(loadedTransformData);
                                                         else
                                                         {
                                                             callbackResults.result = $"Adding Loaded Game Object : {loadedGameObject.name} - At Index : {i} - Failed : Please Check Here.";
@@ -3718,10 +3748,23 @@ namespace Com.RedicalGames.Filar
                                                     else
                                                     {
                                                         GameObject loadedGameObject = new GameObject(gameObjectTransformData.transform.name);
-                                                        Debug.Log($" +++++++++ Creating Game Object : {hierachList[i].Item1.name} Withiout Mesh");
 
-                                                        if (!loadedGameObjectsList.Contains(loadedGameObject))
-                                                            loadedGameObjectsList.Add(loadedGameObject);
+                                                        if (gameObjectTransformData.transformInfo.childCount > 0)
+                                                        {
+                                                            if (!objectParentsList.Contains(loadedGameObject.transform))
+                                                                objectParentsList.Add(loadedGameObject.transform);
+                                                            else
+                                                            {
+                                                                callbackResults.result = $"Adding Parent Game Object As Parent Transform : {loadedGameObject.name} - Please Check Here.";
+                                                                callbackResults.data = default;
+                                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                                            }
+                                                        }
+
+                                                        var loadedTransformData = (gameObjectTransformData.transform.name, loadedGameObject, gameObjectTransformData.transformInfo.parentName);
+
+                                                        if (!loadedGameObjectsList.Contains(loadedTransformData))
+                                                            loadedGameObjectsList.Add(loadedTransformData);
                                                         else
                                                         {
                                                             callbackResults.result = $"Adding Loaded Game Object : {loadedGameObject.name} - At Index : {i} - Failed : Please Check Here.";
@@ -3735,36 +3778,57 @@ namespace Com.RedicalGames.Filar
                                             }
                                         }
 
-                                        //for (int i = 0; i < meshDataList.Count; i++)
-                                        //{
-                                        //    GameObject loadedGameObject = new GameObject(name + $"_{i}");
-
-                                        //    var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
-                                        //    var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
-
-                                        //    meshFilter.sharedMesh = meshDataList[i].mesh;
-                                        //    meshRenderer.sharedMaterial = meshDataList[i].material;
-                                        //    meshRenderer.UpdateGIMaterials();
-
-                                        //    if (!loadedGameObjectsList.Contains(loadedGameObject))
-                                        //        loadedGameObjectsList.Add(loadedGameObject);
-
-                                        //    //loadedGameObject.transform.SetParent(loadedGameObjectParent.transform);
-                                        //}
-
-                                        if (loadedGameObjectsList.Count > 0)
+                                        if (callbackResults.Success())
                                         {
-                                            Debug.Log($" ************ Loaded : {loadedGameObjectsList.Count} Sub Game Objects");
+                                            if (loadedGameObjectsList.Count > 1 && objectParentsList.Count > 0)
+                                            {
+                                                Debug.Log($" +++++++ Parents : {objectParentsList.Count}");
 
-                                            callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
-                                            callbackResults.data = loadedGameObjectParent;
-                                            callbackResults.resultCode = Helpers.SuccessCode;
-                                        }
-                                        else
-                                        {
-                                            callbackResults.result = $"Failed To Add Loaded Game Objects To List. Please Check Here.";
-                                            callbackResults.data = default;
-                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                                for (int i = 0; i < loadedGameObjectsList.Count; i++)
+                                                {
+                                                    if (loadedGameObjectsList[i].parentName != "NULL")
+                                                    {
+                                                        var parentTransform = objectParentsList.Find(parent => parent.name == loadedGameObjectsList[i].parentName);
+
+                                                        if(parentTransform != null)
+                                                            loadedGameObjectsList[i].gameObject.transform.SetParent(parentTransform, true);
+                                                        else
+                                                        {
+                                                            callbackResults.result = $"Game Object : {loadedGameObjectsList[i].gameObject.name}'s Parent Name : {loadedGameObjectsList[i].parentName} Missing / Not Found - Please Check Here.";
+                                                            callbackResults.data = default;
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                            break;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = $"Game Object : {meshDataList.Count} Parent Name Is Set To Null.";
+                                                        callbackResults.data = default;
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
+                                                    callbackResults.data = loadedRootParentGameObject;
+                                                }
+                                            }
+                                            else if(loadedGameObjectsList.Count == 1)
+                                            {
+                                                callbackResults.result = $"Created Game Object From : {meshDataList.Count} Sub Meshes.";
+                                                callbackResults.data = loadedRootParentGameObject;
+                                                callbackResults.resultCode = Helpers.SuccessCode;
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Failed To Load Objects - Please Check Here.";
+                                                callbackResults.data = default;
+                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                            }
                                         }
                                     }
                                 }
