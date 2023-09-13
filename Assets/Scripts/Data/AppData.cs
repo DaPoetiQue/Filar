@@ -8,6 +8,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Burst;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -1238,17 +1242,25 @@ namespace Com.RedicalGames.Filar
 
                 if (container != null)
                 {
-                    content.GetModel().SetActive(false);
-                    content.GetModel().transform.SetParent(container, keepWorldPos);
+                    if (content.GetModel() != null)
+                    {      
+                        content.GetModel().transform.SetParent(container, keepWorldPos);
+                        content.GetModel().SetActive(false);
 
-                    if (!content.GetModel().activeSelf && content.GetModel().transform.parent == container)
-                    {
-                        callbackResults.result = $"Added Content : {content.name} To Container : {container.name} Successfully.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        if (!content.GetModel().activeSelf && content.GetModel().transform.parent == container)
+                        {
+                            callbackResults.result = $"Added Content : {content.name} To Container : {container.name} Successfully.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Add Content : {content.name} To Container : {container.name} - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = $"Failed To Add Content : {content.name} To Container : {container.name} - Please Check Here.";
+                        callbackResults.result = $"Failed To Add Content - Content Model Is Missing / Null Please Check Here.";
                         callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
@@ -1537,7 +1549,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected ContentRecycleContainer recycleContainer;
+            protected ContentRecycleContainer recycleContainer = new ContentRecycleContainer();
 
             #endregion
 
@@ -1551,7 +1563,7 @@ namespace Com.RedicalGames.Filar
 
             #region Content Clear
 
-            public async void Clear(bool showSpinner = false, Action<Callback> callback = null)
+            public void Clear(bool showSpinner = false, Action<Callback> callback = null)
             {
                 try
                 {
@@ -3554,11 +3566,36 @@ namespace Com.RedicalGames.Filar
                         var readableMesh = Helpers.GetReadableMesh(meshProperties[i].GetFilter().sharedMesh);
                         var meshName = meshProperties[i].GetFilter().gameObject.name;
 
-                        var vertices = Helpers.Vector3ArrayToString(readableMesh.vertices, vertexSplit);
+                        #region Vertices - Delete This
+
+                        //var verticesSplitStringArray = Encoding.UTF8.GetBytes(vertexSplit);
+
+                        //var verticesJob = new Vector3ArrayToStringJob()
+                        //{
+                        //    vectorNativeArray = new NativeArray<Vector3>(readableMesh.vertices, Allocator.TempJob),
+                        //    splitStringNativeArray = new NativeArray<byte>(verticesSplitStringArray, Allocator.TempJob),
+                        //    results = new NativeList<byte>(Allocator.TempJob)
+                        //};
+
+                        //var verticesJobHandle = verticesJob.Schedule();
+
+                        //verticesJobHandle.Complete();
+
+                        //var vertices = Encoding.UTF8.GetString(verticesJob.results.ToArray());
+
+                        //verticesJob.vectorNativeArray.Dispose();
+                        //verticesJob.splitStringNativeArray.Dispose();
+                        //verticesJob.results.Dispose();
+
+                        //Debug.Log($" +++++++++++ Vertices String : {vertices}");
+
+                        #endregion
+
+                        var vertices = Helpers.Vector3ArrayToStringJob(readableMesh.vertices, vertexSplit);
                         var triangles = Helpers.IntArrayToString(readableMesh.triangles);
-                        var normals = Helpers.Vector3ArrayToString(readableMesh.normals, normalSplit);
-                        var uvs = Helpers.Vector2ArrayToString(readableMesh.uv, uvSplit);
-                        var tangents = Helpers.Vector4ArrayToString(readableMesh.tangents, tangentSplit);
+                        var normals = Helpers.Vector3ArrayToStringJob(readableMesh.normals, normalSplit);
+                        var uvs = Helpers.Vector2ArrayToStringJob(readableMesh.uv, uvSplit);
+                        var tangents = Helpers.Vector4ArrayToStringJob(readableMesh.tangents, tangentSplit);
                         var indices = Helpers.IntArrayToString(readableMesh.GetIndices(0));
                         var topology = ((int)readableMesh.GetTopology(0)).ToString();
 
@@ -33461,6 +33498,179 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        #region Unity Jobs
+
+        [BurstCompile]
+        public struct Vector2ArrayToStringJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<Vector2> vectorNativeArray;
+
+            [ReadOnly]
+            public NativeArray<byte> splitStringNativeArray;
+
+            public NativeList<byte> results;
+
+            public void Execute()
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
+
+                for (int i = 0; i < vectorNativeArray.Length; i++)
+                    stringBuilder.Append(vectorNativeArray[i].x).Append(" ").Append(vectorNativeArray[i].y).Append(seperator);
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
+
+                for (int i = 0; i < stringBytesArray.Length; i++)
+                    results.Add(stringBytesArray[i]);
+            }
+        }
+
+        [BurstCompile]
+        public struct Vector3ArrayToStringJob : IJob
+        {    
+            [ReadOnly]
+            public NativeArray<Vector3> vectorNativeArray;
+
+            [ReadOnly]
+            public NativeArray<byte> splitStringNativeArray;
+
+            public NativeList<byte> results;
+
+            public void Execute()
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
+
+                for (int i = 0; i < vectorNativeArray.Length; i++)
+                    stringBuilder.Append(vectorNativeArray[i].x).Append(" ").Append(vectorNativeArray[i].y).Append(" ").Append(vectorNativeArray[i].z).Append(seperator);
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
+
+                for (int i = 0; i < stringBytesArray.Length; i++)
+                    results.Add(stringBytesArray[i]);
+            }
+        }
+
+        [BurstCompile]
+        public struct Vector4ArrayToStringJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<Vector4> vectorNativeArray;
+
+            [ReadOnly]
+            public NativeArray<byte> splitStringNativeArray;
+
+            public NativeList<byte> results;
+
+            public void Execute()
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
+
+                for (int i = 0; i < vectorNativeArray.Length; i++)
+                    stringBuilder.Append(vectorNativeArray[i].x).Append(" ").Append(vectorNativeArray[i].y).Append(" ").Append(vectorNativeArray[i].z).Append(" ").Append(vectorNativeArray[i].w).Append(seperator);
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
+
+                for (int i = 0; i < stringBytesArray.Length; i++)
+                    results.Add(stringBytesArray[i]);
+            }
+        }
+
+        #endregion
+
+        #region Managed Objects
+
+        public struct ManagedObjectReference<T> where T : class
+        {
+            #region Components
+
+            public readonly int id;
+
+            #endregion
+
+            #region Constructors
+
+            public ManagedObjectReference(int id) => this.id = id;
+
+            #endregion
+        }
+
+        public class ManagedObject
+        {
+            #region Components
+
+            int nextID;
+            readonly Dictionary<int, object> objects;
+
+            #endregion
+
+            #region Constructors
+
+            public ManagedObject(int initialCapacity = 1000)
+            {
+                nextID = 1;
+                objects = new Dictionary<int, object>(initialCapacity);
+            }
+
+            #endregion
+
+            #region Main
+
+            public ManagedObjectReference<T> Add<T>(T objectReference)where T: class
+            {
+                int id = nextID;
+                nextID++;
+                objects[id] = objectReference;
+                return new ManagedObjectReference<T>(id);
+            }
+
+            public T Get<T>(ManagedObjectReference<T> managedObject) where T : class => (T)objects[managedObject.id];
+
+            public void Remove<T>(ManagedObjectReference<T> managedObject) where T : class => objects.Remove(managedObject.id);
+
+            #endregion
+        }
+
+        public struct ManagedStringObject
+        {
+            #region Comopents
+
+            public byte[] stringArray;
+
+            public object stringValue;
+
+            #endregion
+
+            #region Main
+
+            public void SetStringArray(object stringValue) => stringArray = Encoding.UTF8.GetBytes((string)stringValue);
+            public void SetStringArray(byte[] stringArray) => stringValue = Encoding.UTF8.GetString(stringArray);
+
+            public byte[] GetStringArray() => stringArray;
+            public byte[] GetStringArray(object stringValue) => Encoding.UTF8.GetBytes((string)stringValue);
+
+            public object GetStringValue() => (string)stringValue;
+            public object GetStringValue(byte[] stringArray) => (object)Encoding.UTF8.GetString(stringArray);
+
+            #endregion
+        }
+
+        #endregion
+
         public static class Helpers
         {
             public static DeviceInfo GetDeviceInfo()
@@ -33982,6 +34192,78 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentException("Vector 3 Array To String Failed - Array Data Is Null.");
 
                 return stringBuilder.ToString();
+            }
+
+            public static string Vector2ArrayToStringJob(Vector2[] arrayData, string seperator)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+
+                var vectorStringJob = new Vector2ArrayToStringJob()
+                {
+                    vectorNativeArray = new NativeArray<Vector2>(arrayData, Allocator.TempJob),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
+                    results = new NativeList<byte>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = vectorStringJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
+
+                vectorStringJob.vectorNativeArray.Dispose();
+                vectorStringJob.splitStringNativeArray.Dispose();
+                vectorStringJob.results.Dispose();
+
+                return results;
+            }
+
+            public static string Vector3ArrayToStringJob(Vector3[] arrayData, string seperator)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+
+                var vectorStringJob = new Vector3ArrayToStringJob()
+                {
+                    vectorNativeArray = new NativeArray<Vector3>(arrayData, Allocator.TempJob),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
+                    results = new NativeList<byte>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = vectorStringJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
+
+                vectorStringJob.vectorNativeArray.Dispose();
+                vectorStringJob.splitStringNativeArray.Dispose();
+                vectorStringJob.results.Dispose();
+
+                return results;
+            }
+
+            public static string Vector4ArrayToStringJob(Vector4[] arrayData, string seperator)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+
+                var vectorStringJob = new Vector4ArrayToStringJob()
+                {
+                    vectorNativeArray = new NativeArray<Vector4>(arrayData, Allocator.TempJob),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
+                    results = new NativeList<byte>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = vectorStringJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
+
+                vectorStringJob.vectorNativeArray.Dispose();
+                vectorStringJob.splitStringNativeArray.Dispose();
+                vectorStringJob.results.Dispose();
+
+                return results;
             }
 
             public static string Vector3ToString(Vector3 data, string seperator)

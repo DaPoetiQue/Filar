@@ -4445,6 +4445,8 @@ namespace Com.RedicalGames.Filar
 
                                                 var model = modelCallbackResults.data;
 
+                                                model.GetModel().SetActive(true);
+
                                                 contentContainer.AddContent(model, false, true, contentAddedCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(contentAddedCallbackResults);

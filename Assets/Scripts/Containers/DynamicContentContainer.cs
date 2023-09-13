@@ -37,23 +37,21 @@ namespace Com.RedicalGames.Filar
 
                             if (contentHandler != null)
                             {
-                                recycleContainer.AddContent(contentHandler, false);
+                                if (recycleContainer != null)
+                                {
+                                    recycleContainer.AddContent(contentHandler, false, contentAddedCallbackResults => 
+                                    {
+                                        callback.Invoke(contentAddedCallbackResults);
+                                    });
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Recycle Container Is Not Yet Initialized.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
                             }
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
-                        }
-
-                        if (container.childCount == 0)
-                        {
-                            AppDatabaseManager.Instance.UnloadUnusedAssets();
-
-                            callbackResults.result = "All Widgets Cleared.";
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                     else
