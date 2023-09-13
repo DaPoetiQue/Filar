@@ -1214,6 +1214,74 @@ namespace Com.RedicalGames.Filar
         #region Container Classes
 
         [Serializable]
+        public class ContentRecycleContainer
+        {
+            #region Components
+
+            public Transform container;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            #endregion
+
+            #region Data Getters
+
+            #endregion
+
+            public void AddContent<T>(T content, bool keepWorldPos, Action<Callback> callback = null) where T : PostContentHandler
+            {
+                Callback callbackResults = new Callback();
+
+                if (container != null)
+                {
+                    content.GetModel().SetActive(false);
+                    content.GetModel().transform.SetParent(container, keepWorldPos);
+
+                    if (!content.GetModel().activeSelf && content.GetModel().transform.parent == container)
+                    {
+                        callbackResults.result = $"Added Content : {content.name} To Container : {container.name} Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Add Content : {content.name} To Container : {container.name} - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Add Content : {content.name} - Container Is Null / Missing..";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            public void ClearAll()
+            {
+                if (container.childCount > 0)
+                {
+                    for (int i = 0; i < container.childCount; i++)
+                       GameObject.Destroy(container.GetChild(i).gameObject);
+
+                    if (container.childCount == 0)
+                    {
+                        AppDatabaseManager.Instance.UnloadUnusedAssets();
+                    }
+                    else
+                    {
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        [Serializable]
         public class DynamicContainerData : AppComponent
         {
             #region Components
@@ -1466,6 +1534,10 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             [SerializeField]
             bool selectableContent;
+
+            [Space(5)]
+            [SerializeField]
+            protected ContentRecycleContainer recycleContainer;
 
             #endregion
 

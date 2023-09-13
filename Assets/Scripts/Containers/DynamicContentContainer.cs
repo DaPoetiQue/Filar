@@ -37,7 +37,7 @@ namespace Com.RedicalGames.Filar
 
                             if (contentHandler != null)
                             {
-                                contentHandler.GetModel().SetActive(false);
+                                recycleContainer.AddContent(contentHandler, false);
                             }
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
