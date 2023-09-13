@@ -3372,13 +3372,13 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public ContentHierachyObject(GameObject obj, string objName = null)
+            public async Task<string> SetupHierachy(GameObject obj, string objName = null)
             {
                 var rootTransformString = obj.transform.TransformToString();
 
                 var rootTransformStringBuilder = new StringBuilder();
 
-                rootTransformStringBuilder.Append(rootTransformString).Append(subHierachySplit).Append(!string.IsNullOrEmpty(obj.transform?.parent?.name)? obj.transform?.parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.childCount).Append(subHierachySplit);
+                rootTransformStringBuilder.Append(rootTransformString).Append(subHierachySplit).Append(!string.IsNullOrEmpty(obj.transform?.parent?.name) ? obj.transform?.parent?.name : "NULL").Append(subHierachySplit).Append(obj.transform.childCount).Append(subHierachySplit);
 
                 var hierachyStringBuilder = new StringBuilder();
 
@@ -3397,11 +3397,14 @@ namespace Com.RedicalGames.Filar
 
                             transformStringBuilder.Append(transformString).Append(subHierachySplit).Append(!string.IsNullOrEmpty(transforms[i].parent?.name) ? transforms[i].parent?.name : "NULL").Append(subHierachySplit).Append(transforms[i].childCount);
                             hierachyStringBuilder.Append(hierachySplit).Append(transformStringBuilder);
+                           
                         }
+
+                        await Task.Yield();
                     }
                 }
 
-                hierachyString = hierachyStringBuilder.ToString();
+                return hierachyStringBuilder.ToString();
             }
 
             public ContentHierachyObject(string hierachyString) => this.hierachyString = hierachyString;
@@ -3551,13 +3554,15 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
-                callbackResults.SetResult(Helpers.GetMeshPropertiesData(value));
+                var getMeshTaskCallbackResults = await Helpers.GetMeshPropertiesData(value);
+
+                callbackResults.SetResult(getMeshTaskCallbackResults);
 
                 if (callbackResults.Success())
                 {
-                    var meshProperties = Helpers.GetMeshPropertiesData(value).data;
-                    var objectHierachy = new ContentHierachyObject(value);
-                    var objectHierachyString = objectHierachy.GetHierachyString();
+                    var meshProperties = getMeshTaskCallbackResults.data;
+                    var objectHierachy = new ContentHierachyObject();
+                    var objectHierachyString = await objectHierachy.SetupHierachy(value);
 
                     var subMeshStringList = new List<string>();
 
@@ -3592,11 +3597,11 @@ namespace Com.RedicalGames.Filar
                         #endregion
 
                         var vertices = Helpers.Vector3ArrayToStringJob(readableMesh.vertices, vertexSplit);
-                        var triangles = Helpers.IntArrayToString(readableMesh.triangles);
+                        var triangles = Helpers.IntArrayToStringJob(readableMesh.triangles);
                         var normals = Helpers.Vector3ArrayToStringJob(readableMesh.normals, normalSplit);
                         var uvs = Helpers.Vector2ArrayToStringJob(readableMesh.uv, uvSplit);
                         var tangents = Helpers.Vector4ArrayToStringJob(readableMesh.tangents, tangentSplit);
-                        var indices = Helpers.IntArrayToString(readableMesh.GetIndices(0));
+                        var indices = Helpers.IntArrayToStringJob(readableMesh.GetIndices(0));
                         var topology = ((int)readableMesh.GetTopology(0)).ToString();
 
                         var serializableMaterialData = new SerializableMaterial(meshProperties[i].GetRenderer().sharedMaterial);
@@ -3604,9 +3609,12 @@ namespace Com.RedicalGames.Filar
 
                         var childNameList = new List<string>();
 
-                        if(meshProperties[i].GetFilter().gameObject.transform.childCount > 0)
+                        if (meshProperties[i].GetFilter().gameObject.transform.childCount > 0)
                             for (int j = 0; j < meshProperties[i].GetFilter().gameObject.transform.childCount; j++)
+                            {
                                 childNameList.Add(meshProperties[i].GetFilter().gameObject.transform.GetChild(j).name);
+                                await Task.Yield();
+                            }
 
                         StringBuilder subMeshString = new StringBuilder();
 
@@ -3688,7 +3696,6 @@ namespace Com.RedicalGames.Filar
 
                     var meshSplitResultsList = meshResults.Split(meshSplit);
 
-                    await Task.Yield();
 
                     if (meshSplitResultsList != null && meshSplitResultsList.Length > 0)
                     {
@@ -3698,6 +3705,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var meshDataArray = meshSplitResultsList[i].Split(subMeshSplit);
                             submeshDataList.Add(meshDataArray.ToList());
+                            await Task.Yield();
                         }
 
                         if (submeshDataList.Count > 0)
@@ -3708,21 +3716,15 @@ namespace Com.RedicalGames.Filar
                             {
                                 var  meshName = submeshDataList[i][0];
 
-                                var vertices = submeshDataList[i][1].Split(vertexSplit);
-                                var triangles = submeshDataList[i][2].Split(" ");
-                                var normals = submeshDataList[i][3].Split(normalSplit);
-                                var uvs = submeshDataList[i][4].Split(uvSplit);
-                                var tangents = submeshDataList[i][5].Split(tangentSplit);
-                                var indices = submeshDataList[i][6].Split(" "); ;
+                                var verticesArrary = Helpers.StringToVector3ArrayJob(submeshDataList[i][1], vertexSplit);
+                                var trianglesArray = Helpers.StringToIntArrayJob(submeshDataList[i][2]);
+                                var normalsArray = Helpers.StringToVector3ArrayJob(submeshDataList[i][3], normalSplit);
+                                var uvsArray = Helpers.StringToVector2ArrayJob(submeshDataList[i][4], uvSplit);
+                                var tangentsArray = Helpers.StringToVector4ArrayJob(submeshDataList[i][5], tangentSplit);
+                                var indicesArray = Helpers.StringToIntArrayJob(submeshDataList[i][6]);
+
                                 var topology = int.Parse(submeshDataList[i][7]);
                                 var materials = submeshDataList[i][8];
-
-                                var verticesArrary = Helpers.StringArrayToVector3Array(vertices);
-                                var trianglesArray = Helpers.StringArrayToIntArray(triangles);
-                                var normalsArray = Helpers.StringArrayToVector3Array(normals);
-                                var uvsArray = Helpers.StringArrayToVector2Array(uvs);
-                                var tangentsArray = Helpers.StringArrayToVector4Array(tangents);
-                                var indicesArray = Helpers.StringArrayToIntArray(indices);
 
                                 var mesh = new Mesh();
                                 mesh.name = meshName;
@@ -3745,6 +3747,9 @@ namespace Com.RedicalGames.Filar
                                     meshDataList.Add((meshName, mesh, serializableMaterial.GetMaterial().data));
                                 else
                                     break;
+
+
+                                await Task.Yield();
                             }
 
                             if (callbackResults.Success())
@@ -3884,6 +3889,8 @@ namespace Com.RedicalGames.Filar
                                                         }
                                                     }
                                                 }
+
+                                                await Task.Yield();
                                             }
                                         }
 
@@ -3926,6 +3933,8 @@ namespace Com.RedicalGames.Filar
 
                                                         break;
                                                     }
+
+                                                    await Task.Yield();
                                                 }
 
                                                 if (callbackResults.Success())
@@ -33531,6 +33540,23 @@ namespace Com.RedicalGames.Filar
         }
 
         [BurstCompile]
+        public struct StringToVector2ArrayJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<byte> byteNativeArray;
+
+            [ReadOnly]
+            public NativeArray<byte> splitStringNativeArray;
+
+            public NativeList<Vector2> results;
+
+            public void Execute()
+            {
+
+            }
+        }
+
+        [BurstCompile]
         public struct Vector3ArrayToStringJob : IJob
         {    
             [ReadOnly]
@@ -33561,6 +33587,23 @@ namespace Com.RedicalGames.Filar
         }
 
         [BurstCompile]
+        public struct StringToVector3ArrayJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<byte> byteNativeArray;
+
+            [ReadOnly]
+            public NativeArray<byte> splitStringNativeArray;
+
+            public NativeList<Vector3> results;
+
+            public void Execute()
+            {
+               
+            }
+        }
+
+        [BurstCompile]
         public struct Vector4ArrayToStringJob : IJob
         {
             [ReadOnly]
@@ -33587,6 +33630,62 @@ namespace Com.RedicalGames.Filar
 
                 for (int i = 0; i < stringBytesArray.Length; i++)
                     results.Add(stringBytesArray[i]);
+            }
+        }
+
+        [BurstCompile]
+        public struct StringToVector4ArrayJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<byte> byteNativeArray;
+
+            [ReadOnly]
+            public NativeArray<byte> splitStringNativeArray;
+
+            public NativeList<Vector4> results;
+
+            public void Execute()
+            {
+
+            }
+        }
+
+        [BurstCompile]
+        public struct IntArrayToStringJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<int> vectorNativeArray;
+
+            public NativeList<byte> results;
+
+            public void Execute()
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (int i = 0; i < vectorNativeArray.Length; i++)
+                    stringBuilder.Append(vectorNativeArray[i]).Append(" ");
+
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
+
+                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
+
+                for (int i = 0; i < stringBytesArray.Length; i++)
+                    results.Add(stringBytesArray[i]);
+            }
+        }
+
+        [BurstCompile]
+        public struct StringToIntArrayJob : IJob
+        {
+            [ReadOnly]
+            public NativeArray<byte> byteNativeArray;
+
+            public NativeList<int> results;
+
+            public void Execute()
+            {
+
             }
         }
 
@@ -34081,6 +34180,32 @@ namespace Com.RedicalGames.Filar
                 return vectorArray;
             }
 
+
+            public static Vector2[] StringToVector2ArrayJob(string source, string seperator)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+                var arrayData = Encoding.UTF8.GetBytes(source);
+
+                var stringToVectorArrayJob = new StringToVector2ArrayJob()
+                {
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
+                    results = new NativeList<Vector2>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = stringToVectorArrayJob.results.ToArray();
+
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.results.Dispose();
+
+                return results;
+            }
+
             public static Vector3[] StringArrayToVector3Array(string[] arrayData)
             {
                 var vectorArray = new Vector3[arrayData.Length];
@@ -34096,6 +34221,31 @@ namespace Com.RedicalGames.Filar
                 }
 
                 return vectorArray;
+            }
+
+            public static Vector3[] StringToVector3ArrayJob(string source, string seperator)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+                var arrayData = Encoding.UTF8.GetBytes(source);
+
+                var stringToVectorArrayJob = new StringToVector3ArrayJob()
+                {
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
+                    results = new NativeList<Vector3>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = stringToVectorArrayJob.results.ToArray();
+
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.results.Dispose();
+
+                return results;
             }
 
             public static Vector4[] StringArrayToVector4Array(string[] arrayData)
@@ -34115,6 +34265,31 @@ namespace Com.RedicalGames.Filar
                 return vectorArray;
             }
 
+            public static Vector4[] StringToVector4ArrayJob(string source, string seperator)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+                var arrayData = Encoding.UTF8.GetBytes(source);
+
+                var stringToVectorArrayJob = new StringToVector4ArrayJob()
+                {
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
+                    results = new NativeList<Vector4>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = stringToVectorArrayJob.results.ToArray();
+
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.results.Dispose();
+
+                return results;
+            }
+
             public static int[] StringArrayToIntArray(string[] arrayData)
             {
                 var intArray = new int[arrayData.Length];
@@ -34124,6 +34299,29 @@ namespace Com.RedicalGames.Filar
                         intArray[i] = int.Parse(arrayData[i]);
 
                 return intArray;
+            }
+
+            public static int[] StringToIntArrayJob(string source)
+            {
+                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
+                var arrayData = Encoding.UTF8.GetBytes(source);
+
+                var stringToVectorArrayJob = new StringToIntArrayJob()
+                {
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
+                    results = new NativeList<int>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = stringToVectorArrayJob.results.ToArray();
+
+                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.results.Dispose();
+
+                return results;
             }
 
             public static string Vector2ArrayToString(Vector2[] arrayData, string seperator)
@@ -34364,6 +34562,26 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentException("Int Array To String Failed- Array Data Is Null.");
 
                 return stringBuilder.ToString();
+            }
+
+            public static string IntArrayToStringJob(int[] arrayData)
+            {
+                var vectorStringJob = new IntArrayToStringJob()
+                {
+                    vectorNativeArray = new NativeArray<int>(arrayData, Allocator.TempJob),
+                    results = new NativeList<byte>(Allocator.TempJob)
+                };
+
+                var vectorStringJobHandle = vectorStringJob.Schedule();
+
+                vectorStringJobHandle.Complete();
+
+                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
+
+                vectorStringJob.vectorNativeArray.Dispose();
+                vectorStringJob.results.Dispose();
+
+                return results;
             }
 
             public static async Task<string> IntArrayToStringAsync(int[] arrayData)
@@ -34669,7 +34887,7 @@ namespace Com.RedicalGames.Filar
                 return mesh;
             }
 
-            public static CallbackDataArray<MeshProperties> GetMeshPropertiesData(GameObject gameObject)
+            public async static Task<CallbackDataArray<MeshProperties>> GetMeshPropertiesData(GameObject gameObject)
             {
                 CallbackDataArray<MeshProperties> callbackResults = new CallbackDataArray<MeshProperties>();
 
@@ -34681,6 +34899,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var meshProperties = new MeshProperties(gameObject.GetComponents<MeshFilter>()[i], gameObject.GetComponents<MeshRenderer>()[i]);
                         meshPropertiesList.Add(meshProperties);
+                        await Task.Yield();
                     }
                 }
 
@@ -34692,6 +34911,7 @@ namespace Com.RedicalGames.Filar
 
                         var meshProperties = new MeshProperties(meshFilterObject.GetComponent<MeshFilter>(), meshFilterObject.GetComponent<MeshRenderer>());
                         meshPropertiesList.Add(meshProperties);
+                        await Task.Yield();
                     }
                 }
 
