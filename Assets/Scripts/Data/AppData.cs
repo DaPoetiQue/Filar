@@ -1839,7 +1839,6 @@ namespace Com.RedicalGames.Filar
                                         if (callbackResults.Success())
                                         {
                                             content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
-                                            content.gameObject.SetActive(isActive);
 
                                             if (updateContainer)
                                                 OnUpdatedContainerSize();
@@ -1894,10 +1893,7 @@ namespace Com.RedicalGames.Filar
                                         callbackResults.SetResult(GetViewSpace());
 
                                         if (callbackResults.Success())
-                                        {
                                             content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
-                                            content.gameObject.SetActive(isActive);
-                                        }
                                     }
                                 }
                                 else
@@ -3694,7 +3690,6 @@ namespace Com.RedicalGames.Filar
 
                 if (objectSplitResultsList != null && objectSplitResultsList.Length == 2)
                 {
-
                     var meshResults = objectSplitResultsList[0];
                     var hierachy = objectSplitResultsList[1];
 
@@ -3752,7 +3747,6 @@ namespace Com.RedicalGames.Filar
                                 else
                                     break;
 
-
                                 await Task.Yield();
                             }
 
@@ -3773,7 +3767,6 @@ namespace Com.RedicalGames.Filar
                                         var loadedGameObjectsList = new List<((string name, GameObject gameObject, string parentName) gameObject, (Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) gameObjectTransform)>();
 
                                         GameObject loadedRootParentGameObject = new GameObject(rootGameObjectTransformData.transform.name);
-                                        loadedRootParentGameObject.SetActive(false);
 
                                         loadedRootParentGameObject.transform.position = rootGameObjectTransformData.transform.localPosition;
                                         loadedRootParentGameObject.transform.localScale = rootGameObjectTransformData.transform.localScale;
