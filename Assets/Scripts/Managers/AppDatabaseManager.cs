@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Threading.Tasks;
-using System.Collections;
 using System.Linq;
 using static TMPro.TMP_Dropdown;
-using Firebase;
+using Firebase.Messaging;
 using Firebase.Database;
 using Firebase.Storage;
 
@@ -259,6 +258,12 @@ namespace Com.RedicalGames.Filar
         StorageReference storageReference;
 
         Dictionary<AppData.Post, object> postContents = new Dictionary<AppData.Post, object>();
+
+        #endregion
+
+        #region Messaging
+
+        FirebaseMessaging messaging;
 
         #endregion
 
@@ -4447,7 +4452,7 @@ namespace Com.RedicalGames.Filar
 
                                                 model.GetModel().SetActive(true);
 
-                                                contentContainer.AddContent(model, false, true, contentAddedCallbackResults =>
+                                                contentContainer.AddContent(model, false, true, true, contentAddedCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(contentAddedCallbackResults);
 
@@ -4472,7 +4477,7 @@ namespace Com.RedicalGames.Filar
 
                                                 AppData.SessionStorage<AppData.Post, PostContentHandler>.Store(post, model);
 
-                                                contentContainer.AddContent(model, false, true, contentAddedCallbackResults =>
+                                                contentContainer.AddContent(model, false, true, true, contentAddedCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(contentAddedCallbackResults);
 

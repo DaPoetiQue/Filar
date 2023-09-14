@@ -1812,7 +1812,7 @@ namespace Com.RedicalGames.Filar
 
             #region Contents
 
-            public void AddContent<T>(T content, bool keepWorldPosition = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent
+            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent
             {
                 try
                 {
@@ -1839,6 +1839,7 @@ namespace Com.RedicalGames.Filar
                                         if (callbackResults.Success())
                                         {
                                             content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
+                                            content.gameObject.SetActive(isActive);
 
                                             if (updateContainer)
                                                 OnUpdatedContainerSize();
@@ -1868,7 +1869,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public async Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool updateContainer = false) where T : SelectableDynamicContent
+            public async Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false) where T : SelectableDynamicContent
             {
                 try
                 {
@@ -1893,7 +1894,10 @@ namespace Com.RedicalGames.Filar
                                         callbackResults.SetResult(GetViewSpace());
 
                                         if (callbackResults.Success())
+                                        {
                                             content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
+                                            content.gameObject.SetActive(isActive);
+                                        }
                                     }
                                 }
                                 else
@@ -3769,6 +3773,7 @@ namespace Com.RedicalGames.Filar
                                         var loadedGameObjectsList = new List<((string name, GameObject gameObject, string parentName) gameObject, (Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) gameObjectTransform)>();
 
                                         GameObject loadedRootParentGameObject = new GameObject(rootGameObjectTransformData.transform.name);
+                                        loadedRootParentGameObject.SetActive(false);
 
                                         loadedRootParentGameObject.transform.position = rootGameObjectTransformData.transform.localPosition;
                                         loadedRootParentGameObject.transform.localScale = rootGameObjectTransformData.transform.localScale;
@@ -33552,7 +33557,20 @@ namespace Com.RedicalGames.Filar
 
             public void Execute()
             {
+                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
+                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
 
+                var arrayData = bytesToStringResults.Split(seperator);
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                    {
+                        var vectorSplit = arrayData[i].Split(" ");
+                        var vector = new Vector2(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]));
+                        results.Add(vector);
+                    }
+                }
             }
         }
 
@@ -33599,7 +33617,20 @@ namespace Com.RedicalGames.Filar
 
             public void Execute()
             {
-               
+                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
+                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
+
+                var arrayData = bytesToStringResults.Split(seperator);
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                    {
+                        var vectorSplit = arrayData[i].Split(" ");
+                        var vector = new Vector3(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]));
+                        results.Add(vector);
+                    }
+                }
             }
         }
 
@@ -33646,7 +33677,20 @@ namespace Com.RedicalGames.Filar
 
             public void Execute()
             {
+                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
+                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
 
+                var arrayData = bytesToStringResults.Split(seperator);
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    for (int i = 0; i < arrayData.Length; i++)
+                    {
+                        var vectorSplit = arrayData[i].Split(" ");
+                        var vector = new Vector4(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]), float.Parse(vectorSplit[3]));
+                        results.Add(vector);
+                    }
+                }
             }
         }
 
@@ -33685,7 +33729,18 @@ namespace Com.RedicalGames.Filar
 
             public void Execute()
             {
+                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
 
+                var arrayData = bytesToStringResults.Split(" ");
+
+                if (arrayData != null && arrayData.Length > 0)
+                {
+                    var intArray = new int[arrayData.Length];
+
+                    if (arrayData != null && arrayData.Length > 0)
+                        for (int i = 0; i < arrayData.Length; i++)
+                            results.Add(int.Parse(arrayData[i]));
+                }
             }
         }
 
@@ -34188,9 +34243,9 @@ namespace Com.RedicalGames.Filar
 
                 var stringToVectorArrayJob = new StringToVector2ArrayJob()
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
-                    results = new NativeList<Vector2>(Allocator.TempJob)
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.Persistent),
+                    results = new NativeList<Vector2>(Allocator.Persistent)
                 };
 
                 var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
@@ -34199,7 +34254,7 @@ namespace Com.RedicalGames.Filar
 
                 var results = stringToVectorArrayJob.results.ToArray();
 
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.byteNativeArray.Dispose();
                 stringToVectorArrayJob.splitStringNativeArray.Dispose();
                 stringToVectorArrayJob.results.Dispose();
 
@@ -34230,9 +34285,9 @@ namespace Com.RedicalGames.Filar
 
                 var stringToVectorArrayJob = new StringToVector3ArrayJob()
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
-                    results = new NativeList<Vector3>(Allocator.TempJob)
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.Persistent),
+                    results = new NativeList<Vector3>(Allocator.Persistent)
                 };
 
                 var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
@@ -34241,7 +34296,7 @@ namespace Com.RedicalGames.Filar
 
                 var results = stringToVectorArrayJob.results.ToArray();
 
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.byteNativeArray.Dispose();
                 stringToVectorArrayJob.splitStringNativeArray.Dispose();
                 stringToVectorArrayJob.results.Dispose();
 
@@ -34272,9 +34327,9 @@ namespace Com.RedicalGames.Filar
 
                 var stringToVectorArrayJob = new StringToVector4ArrayJob()
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
-                    results = new NativeList<Vector4>(Allocator.TempJob)
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
+                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.Persistent),
+                    results = new NativeList<Vector4>(Allocator.Persistent)
                 };
 
                 var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
@@ -34283,7 +34338,7 @@ namespace Com.RedicalGames.Filar
 
                 var results = stringToVectorArrayJob.results.ToArray();
 
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.byteNativeArray.Dispose();
                 stringToVectorArrayJob.splitStringNativeArray.Dispose();
                 stringToVectorArrayJob.results.Dispose();
 
@@ -34303,13 +34358,12 @@ namespace Com.RedicalGames.Filar
 
             public static int[] StringToIntArrayJob(string source)
             {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
                 var arrayData = Encoding.UTF8.GetBytes(source);
 
                 var stringToVectorArrayJob = new StringToIntArrayJob()
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.TempJob),
-                    results = new NativeList<int>(Allocator.TempJob)
+                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
+                    results = new NativeList<int>(Allocator.Persistent)
                 };
 
                 var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
@@ -34318,7 +34372,7 @@ namespace Com.RedicalGames.Filar
 
                 var results = stringToVectorArrayJob.results.ToArray();
 
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
+                stringToVectorArrayJob.byteNativeArray.Dispose();
                 stringToVectorArrayJob.results.Dispose();
 
                 return results;
@@ -36973,9 +37027,9 @@ namespace Com.RedicalGames.Filar
 
             CallbackData<UIScreenType> GetContainerScreenType();
 
-            void AddContent<T>(T content, bool keepWorldPosition = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
+            void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
 
-            Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool updateContainer = false) where T : SelectableDynamicContent;
+            Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false) where T : SelectableDynamicContent;
 
             void SetContainerSize(Vector3 size, Action<Callback> callback = null);
         }
