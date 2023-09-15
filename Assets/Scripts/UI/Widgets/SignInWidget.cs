@@ -23,21 +23,21 @@ namespace Com.RedicalGames.Filar
         {
             signInWidget = this;
 
-            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults => 
             {
-                if (sceneAssetsManagerCallbackResults.Success())
+                if (databaseManagerCallbackResults.Success())
                 {
                     var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
 
                     transitionable = new AppData.TransitionableUI(widgetContainer.value);
-                    transitionable.SetSpeed(sceneAssetsManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+                    transitionable.SetSpeed(databaseManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
 
                     base.Init();
                 }
                 else
-                    Log(sceneAssetsManagerCallbackResults.resultCode, sceneAssetsManagerCallbackResults.result, this);
+                    Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
             
-            }, "Scene Assets Manager Instance Is Not Yet Initialized.");
+            }, "App Database Manager Instance Is Not Yet Initialized.");
         }
 
         protected override void OnHideScreenWidget()

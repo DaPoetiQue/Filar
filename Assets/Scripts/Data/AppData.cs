@@ -15261,18 +15261,24 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void SetImageData(Sprite image)
+            public void SetImageData(Sprite image, bool preserveAspectRatio = true)
             {
                 if (value != null)
+                {
                     value.sprite = image;
+                    value.preserveAspect = preserveAspectRatio;
+                }
                 else
                     Debug.LogWarning("SetImageData Failed - Displayer Value Missing.");
             }
 
-            public void SetImageData(Texture2D image)
+            public void SetImageData(Texture2D image, bool preserveAspectRatio = true)
             {
                 if (value != null)
+                {
                     value.sprite = Helpers.Texture2DToSprite(image);
+                    value.preserveAspect = preserveAspectRatio;
+                }
                 else
                     Debug.LogWarning("--> SetImageData Failed - Displayer Value Missing.");
             }
@@ -16988,6 +16994,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        public enum UITransitionType
+        {
+            None,
+            Translate,
+            Scale,
+            Rotate
+        }
+
         [Serializable]
         public class TransitionableUI : DataDebugger
         {
@@ -16999,6 +17013,8 @@ namespace Com.RedicalGames.Filar
 
             bool transitionUI = false;
 
+            public UITransitionType transitionType;
+
             #endregion
 
             #region Main
@@ -17009,83 +17025,98 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public TransitionableUI(RectTransform transitionable) => this.transitionable = transitionable;
+            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType)
+            {
+                this.transitionable = transitionable;
+                this.transitionType = transitionType;
+            }
 
-            public TransitionableUI(RectTransform transitionable, Vector2 target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, Vector2 target, float transitionSpeed)
             {
                 this.transitionable = transitionable;
                 this.targetPosition = target;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(RectTransform transitionable, RectTransform target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, RectTransform target, float transitionSpeed)
             {
                 this.transitionable = transitionable;
                 this.targetPosition = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(RectTransform transitionable, Transform target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, Transform target, float transitionSpeed)
             {
                 this.transitionable = transitionable;
                 this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(RectTransform transitionable, GameObject target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, GameObject target, float transitionSpeed)
             {
                 this.transitionable = transitionable;
                 this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(Transform transitionable, Vector2 target, float transitionSpeed)
+            public TransitionableUI(Transform transitionable, UITransitionType transitionType, Vector2 target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(Transform transitionable, RectTransform target, float transitionSpeed)
+            public TransitionableUI(Transform transitionable, UITransitionType transitionType, RectTransform target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(Transform transitionable, Transform target, float transitionSpeed)
+            public TransitionableUI(Transform transitionable, UITransitionType transitionType, Transform target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(GameObject transitionable, Vector2 target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, Vector2 target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(GameObject transitionable, RectTransform target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, RectTransform target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(GameObject transitionable, Transform target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, Transform target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
-            public TransitionableUI(GameObject transitionable, GameObject target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, GameObject target, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
                 this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition; ;
                 this.transitionSpeed = transitionSpeed;
+                this.transitionType = transitionType;
             }
 
             #endregion
@@ -17098,7 +17129,30 @@ namespace Com.RedicalGames.Filar
                     return;
 
                 if (!IsCompleted())
-                    transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, targetPosition, transitionSpeed * Time.smoothDeltaTime);
+                {
+                    if (transitionType != UITransitionType.None)
+                    {
+
+                        switch (transitionType)
+                        {
+                            case UITransitionType.Translate:
+
+                                transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, targetPosition, transitionSpeed * Time.smoothDeltaTime);
+
+                                break;
+
+                            case UITransitionType.Scale:
+
+                                break;
+
+                            case UITransitionType.Rotate:
+
+                                break;
+                        }
+                    }
+                    else
+                        throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                }
                 else
                 {
                     transitionable.anchoredPosition = targetPosition;
@@ -17122,29 +17176,21 @@ namespace Com.RedicalGames.Filar
 
             public void SetSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
 
+            public void SetTransitionType(UITransitionType transitionType) => this.transitionType = transitionType;
+
             #endregion
 
             #region Getters
 
-            public RectTransform GetTransitionable()
-            {
-                return transitionable;
-            }
+            public RectTransform GetTransitionable() => transitionable;
 
-            public Vector2 GetTargetPosition()
-            {
-                return targetPosition;
-            }
+            public Vector2 GetTargetPosition() => targetPosition;
 
-            public float GetTransitionSpeed()
-            {
-                return transitionSpeed;
-            }
+            public float GetTransitionSpeed() => transitionSpeed;
 
-            public bool IsCompleted()
-            {
-                return (transitionable.anchoredPosition - targetPosition).magnitude <= 0.01f;
-            }
+            public UITransitionType GetTransitionType() => transitionType;
+
+            public bool IsCompleted() => (transitionable.anchoredPosition - targetPosition).magnitude <= 0.01f;
 
             #endregion
 
@@ -28605,6 +28651,37 @@ namespace Com.RedicalGames.Filar
 
             #region UI Image Displayer Value
 
+            public void GetUIImageDisplayerValue(ScreenImageType displayerType, Action<CallbackData<UIImageDisplayer<ImageDataPackets>>> callback)
+            {
+                CallbackData<UIImageDisplayer<ImageDataPackets>> callbackResults = new CallbackData<UIImageDisplayer<ImageDataPackets>>();
+
+                if (imageDisplayers.Count > 0)
+                {
+                    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
+
+                    if (imageDisplayer != null)
+                    {
+                        callbackResults.result = $"Screen Widget's Get UI Image Displayer Value Success - Findound Image Displayer : {imageDisplayer.name} Of Type : {displayerType}.";
+                        callbackResults.data = imageDisplayer;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Widget's Get UI Image Displayer Value Failed - Couldn't Find Image Displayer Of Type : {displayerType}.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Screen Widget's Get UI Image Displayer Value Failed - Image Displayers Are Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
             public void SetUIImageDisplayerValue(ScreenImageType displayerType, ImageData screenCaptureData, ImageDataPackets dataPackets)
             {
                 if (imageDisplayers.Count > 0)
@@ -28620,14 +28697,14 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
             }
 
-            public void SetUIImageDisplayerValue(ScreenImageType displayerType, Texture2D imageData)
+            public void SetUIImageDisplayerValue(ScreenImageType displayerType, Texture2D imageData, bool preserveAspectRatio = true)
             {
                 if (imageDisplayers.Count > 0)
                 {
                     UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
 
                     if (imageDisplayer != null)
-                        imageDisplayer.SetImageData(imageData);
+                        imageDisplayer.SetImageData(imageData, preserveAspectRatio);
                     else
                         Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
                 }

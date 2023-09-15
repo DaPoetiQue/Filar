@@ -6,6 +6,8 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        AppData.TransitionableUI transitionable;
+
         #endregion
 
         #region Unity Callbacks
@@ -18,7 +20,32 @@ namespace Com.RedicalGames.Filar
         new void Init()
         {
             splashDisplayerWidget = this;
-            base.Init();
+
+            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults =>
+            {
+                if (databaseManagerCallbackResults.Success())
+                {
+                    var databaseManager = databaseManagerCallbackResults.data;
+
+                    GetUIImageDisplayerValue(AppData.ScreenImageType.ScreenSnap, imageDisplayerCallbackResults =>
+                    {
+                        if (imageDisplayerCallbackResults.Success())
+                        {
+                            var imageDisplayerValue = imageDisplayerCallbackResults.data.value.rectTransform;
+
+                            transitionable = new AppData.TransitionableUI(imageDisplayerValue);
+                            transitionable.SetSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+                        }
+                        else
+                            Log(imageDisplayerCallbackResults.ResultCode, imageDisplayerCallbackResults.Result, this);
+                    });
+
+                    base.Init();
+                }
+                else
+                    Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
+
+            }, "App Database Manager Instance Is Not Yet Initialized.");
         }
 
         protected override void OnHideScreenWidget()
