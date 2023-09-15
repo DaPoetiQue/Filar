@@ -255,6 +255,12 @@ namespace Com.RedicalGames.Filar
 
         #region Storage
 
+        [Space(5)]
+        [SerializeField]
+        string storageURL = "gs://filar-d7a9d.appspot.com/";
+
+        public string StorageURL { get { return storageURL; } private set { } } 
+
         StorageReference storageReference;
 
         Dictionary<AppData.Post, object> postContents = new Dictionary<AppData.Post, object>();
@@ -334,18 +340,53 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public async Task<AppData.CallbackData<Texture2D>> GetRandomSplashImage()
+        {
+            AppData.CallbackData<Texture2D> callbackResults = new AppData.CallbackData<Texture2D>();
+
+            do
+                storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(storageURL);
+            while (storageReference == null);
+
+            #region Splash Displayer
+
+            var imageDataBytesTaskResults = await storageReference.Child("App Library").Child("Images").Child("Splash Images").Child("Default").GetBytesAsync(int.MaxValue);
+
+            if (imageDataBytesTaskResults != null && imageDataBytesTaskResults.Length > 0)
+            {
+                var imageData = new AppData.SerializableImage(imageDataBytesTaskResults);
+                var image = imageData.GetRandomTexture2DImageFromCompressedData();
+
+                callbackResults.result = $"Image : {image.name} Has Been Loaded Successfully.";
+                callbackResults.data = image;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Failed To Load Splash Image Data From Server Storage.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            }
+
+            #endregion
+
+            return callbackResults;
+        }
+
         public async Task<AppData.CallbackData<AppData.Post>> InitializeStorage(AppData.Post post)
         {
             AppData.CallbackData<AppData.Post> callbackResults = new AppData.CallbackData<AppData.Post>();
 
             do
-                storageReference = FirebaseStorage.DefaultInstance.RootReference;
+                storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(storageURL);
             while (storageReference == null);
 
             callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name, "Publishing Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
+                #region Posts Content
+
                 var publishingManager = AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name).data;
 
                 var postContentsURL = publishingManager.PostContentsURL;
@@ -385,6 +426,7 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Failed To Load Content For : {post.GetTitle()} Posts.";
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
+                #endregion
             }
 
             return callbackResults;

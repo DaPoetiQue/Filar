@@ -1550,7 +1550,6 @@ namespace Com.RedicalGames.Filar
 
         #region Checkbox States
 
-
         public void SetScreenActionCheckboxState(AppData.UIScreenType screenType, AppData.InputUIState state)
         {
             OnFindScreenOfType(screenType, screenFound =>

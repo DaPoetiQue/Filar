@@ -118,6 +118,25 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public async void OnUploadImageData(AppData.SerializableImage imageData, Action<AppData.Callback> callback = null)
+        {
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
+            storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl("gs://filar-d7a9d.appspot.com/");
+
+            while (storageReference == null)
+                await Task.Yield();
+
+            LogInfo($"Uploading Images Started In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+
+            await storageReference.Child("App Library").Child("Images").Child("Splash Images").Child("Default").PutBytesAsync(imageData.GetImageDataFromCompressedData());
+
+            sw.Stop();
+
+            LogSuccess($"Image Data Has Been Uploaded Successfully In : {sw.ElapsedMilliseconds / 1000} Seconds", this);
+        }
+
         private void PublishingManager_ValueChanged1(object sender, ValueChangedEventArgs e)
         {
       

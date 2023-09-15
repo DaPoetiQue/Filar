@@ -148,7 +148,8 @@ namespace Com.RedicalGames.Filar
             SignInWarningWidget,
             AnonymousSignInConfirmationWidget,
             TermsAndConditionsWidget,
-            PostsWidget
+            PostsWidget,
+            SplashDisplayerWidget
         }
 
         public enum SubWidgetType
@@ -494,7 +495,8 @@ namespace Com.RedicalGames.Filar
         public enum ScreenImageType
         {
             Thumbnail,
-            ScreenSnap
+            ScreenSnap,
+            Splash
         }
 
         public enum UIStateType
@@ -2250,6 +2252,36 @@ namespace Com.RedicalGames.Filar
             public SequenceInstance[] GetSequenceInstanceArray() => sequences.ToArray();
 
             public bool HasSequenceInstances() => sequences.Count > 0;
+
+            public void RemoveSequenceInstanceData(LoadingSequenceID loadingSequenceID, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var sequence = sequences.Find(sequence => sequence.GetSequenceID() == loadingSequenceID);
+
+                if (sequence != null)
+                {
+                    sequences.Remove(sequence);
+
+                    if(!sequences.Contains(sequence))
+                    {
+                        callbackResults.result = $"Sequence Insctance Of ID : {loadingSequenceID} Has Been Successfully Removed.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Remove Sequence Insctance Of ID : {loadingSequenceID} - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Sequence Insctance Of ID : {loadingSequenceID} Not Found.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
 
             #endregion
 
@@ -5174,6 +5206,8 @@ namespace Com.RedicalGames.Filar
 
             public byte[] imageData;
 
+            string imageSplitString = " img|", imageInfoSplit = " inf|";
+
             #endregion
 
             #region Constructors
@@ -5187,9 +5221,12 @@ namespace Com.RedicalGames.Filar
 
             public SerializableImage(Sprite imageData, Helpers.ImageEncoderType encoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, encoderType));
 
+            public SerializableImage(Helpers.ImageEncoderType encoderType = Helpers.ImageEncoderType.JPG, params Sprite[] images) => SetImageData(encoderType, images);
+
+            public SerializableImage(Helpers.ImageEncoderType encoderType = Helpers.ImageEncoderType.JPG, params Texture2D[] images) => SetImageData(encoderType, images);
+
             public SerializableImage(Texture imageData, Helpers.ImageEncoderType imageEncoderType) => SetImageData(Helpers.ImageToBytesArray((Texture2D)imageData, imageEncoderType));
         
-
             public SerializableImage(Texture2D imageData, Helpers.ImageEncoderType imageEncoderType) => SetImageData(Helpers.ImageToBytesArray(imageData, imageEncoderType));
 
             #endregion
@@ -5199,6 +5236,78 @@ namespace Com.RedicalGames.Filar
             #region Data Setters
 
             public void SetImageData(byte[] imageData) => this.imageData = imageData;
+
+            public void SetImageData(Helpers.ImageEncoderType encoderType = Helpers.ImageEncoderType.JPG, params Sprite[] images)
+            {
+                if (images != null && images.Length > 0)
+                {
+                    var imageBytesDataList = new List<byte[]>();
+
+                    var imagesBytesStringBuilder = new StringBuilder();
+
+                    for (int i = 0; i < images.Length; i++)
+                        imageBytesDataList.Add(Helpers.ImageToBytesArray(images[i], encoderType));
+
+                    if (imageBytesDataList.Count > 0)
+                    {
+                        for (int i = 0; i < imageBytesDataList.Count; i++)
+                        {
+                            var imageBytesToString = Convert.ToBase64String(imageBytesDataList[i]);
+
+                            var imageDataStringBuilder = new StringBuilder();
+                            imageDataStringBuilder.Append(images[i].name).Append(imageInfoSplit).Append(imageBytesToString).Append(imageInfoSplit).Append(images[i].texture.width).Append(imageInfoSplit).Append(images[i].texture.height);
+
+                            imagesBytesStringBuilder.Append(imageDataStringBuilder).Append(imageSplitString);
+                        }
+
+                        imagesBytesStringBuilder.Remove(imagesBytesStringBuilder.Length - imageSplitString.Length, imageSplitString.Length);
+
+                        imageData = Helpers.CompressStringToBytesArray(imagesBytesStringBuilder.ToString());
+
+                    }
+                    else
+                        throw new ArgumentException("Set Image Data Failed - No Images Found To Create Required Data.");
+                }
+                else
+                    throw new ArgumentException("Set Image Data Failed - No Images Found To Create Required Image Data.");
+            }
+
+            public void SetImageData(Helpers.ImageEncoderType encoderType = Helpers.ImageEncoderType.JPG, params Texture2D[] images)
+            {
+                if (images != null && images.Length > 0)
+                {
+                    var imageBytesDataList = new List<byte[]>();
+
+                    var imagesBytesStringBuilder = new StringBuilder();
+
+                    for (int i = 0; i < images.Length; i++)
+                        imageBytesDataList.Add(Helpers.ImageToBytesArray(images[i], encoderType));
+
+                    if(imageBytesDataList.Count > 0)
+                    {
+                        for (int i = 0; i < imageBytesDataList.Count; i++)
+                        {
+                            var imageBytesToString = Convert.ToBase64String(imageBytesDataList[i]);
+
+                            var imageDataStringBuilder = new StringBuilder();
+                            imageDataStringBuilder.Append(images[i].name).Append(imageInfoSplit).Append(imageBytesToString).Append(imageInfoSplit).Append(images[i].width).Append(imageInfoSplit).Append(images[i].height);
+
+                            Debug.Log($" ++++++++++++++++++++ Image : {images[i].name} Data : {imageBytesToString}");
+
+                            imagesBytesStringBuilder.Append(imageDataStringBuilder).Append(imageSplitString);
+                        }
+
+                        imagesBytesStringBuilder.Remove(imagesBytesStringBuilder.Length - imageSplitString.Length, imageSplitString.Length);
+
+                        imageData = Helpers.CompressStringToBytesArray(imagesBytesStringBuilder.ToString());
+
+                    }
+                    else
+                        throw new ArgumentException("Set Image Data Failed - No Images Found To Create Required Data.");
+                }
+                else
+                    throw new ArgumentException("Set Image Data Failed - No Images Found To Create Required Image Data.");
+            }
 
             #endregion
 
@@ -5217,6 +5326,45 @@ namespace Com.RedicalGames.Filar
             public Texture2D GetTexture2DImage(int width = 100, int height = 100) =>
                 Helpers.BytesArrayToTexture2D(imageData, width, height);
 
+            public Texture2D GetTexture2DImage(byte[] imageData, int width = 100, int height = 100) =>
+               Helpers.BytesArrayToTexture2D(imageData, width, height);
+
+            public Texture2D[] GetTexture2DImages(int width = 100, int height = 100)
+            {
+                if (imageData != null && imageData.Length > 0)
+                {
+                    var imageDataString = Encoding.UTF8.GetString(imageData);
+
+                    var imageDataSplitResults = imageDataString.Split(imageSplitString);
+
+                    if (imageDataSplitResults != null && imageDataSplitResults.Length > 0)
+                    {
+                        for (int i = 0; i < imageDataSplitResults.Length; i++)
+                        {
+                            Debug.Log($" ++++++++++++++++++++++++++ Image Data At : {i} - Results: {imageDataSplitResults[i]}");
+
+                            var imageInfoDataSplitString = imageDataSplitResults[i].Split(imageInfoSplit);
+
+                            if(imageInfoDataSplitString.Length > 0)
+                            {
+                                for (int j = 0; j < imageInfoDataSplitString.Length; j++)
+                                {
+                                    Debug.Log($" ++++++++++++++++++++++++++ Image Data At : {j} - Results: {imageInfoDataSplitString[j]}");
+                                }
+                            }
+                            else
+                                throw new ArgumentException($"Get Texture 2D Images Failed - Couldn't Split String : {imageDataSplitResults[i]} Using Seperator : {imageInfoSplit}.");
+                        }
+
+                        return null;
+                    }
+                    else
+                        throw new ArgumentException($"Get Texture 2D Images Failed : Couldn't Split Image String : {imageSplitString} Using Split String : {imageSplitString}");
+                }
+                else
+                    throw new ArgumentException($"Get Texture 2D Images Failed : Image Data Is Null.");
+            }
+
             #endregion
 
             #region Compressed
@@ -5231,6 +5379,110 @@ namespace Com.RedicalGames.Filar
 
             public Texture2D GetTexture2DImageFromCompressedData(int width = 100, int height = 100) =>
                 Helpers.BytesArrayToTexture2D(Helpers.UnCompressByteArray(imageData), width, height);
+
+            public Texture2D[] GetTexture2DImagesFromCompressedData()
+            {
+                if (imageData != null && imageData.Length > 0)
+                {
+                    var uncompressedImageData = GetImageDataFromUnCompressedData();
+                    var imageDataUncompressedString = Helpers.UnCompressByteArrayToString(uncompressedImageData);
+
+                    var imageDataSplitResults = imageDataUncompressedString.Split(imageSplitString);
+
+                    if (imageDataSplitResults != null && imageDataSplitResults.Length > 0)
+                    {
+                        var images = new Texture2D[imageDataSplitResults.Length];
+
+                        for (int i = 0; i < imageDataSplitResults.Length; i++)
+                        {
+                            Debug.Log($" ++++++++++++++++++ Image Data Results : {imageDataSplitResults[i]}");
+                            var imageInfoSplitArray = imageDataSplitResults[i].Split(imageInfoSplit);
+
+                            if (imageInfoSplitArray.Length == 4)
+                            {
+                                var name = imageInfoSplitArray[0];
+                                var imageBytes = Convert.FromBase64String(imageInfoSplitArray[1]);
+                                var width = int.Parse(imageInfoSplitArray[2]);
+                                var height = int.Parse(imageInfoSplitArray[3]);
+
+                                if (imageBytes != null && imageBytes.Length > 0)
+                                {
+                                    var image = Helpers.BytesArrayToTexture2D(imageBytes, width, height);
+                                    image.name = name;
+                                    images[i] = image;
+                                }
+                                else
+                                    throw new ArgumentException($"Get Texture 2D Images Failed : Image Data Is Null.");
+                            }
+                            else
+                                throw new ArgumentException($"Get Texture 2D Images Failed : Image Info Split Array With An Array Length Of : {imageInfoSplitArray.Length}'s Argument Is Out Of Range - Expected A Length Of 4.");
+                        }
+
+                        return images;
+                    }
+                    else
+                        throw new ArgumentException($"Get Texture 2D Images Failed : Couldn't Split Image String : {imageSplitString} Using Split String : {imageSplitString}");
+                }
+                else
+                    throw new ArgumentException($"Get Texture 2D Images Failed : Image Data Is Null.");
+            }
+
+            public Texture2D GetRandomTexture2DImageFromCompressedData()
+            {
+                if (imageData != null && imageData.Length > 0)
+                {
+                    var uncompressedImageData = GetImageDataFromUnCompressedData();
+                    var imageDataUncompressedString = Helpers.UnCompressByteArrayToString(uncompressedImageData);
+
+                    var imageDataSplitResults = imageDataUncompressedString.Split(imageSplitString);
+
+                    if (imageDataSplitResults != null && imageDataSplitResults.Length > 0)
+                    {
+                        var randomIndex = UnityEngine.Random.Range(0, imageDataSplitResults.Length - 1);
+
+                        for (int i = 0; i < imageDataSplitResults.Length; i++)
+                        {
+                            if (i == randomIndex)
+                            {
+                                var imageInfoSplitArray = imageDataSplitResults[i].Split(imageInfoSplit);
+
+                                if (imageInfoSplitArray.Length == 4)
+                                {
+                                    var name = imageInfoSplitArray[0];
+                                    var imageBytes = Convert.FromBase64String(imageInfoSplitArray[1]);
+                                    var width = int.Parse(imageInfoSplitArray[2]);
+                                    var height = int.Parse(imageInfoSplitArray[3]);
+
+                                    if (imageBytes != null && imageBytes.Length > 0)
+                                    {
+                                        var image = Helpers.BytesArrayToTexture2D(imageBytes, width, height);
+                                        image.name = name;
+                                        return image;
+                                    }
+                                    else
+                                        throw new ArgumentException($"Get Texture 2D Images Failed : Image Data Is Null.");
+                                }
+                                else
+                                    throw new ArgumentException($"Get Texture 2D Images Failed : Image Info Split Array With An Array Length Of : {imageInfoSplitArray.Length}'s Argument Is Out Of Range - Expected A Length Of 4.");
+
+                                break;
+                            }
+                        }
+
+                        return null;
+                    }
+                    else
+                        throw new ArgumentException($"Get Texture 2D Images Failed : Couldn't Split Image String : {imageSplitString} Using Split String : {imageSplitString}");
+                }
+                else
+                    throw new ArgumentException($"Get Texture 2D Images Failed : Image Data Is Null.");
+            }
+
+            #endregion
+
+            #region Uncompressed
+
+            public byte[] GetImageDataFromUnCompressedData() => Helpers.UnCompressByteArray(imageData);
 
             #endregion
 
@@ -25256,6 +25508,7 @@ namespace Com.RedicalGames.Filar
             protected TermsAndConditionsWidget termsAndConditionsWidget;
             protected PermissionRequestWidget permissionRequestWidget;
             protected PostsWidget postsWidget;
+            protected SplashDisplayerWidget splashDisplayerWidget;
 
             #endregion
 

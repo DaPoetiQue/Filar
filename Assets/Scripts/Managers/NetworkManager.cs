@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using UnityEngine;
-using Firebase;
 using Firebase.Database;
 
 namespace Com.RedicalGames.Filar
@@ -30,6 +29,8 @@ namespace Com.RedicalGames.Filar
         public NetworkReachability status;
 
         bool serverConnected = false;
+
+        public bool Connected { get { return (status == NetworkReachability.NotReachable) ? false : true; } private set { } }
 
         #endregion
 

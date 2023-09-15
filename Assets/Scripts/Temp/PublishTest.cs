@@ -20,6 +20,9 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.Helpers.ImageEncoderType imageEncoderType;
 
+        [SerializeField]
+        Texture2D[] images;
+
         #endregion
 
         #region Main
@@ -77,6 +80,22 @@ namespace Com.RedicalGames.Filar
 
                 #endregion
             }
+
+            #endregion
+        }
+
+        public void Upload()
+        {
+            AppData.SerializableImage imagesData = new AppData.SerializableImage(encoderType: imageEncoderType, images: images);
+
+            #region Upload
+
+            LogInfo($"Publishing : {images.Length} Images With Data Count : {imagesData.GetImageDataFromCompressedData().Length}", this);
+
+            PublishingManager.Instance.OnUploadImageData(imagesData, uploadCallbackResults =>
+            {
+                Log(uploadCallbackResults.ResultCode, uploadCallbackResults.Result, this);
+            });
 
             #endregion
         }
