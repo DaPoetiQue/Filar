@@ -730,6 +730,7 @@ namespace Com.RedicalGames.Filar
             ARViewScreenFadeOutDuration,
             NetworkInitializationDefaultDuration,
             DefaultAppTimeout,
+            ScreenWidgetScaleTransitionalSpeed,
             None
         }
 
@@ -17002,18 +17003,26 @@ namespace Com.RedicalGames.Filar
             Rotate
         }
 
+        public enum UITransitionStateType
+        {
+            None,
+            Once,
+            Repeat
+        }
+
         [Serializable]
         public class TransitionableUI : DataDebugger
         {
             #region Components
 
             public RectTransform transitionable;
-            public Vector2 targetPosition;
+            public Vector3 target;
             public float transitionSpeed;
 
             bool transitionUI = false;
 
             public UITransitionType transitionType;
+            public UITransitionStateType transitionState;
 
             #endregion
 
@@ -17025,98 +17034,110 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType)
+            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, UITransitionStateType transitionState)
             {
                 this.transitionable = transitionable;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, Vector2 target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable;
-                this.targetPosition = target;
+                this.target = target;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, RectTransform target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable;
-                this.targetPosition = target.anchoredPosition;
+                this.target = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, Transform target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable;
-                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, GameObject target, float transitionSpeed)
+            public TransitionableUI(RectTransform transitionable, GameObject target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable;
-                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(Transform transitionable, UITransitionType transitionType, Vector2 target, float transitionSpeed)
+            public TransitionableUI(Transform transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target;
+                this.target = target;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(Transform transitionable, UITransitionType transitionType, RectTransform target, float transitionSpeed)
+            public TransitionableUI(Transform transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target.anchoredPosition;
+                this.target = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(Transform transitionable, UITransitionType transitionType, Transform target, float transitionSpeed)
+            public TransitionableUI(Transform transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, Vector2 target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target;
+                this.target = target;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, RectTransform target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target.anchoredPosition;
+                this.target = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, Transform target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+                this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
-            public TransitionableUI(GameObject transitionable, UITransitionType transitionType, GameObject target, float transitionSpeed)
+            public TransitionableUI(GameObject transitionable, GameObject target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
                 this.transitionable = transitionable.GetComponent<RectTransform>();
-                this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition; ;
+                this.target = target.GetComponent<RectTransform>().anchoredPosition; ;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
+                this.transitionState = transitionState;
             }
 
             #endregion
@@ -17137,11 +17158,13 @@ namespace Com.RedicalGames.Filar
                         {
                             case UITransitionType.Translate:
 
-                                transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, targetPosition, transitionSpeed * Time.smoothDeltaTime);
+                                transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, target, transitionSpeed * Time.smoothDeltaTime);
 
                                 break;
 
                             case UITransitionType.Scale:
+
+                                transitionable.localScale = Vector3.Lerp(transitionable.localScale, target, transitionSpeed * Time.smoothDeltaTime);
 
                                 break;
 
@@ -17155,7 +17178,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    transitionable.anchoredPosition = targetPosition;
+                    transitionable.anchoredPosition = target;
                     transitionUI = false;
                     ActionEvents._Update -= ActionEvents__Update;
                 }
@@ -17169,14 +17192,15 @@ namespace Com.RedicalGames.Filar
             public void SetTransitionable(Transform transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
             public void SetTransitionable(GameObject transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
 
-            public void SetTarget(Vector2 target) => this.targetPosition = target;
-            public void SetTarget(RectTransform target) => this.targetPosition = target.anchoredPosition;
-            public void SetTarget(Transform target) => this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
-            public void SetTarget(GameObject target) => this.targetPosition = target.GetComponent<RectTransform>().anchoredPosition;
+            public void SetTarget(Vector3 target) => this.target = target;
+            public void SetTarget(RectTransform target) => this.target = target.anchoredPosition;
+            public void SetTarget(Transform target) => this.target = target.GetComponent<RectTransform>().anchoredPosition;
+            public void SetTarget(GameObject target) => this.target = target.GetComponent<RectTransform>().anchoredPosition;
 
             public void SetSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
 
             public void SetTransitionType(UITransitionType transitionType) => this.transitionType = transitionType;
+            public void SetTransitionStateType(UITransitionStateType transitionState) => this.transitionState = transitionState;
 
             #endregion
 
@@ -17184,13 +17208,14 @@ namespace Com.RedicalGames.Filar
 
             public RectTransform GetTransitionable() => transitionable;
 
-            public Vector2 GetTargetPosition() => targetPosition;
+            public Vector3 GetTargetPosition() => target;
 
             public float GetTransitionSpeed() => transitionSpeed;
 
             public UITransitionType GetTransitionType() => transitionType;
+            public UITransitionStateType GetTransitionStateType() => transitionState;
 
-            public bool IsCompleted() => (transitionable.anchoredPosition - targetPosition).magnitude <= 0.01f;
+            public bool IsCompleted() => (transitionable.anchoredPosition - (Vector2)target).magnitude <= 0.01f;
 
             #endregion
 
@@ -17224,6 +17249,27 @@ namespace Com.RedicalGames.Filar
                     LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
 
                 return false;
+            }
+
+            public void Restart()
+            {
+                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f && transitionUI == true)
+                {
+                   
+                }
+                else
+                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+            }
+
+            public void Stop()
+            {
+                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f && transitionUI == true)
+                {
+                    transitionUI = false;
+                    ActionEvents._Update -= ActionEvents__Update;
+                }
+                else
+                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
             }
 
             #endregion

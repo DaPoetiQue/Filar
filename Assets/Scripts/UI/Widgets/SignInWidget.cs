@@ -27,10 +27,12 @@ namespace Com.RedicalGames.Filar
             {
                 if (databaseManagerCallbackResults.Success())
                 {
+                    var databaseManager = databaseManagerCallbackResults.data;
+
                     var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
 
-                    transitionable = new AppData.TransitionableUI(widgetContainer.value);
-                    transitionable.SetSpeed(databaseManagerCallbackResults.data.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+                    transitionable = new AppData.TransitionableUI(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
+                    transitionable.SetSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
 
                     base.Init();
                 }

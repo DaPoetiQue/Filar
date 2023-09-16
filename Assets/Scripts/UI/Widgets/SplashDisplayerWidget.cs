@@ -33,8 +33,8 @@ namespace Com.RedicalGames.Filar
                         {
                             var imageDisplayerValue = imageDisplayerCallbackResults.data.value.rectTransform;
 
-                            transitionable = new AppData.TransitionableUI(imageDisplayerValue);
-                            transitionable.SetSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+                            transitionable = new AppData.TransitionableUI(imageDisplayerValue, AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
+                            transitionable.SetSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
                         }
                         else
                             Log(imageDisplayerCallbackResults.ResultCode, imageDisplayerCallbackResults.Result, this);
@@ -65,11 +65,6 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-            
-        }
-
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
-        {
             AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, async appDatabaseManagerCallbackResults =>
             {
                 if (appDatabaseManagerCallbackResults.Success())
@@ -78,17 +73,42 @@ namespace Com.RedicalGames.Filar
 
                     var splashImageURLCallbackResults = await appDatabaseManager.GetRandomSplashImage();
 
-                    if (splashImageURLCallbackResults.Success())
-                        SetUIImageDisplayerValue(AppData.ScreenImageType.Splash, splashImageURLCallbackResults.data);
-                    else
-                        Log(splashImageURLCallbackResults.ResultCode, splashImageURLCallbackResults.Result, this);
+                    //if (splashImageURLCallbackResults.Success())
+                    //    SetUIImageDisplayerValue(AppData.ScreenImageType.Splash, splashImageURLCallbackResults.data);
+                    //else
+                    //    Log(splashImageURLCallbackResults.ResultCode, splashImageURLCallbackResults.Result, this);
+
+                    GetUIImageDisplayerValue(AppData.ScreenImageType.ScreenSnap, async imageDisplayerCallbackResults =>
+                    {
+                        if (imageDisplayerCallbackResults.Success())
+                        {
+                            var imageDisplayer = imageDisplayerCallbackResults.data.value;
+                            var randomPointIndex = Random.Range(0, 1);
+
+                            if (randomPointIndex == 0)
+                            {
+                                imageDisplayer.transform.localScale = widgetContainer.visibleScreenPoint.localScale;
+                                transitionable.SetTarget(widgetContainer.hiddenScreenPoint);
+                            }
+
+                            if (randomPointIndex == 1)
+                            {
+                                imageDisplayer.transform.localScale = widgetContainer.hiddenScreenPoint.localScale;
+                                transitionable.SetTarget(widgetContainer.visibleScreenPoint);
+                            }
+
+                            await transitionable.TransitionAsync();
+                        }
+                        else
+                            Log(imageDisplayerCallbackResults.ResultCode, imageDisplayerCallbackResults.Result, this);
+                    });
                 }
                 else
                     Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
             });
-
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
+
+        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
         protected override void OnSubscribeToActionEvents(bool subscribe)
         {
