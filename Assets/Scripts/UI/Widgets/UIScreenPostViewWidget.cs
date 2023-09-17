@@ -51,7 +51,7 @@ namespace Com.RedicalGames.Filar
                             CancelActionButtonInvoke(AppData.InputActionButtonType.ConfirmationButton);
                         }
                         else
-                            Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
+                            Log(appDatabaseManagerCallbackResults.GetResultCode, appDatabaseManagerCallbackResults.GetResult, this);
 
                     }, "App Database Manager Is Not Yet Initialized.");
 
@@ -128,7 +128,7 @@ namespace Com.RedicalGames.Filar
                 if (thumbnailCallbackResults.Success())
                     SetUIImageDisplayerValue(post.GetPostThumbnail(), AppData.ScreenImageType.Thumbnail);
                 else
-                    Log(thumbnailCallbackResults.ResultCode, thumbnailCallbackResults.Result, this);
+                    Log(thumbnailCallbackResults.GetResultCode, thumbnailCallbackResults.GetResult, this);
             });
 
             //AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults =>

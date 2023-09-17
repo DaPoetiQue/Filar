@@ -104,6 +104,10 @@ namespace Com.RedicalGames.Filar
 
                         foreach (var screenComponent in screenComponents)
                         {
+                            LogInfo($" _____+++++++++++ Getting Screen : {screenComponent.name}", this);
+
+                            screenComponent.Init();
+
                             AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
                             {
                                 name = screenComponent.GetScreenTitle(),
@@ -111,6 +115,8 @@ namespace Com.RedicalGames.Filar
                             };
 
                             AddScreen(newScreen, screenAddCallback => { callbackResults = screenAddCallback; });
+
+                            LogInfo($" _____+++++++++++ Loaded Screen : {screenComponent.name}", this);
 
                             if (callbackResults.Success())
                                 continue;
@@ -124,10 +130,6 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (compareDataCallback.Success())
                                 {
-                                    callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
-                                    callbackResults.data = compareDataCallback.tuple_A;
-                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
                                     foreach (var screenView in callbackResults.data)
                                     {
                                         screenView.value.Init(screenInitializationCallback =>
@@ -146,6 +148,19 @@ namespace Com.RedicalGames.Filar
                                     {
                                         //SetCurrentScreenData(GetScreenData(AppManager.Instance.GetInitialLoadDataPackets()));
                                         SetScreensInitialized(callbackResults.Success(), callbackResults.result);
+
+                                        if(IsInitialized())
+                                        {
+                                            callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
+                                            callbackResults.data = compareDataCallback.tuple_A;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Screens Failed To Initialize.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                        }
                                     }
                                     else
                                         Log(callbackResults.resultCode, callbackResults.result, this);
@@ -1026,7 +1041,7 @@ namespace Com.RedicalGames.Filar
                                                 container.DeselectAllContentWidgets();
                                         }
                                         else
-                                            Log(widgetsContentContainers.ResultCode, widgetsContentContainers.Result, this);
+                                            Log(widgetsContentContainers.GetResultCode, widgetsContentContainers.GetResult, this);
                                     });
                                 }
                                 else
@@ -1092,7 +1107,7 @@ namespace Com.RedicalGames.Filar
 
                                             databaseManager.SetRefreshData(null, screenContainerCallbackResults.data, sceneContainerCallbackResults.data, dataSetupCallbackResults =>
                                             {
-                                                Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
+                                                Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
                                             });
 
                                             #endregion
@@ -1103,7 +1118,7 @@ namespace Com.RedicalGames.Filar
 
                                             AppDatabaseManager.Instance.SetRefreshData(null, screenContainerCallbackResults.data, null, dataSetupCallbackResults =>
                                             {
-                                                Log(dataSetupCallbackResults.ResultCode, dataSetupCallbackResults.Result, this);
+                                                Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
                                             });
 
                                             #endregion
@@ -1849,7 +1864,7 @@ namespace Com.RedicalGames.Filar
                                 else
                                     Log(callbackResults.resultCode, callbackResults.result, this);
 
-                                LogInfo($" ================++++++ Widgets Loading Completed With Results : {callbackResults.Result}.", this);
+                                LogInfo($" ================++++++ Widgets Loading Completed With Results : {callbackResults.GetResult}.", this);
                             }
                             else
                             {
@@ -2125,7 +2140,7 @@ namespace Com.RedicalGames.Filar
                                                                     });
                                                                 }
                                                                 else
-                                                                    Log(callbackResults.ResultCode, callbackResults.Result, this);
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 LogError("Widget Prefab Data Missing.", this);
@@ -2303,7 +2318,7 @@ namespace Com.RedicalGames.Filar
                                                             });
                                                         }
                                                         else
-                                                            Log(callbackResults.ResultCode, callbackResults.Result, this);
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     }
                                                     else
                                                         LogError("Widget Prefab Data Missing.", this);

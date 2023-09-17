@@ -8,18 +8,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            postsWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => postsWidget = this;
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
         {
@@ -57,7 +48,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(currentScreenCallbackResults.ResultCode, currentScreenCallbackResults.Result, this);
+                            Log(currentScreenCallbackResults.GetResultCode, currentScreenCallbackResults.GetResult, this);
 
                     });
                 }

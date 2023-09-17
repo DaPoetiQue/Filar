@@ -10,18 +10,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            termsAndConditionsWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => termsAndConditionsWidget = this;
 
         protected override void OnHideScreenWidget()
         {

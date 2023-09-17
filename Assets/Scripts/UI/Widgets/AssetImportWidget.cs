@@ -15,20 +15,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            assetImportWidget = this;
-            base.Init();
-        }
-
+        protected override void Initialize() => assetImportWidget = this;
 
         protected override void OnScreenWidget()
         {

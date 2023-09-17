@@ -8,18 +8,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            anonymousSignInConfirmationWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => anonymousSignInConfirmationWidget = this;
 
         protected override void OnHideScreenWidget()
         {

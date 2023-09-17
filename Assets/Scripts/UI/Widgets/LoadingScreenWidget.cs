@@ -4,19 +4,9 @@ namespace Com.RedicalGames.Filar
 {
     public class LoadingScreenWidget : AppData.Widget
     {
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            loadingScreenWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => loadingScreenWidget = this;
 
         protected override void OnScreenWidget()
         {

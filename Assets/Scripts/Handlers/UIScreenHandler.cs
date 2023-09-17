@@ -1,12 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Com.RedicalGames.Filar
 {
     public class UIScreenHandler : AppData.ScreenUIData
     {
         #region Unity Callbacks
-
-        void Start() => Init();
 
         void OnEnable() => ActionEventsSubscription(true);
 
@@ -16,7 +15,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        void Init()
+        public void Init()
         {
             if (screenWidgetsList == null || screenWidgetsList.Count == 0)
             {
@@ -26,9 +25,12 @@ namespace Com.RedicalGames.Filar
                 {
                     screenWidgetsList = new List<AppData.Widget>();
 
-                    foreach (var popUpComponent in popUpComponents)
+                    foreach (var widget in popUpComponents)
                     {
-                        screenWidgetsList.Add(popUpComponent);
+                        if (widget != null && !screenWidgetsList.Contains(widget))
+                            screenWidgetsList.Add(widget);
+                        else
+                            break;
                     }
                 }
             }

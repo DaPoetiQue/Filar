@@ -126,7 +126,7 @@ namespace Com.RedicalGames.Filar
                             appManagerCallbackResults.data.SyncAppInfo(appInfoTaskResults.data);
                         }
                         else
-                            Log(appManagerCallbackResults.ResultCode, appManagerCallbackResults.Result, this);
+                            Log(appManagerCallbackResults.GetResultCode, appManagerCallbackResults.GetResult, this);
 
                         await Task.Delay(1000);
 

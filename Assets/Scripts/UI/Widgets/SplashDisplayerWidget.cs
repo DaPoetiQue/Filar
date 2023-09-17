@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -6,18 +7,13 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        AppData.TransitionableUI transitionable;
-
-        #endregion
-
-        #region Unity Callbacks
-        void Start() => Init();
+        AppData.TransitionableUIComponent transitionableUIComponent;
 
         #endregion
 
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             splashDisplayerWidget = this;
 
@@ -27,30 +23,32 @@ namespace Com.RedicalGames.Filar
                 {
                     var databaseManager = databaseManagerCallbackResults.data;
 
-                    GetUIImageDisplayerValue(AppData.ScreenImageType.ScreenSnap, imageDisplayerCallbackResults =>
+                    GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
                     {
                         if (imageDisplayerCallbackResults.Success())
                         {
-                            var imageDisplayerValue = imageDisplayerCallbackResults.data.value.rectTransform;
+                            var imageDisplayer = imageDisplayerCallbackResults.data;
 
-                            transitionable = new AppData.TransitionableUI(imageDisplayerValue, AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
-                            transitionable.SetSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
+                            var randomPointIndex = GetRandomIndex();
+
+                            if (randomPointIndex >= 1)
+                                imageDisplayer.SetUIScale(widgetContainer.visibleScreenPoint.GetWidgetScale());
+
+                            if (randomPointIndex <= 0)
+                                imageDisplayer.SetUIScale(widgetContainer.hiddenScreenPoint.GetWidgetScale());
+
+                            transitionableUIComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
+                            transitionableUIComponent.SetTransitionableUIName(name);
+                            transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
                         }
                         else
-                            Log(imageDisplayerCallbackResults.ResultCode, imageDisplayerCallbackResults.Result, this);
+                            Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
                     });
-
-                    base.Init();
                 }
                 else
                     Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
 
             }, "App Database Manager Instance Is Not Yet Initialized.");
-        }
-
-        protected override void OnHideScreenWidget()
-        {
-            HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
@@ -65,50 +63,94 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, async appDatabaseManagerCallbackResults =>
+            if (widgetType == AppData.WidgetType.ImageDisplayerWidget)
             {
-                if (appDatabaseManagerCallbackResults.Success())
+                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, async appDatabaseManagerCallbackResults =>
                 {
-                    var appDatabaseManager = appDatabaseManagerCallbackResults.data;
-
-                    var splashImageURLCallbackResults = await appDatabaseManager.GetRandomSplashImage();
-
-                    //if (splashImageURLCallbackResults.Success())
-                    //    SetUIImageDisplayerValue(AppData.ScreenImageType.Splash, splashImageURLCallbackResults.data);
-                    //else
-                    //    Log(splashImageURLCallbackResults.ResultCode, splashImageURLCallbackResults.Result, this);
-
-                    GetUIImageDisplayerValue(AppData.ScreenImageType.ScreenSnap, async imageDisplayerCallbackResults =>
+                    if (appDatabaseManagerCallbackResults.Success())
                     {
-                        if (imageDisplayerCallbackResults.Success())
+                        var appDatabaseManager = appDatabaseManagerCallbackResults.data;
+
+                        var splashImageURLCallbackResults = await appDatabaseManager.GetRandomSplashImage();
+
+                        GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, async imageDisplayerCallbackResults =>
                         {
-                            var imageDisplayer = imageDisplayerCallbackResults.data.value;
-                            var randomPointIndex = Random.Range(0, 1);
-
-                            if (randomPointIndex == 0)
+                            if (imageDisplayerCallbackResults.Success())
                             {
-                                imageDisplayer.transform.localScale = widgetContainer.visibleScreenPoint.localScale;
-                                transitionable.SetTarget(widgetContainer.hiddenScreenPoint);
-                            }
+                                var getTransitionableUITaskResults = await GetTransitionableUIComponent();
 
-                            if (randomPointIndex == 1)
-                            {
-                                imageDisplayer.transform.localScale = widgetContainer.hiddenScreenPoint.localScale;
-                                transitionable.SetTarget(widgetContainer.visibleScreenPoint);
-                            }
+                                if (getTransitionableUITaskResults.Success())
+                                {
+                                    var componentData = getTransitionableUITaskResults.data;
 
-                            await transitionable.TransitionAsync();
-                        }
-                        else
-                            Log(imageDisplayerCallbackResults.ResultCode, imageDisplayerCallbackResults.Result, this);
-                    });
-                }
-                else
-                    Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
-            });
+                                    //if (splashImageURLCallbackResults.Success())
+                                    //    SetUIImageDisplayerValue(AppData.ScreenImageType.Splash, splashImageURLCallbackResults.data);
+                                    //else
+                                    //    Log(splashImageURLCallbackResults.ResultCode, splashImageURLCallbackResults.Result, this);
+
+                                    var imageDisplayer = imageDisplayerCallbackResults.data;
+                                    var randomPointIndex = GetRandomIndex();
+
+                                    if (randomPointIndex >= 1)
+                                    {
+                                        imageDisplayer.SetUIScale(widgetContainer.visibleScreenPoint.GetWidgetScale());
+                                        componentData.SetTarget(widgetContainer.hiddenScreenPoint.GetWidgetScale());
+                                    }
+
+                                    if (randomPointIndex <= 0)
+                                    {
+                                        imageDisplayer.SetUIScale(widgetContainer.hiddenScreenPoint.GetWidgetScale());
+                                        componentData.SetTarget(widgetContainer.visibleScreenPoint.GetWidgetScale());
+                                    }
+
+                                    LogInfo($" _____________++++++++++ On Transition Called - Index : {randomPointIndex} - Source : {componentData.GetSource()} Source Origin : {componentData.GetSourceOrigin()} - Target : {componentData.GetTarget()} - Target Origin : {componentData.GetTargetOrigin()}.", this);
+
+                                }
+                                else
+                                    Log(getTransitionableUITaskResults.GetResultCode, getTransitionableUITaskResults.GetResult, this);
+                            }
+                            else
+                                Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(appDatabaseManagerCallbackResults.GetResultCode, appDatabaseManagerCallbackResults.GetResult, this);
+                });
+            }
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        protected override async void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        {
+            var getTransitionableUITaskResults = await GetTransitionableUIComponent();
+
+            if (getTransitionableUITaskResults.Success())
+            {
+                var componentData = getTransitionableUITaskResults.data;
+                var transitionTaskResults = await componentData.InvokeTransitionAsync();
+
+                if (transitionTaskResults.Success())
+                    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+                else
+                    Log(transitionTaskResults.GetResultCode, transitionTaskResults.GetResult, this);
+            }
+            else
+                Log(getTransitionableUITaskResults.GetResultCode, getTransitionableUITaskResults.GetResult, this);
+        }
+
+        protected override async void OnHideScreenWidget()
+        {
+            var getTransitionableUITaskResults = await GetTransitionableUIComponent();
+
+            if (getTransitionableUITaskResults.Success())
+            {
+                var componentData = getTransitionableUITaskResults.data;
+
+                HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+                componentData.CancelTransition();
+            }
+            else
+                Log(getTransitionableUITaskResults.GetResultCode, getTransitionableUITaskResults.GetResult, this);
+        }
 
         protected override void OnSubscribeToActionEvents(bool subscribe)
         {
@@ -138,6 +180,24 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
+        }
+
+        int GetRandomIndex(int maxIndex = 2) => Random.Range(0, maxIndex);
+
+        private async Task<AppData.CallbackData<AppData.TransitionableUIComponent>> GetTransitionableUIComponent()
+        {
+            AppData.CallbackData<AppData.TransitionableUIComponent> callbackResults = new AppData.CallbackData<AppData.TransitionableUIComponent>();
+
+            var initializationTaskResults = await transitionableUIComponent.Initialized();
+
+            callbackResults.SetResult(initializationTaskResults);
+
+            if (callbackResults.Success())
+                callbackResults.SetData(transitionableUIComponent);
+            else
+                callbackResults.SetResults($"TransitionableUIComponent Is Not Yet Initialized.", AppData.Helpers.ErrorCode);
+
+            return callbackResults;
         }
 
         #endregion

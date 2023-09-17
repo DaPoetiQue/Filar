@@ -8,18 +8,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            srollerNavigationWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => scrollerNavigationWidget = this;
 
         protected override void OnHideScreenWidget()
         {

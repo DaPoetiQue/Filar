@@ -16,15 +16,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             if (xRotationInputField.value)
                 xRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, xRotationInputField.dataPackets.action));
@@ -40,7 +34,6 @@ namespace Com.RedicalGames.Filar
                 zRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, zRotationInputField.dataPackets.action));
             else
                 Debug.LogWarning("--> Z Rotation Input Field Value Is Null.");
-
         }
 
         void OnUIInputFieldActionValueChanged(string value, AppData.InputFieldActionType inputFiledAction)

@@ -9,18 +9,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            messageDisplayerWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => messageDisplayerWidget = this;
 
         protected override void OnHideScreenWidget()
         {

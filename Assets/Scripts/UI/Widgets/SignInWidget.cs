@@ -6,24 +6,19 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        AppData.TransitionableUI transitionable;
+        AppData.TransitionableUIComponent transitionableUIComponent;
 
         bool isInitialView = true;
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             signInWidget = this;
 
-            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults => 
+            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults =>
             {
                 if (databaseManagerCallbackResults.Success())
                 {
@@ -31,14 +26,12 @@ namespace Com.RedicalGames.Filar
 
                     var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
 
-                    transitionable = new AppData.TransitionableUI(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
-                    transitionable.SetSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
-
-                    base.Init();
+                    transitionableUIComponent = new AppData.TransitionableUIComponent(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
+                    transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
                 }
                 else
                     Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
-            
+
             }, "App Database Manager Instance Is Not Yet Initialized.");
         }
 
@@ -111,9 +104,9 @@ namespace Com.RedicalGames.Filar
                                     isInitialView = !isInitialView;
 
                                     if (isInitialView)
-                                        transitionable.SetTarget(widgetContainer.visibleScreenPoint);
+                                        GetTransitionableUIComponent().SetTarget(widgetContainer.visibleScreenPoint);
                                     else
-                                        transitionable.SetTarget(widgetContainer.hiddenScreenPoint);
+                                        GetTransitionableUIComponent().SetTarget(widgetContainer.hiddenScreenPoint);
 
                                     SwitchPage();
 
@@ -121,7 +114,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            Log(currentScreenCallbackResults.ResultCode, currentScreenCallbackResults.Result, this);
+                            Log(currentScreenCallbackResults.GetResultCode, currentScreenCallbackResults.GetResult, this);
 
                     });
                 }
@@ -137,7 +130,7 @@ namespace Com.RedicalGames.Filar
 
             SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
 
-            await transitionable.TransitionAsync();
+            await GetTransitionableUIComponent().InvokeTransitionAsync();
 
             string buttonTitle = (isInitialView) ? "Sign In" : "Sign Up";
 
@@ -146,6 +139,8 @@ namespace Com.RedicalGames.Filar
 
             LogInfo(" <+++++++++++++> Went To Login Screen", this);
         }
+
+        AppData.TransitionableUIComponent GetTransitionableUIComponent() => transitionableUIComponent;
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
         {

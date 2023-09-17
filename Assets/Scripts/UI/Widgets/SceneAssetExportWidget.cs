@@ -25,15 +25,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             sceneAssetExportWidget = this;
 
@@ -43,8 +37,6 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
 
             Invoke("InitializeDropDownContent", initializationDelay);
-
-            base.Init();
         }
 
         void InitializeDropDownContent()

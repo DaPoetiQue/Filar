@@ -698,7 +698,7 @@ namespace Com.RedicalGames.Filar
                                         await screenUIManager.RefreshAsync();
                                     }
                                     else
-                                        Log(GetSortedList(postsDatabase, AppData.SortType.DateModified).ResultCode, GetSortedList(postsDatabase, AppData.SortType.DateModified).Result, this);
+                                        Log(GetSortedList(postsDatabase, AppData.SortType.DateModified).GetResultCode, GetSortedList(postsDatabase, AppData.SortType.DateModified).GetResult, this);
 
                                 }
                                 else
@@ -4462,7 +4462,7 @@ namespace Com.RedicalGames.Filar
                     {
                         callbackResults.SetResult(containerClearedCallbackResults);
 
-                        LogInfo($" +++++++++++ Clear Container Results : {callbackResults.Result}", this);
+                        LogInfo($" +++++++++++ Clear Container Results : {callbackResults.GetResult}", this);
 
                         if (callbackResults.Success())
                         {
@@ -4501,7 +4501,7 @@ namespace Com.RedicalGames.Filar
                                                     if (callbackResults.Success())
                                                         currentScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
                                                     else
-                                                        Log(callbackResults.ResultCode, callbackResults.Result, this);
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 });
                                             }
                                             else
@@ -4526,7 +4526,7 @@ namespace Com.RedicalGames.Filar
                                                     if (callbackResults.Success())
                                                         currentScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
                                                     else
-                                                        Log(callbackResults.ResultCode, callbackResults.Result, this);
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 });
                                             }
                                         });
@@ -8601,7 +8601,7 @@ namespace Com.RedicalGames.Filar
             if (shaderLibrabry.HasAssets().Success())
                 shaderLibrabry.GetShaderAsset(name, type, shaderAssetCallbackResults => { callback.Invoke(shaderAssetCallbackResults); });
             else
-                Log(shaderLibrabry.HasAssets().ResultCode, shaderLibrabry.HasAssets().Result, this);
+                Log(shaderLibrabry.HasAssets().GetResultCode, shaderLibrabry.HasAssets().GetResult, this);
         }
 
         public AppData.CallbackData<AppData.ShaderAsset> GetShaderAssetFromLibrary(string name, AppData.ShaderType type)

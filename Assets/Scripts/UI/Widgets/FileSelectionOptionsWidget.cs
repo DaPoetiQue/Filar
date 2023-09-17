@@ -10,18 +10,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            fileSelectionOptionsWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => fileSelectionOptionsWidget = this;
 
         protected override void OnHideScreenWidget()
         {

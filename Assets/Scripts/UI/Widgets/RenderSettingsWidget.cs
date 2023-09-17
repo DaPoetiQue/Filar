@@ -22,6 +22,22 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Initialize()
+        {
+            renderSettingsWidget = this;
+
+            if (navigationWidget != null)
+            {
+                navigationWidget.Init((status) =>
+                {
+                    if (!AppData.Helpers.IsSuccessCode(status.resultCode))
+                        Debug.LogWarning($"--> Init Failed With Results : {status.result}");
+                });
+            }
+            else
+                Debug.LogWarning("--> RG_Unity - Init Failed : Navigation Widget Is Null.");
+        }
+
         void RegisterEventListeners(bool register)
         {
             if (register)
@@ -106,8 +122,6 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Debug.LogWarning("--> RG_Unity - Init Failed : Navigation Widget Is Null.");
-
-            Init();
         }
 
 
@@ -130,7 +144,7 @@ namespace Com.RedicalGames.Filar
 
             if (!widgetsInitialized)
             {
-                InititializeWidget();
+                //InititializeWidget();
                 widgetsInitialized = true;
             }
 

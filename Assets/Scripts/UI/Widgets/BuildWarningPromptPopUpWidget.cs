@@ -10,15 +10,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             buildWarningPromptWidget = this;
 
@@ -33,8 +27,6 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Debug.LogWarning("--> Failed - Layout Value Missing / Not Assigned In The Inspector.");
-
-            base.Init();
         }
 
         protected override void OnScreenWidget()

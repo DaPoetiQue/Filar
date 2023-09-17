@@ -96,7 +96,7 @@ namespace Com.RedicalGames.Filar
                 return AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(AppData.RuntimeExecution.NetworkInitializationDefaultDuration).value);
             }
             else
-                Log(sceneAssetsManagerCallbackResults.ResultCode, sceneAssetsManagerCallbackResults.Result, this);
+                Log(sceneAssetsManagerCallbackResults.GetResultCode, sceneAssetsManagerCallbackResults.GetResult, this);
 
             return 0;
         }
@@ -115,7 +115,7 @@ namespace Com.RedicalGames.Filar
                 return AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(sceneAssetsManager.GetDefaultExecutionValue(AppData.RuntimeExecution.DefaultAppTimeout).value);
             }
             else
-                Log(sceneAssetsManagerCallbackResults.ResultCode, sceneAssetsManagerCallbackResults.Result, this);
+                Log(sceneAssetsManagerCallbackResults.GetResultCode, sceneAssetsManagerCallbackResults.GetResult, this);
 
             return 0;
         }

@@ -19,15 +19,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             if (slider != null)
                 slider.onValueChanged.AddListener((value) => SetValue(value));
@@ -38,10 +32,7 @@ namespace Com.RedicalGames.Filar
             }
 
             sliderWidget = this;
-
-            base.Init();
         }
-
 
         public void SetValue(float value)
         {

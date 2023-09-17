@@ -1671,7 +1671,7 @@ namespace Com.RedicalGames.Filar
                     LogError($"Couldn't Find Widget Named : {widgetName}", this);
             }
             else
-                Log(GetContentCount().ResultCode, GetContentCount().Result, this);
+                Log(GetContentCount().GetResultCode, GetContentCount().GetResult, this);
 
             return widgetFound;
         }

@@ -64,7 +64,7 @@ namespace Com.RedicalGames.Filar
 
                 AppData.SerializableImage thumbnailData = new AppData.SerializableImage(thumbnail, imageEncoderType);
 
-                Log(getObjectStringTaskResults.ResultCode, getObjectStringTaskResults.Result, this);
+                Log(getObjectStringTaskResults.GetResultCode, getObjectStringTaskResults.GetResult, this);
 
                 //var path = Path.Combine(Application.streamingAssetsPath, $"{post.GetTitle()}.json").Replace("\\", "/");
                 //File.WriteAllText(path, getObjectStringTaskResults.data);
@@ -74,7 +74,7 @@ namespace Com.RedicalGames.Filar
 
                 PublishingManager.Instance.OnPublish(post, thumbnailData, content, contentIdentifier, publishCallbackResults =>
                 {
-                    Log(publishCallbackResults.ResultCode, publishCallbackResults.Result, this);
+                    Log(publishCallbackResults.GetResultCode, publishCallbackResults.GetResult, this);
                 });
 
 
@@ -94,7 +94,7 @@ namespace Com.RedicalGames.Filar
 
             PublishingManager.Instance.OnUploadImageData(imagesData, uploadCallbackResults =>
             {
-                Log(uploadCallbackResults.ResultCode, uploadCallbackResults.Result, this);
+                Log(uploadCallbackResults.GetResultCode, uploadCallbackResults.GetResult, this);
             });
 
             #endregion

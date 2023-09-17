@@ -11,18 +11,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            folderCreationWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => folderCreationWidget = this;
 
         protected override void OnScreenWidget()
         {

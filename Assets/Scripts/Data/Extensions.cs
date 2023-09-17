@@ -66,6 +66,46 @@ namespace Com.RedicalGames.Filar
             return Enumerable.Range(0, source.Length / chunkLength).Select(x => source.Substring(x * chunkLength, chunkLength));
         }
 
+        public static Vector2 GetWidgetScale(this RectTransform reference) => reference.sizeDelta;
+        public static Vector2 GetWidgetPosition(this RectTransform reference) => reference.anchoredPosition;
+        public static Vector3 GetWidgetRotationAngle(this RectTransform reference) => reference.localEulerAngles;
+        public static Quaternion GetWidgetRotation(this RectTransform reference) => reference.rotation;
+        public static Quaternion GetWidgetRotationLocal(this RectTransform reference) => reference.localRotation;
+
+        public static (Vector2 position, Vector2 scale, Vector3 rotationAngle) GetWidgetPoseAngle(this RectTransform reference) => (reference.GetWidgetPosition(), reference.GetWidgetScale(), reference.GetWidgetRotationAngle());
+        public static (Vector2 position, Vector2 scale, Quaternion rotation) GetWidgetPose(this RectTransform reference) => (reference.GetWidgetPosition(), reference.GetWidgetScale(), reference.GetWidgetRotation());
+        public static (Vector2 position, Vector2 scale, Quaternion rotation) GetWidgetPoseLocal(this RectTransform reference) => (reference.GetWidgetPosition(), reference.GetWidgetScale(), reference.GetWidgetRotationLocal());
+        public static void SetWidgetPose(this RectTransform reference, Vector2 position, Vector2 scale, Vector3 rotationAngle)
+        {
+            reference.SetWidgetPosition(position);
+            reference.SetWidgetScale(scale);
+            reference.SetWidgetRotation(rotationAngle);
+        }
+
+        public static void SetWidgetPose(this RectTransform reference, Vector2 position, Vector2 scale, Quaternion rotation)
+        {
+            reference.SetWidgetPosition(position);
+            reference.SetWidgetScale(scale);
+            reference.SetWidgetRotation(rotation);
+        }
+
+        public static void SetWidgetPoseLocal(this RectTransform reference, Vector2 position, Vector2 scale, Quaternion rotation)
+        {
+            reference.SetWidgetPosition(position);
+            reference.SetWidgetScale(scale);
+            reference.SetWidgetRotationLocal(rotation);
+        }
+
+        public static void SetWidgetScale(this RectTransform reference, Vector2 scale) => reference.sizeDelta = scale;
+        public static void SetWidgetScale(this RectTransform reference, int width, int height) => reference.sizeDelta = new Vector2(width, height);
+
+        public static void SetWidgetPosition(this RectTransform reference, Vector2 position) => reference.anchoredPosition = position;
+        public static void SetWidgetRotation(this RectTransform reference, Vector3 rotationAngle) => reference.localEulerAngles = rotationAngle;
+        public static void SetWidgetRotationLocal(this RectTransform reference, Quaternion rotation) => reference.localRotation = rotation;
+        public static void SetWidgetRotation(this RectTransform reference, Quaternion rotation) => reference.rotation = rotation;
+
+        public static bool AssignedAndValid(this RectTransform reference) => reference != null;
+
         public static float ToFloat(this string source) => AppData.Helpers.StringToFloat(source);
         public static int ToInt(this string source) => AppData.Helpers.StringToInt(source);
 

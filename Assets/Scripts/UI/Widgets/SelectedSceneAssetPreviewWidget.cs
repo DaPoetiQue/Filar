@@ -32,35 +32,31 @@ namespace Com.RedicalGames.Filar
 
         void OnDisable() => OnSubscribeToEvents(false);
 
-        void Start() => Init();
-
         #endregion
 
         #region Initializations
 
-        new void Init()
+        protected override void Initialize()
         {
             selectedSceneAssetPreviewWidget = this;
 
             if (thumbnailDisplayer == null)
             {
-                LogWarning("Thumbnail Displayer Missing.", this, () => Init());
+                LogWarning("Thumbnail Displayer Missing.", this);
                 return;
             }
 
             if (titleDisplayer == null)
             {
-                LogWarning("Title Displayer Missing.", this, () => Init());
+                LogWarning("Title Displayer Missing.", this);
                 return;
             }
 
             if (descriptionDisplayer == null)
             {
-                LogWarning("Description Displayer Missing.", this, () => Init());
+                LogWarning("Description Displayer Missing.", this);
                 return;
             }
-
-            base.Init();
         }
 
         void OnSubscribeToEvents(bool subscribe)

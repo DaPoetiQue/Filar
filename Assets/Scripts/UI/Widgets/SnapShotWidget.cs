@@ -12,18 +12,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            snapShotWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => snapShotWidget = this;
 
         protected override void OnScreenWidget()
         {

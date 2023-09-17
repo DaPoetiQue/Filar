@@ -149,7 +149,7 @@ namespace Com.RedicalGames.Filar
             AnonymousSignInConfirmationWidget,
             TermsAndConditionsWidget,
             PostsWidget,
-            SplashDisplayerWidget
+            ImageDisplayerWidget
         }
 
         public enum SubWidgetType
@@ -2751,7 +2751,7 @@ namespace Com.RedicalGames.Filar
                                                                     OnCompletition();
                                                                 else
                                                                 {
-                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Init Results {callbackResults.Result}", this);
+                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Init Results {callbackResults.GetResult}", this);
                                                                 }
                                                             }
 
@@ -2837,7 +2837,7 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                 }
                                                 else
-                                                    Log(GetContent().GetMessageList().ResultCode, GetContent().GetMessageList().Result, this);
+                                                    Log(GetContent().GetMessageList().GetResultCode, GetContent().GetMessageList().GetResult, this);
                                             }
                                         }
                                     }
@@ -6378,10 +6378,7 @@ namespace Com.RedicalGames.Filar
                     if (!GetComments().Keys.Contains(profile.GetUniqueIdentifier()))
                         callbackResults.result = "Comment Data Has Been Removed Successfully.";
                     else
-                    {
-                        callbackResults.result = "Failed To Remove Comment Data - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        callbackResults.SetResults("Failed To Remove Comment Data - Please Check Here.", Helpers.ErrorCode);
                 });
 
                 callback?.Invoke(callbackResults);
@@ -13753,6 +13750,25 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning($"--> Set UI Image Value Failed - Image IS Null.");
             }
 
+            /// <summary>
+            /// Set The Scale Of The UI Rect
+            /// </summary>
+            /// <param name="scale">Scale Value</param>
+            public abstract void SetUIScale(Vector2 scale);
+
+            /// <summary>
+            /// Set The Scale Of The UI Rect
+            /// </summary>
+            /// <param name="width">UI Rect Width</param>
+            /// <param name="height">UI Rect Height</param>
+            public abstract void SetUIScale(int width, int height);
+
+            /// <summary>
+            /// Get UI Widget Rect Transform
+            /// </summary>
+            /// <returns>Widget's Rect Transform</returns>
+            public abstract RectTransform GetWidgetRect();
+
             #endregion
         }
 
@@ -13974,6 +13990,12 @@ namespace Com.RedicalGames.Filar
             {
                 throw new NotImplementedException();
             }
+
+            public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
 
             #endregion
         }
@@ -14215,6 +14237,12 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             public override void OnCollapse() => value.Hide();
+
+            public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
 
             #endregion
         }
@@ -14493,6 +14521,12 @@ namespace Com.RedicalGames.Filar
 
             }
 
+            public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+
             #endregion
         }
 
@@ -14713,6 +14747,12 @@ namespace Com.RedicalGames.Filar
 
             }
 
+            public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+
             #endregion
         }
 
@@ -14912,6 +14952,12 @@ namespace Com.RedicalGames.Filar
 
             }
 
+            public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+
             #endregion
         }
 
@@ -15054,10 +15100,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public override void SetChildWidgetsState(bool interactable, bool isSelected)
-            {
-                widgets.SetWidgetsInteractableState(interactable, isSelected);
-            }
+            public override void SetChildWidgetsState(bool interactable, bool isSelected) => widgets.SetWidgetsInteractableState(interactable, isSelected);
 
             public override void SetUIColor(Color color)
             {
@@ -15138,6 +15181,12 @@ namespace Com.RedicalGames.Filar
 
             }
 
+            public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+
             #endregion
         }
 
@@ -15148,7 +15197,6 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public class UIText<T> : UIInputComponent<TMP_Text, T, UIText<T>>
         {
-
             #region Main
 
             bool IsInitialized()
@@ -15225,6 +15273,12 @@ namespace Com.RedicalGames.Filar
             {
 
             }
+
+            public override RectTransform GetWidgetRect() => value.rectTransform;
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
 
             #endregion
         }
@@ -15353,6 +15407,12 @@ namespace Com.RedicalGames.Filar
             {
 
             }
+
+            public override RectTransform GetWidgetRect() => value.rectTransform;
+
+            public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
+
+            public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
 
             #endregion
         }
@@ -15658,6 +15718,21 @@ namespace Com.RedicalGames.Filar
             }
 
             public override void SetUIInputVisibilityState(bool visible)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override RectTransform GetWidgetRect()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetUIScale(Vector2 scale)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetUIScale(int width, int height)
             {
                 throw new NotImplementedException();
             }
@@ -17011,18 +17086,24 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class TransitionableUI : DataDebugger
+        public class TransitionableUIComponent : DataDebugger
         {
             #region Components
 
-            public RectTransform transitionable;
+            public RectTransform transitionableUISourceReference;
             public Vector3 target;
             public float transitionSpeed;
 
-            bool transitionUI = false;
+            bool canTransitionUI = false;
 
             public UITransitionType transitionType;
             public UITransitionStateType transitionState;
+
+            private Vector3 sourceOrigin, targetOrigin;
+
+            private bool subscribedToEvents;
+
+            private const float transitionDistanceInMagnitude = 0.01f;
 
             #endregion
 
@@ -17030,246 +17111,1337 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public TransitionableUI()
+            public TransitionableUIComponent()
             {
             }
 
-            public TransitionableUI(RectTransform transitionable, UITransitionType transitionType, UITransitionStateType transitionState)
+            public TransitionableUIComponent(RectTransform transitionable, UITransitionType transitionType, UITransitionStateType transitionState)
             {
-                this.transitionable = transitionable;
+                this.transitionableUISourceReference = transitionable;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(RectTransform transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(RectTransform transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable;
+                this.transitionableUISourceReference = transitionable;
                 this.target = target;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.anchoredPosition;
+                                    targetOrigin = target;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetWidgetScale();
+                                    targetOrigin = target;
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(RectTransform transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(RectTransform transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable;
+                this.transitionableUISourceReference = transitionable;
                 this.target = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.anchoredPosition;
+                                    targetOrigin = target.anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetWidgetScale();
+                                    targetOrigin = target.GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(RectTransform transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(RectTransform transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable;
+                this.transitionableUISourceReference = transitionable;
                 this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.anchoredPosition;
+                                    targetOrigin = target.GetComponent<RectTransform>().anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.sizeDelta;
+                                    targetOrigin = target.GetComponent<RectTransform>().sizeDelta;
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target.GetComponent<RectTransform>().localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(RectTransform transitionable, GameObject target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(RectTransform transitionable, GameObject target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable;
+                this.transitionableUISourceReference = transitionable;
                 this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.anchoredPosition;
+                                    targetOrigin = target.GetComponent<RectTransform>().anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.sizeDelta;
+                                    targetOrigin = target.GetComponent<RectTransform>().sizeDelta;
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target.GetComponent<RectTransform>().localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(Transform transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(Transform transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target;
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(Transform transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(Transform transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target.anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target.sizeDelta;
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(Transform transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(Transform transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target.GetComponent<RectTransform>().anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target.GetComponent<RectTransform>().GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+                                    targetOrigin = target.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(GameObject transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(GameObject transitionable, Vector3 target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target;
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.transform.localEulerAngles;
+                                    targetOrigin = target;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(GameObject transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(GameObject transitionable, RectTransform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target.anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target.anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target.GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.transform.localEulerAngles;
+                                    targetOrigin = target.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(GameObject transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(GameObject transitionable, Transform target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target.GetComponent<RectTransform>().anchoredPosition;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target.GetComponent<RectTransform>().anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target.GetComponent<RectTransform>().GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.transform.localEulerAngles;
+                                    targetOrigin = target.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
-            public TransitionableUI(GameObject transitionable, GameObject target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            public TransitionableUIComponent(GameObject transitionable, GameObject target, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
             {
-                this.transitionable = transitionable.GetComponent<RectTransform>();
+                this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
                 this.target = target.GetComponent<RectTransform>().anchoredPosition; ;
                 this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().anchoredPosition;
+                                    targetOrigin = target.GetComponent<RectTransform>().anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetComponent<RectTransform>().GetWidgetScale();
+                                    targetOrigin = target.GetComponent<RectTransform>().GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.transform.localEulerAngles;
+                                    targetOrigin = target.transform.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
             }
 
             #endregion
 
             #region Events
 
-            private void ActionEvents__Update()
+            private async void ActionEvents__Update()
             {
-                if (!transitionUI)
+                if (GetCanTransition().UnSuccessful())
                     return;
 
-                if (!IsCompleted())
+                LogInfo($" _________________++++++++++++++ In Progress - Started.", this);
+
+                var initializationTaskCallback = await Initialized();
+
+                LogInfo($" _________________++++++++++++++ In Progress - Initialization Code : {initializationTaskCallback.GetResultCode} - Results : {initializationTaskCallback.GetResult}.", this);
+
+                if (initializationTaskCallback.Success())
                 {
-                    if (transitionType != UITransitionType.None)
+                    var inProgressTaskCallback = await InProgress();
+
+                    if (inProgressTaskCallback.Success())
                     {
+                        LogInfo($" _________________++++++++++++++ In Progress - Type : {transitionType}", this);
 
                         switch (transitionType)
                         {
                             case UITransitionType.Translate:
 
-                                transitionable.anchoredPosition = Vector2.Lerp(transitionable.anchoredPosition, target, transitionSpeed * Time.smoothDeltaTime);
+                                var targetPosition = Vector2.Lerp(GetTransitionableUISource().GetWidgetPosition(), GetTarget(), GetTransitionSpeed());
+                                GetTransitionableUISource().SetWidgetPosition(targetPosition);
 
                                 break;
 
                             case UITransitionType.Scale:
 
-                                transitionable.localScale = Vector3.Lerp(transitionable.localScale, target, transitionSpeed * Time.smoothDeltaTime);
+                                transitionableUISourceReference.sizeDelta = Vector2.Lerp(transitionableUISourceReference.sizeDelta, target, transitionSpeed * Time.smoothDeltaTime);
 
                                 break;
 
                             case UITransitionType.Rotate:
 
+                                transitionableUISourceReference.rotation = Quaternion.Slerp(transitionableUISourceReference.rotation, Quaternion.Euler(target), transitionSpeed * Time.smoothDeltaTime);
+
                                 break;
                         }
                     }
                     else
-                        throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    {
+                        switch (transitionType)
+                        {
+                            case UITransitionType.Translate:
+
+                                if (transitionState != UITransitionStateType.None)
+                                {
+                                    switch (transitionState)
+                                    {
+                                        case UITransitionStateType.Once:
+
+                                            GetTransitionableUISource().SetWidgetPosition(GetTarget());
+                                            SetCanTransition(false);
+                                            UnSubscribedFromEvents();
+
+                                            break;
+
+                                        case UITransitionStateType.Repeat:
+
+                                            SetTarget(GetSourceOrigin());
+                                            SetSourceOrigin(GetTransitionableUISource().GetWidgetPosition());
+
+                                            break;
+                                    }
+                                }
+                                else
+                                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
+
+                                break;
+
+                            case UITransitionType.Scale:
+
+                                switch (transitionState)
+                                {
+                                    case UITransitionStateType.Once:
+
+                                        GetTransitionableUISource().SetWidgetScale(GetTarget());
+                                        SetCanTransition(false);
+                                        UnSubscribedFromEvents();
+
+                                        break;
+
+                                    case UITransitionStateType.Repeat:
+
+                                        SetTarget(GetSourceOrigin());
+                                        SetSourceOrigin(GetTransitionableUISource().GetWidgetScale());
+
+                                        break;
+                                }
+
+                                break;
+
+                            case UITransitionType.Rotate:
+
+                                switch (transitionState)
+                                {
+                                    case UITransitionStateType.Once:
+
+                                        GetTransitionableUISource().SetWidgetRotation(GetTarget());
+                                        SetCanTransition(false);
+                                        UnSubscribedFromEvents();
+
+                                        break;
+
+                                    case UITransitionStateType.Repeat:
+
+                                        SetTarget(GetSourceOrigin());
+                                        SetSourceOrigin(GetTransitionableUISource().GetWidgetRotationAngle());
+
+                                        break;
+                                }
+
+                                break;
+                        }
+                    }
                 }
                 else
-                {
-                    transitionable.anchoredPosition = target;
-                    transitionUI = false;
-                    ActionEvents._Update -= ActionEvents__Update;
-                }
+                    Log(initializationTaskCallback.GetResultCode, initializationTaskCallback.GetResult, this);
             }
 
             #endregion
 
             #region Setters
 
-            public void SetTransitionable(RectTransform transitionable) => this.transitionable = transitionable;
-            public void SetTransitionable(Transform transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
-            public void SetTransitionable(GameObject transitionable) => this.transitionable = transitionable.GetComponent<RectTransform>();
+            public void SetTransitionableUIName(string name) => this.name = name;
 
-            public void SetTarget(Vector3 target) => this.target = target;
-            public void SetTarget(RectTransform target) => this.target = target.anchoredPosition;
-            public void SetTarget(Transform target) => this.target = target.GetComponent<RectTransform>().anchoredPosition;
-            public void SetTarget(GameObject target) => this.target = target.GetComponent<RectTransform>().anchoredPosition;
+            public void SetTransitionableUISource(RectTransform transitionable) => this.transitionableUISourceReference = transitionable;
+            public void SetTransitionableUISource(Transform transitionable) => this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
+            public void SetTransitionableUISource(GameObject transitionable) => this.transitionableUISourceReference = transitionable.GetComponent<RectTransform>();
 
-            public void SetSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
+            public void SetTarget(Vector3 target)
+            {
+                this.target = target;
+
+                if (transitionState == UITransitionStateType.Repeat)
+                    targetOrigin = this.target;
+            }
+
+            public void SetTarget(RectTransform target)
+            {
+                if (transitionType != UITransitionType.None)
+                {
+                    switch (transitionType)
+                    {
+                        case UITransitionType.Translate:
+
+                            this.target = target.anchoredPosition;
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            this.target = target.sizeDelta;
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            this.target = target.localEulerAngles;
+
+                            break;
+                    }
+
+                    if (transitionState == UITransitionStateType.Repeat)
+                        targetOrigin = this.target;
+                }
+                else
+                    throw new ArgumentException("Set Target Failed : Transition Type Is Set To Default : NONE.");
+            }
+
+            public void SetTarget(Transform target)
+            {
+                if (transitionType != UITransitionType.None)
+                {
+                    switch (transitionType)
+                    {
+                        case UITransitionType.Translate:
+
+                            this.target = target.GetComponent<RectTransform>().anchoredPosition;
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            this.target = target.GetComponent<RectTransform>().sizeDelta;
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            this.target = target.localEulerAngles;
+
+                            break;
+                    }
+
+                    if(transitionState == UITransitionStateType.Repeat)
+                        targetOrigin = this.target;
+                }
+                else
+                    throw new ArgumentException("Set Target Failed : Transition Type Is Set To Default : NONE.");
+            }
+
+            public void SetTarget(GameObject target)
+            {
+                if (transitionType != UITransitionType.None)
+                {
+                    switch (transitionType)
+                    {
+                        case UITransitionType.Translate:
+
+                            this.target = target.GetComponent<RectTransform>().anchoredPosition;
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            this.target = target.GetComponent<RectTransform>().sizeDelta;
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            this.target = target.transform.localEulerAngles;
+
+                            break;
+                    }
+
+                    if (transitionState == UITransitionStateType.Repeat)
+                        targetOrigin = this.target;
+                }
+                else
+                    throw new ArgumentException("Set Target Failed : Transition Type Is Set To Default : NONE.");
+            }
+
+            public void SetTransitionSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
 
             public void SetTransitionType(UITransitionType transitionType) => this.transitionType = transitionType;
             public void SetTransitionStateType(UITransitionStateType transitionState) => this.transitionState = transitionState;
+
+            public void SetSourceOrigin(Vector3 sourceOrigin) => this.sourceOrigin = sourceOrigin;
+
+            public void SetTargetOrigin(Vector3 targetOrigin) => this.targetOrigin = targetOrigin;
+
+            public void SetSourceValue(Vector3 sourceValue)
+            {
+                Initialized(initializationCallback => 
+                {
+                    if(initializationCallback.Success())
+                    {
+                        switch(transitionType)
+                        {
+                            case UITransitionType.Translate:
+
+                                transitionableUISourceReference.anchoredPosition = sourceValue;
+
+                                break;
+
+                            case UITransitionType.Scale:
+
+                                transitionableUISourceReference.sizeDelta = sourceValue;
+
+                                break;
+
+                            case UITransitionType.Rotate:
+
+                                transitionableUISourceReference.localEulerAngles = sourceValue;
+
+                                break;
+                        }
+                    }
+                });
+            }
+
+            void SetCanTransition(bool canTransitionUI) => this.canTransitionUI = canTransitionUI;
+
+            void SubscribedToEvents() => subscribedToEvents = true;
+
+            void UnSubscribedFromEvents() => subscribedToEvents = false;
+
+            void SubscribeToEvents()
+            {
+                ActionEvents._Update += ActionEvents__Update;
+                SubscribedToEvents();
+            }
+            void UnSubscribeFromEvents()
+            {
+                ActionEvents._Update -= ActionEvents__Update;
+                UnSubscribeFromEvents();
+            }
 
             #endregion
 
             #region Getters
 
-            public RectTransform GetTransitionable() => transitionable;
+            public string GetTransitionableUIName() => (!string.IsNullOrEmpty(name))? name : $"Transitionable UI Name Not Assigned";
 
-            public Vector3 GetTargetPosition() => target;
+            public RectTransform GetTransitionableUISource() => transitionableUISourceReference;
 
-            public float GetTransitionSpeed() => transitionSpeed;
+            public Vector3 GetSource()
+            {
+                if (transitionType != UITransitionType.None)
+                {
+                    var souceVector = Vector3.zero;
 
-            public UITransitionType GetTransitionType() => transitionType;
-            public UITransitionStateType GetTransitionStateType() => transitionState;
+                    switch (transitionType)
+                    {
+                        case UITransitionType.Translate:
 
-            public bool IsCompleted() => (transitionable.anchoredPosition - (Vector2)target).magnitude <= 0.01f;
+                            souceVector = transitionableUISourceReference.anchoredPosition;
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            souceVector = transitionableUISourceReference.sizeDelta;
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            souceVector = transitionableUISourceReference.localEulerAngles;
+
+                            break;
+                    }
+
+                    return souceVector;
+                }
+                else
+                    throw new ArgumentException("Set Target Failed : Transition Type Is Set To Default : NONE.");
+            }
+
+            public Vector3 GetSourceOrigin() => sourceOrigin;
+
+            public Vector3 GetTarget() => target;
+
+            public Vector3 GetTargetOrigin() => targetOrigin;
+
+            public float GetTransitionSpeed() => (transitionSpeed * Time.smoothDeltaTime);
+            public float GetTransitionDistanceInMagnitude() => transitionDistanceInMagnitude;
+
+            private Callback GetCanTransition()
+            {
+                Callback callbackResults = new Callback();
+
+                if(canTransitionUI)
+                {
+                    callbackResults.result = $"Can Transition UI : {GetTransitionableUIName()}";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Can Not Transition UI : {GetTransitionableUIName()}";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            private Callback IsSubscribedToEvents()
+            {
+                Callback callbackResults = new Callback();
+
+                if(subscribedToEvents)
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Has Been Subscribed To The Updates Events.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is Not Subscribed To Events.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<UITransitionType> GetTransitionType()
+            {
+                CallbackData<UITransitionType> callbackResults = new CallbackData<UITransitionType>();
+
+                if (transitionType != UITransitionType.None)
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition Type Has Been Successfully Set To : {transitionType}";
+                    callbackResults.data = transitionType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition Type Is Set To Default : {transitionType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<UITransitionStateType> GetTransitionStateType()
+            {
+                CallbackData<UITransitionStateType> callbackResults = new CallbackData<UITransitionStateType>();
+
+                if(transitionState != UITransitionStateType.None)
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition State Has Been Successfully Set To : {transitionState}";
+                    callbackResults.data = transitionState;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition State Is Set To Default : {transitionState}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public async void Initialized(Action<Callback> callback)
+            {
+                var initializationTaskResults = await Initialized();
+                callback.Invoke(initializationTaskResults);
+            }
+
+            public async Task<Callback> Initialized()
+            {
+                Callback callbackResults = new Callback();
+
+                await Task.Yield();
+
+                if (this != null && GetTransitionableUISource().AssignedAndValid() && GetTransitionType().Success() && GetTransitionStateType().Success() && GetTransitionSpeed() > 0.0f)
+                {
+                    callbackResults.result = "UI Transitionable Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"UI Transitionable Has Not Been Initialized Yet - Type Results : {GetTransitionType().GetResult} - State Results : {GetTransitionStateType().GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            private Callback InTransition(Vector2 source, Vector2 target, Vector2 startDistance, float distanceInMagnitude)
+            {
+                Callback callbackResults = new Callback();
+
+                if((source - target).magnitude <= distanceInMagnitude || (source - startDistance).magnitude <= distanceInMagnitude)
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is Not In Transition";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is In Transition.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+
+                return callbackResults;
+            }
+
+            public async Task<Callback> Completed()
+            {
+                Callback callbackResults = new Callback();
+
+                var initializationTaskResults = await Initialized();
+
+                callbackResults.SetResult(initializationTaskResults);
+
+                if (callbackResults.Success())
+                {
+                    switch (transitionType)
+                    {
+                        case UITransitionType.Translate:
+
+                            callbackResults.SetResult(InTransition(GetTransitionableUISource().GetWidgetPosition(), GetTarget(), GetSourceOrigin(), GetTransitionDistanceInMagnitude()));
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            callbackResults.SetResult(InTransition(GetTransitionableUISource().GetWidgetScale(), GetTarget(), GetSourceOrigin(), GetTransitionDistanceInMagnitude()));
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            callbackResults.SetResult(InTransition(GetTransitionableUISource().GetWidgetRotationAngle(), GetTarget(), GetSourceOrigin(), GetTransitionDistanceInMagnitude()));
+
+                            break;
+                    }
+
+                    if (callbackResults.UnSuccessful() && GetCanTransition().UnSuccessful() && IsSubscribedToEvents().UnSuccessful())
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Of Type : {transitionType} - State : {transitionState} - Transition Completed.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Of Type : {transitionType} - State : {transitionState} - Is Still In Progress.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public async Task<Callback> InProgress()
+            {
+                Callback callbackResults = new Callback();
+
+                var initializationTaskResults = await Initialized();
+
+                callbackResults.SetResult(initializationTaskResults);
+
+                if (callbackResults.Success())
+                {
+                    var completedTaskResults = await Completed();
+
+                    callbackResults.SetResult(completedTaskResults);
+
+                    if (callbackResults.UnSuccessful())
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Transition In Progress - Results : {callbackResults.GetResult}.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Transition Has Completed - Results : {callbackResults.GetResult}.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
 
             #endregion
 
             #region Actions
 
-            public void Transition()
+            public async Task<Callback> InvokeTransitionAsync()
             {
-                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f)
+                Callback callbackResults = new Callback();
+
+                var initializationTaskResults = await Initialized();
+
+                callbackResults.SetResult(initializationTaskResults);
+
+                if (callbackResults.Success())
                 {
-                    ActionEvents._Update += ActionEvents__Update;
-                    transitionUI = true;
-                }
-                else
-                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
-            }
+                    var progressCheckTaskResults = await InProgress();
 
-            public async Task<bool> TransitionAsync()
-            {
-                if(transitionable != null && !IsCompleted() && transitionSpeed > 0.0f)
-                {
-                    ActionEvents._Update += ActionEvents__Update;
+                    callbackResults.SetResult(progressCheckTaskResults);
 
-                    transitionUI = true;
+                    LogInfo($" ______________________++++++++++++++ Start Progress - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.", this);
 
-                    while (transitionUI && !IsCompleted())
+                    if (callbackResults.UnSuccessful())
+                    {
+                        if (transitionState == UITransitionStateType.Repeat)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    if ((Vector2)sourceOrigin != GetTransitionableUISource().GetWidgetPosition())
+                                        SetSourceOrigin(GetTransitionableUISource().GetWidgetPosition());
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    if ((Vector2)sourceOrigin != GetTransitionableUISource().GetWidgetScale())
+                                        SetSourceOrigin(GetTransitionableUISource().GetWidgetScale());
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    if (sourceOrigin != GetTransitionableUISource().GetWidgetRotationAngle())
+                                        SetSourceOrigin(GetTransitionableUISource().GetWidgetRotationAngle());
+
+                                    break;
+                            }
+
+                            if (targetOrigin != target)
+                                SetTargetOrigin(target);
+                        }
+
+                        SubscribeToEvents();
+                        SetCanTransition(true);
+
                         await Task.Yield();
 
-                    return IsCompleted();
+                        var progressStartedTaskResults = await InProgress();
+                        callbackResults.SetResult(progressStartedTaskResults);
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is Already In Progress - Result Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
                 }
-                else
-                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
 
-                return false;
+                return callbackResults;
             }
 
-            public void Restart()
+            public void RestartTransition(Action<Callback> callback = null)
             {
-                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f && transitionUI == true)
+                Callback callbackResults = new Callback();
+
+                Initialized(async initializationCallbackResults =>
                 {
-                   
-                }
-                else
-                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+                    callbackResults.SetResult(initializationCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var progressStartedTaskResults = await InProgress();
+                        callbackResults.SetResult(progressStartedTaskResults);
+
+                        if (callbackResults.Success())
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    if (transitionableUISourceReference.GetWidgetPosition() != (Vector2)GetSourceOrigin())
+                                        SetSourceValue(GetSourceOrigin());
+
+                                    await Task.Yield();
+
+                                    if (transitionableUISourceReference.GetWidgetPosition() == (Vector2)GetSourceOrigin())
+                                    {
+                                        callbackResults.result = $"Translate State Transition : {name} Has Been Restarted Successfully.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    if (transitionableUISourceReference.GetWidgetScale() != (Vector2)GetSourceOrigin())
+                                        SetSourceValue(GetSourceOrigin());
+
+                                    await Task.Yield();
+
+                                    if (transitionableUISourceReference.GetWidgetScale() == (Vector2)GetSourceOrigin())
+                                    {
+                                        callbackResults.result = $"Scale State Transition : {name} Has Been Restarted Successfully.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    if (transitionableUISourceReference.GetWidgetRotationAngle() != GetSourceOrigin())
+                                        SetSourceValue(GetSourceOrigin());
+
+                                    await Task.Yield();
+
+                                    if (transitionableUISourceReference.GetWidgetRotationAngle() == GetSourceOrigin())
+                                    {
+                                        callbackResults.result = $"Rotation State Transition : {name} Has Been Restarted Successfully.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Transition : {name} - There Are Possibly Components Missing.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void Stop()
+            public void CancelTransition(Action<Callback> callback = null)
             {
-                if (transitionable != null && !IsCompleted() && transitionSpeed > 0.0f && transitionUI == true)
+                Callback callbackResults = new Callback();
+
+                LogInfo(" __________________++++++++++ Cancelling Transitionable UI.", this);
+
+                Initialized(async initializationCallbackResults => 
                 {
-                    transitionUI = false;
-                    ActionEvents._Update -= ActionEvents__Update;
-                }
-                else
-                    LogError($"Failed To Transition : {name} - There Are Possibly Components Missing.", this);
+                    callbackResults.SetResult(initializationCallbackResults);
+
+                    if(callbackResults.Success())
+                    {
+                        var inProgressTaskResults = await InProgress();
+
+                        callbackResults.SetResult(inProgressTaskResults);
+
+                        if (callbackResults.Success())
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    if (transitionableUISourceReference.GetWidgetPosition() != (Vector2)GetSourceOrigin())
+                                        SetSourceValue(GetSourceOrigin());
+
+                                    await Task.Yield();
+
+                                    if (transitionableUISourceReference.GetWidgetPosition() == (Vector2)GetSourceOrigin())
+                                    {
+                                        callbackResults.result = $"Translate State Transition : {name} Has Been Cancelled Successfully.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    if (transitionableUISourceReference.GetWidgetScale() != (Vector2)GetSourceOrigin())
+                                        SetSourceValue(GetSourceOrigin());
+
+                                    await Task.Yield();
+
+                                    if (transitionableUISourceReference.GetWidgetScale() == (Vector2)GetSourceOrigin())
+                                    {
+                                        callbackResults.result = $"Scale State Transition : {name} Has Been Cancelled Successfully.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    if (transitionableUISourceReference.GetWidgetRotationAngle() != GetSourceOrigin())
+                                        SetSourceValue(GetSourceOrigin());
+
+                                    await Task.Yield();
+
+                                    if (transitionableUISourceReference.GetWidgetRotationAngle() == GetSourceOrigin())
+                                    {
+                                        callbackResults.result = $"Rotation State Transition : {name} Has Been Cancelled Successfully.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    break;
+                            }
+
+                            SetCanTransition(false);
+                            UnSubscribeFromEvents();
+
+                            var inProgressVarificationTaskResults = await InProgress();
+
+                            callbackResults.SetResult(inProgressVarificationTaskResults);
+
+                            await Task.Yield();
+
+                            if (callbackResults.UnSuccessful())
+                            {
+                                callbackResults.result = $"Transition : {GetTransitionableUIName()} - Has Been Cancelled Successfully.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed To Cancel Transition : {GetTransitionableUIName()} - Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Transition : {GetTransitionableUIName()} - There Are Possibly Components Missing.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -17715,6 +18887,10 @@ namespace Com.RedicalGames.Filar
             #region Abstract Functions
 
             public abstract bool Success();
+            public abstract bool UnSuccessful();
+
+            public abstract bool Error();
+            public abstract bool Warning();
 
             #endregion
 
@@ -17724,7 +18900,7 @@ namespace Com.RedicalGames.Filar
                 resultCode = callbackResults.resultCode;
             }
 
-            public void LogResult() => Log(ResultCode, Result, GetClassInfo ?? this.name);
+            public void LogResult() => Log(GetResultCode, GetResult, GetClassInfo ?? this.name);
 
             #endregion
 
@@ -17732,9 +18908,9 @@ namespace Com.RedicalGames.Filar
 
             public string GetName => Name;
 
-            public string Result { get { return result; } protected set { } }
+            public string GetResult { get { return result; } protected set { } }
 
-            public LogInfoChannel ResultCode { get { return resultCode; } protected set { } }
+            public LogInfoChannel GetResultCode { get { return resultCode; } protected set { } }
 
             #endregion
 
@@ -17781,14 +18957,19 @@ namespace Com.RedicalGames.Filar
             public Callback(Callback callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             #endregion
 
-            public override bool Success() => Helpers.IsSuccessCode(ResultCode);
+            public override bool Success() => Helpers.IsSuccessCode(GetResultCode);
+
+            public override bool UnSuccessful() => (Helpers.IsWarningCode(GetResultCode) || Helpers.IsErrorCode(GetResultCode));
+
+            public override bool Error() => Helpers.IsErrorCode(GetResultCode);
+            public override bool Warning() => Helpers.IsErrorCode(GetResultCode);
 
             //protected bool HasResultsData() => hasResultsData;
 
@@ -17914,8 +19095,8 @@ namespace Com.RedicalGames.Filar
             public CallbackData(Callback callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -17923,33 +19104,33 @@ namespace Com.RedicalGames.Filar
             public CallbackData(CallbackData<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
+                result = callbackResults.GetResult;
                 data = callbackResults.Data;
-                resultCode = callbackResults.ResultCode;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackData(CallbackDataList<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackData(CallbackDataArray<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackData(CallbackDataQueue<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -17964,9 +19145,9 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
-                    Log(ResultCode, Result, this);
+                    Log(GetResultCode, GetResult, this);
 
-                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {GetResultCode} And Result Message : {GetResult}");
                 }
             }
 
@@ -18093,8 +19274,8 @@ namespace Com.RedicalGames.Filar
             public CallbackDataList(Callback callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -18102,33 +19283,33 @@ namespace Com.RedicalGames.Filar
             public CallbackDataList(CallbackData<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataList(CallbackDataList<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
+                result = callbackResults.GetResult;
                 data = callbackResults.Data;
-                resultCode = callbackResults.ResultCode;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataList(CallbackDataArray<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataList(CallbackDataQueue<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -18144,9 +19325,9 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
-                    Log(ResultCode, Result, this);
+                    Log(GetResultCode, GetResult, this);
 
-                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {GetResultCode} And Result Message : {GetResult}");
                 }
             }
 
@@ -18264,8 +19445,8 @@ namespace Com.RedicalGames.Filar
             public CallbackDataQueue(Callback callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -18273,33 +19454,33 @@ namespace Com.RedicalGames.Filar
             public CallbackDataQueue(CallbackData<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataQueue(CallbackDataList<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataQueue(CallbackDataArray<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataQueue(CallbackDataQueue<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
+                result = callbackResults.GetResult;
                 data = callbackResults.Data;
-                resultCode = callbackResults.ResultCode;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -18314,9 +19495,9 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
-                    Log(ResultCode, Result, this);
+                    Log(GetResultCode, GetResult, this);
 
-                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {GetResultCode} And Result Message : {GetResult}");
                 }
             }
 
@@ -18484,41 +19665,41 @@ namespace Com.RedicalGames.Filar
             public CallbackDataArray(Callback callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataArray(CallbackData<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataArray(CallbackDataList<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataArray(CallbackDataArray<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
+                result = callbackResults.GetResult;
                 data = callbackResults.GetData();
-                resultCode = callbackResults.ResultCode;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
             public CallbackDataArray(CallbackDataQueue<T> callbackResults)
             {
                 name = callbackResults.GetName;
-                result = callbackResults.Result;
-                resultCode = callbackResults.ResultCode;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
                 resultClass = callbackResults.GetClassInfo;
             }
 
@@ -18533,9 +19714,9 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
-                    Log(ResultCode, Result, this);
+                    Log(GetResultCode, GetResult, this);
 
-                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {ResultCode} And Result Message : {Result}");
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {GetResultCode} And Result Message : {GetResult}");
                 }
             }
 
@@ -19530,7 +20711,7 @@ namespace Com.RedicalGames.Filar
                                         widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
                                         {
 
-                                            LogInfo($" +++++==============>>>> Found Image Data - Code : {dataPacketsCallback.ResultCode} - Results : {dataPacketsCallback.Result}", this);
+                                            LogInfo($" +++++==============>>>> Found Image Data - Code : {dataPacketsCallback.GetResultCode} - Results : {dataPacketsCallback.GetResult}", this);
 
                                             if (dataPacketsCallback.Success())
                                             {
@@ -23791,7 +24972,7 @@ namespace Com.RedicalGames.Filar
                                                                 ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
                                                             }
                                                             else
-                                                                Log(containerCallbackResults.data.GetLastContentIndex().ResultCode, containerCallbackResults.data.GetLastContentIndex().Result, this);
+                                                                Log(containerCallbackResults.data.GetLastContentIndex().GetResultCode, containerCallbackResults.data.GetLastContentIndex().GetResult, this);
                                                         }
                                                     }
                                                     else
@@ -25565,6 +26746,8 @@ namespace Com.RedicalGames.Filar
 
             Coroutine showWidgetAsyncRoutine;
 
+            public bool Initialized { get; private set; }
+
             #region Widgets 
 
             protected SliderValuePopUpWidget sliderWidget = null;
@@ -25583,7 +26766,7 @@ namespace Com.RedicalGames.Filar
             protected SnapShotWidget snapShotWidget;
             protected UIScreenFolderCreationWidget folderCreationWidget;
             protected FileSelectionOptionsWidget fileSelectionOptionsWidget;
-            protected SrollerNavigationWidget srollerNavigationWidget;
+            protected SrollerNavigationWidget scrollerNavigationWidget;
             protected UITextDisplayerWidget textDisplayerWidget;
             protected PagerNavigationWidget pagerNavigationWidget;
             protected UIAssetActionWarningWidget uiAssetWarningWidget;
@@ -25618,251 +26801,261 @@ namespace Com.RedicalGames.Filar
                     OnSubscribeToActionEvents(false);
             }
 
+            void Start() => Init();
+
             void Update() => OnWidgetTransition();
 
             #endregion
 
-            protected void Init()
+            public void Init()
             {
-                WidgetLayoutView layoutView = GetLayoutView();
+                if (!Initialized)
+                {
 
-                if (layoutView.layout)
-                    if (layoutView.layout.GetComponent<RectTransform>())
-                        widgetRect = layoutView.layout.GetComponent<RectTransform>();
+                    WidgetLayoutView layoutView = GetLayoutView();
+
+                    if (layoutView.layout)
+                        if (layoutView.layout.GetComponent<RectTransform>())
+                            widgetRect = layoutView.layout.GetComponent<RectTransform>();
+                        else
+                            LogWarning("Value Doesn't Have A Rect Transform Component.", this);
                     else
-                        LogWarning("Value Doesn't Have A Rect Transform Component.", this, () => Init());
-                else
-                    LogWarning("Value Is Null.", this, () => Init());
+                        LogWarning("Value Is Null.", this);
 
 
-                if (dontShowAgainToggleField != null)
-                    dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
+                    if (dontShowAgainToggleField != null)
+                        dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
 
-                #region Initialize Buttons
+                    #region Initialize Buttons
 
-                if (buttons != null && buttons.Count > 0)
-                {
-                    foreach (var button in buttons)
+                    if (buttons != null && buttons.Count > 0)
                     {
-                        if (button.InputValueAssigned().success)
+                        foreach (var button in buttons)
                         {
-                            if (button.Selectable().success)
+                            if (button.InputValueAssigned().success)
                             {
-                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                if (button.Selectable().success)
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, button, selectableCallbackResults =>
+                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                     {
-                                        if (selectableCallbackResults.Success())
+                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, button, selectableCallbackResults =>
                                         {
+                                            if (selectableCallbackResults.Success())
+                                            {
 
-                                        }
-                                        else
-                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                            }
+                                            else
+                                                Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                        });
                                     });
-                                });
+                                }
+                                else
+                                {
+                                    string results = (button.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                    if (button.Selectable().selectable)
+                                        LogError($"Button : {button.name} - {results}", this);
+                                    else
+                                        LogInfo($"Button : {button.name} - {results}", this);
+                                }
                             }
                             else
                             {
-                                string results = (button.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                if (button.Selectable().selectable)
-                                    LogError($"Button : {button.name} - {results}", this);
-                                else
-                                    LogInfo($"Button : {button.name} - {results}", this);
+                                LogError(button.InputValueAssigned().results, this);
+                                break;
                             }
-                        }
-                        else
-                        {
-                            LogError(button.InputValueAssigned().results, this);
-                            break;
                         }
                     }
-                }
 
-                #endregion
+                    #endregion
 
-                #region Initialize Inputs
+                    #region Initialize Inputs
 
-                if (inputs != null && inputs.Count > 0)
-                {
-                    foreach (var inputField in inputs)
+                    if (inputs != null && inputs.Count > 0)
                     {
-                        if (inputField.InputValueAssigned().success)
+                        foreach (var inputField in inputs)
                         {
-                            if (inputField.Selectable().success)
+                            if (inputField.InputValueAssigned().success)
                             {
-                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                if (inputField.Selectable().success)
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputField, selectableCallbackResults =>
+                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                     {
-                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                    });
-                                });
-                            }
-                            else
-                            {
-                                string results = (inputField.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                if (inputField.Selectable().selectable)
-                                    LogError($"Input Field : {inputField.name} - {results}", this);
-                                else
-                                    LogInfo($"Input Field : {inputField.name} - {results}", this);
-                            }
-
-                            inputField.Initialize();
-                        }
-                        else
-                        {
-                            LogError(inputField.InputValueAssigned().results, this);
-                            break;
-                        }
-                    }
-                }
-
-                #endregion
-
-                #region Initialize Input Sliders
-
-                if (sliders != null && sliders.Count > 0)
-                {
-                    foreach (var inputSlider in sliders)
-                    {
-                        if (inputSlider.InputValueAssigned().success)
-                        {
-                            if (inputSlider.Selectable().success)
-                            {
-                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputSlider, selectableCallbackResults =>
-                                    {
-                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                    });
-                                });
-                            }
-                            else
-                            {
-                                string results = (inputSlider.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                if (inputSlider.Selectable().selectable)
-                                    LogError($"Input Slider : {inputSlider.name} - {results}", this);
-                                else
-                                    LogInfo($"Input Slider : {inputSlider.name} - {results}", this);
-                            }
-                        }
-                        else
-                        {
-                            LogError(inputSlider.InputValueAssigned().results, this);
-                            break;
-                        }
-                    }
-                }
-
-                #endregion
-
-                #region Initialize Dropdowns
-
-                if (dropdowns != null && dropdowns.Count > 0)
-                {
-                    foreach (var dropdown in dropdowns)
-                    {
-                        if (dropdown.InputValueAssigned().success)
-                        {
-                            if (dropdown.Selectable().success)
-                            {
-                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, dropdown, selectableCallbackResults =>
-                                    {
-                                        if (selectableCallbackResults.Success())
+                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputField, selectableCallbackResults =>
                                         {
-
-                                        }
-                                        else
                                             Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                        });
                                     });
-                                });
-                            }
-                            else
-                            {
-                                string results = (dropdown.Selectable().selectable)? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector."  : "Is Not Set To Selectable Input";
-
-                                if (dropdown.Selectable().selectable)
-                                    LogError($"Dropdown : {dropdown.name} - {results}", this);
+                                }
                                 else
-                                    LogInfo($"Dropdown : {dropdown.name} - {results}", this);
-                            }
-                        }
-                        else
-                        {
-                            LogError(dropdown.InputValueAssigned().results, this);
-                            break;
-                        }
-                    }
-                }
-
-                #endregion
-
-                #region Initialize Checkbox
-
-                if (checkboxes != null && checkboxes.Count > 0)
-                {
-                    foreach (var checkbox in checkboxes)
-                    {
-                        if (checkbox.InputValueAssigned().success)
-                        {
-                            if (checkbox.Selectable().success)
-                            {
-                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, checkbox, selectableCallbackResults =>
-                                    {
-                                        if (selectableCallbackResults.Success())
-                                        {
+                                    string results = (inputField.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
 
-                                        }
-                                        else
-                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                    });
-                                });
+                                    if (inputField.Selectable().selectable)
+                                        LogError($"Input Field : {inputField.name} - {results}", this);
+                                    else
+                                        LogInfo($"Input Field : {inputField.name} - {results}", this);
+                                }
+
+                                inputField.Initialize();
                             }
                             else
                             {
-                                string results = (checkbox.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                if (checkbox.Selectable().selectable)
-                                    LogError($"Checkbox : {checkbox.name} - {results}", this);
-                                else
-                                    LogInfo($"Checkbox : {checkbox.name} - {results}", this);
+                                LogError(inputField.InputValueAssigned().results, this);
+                                break;
                             }
+                        }
+                    }
 
-                            checkbox.value.onValueChanged.AddListener((value) => SetOnCheckboxValueChanged(checkbox.actionType, value, checkbox.dataPackets));
+                    #endregion
+
+                    #region Initialize Input Sliders
+
+                    if (sliders != null && sliders.Count > 0)
+                    {
+                        foreach (var inputSlider in sliders)
+                        {
+                            if (inputSlider.InputValueAssigned().success)
+                            {
+                                if (inputSlider.Selectable().success)
+                                {
+                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    {
+                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputSlider, selectableCallbackResults =>
+                                        {
+                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                        });
+                                    });
+                                }
+                                else
+                                {
+                                    string results = (inputSlider.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                    if (inputSlider.Selectable().selectable)
+                                        LogError($"Input Slider : {inputSlider.name} - {results}", this);
+                                    else
+                                        LogInfo($"Input Slider : {inputSlider.name} - {results}", this);
+                                }
+                            }
+                            else
+                            {
+                                LogError(inputSlider.InputValueAssigned().results, this);
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region Initialize Dropdowns
+
+                    if (dropdowns != null && dropdowns.Count > 0)
+                    {
+                        foreach (var dropdown in dropdowns)
+                        {
+                            if (dropdown.InputValueAssigned().success)
+                            {
+                                if (dropdown.Selectable().success)
+                                {
+                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    {
+                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, dropdown, selectableCallbackResults =>
+                                        {
+                                            if (selectableCallbackResults.Success())
+                                            {
+
+                                            }
+                                            else
+                                                Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                        });
+                                    });
+                                }
+                                else
+                                {
+                                    string results = (dropdown.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                    if (dropdown.Selectable().selectable)
+                                        LogError($"Dropdown : {dropdown.name} - {results}", this);
+                                    else
+                                        LogInfo($"Dropdown : {dropdown.name} - {results}", this);
+                                }
+                            }
+                            else
+                            {
+                                LogError(dropdown.InputValueAssigned().results, this);
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region Initialize Checkbox
+
+                    if (checkboxes != null && checkboxes.Count > 0)
+                    {
+                        foreach (var checkbox in checkboxes)
+                        {
+                            if (checkbox.InputValueAssigned().success)
+                            {
+                                if (checkbox.Selectable().success)
+                                {
+                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    {
+                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, checkbox, selectableCallbackResults =>
+                                        {
+                                            if (selectableCallbackResults.Success())
+                                            {
+
+                                            }
+                                            else
+                                                Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                        });
+                                    });
+                                }
+                                else
+                                {
+                                    string results = (checkbox.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                    if (checkbox.Selectable().selectable)
+                                        LogError($"Checkbox : {checkbox.name} - {results}", this);
+                                    else
+                                        LogInfo($"Checkbox : {checkbox.name} - {results}", this);
+                                }
+
+                                checkbox.value.onValueChanged.AddListener((value) => SetOnCheckboxValueChanged(checkbox.actionType, value, checkbox.dataPackets));
+                            }
+                            else
+                            {
+                                LogError(checkbox.InputValueAssigned().results, this);
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region Initialize Scroller
+
+                    scroller.Initialized(scrollerInitializedCallback =>
+                    {
+                        if (scrollerInitializedCallback.Success())
+                        {
+                            scroller.value.onValueChanged.AddListener(value => { ScrollerPosition(value); });
+
+                            if (scroller.GetFadeUIScrollBar())
+                                scroller.GetUIScrollBarComponent().SetVisibilityState(UIScreenWidgetVisibilityState.Hidden);
                         }
                         else
-                        {
-                            LogError(checkbox.InputValueAssigned().results, this);
-                            break;
-                        }
-                    }
+                            LogWarning(scrollerInitializedCallback.result, this);
+                    });
+
+                    #endregion
+
+                    Initialized = true;
+
+                    Initialize();
                 }
-
-                #endregion
-
-                #region Initialize Scroller
-
-                scroller.Initialized(scrollerInitializedCallback =>
-                {
-                    if (Helpers.IsSuccessCode(scrollerInitializedCallback.resultCode))
-                    {
-                        scroller.value.onValueChanged.AddListener(value => { ScrollerPosition(value); });
-
-                        if (scroller.GetFadeUIScrollBar())
-                            scroller.GetUIScrollBarComponent().SetVisibilityState(UIScreenWidgetVisibilityState.Hidden);
-                    }
-                    else
-                        LogWarning(scrollerInitializedCallback.result, this);
-                });
-
-                #endregion
             }
 
             public SceneDataPackets GetDataPackets() => dataPackets;
@@ -26213,7 +27406,7 @@ namespace Com.RedicalGames.Filar
                                             widgetsContainer.OnFocusedSelectionStateUpdate();
                                         }
                                         else
-                                            Log(widgetsContainer.GetContentCount().ResultCode, widgetsContainer.GetContentCount().Result, this);
+                                            Log(widgetsContainer.GetContentCount().GetResultCode, widgetsContainer.GetContentCount().GetResult, this);
                                     }
                                     else
                                         LogError(selectionCallback.result, this, () => OnSelection_ActionEvents(dataPackets));
@@ -27201,7 +28394,7 @@ namespace Com.RedicalGames.Filar
                                                                 //StartCoroutine(OnShowWidgetAsync(WidgetType.UITextDisplayerWidget, actionButton.dataPackets));
                                                             }
                                                             else
-                                                                Log(widgetContainer.GetLastContentIndex().ResultCode, widgetContainer.GetLastContentIndex().Result, this);
+                                                                Log(widgetContainer.GetLastContentIndex().GetResultCode, widgetContainer.GetLastContentIndex().GetResult, this);
                                                         }
                                                     }
                                                     else
@@ -27770,6 +28963,7 @@ namespace Com.RedicalGames.Filar
 
             #region Overrides
 
+            protected abstract void Initialize();
             protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets);
             protected abstract void OnActionDropdownValueChanged(int value, DropdownDataPackets dataPackets);
             protected abstract void OnScrollerValueChanged(Vector2 value);
@@ -35423,12 +36617,12 @@ namespace Com.RedicalGames.Filar
 
                         filter.mesh = getMeshTaskResults;
 
-                        callbackResults.result = $"Mesh Loaded Successfully : {callbackResults.Result}";
+                        callbackResults.result = $"Mesh Loaded Successfully : {callbackResults.GetResult}";
                         callbackResults.data = loadedObj;
                     }
                     else
                     {
-                        callbackResults.result = $"Mesh Failed To Load After : {callbackResults.Result}";
+                        callbackResults.result = $"Mesh Failed To Load After : {callbackResults.GetResult}";
                         callbackResults.data = default;
                         callbackResults.resultCode = ErrorCode;
                     }

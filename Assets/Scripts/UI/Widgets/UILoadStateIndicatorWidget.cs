@@ -17,18 +17,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            uiLoadingWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => uiLoadingWidget = this;
 
         protected override void OnHideScreenWidget()
         {

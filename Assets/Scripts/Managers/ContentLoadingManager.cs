@@ -45,9 +45,9 @@ namespace Com.RedicalGames.Filar
 
                 AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                 {
-                    loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.Result;
+                    loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.GetResult;
                     loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.Data.dataPackets;
-                    loadingScreenDataPacketsCallbackResults.resultCode = getLoadingScreenDataPacketsCallbackResults.ResultCode;
+                    loadingScreenDataPacketsCallbackResults.resultCode = getLoadingScreenDataPacketsCallbackResults.GetResultCode;
                 });
 
                 if (loadingScreenDataPacketsCallbackResults.Success())

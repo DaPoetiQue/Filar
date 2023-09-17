@@ -8,18 +8,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
-        {
-            permissionRequestWidget = this;
-            base.Init();
-        }
+        protected override void Initialize() => permissionRequestWidget = this;
 
         protected override void OnScreenWidget()
         {
@@ -85,7 +76,7 @@ namespace Com.RedicalGames.Filar
 
                 }
                 else
-                    Log(callbackResults.ResultCode, callbackResults.Result, this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             }, "Screen UI Manager Instance Is Not Yet Initialized.");
         }

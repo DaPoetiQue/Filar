@@ -39,15 +39,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        new void Init()
+        protected override void Initialize()
         {
             createAssetConfirmationWidget = this;
 
@@ -91,8 +85,6 @@ namespace Com.RedicalGames.Filar
                 screenRect = GetLayoutView().layout.GetComponent<RectTransform>();
             else
                 Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
-
-            base.Init();
         }
 
         protected override void OnScreenWidget()
