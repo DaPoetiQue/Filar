@@ -13773,6 +13773,32 @@ namespace Com.RedicalGames.Filar
             public abstract void SetUIScale(int width, int height);
 
             /// <summary>
+            /// Sets The Position Of The UI Rect
+            /// </summary>
+            /// <param name="position">UI Vector 2 Position</param>
+            public abstract void SetUIPosition(Vector2 position);
+
+            /// <summary>
+            /// Sets The UI Rotation Euler Angle
+            /// </summary>
+            /// <param name="rotation">Rotation (Local Euler Angles)</param>
+            public abstract void SetUIRotation(Vector3 rotation);
+
+            /// <summary>
+            /// Sets The Pose Of The UI Rect
+            /// </summary>
+            /// <param name="position">UI Vector 2 Position</param>
+            /// <param name="scale">UI Vector 2 Scale</param>
+            /// <param name="rotation">UI Vector 3 Rotation (Euler Angles)</param>
+            public abstract void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation);
+
+            /// <summary>
+            /// Sets The Pose Of The UI Rect
+            /// </summary>
+            /// <param name="pose">Pose Tupil Value</param>
+            public abstract void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose);
+
+            /// <summary>
             /// Get UI Widget Rect Transform
             /// </summary>
             /// <returns>Widget's Rect Transform</returns>
@@ -14005,6 +14031,11 @@ namespace Com.RedicalGames.Filar
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
 
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -14252,6 +14283,11 @@ namespace Com.RedicalGames.Filar
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
 
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -14533,8 +14569,11 @@ namespace Com.RedicalGames.Filar
             public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
-
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -14759,8 +14798,11 @@ namespace Com.RedicalGames.Filar
             public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
-
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -14964,8 +15006,11 @@ namespace Com.RedicalGames.Filar
             public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
-
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -15193,8 +15238,11 @@ namespace Com.RedicalGames.Filar
             public override RectTransform GetWidgetRect() => value.GetComponent<RectTransform>();
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
-
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -15286,8 +15334,11 @@ namespace Com.RedicalGames.Filar
             public override RectTransform GetWidgetRect() => value.rectTransform;
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
-
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -15420,8 +15471,11 @@ namespace Com.RedicalGames.Filar
             public override RectTransform GetWidgetRect() => value.rectTransform;
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
-
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -15740,11 +15794,14 @@ namespace Com.RedicalGames.Filar
             {
                 throw new NotImplementedException();
             }
-
             public override void SetUIScale(int width, int height)
             {
                 throw new NotImplementedException();
             }
+            public override void SetUIPosition(Vector2 position) => GetWidgetRect().SetWidgetPosition(position);
+            public override void SetUIRotation(Vector3 rotation) => GetWidgetRect().SetWidgetRotation(rotation);
+            public override void SetUIPose(Vector2 position, Vector2 scale, Vector3 rotation) => GetWidgetRect().SetWidgetPose(position, scale, rotation);
+            public override void SetUIPose((Vector2 position, Vector2 scale, Vector3 rotation) pose) => GetWidgetRect().SetWidgetPose(pose.position, pose.scale, pose.rotation);
 
             #endregion
         }
@@ -17971,7 +18028,7 @@ namespace Com.RedicalGames.Filar
 
             #region Getters
 
-            public string GetTransitionableUIName() => (!string.IsNullOrEmpty(name))? name : $"Transitionable UI Name Not Assigned";
+            public string GetName() => (!string.IsNullOrEmpty(name))? name : $"Transitionable UI Name Not Assigned";
 
             public RectTransform GetTransitionableUISource() => transitionableUISourceReference;
 
@@ -18023,12 +18080,12 @@ namespace Com.RedicalGames.Filar
 
                 if(canTransitionUI)
                 {
-                    callbackResults.result = $"Can Transition UI : {GetTransitionableUIName()}";
+                    callbackResults.result = $"Can Transition UI : {GetName()}";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Can Not Transition UI : {GetTransitionableUIName()}";
+                    callbackResults.result = $"Can Not Transition UI : {GetName()}";
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
@@ -18041,12 +18098,12 @@ namespace Com.RedicalGames.Filar
 
                 if(subscribedToEvents)
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Has Been Subscribed To The Updates Events.";
+                    callbackResults.result = $"Transitionable UI : {GetName()} Has Been Subscribed To The Updates Events.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is Not Subscribed To Events.";
+                    callbackResults.result = $"Transitionable UI : {GetName()} Is Not Subscribed To Events.";
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
@@ -18059,13 +18116,13 @@ namespace Com.RedicalGames.Filar
 
                 if (transitionType != UITransitionType.None)
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition Type Has Been Successfully Set To : {transitionType}";
+                    callbackResults.result = $"Transitionable UI : {GetName()}'s Transition Type Has Been Successfully Set To : {transitionType}";
                     callbackResults.data = transitionType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition Type Is Set To Default : {transitionType}";
+                    callbackResults.result = $"Transitionable UI : {GetName()}'s Transition Type Is Set To Default : {transitionType}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -18079,13 +18136,13 @@ namespace Com.RedicalGames.Filar
 
                 if(transitionState != UITransitionStateType.None)
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition State Has Been Successfully Set To : {transitionState}";
+                    callbackResults.result = $"Transitionable UI : {GetName()}'s Transition State Has Been Successfully Set To : {transitionState}";
                     callbackResults.data = transitionState;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()}'s Transition State Is Set To Default : {transitionState}";
+                    callbackResults.result = $"Transitionable UI : {GetName()}'s Transition State Is Set To Default : {transitionState}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -18125,12 +18182,12 @@ namespace Com.RedicalGames.Filar
 
                 if((source - target).magnitude <= distanceInMagnitude || (source - startDistance).magnitude <= distanceInMagnitude)
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is Not In Transition";
+                    callbackResults.result = $"Transitionable UI : {GetName()} Is Not In Transition";
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is In Transition.";
+                    callbackResults.result = $"Transitionable UI : {GetName()} Is In Transition.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
@@ -18170,12 +18227,12 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.UnSuccessful() && GetCanTransition().UnSuccessful() && IsSubscribedToEvents().UnSuccessful())
                     {
-                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Of Type : {transitionType} - State : {transitionState} - Transition Completed.";
+                        callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Transition Completed.";
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Of Type : {transitionType} - State : {transitionState} - Is Still In Progress.";
+                        callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Is Still In Progress.";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -18199,12 +18256,12 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.UnSuccessful())
                     {
-                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Transition In Progress - Results : {callbackResults.GetResult}.";
+                        callbackResults.result = $"Transitionable UI : {GetName()} Transition In Progress - Results : {callbackResults.GetResult}.";
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Transition Has Completed - Results : {callbackResults.GetResult}.";
+                        callbackResults.result = $"Transitionable UI : {GetName()} Transition Has Completed - Results : {callbackResults.GetResult}.";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -18274,7 +18331,7 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.result = $"Transitionable UI : {GetTransitionableUIName()} Is Already In Progress - Result Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
+                        callbackResults.result = $"Transitionable UI : {GetName()} Is Already In Progress - Result Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -18433,18 +18490,18 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.UnSuccessful())
                             {
-                                callbackResults.result = $"Transition : {GetTransitionableUIName()} - Has Been Cancelled Successfully.";
+                                callbackResults.result = $"Transition : {GetName()} - Has Been Cancelled Successfully.";
                                 callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
                             {
-                                callbackResults.result = $"Failed To Cancel Transition : {GetTransitionableUIName()} - Please Check Here.";
+                                callbackResults.result = $"Failed To Cancel Transition : {GetName()} - Please Check Here.";
                                 callbackResults.resultCode = Helpers.ErrorCode;
                             }
                         }
                         else
                         {
-                            callbackResults.result = $"Failed To Transition : {GetTransitionableUIName()} - There Are Possibly Components Missing.";
+                            callbackResults.result = $"Failed To Transition : {GetName()} - There Are Possibly Components Missing.";
                             callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
@@ -26952,40 +27009,12 @@ namespace Com.RedicalGames.Filar
 
             protected Dictionary<string, Widget> registeredWidgets = new Dictionary<string, Widget>();
 
-            //protected SliderValuePopUpWidget sliderWidget = null;
-            //protected ConfirmationPopUpWidget confirmationWidget = null;
-            //protected CreateAssetConfirmationPopUpWidget createAssetConfirmationWidget;
-            //protected BuildWarningPromptPopUpWidget buildWarningPromptWidget;
-            //protected SelectedSceneAssetPreviewWidget selectedSceneAssetPreviewWidget;
-            //protected SceneAssetPropertiesWidget assetPropertiesWidget;
-            //protected AssetImportWidget assetImportWidget;
-            //protected LoadingScreenWidget loadingScreenWidget;
-            //protected SceneAssetExportWidget sceneAssetExportWidget;
-            //protected RenderSettingsWidget renderSettingsWidget;
-            //protected AssetPublishingWidget assetPublishingWidget;
-            //protected NetworkNotificationWidget networkNotificationWidget;
-            //protected ColorPickerWidget colorPickerWidget;
-            //protected SnapShotWidget snapShotWidget;
-            //protected UIScreenFolderCreationWidget folderCreationWidget;
-            //protected FileSelectionOptionsWidget fileSelectionOptionsWidget;
-            //protected SrollerNavigationWidget scrollerNavigationWidget;
-            //protected UITextDisplayerWidget textDisplayerWidget;
-            //protected PagerNavigationWidget pagerNavigationWidget;
-            //protected UIAssetActionWarningWidget uiAssetWarningWidget;
-            //protected SelectionOptionsWidget selectionOptionsWidget;
-            //protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
-            //protected UILoadStateIndicatorWidget uiLoadingWidget;
-            //protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
-            //protected CreateNewProjectWidget createNewProjectWidget;
-            //protected ProjectCreationWarningWidget projectCreationWarningWidget;
-            //protected MainMenuWidget mainMenuWidget;
-            //protected UIMessageDisplayerWidget messageDisplayerWidget;
-            //protected SignInWidget signInWidget;
-            //protected AnonymousSignInConfirmationWidget anonymousSignInConfirmationWidget;
-            //protected TermsAndConditionsWidget termsAndConditionsWidget;
-            //protected PermissionRequestWidget permissionRequestWidget;
-            //protected PostsWidget postsWidget;
-            //protected SplashDisplayerWidget splashDisplayerWidget;
+            #endregion
+
+            #region UI Transitonable Components
+
+
+            private List<TransitionableUIComponent> transitionableUIComponentList = new List<TransitionableUIComponent>();
 
             #endregion
 
@@ -27320,6 +27349,83 @@ namespace Com.RedicalGames.Filar
                 else
                     throw new ArgumentNullException("On Register Widget Failed - Widget Is Null / Missing");
             }
+
+            #region Transitionable UI Components
+
+            protected Callback OnRegisterTransitionableUIComponents(params TransitionableUIComponent[] transitionableUIParams)
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(Helpers.GetList(transitionableUIParams), "Transitionable UI", async componentsValidCallbackResults =>
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < transitionableUIParams.Length; i++)
+                        {
+                            var initializationTaskResults = await transitionableUIParams[i].Initialized();
+
+                            callbackResults.SetResult(initializationTaskResults);
+
+                            if (callbackResults.Success())
+                            {
+                                if (!transitionableUIComponentList.Contains(transitionableUIParams[i]))
+                                {
+                                    transitionableUIComponentList.Add(transitionableUIParams[i]);
+
+                                    if (transitionableUIComponentList.Contains(transitionableUIParams[i]))
+                                    {
+                                        callbackResults.result = $"Transitionable UI Component : {transitionableUIParams[i].GetName()} Has Been Registered Successfully In Transitionable UI Component List.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Register Transitionable UI Component - Transitionable UI Component : {transitionableUIParams[i].GetName()} Could Be Added To Transitionable UI Component List - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Register Transitionable UI Component - Transitionable UI Component : {transitionableUIParams[i].GetName()} Already Exists In Transitionable UI Component List.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+                        }
+                    }
+
+                }, "Transitionable UI Componets Params Is Null / Not Assigned In Parameter / Not Initialized.");
+
+                return callbackResults;
+            }
+
+            protected CallbackData<TransitionableUIComponent> GetTransitionableUIComponent(UITransitionType transitionType)
+            {
+                CallbackData<TransitionableUIComponent> callbackResults = new CallbackData<TransitionableUIComponent>();
+
+                Helpers.GetAppComponentsValid(transitionableUIComponentList, "Transitionable UI Component List", componentsValidationCallbackResults => 
+                {
+                    callbackResults.SetResult(componentsValidationCallbackResults);
+
+                    if(callbackResults.Success())
+                    {
+                        var transitionableUIComponent = transitionableUIComponentList.Find(component => component.GetTransitionType().Success() && component.GetTransitionType().data == transitionType);
+
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Get Transitionable UI Component Failed - Couldn't Find Transitionable UI Component Of Type : {transitionType} For Screen Widget : {GetName()} Of Type : {GetWidgetType()}."));
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.result = $"Transitionable UI Component : {transitionableUIComponent.GetName()} Of Type : {transitionType} Have Been Found In Transitionable UI Component List For Screen Widget : {GetName()} Of Type : {GetWidgetType()}.";
+                            callbackResults.data = transitionableUIComponent;
+                        }
+                    }
+
+                }, $"Transitionable UI Component List Is Not Yet Initialized For Screen Widget : {GetName()} Of Type : {GetWidgetType()}.");
+
+                return callbackResults;
+            }
+
+            #endregion
 
             protected Dictionary<string, Widget> GetRegisteredWidgets() => registeredWidgets;
 

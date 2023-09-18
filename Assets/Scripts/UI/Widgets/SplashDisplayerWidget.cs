@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        AppData.TransitionableUIComponent transitionableUIComponent;
+        AppData.TransitionableUIComponent transitionableUIScaleComponent, transitionableUITranslateComponent;
 
         #endregion
 
@@ -43,26 +44,49 @@ namespace Com.RedicalGames.Filar
                                     var randomPointIndex = GetRandomIndex();
 
                                     if (randomPointIndex >= 1)
-                                        imageDisplayer.SetUIScale(widgetContainer.visibleScreenPoint.GetWidgetScale());
+                                        imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
 
                                     if (randomPointIndex <= 0)
-                                        imageDisplayer.SetUIScale(widgetContainer.hiddenScreenPoint.GetWidgetScale());
+                                        imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
 
-                                    transitionableUIComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
-                                    transitionableUIComponent.SetTransitionableUIName(name);
-                                    transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
+                                    #region Transitionable UI
 
-                                    callbackResults.SetResult(GetType());
+                                    #region Translation Component
+
+                                    transitionableUITranslateComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Repeat);
+                                    transitionableUITranslateComponent.SetTransitionableUIName(name);
+                                    transitionableUITranslateComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
+
+                                    #endregion
+
+                                    #region Scaling Component
+
+                                    transitionableUIScaleComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
+                                    transitionableUIScaleComponent.SetTransitionableUIName(name);
+                                    transitionableUIScaleComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
+
+                                    #endregion
+
+                                    var registerTransitionableUICallbackResults = OnRegisterTransitionableUIComponents(transitionableUITranslateComponent, transitionableUIScaleComponent);
+
+                                    #endregion
+
+                                    callbackResults.SetResult(registerTransitionableUICallbackResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+                                        callbackResults.SetResult(GetType());
 
-                                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                                        callbackResults.data = widgetStatePacket;
+                                        if (callbackResults.Success())
+                                        {
+                                            var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                                            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                                            callbackResults.data = widgetStatePacket;
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -110,11 +134,13 @@ namespace Com.RedicalGames.Filar
                         {
                             if (imageDisplayerCallbackResults.Success())
                             {
-                                var getTransitionableUITaskResults = await GetTransitionableUIComponent();
+                                var getTransitionableUITranslateTaskResults = GetTransitionableUIComponent(AppData.UITransitionType.Translate);
+                                var getTransitionableUIScaleTaskResults = GetTransitionableUIComponent(AppData.UITransitionType.Scale);
 
-                                if (getTransitionableUITaskResults.Success())
+                                if (getTransitionableUITranslateTaskResults.Success() && getTransitionableUIScaleTaskResults.Success())
                                 {
-                                    var componentData = getTransitionableUITaskResults.data;
+                                    var translationComponent = getTransitionableUITranslateTaskResults.data;
+                                    var scalingComponent = getTransitionableUIScaleTaskResults.data;
 
                                     //if (splashImageURLCallbackResults.Success())
                                     //    SetUIImageDisplayerValue(AppData.ScreenImageType.Splash, splashImageURLCallbackResults.data);
@@ -128,21 +154,28 @@ namespace Com.RedicalGames.Filar
 
                                     if (randomPointIndex >= 1)
                                     {
-                                        imageDisplayer.SetUIScale(widgetContainer.visibleScreenPoint.GetWidgetScale());
-                                        componentData.SetTarget(widgetContainer.hiddenScreenPoint.GetWidgetScale());
+                                        imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
+
+                                        translationComponent.SetTarget(widgetContainer.hiddenScreenPoint.GetWidgetPosition());
+                                        scalingComponent.SetTarget(widgetContainer.hiddenScreenPoint.GetWidgetScale());
                                     }
 
                                     if (randomPointIndex <= 0)
                                     {
-                                        imageDisplayer.SetUIScale(widgetContainer.hiddenScreenPoint.GetWidgetScale());
-                                        componentData.SetTarget(widgetContainer.visibleScreenPoint.GetWidgetScale());
+                                        imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
+
+                                        translationComponent.SetTarget(widgetContainer.visibleScreenPoint.GetWidgetPosition());
+                                        scalingComponent.SetTarget(widgetContainer.visibleScreenPoint.GetWidgetScale());
                                     }
 
-                                    LogInfo($" _____________++++++++++ On Transition Called - Index : {randomPointIndex} - Source : {componentData.GetSource()} Source Origin : {componentData.GetSourceOrigin()} - Target : {componentData.GetTarget()} - Target Origin : {componentData.GetTargetOrigin()}.", this);
+                                    //LogInfo($" _____________++++++++++ On Transition Called - Index : {randomPointIndex} - Source : {componentData.GetSource()} Source Origin : {componentData.GetSourceOrigin()} - Target : {componentData.GetTarget()} - Target Origin : {componentData.GetTargetOrigin()}.", this);
 
                                 }
                                 else
-                                    Log(getTransitionableUITaskResults.GetResultCode, getTransitionableUITaskResults.GetResult, this);
+                                {
+                                    Log(getTransitionableUITranslateTaskResults.GetResultCode, getTransitionableUITranslateTaskResults.GetResult, this);
+                                    Log(getTransitionableUIScaleTaskResults.GetResultCode, getTransitionableUIScaleTaskResults.GetResult, this);
+                                }
                             }
                             else
                                 Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
@@ -160,37 +193,63 @@ namespace Com.RedicalGames.Filar
 
             LogInfo($" _____________++++++++++ Show Widget - Starts Here.", this);
 
-            var getTransitionableUITaskResults = await GetTransitionableUIComponent();
+            var getTransitionableUITranslateTaskResults = GetTransitionableUIComponent(AppData.UITransitionType.Translate);
+            var getTransitionableUIScaleTaskResults = GetTransitionableUIComponent(AppData.UITransitionType.Scale);
 
-            LogInfo($" _____________++++++++++ Show Widget - Code : {getTransitionableUITaskResults.GetResultCode} - Results : {getTransitionableUITaskResults.GetResult}", this);
+            //LogInfo($" _____________++++++++++ Show Widget - Code : {getTransitionableUITaskResults.GetResultCode} - Results : {getTransitionableUITaskResults.GetResult}", this);
 
-            if (getTransitionableUITaskResults.Success())
+            if (getTransitionableUITranslateTaskResults.Success() && getTransitionableUIScaleTaskResults.Success())
             {
-                var componentData = getTransitionableUITaskResults.data;
-                var transitionTaskResults = await componentData.InvokeTransitionAsync();
+                var translationComponent = getTransitionableUITranslateTaskResults.data;
+                var scalingComponent = getTransitionableUIScaleTaskResults.data;
 
-                if (transitionTaskResults.Success())
+                var translationTaskResults = await translationComponent.InvokeTransitionAsync();
+                var scalingTaskResults = await translationComponent.InvokeTransitionAsync();
+
+                if (translationTaskResults.Success() && scalingTaskResults.Success())
                     ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
                 else
-                    Log(transitionTaskResults.GetResultCode, transitionTaskResults.GetResult, this);
+                {
+                    Log(translationTaskResults.GetResultCode, translationTaskResults.GetResult, this);
+                    Log(scalingTaskResults.GetResultCode, scalingTaskResults.GetResult, this);
+                }
             }
             else
-                Log(getTransitionableUITaskResults.GetResultCode, getTransitionableUITaskResults.GetResult, this);
+            {
+                Log(getTransitionableUITranslateTaskResults.GetResultCode, getTransitionableUITranslateTaskResults.GetResult, this);
+                Log(getTransitionableUIScaleTaskResults.GetResultCode, getTransitionableUIScaleTaskResults.GetResult, this);
+            }
         }
 
-        protected override async void OnHideScreenWidget()
+        protected override void OnHideScreenWidget()
         {
-            var getTransitionableUITaskResults = await GetTransitionableUIComponent();
+            var getTransitionableUITranslateTaskResults = GetTransitionableUIComponent(AppData.UITransitionType.Translate);
+            var getTransitionableUIScaleTaskResults = GetTransitionableUIComponent(AppData.UITransitionType.Scale);
 
-            if (getTransitionableUITaskResults.Success())
+            //LogInfo($" _____________++++++++++ Show Widget - Code : {getTransitionableUITaskResults.GetResultCode} - Results : {getTransitionableUITaskResults.GetResult}", this);
+
+            if (getTransitionableUITranslateTaskResults.Success() && getTransitionableUIScaleTaskResults.Success())
             {
-                var componentData = getTransitionableUITaskResults.data;
+                var translationComponent = getTransitionableUITranslateTaskResults.data;
+                var scalingComponent = getTransitionableUIScaleTaskResults.data;
 
-                HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-                componentData.CancelTransition();
+                translationComponent.CancelTransition(translationCancelledCallbackResults =>
+                {
+                    if (translationCancelledCallbackResults.Success())
+                    {
+                        scalingComponent.CancelTransition(scalingCancelledCallbackResults =>
+                        {
+                            if (scalingCancelledCallbackResults.Success())
+                                HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+                        });
+                    }
+                }); 
             }
             else
-                Log(getTransitionableUITaskResults.GetResultCode, getTransitionableUITaskResults.GetResult, this);
+            {
+                Log(getTransitionableUITranslateTaskResults.GetResultCode, getTransitionableUITranslateTaskResults.GetResult, this);
+                Log(getTransitionableUIScaleTaskResults.GetResultCode, getTransitionableUIScaleTaskResults.GetResult, this);
+            }
         }
 
         protected override void OnSubscribeToActionEvents(bool subscribe)
@@ -224,22 +283,6 @@ namespace Com.RedicalGames.Filar
         }
 
         int GetRandomIndex(int maxIndex = 2) => UnityEngine.Random.Range(0, maxIndex);
-
-        private async Task<AppData.CallbackData<AppData.TransitionableUIComponent>> GetTransitionableUIComponent()
-        {
-            AppData.CallbackData<AppData.TransitionableUIComponent> callbackResults = new AppData.CallbackData<AppData.TransitionableUIComponent>();
-
-            var initializationTaskResults = await transitionableUIComponent.Initialized();
-
-            callbackResults.SetResult(initializationTaskResults);
-
-            if (callbackResults.Success())
-                callbackResults.SetData(transitionableUIComponent);
-            else
-                callbackResults.SetResults($"TransitionableUIComponent Is Not Yet Initialized.", AppData.Helpers.ErrorCode);
-
-            return callbackResults;
-        }
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
         {
