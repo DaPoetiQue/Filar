@@ -15,7 +15,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void Init()
+        public async void Init()
         {
             if (screenWidgetsList == null || screenWidgetsList.Count == 0)
             {
@@ -28,7 +28,17 @@ namespace Com.RedicalGames.Filar
                     foreach (var widget in popUpComponents)
                     {
                         if (widget != null && !screenWidgetsList.Contains(widget))
-                            screenWidgetsList.Add(widget);
+                        {
+                            await Task.Yield();
+
+                            widget.Init(initializationCallbackResults => 
+                            {
+                                if(initializationCallbackResults.Success())
+                                    screenWidgetsList.Add(widget);
+                                else
+                                    Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
+                            });
+                        }
                         else
                             break;
                     }

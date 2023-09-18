@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System;
 
 namespace Com.RedicalGames.Filar
 {
@@ -36,27 +37,51 @@ namespace Com.RedicalGames.Filar
 
         #region Initializations
 
-        protected override void Initialize()
+
+        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
-            selectedSceneAssetPreviewWidget = this;
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            if (thumbnailDisplayer == null)
-            {
-                LogWarning("Thumbnail Displayer Missing.", this);
-                return;
-            }
+            callbackResults.SetResult(GetType());
 
-            if (titleDisplayer == null)
+            if (callbackResults.Success())
             {
-                LogWarning("Title Displayer Missing.", this);
-                return;
-            }
+                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                {
+                    callbackResults.SetResult(GetType());
 
-            if (descriptionDisplayer == null)
-            {
-                LogWarning("Description Displayer Missing.", this);
-                return;
+                    if (callbackResults.Success())
+                    {
+                        //if (thumbnailDisplayer == null)
+                        //{
+                        //    LogWarning("Thumbnail Displayer Missing.", this);
+                        //    return;
+                        //}
+
+                        //if (titleDisplayer == null)
+                        //{
+                        //    LogWarning("Title Displayer Missing.", this);
+                        //    return;
+                        //}
+
+                        //if (descriptionDisplayer == null)
+                        //{
+                        //    LogWarning("Description Displayer Missing.", this);
+                        //    return;
+                        //}
+
+                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                        callbackResults.data = widgetStatePacket;
+                    }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback.Invoke(callbackResults);
         }
 
         void OnSubscribeToEvents(bool subscribe)
@@ -240,6 +265,37 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

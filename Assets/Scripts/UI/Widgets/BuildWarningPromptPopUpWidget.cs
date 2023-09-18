@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -12,21 +13,44 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Initialize()
+        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
-            buildWarningPromptWidget = this;
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            AppData.WidgetLayoutView layoutView = widgetLayouts.Find(layout => layout.layoutViewType == defaultLayoutType);
+            callbackResults.SetResult(GetType());
 
-            if (layoutView.layout)
+            if (callbackResults.Success())
             {
-                if (layoutView.layout.GetComponent<RectTransform>())
-                    screenRect = layoutView.layout.GetComponent<RectTransform>();
-                else
-                    Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
+                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                {
+                    callbackResults.SetResult(GetType());
+
+                    if (callbackResults.Success())
+                    {
+                        AppData.WidgetLayoutView layoutView = widgetLayouts.Find(layout => layout.layoutViewType == defaultLayoutType);
+
+                        if (layoutView.layout)
+                        {
+                            if (layoutView.layout.GetComponent<RectTransform>())
+                                screenRect = layoutView.layout.GetComponent<RectTransform>();
+                            else
+                                Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
+                        }
+                        else
+                            Debug.LogWarning("--> Failed - Layout Value Missing / Not Assigned In The Inspector.");
+
+                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                        callbackResults.data = widgetStatePacket;
+                    }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
             else
-                Debug.LogWarning("--> Failed - Layout Value Missing / Not Assigned In The Inspector.");
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback.Invoke(callbackResults);
         }
 
         protected override void OnScreenWidget()
@@ -82,6 +106,37 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

@@ -41,50 +41,73 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Initialize()
+        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
-            createAssetConfirmationWidget = this;
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            if (nameInputField != null)
-                nameInputField.onValueChanged.AddListener((value) => OnSceneAssetNameFieldValueChanged(value));
-            else
-                Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
+            callbackResults.SetResult(GetType());
 
-            if (descriptionInputField != null)
-                descriptionInputField.onValueChanged.AddListener((value) => OnSceneAssetDescriptionFieldValueChanged(value));
-            else
-                Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
-
-            if (AppDatabaseManager.Instance != null)
+            if (callbackResults.Success())
             {
-                var content = AppDatabaseManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
-
-                if (content.data != null)
+                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
                 {
-                    if (assetCategoryDropdown != null)
+                    callbackResults.SetResult(GetType());
+
+                    if (callbackResults.Success())
                     {
-                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+                        if (nameInputField != null)
+                            nameInputField.onValueChanged.AddListener((value) => OnSceneAssetNameFieldValueChanged(value));
+                        else
+                            Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
 
-                        foreach (var category in content.data)
-                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = category });
+                        if (descriptionInputField != null)
+                            descriptionInputField.onValueChanged.AddListener((value) => OnSceneAssetDescriptionFieldValueChanged(value));
+                        else
+                            Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
 
-                        assetCategoryDropdown.AddOptions(dropdownOption);
+                        if (AppDatabaseManager.Instance != null)
+                        {
+                            var content = AppDatabaseManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
 
-                        assetCategoryDropdown.onValueChanged.AddListener((value) => OnAssetCategorySelectionDropdownValueChanged(value));
+                            if (content.data != null)
+                            {
+                                if (assetCategoryDropdown != null)
+                                {
+                                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+                                    foreach (var category in content.data)
+                                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = category });
+
+                                    assetCategoryDropdown.AddOptions(dropdownOption);
+
+                                    assetCategoryDropdown.onValueChanged.AddListener((value) => OnAssetCategorySelectionDropdownValueChanged(value));
+                                }
+                                else
+                                    LogError("Category Drop Down Missing / Not Assigned In The Editor Inspector Panel.", this);
+                            }
+                            else
+                                LogError("Scene Asset Category Content Missing / Not Found.", this);
+                        }
+                        else
+                            LogError("Scene Asset Manager Instance Not Initialized.", this);
+
+                        if (GetLayoutView().layout.GetComponent<RectTransform>())
+                            screenRect = GetLayoutView().layout.GetComponent<RectTransform>();
+                        else
+                            Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
+
+                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                        callbackResults.data = widgetStatePacket;
                     }
-                    else
-                        LogError("Category Drop Down Missing / Not Assigned In The Editor Inspector Panel.", this);
-                }
-                else
-                    LogError("Scene Asset Category Content Missing / Not Found.", this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
             else
-                LogError("Scene Asset Manager Instance Not Initialized.", this);
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            if (GetLayoutView().layout.GetComponent<RectTransform>())
-                screenRect = GetLayoutView().layout.GetComponent<RectTransform>();
-            else
-                Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
+            callback.Invoke(callbackResults);
         }
 
         protected override void OnScreenWidget()
@@ -256,6 +279,37 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

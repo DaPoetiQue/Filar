@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -22,20 +23,32 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Initialize()
+        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
-            renderSettingsWidget = this;
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            if (navigationWidget != null)
+            callbackResults.SetResult(GetType());
+
+            if (callbackResults.Success())
             {
-                navigationWidget.Init((status) =>
+                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
                 {
-                    if (!AppData.Helpers.IsSuccessCode(status.resultCode))
-                        Debug.LogWarning($"--> Init Failed With Results : {status.result}");
+                    callbackResults.SetResult(GetType());
+
+                    if (callbackResults.Success())
+                    {
+                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                        callbackResults.data = widgetStatePacket;
+                    }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
             }
             else
-                Debug.LogWarning("--> RG_Unity - Init Failed : Navigation Widget Is Null.");
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback.Invoke(callbackResults);
         }
 
         void RegisterEventListeners(bool register)
@@ -107,23 +120,6 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning($"--> RG_Unity - ActionEvents__OnCreateNewRenderProfileEvent Failed : Sub Widget Not Found For : {dataPackets.navigationTabWidgetType}");
             }
         }
-
-        void InititializeWidget()
-        {
-            renderSettingsWidget = this;
-
-            if (navigationWidget != null)
-            {
-                navigationWidget.Init((status) =>
-                {
-                    if (!AppData.Helpers.IsSuccessCode(status.resultCode))
-                        Debug.LogWarning($"--> Init Failed With Results : {status.result}");
-                });
-            }
-            else
-                Debug.LogWarning("--> RG_Unity - Init Failed : Navigation Widget Is Null.");
-        }
-
 
         protected override void OnScreenWidget()
         {
@@ -197,6 +193,37 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

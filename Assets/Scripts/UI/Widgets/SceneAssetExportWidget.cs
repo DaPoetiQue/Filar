@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -27,16 +28,39 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Initialize()
+        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
-            sceneAssetExportWidget = this;
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            if (exportedAssetNameInputField.value != null)
-                exportedAssetNameInputField.value.onValueChanged.AddListener((value) => OnInputAssetNameFieldValueChangeEvent(value));
+            callbackResults.SetResult(GetType());
+
+            if (callbackResults.Success())
+            {
+                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                {
+                    callbackResults.SetResult(GetType());
+
+                    if (callbackResults.Success())
+                    {
+                        if (exportedAssetNameInputField.value != null)
+                            exportedAssetNameInputField.value.onValueChanged.AddListener((value) => OnInputAssetNameFieldValueChangeEvent(value));
+                        else
+                            Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
+
+                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                        callbackResults.data = widgetStatePacket;
+
+                        Invoke("InitializeDropDownContent", initializationDelay);
+                    }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
             else
-                Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            Invoke("InitializeDropDownContent", initializationDelay);
+            callback.Invoke(callbackResults);
         }
 
         void InitializeDropDownContent()
@@ -198,6 +222,37 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

@@ -1125,6 +1125,15 @@ namespace Com.RedicalGames.Filar
             DetailNormalMap
         }
 
+        public enum WidgetStateType
+        {
+            None,
+            Initialized,
+            NotInitialized,
+            InitializedAndActive,
+            InitializedAndInActive
+        }
+
         #region Refresh Data
 
         [Serializable]
@@ -18966,7 +18975,7 @@ namespace Com.RedicalGames.Filar
 
             public override bool Success() => Helpers.IsSuccessCode(GetResultCode);
 
-            public override bool UnSuccessful() => (Helpers.IsWarningCode(GetResultCode) || Helpers.IsErrorCode(GetResultCode));
+            public override bool UnSuccessful() => !Success();
 
             public override bool Error() => Helpers.IsErrorCode(GetResultCode);
             public override bool Warning() => Helpers.IsErrorCode(GetResultCode);
@@ -25331,19 +25340,13 @@ namespace Com.RedicalGames.Filar
 
             #region Show View Async
 
-            public async Task<CallbackData<UIScreenViewComponent>> ShowViewAsync()
-            {
-                return await GetScreenView().ShowScreenViewAsync();
-            }
+            public async Task<CallbackData<UIScreenViewComponent>> ShowViewAsync() => await GetScreenView().ShowScreenViewAsync();
 
             #endregion
 
             #region Hide View Async
 
-            public async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> HideViewSync()
-            {
-                return await GetScreenView().HideScreenViewAsync();
-            }
+            public async Task<CallbackData<UIScreenViewComponent>> HideViewSync() => await GetScreenView().HideScreenViewAsync();
 
             #endregion
 
@@ -25487,6 +25490,49 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     LogError($"Widget Of Type : {widgetType} - Missing / Not Found.", this);
+            }
+
+            public async Task<Callback> ShowWidgetAsync(WidgetType widgetType, bool blurScreen = false, string title = null)
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets", screenWidgetsCallbackResults => 
+                {
+                    callbackResults.SetResult(screenWidgetsCallbackResults);
+
+                }, "Screen Widgets Are Not Yet initialized.");
+
+                if (callbackResults.Success())
+                {
+                    var widget = screenWidgetsList.Find(widget => widget.widgetType.Equals(widgetType));
+
+                    await Task.Yield();
+
+                    if (widget)
+                    {
+                        SceneDataPackets dataPackets = new SceneDataPackets
+                        {
+                            widgetTitle = title,
+                            widgetType = widgetType,
+                            blurScreen = blurScreen
+                        };
+
+                        if (blurScreen)
+                            Blur(dataPackets);
+
+                        widget.ResetScrollPosition(scrollerResetCallback =>
+                        {
+                            if (scrollerResetCallback.Success())
+                                widget.ShowScreenWidget(dataPackets);
+                            else
+                                Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
+                        });
+                    }
+                    else
+                        LogError($"Widget Of Type : {widgetType} - Missing / Not Found.", this);
+                }
+
+                return callbackResults;
             }
 
             public void ShowWidget(Widget widget)
@@ -25710,8 +25756,50 @@ namespace Com.RedicalGames.Filar
 
             public Widget GetWidget(WidgetType widgetType)
             {
-                return screenWidgetsList.Find(widget => widget.widgetType == widgetType);
+                if (GetWidgetOfType(widgetType).Success())
+                    return GetWidgetOfType(widgetType).GetData();
+                else
+                    Log(GetWidgetOfType(widgetType).GetResultCode, GetWidgetOfType(widgetType).GetResult, this);
+
+                return null;
             }
+
+            public CallbackData<Widget> GetWidgetOfType(WidgetType widgetType)
+            {
+                CallbackData<Widget> callbackResults = new CallbackData<Widget>(GetWidgets());
+
+                if (callbackResults.Success())
+                {
+                    if (widgetType != WidgetType.None)
+                    {
+                        var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
+
+                        if (widget != null)
+                        {
+                            callbackResults.result = $"Widget : {widget.GetName()} - Of Type : {widgetType} Has Been Loaded.";
+                            callbackResults.data = widget;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed to Get Widget - Widget Of Type : {widgetType} Doesn't Exist In Screen Widgets List - Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed to Get Widget - Parameter Value Is Set To Default : {widgetType}";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
 
             public Widget GetWidget(Widget widget)
             {
@@ -25719,9 +25807,20 @@ namespace Com.RedicalGames.Filar
             }
 
 
-            public List<Widget> GetWidgets()
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen Name Is Not Assigned.";
+
+
+            public CallbackDataList<Widget> GetWidgets()
             {
-                return screenWidgetsList;
+                CallbackDataList<Widget> callbackResults = new CallbackDataList<Widget>();
+
+                Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", componentsValidCallbackResults => 
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                }, $"Screen Widegts For Screen : {GetName()} Of type : {GetUIScreenType()} - Are Not Yet Initialized.");
+
+                return callbackResults;
             }
 
             public void HideScreenWidget(WidgetType widgetType, SceneDataPackets dataPackets)
@@ -26641,8 +26740,109 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        public class WidgetStatePacket
+        {
+            #region Components
+
+            public string name;
+            public WidgetType type;
+            public WidgetStateType state;
+            public SceneDataPackets dataPackets;
+            public Widget value;
+
+            #endregion
+
+            #region Constructors
+
+            public WidgetStatePacket()
+            {
+
+            }
+
+            public WidgetStatePacket(string name = null, WidgetType type = WidgetType.None, WidgetStateType stateType = WidgetStateType.None, Widget value = null,  SceneDataPackets dataPackets = null)
+            {
+                SetName(name);
+                SetType(type);
+                SetStateType(stateType);
+                SetValue(value);
+                SetDataPackets(dataPackets);
+            }
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetName(string name) => this.name = name;
+            public void SetType(WidgetType type) => this.type = type;
+            public void SetStateType(WidgetStateType state) => this.state = state;
+            public void SetDataPackets(SceneDataPackets dataPackets) => this.dataPackets = dataPackets;
+            public void SetValue(Widget value) => this.value = value;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName() => !string.IsNullOrEmpty(name)? name : "Widget State Object Name Is Not Assigned";
+            public new WidgetType GetType() => type;
+            public WidgetStateType GetStateType() => state;
+            public SceneDataPackets GetDataPackets() => dataPackets;
+
+            public CallbackData<Widget> GetValue()
+            {
+                CallbackData<Widget> callbackResults = new CallbackData<Widget>();
+
+                if(value != null)
+                {
+                    callbackResults.result = $"Widget State Packet : {GetName()} - Of Type : {GetType()} Value Has Been Loaded And Initialized Successfully With State Type : {GetStateType()}.";
+                    callbackResults.data = value;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Widget State Packet : {GetName()}'s Get Value Function Failed. Value Is Null / Not Yet Intialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback Initialized(WidgetType widgetType)
+            {
+                Callback callbackResults = new Callback();
+
+                if (GetType() != WidgetType.None && GetStateType() != WidgetStateType.None)
+                {
+                    if (widgetType == GetType())
+                    {
+                        callbackResults.result = $"Widget State Object : {GetName()} - Of Type : {GetType()} Has Been Successfully Initialized With State : {GetStateType()} Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Widget State Object : {GetName()} - Type : {GetType()} - Doesn't Match Required Type : {widgetType}.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Widget State Object : {GetName()} - Is Not Yet Initialized - Type : {GetType()} - State : {GetStateType()}.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+
         [Serializable]
-        public abstract class Widget : AppMonoBaseClass
+        public abstract class Widget : AppMonoBaseClass, IUIWidget
         {
             [Space(5)]
             public TMP_Text titleDisplayer;
@@ -26746,44 +26946,46 @@ namespace Com.RedicalGames.Filar
 
             Coroutine showWidgetAsyncRoutine;
 
-            public bool Initialized { get; private set; }
+            protected WidgetStatePacket widgetStatePacket;
 
             #region Widgets 
 
-            protected SliderValuePopUpWidget sliderWidget = null;
-            protected ConfirmationPopUpWidget confirmationWidget = null;
-            protected CreateAssetConfirmationPopUpWidget createAssetConfirmationWidget;
-            protected BuildWarningPromptPopUpWidget buildWarningPromptWidget;
-            protected SelectedSceneAssetPreviewWidget selectedSceneAssetPreviewWidget;
-            protected SceneAssetPropertiesWidget assetPropertiesWidget;
-            protected AssetImportWidget assetImportWidget;
-            protected LoadingScreenWidget loadingScreenWidget;
-            protected SceneAssetExportWidget sceneAssetExportWidget;
-            protected RenderSettingsWidget renderSettingsWidget;
-            protected AssetPublishingWidget assetPublishingWidget;
-            protected NetworkNotificationWidget networkNotificationWidget;
-            protected ColorPickerWidget colorPickerWidget;
-            protected SnapShotWidget snapShotWidget;
-            protected UIScreenFolderCreationWidget folderCreationWidget;
-            protected FileSelectionOptionsWidget fileSelectionOptionsWidget;
-            protected SrollerNavigationWidget scrollerNavigationWidget;
-            protected UITextDisplayerWidget textDisplayerWidget;
-            protected PagerNavigationWidget pagerNavigationWidget;
-            protected UIAssetActionWarningWidget uiAssetWarningWidget;
-            protected SelectionOptionsWidget selectionOptionsWidget;
-            protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
-            protected UILoadStateIndicatorWidget uiLoadingWidget;
-            protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
-            protected CreateNewProjectWidget createNewProjectWidget;
-            protected ProjectCreationWarningWidget projectCreationWarningWidget;
-            protected MainMenuWidget mainMenuWidget;
-            protected UIMessageDisplayerWidget messageDisplayerWidget;
-            protected SignInWidget signInWidget;
-            protected AnonymousSignInConfirmationWidget anonymousSignInConfirmationWidget;
-            protected TermsAndConditionsWidget termsAndConditionsWidget;
-            protected PermissionRequestWidget permissionRequestWidget;
-            protected PostsWidget postsWidget;
-            protected SplashDisplayerWidget splashDisplayerWidget;
+            protected Dictionary<string, Widget> registeredWidgets = new Dictionary<string, Widget>();
+
+            //protected SliderValuePopUpWidget sliderWidget = null;
+            //protected ConfirmationPopUpWidget confirmationWidget = null;
+            //protected CreateAssetConfirmationPopUpWidget createAssetConfirmationWidget;
+            //protected BuildWarningPromptPopUpWidget buildWarningPromptWidget;
+            //protected SelectedSceneAssetPreviewWidget selectedSceneAssetPreviewWidget;
+            //protected SceneAssetPropertiesWidget assetPropertiesWidget;
+            //protected AssetImportWidget assetImportWidget;
+            //protected LoadingScreenWidget loadingScreenWidget;
+            //protected SceneAssetExportWidget sceneAssetExportWidget;
+            //protected RenderSettingsWidget renderSettingsWidget;
+            //protected AssetPublishingWidget assetPublishingWidget;
+            //protected NetworkNotificationWidget networkNotificationWidget;
+            //protected ColorPickerWidget colorPickerWidget;
+            //protected SnapShotWidget snapShotWidget;
+            //protected UIScreenFolderCreationWidget folderCreationWidget;
+            //protected FileSelectionOptionsWidget fileSelectionOptionsWidget;
+            //protected SrollerNavigationWidget scrollerNavigationWidget;
+            //protected UITextDisplayerWidget textDisplayerWidget;
+            //protected PagerNavigationWidget pagerNavigationWidget;
+            //protected UIAssetActionWarningWidget uiAssetWarningWidget;
+            //protected SelectionOptionsWidget selectionOptionsWidget;
+            //protected SelectedFileCopyOptionsWidget selectedFileCopyOptionsWidget;
+            //protected UILoadStateIndicatorWidget uiLoadingWidget;
+            //protected UserHelpInfoScreenWidget userHelpInfoScreenWidget;
+            //protected CreateNewProjectWidget createNewProjectWidget;
+            //protected ProjectCreationWarningWidget projectCreationWarningWidget;
+            //protected MainMenuWidget mainMenuWidget;
+            //protected UIMessageDisplayerWidget messageDisplayerWidget;
+            //protected SignInWidget signInWidget;
+            //protected AnonymousSignInConfirmationWidget anonymousSignInConfirmationWidget;
+            //protected TermsAndConditionsWidget termsAndConditionsWidget;
+            //protected PermissionRequestWidget permissionRequestWidget;
+            //protected PostsWidget postsWidget;
+            //protected SplashDisplayerWidget splashDisplayerWidget;
 
             #endregion
 
@@ -26801,241 +27003,249 @@ namespace Com.RedicalGames.Filar
                     OnSubscribeToActionEvents(false);
             }
 
-            void Start() => Init();
+            //void Start() => Init();
 
             void Update() => OnWidgetTransition();
 
             #endregion
 
-            public void Init()
+            public void Init(Action<Callback> callback = null)
             {
-                if (!Initialized)
-                {
+                Callback callbackResults = new Callback();
 
-                    WidgetLayoutView layoutView = GetLayoutView();
+                #region Base Initialization
 
-                    if (layoutView.layout)
-                        if (layoutView.layout.GetComponent<RectTransform>())
-                            widgetRect = layoutView.layout.GetComponent<RectTransform>();
-                        else
-                            LogWarning("Value Doesn't Have A Rect Transform Component.", this);
+                #region Layout
+
+                WidgetLayoutView layoutView = GetLayoutView();
+
+                if (layoutView.layout)
+                    if (layoutView.layout.GetComponent<RectTransform>())
+                        widgetRect = layoutView.layout.GetComponent<RectTransform>();
                     else
-                        LogWarning("Value Is Null.", this);
+                        LogWarning("Value Doesn't Have A Rect Transform Component.", this);
+                else
+                    LogWarning("Value Is Null.", this);
 
 
-                    if (dontShowAgainToggleField != null)
-                        dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
+                if (dontShowAgainToggleField != null)
+                    dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
 
-                    #region Initialize Buttons
+                #endregion
 
-                    if (buttons != null && buttons.Count > 0)
+                #region Initialize Buttons
+
+                if (buttons != null && buttons.Count > 0)
+                {
+                    foreach (var button in buttons)
                     {
-                        foreach (var button in buttons)
+                        if (button.InputValueAssigned().success)
                         {
-                            if (button.InputValueAssigned().success)
+                            if (button.Selectable().success)
                             {
-                                if (button.Selectable().success)
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, button, selectableCallbackResults =>
                                     {
-                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, button, selectableCallbackResults =>
+                                        if (selectableCallbackResults.Success())
                                         {
-                                            if (selectableCallbackResults.Success())
-                                            {
 
-                                            }
-                                            else
-                                                Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                        });
-                                    });
-                                }
-                                else
-                                {
-                                    string results = (button.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                    if (button.Selectable().selectable)
-                                        LogError($"Button : {button.name} - {results}", this);
-                                    else
-                                        LogInfo($"Button : {button.name} - {results}", this);
-                                }
-                            }
-                            else
-                            {
-                                LogError(button.InputValueAssigned().results, this);
-                                break;
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Initialize Inputs
-
-                    if (inputs != null && inputs.Count > 0)
-                    {
-                        foreach (var inputField in inputs)
-                        {
-                            if (inputField.InputValueAssigned().success)
-                            {
-                                if (inputField.Selectable().success)
-                                {
-                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                    {
-                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputField, selectableCallbackResults =>
-                                        {
+                                        }
+                                        else
                                             Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                        });
                                     });
-                                }
-                                else
-                                {
-                                    string results = (inputField.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                    if (inputField.Selectable().selectable)
-                                        LogError($"Input Field : {inputField.name} - {results}", this);
-                                    else
-                                        LogInfo($"Input Field : {inputField.name} - {results}", this);
-                                }
-
-                                inputField.Initialize();
+                                });
                             }
                             else
                             {
-                                LogError(inputField.InputValueAssigned().results, this);
-                                break;
+                                string results = (button.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (button.Selectable().selectable)
+                                    LogError($"Button : {button.name} - {results}", this);
+                                else
+                                    LogInfo($"Button : {button.name} - {results}", this);
                             }
                         }
-                    }
-
-                    #endregion
-
-                    #region Initialize Input Sliders
-
-                    if (sliders != null && sliders.Count > 0)
-                    {
-                        foreach (var inputSlider in sliders)
+                        else
                         {
-                            if (inputSlider.InputValueAssigned().success)
+                            LogError(button.InputValueAssigned().results, this);
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Initialize Inputs
+
+                if (inputs != null && inputs.Count > 0)
+                {
+                    foreach (var inputField in inputs)
+                    {
+                        if (inputField.InputValueAssigned().success)
+                        {
+                            if (inputField.Selectable().success)
                             {
-                                if (inputSlider.Selectable().success)
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputField, selectableCallbackResults =>
                                     {
-                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputSlider, selectableCallbackResults =>
+                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (inputField.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (inputField.Selectable().selectable)
+                                    LogError($"Input Field : {inputField.name} - {results}", this);
+                                else
+                                    LogInfo($"Input Field : {inputField.name} - {results}", this);
+                            }
+
+                            inputField.Initialize();
+                        }
+                        else
+                        {
+                            LogError(inputField.InputValueAssigned().results, this);
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Initialize Input Sliders
+
+                if (sliders != null && sliders.Count > 0)
+                {
+                    foreach (var inputSlider in sliders)
+                    {
+                        if (inputSlider.InputValueAssigned().success)
+                        {
+                            if (inputSlider.Selectable().success)
+                            {
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, inputSlider, selectableCallbackResults =>
+                                    {
+                                        Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                string results = (inputSlider.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (inputSlider.Selectable().selectable)
+                                    LogError($"Input Slider : {inputSlider.name} - {results}", this);
+                                else
+                                    LogInfo($"Input Slider : {inputSlider.name} - {results}", this);
+                            }
+                        }
+                        else
+                        {
+                            LogError(inputSlider.InputValueAssigned().results, this);
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Initialize Dropdowns
+
+                if (dropdowns != null && dropdowns.Count > 0)
+                {
+                    foreach (var dropdown in dropdowns)
+                    {
+                        if (dropdown.InputValueAssigned().success)
+                        {
+                            if (dropdown.Selectable().success)
+                            {
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                {
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, dropdown, selectableCallbackResults =>
+                                    {
+                                        if (selectableCallbackResults.Success())
                                         {
+
+                                        }
+                                        else
                                             Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                        });
                                     });
-                                }
-                                else
-                                {
-                                    string results = (inputSlider.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                    if (inputSlider.Selectable().selectable)
-                                        LogError($"Input Slider : {inputSlider.name} - {results}", this);
-                                    else
-                                        LogInfo($"Input Slider : {inputSlider.name} - {results}", this);
-                                }
+                                });
                             }
                             else
                             {
-                                LogError(inputSlider.InputValueAssigned().results, this);
-                                break;
+                                string results = (dropdown.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (dropdown.Selectable().selectable)
+                                    LogError($"Dropdown : {dropdown.name} - {results}", this);
+                                else
+                                    LogInfo($"Dropdown : {dropdown.name} - {results}", this);
                             }
                         }
-                    }
-
-                    #endregion
-
-                    #region Initialize Dropdowns
-
-                    if (dropdowns != null && dropdowns.Count > 0)
-                    {
-                        foreach (var dropdown in dropdowns)
+                        else
                         {
-                            if (dropdown.InputValueAssigned().success)
-                            {
-                                if (dropdown.Selectable().success)
-                                {
-                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                    {
-                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, dropdown, selectableCallbackResults =>
-                                        {
-                                            if (selectableCallbackResults.Success())
-                                            {
-
-                                            }
-                                            else
-                                                Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                        });
-                                    });
-                                }
-                                else
-                                {
-                                    string results = (dropdown.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                    if (dropdown.Selectable().selectable)
-                                        LogError($"Dropdown : {dropdown.name} - {results}", this);
-                                    else
-                                        LogInfo($"Dropdown : {dropdown.name} - {results}", this);
-                                }
-                            }
-                            else
-                            {
-                                LogError(dropdown.InputValueAssigned().results, this);
-                                break;
-                            }
+                            LogError(dropdown.InputValueAssigned().results, this);
+                            break;
                         }
                     }
+                }
 
-                    #endregion
+                #endregion
 
-                    #region Initialize Checkbox
+                #region Initialize Checkbox
 
-                    if (checkboxes != null && checkboxes.Count > 0)
+                if (checkboxes != null && checkboxes.Count > 0)
+                {
+                    foreach (var checkbox in checkboxes)
                     {
-                        foreach (var checkbox in checkboxes)
+                        if (checkbox.InputValueAssigned().success)
                         {
-                            if (checkbox.InputValueAssigned().success)
+                            if (checkbox.Selectable().success)
                             {
-                                if (checkbox.Selectable().success)
+                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
                                 {
-                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, checkbox, selectableCallbackResults =>
                                     {
-                                        structureCallbackResults.data.OnRegisterInputToSelectableEventListener(widgetType, checkbox, selectableCallbackResults =>
+                                        if (selectableCallbackResults.Success())
                                         {
-                                            if (selectableCallbackResults.Success())
-                                            {
 
-                                            }
-                                            else
-                                                Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
-                                        });
+                                        }
+                                        else
+                                            Log(selectableCallbackResults.resultCode, selectableCallbackResults.result, this);
                                     });
-                                }
-                                else
-                                {
-                                    string results = (checkbox.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
-
-                                    if (checkbox.Selectable().selectable)
-                                        LogError($"Checkbox : {checkbox.name} - {results}", this);
-                                    else
-                                        LogInfo($"Checkbox : {checkbox.name} - {results}", this);
-                                }
-
-                                checkbox.value.onValueChanged.AddListener((value) => SetOnCheckboxValueChanged(checkbox.actionType, value, checkbox.dataPackets));
+                                });
                             }
                             else
                             {
-                                LogError(checkbox.InputValueAssigned().results, this);
-                                break;
+                                string results = (checkbox.Selectable().selectable) ? " Is Set To Selectable But The Selection Frame Is Missing / Not Assigned In The Editor Inspector." : "Is Not Set To Selectable Input";
+
+                                if (checkbox.Selectable().selectable)
+                                    LogError($"Checkbox : {checkbox.name} - {results}", this);
+                                else
+                                    LogInfo($"Checkbox : {checkbox.name} - {results}", this);
                             }
+
+                            checkbox.value.onValueChanged.AddListener((value) => SetOnCheckboxValueChanged(checkbox.actionType, value, checkbox.dataPackets));
+                        }
+                        else
+                        {
+                            LogError(checkbox.InputValueAssigned().results, this);
+                            break;
                         }
                     }
+                }
 
-                    #endregion
+                #endregion
 
-                    #region Initialize Scroller
+                #region Initialize Scroller
+
+                if (scroller != null)
+                {
 
                     scroller.Initialized(scrollerInitializedCallback =>
                     {
@@ -27049,14 +27259,69 @@ namespace Com.RedicalGames.Filar
                         else
                             LogWarning(scrollerInitializedCallback.result, this);
                     });
-
-                    #endregion
-
-                    Initialized = true;
-
-                    Initialize();
                 }
+
+                #endregion
+
+                #endregion
+
+                #region Widget Initialization
+
+                Initialize(initializationCallbackResults =>
+                {
+                    callbackResults.SetResult(initializationCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var statePacket = initializationCallbackResults.data;
+                        SetStatePacket(statePacket);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+
+                #endregion
+
+                callback?.Invoke(callbackResults);
             }
+
+            protected void OnRegisterWidget<T>(T widget, Action<Callback> callback = null) where T : Widget
+            {
+                if (widget != null)
+                {
+                    Callback callbackResults = new Callback(Helpers.GetAppComponentValid(widget, $"{(!string.IsNullOrEmpty(widget?.GetName()) ? widget?.GetName() : "Widget")}", $"Widget : {(!string.IsNullOrEmpty(widget?.GetName()) ? widget?.GetName() : "Widget Name Not Assigned")} Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        if (!GetRegisteredWidgets().ContainsKey(widget.GetName()) && !GetRegisteredWidgets().ContainsValue(widget))
+                        {
+                            GetRegisteredWidgets().Add(widget.GetName(), widget);
+
+                            if (GetRegisteredWidgets().ContainsKey(widget.GetName()) && GetRegisteredWidgets().ContainsValue(widget))
+                            {
+                                callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType()} Has Been Registered Successfully.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"On Register Widget Failed - Widget : {widget.GetName()} - Of Type : {widget.GetType()} Is Not Registred - Unexpected Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"On Register Widget Failed - Widget : {widget.GetName()} - Of Type : {widget.GetType()} Already Exists In Registred Widgets.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+
+                    callback?.Invoke(callbackResults);
+                }
+                else
+                    throw new ArgumentNullException("On Register Widget Failed - Widget Is Null / Missing");
+            }
+
+            protected Dictionary<string, Widget> GetRegisteredWidgets() => registeredWidgets;
 
             public SceneDataPackets GetDataPackets() => dataPackets;
 
@@ -28740,14 +29005,14 @@ namespace Com.RedicalGames.Filar
             {
                 if (widgetType == WidgetType.SliderValueWidget)
                 {
-                    if (sliderWidget.slider != null)
-                    {
-                        sliderWidget.slider.value = sliderWidget.defaultFieldValue;
-                    }
-                    else
-                    {
-                        LogWarning("Slider Value Pop Up Handler Component Required.", this, () => UndoChanges());
-                    }
+                    //if (sliderWidget.slider != null)
+                    //{
+                    //    sliderWidget.slider.value = sliderWidget.defaultFieldValue;
+                    //}
+                    //else
+                    //{
+                    //    LogWarning("Slider Value Pop Up Handler Component Required.", this, () => UndoChanges());
+                    //}
                 }
             }
 
@@ -28786,44 +29051,44 @@ namespace Com.RedicalGames.Filar
 
                         case WidgetType.SliderValueWidget:
 
-                            if (sliderWidget.slider)
-                            {
-                                if (AppDatabaseManager.Instance != null)
-                                {
-                                    if (AppDatabaseManager.Instance.GetCurrentSceneAsset().modelAsset)
-                                    {
-                                        switch (dataPackets.assetFieldConfiguration)
-                                        {
-                                            case AssetFieldSettingsType.MainTextureSettings:
+                            //if (sliderWidget.slider)
+                            //{
+                            //    if (AppDatabaseManager.Instance != null)
+                            //    {
+                            //        if (AppDatabaseManager.Instance.GetCurrentSceneAsset().modelAsset)
+                            //        {
+                            //            switch (dataPackets.assetFieldConfiguration)
+                            //            {
+                            //                case AssetFieldSettingsType.MainTextureSettings:
 
-                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness}");
-                                                sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness, SliderValueType.MaterialGlossinessValue);
+                            //                    Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness}");
+                            //                    sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().glossiness, SliderValueType.MaterialGlossinessValue);
 
-                                                break;
+                            //                    break;
 
-                                            case AssetFieldSettingsType.NormalMapSettings:
+                            //                case AssetFieldSettingsType.NormalMapSettings:
 
-                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale}");
-                                                sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale, SliderValueType.MaterialBumpScaleValue);
+                            //                    Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale}");
+                            //                    sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().bumpScale, SliderValueType.MaterialBumpScaleValue);
 
-                                                break;
+                            //                    break;
 
-                                            case AssetFieldSettingsType.AOMapSettings:
+                            //                case AssetFieldSettingsType.AOMapSettings:
 
-                                                Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength}");
-                                                sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength, SliderValueType.MaterialOcclusionIntensityValue);
+                            //                    Debug.Log($"---> Material Properties : {dataPackets.assetFieldConfiguration.ToString()} - Value : {AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength}");
+                            //                    sliderWidget.SetSliderValue(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetMaterialProperties().aoStrength, SliderValueType.MaterialOcclusionIntensityValue);
 
-                                                break;
-                                        }
-                                    }
-                                    else
-                                        LogWarning("Current Scene Asset Model Is Null / Invalid.", this, () => ShowScreenWidget(dataPackets));
-                                }
-                                else
-                                    LogError("Scene Assets Manager Not Yet Initialized.", this, () => ShowScreenWidget(dataPackets));
-                            }
-                            else
-                                LogInfo($"Slider Value For : {gameObject.name} Is Null.", this, () => ShowScreenWidget(dataPackets));
+                            //                    break;
+                            //            }
+                            //        }
+                            //        else
+                            //            LogWarning("Current Scene Asset Model Is Null / Invalid.", this, () => ShowScreenWidget(dataPackets));
+                            //    }
+                            //    else
+                            //        LogError("Scene Assets Manager Not Yet Initialized.", this, () => ShowScreenWidget(dataPackets));
+                            //}
+                            //else
+                            //    LogInfo($"Slider Value For : {gameObject.name} Is Null.", this, () => ShowScreenWidget(dataPackets));
 
                             break;
 
@@ -28961,9 +29226,15 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Widget States
+
+            protected void SetStateType(WidgetStateType widgetStateType) => GetStatePacket().SetStateType(widgetStateType);
+
+            #endregion
+
             #region Overrides
 
-            protected abstract void Initialize();
+            protected abstract void Initialize(Action<CallbackData<WidgetStatePacket>> callback);
             protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets);
             protected abstract void OnActionDropdownValueChanged(int value, DropdownDataPackets dataPackets);
             protected abstract void OnScrollerValueChanged(Vector2 value);
@@ -28974,9 +29245,7 @@ namespace Com.RedicalGames.Filar
             protected abstract void ScrollerPosition(Vector2 position);
 
             protected abstract void OnScreenWidget();
-
             protected abstract void OnShowScreenWidget(SceneDataPackets dataPackets);
-
             protected abstract void OnHideScreenWidget();
 
             #endregion
@@ -29994,6 +30263,66 @@ namespace Com.RedicalGames.Filar
             {
                 return selectableAssetType;
             }
+
+            #region Widget States
+
+            public string GetName() => !string.IsNullOrEmpty(name)? name : $"Widget Of Type : {widgetType} Name Is Not Assigned.";
+
+            WidgetType GetWidgetType() => widgetType;
+
+            public new CallbackData<WidgetType> GetType()
+            {
+                CallbackData<WidgetType> callbackResults = new CallbackData<WidgetType>();
+
+                if (GetWidgetType() != WidgetType.None)
+                {
+                    callbackResults.result = $"Widget : {GetName()} Type Is Set To : {GetWidgetType()}";
+                    callbackResults.data = GetWidgetType();
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Widget : {GetName()} Type Is Set To Default : {GetWidgetType()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            protected void SetStatePacket(WidgetStatePacket widgetStatePacket) => this.widgetStatePacket = widgetStatePacket;
+
+            public WidgetStatePacket GetStatePacket() => widgetStatePacket;
+
+            public CallbackData<WidgetStatePacket> GetState() => OnGetState();
+
+            public Callback Initialized()
+            {
+                Callback callbackResults = new Callback(GetState());
+
+                if(callbackResults.Success())
+                {
+                    var stateType = GetState().data.GetStateType();
+                    bool initializedState = stateType != WidgetStateType.NotInitialized && (stateType == WidgetStateType.Initialized || stateType == WidgetStateType.InitializedAndActive || stateType == WidgetStateType.InitializedAndInActive);
+
+                    if (initializedState)
+                    {
+                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType()} Has Been Initialized Successfully With State : {stateType}.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType()} Is Not Yet Initialized.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            protected abstract CallbackData<WidgetStatePacket> OnGetState();
+
+            #endregion
 
             #endregion
 
@@ -38553,6 +38882,15 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Interfaces
+
+        /// <summary>
+        /// Interface For UI Widgets.
+        /// </summary>
+        public interface IUIWidget
+        {
+            string GetName();
+            CallbackData<WidgetStatePacket> GetState();
+        }
 
         public interface IContainer
         {

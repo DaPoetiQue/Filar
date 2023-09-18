@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -14,25 +15,50 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Initialize()
+        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
-            signInWidget = this;
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
             AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults =>
             {
+                callbackResults.SetResult(databaseManagerCallbackResults);
+
                 if (databaseManagerCallbackResults.Success())
                 {
-                    var databaseManager = databaseManagerCallbackResults.data;
+                    callbackResults.SetResult(GetType());
 
-                    var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
+                    if (callbackResults.Success())
+                    {
+                        OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                        {
+                            callbackResults.SetResult(GetType());
 
-                    transitionableUIComponent = new AppData.TransitionableUIComponent(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
-                    transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+                            if (callbackResults.Success())
+                            {
+                                var databaseManager = databaseManagerCallbackResults.data;
+                                var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
+
+                                transitionableUIComponent = new AppData.TransitionableUIComponent(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
+                                transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+
+                                var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                                callbackResults.data = widgetStatePacket;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
 
             }, "App Database Manager Instance Is Not Yet Initialized.");
+
+            callback.Invoke(callbackResults);
         }
 
         protected override void OnHideScreenWidget()
@@ -150,6 +176,37 @@ namespace Com.RedicalGames.Filar
         protected override void ScrollerPosition(Vector2 position)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion
