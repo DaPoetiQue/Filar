@@ -91,7 +91,7 @@ namespace Com.RedicalGames.Filar
                 StoragePermissionRequest();
         }
 
-        async void Init(Action<AppData.Callback> callback = null)
+        void Init(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
 
@@ -113,7 +113,9 @@ namespace Com.RedicalGames.Filar
                             {
                                 var databaseManager = sceneAssetsManagerCallbackResults.data;
 
-                                databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
+                                databaseManager.InitializeSplashImageLibrary();
+
+                                databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType.SplashScreen, async splashScreenLoadInfoCallbackResults =>
                                 {
                                     callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
 
@@ -142,7 +144,7 @@ namespace Com.RedicalGames.Filar
 
                                                             var splashDisplayerWidgetCallbackResults = new AppData.CallbackData<AppData.Widget>();
 
-                                                            while(splashDisplayerWidgetCallbackResults.UnSuccessful())
+                                                            while (splashDisplayerWidgetCallbackResults.UnSuccessful())
                                                             {
                                                                 splashDisplayerWidgetCallbackResults = currentScreenView.GetWidgetOfType(AppData.WidgetType.ImageDisplayerWidget);
                                                                 await Task.Yield();
@@ -158,14 +160,14 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.data;
 
-                                                                    currentScreenView.ShowWidget(splashDisplayerWidget);
-
                                                                     await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
                                                                     {
                                                                         callbackResults.SetResult(showSplashScreenCallbackResults);
 
                                                                         if (callbackResults.Success())
                                                                         {
+                                                                            currentScreenView.ShowWidget(splashDisplayerWidget);
+
                                                                             callbackResults.SetResult(databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary());
 
                                                                             if (callbackResults.Success())

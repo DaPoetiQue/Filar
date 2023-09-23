@@ -72,7 +72,7 @@ namespace Com.RedicalGames.Filar
                 {
                     OnInitialLoad = screenLoadInfoInstance.InitialScreen();
 
-                    var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+                    var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
                     if (callbackResults.Success())
                     {
@@ -94,27 +94,22 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    var screenLoadedDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnSplashScreenExitDelay);
+                                    while (!databaseManager.IsSplashImagesLibraryInitialized)
+                                        await Task.Yield();
 
-                                    callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
+                                    var hideScreenTaskResults = await screenUIManager.HideScreenAsync(screenLoadInfoInstance.GetScreenData());
 
+                                    callbackResults.SetResults(hideScreenTaskResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        var hideScreenTaskResults =  await screenUIManager.HideScreenAsync(screenLoadInfoInstance.GetScreenData());
-
-                                        callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
+                                        var screenExitDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnScreenChangedExitDelay);
+                                        callbackResults.SetResults(screenExitDelayTimeTaskResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var screenExitDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnScreenChangedExitDelay);
-                                            callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                OnShowSplashScreen = false;
-                                                //OnInitialLoad = true;
-                                            }
+                                            OnShowSplashScreen = false;
+                                            //OnInitialLoad = true;
                                         }
                                     }
                                 }

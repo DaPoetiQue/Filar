@@ -17737,11 +17737,7 @@ namespace Com.RedicalGames.Filar
                 if (GetCanTransition().UnSuccessful())
                     return;
 
-                LogInfo($" _________________++++++++++++++ In Progress - Started.", this);
-
                 var initializationTaskCallback = await Initialized();
-
-                LogInfo($" _________________++++++++++++++ In Progress - Initialization Code : {initializationTaskCallback.GetResultCode} - Results : {initializationTaskCallback.GetResult}.", this);
 
                 if (initializationTaskCallback.Success())
                 {
@@ -17749,14 +17745,14 @@ namespace Com.RedicalGames.Filar
 
                     if (inProgressTaskCallback.Success())
                     {
-                        LogInfo($" _________________++++++++++++++ In Progress - Type : {transitionType}", this);
-
                         switch (transitionType)
                         {
                             case UITransitionType.Translate:
 
                                 var targetPosition = Vector2.Lerp(GetTransitionableUISource().GetWidgetPosition(), GetTarget(), GetTransitionSpeed());
                                 GetTransitionableUISource().SetWidgetPosition(targetPosition);
+
+                                LogInfo($" _________________++++++++++++++ In Progress - Position : {GetTransitionableUISource().GetWidgetPosition()} - Target : { GetTarget()}", this);
 
                                 break;
 
@@ -18281,13 +18277,13 @@ namespace Com.RedicalGames.Filar
 
                 callbackResults.SetResult(initializationTaskResults);
 
+                LogInfo($" ______________________++++++++++ Transitionable UI : {GetTransitionType().GetData()} - Starts Here .", this);
+
                 if (callbackResults.Success())
                 {
                     var progressCheckTaskResults = await InProgress();
 
                     callbackResults.SetResult(progressCheckTaskResults);
-
-                    LogInfo($" ______________________++++++++++++++ Start Progress - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.", this);
 
                     if (callbackResults.UnSuccessful())
                     {
@@ -18328,6 +18324,8 @@ namespace Com.RedicalGames.Filar
 
                         var progressStartedTaskResults = await InProgress();
                         callbackResults.SetResult(progressStartedTaskResults);
+
+                        LogInfo($" ______________________++++++++++++++ Start Progress - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.", this);
                     }
                     else
                     {
@@ -27370,6 +27368,8 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
+                                await Task.Yield();
+
                                 if (!transitionableUIComponentList.Contains(transitionableUIParams[i]))
                                 {
                                     transitionableUIComponentList.Add(transitionableUIParams[i]);
@@ -27399,28 +27399,96 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<TransitionableUIComponent> GetTransitionableUIComponent(UITransitionType transitionType)
+
+            protected async void SetTransitionableUITarget(UITransitionType transitionType, Vector3 target, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var transitionableUITaskResultsCallback = await GetTransitionableUIComponent(transitionType);
+
+                callbackResults.SetResult(transitionableUITaskResultsCallback);
+
+                if(callbackResults.Success())
+                {
+                    var transitionableUI = transitionableUITaskResultsCallback.GetData();
+                    transitionableUI.SetTarget(target);
+
+                    callbackResults.result = $"Target Set For Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType}";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected async void InvokeTransitionableUI(UITransitionType transitionType, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var transitionableUITaskResultsCallback = await GetTransitionableUIComponent(transitionType);
+
+                callbackResults.SetResult(transitionableUITaskResultsCallback);
+
+                if (callbackResults.Success())
+                {
+                    var transitionableUI = transitionableUITaskResultsCallback.GetData();
+                    await transitionableUI.InvokeTransitionAsync();
+
+                    callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected async void CancelInvokedTransitionableUI(UITransitionType transitionType, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var transitionableUITaskResultsCallback = await GetTransitionableUIComponent(transitionType);
+
+                callbackResults.SetResult(transitionableUITaskResultsCallback);
+
+                if (callbackResults.Success())
+                {
+                    var transitionableUI = transitionableUITaskResultsCallback.GetData();
+                    transitionableUI.CancelTransition(cancelCallbackResults => 
+                    {
+                        callbackResults.SetResult(cancelCallbackResults); 
+
+                        if(callbackResults.Success())
+                            callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
+                    });
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private async Task<CallbackData<TransitionableUIComponent>> GetTransitionableUIComponent(UITransitionType transitionType)
             {
                 CallbackData<TransitionableUIComponent> callbackResults = new CallbackData<TransitionableUIComponent>();
 
-                Helpers.GetAppComponentsValid(transitionableUIComponentList, "Transitionable UI Component List", componentsValidationCallbackResults => 
+                while (callbackResults.UnSuccessful())
                 {
-                    callbackResults.SetResult(componentsValidationCallbackResults);
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(transitionableUIComponentList, "Transitionable UI Component List", "Transitionable UI Componets Params Is Null / Not Assigned In Parameter / Not Initialized."));
+                    await Task.Yield();
+                }
 
-                    if(callbackResults.Success())
+                if (callbackResults.Success())
+                {
+                    var transitionableUIComponent = transitionableUIComponentList.Find(component => component.GetTransitionType().Success() && component.GetTransitionType().data == transitionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Get Transitionable UI Component Failed - Couldn't Find Transitionable UI Component Of Type : {transitionType} For Screen Widget : {GetName()} Of Type : {GetWidgetType()}."));
+
+                    if (callbackResults.Success())
                     {
-                        var transitionableUIComponent = transitionableUIComponentList.Find(component => component.GetTransitionType().Success() && component.GetTransitionType().data == transitionType);
-
-                        callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Get Transitionable UI Component Failed - Couldn't Find Transitionable UI Component Of Type : {transitionType} For Screen Widget : {GetName()} Of Type : {GetWidgetType()}."));
-
-                        if(callbackResults.Success())
-                        {
-                            callbackResults.result = $"Transitionable UI Component : {transitionableUIComponent.GetName()} Of Type : {transitionType} Have Been Found In Transitionable UI Component List For Screen Widget : {GetName()} Of Type : {GetWidgetType()}.";
-                            callbackResults.data = transitionableUIComponent;
-                        }
+                        callbackResults.result = $"Transitionable UI Component : {transitionableUIComponent.GetName()} Of Type : {transitionType} Have Been Found In Transitionable UI Component List For Screen Widget : {GetName()} Of Type : {GetWidgetType()}.";
+                        callbackResults.data = transitionableUIComponent;
                     }
+                    else
+                    {
+                        callbackResults.result = $"Transitionable UI Component Failed : {transitionableUIComponent.GetName()} Of Type : {transitionType} Have Been Not Found In Transitionable UI Component List For Screen Widget : {GetName()} Of Type : {GetWidgetType()}.";
+                        callbackResults.data = default;
+                    }
+                }
 
-                }, $"Transitionable UI Component List Is Not Yet Initialized For Screen Widget : {GetName()} Of Type : {GetWidgetType()}.");
 
                 return callbackResults;
             }
@@ -29220,7 +29288,10 @@ namespace Com.RedicalGames.Filar
 
                     this.dataPackets = dataPackets;
 
-                    OnScreenWidget();
+                    if (WidgetReady().Success())
+                    {
+                        OnScreenWidget();
+                    }
 
                     ShowWidget(transitionType, dataPackets);
                 }
@@ -29289,7 +29360,10 @@ namespace Com.RedicalGames.Filar
                                 else
                                     LogWarning("Screen Rect Is Null.", this, () => ShowWidget(transitionType, dataPackets));
 
-                            OnShowScreenWidget(dataPackets);
+                            if (WidgetReady().Success())
+                                OnShowScreenWidget(dataPackets);
+                            else
+                                Log(WidgetReady().GetResultCode, WidgetReady().GetResult, this);
 
                             break;
 
@@ -30420,6 +30494,41 @@ namespace Com.RedicalGames.Filar
                     {
                         callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType()} Is Not Yet Initialized.";
                         callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public Callback WidgetReady(SceneDataPackets dataPackets = null)
+            {
+                Callback callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized"));
+
+                    if (callbackResults.Success())
+                    {
+                        var screenUIManager = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
+
+                        callbackResults.SetResult(GetType());
+
+                        if (callbackResults.Success())
+                        {
+                            var dataPacket = (dataPackets != null)? dataPackets : this.dataPackets;
+
+                            if (dataPacket.widgetType == GetType().data && dataPacket.screenType == screenUIManager.GetCurrentUIScreenType())
+                            {
+                                callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().data} Is Ready.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().data} For Screen Type : {dataPacket.screenType} Can not Be Enabled From Screen : {screenUIManager.GetCurrentUIScreenType()}.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
                     }
                 }
 
@@ -36083,6 +36192,10 @@ namespace Com.RedicalGames.Filar
                 return materialProperties;
             }
 
+
+            public static int GetRandomValue(int length) => UnityEngine.Random.Range(0, length - 1);
+
+
             public static MaterialProperties GetMaterialProperties(GameObject asset, int selectedMeshIndex)
             {
                 List<MeshRenderer> renderers = new List<MeshRenderer>();
@@ -38036,6 +38149,51 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback.Invoke(callbackResults);
+            }
+
+
+            public static CallbackDataList<T> GetAppComponentsValid<T>(List<T> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                CallbackDataList<T> callbackResults = new CallbackDataList<T>();
+
+                if (components != null && components.Count > 0)
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = components;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataArray<T> GetAppComponentsValid<T>(T[] components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                CallbackDataArray<T> callbackResults = new CallbackDataArray<T>();
+
+                if (components != null && components.Length > 0)
+                {
+                    callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = components;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public static CallbackDataQueue<T> GetAppComponentsValid<T>(Queue<T> queueComponent, string queueIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)

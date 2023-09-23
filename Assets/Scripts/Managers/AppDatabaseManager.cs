@@ -265,6 +265,8 @@ namespace Com.RedicalGames.Filar
 
         Dictionary<AppData.Post, object> postContents = new Dictionary<AppData.Post, object>();
 
+        List<Texture2D> splashImageLibrary = new List<Texture2D>();
+
         #endregion
 
         #region Messaging
@@ -289,6 +291,7 @@ namespace Com.RedicalGames.Filar
         public bool IsServerPostsDatabaseInitialized { get; private set; }
         public bool IsServerContentsDatabaseInitialized { get; private set; }
         public bool IsLocalStorageInitialized { get; private set; }
+        public bool IsSplashImagesLibraryInitialized { get; private set; }
 
         #endregion
 
@@ -340,9 +343,9 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public async Task<AppData.CallbackData<Texture2D>> GetRandomSplashImage()
+        public async void InitializeSplashImageLibrary(Action<AppData.Callback> callback = null)
         {
-            AppData.CallbackData<Texture2D> callbackResults = new AppData.CallbackData<Texture2D>();
+            AppData.Callback callbackResults = new AppData.Callback();
 
             do
                 storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(storageURL);
@@ -352,23 +355,32 @@ namespace Com.RedicalGames.Filar
 
             var imageDataBytesTaskResults = await storageReference.Child("App Library").Child("Images").Child("Splash Images").Child("Default").GetBytesAsync(int.MaxValue);
 
-            if (imageDataBytesTaskResults != null && imageDataBytesTaskResults.Length > 0)
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(imageDataBytesTaskResults, "Image Data Bytes", "Failed To Download Splash Images From Server Storage."));
+
+            if (callbackResults.Success())
             {
                 var imageData = new AppData.SerializableImage(imageDataBytesTaskResults);
-                var image = imageData.GetRandomTexture2DImageFromCompressedData();
+                splashImageLibrary = imageData.GetTexture2DImagesFromCompressedData().ToList();
 
-                callbackResults.result = $"Image : {image.name} Has Been Loaded Successfully.";
-                callbackResults.data = image;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = $"Failed To Load Splash Image Data From Server Storage.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                IsSplashImagesLibraryInitialized = true;
             }
 
             #endregion
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<Texture2D> GetRandomSplashImage()
+        {
+            AppData.CallbackData<Texture2D> callbackResults = new AppData.CallbackData<Texture2D>(AppData.Helpers.GetAppComponentsValid(splashImageLibrary, "Splash Image Library", "Splash Image Not Found : Splash Image Library Is Not Yet Loaded From The Server Storage."));
+
+            if(callbackResults.Success())
+            {
+                var randomImage = splashImageLibrary[AppData.Helpers.GetRandomValue(splashImageLibrary.Count)];
+
+                callbackResults.result = $"{splashImageLibrary.Count} Splash Images Have Been Found Successfully";
+                callbackResults.data = randomImage;
+            }
 
             return callbackResults;
         }
