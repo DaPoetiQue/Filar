@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "282448691213",
+    "firebase_url": "https://filar-d7a9d-default-rtdb.firebaseio.com",
+    "project_id": "filar-d7a9d",
+    "storage_bucket": "filar-d7a9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282448691213:android:fe3be3d416b5c18932d544",
+        "android_client_info": {
+          "package_name": "com.redicalgames.designar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "282448691213-qgrbp1akselt4mp3l8umc21r0csh6kni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUyr3pMJzebt3rgyRT6YN7ZJiTtGi1pCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282448691213-nsl4bokl3709g2f1emr6k6su1rd1vckm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

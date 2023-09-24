@@ -1,0 +1,66 @@
+{
+    "name": "App Inputs",
+    "maps": [
+        {
+            "name": "Touch Inputs",
+            "id": "e0de10f2-3744-40c4-8893-c9341b520542",
+            "actions": [
+                {
+                    "name": "Double Tap",
+                    "type": "Value",
+                    "id": "61007f56-9c13-4b9d-9abc-60f76c23afd6",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "MultiTap(tapDelay=0.5,tapCount=1)",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Press And Hold",
+                    "type": "Value",
+                    "id": "a15fdaca-eaec-4780-9cfa-1156ce89d8b6",
+                    "expectedControlType": "Touch",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d94b6de9-a6c0-4769-9aca-261c249e864f",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "MultiTap",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Double Tap",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "deb2064f-b11c-460b-b0a3-d2047a6a4fcc",
+                    "path": "<Touchscreen>/primaryTouch",
+                    "interactions": "Hold(duration=0.5)",
+                    "processors": "",
+                    "groups": "Touch Screen",
+                    "action": "Press And Hold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Touch Screen",
+            "bindingGroup": "Touch Screen",
+            "devices": [
+                {
+                    "devicePath": "<Touchscreen>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
