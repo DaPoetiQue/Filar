@@ -2207,6 +2207,9 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public List<RuntimeInstanceInfo> runtimeInstanceInfoList = new List<RuntimeInstanceInfo>();
 
+            [HideInInspector]
+            public UIScreenHandler referencedScreen;
+
             #endregion
 
             #region Main
@@ -2248,6 +2251,12 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Data Setters
+
+            public void SetReferencedScreen(UIScreenHandler referencedScreen) => this.referencedScreen = referencedScreen;
+
+            #endregion
+
             #region Data Getters
 
             public SceneDataPackets GetScreenData() => dataPackets;
@@ -2260,6 +2269,26 @@ namespace Com.RedicalGames.Filar
 
             public List<SequenceInstance> GetSequenceInstanceList() => sequences;
             public SequenceInstance[] GetSequenceInstanceArray() => sequences.ToArray();
+
+            public CallbackData<UIScreenHandler> GetReferencedScreen()
+            {
+                CallbackData<UIScreenHandler> callbackResults = new CallbackData<UIScreenHandler>();
+
+                if(referencedScreen != null)
+                {
+                    callbackResults.result = $"Screen Load Info Instance - Referenced Screen : {referencedScreen.name} Found";
+                    callbackResults.data = referencedScreen;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Screen Load Info Instance - Get Referenced Screen Failed - There Is No Referenced Screen Found";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
 
             public bool HasSequenceInstances() => sequences.Count > 0;
 
@@ -18174,17 +18203,20 @@ namespace Com.RedicalGames.Filar
 
             private Callback InTransition(Vector2 source, Vector2 target, Vector2 startDistance, float distanceInMagnitude)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetCanTransition());
 
-                if((source - target).magnitude <= distanceInMagnitude || (source - startDistance).magnitude <= distanceInMagnitude)
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Transitionable UI : {GetName()} Is Not In Transition";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Transitionable UI : {GetName()} Is In Transition.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                    if ((source - target).magnitude <= distanceInMagnitude || (source - startDistance).magnitude <= distanceInMagnitude)
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetName()} Is Not In Transition";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetName()} Is In Transition.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
                 }
 
                 return callbackResults;
@@ -18277,13 +18309,13 @@ namespace Com.RedicalGames.Filar
 
                 callbackResults.SetResult(initializationTaskResults);
 
-                LogInfo($" ______________________++++++++++ Transitionable UI : {GetTransitionType().GetData()} - Starts Here .", this);
-
                 if (callbackResults.Success())
                 {
                     var progressCheckTaskResults = await InProgress();
 
                     callbackResults.SetResult(progressCheckTaskResults);
+
+                    LogInfo($" ______________________++++++++++ Transitionable UI : {GetTransitionType().GetData()} - Invoed Here - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Pos : {GetTransitionableUISource().GetWidgetPosition()} - Target : {GetTarget()} .", this);
 
                     if (callbackResults.UnSuccessful())
                     {
@@ -18411,17 +18443,44 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public async Task<Callback> CancelTransitionAsync()
+            {
+                Callback callbackResults = new Callback();
+
+                var initializationTaskResults = await Initialized();
+
+                callbackResults.SetResult(initializationTaskResults);
+
+                if (callbackResults.Success())
+                {
+                    SetCanTransition(false);
+
+                    callbackResults.SetResult(GetCanTransition());
+
+                    if(callbackResults.Success())
+                    {
+                        await Task.Yield();
+                        UnSubscribedFromEvents();
+                    }
+                }
+
+                return callbackResults;
+            }
+
             public void CancelTransition(Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
-                LogInfo(" __________________++++++++++ Cancelling Transitionable UI.", this);
+                SetCanTransition(false);
+                UnSubscribeFromEvents();
 
-                Initialized(async initializationCallbackResults => 
+                callbackResults.resultCode = Helpers.SuccessCode;
+
+                Initialized(async initializationCallbackResults =>
                 {
                     callbackResults.SetResult(initializationCallbackResults);
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
                         var inProgressTaskResults = await InProgress();
 
@@ -27430,32 +27489,55 @@ namespace Com.RedicalGames.Filar
                 if (callbackResults.Success())
                 {
                     var transitionableUI = transitionableUITaskResultsCallback.GetData();
-                    await transitionableUI.InvokeTransitionAsync();
+                    var transitionableUITasResultsCallback = await transitionableUI.InvokeTransitionAsync();
 
-                    callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
+                    callbackResults.SetResult(transitionableUITasResultsCallback);
+
+                    if(callbackResults.Success())
+                        callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
                 }
 
                 callback?.Invoke(callbackResults);
             }
 
-            protected async void CancelInvokedTransitionableUI(UITransitionType transitionType, Action<Callback> callback = null)
+            protected async void CancelInvokedTransitionableUI(UITransitionType transitionType = UITransitionType.None, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
-                var transitionableUITaskResultsCallback = await GetTransitionableUIComponent(transitionType);
-
-                callbackResults.SetResult(transitionableUITaskResultsCallback);
-
-                if (callbackResults.Success())
+                if (transitionType != UITransitionType.None)
                 {
-                    var transitionableUI = transitionableUITaskResultsCallback.GetData();
-                    transitionableUI.CancelTransition(cancelCallbackResults => 
-                    {
-                        callbackResults.SetResult(cancelCallbackResults); 
+                    var transitionableUITaskResultsCallback = await GetTransitionableUIComponent(transitionType);
 
-                        if(callbackResults.Success())
-                            callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
-                    });
+                    callbackResults.SetResult(transitionableUITaskResultsCallback);
+
+                    if (callbackResults.Success())
+                    {
+                        var transitionableUI = transitionableUITaskResultsCallback.GetData();
+                        var cancelTransitionTaskResultsCallback = await transitionableUI.CancelTransitionAsync();
+
+                        callbackResults.SetResult(cancelTransitionTaskResultsCallback);
+                    }
+                }
+                else
+                {
+                    var getTransitionableUIComponentTaskResultsCallback = await GetTransitionableUIComponent();
+
+                    callbackResults.SetResult(getTransitionableUIComponentTaskResultsCallback);
+
+                    if(callbackResults.Success())
+                    {
+                        var transitionableUIComponentsList = getTransitionableUIComponentTaskResultsCallback.data;
+
+                        for (int i = 0; i < transitionableUIComponentsList.Count; i++)
+                        {
+                            var cancelledTransitionTaskResultsCallback = await transitionableUIComponentsList[i].CancelTransitionAsync();
+
+                            callbackResults.SetResult(cancelledTransitionTaskResultsCallback);
+
+                            if (callbackResults.UnSuccessful())
+                                break;
+                        }
+                    }
                 }
 
                 callback?.Invoke(callbackResults);
@@ -27465,15 +27547,13 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<TransitionableUIComponent> callbackResults = new CallbackData<TransitionableUIComponent>();
 
-                while (callbackResults.UnSuccessful())
-                {
-                    callbackResults.SetResult(Helpers.GetAppComponentsValid(transitionableUIComponentList, "Transitionable UI Component List", "Transitionable UI Componets Params Is Null / Not Assigned In Parameter / Not Initialized."));
-                    await Task.Yield();
-                }
+                var getTransitionableUIComponentTaskResultsCallback = await GetTransitionableUIComponent();
+
+                callbackResults.SetResult(getTransitionableUIComponentTaskResultsCallback);
 
                 if (callbackResults.Success())
                 {
-                    var transitionableUIComponent = transitionableUIComponentList.Find(component => component.GetTransitionType().Success() && component.GetTransitionType().data == transitionType);
+                    var transitionableUIComponent = getTransitionableUIComponentTaskResultsCallback.GetData().Find(component => component.GetTransitionType().Success() && component.GetTransitionType().data == transitionType);
 
                     callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Get Transitionable UI Component Failed - Couldn't Find Transitionable UI Component Of Type : {transitionType} For Screen Widget : {GetName()} Of Type : {GetWidgetType()}."));
 
@@ -27489,6 +27569,25 @@ namespace Com.RedicalGames.Filar
                     }
                 }
 
+
+                return callbackResults;
+            }
+
+            private async Task<CallbackDataList<TransitionableUIComponent>> GetTransitionableUIComponent()
+            {
+                CallbackDataList<TransitionableUIComponent> callbackResults = new CallbackDataList<TransitionableUIComponent>();
+
+                while (callbackResults.UnSuccessful())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(transitionableUIComponentList, "Transitionable UI Component List", "Transitionable UI Componets Params Is Null / Not Assigned In Parameter / Not Initialized."));
+                    await Task.Yield();
+                }
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Transitionable UI Components List With : {transitionableUIComponentList.Count} Transitionables Has Been Loaded Successfully For Screen Widget Of Type : {GetWidgetType()}.";
+                    callbackResults.data = transitionableUIComponentList;
+                }
 
                 return callbackResults;
             }
@@ -29601,46 +29700,49 @@ namespace Com.RedicalGames.Filar
 
             public void Hide(bool canTransition = true, Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(WidgetReady());
 
-                switch (transitionType)
+                if (callbackResults.Success())
                 {
-                    case TransitionType.Default:
+                    switch (transitionType)
+                    {
+                        case TransitionType.Default:
 
-                        OnHideScreenWidget();
+                            OnHideScreenWidget();
 
-                        callbackResults.result = "Widget Hidden.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                            callbackResults.result = "Widget Hidden.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
-                        break;
+                            break;
 
-                    case TransitionType.Translate:
+                        case TransitionType.Translate:
 
-                        if (widgetRect)
-                        {
-                            if (canTransition)
+                            if (widgetRect)
                             {
-                                onWidgetTransition = true;
-                                showWidget = false;
-
-                                if (onWidgetTransition == false)
+                                if (canTransition)
                                 {
-                                    callbackResults.result = "Widget Hidden.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                    onWidgetTransition = true;
+                                    showWidget = false;
+
+                                    if (onWidgetTransition == false)
+                                    {
+                                        callbackResults.result = "Widget Hidden.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = "Widget Not Hidden.";
+                                        callbackResults.resultCode = Helpers.WarningCode;
+                                    }
                                 }
                                 else
                                 {
-                                    callbackResults.result = "Widget Not Hidden.";
-                                    callbackResults.resultCode = Helpers.WarningCode;
+                                    widgetRect.anchoredPosition = widgetContainer.hiddenScreenPoint.anchoredPosition;
                                 }
                             }
-                            else
-                            {
-                                widgetRect.anchoredPosition = widgetContainer.hiddenScreenPoint.anchoredPosition;
-                            }
-                        }
 
-                        break;
+                            break;
+                    }
                 }
 
                 callback?.Invoke(callbackResults);
@@ -29648,49 +29750,52 @@ namespace Com.RedicalGames.Filar
 
             public async Task<Callback> HideAsync(bool canTransition = true)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(WidgetReady());
 
-                switch (transitionType)
+                if (callbackResults.Success())
                 {
-                    case TransitionType.Default:
+                    switch (transitionType)
+                    {
+                        case TransitionType.Default:
 
-                        OnHideScreenWidget();
+                            OnHideScreenWidget();
 
-                        callbackResults.result = "Widget Hidden.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                            callbackResults.result = "Widget Hidden.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
 
-                        break;
+                            break;
 
-                    case TransitionType.Translate:
+                        case TransitionType.Translate:
 
-                        if (widgetRect)
-                        {
-                            if (canTransition)
+                            if (widgetRect)
                             {
-                                onWidgetTransition = true;
-                                showWidget = false;
-
-                                if (onWidgetTransition == false)
+                                if (canTransition)
                                 {
-                                    callbackResults.result = "Widget Hidden.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                    onWidgetTransition = true;
+                                    showWidget = false;
+
+                                    if (onWidgetTransition == false)
+                                    {
+                                        callbackResults.result = "Widget Hidden.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = "Widget Not Hidden.";
+                                        callbackResults.resultCode = Helpers.WarningCode;
+                                    }
+
+                                    while (onWidgetTransition)
+                                        await Task.Yield();
                                 }
                                 else
                                 {
-                                    callbackResults.result = "Widget Not Hidden.";
-                                    callbackResults.resultCode = Helpers.WarningCode;
+                                    widgetRect.anchoredPosition = widgetContainer.hiddenScreenPoint.anchoredPosition;
                                 }
-
-                                while (onWidgetTransition)
-                                    await Task.Yield();
                             }
-                            else
-                            {
-                                widgetRect.anchoredPosition = widgetContainer.hiddenScreenPoint.anchoredPosition;
-                            }
-                        }
 
-                        break;
+                            break;
+                    }
                 }
 
                 return callbackResults;

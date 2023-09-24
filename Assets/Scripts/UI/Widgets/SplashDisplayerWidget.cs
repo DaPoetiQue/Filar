@@ -138,8 +138,6 @@ namespace Com.RedicalGames.Filar
                             var imageDisplayer = imageDisplayerCallbackResults.data;
                             var randomPointIndex = GetRandomIndex();
 
-                            LogInfo($" _____________++++++++++ On Screen Widget - Starts Here.", this);
-
                             if (randomPointIndex >= 1)
                             {
                                 SetTransitionableUITarget(AppData.UITransitionType.Translate, widgetContainer.hiddenScreenPoint.GetWidgetPosition(), targetSetCallbackResults => 
@@ -150,7 +148,7 @@ namespace Com.RedicalGames.Filar
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
-                                imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
+                                imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
                             }
 
                             if (randomPointIndex <= 0)
@@ -163,7 +161,7 @@ namespace Com.RedicalGames.Filar
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
-                                imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
+                                imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
                             }
                         }
                         else
@@ -185,8 +183,13 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnHideScreenWidget()
         {
-            CancelInvokedTransitionableUI(AppData.UITransitionType.Translate);
-            HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+            CancelInvokedTransitionableUI(callback: transitionCancelledCallbackResults => 
+            {
+                if (transitionCancelledCallbackResults.Success())
+                    HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+                else
+                    Log(transitionCancelledCallbackResults.GetResultCode, transitionCancelledCallbackResults.GetResult, this);
+            });
         }
 
         protected override void OnSubscribeToActionEvents(bool subscribe)

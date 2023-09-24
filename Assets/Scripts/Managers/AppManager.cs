@@ -141,8 +141,9 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             var loadingManager = loadingManagerCallbackResults.data;
                                                             var currentScreenView = loadingScreenCallbackResults.data.value;
-
                                                             var splashDisplayerWidgetCallbackResults = new AppData.CallbackData<AppData.Widget>();
+
+                                                            splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
 
                                                             while (splashDisplayerWidgetCallbackResults.UnSuccessful())
                                                             {
@@ -183,14 +184,14 @@ namespace Com.RedicalGames.Filar
                                                                                     if (networkManager.Connected)
                                                                                         initialLoadInfo.RemoveSequenceInstanceData(AppData.LoadingSequenceID.CheckingNetworkConnection);
 
+                                                                                    initialLoadInfo.SetReferencedScreen(currentScreenView);
+
                                                                                     await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
                                                                                     {
                                                                                         callbackResults.SetResult(initialLoadInfoCallbackResults);
 
                                                                                         if (callbackResults.Success())
                                                                                         {
-                                                                                            //currentScreenView.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
-
                                                                                             screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
                                                                                             {
                                                                                                 callbackResults.SetResult(currentScreenCallbackResults);
