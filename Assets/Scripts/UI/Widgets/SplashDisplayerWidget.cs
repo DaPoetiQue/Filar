@@ -127,6 +127,9 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             var imageDisplayer = imageDisplayerCallbackResults.data;
+                            var image = appDatabaseManager.GetRandomSplashImage().GetData();
+                            imageDisplayer.SetImageData(image, true);
+
                             var randomPointIndex = GetRandomIndex();
 
                             if (randomPointIndex >= 1)

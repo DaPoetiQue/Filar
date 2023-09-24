@@ -617,7 +617,8 @@ namespace Com.RedicalGames.Filar
             Settings_Storage,
             Project_Structure,
             Sub_Folder_Structure,
-            App_Information
+            App_Information,
+            App_Cache_Storage
         }
 
         public enum AssetModeType
@@ -5240,7 +5241,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SerializableImage
+        public class SerializableImage : SerializableData
         {
             #region Components
 
@@ -12728,10 +12729,49 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
+            #region Constructors
+
+            public StorageDirectoryData()
+            {
+
+            }
+
+            public StorageDirectoryData(string path, string projectDirectory, string rootDirectory, string directory, StorageType type)
+            {
+                this.path = path;
+                this.projectDirectory = projectDirectory;
+                this.rootDirectory = rootDirectory;
+                this.directory = directory;
+                this.type = type;
+            }
+
+            #endregion
+
             new public string ToString()
             {
                 return $"Name : {name} - Type : {type} - Path : {path} - Project Directory : {projectDirectory} - Root Directory : {rootDirectory} - Directory : {directory}";
             }
+
+            #region Data Setters
+
+            public void SetPath(string path) => this.path = path;
+            public void SetDirectory(string directory) => this.directory = directory;
+            public void SetRootDirectory(string rootDirectory) => this.rootDirectory = rootDirectory;
+            public void SetProjectDirectory(string projectDirectory) => this.projectDirectory = projectDirectory;
+            public void SetStorageType(StorageType type) => this.type = type;
+
+            #endregion
+
+
+            #region Data Getters
+
+            public string GetPath() => path;
+            public string GetDirectory() => directory;
+            public string GetRootDirectory() => rootDirectory;
+            public string GetProjectDirectory() => projectDirectory;
+            public StorageType GetStorageType() =>  type;
+
+            #endregion
 
             #endregion
         }
@@ -17880,14 +17920,12 @@ namespace Com.RedicalGames.Filar
 
             public void OnEnabled()
             {
-                LogInfo(" __________________________++++++++ Enabled.", this);
+
             }
 
 
             public async void OnDisabled()
             {
-                LogInfo(" __________________________++++++++ Disabled.", this);
-
                 var cancelTransitionTaskResultsCallback = await CancelTransitionAsync();
 
                 if (cancelTransitionTaskResultsCallback.UnSuccessful())
