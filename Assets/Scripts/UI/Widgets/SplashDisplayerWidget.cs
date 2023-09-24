@@ -8,6 +8,7 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         AppData.TransitionableUIComponent transitionableUIScaleComponent, transitionableUITranslateComponent;
+        AppData.TimedEventComponent changeSplashImageTimedEventComponent;
 
         bool canShowScreen = false;
 
@@ -65,21 +66,34 @@ namespace Com.RedicalGames.Filar
 
                                     #endregion
 
+                                    #region Timed Events
+
+                                    changeSplashImageTimedEventComponent = new AppData.TimedEventComponent(name, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageChangeEventInterval).value, OnRandomizeDisplayedSplashImage);
+
+                                    var registerTimedEventsCallbackResults = OnRegisterTimedEventComponents(changeSplashImageTimedEventComponent);
+
+                                    #endregion
+
                                     callbackResults.SetResult(registerTransitionableUICallbackResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(GetType());
+                                        callbackResults.SetResult(registerTimedEventsCallbackResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+                                            callbackResults.SetResult(GetType());
 
-                                            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                                            callbackResults.data = widgetStatePacket;
+                                            if (callbackResults.Success())
+                                            {
+                                                var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                                                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                                                callbackResults.data = widgetStatePacket;
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
                                 }
                                 else
@@ -126,37 +140,45 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var imageDisplayer = imageDisplayerCallbackResults.data;
-                            var image = appDatabaseManager.GetRandomSplashImage().GetData();
-                            imageDisplayer.SetImageData(image, true);
-
-                            var randomPointIndex = GetRandomIndex();
-
-                            if (randomPointIndex >= 1)
+                            InvokeTimedEvents(timeEventInvokedCallbackResults => 
                             {
-                                SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults => 
+                                callbackResults.SetResult(timeEventInvokedCallbackResults);
+
+                                if(callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(targetSetCallbackResults);
+                                    var imageDisplayer = imageDisplayerCallbackResults.data;
+                                    var image = appDatabaseManager.GetRandomSplashImage().GetData();
+                                    imageDisplayer.SetImageData(image, true);
 
-                                    if(callbackResults.Success())
-                                        imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-                            }
+                                    var randomPointIndex = GetRandomIndex();
 
-                            if (randomPointIndex <= 0)
-                            {
-                                SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                                {
-                                    callbackResults.SetResult(targetSetCallbackResults);
+                                    if (randomPointIndex >= 1)
+                                    {
+                                        SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(targetSetCallbackResults);
 
-                                    if (callbackResults.Success())
-                                        imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-                            }
+                                            if (callbackResults.Success())
+                                                imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+
+                                    if (randomPointIndex <= 0)
+                                    {
+                                        SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(targetSetCallbackResults);
+
+                                            if (callbackResults.Success())
+                                                imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                }
+                            });
                         }
                         else
                             Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
@@ -169,10 +191,16 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
+
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
             InvokeTransitionableUI();
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        }
+
+        void OnRandomizeDisplayedSplashImage()
+        {
+            LogInfo(" ____________________________++++++++++++++++ OnChange Splash Image Event Called.", this);
         }
 
         protected override void OnHideScreenWidget() => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);

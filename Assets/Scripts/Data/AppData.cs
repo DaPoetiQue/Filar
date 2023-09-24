@@ -733,6 +733,7 @@ namespace Com.RedicalGames.Filar
             DefaultAppTimeout,
             ScreenWidgetTranslateTransitionalSpeed,
             ScreenWidgetScaleTransitionalSpeed,
+            SplashImageChangeEventInterval,
             None
         }
 
@@ -18626,6 +18627,122 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class TimedEventComponent
+        {
+            #region Components
+
+            public string name;
+
+            public float intervalLength;
+
+            private Action triggerEventAction;
+            private bool isRunning = false;
+
+            private float elapsedTime;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public TimedEventComponent()
+            {
+
+            }
+
+            public TimedEventComponent(string name, float intervalLength, Action triggerEventAction)
+            {
+                this.name = name;
+                this.intervalLength = intervalLength;
+                this.triggerEventAction = triggerEventAction;
+            }
+
+            #endregion
+
+            #region Events
+
+            private void ActionEvents__Update()
+            {
+                if(isRunning)
+                {
+                    if(GetElapsedTime() > 0)
+                        elapsedTime -= 1 * Time.deltaTime;
+                    else
+                    {
+                        TriggerEvent();
+                        SetElpasedTime(GetIntervalLength());
+                    }
+                }
+            }
+
+            public void OnEnabled()
+            {
+
+            }
+
+            public void OnDisabled() => Stop();
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetIntervalLength(float intervalLength) => this.intervalLength = intervalLength;
+            public void SetTriggerEventAction(Action triggerEventAction) => this.triggerEventAction = triggerEventAction;
+            public void SetElpasedTime(float elapsedTime) => this.elapsedTime = elapsedTime;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName() => (!string.IsNullOrEmpty(name)) ? name : "Timed Event Component Name Is Not Assigned.";
+
+            public float GetIntervalLength() => intervalLength;
+            public Action GetTriggerEventAction() => triggerEventAction;
+            public float GetElapsedTime() => elapsedTime;
+
+            #endregion
+
+            public async Task<Callback> Initialized()
+            {
+                Callback callbackResults = new Callback();
+
+                await Task.Yield();
+
+                if (this != null && GetIntervalLength() > 0.0f)
+                {
+                    callbackResults.result = $"Timed Event Component : {GetName()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Timed Event Component : {GetName()} - Is Not Yet Initialized.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public void Start()
+            {
+                SetElpasedTime(GetIntervalLength());
+
+                ActionEvents._Update += ActionEvents__Update;
+                isRunning = true;
+            }
+
+            public void Stop()
+            {
+                isRunning = false;
+                ActionEvents._Update -= ActionEvents__Update;
+            }
+
+            void TriggerEvent() => GetTriggerEventAction().Invoke();
+
+            #endregion
+        }
+
+        [Serializable]
         public class DataPacket
         {
             #region Components
@@ -27123,8 +27240,13 @@ namespace Com.RedicalGames.Filar
 
             #region UI Transitonable Components
 
-
             private List<TransitionableUIComponent> transitionableUIComponentList = new List<TransitionableUIComponent>();
+
+            #endregion
+
+            #region Timed Events
+
+            private List<TimedEventComponent> timedEventComponentList = new List<TimedEventComponent>(); 
 
             #endregion
 
@@ -27529,7 +27651,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             protected async void SetTransitionableUITarget(UITransitionType transitionType, Vector3 target, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
@@ -27754,6 +27875,100 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"Transitionable UI Components List With : {transitionableUIComponentList.Count} Transitionables Has Been Loaded Successfully For Screen Widget Of Type : {GetWidgetType()}.";
                     callbackResults.data = transitionableUIComponentList;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Timed Events
+
+            protected Callback OnRegisterTimedEventComponents(params TimedEventComponent[] timedEventComponentParams)
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(Helpers.GetList(timedEventComponentParams), "Timed Event Components", async componentsValidCallbackResults =>
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < timedEventComponentParams.Length; i++)
+                        {
+                            var initializationTaskResults = await timedEventComponentParams[i].Initialized();
+
+                            callbackResults.SetResult(initializationTaskResults);
+
+                            if (callbackResults.Success())
+                            {
+                                await Task.Yield();
+
+                                if (!timedEventComponentList.Contains(timedEventComponentParams[i]))
+                                {
+                                    OnEnabledEventAction += timedEventComponentParams[i].OnEnabled;
+                                    OnDisabledEventAction += timedEventComponentParams[i].OnDisabled;
+
+                                    timedEventComponentList.Add(timedEventComponentParams[i]);
+
+                                    if (timedEventComponentList.Contains(timedEventComponentParams[i]))
+                                    {
+                                        callbackResults.result = $"Timed Event Component : {timedEventComponentParams[i].GetName()} Has Been Registered Successfully In Timed Event Component List.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Register Timed Event Component - Timed Event Component : {timedEventComponentParams[i].GetName()} Could'nt Be Added To Timed Event Component List - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Register Timed Event Component - Timed Event Component : {timedEventComponentParams[i].GetName()} Already Exists In Timed Event Component List.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+                        }
+                    }
+
+                }, "Timed Event Components Params Is Null / Not Assigned In Parameter / Not Initialized.");
+
+                return callbackResults;
+            }
+
+            protected async void InvokeTimedEvents(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var timedEventComponentListTaskResultsCallback = await GetTimedEventComponents();
+
+                callbackResults.SetResult(timedEventComponentListTaskResultsCallback);
+
+                if (callbackResults.Success())
+                {
+                    var timedEventComponentList = timedEventComponentListTaskResultsCallback.GetData();
+
+                    for (int i = 0; i < timedEventComponentList.Count; i++)
+                        timedEventComponentList[i].Start();
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private async Task<CallbackDataList<TimedEventComponent>> GetTimedEventComponents()
+            {
+                CallbackDataList<TimedEventComponent> callbackResults = new CallbackDataList<TimedEventComponent>();
+
+                while (callbackResults.UnSuccessful())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(timedEventComponentList, "Timed Event Component List", "Timed Event Componets Params Is Null / Not Assigned In Parameter / Not Initialized."));
+                    await Task.Yield();
+                }
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Timed Event Components List With : {timedEventComponentList.Count} Timed event Component(s) Has Been Loaded Successfully For Screen Widget Of Type : {GetWidgetType()}.";
+                    callbackResults.data = timedEventComponentList;
                 }
 
                 return callbackResults;
