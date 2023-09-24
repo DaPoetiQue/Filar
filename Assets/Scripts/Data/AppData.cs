@@ -17878,6 +17878,22 @@ namespace Com.RedicalGames.Filar
                     Log(initializationTaskCallback.GetResultCode, initializationTaskCallback.GetResult, this);
             }
 
+            public void OnEnabled()
+            {
+                LogInfo(" __________________________++++++++ Enabled.", this);
+            }
+
+
+            public async void OnDisabled()
+            {
+                LogInfo(" __________________________++++++++ Disabled.", this);
+
+                var cancelTransitionTaskResultsCallback = await CancelTransitionAsync();
+
+                if (cancelTransitionTaskResultsCallback.UnSuccessful())
+                    Log(cancelTransitionTaskResultsCallback.GetResultCode, cancelTransitionTaskResultsCallback.GetResult, this);
+            }
+
             #endregion
 
             #region Setters
@@ -27074,6 +27090,13 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Actions
+
+            private Action OnEnabledEventAction, 
+                           OnDisabledEventAction;
+
+            #endregion
+
             #region Unity Callbacks
 
             void OnEnable()
@@ -27406,6 +27429,14 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentNullException("On Register Widget Failed - Widget Is Null / Missing");
             }
 
+            #region Action Events
+
+            protected void OnEnabled() => OnEnabledEventAction.Invoke();
+            protected void OnDisabled() => OnDisabledEventAction.Invoke();
+
+            #endregion
+
+
             #region Transitionable UI Components
 
             protected Callback OnRegisterTransitionableUIComponents(params TransitionableUIComponent[] transitionableUIParams)
@@ -27430,6 +27461,9 @@ namespace Com.RedicalGames.Filar
 
                                 if (!transitionableUIComponentList.Contains(transitionableUIParams[i]))
                                 {
+                                    OnEnabledEventAction += transitionableUIParams[i].OnEnabled;
+                                    OnDisabledEventAction += transitionableUIParams[i].OnDisabled;
+
                                     transitionableUIComponentList.Add(transitionableUIParams[i]);
 
                                     if (transitionableUIComponentList.Contains(transitionableUIParams[i]))
@@ -27564,6 +27598,33 @@ namespace Com.RedicalGames.Filar
 
                     if(callbackResults.Success())
                         callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected async void CancelAllInvokedTransitionableUI(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var transitionableUIListTaskResultsCallback = await GetTransitionableUIComponent();
+
+                callbackResults.SetResult(transitionableUIListTaskResultsCallback);
+
+                if (callbackResults.Success())
+                {
+                    var transitionableUIList = transitionableUIListTaskResultsCallback.GetData();
+
+                    await Task.Yield();
+
+                    for (int i = 0; i < transitionableUIList.Count; i++)
+                    {
+                        var transitionableUITasResultsCallback = await transitionableUIList[i].CancelTransitionAsync();
+                        callbackResults.SetResult(transitionableUITasResultsCallback);
+
+                        while(callbackResults.UnSuccessful())
+                         await Task.Yield();
+                    }
                 }
 
                 callback?.Invoke(callbackResults);
@@ -29456,9 +29517,7 @@ namespace Com.RedicalGames.Filar
                     this.dataPackets = dataPackets;
 
                     if (WidgetReady().Success())
-                    {
                         OnScreenWidget();
-                    }
 
                     ShowWidget(transitionType, dataPackets);
                 }
@@ -29528,7 +29587,10 @@ namespace Com.RedicalGames.Filar
                                     LogWarning("Screen Rect Is Null.", this, () => ShowWidget(transitionType, dataPackets));
 
                             if (WidgetReady().Success())
+                            {
                                 OnShowScreenWidget(dataPackets);
+                                OnEnabled();
+                            }
                             else
                                 Log(WidgetReady().GetResultCode, WidgetReady().GetResult, this);
 
@@ -29777,6 +29839,7 @@ namespace Com.RedicalGames.Filar
                         case TransitionType.Default:
 
                             OnHideScreenWidget();
+                            OnDisabled();
 
                             callbackResults.result = "Widget Hidden.";
                             callbackResults.resultCode = Helpers.SuccessCode;
@@ -29827,6 +29890,7 @@ namespace Com.RedicalGames.Filar
                         case TransitionType.Default:
 
                             OnHideScreenWidget();
+                            OnDisabled();
 
                             callbackResults.result = "Widget Hidden.";
                             callbackResults.resultCode = Helpers.SuccessCode;

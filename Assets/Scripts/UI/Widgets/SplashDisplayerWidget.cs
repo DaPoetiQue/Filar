@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -45,12 +42,6 @@ namespace Com.RedicalGames.Filar
                                     var imageDisplayer = imageDisplayerCallbackResults.data;
 
                                     var randomPointIndex = GetRandomIndex();
-
-                                    //if (randomPointIndex >= 1)
-                                    //    imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
-
-                                    //if (randomPointIndex <= 0)
-                                    //    imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
 
                                     #region Transitionable UI
 
@@ -181,24 +172,7 @@ namespace Com.RedicalGames.Filar
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnHideScreenWidget()
-        {
-            CancelInvokedTransitionableUI(AppData.UITransitionType.Translate, callback: transitionCancelledCallbackResults =>
-            {
-                if (transitionCancelledCallbackResults.Success())
-                    HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-                else
-                    Log(transitionCancelledCallbackResults.GetResultCode, transitionCancelledCallbackResults.GetResult, this);
-            });
-
-            CancelInvokedTransitionableUI(AppData.UITransitionType.Scale, callback: transitionCancelledCallbackResults => 
-            {
-                if (transitionCancelledCallbackResults.Success())
-                    HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-                else
-                    Log(transitionCancelledCallbackResults.GetResultCode, transitionCancelledCallbackResults.GetResult, this);
-            });
-        }
+        protected override void OnHideScreenWidget() => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
         protected override void OnSubscribeToActionEvents(bool subscribe)
         {
