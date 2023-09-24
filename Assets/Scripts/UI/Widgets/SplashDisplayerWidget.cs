@@ -58,11 +58,7 @@ namespace Com.RedicalGames.Filar
 
                                     transitionableUITranslateComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Repeat);
                                     transitionableUITranslateComponent.SetTransitionableUIName(name + "_Translate");
-<<<<<<< HEAD
                                     transitionableUITranslateComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTranslateTransitionalSpeed).value);
-=======
-                                    transitionableUITranslateComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
 
                                     #endregion
 
@@ -144,7 +140,6 @@ namespace Com.RedicalGames.Filar
 
                             if (randomPointIndex >= 1)
                             {
-<<<<<<< HEAD
                                 SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults => 
                                 {
                                     callbackResults.SetResult(targetSetCallbackResults);
@@ -154,22 +149,10 @@ namespace Com.RedicalGames.Filar
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
-=======
-                                SetTransitionableUITarget(AppData.UITransitionType.Translate, widgetContainer.hiddenScreenPoint.GetWidgetPosition(), targetSetCallbackResults => 
-                                {
-                                    callbackResults.SetResult(targetSetCallbackResults);
-
-                                    if(callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-
-                                imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
                             }
 
                             if (randomPointIndex <= 0)
                             {
-<<<<<<< HEAD
                                 SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(targetSetCallbackResults);
@@ -179,17 +162,6 @@ namespace Com.RedicalGames.Filar
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
-=======
-                                SetTransitionableUITarget(AppData.UITransitionType.Translate, widgetContainer.visibleScreenPoint.GetWidgetPosition(), targetSetCallbackResults =>
-                                {
-                                    callbackResults.SetResult(targetSetCallbackResults);
-
-                                    if (callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-
-                                imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
                             }
                         }
                         else
@@ -205,17 +177,12 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
-<<<<<<< HEAD
             InvokeTransitionableUI();
-=======
-            InvokeTransitionableUI(AppData.UITransitionType.Translate);
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
         protected override void OnHideScreenWidget()
         {
-<<<<<<< HEAD
             CancelInvokedTransitionableUI(AppData.UITransitionType.Translate, callback: transitionCancelledCallbackResults =>
             {
                 if (transitionCancelledCallbackResults.Success())
@@ -225,9 +192,6 @@ namespace Com.RedicalGames.Filar
             });
 
             CancelInvokedTransitionableUI(AppData.UITransitionType.Scale, callback: transitionCancelledCallbackResults => 
-=======
-            CancelInvokedTransitionableUI(callback: transitionCancelledCallbackResults => 
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
             {
                 if (transitionCancelledCallbackResults.Success())
                     HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);

@@ -730,10 +730,7 @@ namespace Com.RedicalGames.Filar
             ARViewScreenFadeOutDuration,
             NetworkInitializationDefaultDuration,
             DefaultAppTimeout,
-<<<<<<< HEAD
             ScreenWidgetTranslateTransitionalSpeed,
-=======
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
             ScreenWidgetScaleTransitionalSpeed,
             None
         }
@@ -17785,11 +17782,6 @@ namespace Com.RedicalGames.Filar
                                 var targetPosition = Vector2.Lerp(GetTransitionableUISource().GetWidgetPosition(), GetTarget(), GetTransitionSpeed());
                                 GetTransitionableUISource().SetWidgetPosition(targetPosition);
 
-<<<<<<< HEAD
-=======
-                                LogInfo($" _________________++++++++++++++ In Progress - Position : {GetTransitionableUISource().GetWidgetPosition()} - Target : { GetTarget()}", this);
-
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
                                 break;
 
                             case UITransitionType.Scale:
@@ -27485,7 +27477,6 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-<<<<<<< HEAD
             protected async void SetTransitionableUITarget((Vector2 position, Vector2 scale, Vector3 rotationAngle) target, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
@@ -27556,8 +27547,6 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-=======
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
             protected async void InvokeTransitionableUI(UITransitionType transitionType, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
@@ -27600,7 +27589,6 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-<<<<<<< HEAD
                     var transitionableUIListTaskResultsCallback = await GetTransitionableUIComponent();
 
                     callbackResults.SetResult(transitionableUIListTaskResultsCallback);
@@ -27613,21 +27601,6 @@ namespace Com.RedicalGames.Filar
                         {
                             var transitionableUITasResultsCallback = await transitionableUIList[i].CancelTransitionAsync();
                             callbackResults.SetResult(transitionableUITasResultsCallback);
-=======
-                    var getTransitionableUIComponentTaskResultsCallback = await GetTransitionableUIComponent();
-
-                    callbackResults.SetResult(getTransitionableUIComponentTaskResultsCallback);
-
-                    if(callbackResults.Success())
-                    {
-                        var transitionableUIComponentsList = getTransitionableUIComponentTaskResultsCallback.data;
-
-                        for (int i = 0; i < transitionableUIComponentsList.Count; i++)
-                        {
-                            var cancelledTransitionTaskResultsCallback = await transitionableUIComponentsList[i].CancelTransitionAsync();
-
-                            callbackResults.SetResult(cancelledTransitionTaskResultsCallback);
->>>>>>> b9e78c8cab63710ff4734b29117e85e99d2a780e
 
                             if (callbackResults.UnSuccessful())
                                 break;
