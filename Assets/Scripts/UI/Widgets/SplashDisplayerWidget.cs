@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -10,7 +11,7 @@ namespace Com.RedicalGames.Filar
         AppData.TransitionableUIComponent transitionableUIScaleComponent, transitionableUITranslateComponent;
         AppData.TimedEventComponent changeSplashImageTimedEventComponent;
 
-        bool canShowScreen = false;
+        bool canShowSpinner = false;
 
         #endregion
 
@@ -88,6 +89,8 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
 
+                                                InitializeDisplayer();
+
                                                 callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
                                                 callbackResults.data = widgetStatePacket;
                                             }
@@ -122,9 +125,9 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
+        void InitializeDisplayer(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name,"App Database Manager Is Not Yet Initialized."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
@@ -140,11 +143,11 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            InvokeTimedEvents(timeEventInvokedCallbackResults => 
+                            InvokeTimedEvents(timeEventInvokedCallbackResults =>
                             {
                                 callbackResults.SetResult(timeEventInvokedCallbackResults);
 
-                                if(callbackResults.Success())
+                                if (callbackResults.Success())
                                 {
                                     var imageDisplayer = imageDisplayerCallbackResults.data;
                                     var image = appDatabaseManager.GetRandomSplashImage().GetData();
@@ -177,6 +180,8 @@ namespace Com.RedicalGames.Filar
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
                                     }
+
+                                    canShowSpinner = true;
                                 }
                             });
                         }
@@ -189,17 +194,84 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
-
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnScreenWidget()
         {
-            InvokeTransitionableUI();
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        
+        }
+
+        protected override async void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        {
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                InvokeTransitionableUI();
+                ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+
+                while (!canShowSpinner)
+                    await Task.Yield();
+
+                await Task.Delay((int)databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
+
+                callbackResults.SetResult(GetParentWidget());
+
+                if (callbackResults.Success())
+                {
+                    var parentWidget = GetParentWidget().GetData();
+
+                    var loadingSpinnerDataPackets = new AppData.SceneDataPackets
+                    {
+                        screenType = AppData.UIScreenType.LoadingScreen,
+                        widgetType = AppData.WidgetType.LoadingWidget
+                    };
+
+                    parentWidget.ShowWidget(loadingSpinnerDataPackets);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         void OnRandomizeDisplayedSplashImage()
         {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var appDatabaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+
+                callbackResults.SetResult(appDatabaseManager.GetRandomSplashImage());
+
+                if (callbackResults.Success())
+                {
+                    GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
+                    {
+                        callbackResults.SetResult(imageDisplayerCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var imageDisplayer = imageDisplayerCallbackResults.data;
+                            var image = appDatabaseManager.GetRandomSplashImage().GetData();
+                            imageDisplayer.SetImageData(image, true);
+                        }
+                        else
+                            Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
             LogInfo(" ____________________________++++++++++++++++ OnChange Splash Image Event Called.", this);
         }
 

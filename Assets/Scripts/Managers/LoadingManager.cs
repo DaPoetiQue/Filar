@@ -173,6 +173,9 @@ namespace Com.RedicalGames.Filar
                                             while (GetLoadingSequence().IsRunning())
                                                 await Task.Yield();
 
+                                            var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
+                                            referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
                                             await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
 
                                             int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
@@ -182,9 +185,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
                                                 referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
-
                                                 await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenData());
                                             }
                                         }

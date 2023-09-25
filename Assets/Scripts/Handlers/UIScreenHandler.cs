@@ -31,7 +31,7 @@ namespace Com.RedicalGames.Filar
                         {
                             await Task.Yield();
 
-                            widget.Init(initializationCallbackResults => 
+                            widget.Init(this, initializationCallbackResults => 
                             {
                                 if(initializationCallbackResults.Success())
                                     screenWidgetsList.Add(widget);

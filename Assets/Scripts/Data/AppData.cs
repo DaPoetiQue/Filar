@@ -27232,6 +27232,8 @@ namespace Com.RedicalGames.Filar
 
             protected WidgetStatePacket widgetStatePacket;
 
+            private UIScreenHandler parentWidget;
+
             #region Widgets 
 
             protected Dictionary<string, Widget> registeredWidgets = new Dictionary<string, Widget>();
@@ -27271,13 +27273,11 @@ namespace Com.RedicalGames.Filar
                     OnSubscribeToActionEvents(false);
             }
 
-            //void Start() => Init();
-
             void Update() => OnWidgetTransition();
 
             #endregion
 
-            public void Init(Action<Callback> callback = null)
+            public void Init(UIScreenHandler parentWidget, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -27543,6 +27543,8 @@ namespace Com.RedicalGames.Filar
                     {
                         var statePacket = initializationCallbackResults.data;
                         SetStatePacket(statePacket);
+
+                        this.parentWidget = parentWidget;
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -27551,6 +27553,21 @@ namespace Com.RedicalGames.Filar
                 #endregion
 
                 callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<UIScreenHandler> GetParentWidget()
+            {
+                CallbackData<UIScreenHandler> callbackResults = new CallbackData<UIScreenHandler>(Helpers.GetAppComponentValid(parentWidget, "Parent Widget", "Parent Widget Is Not Yet Initialized."));
+
+                if(callbackResults.Success())
+                {
+                    var parentWidgetData = Helpers.GetAppComponentValid(parentWidget, "Parent Widget").GetData();
+
+                    callbackResults.result = $"Parent Widget : {parentWidgetData.name} Found For Screen Widget : {name} Of Type : {widgetType}";
+                    callbackResults.data = parentWidgetData;
+                }
+
+                return callbackResults;
             }
 
             protected void OnRegisterWidget<T>(T widget, Action<Callback> callback = null) where T : Widget
@@ -27591,8 +27608,8 @@ namespace Com.RedicalGames.Filar
 
             #region Action Events
 
-            protected void OnEnabled() => OnEnabledEventAction.Invoke();
-            protected void OnDisabled() => OnDisabledEventAction.Invoke();
+            protected void OnEnabled() => OnEnabledEventAction?.Invoke();
+            protected void OnDisabled() => OnDisabledEventAction?.Invoke();
 
             #endregion
 
@@ -39644,6 +39661,8 @@ namespace Com.RedicalGames.Filar
         {
             string GetName();
             CallbackData<WidgetStatePacket> GetState();
+
+            CallbackData<UIScreenHandler> GetParentWidget();
         }
 
         public interface IContainer
