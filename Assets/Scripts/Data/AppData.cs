@@ -27248,7 +27248,13 @@ namespace Com.RedicalGames.Filar
 
             #region Timed Events
 
-            private List<TimedEventComponent> timedEventComponentList = new List<TimedEventComponent>(); 
+            private List<TimedEventComponent> timedEventComponentList = new List<TimedEventComponent>();
+
+            #endregion
+
+            #region Events
+
+            private List<EventAction> subscribedEventsList = new List<EventAction>();
 
             #endregion
 
@@ -27606,13 +27612,33 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentNullException("On Register Widget Failed - Widget Is Null / Missing");
             }
 
+            #region Events
+
+            protected void SubscribeToEvents(Action<Callback> callback = null, params EventAction[] eventParams)
+            {
+
+            }
+
+            protected void UnSubscribeFromEvents(EventAction eventACtion = null, Action<Callback> callback = null)
+            {
+
+            }
+
+            private CallbackDataList<EventAction> GetSubscribedEvents()
+            {
+                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>();
+
+                return callbackResults;
+            }
+
+            #endregion
+
             #region Action Events
 
             protected void OnEnabled() => OnEnabledEventAction?.Invoke();
             protected void OnDisabled() => OnDisabledEventAction?.Invoke();
 
             #endregion
-
 
             #region Transitionable UI Components
 
@@ -39858,6 +39884,48 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Events
+
+        public enum EventType
+        {
+            None,
+            OnLoadCompletedEvent
+        }
+
+        [Serializable]
+        public class EventAction
+        {
+            #region Components
+
+            public EventType eventType;
+            public Action eventMethod;
+
+            #endregion
+
+            #region Constructors
+
+            public EventAction()
+            {
+
+            }
+
+            public EventAction(EventType eventType, Action eventMethod)
+            {
+                this.eventType = eventType;
+                this.eventMethod = eventMethod;
+            }
+
+            #endregion
+
+            #region Main
+
+            public void SetEventType(EventType eventType) => this.eventType = eventType;
+            public void SetEventMethod(Action eventMethod) => this.eventMethod = eventMethod;
+
+            public EventType GetEventType() => eventType;
+            public Action GetEventMethod() => eventMethod;
+
+            #endregion
+        }
 
         public static class ActionEvents
         {

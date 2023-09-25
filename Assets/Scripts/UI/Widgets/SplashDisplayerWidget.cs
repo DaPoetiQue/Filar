@@ -83,21 +83,33 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(GetType());
-
-                                            if (callbackResults.Success())
+                                            InitializeDisplayer(displayerInitializedCallbackResults => 
                                             {
-                                                var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+                                                callbackResults.SetResult(displayerInitializedCallbackResults);
 
-                                                InitializeDisplayer();
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(GetType());
 
-                                                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                                                callbackResults.data = widgetStatePacket;
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                                                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                                                        callbackResults.data = widgetStatePacket;
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
                                         }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -113,16 +125,6 @@ namespace Com.RedicalGames.Filar
             }, "App Database Manager Instance Is Not Yet Initialized.");
 
             callback.Invoke(callbackResults);
-        }
-
-        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
-        {
-            throw new System.NotImplementedException();
         }
 
         void InitializeDisplayer(Action<AppData.Callback> callback = null)
@@ -196,6 +198,17 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback?.Invoke(callbackResults);
+        }
+
+
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
+        {
+            throw new System.NotImplementedException();
         }
 
         protected override void OnScreenWidget()
