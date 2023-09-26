@@ -67,11 +67,6 @@ namespace Com.RedicalGames.Filar
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnSubscribeToActionEvents(bool subscribe)
-        {
-            LogInfo($"===============> Subscribe : {subscribe}", this);
-        }
-
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
 
         protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)

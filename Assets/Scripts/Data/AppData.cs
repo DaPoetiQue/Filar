@@ -27270,13 +27270,25 @@ namespace Com.RedicalGames.Filar
             void OnEnable()
             {
                 if (subscribeToActionEvents)
-                    OnSubscribeToActionEvents(true);
+                {
+                    SubscribeToEvents(callback: subscriptionCallbackResults => 
+                    {
+                        if (subscriptionCallbackResults.UnSuccessful())
+                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                    });
+                }
             }
 
             void OnDisable()
             {
                 if (subscribeToActionEvents)
-                    OnSubscribeToActionEvents(false);
+                {
+                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                    {
+                        if (subscriptionCallbackResults.UnSuccessful())
+                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                    });
+                }
             }
 
             void Update() => OnWidgetTransition();
@@ -27614,19 +27626,122 @@ namespace Com.RedicalGames.Filar
 
             #region Events
 
-            protected void SubscribeToEvents(Action<Callback> callback = null, params EventAction[] eventParams)
+            protected void RegisterEventAction(Action<Callback> callback = null, params EventAction[] eventParams)
             {
+                Callback callbackResults = new Callback(); 
 
+                Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < eventParams.Length; i++)
+                        {
+                            var eventAction = eventParams[i];
+                            var initializationTaskResults = await eventAction.Initialized();
+
+                            callbackResults.SetResult(initializationTaskResults);
+
+                            if (callbackResults.Success())
+                            {
+                                await Task.Yield();
+
+                                if (!subscribedEventsList.Contains(eventAction))
+                                {
+                                    subscribedEventsList.Add(eventAction);
+
+                                    if (subscribedEventsList.Contains(eventAction))
+                                    {
+                                        callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+                        }
+                    }
+
+                }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected void UnSubscribeFromEvents(EventAction eventACtion = null, Action<Callback> callback = null)
+            private void SubscribeToEvents(EventAction eventAction = null, Action<Callback> callback = null)
             {
+                Callback callbackResults = new Callback(GetRegisteredEventActions());
 
+                if (callbackResults.Success())
+                {
+                    var subsciptionList = GetRegisteredEventActions().GetData();
+
+                    if (eventAction != null && subsciptionList.Contains(eventAction))
+                    {
+                        ActionEvents.OnEventActionSubscription(eventAction, true, subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+                        });
+                    }
+                    else
+                    {
+                        for (int i = 0; i < subsciptionList.Count; i++)
+                        {
+                            ActionEvents.OnEventActionSubscription(subsciptionList[i], true, subscriptionCallbackResults =>
+                            {
+                                callbackResults.SetResult(subscriptionCallbackResults);
+                            });
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            private CallbackDataList<EventAction> GetSubscribedEvents()
+            private void UnSubscribeFromEvents(EventAction eventAction = null, Action<Callback> callback = null)
             {
-                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>();
+                Callback callbackResults = new Callback(GetRegisteredEventActions());
+
+                if (callbackResults.Success())
+                {
+                    var subsciptionList = GetRegisteredEventActions().GetData();
+
+                    if (eventAction != null && subsciptionList.Contains(eventAction))
+                    {
+                        ActionEvents.OnEventActionSubscription(eventAction, false, subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+                        });
+                    }
+                    else
+                    {
+                        for (int i = 0; i < subsciptionList.Count; i++)
+                        {
+                            ActionEvents.OnEventActionSubscription(subsciptionList[i], false, subscriptionCallbackResults =>
+                            {
+                                callbackResults.SetResult(subscriptionCallbackResults);
+                            });
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private CallbackDataList<EventAction> GetRegisteredEventActions()
+            {
+                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>(Helpers.GetAppComponentsValid(subscribedEventsList, "Subscribed Events List", "Subscribed Events List Is Not Yet Initialized."));
+
+                if(callbackResults.Success())
+                    callbackResults.SetData(Helpers.GetAppComponentsValid(subscribedEventsList, "Subscribed Events List", "Subscribed Events List Is Not Yet Initialized.").GetData());
 
                 return callbackResults;
             }
@@ -28024,8 +28139,6 @@ namespace Com.RedicalGames.Filar
             public SceneDataPackets GetDataPackets() => dataPackets;
 
             void OnDropDownOptionValueChange(int value, DropdownDataPackets dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
-
-            protected abstract void OnSubscribeToActionEvents(bool subscribe);
 
             public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
@@ -39888,7 +40001,8 @@ namespace Com.RedicalGames.Filar
         public enum EventType
         {
             None,
-            OnLoadCompletedEvent
+            OnInitializationInProgressEvent,
+            OnInitializationCompletedEvent
         }
 
         [Serializable]
@@ -39896,6 +40010,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            public string name;
             public EventType eventType;
             public Action eventMethod;
 
@@ -39908,8 +40023,9 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public EventAction(EventType eventType, Action eventMethod)
+            public EventAction(string name, EventType eventType, Action eventMethod)
             {
+                this.name = name;
                 this.eventType = eventType;
                 this.eventMethod = eventMethod;
             }
@@ -39918,11 +40034,62 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
+            public async Task<Callback> Initialized()
+            {
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                await Task.Yield();
+
+                if (this != null &&  callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             public void SetEventType(EventType eventType) => this.eventType = eventType;
+
             public void SetEventMethod(Action eventMethod) => this.eventMethod = eventMethod;
 
+            public string GetName() => (!string.IsNullOrEmpty(name)) ? name : "Event Action Name Is Not Assigned.";
+
             public EventType GetEventType() => eventType;
-            public Action GetEventMethod() => eventMethod;
+
+            public CallbackData<Action> GetEventMethod()
+            {
+                CallbackData<Action> callbackResults = new CallbackData<Action>();
+               
+                if(eventMethod != null)
+                {
+                    if (GetEventType() != EventType.None)
+                    {
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.data = eventMethod;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
 
             #endregion
         }
@@ -39960,10 +40127,14 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnAppScreensInitializedEvent;
             public static event Void _OnDropDownContentDataInitializedEvent;
             public static event Void _OnscrollToTopEvent;
+
             public static event Void _OnWidgetSelectionEvent;
             public static event Void _OnWidgetSelectionAdded;
             public static event Void _OnWidgetDeselectionEvent;
             public static event Void _OnWidgetSelectionRemoved;
+
+            public static event Void _OnInitializationInProgressEvent;
+            public static event Void _OnInitializationCompletedEvent;
 
             #region Unity Events
 
@@ -40031,6 +40202,9 @@ namespace Com.RedicalGames.Filar
             public static void OnWidgetDeselectionEvent() => _OnWidgetDeselectionEvent?.Invoke();
             public static void OnWidgetSelectionRemoved() => _OnWidgetSelectionRemoved?.Invoke();
 
+            public static void OnInitializationInProgressEvent() => _OnInitializationInProgressEvent?.Invoke();
+            public static void OnInitializationCompletedEvent() => _OnInitializationCompletedEvent?.Invoke();
+
             #region Unity Event Callbacks
 
             public static void Enabled() => _Enabled?.Invoke();
@@ -40078,6 +40252,46 @@ namespace Com.RedicalGames.Filar
             public static Transform OnGetContentPreviewContainer()
             {
                 return _OnGetContentPreviewContainer?.Invoke();
+            }
+
+            #endregion
+
+            #region Actions Events
+
+            public static async void OnEventActionSubscription(EventAction eventAction, bool subscribe = true, Action<CallbackData<EventAction>> callback = null)
+            {
+                CallbackData<EventAction> callbackResults = new CallbackData<EventAction>(await eventAction.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    switch (eventAction.GetEventType())
+                    {
+                        case EventType.OnInitializationInProgressEvent:
+
+                            if (subscribe)
+                                _OnInitializationInProgressEvent += () => eventAction.eventMethod.Invoke();
+                            else
+                                _OnInitializationInProgressEvent -= () => eventAction.eventMethod.Invoke();
+
+                            break;
+
+                        case EventType.OnInitializationCompletedEvent:
+
+                            if (subscribe)
+                                _OnInitializationCompletedEvent += () => eventAction.eventMethod.Invoke();
+                            else
+                                _OnInitializationCompletedEvent -= () => eventAction.eventMethod.Invoke();
+
+                            break;
+                    }
+
+                    var results = (subscribe) ? "Subcribed" : "Un-Subscribed";
+
+                    callbackResults.result = $"Event Action : {eventAction.GetName()} - Has Been Successfully : {results}.";
+                    callbackResults.data = eventAction;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion

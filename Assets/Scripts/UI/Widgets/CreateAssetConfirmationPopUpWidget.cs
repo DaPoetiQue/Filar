@@ -251,11 +251,6 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnSubscribeToActionEvents(bool subscribe)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void OnScrollerValueChanged(Vector2 value)
         {
             throw new NotImplementedException();

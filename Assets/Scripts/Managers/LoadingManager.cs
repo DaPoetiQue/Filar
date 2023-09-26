@@ -174,6 +174,9 @@ namespace Com.RedicalGames.Filar
                                                 await Task.Yield();
 
                                             var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
+
+                                            AppData.ActionEvents.OnInitializationCompletedEvent();
+
                                             referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
 
                                             await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);

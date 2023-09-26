@@ -54,10 +54,6 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        protected override void OnSubscribeToActionEvents(bool subscribe)
-        {
-        }
-
         protected override void OnScreenWidget()
         {
             if (snapToSelection)

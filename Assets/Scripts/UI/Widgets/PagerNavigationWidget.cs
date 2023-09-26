@@ -77,11 +77,6 @@ namespace Com.RedicalGames.Filar
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnSubscribeToActionEvents(bool subscribe)
-        {
-            throw new System.NotImplementedException();
-        }
-
         protected override void OnScrollerValueChanged(Vector2 value)
         {
             throw new System.NotImplementedException();

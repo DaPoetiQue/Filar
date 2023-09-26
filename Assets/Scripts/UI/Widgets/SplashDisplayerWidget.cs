@@ -35,85 +35,96 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
+                            var initializationProgressCompletionEvent = new AppData.EventAction(name, AppData.EventType.OnInitializationCompletedEvent, OnInitializationCompletedEvent);
+
+                            RegisterEventAction(actionEventRegisteredCallbackResults => 
                             {
-                                callbackResults.SetResult(imageDisplayerCallbackResults);
+                                callbackResults.SetResult(actionEventRegisteredCallbackResults);
 
-                                if (callbackResults.Success())
+                                if(callbackResults.Success())
                                 {
-                                    var imageDisplayer = imageDisplayerCallbackResults.data;
-
-                                    var randomPointIndex = GetRandomIndex();
-
-                                    #region Transitionable UI
-
-                                    #region Translation Component
-
-                                    transitionableUITranslateComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Repeat);
-                                    transitionableUITranslateComponent.SetTransitionableUIName(name + "_Translate");
-                                    transitionableUITranslateComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTranslateTransitionalSpeed).value);
-
-                                    #endregion
-
-                                    #region Scaling Component
-
-                                    transitionableUIScaleComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
-                                    transitionableUIScaleComponent.SetTransitionableUIName(name + "_Scale");
-                                    transitionableUIScaleComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
-
-                                    #endregion
-
-                                    var registerTransitionableUICallbackResults = OnRegisterTransitionableUIComponents(transitionableUITranslateComponent, transitionableUIScaleComponent);
-
-                                    #endregion
-
-                                    #region Timed Events
-
-                                    changeSplashImageTimedEventComponent = new AppData.TimedEventComponent(name, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageChangeEventInterval).value, OnRandomizeDisplayedSplashImage);
-
-                                    var registerTimedEventsCallbackResults = OnRegisterTimedEventComponents(changeSplashImageTimedEventComponent);
-
-                                    #endregion
-
-                                    callbackResults.SetResult(registerTransitionableUICallbackResults);
-
-                                    if (callbackResults.Success())
+                                    GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
                                     {
-                                        callbackResults.SetResult(registerTimedEventsCallbackResults);
+                                        callbackResults.SetResult(imageDisplayerCallbackResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            InitializeDisplayer(displayerInitializedCallbackResults => 
+                                            var imageDisplayer = imageDisplayerCallbackResults.data;
+
+                                            var randomPointIndex = GetRandomIndex();
+
+                                            #region Transitionable UI
+
+                                            #region Translation Component
+
+                                            transitionableUITranslateComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Repeat);
+                                            transitionableUITranslateComponent.SetTransitionableUIName(name + "_Translate");
+                                            transitionableUITranslateComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTranslateTransitionalSpeed).value);
+
+                                            #endregion
+
+                                            #region Scaling Component
+
+                                            transitionableUIScaleComponent = new AppData.TransitionableUIComponent(imageDisplayer.GetWidgetRect(), AppData.UITransitionType.Scale, AppData.UITransitionStateType.Repeat);
+                                            transitionableUIScaleComponent.SetTransitionableUIName(name + "_Scale");
+                                            transitionableUIScaleComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetScaleTransitionalSpeed).value);
+
+                                            #endregion
+
+                                            var registerTransitionableUICallbackResults = OnRegisterTransitionableUIComponents(transitionableUITranslateComponent, transitionableUIScaleComponent);
+
+                                            #endregion
+
+                                            #region Timed Events
+
+                                            changeSplashImageTimedEventComponent = new AppData.TimedEventComponent(name, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageChangeEventInterval).value, OnRandomizeDisplayedSplashImage);
+
+                                            var registerTimedEventsCallbackResults = OnRegisterTimedEventComponents(changeSplashImageTimedEventComponent);
+
+                                            #endregion
+
+                                            callbackResults.SetResult(registerTransitionableUICallbackResults);
+
+                                            if (callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(displayerInitializedCallbackResults);
+                                                callbackResults.SetResult(registerTimedEventsCallbackResults);
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(GetType());
-
-                                                    if (callbackResults.Success())
+                                                    InitializeDisplayer(displayerInitializedCallbackResults =>
                                                     {
-                                                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+                                                        callbackResults.SetResult(displayerInitializedCallbackResults);
 
-                                                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                                                        callbackResults.data = widgetStatePacket;
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            callbackResults.SetResult(GetType());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+                                                                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+                                                                callbackResults.data = widgetStatePacket;
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            });
+
+                            }, initializationProgressCompletionEvent);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -253,6 +264,11 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
+        void OnInitializationCompletedEvent()
+        {
+            LogInfo(" _________________________++++++++++++ Initialization Completed Event Called.", this);
+        }
+
         void OnRandomizeDisplayedSplashImage()
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
@@ -289,11 +305,6 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnHideScreenWidget() => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-
-        protected override void OnSubscribeToActionEvents(bool subscribe)
-        {
-            throw new System.NotImplementedException();
-        }
 
         protected override void OnScrollerValueChanged(Vector2 value)
         {
