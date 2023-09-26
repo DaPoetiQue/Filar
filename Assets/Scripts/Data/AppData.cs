@@ -27267,30 +27267,6 @@ namespace Com.RedicalGames.Filar
 
             #region Unity Callbacks
 
-            void OnEnable()
-            {
-                if (subscribeToActionEvents)
-                {
-                    SubscribeToEvents(callback: subscriptionCallbackResults => 
-                    {
-                        if (subscriptionCallbackResults.UnSuccessful())
-                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                    });
-                }
-            }
-
-            void OnDisable()
-            {
-                if (subscribeToActionEvents)
-                {
-                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
-                    {
-                        if (subscriptionCallbackResults.UnSuccessful())
-                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                    });
-                }
-            }
-
             void Update() => OnWidgetTransition();
 
             #endregion
@@ -27686,7 +27662,7 @@ namespace Com.RedicalGames.Filar
 
                     if (eventAction != null && subsciptionList.Contains(eventAction))
                     {
-                        ActionEvents.OnEventActionSubscription(eventAction, true, subscriptionCallbackResults =>
+                        ActionEvents.OnEventActionSubscription(eventAction, callback: subscriptionCallbackResults =>
                         {
                             callbackResults.SetResult(subscriptionCallbackResults);
                         });
@@ -27695,7 +27671,7 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < subsciptionList.Count; i++)
                         {
-                            ActionEvents.OnEventActionSubscription(subsciptionList[i], true, subscriptionCallbackResults =>
+                            ActionEvents.OnEventActionSubscription(subsciptionList[i], callback: subscriptionCallbackResults =>
                             {
                                 callbackResults.SetResult(subscriptionCallbackResults);
                             });
@@ -27738,10 +27714,19 @@ namespace Com.RedicalGames.Filar
 
             private CallbackDataList<EventAction> GetRegisteredEventActions()
             {
-                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>(Helpers.GetAppComponentsValid(subscribedEventsList, "Subscribed Events List", "Subscribed Events List Is Not Yet Initialized."));
+                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>();
 
-                if(callbackResults.Success())
-                    callbackResults.SetData(Helpers.GetAppComponentsValid(subscribedEventsList, "Subscribed Events List", "Subscribed Events List Is Not Yet Initialized.").GetData());
+                Helpers.GetAppComponentsValid(subscribedEventsList, "Subscribed Events List", eventsListCallbackResults => 
+                {
+                    callbackResults.SetResult(eventsListCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{subscribedEventsList.Count} : Subscribed Event Action(s) Found.";
+                        callbackResults.data = subscribedEventsList;
+                    }
+                
+                }, "Subscribed Events List Is Not Yet initialized.");
 
                 return callbackResults;
             }
@@ -29926,7 +29911,18 @@ namespace Com.RedicalGames.Filar
                     this.dataPackets = dataPackets;
 
                     if (WidgetReady().Success())
+                    {
+                        if (subscribeToActionEvents)
+                        {
+                            SubscribeToEvents(callback: subscriptionCallbackResults =>
+                            {
+                                if (subscriptionCallbackResults.UnSuccessful())
+                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                            });
+                        }
+
                         OnScreenWidget();
+                    }
 
                     ShowWidget(transitionType, dataPackets);
                 }
@@ -30247,6 +30243,15 @@ namespace Com.RedicalGames.Filar
                     {
                         case TransitionType.Default:
 
+                            if (subscribeToActionEvents)
+                            {
+                                UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                                {
+                                    if (subscriptionCallbackResults.UnSuccessful())
+                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                                });
+                            }
+
                             OnHideScreenWidget();
                             OnDisabled();
 
@@ -30297,6 +30302,15 @@ namespace Com.RedicalGames.Filar
                     switch (transitionType)
                     {
                         case TransitionType.Default:
+
+                            if (subscribeToActionEvents)
+                            {
+                                UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                                {
+                                    if (subscriptionCallbackResults.UnSuccessful())
+                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                                });
+                            }
 
                             OnHideScreenWidget();
                             OnDisabled();
@@ -40091,6 +40105,8 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public void TriggeredEventMethod() => GetEventMethod().GetData().Invoke();
+
             #endregion
         }
 
@@ -40269,18 +40285,18 @@ namespace Com.RedicalGames.Filar
                         case EventType.OnInitializationInProgressEvent:
 
                             if (subscribe)
-                                _OnInitializationInProgressEvent += () => eventAction.eventMethod.Invoke();
+                                _OnInitializationInProgressEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnInitializationInProgressEvent -= () => eventAction.eventMethod.Invoke();
+                                _OnInitializationInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnInitializationCompletedEvent:
 
                             if (subscribe)
-                                _OnInitializationCompletedEvent += () => eventAction.eventMethod.Invoke();
+                                _OnInitializationCompletedEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnInitializationCompletedEvent -= () => eventAction.eventMethod.Invoke();
+                                _OnInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
 
                             break;
                     }
