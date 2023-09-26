@@ -24425,7 +24425,7 @@ namespace Com.RedicalGames.Filar
                 return initialVisibilityState;
             }
 
-            protected void OnWidgetsEvents(WidgetType widgetType, InputActionButtonType actionType, SceneDataPackets dataPackets)
+            protected void OnWidgetsEvent(WidgetType widgetType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
                 if (screenWidgetsList.Count == 0)
                     return;
@@ -27884,6 +27884,7 @@ namespace Com.RedicalGames.Filar
                 if (callbackResults.Success())
                 {
                     var onWidgetTransitionEvent = new EventAction("On Widget Transition Event", EventType.OnUpdate, OnWidgetTransition);
+
                     callbackResults.SetData(onWidgetTransitionEvent);
                 }
 
@@ -40364,17 +40365,96 @@ namespace Com.RedicalGames.Filar
             OnAppStart,
             OnUpdate,
             OnLateUpdate,
-            OnFixedUpdate
+            OnFixedUpdate,
+            OnScreenChangedEvent,
+            OnWidgetActionEvent,
+            OnScreenTogglableStateEvent,
+            OnSceneModelPoseResetEvent
+
         }
 
         [Serializable]
-        public class EventAction
+        public abstract class EventActionHandler : DataDebugger
         {
             #region Components
 
-            public string name;
             public EventType eventType;
-            public Action eventMethod;
+
+            private bool isInitialized;
+
+            #endregion
+
+            #region Constructors
+
+            #endregion
+
+            #region Main
+
+
+            public async Task<Callback> Initialized()
+            {
+                Callback callbackResults = new Callback();
+
+                await Task.Yield();
+
+                if (this != null && GetInitialized())
+                {
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+            public void SetName(string name) => this.name = name;
+            public void SetEventType(EventType eventType) => this.eventType = eventType;
+
+            protected void SetInitialized(bool isInitialized = true) => this.isInitialized = isInitialized;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName() => (!string.IsNullOrEmpty(name)) ? name : "Event Action Name Is Not Assigned.";
+
+            public EventType GetEventType() => eventType;
+
+            private bool GetInitialized() => isInitialized;
+
+            #endregion
+
+            #region Event Actions
+
+            public void TriggeredEventMethod() => OnTriggeredEventMethod();
+            public void TriggeredEventMethod<T>(T value) => OnTriggeredEventMethod(value);
+            public void TriggeredEventMethod<T, U>(T valueA, U valueB) => OnTriggeredEventMethod(valueA, valueB);
+            public void TriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC) => OnTriggeredEventMethod(valueA, valueB, valueC);
+            public void TriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD) => OnTriggeredEventMethod(valueA, valueB, valueC, valueD);
+
+            protected abstract void OnTriggeredEventMethod();
+            protected abstract void OnTriggeredEventMethod<T>(T value);
+            protected abstract void OnTriggeredEventMethod<T,U>(T valueA, U valueB);
+            protected abstract void OnTriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC);
+            protected abstract void OnTriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD);
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class EventAction : EventActionHandler
+        {
+            #region Components
+
+            Action eventMethod;
 
             #endregion
 
@@ -40390,17 +40470,20 @@ namespace Com.RedicalGames.Filar
                 this.name = name;
                 this.eventType = eventType;
                 this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
             }
 
             #endregion
 
             #region Main
 
-            public async Task<Callback> Initialized()
+            public Callback IsInitialized()
             {
                 Callback callbackResults = new Callback(GetEventMethod());
-
-                await Task.Yield();
 
                 if (this != null &&  callbackResults.Success())
                 {
@@ -40416,13 +40499,23 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void SetEventType(EventType eventType) => this.eventType = eventType;
+            #region Data Setters
 
-            public void SetEventMethod(Action eventMethod) => this.eventMethod = eventMethod;
+          
 
-            public string GetName() => (!string.IsNullOrEmpty(name)) ? name : "Event Action Name Is Not Assigned.";
+            public void SetEventMethod(Action eventMethod)
+            {
+                this.eventMethod = eventMethod;
 
-            public EventType GetEventType() => eventType;
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Data Getters
 
             public CallbackData<Action> GetEventMethod()
             {
@@ -40453,7 +40546,542 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void TriggeredEventMethod() => GetEventMethod().GetData().Invoke();
+            #endregion
+
+            protected override void OnTriggeredEventMethod() => GetEventMethod().GetData().Invoke();
+
+            protected override void OnTriggeredEventMethod<T>(T value)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T, U>(T valueA, U valueB)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class EventAction<T> : EventActionHandler
+        {
+            #region Components
+
+            Action<T> eventMethod;
+
+            #endregion
+
+            #region Constructors
+
+            public EventAction()
+            {
+
+            }
+
+            public EventAction(string name, EventType eventType, Action<T> eventMethod)
+            {
+                this.name = name;
+                this.eventType = eventType;
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Main
+
+            public Callback IsInitialized()
+            {
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (this != null && callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+            public void SetEventMethod(Action<T> eventMethod)
+            {
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<Action<T>> GetEventMethod()
+            {
+                CallbackData<Action<T>> callbackResults = new CallbackData<Action<T>>();
+
+                if (eventMethod != null)
+                {
+                    if (GetEventType() != EventType.None)
+                    {
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.data = eventMethod;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            public void TriggeredEventMethod(T value) => GetEventMethod().GetData().Invoke(value);
+
+            protected override void OnTriggeredEventMethod()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U>(T1 valueA, U valueB)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U, V>(T1 valueA, U valueB, V valueC)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U, V, W>(T1 valueA, U valueB, V valueC, W valueD)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+
+        [Serializable]
+        public class EventAction<T, U> : EventActionHandler
+        {
+            #region Components
+
+            Action<T, U> eventMethod;
+
+            #endregion
+
+            #region Constructors
+
+            public EventAction()
+            {
+
+            }
+
+            public EventAction(string name, EventType eventType, Action<T, U> eventMethod)
+            {
+                this.name = name;
+                this.eventType = eventType;
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Main
+
+            public Callback IsInitialized()
+            {
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (this != null && callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+            public void SetEventMethod(Action<T, U> eventMethod)
+            {
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<Action<T,U>> GetEventMethod()
+            {
+                CallbackData<Action<T,U>> callbackResults = new CallbackData<Action<T,U>>();
+
+                if (eventMethod != null)
+                {
+                    if (GetEventType() != EventType.None)
+                    {
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.data = eventMethod;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            public void TriggeredEventMethod(T valueA, U valueB) => GetEventMethod().GetData().Invoke(valueA, valueB);
+
+            protected override void OnTriggeredEventMethod()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1>(T1 valueA, U1 valueB)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1, V>(T1 valueA, U1 valueB, V valueC)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1, V, W>(T1 valueA, U1 valueB, V valueC, W valueD)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class EventAction<T, U, V> : EventActionHandler
+        {
+            #region Components
+
+            Action<T, U, V> eventMethod;
+
+            #endregion
+
+            #region Constructors
+
+            public EventAction()
+            {
+
+            }
+
+            public EventAction(string name, EventType eventType, Action<T, U, V> eventMethod)
+            {
+                this.name = name;
+                this.eventType = eventType;
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Main
+
+            public Callback IsInitialized()
+            {
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (this != null && callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+
+
+            public void SetEventMethod(Action<T, U, V> eventMethod)
+            {
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<Action<T, U, V>> GetEventMethod()
+            {
+                CallbackData<Action<T, U, V>> callbackResults = new CallbackData<Action<T, U, V>>();
+
+                if (eventMethod != null)
+                {
+                    if (GetEventType() != EventType.None)
+                    {
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.data = eventMethod;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            public void TriggeredEventMethod(T valueA, U valueB, V valueC) => GetEventMethod().GetData().Invoke(valueA, valueB, valueC);
+
+            protected override void OnTriggeredEventMethod()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1>(T1 valueA, U1 valueB)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1, V1>(T1 valueA, U1 valueB, V1 valueC)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1, V1, W>(T1 valueA, U1 valueB, V1 valueC, W valueD)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class EventAction<T, U, V, W> : EventActionHandler
+        {
+            #region Components
+
+            Action<T, U, V, W> eventMethod;
+
+            #endregion
+
+            #region Constructors
+
+            public EventAction()
+            {
+
+            }
+
+            public EventAction(string name, EventType eventType, Action<T, U, V, W> eventMethod)
+            {
+                this.name = name;
+                this.eventType = eventType;
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Main
+
+            public Callback IsInitialized()
+            {
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (this != null && callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+
+
+            public void SetEventMethod(Action<T, U, V, W> eventMethod)
+            {
+                this.eventMethod = eventMethod;
+
+                if (IsInitialized().Success())
+                    SetInitialized();
+                else
+                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<Action<T, U, V, W>> GetEventMethod()
+            {
+                CallbackData<Action<T, U, V, W>> callbackResults = new CallbackData<Action<T, U, V, W>>();
+
+                if (eventMethod != null)
+                {
+                    if (GetEventType() != EventType.None)
+                    {
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.data = eventMethod;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            public void TriggeredEventMethod(T valueA, U valueB, V valueC, W valueD) => GetEventMethod().GetData().Invoke(valueA, valueB, valueC, valueD);
+
+            protected override void OnTriggeredEventMethod()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1>(T1 valueA, U1 valueB)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1, V1>(T1 valueA, U1 valueB, V1 valueC)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnTriggeredEventMethod<T1, U1, V1, W1>(T1 valueA, U1 valueB, V1 valueC, W1 valueD)
+            {
+                throw new NotImplementedException();
+            }
 
             #endregion
         }
@@ -40520,7 +41148,7 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<UIScreenType> _OnScreenChangedEvent;
             public static event ParamVoid<UIScreenType> _OnScreenExitEvent;
             public static event ParamVoid<UIScreenViewComponent> _OnScreenRefreshed;
-            public static event ParamVoid<WidgetType, InputActionButtonType, SceneDataPackets> _OnPopUpActionEvent;
+            public static event ParamVoid<WidgetType, InputActionButtonType, SceneDataPackets> _OnWidgetActionEvent;
             public static event ParamVoid<AssetModeType> _OnResetSceneAssetPreviewPoseEvent;
             public static event ParamVoid<ARSceneContentState> _OnARSceneAssetStateEvent;
             public static event ParamVoid<SceneEventCameraType> _OnSetCurrentActiveSceneCameraEvent;
@@ -40599,7 +41227,7 @@ namespace Com.RedicalGames.Filar
             public static void OnScreenRefreshed(UIScreenViewComponent screenData) => _OnScreenRefreshed?.Invoke(screenData);
             public static void OnActionButtonFieldUploadedEvent(InputActionButtonType actionType = InputActionButtonType.None, bool interactable = false, bool isSelected = false) => _OnActionButtonFieldUploadedEvent?.Invoke(actionType, interactable, isSelected);
             public static void OnClearPreviewedSceneAssetObjectEvent() => _OnClearPreviewedSceneAssetObjectEvent?.Invoke();
-            public static void OnPopUpActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets) => _OnPopUpActionEvent?.Invoke(popUpType, actionType, dataPackets);
+            public static void OnPopUpActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets) => _OnWidgetActionEvent?.Invoke(popUpType, actionType, dataPackets);
             public static void OnTransitionSceneEventCamera(SceneDataPackets dataPackets) => _OnTransitionSceneEventCamera?.Invoke(dataPackets);
             public static void OnActionCheckboxStateEvent(bool interactable, bool visible) => _OnActionCheckboxStateEvent?.Invoke(interactable, visible);
             public static void OnSwatchColorPickedEvent(ColorInfo colorID, bool fromButtonPress, bool onOpenColorSettings) => _OnSwatchColorPickedEvent?.Invoke(colorID, fromButtonPress, onOpenColorSettings);
@@ -40622,9 +41250,9 @@ namespace Com.RedicalGames.Filar
 
             #region Actions Events
 
-            public static async void OnEventActionSubscription(EventAction eventAction, bool subscribe = true, Action<CallbackData<EventAction>> callback = null)
+            public static async void OnEventActionSubscription(EventActionHandler eventAction, bool subscribe = true, Action<CallbackData<EventActionHandler>> callback = null)
             {
-                CallbackData<EventAction> callbackResults = new CallbackData<EventAction>(await eventAction.Initialized());
+                CallbackData<EventActionHandler> callbackResults = new CallbackData<EventActionHandler>(await eventAction.Initialized());
 
                 if (callbackResults.Success())
                 {
@@ -40654,6 +41282,42 @@ namespace Com.RedicalGames.Filar
                                 _Update += eventAction.TriggeredEventMethod;
                             else
                                 _Update -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnScreenChangedEvent:
+
+                            if (subscribe)
+                                _OnScreenChangedEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnScreenChangedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnWidgetActionEvent:
+
+                            if (subscribe)
+                                _OnWidgetActionEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnWidgetActionEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnScreenTogglableStateEvent:
+
+                            if (subscribe)
+                                _OnScreenTogglableStateEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnScreenTogglableStateEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnSceneModelPoseResetEvent:
+
+                            if (subscribe)
+                                _OnSceneModelPoseResetEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnSceneModelPoseResetEvent -= eventAction.TriggeredEventMethod;
 
                             break;
                     }

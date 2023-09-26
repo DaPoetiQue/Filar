@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region UI Screens
+        #region Components
 
         [SerializeField]
         List<AppData.UIScreenViewComponent> screens = new List<AppData.UIScreenViewComponent>();
@@ -49,7 +48,11 @@ namespace Com.RedicalGames.Filar
 
         Vector2 targetScreenPoint = Vector2.zero;
 
-        Coroutine pageRefreshRoutine;
+        #region Event Actions
+
+        private List<AppData.EventAction> eventActionList = new List<AppData.EventAction>();
+
+        #endregion
 
         #endregion
 
@@ -192,6 +195,140 @@ namespace Com.RedicalGames.Filar
 
             callback?.Invoke(callbackResults);
         }
+
+
+        #region Events
+
+        protected void RegisterEventAction(Action<AppData.Callback> callback = null, params AppData.EventAction[] eventParams)
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            AppData.Helpers.GetAppComponentsValid(AppData.Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
+            {
+                callbackResults.SetResult(componentsValidCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    for (int i = 0; i < eventParams.Length; i++)
+                    {
+                        var eventAction = eventParams[i];
+                        var initializationTaskResults = await eventAction.Initialized();
+
+                        callbackResults.SetResult(initializationTaskResults);
+
+                        if (callbackResults.Success())
+                        {
+                            await Task.Yield();
+
+                            if (!eventActionList.Contains(eventAction))
+                            {
+                                eventActionList.Add(eventAction);
+
+                                if (eventActionList.Contains(eventAction))
+                                {
+                                    callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
+                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                            }
+                        }
+                    }
+                }
+
+            }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private void SubscribeToEvents(AppData.EventAction eventAction = null, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback(GetRegisteredEventActions());
+
+            if (callbackResults.Success())
+            {
+                var subsciptionList = GetRegisteredEventActions().GetData();
+
+                if (eventAction != null && subsciptionList.Contains(eventAction))
+                {
+                    AppData.ActionEvents.OnEventActionSubscription(eventAction, callback: subscriptionCallbackResults =>
+                    {
+                        callbackResults.SetResult(subscriptionCallbackResults);
+                    });
+                }
+                else
+                {
+                    for (int i = 0; i < subsciptionList.Count; i++)
+                    {
+                        AppData.ActionEvents.OnEventActionSubscription(subsciptionList[i], callback: subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+                        });
+                    }
+                }
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private void UnSubscribeFromEvents(AppData.EventAction eventAction = null, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback(GetRegisteredEventActions());
+
+            if (callbackResults.Success())
+            {
+                var subsciptionList = GetRegisteredEventActions().GetData();
+
+                if (eventAction != null && subsciptionList.Contains(eventAction))
+                {
+                    AppData.ActionEvents.OnEventActionSubscription(eventAction, false, subscriptionCallbackResults =>
+                    {
+                        callbackResults.SetResult(subscriptionCallbackResults);
+                    });
+                }
+                else
+                {
+                    for (int i = 0; i < subsciptionList.Count; i++)
+                    {
+                        AppData.ActionEvents.OnEventActionSubscription(subsciptionList[i], false, subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+                        });
+                    }
+                }
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private AppData.CallbackDataList<AppData.EventAction> GetRegisteredEventActions()
+        {
+            AppData.CallbackDataList<AppData.EventAction> callbackResults = new AppData.CallbackDataList<AppData.EventAction>();
+
+            AppData.Helpers.GetAppComponentsValid(eventActionList, "Subscribed Events List", eventsListCallbackResults =>
+            {
+                callbackResults.SetResult(eventsListCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{eventActionList.Count} : Subscribed Event Action(s) Found.";
+                    callbackResults.data = eventActionList;
+                }
+
+            }, "Subscribed Events List Is Not Yet initialized.");
+
+            return callbackResults;
+        }
+
+        #endregion
 
         public void AddScreen(AppData.UIScreenViewComponent screen, Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
         {
