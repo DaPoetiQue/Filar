@@ -19701,6 +19701,172 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        public class CallbackDataArray<T> : Callback
+        {
+            #region Components
+
+            public T[] data;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public CallbackDataArray()
+            {
+
+            }
+
+            public CallbackDataArray(string name, T[] data, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.data = data;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public CallbackDataArray(string name, T[] data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackDataArray(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackData<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackDataList<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackDataArray<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                data = callbackResults.GetData();
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataArray(CallbackDataQueue<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public T[] GetData()
+            {
+                if (data != null && data.Length > 0)
+                    return data;
+                else
+                {
+                    SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
+                    Log(GetResultCode, GetResult, this);
+
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {GetResultCode} And Result Message : {GetResult}");
+                }
+            }
+
+            public T[] Data => GetData();
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetData(T[] data) => this.data = data;
+
+            #endregion
+
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetDataResults(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetArray(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                SetData(Helpers.GetArray(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackTuple<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+            #region Parameter Assignable Results
+
+            public void SetResults(string results = null, LogInfoChannel resultsCode = LogInfoChannel.Debug, T[] data = default, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            #endregion
+
+            #endregion
+
+            #endregion
+        }
+
         public class CallbackDataQueue<T> : Callback
         {
             #region Components
@@ -19865,63 +20031,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public class CallbackTuple<T, U> : Callback
-        {
-            #region Components
-
-            public List<T> tuple_A;
-            public List<U> tuple_B;
-
-            #endregion
-        }
-
-        public class CallbackTuple<T, U, V> : Callback
-        {
-            #region Components
-
-            public List<T> tuple_A;
-            public List<U> tuple_B;
-            public List<V> tuple_C;
-
-            #endregion
-        }
-
-        public class CallbackSizeDataTuple<T, U, V> : Callback
-        {
-            #region Components
-
-            public List<T> tuple_A;
-            public List<U> tuple_B;
-
-            public V tuple_C;
-
-            #endregion
-        }
-
-        public class CallbackSizeDataTuple<T> : Callback
-        {
-            #region Components
-
-            public List<T> tuple_A;
-            public List<T> tuple_B;
-
-            public int size;
-
-            #endregion
-        }
-
-        public class CallbackSizeDataTuple<T, U> : Callback
-        {
-            #region Components
-
-            public List<T> tuple_A;
-            public List<U> tuple_B;
-            public int size;
-
-            #endregion
-        }
-
-        public class CallbackDataArray<T> : Callback
+        public class CallbackParams<T> : Callback
         {
             #region Components
 
@@ -19933,12 +20043,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public CallbackDataArray()
+            public CallbackParams()
             {
 
             }
 
-            public CallbackDataArray(string name, T[] data, string results, LogInfoChannel resultsCode)
+            public CallbackParams(string name, string results, LogInfoChannel resultsCode, params T[] data)
             {
                 this.name = name;
                 this.data = data;
@@ -19946,7 +20056,7 @@ namespace Com.RedicalGames.Filar
                 this.resultCode = resultsCode;
             }
 
-            public CallbackDataArray(string name, T[] data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            public CallbackParams(string name, string results, LogInfoChannel resultsCode, string classInfo = null, params T[] data)
             {
                 this.name = name;
                 this.result = results;
@@ -19955,7 +20065,7 @@ namespace Com.RedicalGames.Filar
                 this.resultClass = classInfo;
             }
 
-            public CallbackDataArray(Callback callbackResults)
+            public CallbackParams(Callback callbackResults)
             {
                 name = callbackResults.GetName;
                 result = callbackResults.GetResult;
@@ -19963,7 +20073,7 @@ namespace Com.RedicalGames.Filar
                 resultClass = callbackResults.GetClassInfo;
             }
 
-            public CallbackDataArray(CallbackData<T> callbackResults)
+            public CallbackParams(CallbackData<T> callbackResults)
             {
                 name = callbackResults.GetName;
                 result = callbackResults.GetResult;
@@ -19971,7 +20081,7 @@ namespace Com.RedicalGames.Filar
                 resultClass = callbackResults.GetClassInfo;
             }
 
-            public CallbackDataArray(CallbackDataList<T> callbackResults)
+            public CallbackParams(CallbackDataList<T> callbackResults)
             {
                 name = callbackResults.GetName;
                 result = callbackResults.GetResult;
@@ -19979,7 +20089,7 @@ namespace Com.RedicalGames.Filar
                 resultClass = callbackResults.GetClassInfo;
             }
 
-            public CallbackDataArray(CallbackDataArray<T> callbackResults)
+            public CallbackParams(CallbackDataArray<T> callbackResults)
             {
                 name = callbackResults.GetName;
                 result = callbackResults.GetResult;
@@ -19988,7 +20098,7 @@ namespace Com.RedicalGames.Filar
                 resultClass = callbackResults.GetClassInfo;
             }
 
-            public CallbackDataArray(CallbackDataQueue<T> callbackResults)
+            public CallbackParams(CallbackDataQueue<T> callbackResults)
             {
                 name = callbackResults.GetName;
                 result = callbackResults.GetResult;
@@ -20019,7 +20129,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetData(T[] data) => this.data = data;
+            public void SetData(params T[] data) => this.data = data;
 
             #endregion
 
@@ -20083,6 +20193,62 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #endregion
+
+            #endregion
+        }
+
+        public class CallbackTuple<T, U> : Callback
+        {
+            #region Components
+
+            public List<T> tuple_A;
+            public List<U> tuple_B;
+
+            #endregion
+        }
+
+        public class CallbackTuple<T, U, V> : Callback
+        {
+            #region Components
+
+            public List<T> tuple_A;
+            public List<U> tuple_B;
+            public List<V> tuple_C;
+
+            #endregion
+        }
+
+        public class CallbackSizeDataTuple<T, U, V> : Callback
+        {
+            #region Components
+
+            public List<T> tuple_A;
+            public List<U> tuple_B;
+
+            public V tuple_C;
+
+            #endregion
+        }
+
+        public class CallbackSizeDataTuple<T> : Callback
+        {
+            #region Components
+
+            public List<T> tuple_A;
+            public List<T> tuple_B;
+
+            public int size;
+
+            #endregion
+        }
+
+        public class CallbackSizeDataTuple<T, U> : Callback
+        {
+            #region Components
+
+            public List<T> tuple_A;
+            public List<U> tuple_B;
+            public int size;
 
             #endregion
         }
@@ -23523,6 +23689,7 @@ namespace Com.RedicalGames.Filar
                                 if (callbackResults.Success())
                                 {
                                     OnScreenViewVisibility(true);
+
                                    return await faderComponent.FadeOut();
                                 }
                                 else
@@ -23734,6 +23901,12 @@ namespace Com.RedicalGames.Filar
             LoadingItemData currentLoadingItem = new LoadingItemData();
 
             bool canResetAssetPose = false;
+
+            #region Event Actions
+
+            private List<EventAction> eventActionList = new List<EventAction>();
+
+            #endregion
 
             public void Init(Action<CallbackData<ScreenUIData>> callBack = null)
             {
@@ -24112,6 +24285,140 @@ namespace Com.RedicalGames.Filar
 
                 callBack?.Invoke(callbackResults);
             }
+
+
+            #region Events
+
+            protected void RegisterEventAction(Action<Callback> callback = null, params EventAction[] eventParams)
+            {
+                Callback callbackResults = new Callback();
+
+                Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
+                {
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < eventParams.Length; i++)
+                        {
+                            var eventAction = eventParams[i];
+                            var initializationTaskResults = await eventAction.Initialized();
+
+                            callbackResults.SetResult(initializationTaskResults);
+
+                            if (callbackResults.Success())
+                            {
+                                await Task.Yield();
+
+                                if (!eventActionList.Contains(eventAction))
+                                {
+                                    eventActionList.Add(eventAction);
+
+                                    if (eventActionList.Contains(eventAction))
+                                    {
+                                        callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+                        }
+                    }
+
+                }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void SubscribeToEvents(EventAction eventAction = null, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback(GetRegisteredEventActions());
+
+                if (callbackResults.Success())
+                {
+                    var subsciptionList = GetRegisteredEventActions().GetData();
+
+                    if (eventAction != null && subsciptionList.Contains(eventAction))
+                    {
+                        ActionEvents.OnEventActionSubscription(eventAction, callback: subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+                        });
+                    }
+                    else
+                    {
+                        for (int i = 0; i < subsciptionList.Count; i++)
+                        {
+                            ActionEvents.OnEventActionSubscription(subsciptionList[i], callback: subscriptionCallbackResults =>
+                            {
+                                callbackResults.SetResult(subscriptionCallbackResults);
+                            });
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void UnSubscribeFromEvents(EventAction eventAction = null, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback(GetRegisteredEventActions());
+
+                if (callbackResults.Success())
+                {
+                    var subsciptionList = GetRegisteredEventActions().GetData();
+
+                    if (eventAction != null && subsciptionList.Contains(eventAction))
+                    {
+                        ActionEvents.OnEventActionSubscription(eventAction, false, subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+                        });
+                    }
+                    else
+                    {
+                        for (int i = 0; i < subsciptionList.Count; i++)
+                        {
+                            ActionEvents.OnEventActionSubscription(subsciptionList[i], false, subscriptionCallbackResults =>
+                            {
+                                callbackResults.SetResult(subscriptionCallbackResults);
+                            });
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private CallbackDataList<EventAction> GetRegisteredEventActions()
+            {
+                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>();
+
+                Helpers.GetAppComponentsValid(eventActionList, "Subscribed Events List", eventsListCallbackResults =>
+                {
+                    callbackResults.SetResult(eventsListCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{eventActionList.Count} : Subscribed Event Action(s) Found.";
+                        callbackResults.data = eventActionList;
+                    }
+
+                }, "Subscribed Events List Is Not Yet initialized.");
+
+                return callbackResults;
+            }
+
+            #endregion
 
             public UIScreenWidgetVisibilityState GetUIScreenInitialVisibility()
             {
@@ -25624,13 +25931,45 @@ namespace Com.RedicalGames.Filar
 
             #region Show View Async
 
-            public async Task<CallbackData<UIScreenViewComponent>> ShowViewAsync() => await GetScreenView().ShowScreenViewAsync();
+            public async Task<CallbackData<UIScreenViewComponent>> ShowViewAsync()
+            {
+                var showViewTaskResultsCallback = await GetScreenView().ShowScreenViewAsync();
+
+                if (showViewTaskResultsCallback.Success())
+                {
+                    SubscribeToEvents(callback: subscriptionCallbackResults => 
+                    {
+                        if(subscriptionCallbackResults.UnSuccessful())
+                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(showViewTaskResultsCallback.GetResultCode, showViewTaskResultsCallback.GetResult, this);
+
+                return showViewTaskResultsCallback;
+            }
 
             #endregion
 
             #region Hide View Async
 
-            public async Task<CallbackData<UIScreenViewComponent>> HideViewSync() => await GetScreenView().HideScreenViewAsync();
+            public async Task<CallbackData<UIScreenViewComponent>> HideViewSync()
+            {
+                var hideViewTaskResultsCallback = await GetScreenView().HideScreenViewAsync();
+
+                if (hideViewTaskResultsCallback.Success())
+                {
+                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                    {
+                        if (subscriptionCallbackResults.UnSuccessful())
+                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(hideViewTaskResultsCallback.GetResultCode, hideViewTaskResultsCallback.GetResult, this);
+
+                return hideViewTaskResultsCallback;
+            }
 
             #endregion
 
@@ -27252,9 +27591,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Events
+            #region Event Actions
 
-            private List<EventAction> subscribedEventsList = new List<EventAction>();
+            private List<EventAction> eventActionList = new List<EventAction>();
 
             #endregion
 
@@ -27265,15 +27604,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Unity Callbacks
-
-            void Update() => OnWidgetTransition();
-
-            #endregion
-
-            public void Init(UIScreenHandler parentWidget, Action<Callback> callback = null)
+            public void Init(UIScreenHandler parentWidget, Action<CallbackParams<EventAction>> callback = null)
             {
-                Callback callbackResults = new Callback();
+                CallbackParams<EventAction> callbackResults = new CallbackParams<EventAction>();
 
                 #region Base Initialization
 
@@ -27546,6 +27879,16 @@ namespace Com.RedicalGames.Filar
 
                 #endregion
 
+                #region Event Actions
+
+                if (callbackResults.Success())
+                {
+                    var onWidgetTransitionEvent = new EventAction("On Widget Transition Event", EventType.OnUpdate, OnWidgetTransition);
+                    callbackResults.SetData(onWidgetTransitionEvent);
+                }
+
+                #endregion
+
                 callback?.Invoke(callbackResults);
             }
 
@@ -27623,11 +27966,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 await Task.Yield();
 
-                                if (!subscribedEventsList.Contains(eventAction))
+                                if (!eventActionList.Contains(eventAction))
                                 {
-                                    subscribedEventsList.Add(eventAction);
+                                    eventActionList.Add(eventAction);
 
-                                    if (subscribedEventsList.Contains(eventAction))
+                                    if (eventActionList.Contains(eventAction))
                                     {
                                         callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
                                         callbackResults.resultCode = Helpers.SuccessCode;
@@ -27716,14 +28059,14 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>();
 
-                Helpers.GetAppComponentsValid(subscribedEventsList, "Subscribed Events List", eventsListCallbackResults => 
+                Helpers.GetAppComponentsValid(eventActionList, "Subscribed Events List", eventsListCallbackResults => 
                 {
                     callbackResults.SetResult(eventsListCallbackResults);
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.result = $"{subscribedEventsList.Count} : Subscribed Event Action(s) Found.";
-                        callbackResults.data = subscribedEventsList;
+                        callbackResults.result = $"{eventActionList.Count} : Subscribed Event Action(s) Found.";
+                        callbackResults.data = eventActionList;
                     }
                 
                 }, "Subscribed Events List Is Not Yet initialized.");
@@ -40016,7 +40359,12 @@ namespace Com.RedicalGames.Filar
         {
             None,
             OnInitializationInProgressEvent,
-            OnInitializationCompletedEvent
+            OnInitializationCompletedEvent,
+            OnAppAwake,
+            OnAppStart,
+            OnUpdate,
+            OnLateUpdate,
+            OnFixedUpdate
         }
 
         [Serializable]
@@ -40297,6 +40645,15 @@ namespace Com.RedicalGames.Filar
                                 _OnInitializationCompletedEvent += eventAction.TriggeredEventMethod;
                             else
                                 _OnInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnUpdate:
+
+                            if (subscribe)
+                                _Update += eventAction.TriggeredEventMethod;
+                            else
+                                _Update -= eventAction.TriggeredEventMethod;
 
                             break;
                     }

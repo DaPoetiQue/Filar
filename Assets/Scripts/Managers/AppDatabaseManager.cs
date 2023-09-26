@@ -401,8 +401,6 @@ namespace Com.RedicalGames.Filar
 
                         var randomImage = splashImages[AppData.Helpers.GetRandomValue(splashImages.Count)];
 
-                        LogInfo($" __________________________+++++++++++++ Cache Data Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
-
                         callbackResults.result = $"{splashImages.Count} Splash Images Have Been Found Successfully";
                         callbackResults.data = randomImage;
                     }

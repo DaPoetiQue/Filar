@@ -33,8 +33,19 @@ namespace Com.RedicalGames.Filar
 
                             widget.Init(this, initializationCallbackResults => 
                             {
-                                if(initializationCallbackResults.Success())
-                                    screenWidgetsList.Add(widget);
+                                if (initializationCallbackResults.Success())
+                                {
+                                    var widgetEventActionData = initializationCallbackResults.GetData();
+
+                                    RegisterEventAction(eventRegisteredCallbackResults => 
+                                    {
+                                        if (eventRegisteredCallbackResults.Success())
+                                            screenWidgetsList.Add(widget);
+                                        else
+                                            Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
+
+                                    }, widgetEventActionData);
+                                }
                                 else
                                     Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
                             });
