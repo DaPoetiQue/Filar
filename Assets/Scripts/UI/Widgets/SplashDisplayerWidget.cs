@@ -35,7 +35,7 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var initializationProgressCompletionEvent = new AppData.EventAction(name, AppData.EventType.OnInitializationCompletedEvent, OnInitializationCompletedEvent);
+                            var initializationProgressCompletionEvent = new AppData.EventActionData(name, AppData.EventType.OnInitializationCompletedEvent, OnInitializationCompletedEvent);
 
                             RegisterEventAction(actionEventRegisteredCallbackResults => 
                             {

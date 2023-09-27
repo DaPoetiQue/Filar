@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,87 +5,56 @@ namespace Com.RedicalGames.Filar
 {
     public class UIScreenHandler : AppData.ScreenUIData
     {
+        #region Unity Callbacks
+
+        void OnEnable() => ActionEventsSubscription(true);
+
+        void OnDisable() => ActionEventsSubscription(false);
+
+        #endregion
+
         #region Main
 
-        public void Init(Action<AppData.CallbackParams<AppData.EventActionHandler>> callback = null)
+        public async void Init()
         {
-            AppData.CallbackParams<AppData.EventActionHandler> callbackResults = new AppData.CallbackParams<AppData.EventActionHandler>();
-
-            AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", async componentsValidCallbackResults => 
+            if (screenWidgetsList == null || screenWidgetsList.Count == 0)
             {
-                callbackResults.SetResult(componentsValidCallbackResults);
+                AppData.Widget[] popUpComponents = this.GetComponentsInChildren<AppData.Widget>();
 
-                if(callbackResults.Success())
+                if (popUpComponents.Length > 0)
                 {
-                    AppData.Widget[] widgetComponents = GetComponentsInChildren<AppData.Widget>();
+                    screenWidgetsList = new List<AppData.Widget>();
 
-                    AppData.Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", async componentsValidCallbackResults => 
+                    foreach (var widget in popUpComponents)
                     {
-                        callbackResults.SetResult(componentsValidCallbackResults);
-
-                        if (callbackResults.Success())
+                        if (widget != null && !screenWidgetsList.Contains(widget))
                         {
-                            screenWidgetsList = new List<AppData.Widget>();
+                            await Task.Yield();
 
-                            foreach (var widget in widgetComponents)
+                            widget.Init(this, initializationCallbackResults => 
                             {
-                                if (widget != null && !screenWidgetsList.Contains(widget))
+                                if (initializationCallbackResults.Success())
                                 {
-                                    await Task.Yield();
+                                    var widgetEventActionData = initializationCallbackResults.GetData();
 
-                                    widget.Init(this, initializationCallbackResults =>
+                                    RegisterEventAction(eventRegisteredCallbackResults => 
                                     {
-                                        callbackResults.SetResult(initializationCallbackResults);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            var widgetEventActionData = initializationCallbackResults.GetData();
-
-                                            RegisterEventAction(eventRegisteredCallbackResults =>
-                                            {
-                                                callbackResults.SetResult(eventRegisteredCallbackResults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    screenWidgetsList.Add(widget);
-
-                                                    var onScreenChangedEvent = new AppData.EventAction<AppData.UIScreenType>("On Screen Changed Event", AppData.EventType.OnScreenChangedEvent, OnScreenChangedEvent);
-
-                                                    var onWidgetsEvent = new AppData.EventAction<AppData.WidgetType, AppData.InputActionButtonType, AppData.SceneDataPackets>("On Widgets Event", AppData.EventType.OnWidgetActionEvent, OnWidgetsEvent);
-
-                                                    var onScreenTogglableStateEvent = new AppData.EventAction<AppData.TogglableWidgetType, bool, bool>("On Screen Togglable State Event", AppData.EventType.OnScreenTogglableStateEvent, OnScreenTogglableStateEvent);
-
-                                                    var onAssetPoseResetEvent = new AppData.EventAction("On Asset Pose Reset", AppData.EventType.OnSceneModelPoseResetEvent, OnAssetPoseReset);
-
-                                                    callbackResults.SetData(onScreenChangedEvent, onWidgetsEvent, onScreenTogglableStateEvent, onAssetPoseResetEvent);
-
-                                                }
-                                                else
-                                                    Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
-
-                                            }, widgetEventActionData);
-                                        }
+                                        if (eventRegisteredCallbackResults.Success())
+                                            screenWidgetsList.Add(widget);
                                         else
-                                            Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
-                                    });
+                                            Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
+
+                                    }, widgetEventActionData);
                                 }
                                 else
-                                {
-                                    callbackResults.result = $"Widget / Screen Widgets List Is Null / Missing - Invalid Operation - Please See Here.";
-                                    callbackResults.data = default;
-                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-
-                                    break;
-                                }
-                            }
+                                    Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
+                            });
                         }
-                    
-                    }, $"Widget Components Not Found For Screen : {name}");
+                        else
+                            break;
+                    }
                 }
-            
-            }, "Screen Widgets List Is Not Yet Initialized.");
-
-            callback?.Invoke(callbackResults);
+            }
         }
 
         void ActionEventsSubscription(bool subscribe)
@@ -94,13 +62,13 @@ namespace Com.RedicalGames.Filar
             if (subscribe)
             {
                 AppData.ActionEvents._OnScreenChangedEvent += OnScreenChangedEvent;
-                AppData.ActionEvents._OnWidgetActionEvent += OnWidgetsEvent;
+                AppData.ActionEvents._OnPopUpActionEvent += OnWidgetsEvents;
                 AppData.ActionEvents._OnScreenTogglableStateEvent += OnScreenTogglableStateEvent;
                 AppData.ActionEvents._OnSceneModelPoseResetEvent += OnAssetPoseReset;
             }
             else
             {
-                AppData.ActionEvents._OnWidgetActionEvent -= OnWidgetsEvent;
+                AppData.ActionEvents._OnPopUpActionEvent -= OnWidgetsEvents;
                 AppData.ActionEvents._OnScreenChangedEvent -= OnScreenChangedEvent;
                 AppData.ActionEvents._OnScreenTogglableStateEvent -= OnScreenTogglableStateEvent;
                 AppData.ActionEvents._OnSceneModelPoseResetEvent -= OnAssetPoseReset;

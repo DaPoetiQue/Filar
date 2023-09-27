@@ -24289,7 +24289,7 @@ namespace Com.RedicalGames.Filar
 
             #region Events
 
-            protected void RegisterEventAction(Action<Callback> callback = null, params EventAction[] eventParams)
+            protected void RegisterEventAction(Action<Callback> callback = null, params EventActionData[] eventParams)
             {
                 Callback callbackResults = new Callback();
 
@@ -24302,9 +24302,8 @@ namespace Com.RedicalGames.Filar
                         for (int i = 0; i < eventParams.Length; i++)
                         {
                             var eventAction = eventParams[i];
-                            var initializationTaskResults = await eventAction.Initialized();
 
-                            callbackResults.SetResult(initializationTaskResults);
+                            callbackResults.SetResult(eventAction.Initialized());
 
                             if (callbackResults.Success())
                             {
@@ -24425,7 +24424,7 @@ namespace Com.RedicalGames.Filar
                 return initialVisibilityState;
             }
 
-            protected void OnWidgetsEvent(WidgetType widgetType, InputActionButtonType actionType, SceneDataPackets dataPackets)
+            protected void OnWidgetsEvents(WidgetType widgetType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
                 if (screenWidgetsList.Count == 0)
                     return;
@@ -27604,9 +27603,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(UIScreenHandler parentWidget, Action<CallbackParams<EventAction>> callback = null)
+            public void Init(UIScreenHandler parentWidget, Action<CallbackParams<EventActionData>> callback = null)
             {
-                CallbackParams<EventAction> callbackResults = new CallbackParams<EventAction>();
+                CallbackParams<EventActionData> callbackResults = new CallbackParams<EventActionData>();
 
                 #region Base Initialization
 
@@ -27871,22 +27870,18 @@ namespace Com.RedicalGames.Filar
                         var statePacket = initializationCallbackResults.data;
                         SetStatePacket(statePacket);
 
+                        #region Event Actions
+
+                        var onWidgetTransitionEvent = new EventActionData("On Widget Transition Event", EventType.OnUpdate, OnWidgetTransition);
+                        callbackResults.SetData(onWidgetTransitionEvent);
+
+                        #endregion
+
                         this.parentWidget = parentWidget;
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
-
-                #endregion
-
-                #region Event Actions
-
-                if (callbackResults.Success())
-                {
-                    var onWidgetTransitionEvent = new EventAction("On Widget Transition Event", EventType.OnUpdate, OnWidgetTransition);
-
-                    callbackResults.SetData(onWidgetTransitionEvent);
-                }
 
                 #endregion
 
@@ -27946,7 +27941,7 @@ namespace Com.RedicalGames.Filar
 
             #region Events
 
-            protected void RegisterEventAction(Action<Callback> callback = null, params EventAction[] eventParams)
+            protected void RegisterEventAction(Action<Callback> callback = null, params EventActionData[] eventParams)
             {
                 Callback callbackResults = new Callback(); 
 
@@ -27959,9 +27954,7 @@ namespace Com.RedicalGames.Filar
                         for (int i = 0; i < eventParams.Length; i++)
                         {
                             var eventAction = eventParams[i];
-                            var initializationTaskResults = await eventAction.Initialized();
-
-                            callbackResults.SetResult(initializationTaskResults);
+                            callbackResults.SetResult(eventAction.Initialized());
 
                             if (callbackResults.Success())
                             {
@@ -40365,46 +40358,36 @@ namespace Com.RedicalGames.Filar
             OnAppStart,
             OnUpdate,
             OnLateUpdate,
-            OnFixedUpdate,
-            OnScreenChangedEvent,
-            OnWidgetActionEvent,
-            OnScreenTogglableStateEvent,
-            OnSceneModelPoseResetEvent
-
+            OnFixedUpdate
         }
 
-        [Serializable]
-        public abstract class EventActionHandler : DataDebugger
+        #region Event Actions
+
+        #region Event Actrion Base
+
+        public abstract class EventAction : DataDebugger
         {
             #region Components
 
-            public EventType eventType;
-
-            private bool isInitialized;
-
-            #endregion
-
-            #region Constructors
+            EventType eventType;
+            bool isInitialized = false;
 
             #endregion
 
             #region Main
 
-
-            public async Task<Callback> Initialized()
+            public Callback Initialized()
             {
                 Callback callbackResults = new Callback();
 
-                await Task.Yield();
-
-                if (this != null && GetInitialized())
+                if (isInitialized)
                 {
-                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.result = $"Event Action : {GetName()} Of Type : {GetEventType()} Has Been Successfully Initialized.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Event Action Has Not Been Initialized Yet - Type Results : {callbackResults.GetResult} - State Results : {callbackResults.GetResult}.";
+                    callbackResults.result = $"Event Action : {GetName()} Is Not Yet Initialized.";
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
@@ -40414,6 +40397,7 @@ namespace Com.RedicalGames.Filar
             #region Data Setters
 
             public void SetName(string name) => this.name = name;
+
             public void SetEventType(EventType eventType) => this.eventType = eventType;
 
             protected void SetInitialized(bool isInitialized = true) => this.isInitialized = isInitialized;
@@ -40426,62 +40410,105 @@ namespace Com.RedicalGames.Filar
 
             public EventType GetEventType() => eventType;
 
-            private bool GetInitialized() => isInitialized;
+            #endregion
+
+            #region Event Triggers
+
+            public void TriggeredEventMethod()
+            {
+                OnTriggeredEventMethod(callbackResults => 
+                {
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                
+                });
+            }
+
+            public void TriggeredEventMethod<T>(T value)
+            {
+                OnTriggeredEventMethod((object)value, callbackResults => 
+                {
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                });
+            }
+
+
+            public void TriggeredEventMethod<T, U>(T valueA, U valueB)
+            {
+                OnTriggeredEventMethod((object)valueA, (object)valueB, callbackResults => 
+                {
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+
+
+            public void TriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC)
+            {
+                OnTriggeredEventMethod((object)valueA, (object)valueB, (object)valueC, callbackResults => 
+                {
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+
+            public void TriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD)
+            {
+                OnTriggeredEventMethod((object)valueA, (object)valueB, (object)valueC, (object)valueD, callbackResults =>
+                {
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
 
             #endregion
 
-            #region Event Actions
+            #region Event Abstract Methods
 
-            public void TriggeredEventMethod() => OnTriggeredEventMethod();
-            public void TriggeredEventMethod<T>(T value) => OnTriggeredEventMethod(value);
-            public void TriggeredEventMethod<T, U>(T valueA, U valueB) => OnTriggeredEventMethod(valueA, valueB);
-            public void TriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC) => OnTriggeredEventMethod(valueA, valueB, valueC);
-            public void TriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD) => OnTriggeredEventMethod(valueA, valueB, valueC, valueD);
-
-            protected abstract void OnTriggeredEventMethod();
-            protected abstract void OnTriggeredEventMethod<T>(T value);
-            protected abstract void OnTriggeredEventMethod<T,U>(T valueA, U valueB);
-            protected abstract void OnTriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC);
-            protected abstract void OnTriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD);
+            protected abstract void OnTriggeredEventMethod(Action<Callback> callback = null);
+            protected abstract void OnTriggeredEventMethod(object value, Action<Callback> callback = null);
+            protected abstract void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null);
+            protected abstract void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null);
+            protected abstract void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null);
 
             #endregion
 
             #endregion
         }
 
-        [Serializable]
-        public class EventAction : EventActionHandler
+        #endregion
+
+        #region Event Action Data
+
+        public class EventActionData : EventAction
         {
             #region Components
 
-            Action eventMethod;
+            public Action eventMethod;
 
             #endregion
 
             #region Constructors
 
-            public EventAction()
+            public EventActionData()
             {
 
             }
 
-            public EventAction(string name, EventType eventType, Action eventMethod)
+            public EventActionData(string name, EventType eventType, Action eventMethod)
             {
-                this.name = name;
-                this.eventType = eventType;
-                this.eventMethod = eventMethod;
-
-                if (IsInitialized().Success())
-                    SetInitialized();
-                else
-                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+                SetName(name);
+                SetEventType(eventType);
+                SetEventMethod(eventMethod);
             }
 
             #endregion
 
             #region Main
 
-            public Callback IsInitialized()
+            private Callback IsInitialized()
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -40501,8 +40528,6 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-          
-
             public void SetEventMethod(Action eventMethod)
             {
                 this.eventMethod = eventMethod;
@@ -40514,6 +40539,7 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
+
 
             #region Data Getters
 
@@ -40548,64 +40574,76 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            protected override void OnTriggeredEventMethod() => GetEventMethod().GetData().Invoke();
 
-            protected override void OnTriggeredEventMethod<T>(T value)
+            #region Event Abstract Methods
+
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (callbackResults.Success())
+                {
+                    var eventMethodData = GetEventMethod().GetData();
+                    eventMethodData.Invoke();
+
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected override void OnTriggeredEventMethod<T, U>(T valueA, U valueB)
+            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
+
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
+            {
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
+            }
+
+            #endregion
 
             #endregion
         }
 
-        [Serializable]
-        public class EventAction<T> : EventActionHandler
+        public class EventActionData<T> : EventAction where T : class
         {
             #region Components
 
-            Action<T> eventMethod;
+            public Action<T> eventMethod;
 
             #endregion
 
             #region Constructors
 
-            public EventAction()
+            public EventActionData()
             {
 
             }
 
-            public EventAction(string name, EventType eventType, Action<T> eventMethod)
+            public EventActionData(string name, EventType eventType, Action<T> eventMethod)
             {
-                this.name = name;
-                this.eventType = eventType;
-                this.eventMethod = eventMethod;
-
-                if (IsInitialized().Success())
-                    SetInitialized();
-                else
-                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+                SetName(name);
+                SetEventType(eventType);
+                SetEventMethod(eventMethod);
             }
 
             #endregion
 
             #region Main
 
-            public Callback IsInitialized()
+            private Callback IsInitialized()
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -40636,6 +40674,7 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
+
 
             #region Data Getters
 
@@ -40670,70 +40709,76 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void TriggeredEventMethod(T value) => GetEventMethod().GetData().Invoke(value);
 
-            protected override void OnTriggeredEventMethod()
+            #region Event Abstract Methods
+
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (callbackResults.Success())
+                {
+                    var eventMethodData = GetEventMethod().GetData();
+                    eventMethodData.Invoke((T)value);
+
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected override void OnTriggeredEventMethod<T1, U>(T1 valueA, U valueB)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U, V>(T1 valueA, U valueB, V valueC)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U, V, W>(T1 valueA, U valueB, V valueC, W valueD)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
+
+            #endregion
 
             #endregion
         }
 
-
-        [Serializable]
-        public class EventAction<T, U> : EventActionHandler
+        public class EventActionData<T, U> : EventAction
         {
             #region Components
 
-            Action<T, U> eventMethod;
+            public Action<T, U> eventMethod;
 
             #endregion
 
             #region Constructors
 
-            public EventAction()
+            public EventActionData()
             {
 
             }
 
-            public EventAction(string name, EventType eventType, Action<T, U> eventMethod)
+            public EventActionData(string name, EventType eventType, Action<T, U> eventMethod)
             {
-                this.name = name;
-                this.eventType = eventType;
-                this.eventMethod = eventMethod;
-
-                if (IsInitialized().Success())
-                    SetInitialized();
-                else
-                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+                SetName(name);
+                SetEventType(eventType);
+                SetEventMethod(eventMethod);
             }
 
             #endregion
 
             #region Main
 
-            public Callback IsInitialized()
+            private Callback IsInitialized()
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -40765,11 +40810,12 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+
             #region Data Getters
 
-            public CallbackData<Action<T,U>> GetEventMethod()
+            public CallbackData<Action<T, U>> GetEventMethod()
             {
-                CallbackData<Action<T,U>> callbackResults = new CallbackData<Action<T,U>>();
+                CallbackData<Action<T, U>> callbackResults = new CallbackData<Action<T, U>>();
 
                 if (eventMethod != null)
                 {
@@ -40798,69 +40844,77 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void TriggeredEventMethod(T valueA, U valueB) => GetEventMethod().GetData().Invoke(valueA, valueB);
 
-            protected override void OnTriggeredEventMethod()
+
+            #region Event Abstract Methods
+
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1>(T1 valueA, U1 valueB)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (callbackResults.Success())
+                {
+                    var eventMethodData = GetEventMethod().GetData();
+                    eventMethodData.Invoke((T)valueA, (U)valueB);
+
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1, V>(T1 valueA, U1 valueB, V valueC)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1, V, W>(T1 valueA, U1 valueB, V valueC, W valueD)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
+
+            #endregion
 
             #endregion
         }
 
-        [Serializable]
-        public class EventAction<T, U, V> : EventActionHandler
+        public class EventActionData<T, U, V> : EventAction
         {
             #region Components
 
-            Action<T, U, V> eventMethod;
+            public Action<T, U, V> eventMethod;
 
             #endregion
 
             #region Constructors
 
-            public EventAction()
+            public EventActionData()
             {
 
             }
 
-            public EventAction(string name, EventType eventType, Action<T, U, V> eventMethod)
+            public EventActionData(string name, EventType eventType, Action<T, U, V> eventMethod)
             {
-                this.name = name;
-                this.eventType = eventType;
-                this.eventMethod = eventMethod;
-
-                if (IsInitialized().Success())
-                    SetInitialized();
-                else
-                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+                SetName(name);
+                SetEventType(eventType);
+                SetEventMethod(eventMethod);
             }
 
             #endregion
 
             #region Main
 
-            public Callback IsInitialized()
+            private Callback IsInitialized()
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -40880,8 +40934,6 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-
-
             public void SetEventMethod(Action<T, U, V> eventMethod)
             {
                 this.eventMethod = eventMethod;
@@ -40893,6 +40945,7 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
+
 
             #region Data Getters
 
@@ -40927,69 +40980,76 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void TriggeredEventMethod(T valueA, U valueB, V valueC) => GetEventMethod().GetData().Invoke(valueA, valueB, valueC);
 
-            protected override void OnTriggeredEventMethod()
+            #region Event Abstract Methods
+
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1>(T1 valueA, U1 valueB)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1, V1>(T1 valueA, U1 valueB, V1 valueC)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (callbackResults.Success())
+                {
+                    var eventMethodData = GetEventMethod().GetData();
+                    eventMethodData.Invoke((T)valueA, (U)valueB, (V)valueC);
+
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1, V1, W>(T1 valueA, U1 valueB, V1 valueC, W valueD)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
+
+            #endregion
 
             #endregion
         }
 
-        [Serializable]
-        public class EventAction<T, U, V, W> : EventActionHandler
+        public class EventActionData<T, U, V, W> : EventAction
         {
             #region Components
 
-            Action<T, U, V, W> eventMethod;
+            public Action<T, U, V, W> eventMethod;
 
             #endregion
 
             #region Constructors
 
-            public EventAction()
+            public EventActionData()
             {
 
             }
 
-            public EventAction(string name, EventType eventType, Action<T, U, V, W> eventMethod)
+            public EventActionData(string name, EventType eventType, Action<T, U, V, W> eventMethod)
             {
-                this.name = name;
-                this.eventType = eventType;
-                this.eventMethod = eventMethod;
-
-                if (IsInitialized().Success())
-                    SetInitialized();
-                else
-                    Log(IsInitialized().GetResultCode, IsInitialized().GetResult, this);
+                SetName(name);
+                SetEventType(eventType);
+                SetEventMethod(eventMethod);
             }
 
             #endregion
 
             #region Main
 
-            public Callback IsInitialized()
+            private Callback IsInitialized()
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -41009,8 +41069,6 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-
-
             public void SetEventMethod(Action<T, U, V, W> eventMethod)
             {
                 this.eventMethod = eventMethod;
@@ -41022,6 +41080,7 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
+
 
             #region Data Getters
 
@@ -41056,35 +41115,52 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void TriggeredEventMethod(T valueA, U valueB, V valueC, W valueD) => GetEventMethod().GetData().Invoke(valueA, valueB, valueC, valueD);
 
-            protected override void OnTriggeredEventMethod()
+            #region Event Abstract Methods
+
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1>(T1 value)
+            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1>(T1 valueA, U1 valueB)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1, V1>(T1 valueA, U1 valueB, V1 valueC)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
-            protected override void OnTriggeredEventMethod<T1, U1, V1, W1>(T1 valueA, U1 valueB, V1 valueC, W1 valueD)
+            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
             {
-                throw new NotImplementedException();
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (callbackResults.Success())
+                {
+                    var eventMethodData = GetEventMethod().GetData();
+                    eventMethodData.Invoke((T)valueA, (U)valueB, (V)valueC, (W)valueD);
+
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
+
+            #endregion
         }
+
+        #endregion
+
+        #endregion
 
         public static class ActionEvents
         {
@@ -41148,7 +41224,7 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<UIScreenType> _OnScreenChangedEvent;
             public static event ParamVoid<UIScreenType> _OnScreenExitEvent;
             public static event ParamVoid<UIScreenViewComponent> _OnScreenRefreshed;
-            public static event ParamVoid<WidgetType, InputActionButtonType, SceneDataPackets> _OnWidgetActionEvent;
+            public static event ParamVoid<WidgetType, InputActionButtonType, SceneDataPackets> _OnPopUpActionEvent;
             public static event ParamVoid<AssetModeType> _OnResetSceneAssetPreviewPoseEvent;
             public static event ParamVoid<ARSceneContentState> _OnARSceneAssetStateEvent;
             public static event ParamVoid<SceneEventCameraType> _OnSetCurrentActiveSceneCameraEvent;
@@ -41227,7 +41303,7 @@ namespace Com.RedicalGames.Filar
             public static void OnScreenRefreshed(UIScreenViewComponent screenData) => _OnScreenRefreshed?.Invoke(screenData);
             public static void OnActionButtonFieldUploadedEvent(InputActionButtonType actionType = InputActionButtonType.None, bool interactable = false, bool isSelected = false) => _OnActionButtonFieldUploadedEvent?.Invoke(actionType, interactable, isSelected);
             public static void OnClearPreviewedSceneAssetObjectEvent() => _OnClearPreviewedSceneAssetObjectEvent?.Invoke();
-            public static void OnPopUpActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets) => _OnWidgetActionEvent?.Invoke(popUpType, actionType, dataPackets);
+            public static void OnPopUpActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets) => _OnPopUpActionEvent?.Invoke(popUpType, actionType, dataPackets);
             public static void OnTransitionSceneEventCamera(SceneDataPackets dataPackets) => _OnTransitionSceneEventCamera?.Invoke(dataPackets);
             public static void OnActionCheckboxStateEvent(bool interactable, bool visible) => _OnActionCheckboxStateEvent?.Invoke(interactable, visible);
             public static void OnSwatchColorPickedEvent(ColorInfo colorID, bool fromButtonPress, bool onOpenColorSettings) => _OnSwatchColorPickedEvent?.Invoke(colorID, fromButtonPress, onOpenColorSettings);
@@ -41250,9 +41326,9 @@ namespace Com.RedicalGames.Filar
 
             #region Actions Events
 
-            public static async void OnEventActionSubscription(EventActionHandler eventAction, bool subscribe = true, Action<CallbackData<EventActionHandler>> callback = null)
+            public static void OnEventActionSubscription(EventAction eventAction, bool subscribe = true, Action<CallbackData<EventAction>> callback = null)
             {
-                CallbackData<EventActionHandler> callbackResults = new CallbackData<EventActionHandler>(await eventAction.Initialized());
+                CallbackData<EventAction> callbackResults = new CallbackData<EventAction>(eventAction.Initialized());
 
                 if (callbackResults.Success())
                 {
@@ -41282,42 +41358,6 @@ namespace Com.RedicalGames.Filar
                                 _Update += eventAction.TriggeredEventMethod;
                             else
                                 _Update -= eventAction.TriggeredEventMethod;
-
-                            break;
-
-                        case EventType.OnScreenChangedEvent:
-
-                            if (subscribe)
-                                _OnScreenChangedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnScreenChangedEvent -= eventAction.TriggeredEventMethod;
-
-                            break;
-
-                        case EventType.OnWidgetActionEvent:
-
-                            if (subscribe)
-                                _OnWidgetActionEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnWidgetActionEvent -= eventAction.TriggeredEventMethod;
-
-                            break;
-
-                        case EventType.OnScreenTogglableStateEvent:
-
-                            if (subscribe)
-                                _OnScreenTogglableStateEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnScreenTogglableStateEvent -= eventAction.TriggeredEventMethod;
-
-                            break;
-
-                        case EventType.OnSceneModelPoseResetEvent:
-
-                            if (subscribe)
-                                _OnSceneModelPoseResetEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnSceneModelPoseResetEvent -= eventAction.TriggeredEventMethod;
 
                             break;
                     }
