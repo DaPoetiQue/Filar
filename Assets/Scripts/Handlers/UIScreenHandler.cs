@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,46 +16,64 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public async void Init()
+        public async Task<AppData.CallbackData<AppData.EventActionData>> Init()
         {
-            if (screenWidgetsList == null || screenWidgetsList.Count == 0)
+            AppData.CallbackData<AppData.EventActionData> callbackResults = new AppData.CallbackData<AppData.EventActionData>(InitializeScreenWidgets());
+
+            if (callbackResults.Success())
             {
-                AppData.Widget[] popUpComponents = this.GetComponentsInChildren<AppData.Widget>();
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $"Screen Widgets Are Not Yet Initialized For Screen : {GetName()} - Of Type : {GetUIScreenType()}", $"{screenWidgetsList.Count} : Screen Widgets Have Been Found For Screen : {GetName()} - Of Type : {GetUIScreenType()}"));
 
-                if (popUpComponents.Length > 0)
+                if (callbackResults.UnSuccessful())
                 {
-                    screenWidgetsList = new List<AppData.Widget>();
+                    AppData.Widget[] widgetComponents = widgetComponents = GetComponentsInChildren<AppData.Widget>();
 
-                    foreach (var widget in popUpComponents)
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", $"Widget Components Were Not Found For Screen : {GetName()} - Of Type : {GetUIScreenType()}", $"{widgetComponents.Length} : Widget Component(s) Found For Screen : {GetName()} - Of Type : {GetUIScreenType()}"));
+
+                    if (callbackResults.Success())
                     {
-                        if (widget != null && !screenWidgetsList.Contains(widget))
+                        screenWidgetsList = new List<AppData.Widget>();
+
+                        foreach (var widget in widgetComponents)
                         {
-                            await Task.Yield();
-
-                            widget.Init(this, initializationCallbackResults => 
+                            if (widget != null && !screenWidgetsList.Contains(widget))
                             {
-                                if (initializationCallbackResults.Success())
+                                await Task.Yield();
+
+                                widget.Init(this, initializationCallbackResults =>
                                 {
-                                    var widgetEventActionData = initializationCallbackResults.GetData();
-
-                                    RegisterEventAction(eventRegisteredCallbackResults => 
+                                    if (initializationCallbackResults.Success())
                                     {
-                                        if (eventRegisteredCallbackResults.Success())
-                                            screenWidgetsList.Add(widget);
-                                        else
-                                            Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
+                                        var widgetEventActionData = initializationCallbackResults.GetData();
 
-                                    }, widgetEventActionData);
-                                }
-                                else
-                                    Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
-                            });
+                                        RegisterEventAction(eventRegisteredCallbackResults =>
+                                        {
+                                            if (eventRegisteredCallbackResults.Success())
+                                                screenWidgetsList.Add(widget);
+                                            else
+                                                Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
+
+                                        }, widgetEventActionData);
+                                    }
+                                    else
+                                        Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                break;
                         }
-                        else
-                            break;
                     }
+
+                    LogInfo($" _______________________+++++++ Initialized {screenWidgetsList.Count} : Widgets Out Of : {widgetComponents.Length} Found Child Widgets.", this);
                 }
             }
+            else
+            {
+                callbackResults.result = "Screen Has Been Initialized Without Widgets.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+
+            return callbackResults;
         }
 
         void ActionEventsSubscription(bool subscribe)

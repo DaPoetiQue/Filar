@@ -23889,6 +23889,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            protected bool initializeScreenWidgets = true;
+
+            [Space(5)]
+            [SerializeField]
             protected List<Widget> screenWidgetsList;
 
             [Space(5)]
@@ -24286,6 +24290,23 @@ namespace Com.RedicalGames.Filar
                 callBack?.Invoke(callbackResults);
             }
 
+            protected Callback InitializeScreenWidgets()
+            {
+                Callback callbackResults = new Callback();
+
+                if(initializeScreenWidgets)
+                {
+                    callbackResults.result = $"Screen Widgets Initialization Is Enabled For Screen : {GetName()} - Of Type : {GetUIScreenType()}";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Screen Widgets Initialization Is Not Enabled For Screen : {GetName()} - Of Type : {GetUIScreenType()}";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
 
             #region Events
 
@@ -26394,7 +26415,12 @@ namespace Com.RedicalGames.Filar
                 {
                     if (widgetType != WidgetType.None)
                     {
-                        var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
+                        var widget = GetWidgets().GetData().Find(widget => widget.widgetType == widgetType);
+
+                        for (int i = 0; i < GetWidgets().GetData().Count; i++)
+                        {
+                            LogInfo($" _______________________+++++++ Found Widget : { GetWidgets().GetData()[i].GetName()} - Of Type : { GetWidgets().GetData()[i].GetType()} At Index : {i} For Screen : {GetName()} - Of Type : {GetUIScreenType()} - Requested Widget : {widgetType}", this);
+                        }
 
                         if (widget != null)
                         {
@@ -26440,58 +26466,74 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.SetResult(componentsValidCallbackResults);
 
+                    if (callbackResults.Success())
+                        callbackResults.SetData(screenWidgetsList);
+
                 }, $"Screen Widegts For Screen : {GetName()} Of type : {GetUIScreenType()} - Are Not Yet Initialized.");
 
                 return callbackResults;
             }
 
-            public void HideScreenWidget(WidgetType widgetType, SceneDataPackets dataPackets)
+            public void HideScreenWidget(WidgetType widgetType, SceneDataPackets dataPackets, Action<Callback> callback = null)
             {
-                if (screenWidgetsList.Count == 0)
-                    return;
+                Callback callbackResults = new Callback(GetWidgets());
 
-                var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
-
-                if(widget != null)
+                if (callbackResults.Success())
                 {
-                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
-                    {
-                        if (selectionSystemCallbackResults.Success())
-                        {
-                            selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
-                            {
-                                if (selectionsClearedCallbackResults.Success())
-                                {
-                                    widget.Hide();
+                    var widget = screenWidgetsList.Find(widget => widget.widgetType == widgetType);
 
-                                    if (widgetType == WidgetType.ConfirmationPopUpWidget)
+                    Helpers.GetAppComponentValid(widget, "Widget", componentValidCallbackResults => 
+                    {
+                        callbackResults.SetResult(componentValidCallbackResults);
+                    
+                        if(callbackResults.Success())
+                        {
+                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                            {
+                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
                                     {
-                                        if (SelectableManager.Instance)
+                                        callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                        if (callbackResults.Success())
                                         {
-                                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
-                                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
-                                            else
-                                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                            widget.Hide();
+
+                                            if (widgetType == WidgetType.ConfirmationPopUpWidget)
+                                            {
+                                                if (SelectableManager.Instance)
+                                                {
+                                                    if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
+                                                        ActionEvents.OnTransitionSceneEventCamera(dataPackets);
+                                                    else
+                                                        LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                                }
+                                                else
+                                                    LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                            }
+
+                                            if (widget.widgetType == WidgetType.SceneAssetPreviewWidget)
+                                                if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                                                    ActionEvents.OnResetCameraToDefaultPoseEvent();
+
+                                            Focus();
                                         }
                                         else
-                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
-                                    }
-
-                                    if (widget.widgetType == WidgetType.SceneAssetPreviewWidget)
-                                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
-                                            ActionEvents.OnResetCameraToDefaultPoseEvent();
-                                    Focus();
+                                            Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
+                                    });
                                 }
                                 else
-                                    Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
+                                    Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
                             });
                         }
-                        else
-                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
-                    });
-
-
+                    
+                    }, $"Widget Of Type : {widgetType} not Found For Screen : {GetName()} Of Type : {GetUIScreenType()}.", $"Widget : {widget.GetName()} Of Type : {widget.GetType()} Has been Successfully Found For Screen : {GetName()} Of Type : {GetUIScreenType()}.");
                 }
+
+                callback?.Invoke(callbackResults);
             }
 
             public void HideScreenWidgets()
