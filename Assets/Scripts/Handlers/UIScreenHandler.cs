@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Com.RedicalGames.Filar
@@ -16,7 +17,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public async Task<AppData.CallbackData<AppData.EventActionData>> Init()
+        public AppData.CallbackData<AppData.EventActionData> Init()
         {
             AppData.CallbackData<AppData.EventActionData> callbackResults = new AppData.CallbackData<AppData.EventActionData>(InitializeScreenWidgets());
 
@@ -36,20 +37,32 @@ namespace Com.RedicalGames.Filar
 
                         foreach (var widget in widgetComponents)
                         {
-                            if (widget != null && !screenWidgetsList.Contains(widget))
-                            {
-                                await Task.Yield();
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(widget, "Widget", $"Widget Not Found / Missing At Index : {widgetComponents.ToList().IndexOf(widget)} - For Screen : {GetName()} - Of Type : {GetUIScreenType()}"));
 
+                            if (callbackResults.Success())
+                            {
                                 widget.Init(this, initializationCallbackResults =>
                                 {
-                                    if (initializationCallbackResults.Success())
+                                    callbackResults.SetResult(initializationCallbackResults);
+
+                                    if (callbackResults.Success())
                                     {
                                         var widgetEventActionData = initializationCallbackResults.GetData();
 
                                         RegisterEventAction(eventRegisteredCallbackResults =>
                                         {
-                                            if (eventRegisteredCallbackResults.Success())
-                                                screenWidgetsList.Add(widget);
+                                            callbackResults.SetResult(eventRegisteredCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                AddScreenWidget(widget, widgetAddedCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(widgetAddedCallbackResults);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
                                             else
                                                 Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
 
@@ -59,8 +72,6 @@ namespace Com.RedicalGames.Filar
                                         Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
                                 });
                             }
-                            else
-                                break;
                         }
                     }
 

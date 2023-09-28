@@ -94,8 +94,6 @@ namespace Com.RedicalGames.Filar
             {
                 List<UIScreenHandler> screenComponents = GetComponentsInChildren<UIScreenHandler>().ToList();
 
-                await Task.Yield();
-
                 callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenComponents, "Screen Components", $"Screen Components Were Not Found For. Invalid operation - Please Check Here."));
 
                 if (callbackResults.Success())
@@ -104,9 +102,7 @@ namespace Com.RedicalGames.Filar
 
                     foreach (var screenComponent in screenComponents)
                     {
-                        var initializeScreenTaskResultsCallback = await screenComponent.Init();
-
-                        callbackResults.SetResult(initializeScreenTaskResultsCallback);
+                        callbackResults.SetResult(screenComponent.Init());
 
                         if (callbackResults.Success())
                         {

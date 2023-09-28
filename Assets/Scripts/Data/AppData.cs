@@ -24440,6 +24440,38 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Screen Widgets
+
+            protected void AddScreenWidget(Widget widget, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                if (!screenWidgetsList.Contains(widget))
+                {
+                    screenWidgetsList.Add(widget);
+
+                    if(screenWidgetsList.Contains(widget))
+                    {
+                        callbackResults.result = $"Screen Widget : {widget.GetName()} - Of Type : {widget.GetType()} - Has Been Successfully Added To Screen Widgets List For Screen : {GetName()} - Of Type : {GetUIScreenType()}.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Add Screen Widget Failed - Couldn't Add Widget : {widget.GetName()} - Of Type : {widget.GetType()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetUIScreenType()} - Invalid Operation";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Screen Widgets List For Screen : {GetName()} - Of Type : {GetUIScreenType()} - Already Contains Widget : {widget.GetName()} - Of Type : {widget.GetType()} - Invalid Operation";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
             public UIScreenWidgetVisibilityState GetUIScreenInitialVisibility()
             {
                 return initialVisibilityState;
