@@ -86,7 +86,7 @@ namespace Com.RedicalGames.Filar
                 _instance = this;
         }
 
-        public void OnScreenInit(Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenViewComponent>> OnScreenInit()
         {
             AppData.CallbackDataList<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>();
 
@@ -94,22 +94,29 @@ namespace Com.RedicalGames.Filar
             {
                 List<UIScreenHandler> screenComponents = GetComponentsInChildren<UIScreenHandler>().ToList();
 
-                AppData.Helpers.ListComponentHasData(screenComponents, hasDataCallbackResults =>
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenComponents, "Screen Components", $"Screen Components Were Not Found For. Invalid operation - Please Check Here."));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(hasDataCallbackResults);
+                    screens = new List<AppData.UIScreenViewComponent>();
 
-                    if (callbackResults.Success())
+                    foreach (var screenComponent in screenComponents)
                     {
-                        screens = new List<AppData.UIScreenViewComponent>();
+                        callbackResults.SetResult(screenComponent.Init());
 
-                        foreach (var screenComponent in screenComponents)
+                        if (callbackResults.Success())
                         {
+<<<<<<< HEAD
                             LogInfo($" _____+++++++++++ Getting Screen : {screenComponent.name}", this);
 
                             screenComponent.Init(screenInitializationCallback => 
+=======
+                            AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
+>>>>>>> 7e7b0e8a59355db5f22167974e027d5884c4be2b
                             {
                                 callbackResults.SetResult(screenInitializationCallback);
 
+<<<<<<< HEAD
                                 if(callbackResults.Success())
                                 {
                                     AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
@@ -131,9 +138,43 @@ namespace Com.RedicalGames.Filar
                         if(callbackResults.Success())
                         {
                             AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.data, screenComponents, compareDataCallback =>
+=======
+                            AddScreen(newScreen, screenAddCallback =>
                             {
-                                if (compareDataCallback.Success())
+                                callbackResults.SetResult(screenAddCallback);
+
+                                if (callbackResults.Success())
+                                    callbackResults.data = screenAddCallback.GetData();
+                            });
+
+                            await Task.Yield();
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenComponents, "Screen Components", $"Screen Components Were Not Found For. Invalid operation - Please Check Here."));
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Initialize Screen : {screenComponent.GetName()} - Of Type : {screenComponent.GetUIScreenType()} - At Index : {screenComponents.IndexOf(screenComponent)}";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                            break;
+                        }
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.GetData(), screenComponents, compareDataCallback =>
+                        {
+                            callbackResults.SetResult(compareDataCallback);
+
+                            if (callbackResults.Success())
+>>>>>>> 7e7b0e8a59355db5f22167974e027d5884c4be2b
+                            {
+                                SetScreensInitialized(callbackResults.Success(), callbackResults.result);
+
+                                if (IsInitialized())
                                 {
+<<<<<<< HEAD
                                     foreach (var screenView in callbackResults.data)
                                     {
                                         screenView.value.Initilize(screenInitializationCallback =>
@@ -175,23 +216,28 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                         Log(callbackResults.resultCode, callbackResults.result, this);
+=======
+                                    callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
+                                    callbackResults.data = compareDataCallback.tuple_A;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+>>>>>>> 7e7b0e8a59355db5f22167974e027d5884c4be2b
                                 }
                                 else
                                 {
-                                    callbackResults.result = compareDataCallback.result;
+                                    callbackResults.result = $"Screens Failed To Initialize.";
                                     callbackResults.data = default;
                                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }
-                            });
-                        }
+                            }
+                            else
+                            {
+                                callbackResults.result = compareDataCallback.result;
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            }
+                        });
                     }
-                    else
-                    {
-                        callbackResults.result = hasDataCallbackResults.result;
-                        callbackResults.data = default;
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                });
+                }
             }
             else
             {
@@ -201,7 +247,7 @@ namespace Com.RedicalGames.Filar
 
             Log(callbackResults.resultCode, callbackResults.result, this);
 
-            callback?.Invoke(callbackResults);
+            return callbackResults;
         }
 
         public void AddScreen(AppData.UIScreenViewComponent screen, Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
@@ -427,73 +473,6 @@ namespace Com.RedicalGames.Filar
             {
                 throw new Exception($"--> Unity - Failed To Show New Asset Screen  - With Exception : {exception}");
             }
-        }
-
-        public void OnAppBootScreen(AppData.UIScreenType bootScreenType, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback = null)
-        {
-            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
-
-            OnScreenInit(initializationCallbackResults =>
-            {
-                callbackResults.result = initializationCallbackResults.result;
-                callbackResults.resultCode = initializationCallbackResults.resultCode;
-
-                if (callbackResults.Success())
-                {
-                    AppData.LogInfoChannel bootScreenCallbackResultsCode = (bootScreenType != AppData.UIScreenType.None) ? AppData.Helpers.SuccessCode : AppData.Helpers.WarningCode;
-                    string bootScreenCallbackResults = (bootScreenCallbackResultsCode == AppData.LogInfoChannel.Success) ? $"On App Boot State - Initial Boot Screen : {bootScreenType}" : $"On App Boot Failed : Boot Screen Type Is Not Yet Initialized / Set Tpo Default : {bootScreenType}.";
-
-                    callbackResults.result = bootScreenCallbackResults;
-                    callbackResults.resultCode = bootScreenCallbackResultsCode;
-
-                    if (callbackResults.Success())
-                    {
-                        var bootScreen = initializationCallbackResults.data.Find(screen => screen.value.GetUIScreenType() == bootScreenType);
-
-                        AppData.Helpers.GetAppComponentValid(bootScreen, bootScreen.name, bootScreenValidCallbackResults =>
-                        {
-                            callbackResults.result = bootScreenValidCallbackResults.result;
-                            callbackResults.resultCode = bootScreenValidCallbackResults.resultCode;
-
-                            if (callbackResults.Success())
-                            {
-                                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, hasAssetsManagerCallbackResults =>
-                                {
-                                    callbackResults.result = hasAssetsManagerCallbackResults.result;
-                                    callbackResults.resultCode = hasAssetsManagerCallbackResults.resultCode;
-
-                                    if (callbackResults.Success())
-                                    {
-                                        AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(bootScreenType, bootScreenDataPacketsCallbackResults =>
-                                        {
-                                            callbackResults.result = bootScreenDataPacketsCallbackResults.result;
-                                            callbackResults.resultCode = bootScreenDataPacketsCallbackResults.resultCode;
-
-                                            if (callbackResults.Success())
-                                            {
-                                                callbackResults.data = bootScreenDataPacketsCallbackResults.data.dataPackets;
-                                                callbackResults.result = $"App Initial Boot Screen : {bootScreenType} Data Packets Have Been Loaded Successfully - Show Boot Screen : {callbackResults.data.screenType} Now.";
-                                            }
-                                            else
-                                                callbackResults.result = $"Failed To Load App Initial Boot Screen : {bootScreenType}'s Data Packets - Results : {callbackResults.result}";
-                                        });
-                                    }
-                                    else
-                                        callbackResults.result = $"On App Boot Screen Failed With Results : {callbackResults.result}.";
-
-                                }, $"On App Boot Screen Failed - Scene Assets Manager Instance Is Not Yet Initialized.");
-                            }
-                            else
-                                callbackResults.result = $"On App Boot Screen Failed With Results : {callbackResults.result}.";
-
-                        }, $"On App Boot Screen Failed - Boot Screen : {bootScreenType} Is Not Found / Missing / Null / Not Initialized In The Unity Inspector Panel.");
-
-                        AppData.ActionEvents.OnAppScreensInitializedEvent();
-                    }
-                }
-            });
-
-            callback?.Invoke(callbackResults);
         }
 
         #region On Show Screen Async
