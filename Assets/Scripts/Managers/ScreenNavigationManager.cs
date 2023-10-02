@@ -183,17 +183,17 @@ namespace Com.RedicalGames.Filar
                     formattedTitle = output;
                 }
 
-                if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, formattedTitle);
+                //if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                //{
+                //    ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, formattedTitle);
 
-                    if (folderNavigationNameList.Count == 0)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
-                    else
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Shown);
-                }
-                else
-                    LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
+                //    if (folderNavigationNameList.Count == 0)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
+                //    else
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Shown);
+                //}
+                //else
+                //    LogWarning("Update Navigation Root Title Displayer Failed : Screen UI Manager Instance - Get Current Screen Data's Value Is Missing / Not Found.", this);
             }
             else
                 Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);

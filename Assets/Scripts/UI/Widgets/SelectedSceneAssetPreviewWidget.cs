@@ -37,8 +37,7 @@ namespace Com.RedicalGames.Filar
 
         #region Initializations
 
-
-        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 

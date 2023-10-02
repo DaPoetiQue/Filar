@@ -106,21 +106,25 @@ namespace Com.RedicalGames.Filar
                         {
                             LogInfo($" _____+++++++++++ Getting Screen : {screenComponent.name}", this);
 
-                            screenComponent.Init();
-
-                            AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
+                            screenComponent.Init(screenInitializationCallback => 
                             {
-                                name = screenComponent.GetScreenTitle(),
-                                value = screenComponent
-                            };
+                                callbackResults.SetResult(screenInitializationCallback);
 
-                            AddScreen(newScreen, screenAddCallback => { callbackResults = screenAddCallback; });
+                                if(callbackResults.Success())
+                                {
+                                    AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
+                                    {
+                                        name = screenComponent.GetScreenTitle(),
+                                        value = screenComponent
+                                    };
 
-                            LogInfo($" _____+++++++++++ Loaded Screen : {screenComponent.name}", this);
+                                    AddScreen(newScreen, screenAddCallback => { callbackResults = screenAddCallback; });
 
-                            if (callbackResults.Success())
-                                continue;
-                            else
+                                    LogInfo($" _____+++++++++++ Loaded Screen : {screenComponent.name}", this);
+                                }
+                            });
+
+                            if (callbackResults.UnSuccessful())
                                 break;
                         }
 
@@ -132,16 +136,23 @@ namespace Com.RedicalGames.Filar
                                 {
                                     foreach (var screenView in callbackResults.data)
                                     {
-                                        screenView.value.Init(screenInitializationCallback =>
+                                        screenView.value.Initilize(screenInitializationCallback =>
                                         {
-                                            callbackResults.result = screenInitializationCallback.result;
-                                            callbackResults.resultCode = screenInitializationCallback.resultCode;
-                                        });
+                                            callbackResults.SetResult(screenInitializationCallback);
 
-                                        if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
-                                            continue;
-                                        else
-                                            break;
+                                            if (callbackResults.Success())
+                                            {
+                                                AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
+                                                {
+                                                    name = screenView.value.GetScreenTitle(),
+                                                    value = screenView.value
+                                                };
+
+                                                AddScreen(newScreen, screenAddCallback => { callbackResults = screenAddCallback; });
+
+                                                LogInfo($" _____+++++++++++ Loaded Screen : {screenView.value.GetName()}", this);
+                                            }
+                                        });
                                     }
 
                                     if (callbackResults.Success())
@@ -529,13 +540,13 @@ namespace Com.RedicalGames.Filar
                                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
 
-                            if (callbackResults.Success())
-                            {
-                                if (GetCurrentUIScreenType() != AppData.UIScreenType.None && GetCurrentUIScreenType() != AppData.UIScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.UIScreenType.LoadingScreen)
-                                    callbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, callbackResults.data.value.GetScreenTitle());
-                            }
-                            else
-                                Log(callbackResults.resultCode, callbackResults.result, this);
+                            //if (callbackResults.Success())
+                            //{
+                            //    if (GetCurrentUIScreenType() != AppData.UIScreenType.None && GetCurrentUIScreenType() != AppData.UIScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.UIScreenType.LoadingScreen)
+                            //        callbackResults.data.value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, callbackResults.data.value.GetScreenTitle());
+                            //}
+                            //else
+                            //    Log(callbackResults.resultCode, callbackResults.result, this);
                         });
 
                         if (callbackResults.Success())
@@ -924,31 +935,31 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                                 {
-                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
-                                    {
-                                        callbackResults.result = setUIStateCallback.result;
-                                        callbackResults.resultCode = setUIStateCallback.resultCode;
-                                    });
+                                    //screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
+                                    //{
+                                    //    callbackResults.result = setUIStateCallback.result;
+                                    //    callbackResults.resultCode = setUIStateCallback.resultCode;
+                                    //});
                                 }
 
                                 if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
                                 {
-                                    screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
-                                    {
-                                        callbackResults.result = setUIStateCallback.result;
-                                        callbackResults.resultCode = setUIStateCallback.resultCode;
-                                    });
+                                    //screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
+                                    //{
+                                    //    callbackResults.result = setUIStateCallback.result;
+                                    //    callbackResults.resultCode = setUIStateCallback.resultCode;
+                                    //});
                                 }
                             }
                             else
                                 Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
 
-                            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
-                                screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, AppDatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
-                            else
-                                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
+                            //if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
+                            //    screen.value.SetUITextDisplayerValue(AppData.ScreenTextType.NavigationRootTitleDisplayer, AppDatabaseManager.Instance.GetProjectStructureData().data.GetRootFolder().name);
+                            //else
+                            //    Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
 
-                            screen.value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
+                            //screen.value.SetActionButtonState(AppData.InputActionButtonType.Return, AppData.InputUIState.Hidden);
 
                             AppDatabaseManager.Instance.GetFolderContentCount(AppDatabaseManager.Instance.GetCurrentFolder(), folderFound =>
                             {
@@ -1401,346 +1412,6 @@ namespace Com.RedicalGames.Filar
             }, "There Are No App Screens Initialized. Plsease Check Screen UI Manager In The Inspector Panel.", $"{screens.Count} Screens Are Successfully Loaded And Initialized.");
 
             return callbackResults;
-        }
-
-        #region UI States
-
-        #region Screen States
-
-        public void SetScreenUIState(AppData.UIScreenType screenType, AppData.InputUIState state, params Enum[] parameters)
-        {
-
-        }
-
-        #endregion
-
-        #region Button States
-
-        public void SetScreenActionButtonUIImageValue(AppData.UIScreenType screenType, AppData.InputActionButtonType actionType, AppData.UIImageDisplayerType displayerType, AppData.UIImageType imageType)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionButtonUIImageValue(actionType, displayerType, imageType);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionButtonState(AppData.UIScreenType screenType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionButtonState(state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionButtonState(AppData.UIScreenType screenType, AppData.InputActionButtonType actionType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionButtonState(actionType, state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #region Input States
-
-        public void SetScreenActionInputFieldState(AppData.UIScreenType screenType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionInputFieldState(state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionInputFieldState(AppData.UIScreenType screenType, AppData.InputFieldActionType actionType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionInputFieldState(actionType, state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionInputFieldPlaceHolderText(AppData.UIScreenType screenType, AppData.InputFieldActionType actionType, string placeholder)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionInputFieldPlaceHolderText(actionType, placeholder);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #region Dropdown States
-
-        public void SetScreenActionDropdownState(AppData.UIScreenType screenType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionDropdownState(state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-
-        public void SetScreenActionDropdownState(AppData.UIScreenType screenType, AppData.InputUIState state, List<string> content)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionDropdownState(state, content);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionDropdownState(AppData.UIScreenType screenType, AppData.InputDropDownActionType actionType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionDropdownState(actionType, state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionDropdownState(AppData.UIScreenType screenType, AppData.InputDropDownActionType actionType, AppData.InputUIState state, List<string> content)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionDropdownState(actionType, state, content);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #region Slider States
-
-        public void SetScreenActionSliderState(AppData.UIScreenType screenType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionSliderState(state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionSliderState(AppData.UIScreenType screenType, AppData.SliderValueType valueType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionSliderState(valueType, state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #region Checkbox States
-
-        public void SetScreenActionCheckboxState(AppData.UIScreenType screenType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionCheckboxState(state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        public void SetScreenActionCheckboxState(AppData.UIScreenType screenType, AppData.CheckboxInputActionType actionType, AppData.InputUIState state)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionCheckboxState(actionType, state);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #region Checkbox Value
-
-        /// <summary>
-        /// This Functions Sets Checkbox Selection Value State On The Specific Screen.
-        /// </summary>
-        /// <param name="screenType"></param>
-        /// <param name="value">The State Of The Checkbox</param>
-        public void SetScreenActionCheckboxValue(AppData.UIScreenType screenType, bool value)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionCheckboxValue(value);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        /// <summary>
-        /// This Functions Sets Checkbox Selection Value State On The Specific Screen.
-        /// </summary>
-        /// <param name="screenType"></param>
-        /// <param name="actionType">The Type Of Checkbox.</param>
-        /// <param name="value">The State Of The Checkbox.</param>
-        public void SetScreenActionCheckboxValue(AppData.UIScreenType screenType, AppData.CheckboxInputActionType actionType, bool value)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetActionCheckboxValue(actionType, value);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #region UI Text Value
-
-        /// <summary>
-        /// This Functions Sets Text String To The Selected Text Displayer Type On The Specific Screen.
-        /// </summary>
-        /// <param name="screenType"></param>
-        /// <param name="textType"></param>
-        /// <param name="value"></param>
-        public void SetScreenUITextValue(AppData.UIScreenType screenType, AppData.ScreenTextType textType, string value)
-        {
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetUITextDisplayerValue(textType, value);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-
-        #region UI Image Value
-
-        /// <summary>
-        ///  This Functions Sets A Screen Captured Data To The Selected Displayer Type On The Specific Screen.
-        /// </summary>
-        /// <param name="screenType"></param>
-        /// <param name="displayerType"></param>
-        /// <param name="screenCaptureData"></param>
-        /// <param name="dataPackets"></param>
-        public void SetScreenUIImageValue(AppData.UIScreenType screenType, AppData.ScreenImageType displayerType, AppData.ImageData screenCaptureData, AppData.ImageDataPackets dataPackets)
-        {
-            // Find Screen
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetUIImageDisplayerValue(displayerType, screenCaptureData, dataPackets);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-
-        /// <summary>
-        ///  This Functions Sets A UI Texture 2D To The Selected Displayer Type On The Specific Screen.
-        /// </summary>
-        /// <param name="screenType"></param>
-        /// <param name="displayerType"></param>
-        /// <param name="imageData"></param>
-        public void SetScreenUIImageValue(AppData.UIScreenType screenType, AppData.ScreenImageType displayerType, Texture2D imageData)
-        {
-            // Find Screen
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetUIImageDisplayerValue(displayerType, imageData);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        /// <summary>
-        /// This Functions Sets A UI Sprite To The Selected Displayer Type On The Specific Screen.
-        /// </summary>
-        /// <param name="screenType">The Screen To Set Image To.</param>
-        /// <param name="actionType"></param>
-        /// <param name="displayerType"></param>
-        /// <param name="image"></param>
-        public void SetScreenUIImageValue(AppData.UIScreenType screenType, AppData.ScreenImageType displayerType, Sprite image)
-        {
-            // Find Screen
-            OnFindScreenOfType(screenType, screenFound =>
-            {
-                if (AppData.Helpers.IsSuccessCode(screenFound.resultCode))
-                    screenFound.data.value.SetUIImageDisplayerValue(displayerType, image);
-                else
-                    Debug.LogWarning($"--> OnFindScreenOfType Failed With Results : {screenFound.result}");
-            });
-        }
-
-        #endregion
-
-        #endregion
-
-        public void OnFindScreenOfType(AppData.UIScreenType screenType, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
-        {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
-
-            // Check For Screens
-            if (screens.Count > 0)
-            {
-                AppData.UIScreenViewComponent screen = screens.Find(screen => screen.value.GetUIScreenType() == screenType);
-
-                if (screen.value != null)
-                {
-                    callbackResults.result = $"Screen Found.";
-                    callbackResults.data = screen;
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"OnFindScreenOfType Failed : Screen Of Type : {screenType} Not Found - Value Missing.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
-            }
-            else
-            {
-                callbackResults.result = "OnFindScreenOfType Failed : Screens Are Missing / Null.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
-
-            callback?.Invoke(callbackResults);
         }
 
         public void SetScreenSleepTime(bool neverSleep)

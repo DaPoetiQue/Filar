@@ -68,9 +68,26 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public AppData.InputType GetInputType()
+        public void SetName(string name) => this.name = name;
+
+        public new AppData.CallbackData<AppData.InputType> GetType()
         {
-            return inputType;
+            var callbackResults = new AppData.CallbackData<AppData.InputType>();
+
+            if(inputType != AppData.InputType.None)
+            {
+                callbackResults.result = $"UI Screen Input Widget : {GetName()} Is Set To Type : {inputType}.";
+                callbackResults.data = inputType;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Get Input Type Failed - Input Type For : {GetName()} Is Set To Default : {inputType} - Invalid Operation";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            }
+
+            return callbackResults;
         }
 
         public void GetInputDataPacket<T>(Action<AppData.CallbackData<T>> callback) where T : AppData.SceneDataPackets
@@ -228,6 +245,8 @@ namespace Com.RedicalGames.Filar
 
             callback.Invoke(callbackResults);
         }
+
+        public string GetName() => !string.IsNullOrEmpty(name) ? name : "UI Screen Input Widget Name Not Assigned";
 
         public bool HasComponent(AppData.InputType inputType)
         {

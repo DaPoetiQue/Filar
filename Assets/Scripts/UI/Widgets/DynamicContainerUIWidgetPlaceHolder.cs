@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -17,6 +18,11 @@ namespace Com.RedicalGames.Filar
         #region Main
 
         void Initialization()
+        {
+          
+        }
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
             // Initialize Assets.
             Init((callback) =>

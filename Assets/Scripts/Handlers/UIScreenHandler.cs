@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,46 +16,65 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public async void Init()
+        public void Init(Action<AppData.Callback> callback = null)
         {
-            if (screenWidgetsList == null || screenWidgetsList.Count == 0)
+            var callbackResults = new AppData.Callback();
+
+            if (initializeWidgets)
             {
-                AppData.Widget[] popUpComponents = this.GetComponentsInChildren<AppData.Widget>();
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $""));
 
-                if (popUpComponents.Length > 0)
+                if (callbackResults.UnSuccessful())
                 {
-                    screenWidgetsList = new List<AppData.Widget>();
+                    AppData.Widget[] widgetComponents = this.GetComponentsInChildren<AppData.Widget>();
 
-                    foreach (var widget in popUpComponents)
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", $""));
+
+                    if (callbackResults.Success())
                     {
-                        if (widget != null && !screenWidgetsList.Contains(widget))
+                        screenWidgetsList = new List<AppData.Widget>();
+
+                        foreach (var widget in widgetComponents)
                         {
-                            await Task.Yield();
-
-                            widget.Init(this, initializationCallbackResults => 
+                            if (widget != null && !screenWidgetsList.Contains(widget))
                             {
-                                if (initializationCallbackResults.Success())
+                                widget.Initilize(initializationCallbackResults =>
                                 {
-                                    var widgetEventActionData = initializationCallbackResults.GetData();
+                                    callbackResults.SetResult(initializationCallbackResults);
+                                });
 
-                                    RegisterEventAction(eventRegisteredCallbackResults => 
-                                    {
-                                        if (eventRegisteredCallbackResults.Success())
-                                            screenWidgetsList.Add(widget);
-                                        else
-                                            Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
+                                //widget.Init(this, initializationCallbackResults => 
+                                //{
+                                //    if (initializationCallbackResults.Success())
+                                //    {
+                                //        var widgetEventActionData = initializationCallbackResults.GetData();
 
-                                    }, widgetEventActionData);
-                                }
-                                else
-                                    Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
-                            });
+                                //        RegisterEventAction(eventRegisteredCallbackResults => 
+                                //        {
+                                //            if (eventRegisteredCallbackResults.Success())
+                                //                screenWidgetsList.Add(widget);
+                                //            else
+                                //                Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
+
+                                //        }, widgetEventActionData);
+                                //    }
+                                //    else
+                                //        Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
+                                //});
+                            }
+                            else
+                                break;
                         }
-                        else
-                            break;
                     }
                 }
             }
+            else
+            {
+                callbackResults.result = "";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+
+            callback?.Invoke(callbackResults);
         }
 
         void ActionEventsSubscription(bool subscribe)

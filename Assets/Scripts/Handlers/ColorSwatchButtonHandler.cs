@@ -19,7 +19,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Components
+        #region Main
 
         public void Initialize(AppData.ColorInfo colorInfo, Action<AppData.Callback> callback = null)
         {
@@ -165,6 +165,11 @@ namespace Com.RedicalGames.Filar
         protected override void OnSetUIWidgetData(AppData.Post post)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        {
+           
         }
 
 

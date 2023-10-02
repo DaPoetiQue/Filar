@@ -9,15 +9,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Initialization();
-
-        #endregion
-
         #region Main
 
-        void Initialization()
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
             // Initialize Assets.
             Init((callback) =>

@@ -1,3 +1,5 @@
+using System;
+
 namespace Com.RedicalGames.Filar
 {
     public class FolderEmptyContentWidgetHandler : AppData.UIScreenWidget
@@ -46,6 +48,11 @@ namespace Com.RedicalGames.Filar
         protected override void OnSetUIWidgetData(AppData.Post post)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        {
+           
         }
 
         #endregion

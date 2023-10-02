@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -46,6 +47,11 @@ namespace Com.RedicalGames.Filar
         protected override void OnPointerUpExecuted(PointerEventData eventData)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        {
+           
         }
 
         #endregion

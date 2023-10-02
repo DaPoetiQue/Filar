@@ -7,7 +7,7 @@ namespace Com.RedicalGames.Filar
     {
         #region Main
 
-        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
@@ -15,11 +15,11 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults => 
+                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
                 {
                     callbackResults.SetResult(GetType());
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
                         var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
 

@@ -2694,7 +2694,7 @@ namespace Com.RedicalGames.Filar
                             Debug.LogWarning("--> OpenUIFolderStructure's GetFolderNavigationDataPackets Failed : ScreenNavigationManager.Instance Is Not Yet Initialized.");
 
                         //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.Return, AppData.UIImageDisplayerType.ButtonIcon, AppData.UIImageType.ReturnIcon);
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, folder.name);
+                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, folder.name);
                         await ScreenUIManager.Instance.RefreshAsync();
                     }
                 }
@@ -4204,7 +4204,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (GetProjectStructureData().Success())
                                             {
-                                                ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetProjectStructureData().data.projectInfo.name);
+                                                //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetProjectStructureData().data.projectInfo.name);
 
                                                 SetCurrentFolder(folder);
 
@@ -4617,21 +4617,21 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputType.Button:
 
-                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionButtonState(action.buttonActionType, action.state);
+                                    //ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionButtonState(action.buttonActionType, action.state);
 
                                     break;
 
                                 case AppData.InputType.InputField:
 
-                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionInputFieldState(action.inputFieldActionType, action.state);
-                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionInputFieldPlaceHolderText(action.inputFieldActionType, action.placeHolder);
+                                    //ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionInputFieldState(action.inputFieldActionType, action.state);
+                                    //ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionInputFieldPlaceHolderText(action.inputFieldActionType, action.placeHolder);
 
                                     break;
 
                                 case AppData.InputType.DropDown:
 
 
-                                    ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionDropdownOptions(action.dropDownActionType, action);
+                                    //ScreenUIManager.Instance.HasCurrentScreen().data.value.SetActionDropdownOptions(action.dropDownActionType, action);
 
                                     break;
                             }
@@ -4659,11 +4659,11 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            ScreenUIManager.Instance.SetScreenActionButtonState(screenType, AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Disabled);
-            ScreenUIManager.Instance.SetScreenActionButtonState(screenType, AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
-            ScreenUIManager.Instance.SetScreenActionDropdownState(screenType, AppData.InputUIState.Disabled, dropdownContentPlaceholder);
-            ScreenUIManager.Instance.SetScreenActionInputFieldState(screenType, AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
-            ScreenUIManager.Instance.SetScreenActionInputFieldPlaceHolderText(screenType, AppData.InputFieldActionType.AssetSearchField, string.Empty);
+            //ScreenUIManager.Instance.SetScreenActionButtonState(screenType, AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Disabled);
+            //ScreenUIManager.Instance.SetScreenActionButtonState(screenType, AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Disabled);
+            //ScreenUIManager.Instance.SetScreenActionDropdownState(screenType, AppData.InputUIState.Disabled, dropdownContentPlaceholder);
+            //ScreenUIManager.Instance.SetScreenActionInputFieldState(screenType, AppData.InputFieldActionType.AssetSearchField, AppData.InputUIState.Disabled);
+            //ScreenUIManager.Instance.SetScreenActionInputFieldPlaceHolderText(screenType, AppData.InputFieldActionType.AssetSearchField, string.Empty);
 
             callback?.Invoke(callbackResults);
         }
@@ -4677,7 +4677,7 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.PaginationViewType.Pager:
 
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.PaginationButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ScrollerIcon);
+                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.PaginationButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ScrollerIcon);
                         ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.ScrollerNavigationWidget);
                         ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(ScreenNavigationManager.Instance.GetPagerNavigationWidgetDataPackets());
 
@@ -4685,7 +4685,7 @@ namespace Com.RedicalGames.Filar
 
                     case AppData.PaginationViewType.Scroller:
 
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.PaginationButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PagerIcon);
+                        //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.PaginationButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PagerIcon);
                         ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.PagerNavigationWidget);
                         ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(ScreenNavigationManager.Instance.GetScrollerNavigationWidgetDataPackets());
 
@@ -6307,25 +6307,25 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.UIScreenType.ProjectCreationScreen:
 
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Enabled);
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Enabled);
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
 
                                     break;
 
                                 case AppData.UIScreenType.ProjectDashboardScreen:
 
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Enabled);
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
 
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, AppData.InputUIState.Enabled);
-                                    screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, AppData.InputUIState.Enabled);
+                                    //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, AppData.InputUIState.Enabled);
 
                                     break;
                             }
 
-                            screenUIManager.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.SortingList, AppData.InputUIState.Enabled);
-                            screenUIManager.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Enabled);
+                            //screenUIManager.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.SortingList, AppData.InputUIState.Enabled);
+                            //screenUIManager.GetCurrentScreenData().value.SetActionDropdownState(AppData.InputDropDownActionType.FilterList, AppData.InputUIState.Enabled);
 
                             screenUIManager.GetCurrentScreenData().value.ShowLoadingItem(AppData.LoadingItemType.Spinner, false);
                             await screenUIManager.RefreshAsync();

@@ -11,7 +11,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Initialize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
@@ -30,6 +30,7 @@ namespace Com.RedicalGames.Filar
                         callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
                         callbackResults.data = widgetStatePacket;
                     }
+
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
             }

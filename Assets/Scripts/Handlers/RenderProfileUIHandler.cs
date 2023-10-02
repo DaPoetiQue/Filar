@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -34,6 +35,12 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> RG_Unity - Init Failed : Title Displayer Is Null.");
 
             Init();
+        }
+
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        {
+           
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
