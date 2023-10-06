@@ -121,6 +121,11 @@ namespace Com.RedicalGames.Filar
         public static string TransformToString(this Transform source) => AppData.Helpers.TransformToString(source, " trn|");
         public static (string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) ToTransformInfo(this string source) => AppData.Helpers.StringToTransformInfo(source, " trn|");
 
+        public static bool GetActive(this GameObject gameObject) => gameObject.activeSelf && gameObject.activeInHierarchy;
+        public static bool GetInActive(this GameObject gameObject) => !gameObject.activeSelf && !gameObject.activeInHierarchy;
+        public static void Show(this GameObject gameObject) => gameObject.SetActive(true);
+        public static void Hide(this GameObject gameObject) => gameObject.SetActive(false);
+
         #endregion
     }
 }

@@ -21,7 +21,7 @@ namespace Com.RedicalGames.Filar
         {
             var callbackResults = new AppData.Callback();
 
-            if (initializeWidgets)
+            if (initializeScreenWidgets)
             {
                 callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $""));
 

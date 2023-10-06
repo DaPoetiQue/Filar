@@ -91,7 +91,7 @@ namespace Com.RedicalGames.Filar
                 StoragePermissionRequest();
         }
 
-        private async void Init(Action<AppData.Callback> callback = null)
+        private void Init(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
 
@@ -99,9 +99,7 @@ namespace Com.RedicalGames.Filar
             {
                 var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
 
-                var screenInitializationTaskResultsCallback = await screenUIManager.OnScreenInit();
-
-                callbackResults.SetResult(screenInitializationTaskResultsCallback);
+                callbackResults.SetResult(screenUIManager.OnScreenInit());
 
                 if (callbackResults.Success())
                 {
