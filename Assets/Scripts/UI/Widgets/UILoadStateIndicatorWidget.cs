@@ -92,7 +92,7 @@ namespace Com.RedicalGames.Filar
 
                         if (loadingData.autoHide)
                         {
-                            Hide();
+                            HideWidget();
 
                             TriggerOnRefreshCompletedEvent();
 
@@ -105,7 +105,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 loadingCompleted = true;
 
-                                Hide();
+                                HideWidget();
 
                                 TriggerOnRefreshFailedEvent();
                             }
@@ -116,7 +116,7 @@ namespace Com.RedicalGames.Filar
 
                                 loadingData.SetCompleted();
 
-                                Hide();
+                                HideWidget();
 
                                 TriggerOnRefreshCompletedEvent();
 
