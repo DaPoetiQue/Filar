@@ -41,44 +41,10 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        //if (thumbnailDisplayer == null)
-                        //{
-                        //    LogWarning("Thumbnail Displayer Missing.", this);
-                        //    return;
-                        //}
-
-                        //if (titleDisplayer == null)
-                        //{
-                        //    LogWarning("Title Displayer Missing.", this);
-                        //    return;
-                        //}
-
-                        //if (descriptionDisplayer == null)
-                        //{
-                        //    LogWarning("Description Displayer Missing.", this);
-                        //    return;
-                        //}
-
-                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                        callbackResults.data = widgetStatePacket;
-                    }
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
@@ -201,7 +167,7 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.TransitionType.Default:
 
-                    if (GetLayoutView(defaultLayoutType).layout)
+                    if (GetLayoutView(defaultLayoutType).Success())
                         OnScreenTogglableStateEvent(AppData.TogglableWidgetType.ResetAssetModelRotationButton, false);
                     else
                         LogError("Pop Up Value Required.", this, () => OnShowScreenWidget(dataPackets));

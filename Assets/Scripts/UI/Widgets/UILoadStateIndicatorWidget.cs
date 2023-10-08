@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -23,35 +23,13 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                callbackResults.SetResult(GetType());
-
-                if (callbackResults.Success())
-                {
-                    OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                    {
-                        callbackResults.SetResult(onRegisterWidgetCallbackResults);
-
-                        if (callbackResults.Success())
-                        {
-                            var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                            callbackResults.data = widgetStatePacket;
-                        }
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    });
-                }
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
-
 
         protected override void OnHideScreenWidget()
         {
@@ -73,7 +51,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override async void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
@@ -87,71 +65,74 @@ namespace Com.RedicalGames.Filar
 
                 loadingCompleted = false;
 
-                spinnerRoutine = StartCoroutine(OnLoadingSpinner((loadingCallbackResults) =>
-                {
-                    
-                }));
+                var onLoadingSpinnerTaskResuts = await OnLoadingSpinner();
+
+                if (onLoadingSpinnerTaskResuts.UnSuccessful())
+                    Log(onLoadingSpinnerTaskResuts.GetResultCode, onLoadingSpinnerTaskResuts.GetResult, this);
             }
         }
 
-        IEnumerator OnLoadingSpinner(Action<AppData.Callback> callback = null)
+        private async Task<AppData.Callback> OnLoadingSpinner()
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.Callback callbackResults = new AppData.Callback(GetLayoutView());
 
-            GetLayoutView(defaultLayoutType).layout.SetActive(true);
-
-            yield return new WaitForEndOfFrame();
-
-            while (loadingQueue.Count > 0)
+            if (callbackResults.Success())
             {
-                AppData.ScreenLoadingInitializationData loadingData = loadingQueue.Dequeue();
-
-                while (loadingData.Completed() == false)
+                while (loadingQueue.Count > 0)
                 {
+                    AppData.ScreenLoadingInitializationData loadingData = loadingQueue.Dequeue();
 
-                    TriggerOnRefreshInProgressEvent();
-
-                    yield return new WaitForSeconds(loadingData.duration);
-
-                    if (loadingData.autoHide)
+                    while (loadingData.Completed() == false)
                     {
-                        Hide();
 
-                        TriggerOnRefreshCompletedEvent();
+                        TriggerOnRefreshInProgressEvent();
 
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                        callback?.Invoke(callbackResults);
-                    }
-                    else
-                    {
-                        if (loadingData.isLargeFileSize)
+                        int delay = (int)loadingData.duration * 1000;
+                        await Task.Delay(delay);
+
+                        if (loadingData.autoHide)
                         {
-                            loadingCompleted = true;
-
-                            Hide();
-
-                            TriggerOnRefreshFailedEvent();
-                        }
-                        else
-                        {
-                            yield return new WaitUntil(() => loadingCompleted == true);
-
-                            loadingData.SetCompleted();
-
                             Hide();
 
                             TriggerOnRefreshCompletedEvent();
 
                             callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                            callback?.Invoke(callbackResults);
+                            break;
                         }
+                        else
+                        {
+                            if (loadingData.isLargeFileSize)
+                            {
+                                loadingCompleted = true;
+
+                                Hide();
+
+                                TriggerOnRefreshFailedEvent();
+                            }
+                            else
+                            {
+                                while (!loadingCompleted)
+                                    await Task.Yield();
+
+                                loadingData.SetCompleted();
+
+                                Hide();
+
+                                TriggerOnRefreshCompletedEvent();
+
+                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                break;
+                            }
+
+                            await Task.Yield();
+                        }
+
+                        await Task.Yield();
                     }
-
-                    yield return null;
                 }
-
-                yield return null;
             }
+
+            return callbackResults;
         }
 
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();

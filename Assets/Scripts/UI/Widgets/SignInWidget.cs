@@ -19,47 +19,57 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults =>
+            Init(initializationCallbackResults =>
             {
-                callbackResults.SetResult(databaseManagerCallbackResults);
-
-                if (databaseManagerCallbackResults.Success())
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                        {
-                            callbackResults.SetResult(GetType());
-
-                            if (callbackResults.Success())
-                            {
-                                var databaseManager = databaseManagerCallbackResults.data;
-                                var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
-
-                                transitionableUIComponent = new AppData.TransitionableUIComponent(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
-                                transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
-
-                                var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                                callbackResults.data = widgetStatePacket;
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
-
-            }, "App Database Manager Instance Is Not Yet Initialized.");
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
+
+        void ReferenceAnddelete()
+        {
+
+            //AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, databaseManagerCallbackResults =>
+            //{
+            //    callbackResults.SetResult(databaseManagerCallbackResults);
+
+            //    if (databaseManagerCallbackResults.Success())
+            //    {
+            //        callbackResults.SetResult(GetType());
+
+            //        if (callbackResults.Success())
+            //        {
+            //            OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+            //            {
+            //                callbackResults.SetResult(GetType());
+
+            //                if (callbackResults.Success())
+            //                {
+            //                    var databaseManager = databaseManagerCallbackResults.data;
+            //                    var widgetView = GetLayoutView(AppData.WidgetLayoutViewType.DefaultView);
+
+            //                    transitionableUIComponent = new AppData.TransitionableUIComponent(widgetContainer.value, AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once);
+            //                    transitionableUIComponent.SetTransitionSpeed(databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+
+            //                    var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+            //                    callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+            //                    callbackResults.data = widgetStatePacket;
+            //                }
+            //                else
+            //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //            });
+            //        }
+            //        else
+            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //    }
+            //    else
+            //        Log(databaseManagerCallbackResults.resultCode, databaseManagerCallbackResults.result, this);
+
+            //}, "App Database Manager Instance Is Not Yet Initialized.");
+        }
+
 
         protected override void OnHideScreenWidget()
         {

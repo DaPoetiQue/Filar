@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Com.RedicalGames.Filar
 {
@@ -37,31 +36,28 @@ namespace Com.RedicalGames.Filar
 
                         foreach (var widget in widgetComponents)
                         {
-                            if (widget != null && !screenWidgetsList.Contains(widget))
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(widget, "Screen Widget", $"Screen Widget Null At Index : {widgetComponents.ToList().IndexOf(widget)} For Screen : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                            if (callbackResults.Success())
                             {
                                 widget.Initilize(initializationCallbackResults =>
                                 {
                                     callbackResults.SetResult(initializationCallbackResults);
+
+                                    LogInfo($" _________________________+++++++++++++++++++++++++++++++++++++__________ Screen : {GetName()} - Of Type : {GetType().GetData()} - Code : {callbackResults.GetResultCode} - Result : {callbackResults.GetResult}", this);
+
+                                    if(callbackResults.Success())
+                                    {
+                                        AddScreenWidget(widget, screenWidgetAddedCallbackResults => 
+                                        {
+                                            callbackResults.SetResult(screenWidgetAddedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        
+                                        });
+                                    }
                                 });
-
-                                //widget.Init(this, initializationCallbackResults => 
-                                //{
-                                //    if (initializationCallbackResults.Success())
-                                //    {
-                                //        var widgetEventActionData = initializationCallbackResults.GetData();
-
-                                //        RegisterEventAction(eventRegisteredCallbackResults => 
-                                //        {
-                                //            if (eventRegisteredCallbackResults.Success())
-                                //                screenWidgetsList.Add(widget);
-                                //            else
-                                //                Log(eventRegisteredCallbackResults.GetResultCode, eventRegisteredCallbackResults.GetResult, this);
-
-                                //        }, widgetEventActionData);
-                                //    }
-                                //    else
-                                //        Log(initializationCallbackResults.GetResultCode, initializationCallbackResults.GetResult, this);
-                                //});
                             }
                             else
                                 break;
@@ -76,6 +72,34 @@ namespace Com.RedicalGames.Filar
             }
 
             callback?.Invoke(callbackResults);
+        }
+
+        private void AddScreenWidget(AppData.Widget widget, Action<AppData.Callback> callback = null)
+        {
+            var callbacResults = new AppData.Callback();
+
+            if(!screenWidgetsList.Contains(widget))
+            {
+                screenWidgetsList.Add(widget);
+
+                if(screenWidgetsList.Contains(widget))
+                {
+                    callbacResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                    callbacResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbacResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
+                    callbacResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+            else
+            {
+                callbacResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                callbacResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            callback?.Invoke(callbacResults);
         }
 
         void ActionEventsSubscription(bool subscribe)

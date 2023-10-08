@@ -45,70 +45,77 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        if (nameInputField != null)
-                            nameInputField.onValueChanged.AddListener((value) => OnSceneAssetNameFieldValueChanged(value));
-                        else
-                            Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
-
-                        if (descriptionInputField != null)
-                            descriptionInputField.onValueChanged.AddListener((value) => OnSceneAssetDescriptionFieldValueChanged(value));
-                        else
-                            Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
-
-                        if (AppDatabaseManager.Instance != null)
-                        {
-                            var content = AppDatabaseManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
-
-                            if (content.data != null)
-                            {
-                                if (assetCategoryDropdown != null)
-                                {
-                                    List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
-
-                                    foreach (var category in content.data)
-                                        dropdownOption.Add(new TMP_Dropdown.OptionData() { text = category });
-
-                                    assetCategoryDropdown.AddOptions(dropdownOption);
-
-                                    assetCategoryDropdown.onValueChanged.AddListener((value) => OnAssetCategorySelectionDropdownValueChanged(value));
-                                }
-                                else
-                                    LogError("Category Drop Down Missing / Not Assigned In The Editor Inspector Panel.", this);
-                            }
-                            else
-                                LogError("Scene Asset Category Content Missing / Not Found.", this);
-                        }
-                        else
-                            LogError("Scene Asset Manager Instance Not Initialized.", this);
-
-                        if (GetLayoutView().layout.GetComponent<RectTransform>())
-                            screenRect = GetLayoutView().layout.GetComponent<RectTransform>();
-                        else
-                            Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
-
-                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                        callbackResults.data = widgetStatePacket;
-                    }
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
+
+        void ReuseReferenceDataAndDelete()
+        {
+            //if (callbackResults.Success())
+            //{
+            //    OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+            //    {
+            //        callbackResults.SetResult(GetType());
+
+            //        if (callbackResults.Success())
+            //        {
+            //            if (nameInputField != null)
+            //                nameInputField.onValueChanged.AddListener((value) => OnSceneAssetNameFieldValueChanged(value));
+            //            else
+            //                Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
+
+            //            if (descriptionInputField != null)
+            //                descriptionInputField.onValueChanged.AddListener((value) => OnSceneAssetDescriptionFieldValueChanged(value));
+            //            else
+            //                Debug.LogWarning("--> Scene Asset Input Name Field Missing / Not Assigned In The Inspector Panel.");
+
+            //            if (AppDatabaseManager.Instance != null)
+            //            {
+            //                var content = AppDatabaseManager.Instance.GetDropdownContent<AppData.AssetCategoryType>();
+
+            //                if (content.data != null)
+            //                {
+            //                    if (assetCategoryDropdown != null)
+            //                    {
+            //                        List<TMP_Dropdown.OptionData> dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+            //                        foreach (var category in content.data)
+            //                            dropdownOption.Add(new TMP_Dropdown.OptionData() { text = category });
+
+            //                        assetCategoryDropdown.AddOptions(dropdownOption);
+
+            //                        assetCategoryDropdown.onValueChanged.AddListener((value) => OnAssetCategorySelectionDropdownValueChanged(value));
+            //                    }
+            //                    else
+            //                        LogError("Category Drop Down Missing / Not Assigned In The Editor Inspector Panel.", this);
+            //                }
+            //                else
+            //                    LogError("Scene Asset Category Content Missing / Not Found.", this);
+            //            }
+            //            else
+            //                LogError("Scene Asset Manager Instance Not Initialized.", this);
+
+            //            if (GetLayoutView().layout.GetComponent<RectTransform>())
+            //                screenRect = GetLayoutView().layout.GetComponent<RectTransform>();
+            //            else
+            //                Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
+
+            //            var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+            //            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+            //            callbackResults.data = widgetStatePacket;
+            //        }
+            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //    });
+            //}
+            //else
+            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
         protected override void OnScreenWidget()
         {
             if (AppDatabaseManager.Instance)

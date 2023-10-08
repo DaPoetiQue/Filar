@@ -32,33 +32,10 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        if (exportedAssetNameInputField.value != null)
-                            exportedAssetNameInputField.value.onValueChanged.AddListener((value) => OnInputAssetNameFieldValueChangeEvent(value));
-                        else
-                            Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
-
-                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                        callbackResults.data = widgetStatePacket;
-
-                        Invoke("InitializeDropDownContent", initializationDelay);
-                    }
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
@@ -135,48 +112,48 @@ namespace Com.RedicalGames.Filar
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            switch (transitionType)
-            {
-                case AppData.TransitionType.Default:
+            //switch (transitionType)
+            //{
+            //    case AppData.TransitionType.Default:
 
-                    if (GetLayoutView(defaultLayoutType).layout)
-                    {
-                        if (exportedAssetNameInputField.value != null)
-                        {
-                            exportedAssetNameInputField.value.text = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
-                        }
-                        else
-                            Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
+            //        if (GetLayoutView(defaultLayoutType).layout)
+            //        {
+            //            if (exportedAssetNameInputField.value != null)
+            //            {
+            //                exportedAssetNameInputField.value.text = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
+            //            }
+            //            else
+            //                Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
 
-                        if (AppDatabaseManager.Instance)
-                        {
-                            if (AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value != null)
-                            {
-                                assetExportData.name = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
-                                assetExportData.value = AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value;
-                            }
-                            else
-                                Debug.LogWarning("--> RG_Unity - OnShowScreenWidget Failed : Scene Assets Manager Instance's Get Current Scene Asset Scene Object Value Is Missing / Null");
+            //            if (AppDatabaseManager.Instance)
+            //            {
+            //                if (AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value != null)
+            //                {
+            //                    assetExportData.name = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
+            //                    assetExportData.value = AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value;
+            //                }
+            //                else
+            //                    Debug.LogWarning("--> RG_Unity - OnShowScreenWidget Failed : Scene Assets Manager Instance's Get Current Scene Asset Scene Object Value Is Missing / Null");
 
-                            AppDatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
-                        }
-                        else
-                            Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Pop Up Value Required.");
+            //                AppDatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
+            //            }
+            //            else
+            //                Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
+            //        }
+            //        else
+            //            Debug.LogWarning("--> Pop Up Value Required.");
 
-                    break;
+            //        break;
 
-                case AppData.TransitionType.Translate:
+            //    case AppData.TransitionType.Translate:
 
-                    break;
-            }
+            //        break;
+            //}
 
-            if (AppDatabaseManager.Instance)
-                SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
-            else
-                Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
+            //if (AppDatabaseManager.Instance)
+            //    SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
+            //else
+            //    Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
         }
 
         protected override void OnHideScreenWidget()

@@ -19,49 +19,56 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-
         protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        if (xRotationInputField.value)
-                            xRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, xRotationInputField.dataPackets.action));
-                        else
-                            Debug.LogWarning("--> X Rotation Input Field Value Is Null.");
-
-                        if (yRotationInputField.value)
-                            yRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, yRotationInputField.dataPackets.action));
-                        else
-                            Debug.LogWarning("--> Y Rotation Input Field Value Is Null.");
-
-                        if (zRotationInputField.value)
-                            zRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, zRotationInputField.dataPackets.action));
-                        else
-                            Debug.LogWarning("--> Z Rotation Input Field Value Is Null.");
-
-                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                        callbackResults.data = widgetStatePacket;
-                    }
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
+
+        void ReferenceAndDelete()
+        {
+            //if (callbackResults.Success())
+            //{
+            //    OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+            //    {
+            //        callbackResults.SetResult(GetType());
+
+            //        if (callbackResults.Success())
+            //        {
+            //            if (xRotationInputField.value)
+            //                xRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, xRotationInputField.dataPackets.action));
+            //            else
+            //                Debug.LogWarning("--> X Rotation Input Field Value Is Null.");
+
+            //            if (yRotationInputField.value)
+            //                yRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, yRotationInputField.dataPackets.action));
+            //            else
+            //                Debug.LogWarning("--> Y Rotation Input Field Value Is Null.");
+
+            //            if (zRotationInputField.value)
+            //                zRotationInputField.value.onValueChanged.AddListener((value) => OnUIInputFieldActionValueChanged(value, zRotationInputField.dataPackets.action));
+            //            else
+            //                Debug.LogWarning("--> Z Rotation Input Field Value Is Null.");
+
+            //            var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+
+            //            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
+            //            callbackResults.data = widgetStatePacket;
+            //        }
+            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //    });
+            //}
+            //else
+            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+        }
+
 
         void OnUIInputFieldActionValueChanged(string value, AppData.InputFieldActionType inputFiledAction)
         {

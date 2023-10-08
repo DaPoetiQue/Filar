@@ -160,11 +160,11 @@ namespace Com.RedicalGames.Filar
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            callbackResults.SetResult(splashDisplayerWidgetCallbackResults.data.Initialized());
+                                                                            callbackResults.SetResult(splashDisplayerWidgetCallbackResults.GetData().Initialized());
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.data;
+                                                                                var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.GetData();
 
                                                                                 await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
                                                                                 {

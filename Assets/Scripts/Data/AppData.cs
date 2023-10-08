@@ -7562,6 +7562,7 @@ namespace Com.RedicalGames.Filar
 
         public enum WidgetLayoutViewType
         {
+            None,
             DefaultView,
             ItemView,
             ListView
@@ -25217,55 +25218,76 @@ namespace Com.RedicalGames.Filar
             public GameObject layout;
 
             [Space(5)]
-            public WidgetLayoutViewType layoutViewType;
+            public WidgetLayoutViewType viewType;
 
             #endregion
 
             #region Main
 
-            public void ShowLayout(Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback()
- ;
-                if (IsInitialized())
-                {
-                    layout?.SetActive(true);
+            public string GetName() => !string.IsNullOrEmpty(layoutName) ? layoutName : "Layout View Name Is Not Assigned.";
+            public void SetName(string layoutName) => this.layoutName = layoutName;
 
-                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Set To Active.";
+            public new CallbackData<WidgetLayoutViewType> GetType()
+            {
+                var callbackResults = new CallbackData<WidgetLayoutViewType>();
+
+                if(viewType == WidgetLayoutViewType.DefaultView)
+                {
+                    callbackResults.result = $"Layout View : {GetName()} Is Set To View Type : {viewType}";
+                    callbackResults.data = viewType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Not Initialized.";
+                    callbackResults.result = $"Failed To Get Layout View Type For Layout View : {GetName()} - View Type Is Set To Default : {viewType}";
+                    callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
+
+                return callbackResults;
+            }
+
+            public void ShowLayout(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                    Initialized().GetData().Show();
 
                 callback?.Invoke(callbackResults);
             }
 
             public void HideLayout(Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(Initialized());
 
-                if (IsInitialized())
-                {
-                    layout?.SetActive(false);
-
-                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Initialized And Now Deactivated.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Layout View Of Type : {layoutViewType} Is Not Initialized.";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                if (callbackResults.Success())
+                    Initialized().GetData().Hide();
 
                 callback?.Invoke(callbackResults);
             }
 
-            public bool IsInitialized()
+            public CallbackData<GameObject> Initialized()
             {
-                return layout != null;
+                var callbackResults = new CallbackData<GameObject>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    if (layout != null)
+                    {
+                        callbackResults.result = $"Layout View : {GetName()} Of View Type : {GetType().GetData()} - Has Been Initialized Successfully.";
+                        callbackResults.data = layout;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Initialize Layout : {GetName()} Of View Type : {GetType().GetData()} - Layout Value Is Missing / Null / Not Assigned In The Unity Editor Inspector Panel.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
             }
 
             #endregion
@@ -25816,6 +25838,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [DisallowMultipleComponent]
         [Serializable]
         public abstract class UIScreenWidget<T> : AppMonoBaseClass, IScreenWidget<T> where T : Enum
         {
@@ -25849,6 +25872,10 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Event Actions
+
+            [Space(5)]
+            [SerializeField]
+            protected bool subscribeToActionEvents = false;
 
             private List<EventAction> eventActionList = new List<EventAction>();
 
@@ -25900,46 +25927,54 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
+                if (subscribeToActionEvents)
                 {
-                    callbackResults.SetResult(componentsValidCallbackResults);
-
-                    if (callbackResults.Success())
+                    Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
                     {
-                        for (int i = 0; i < eventParams.Length; i++)
+                        callbackResults.SetResult(componentsValidCallbackResults);
+
+                        if (callbackResults.Success())
                         {
-                            var eventAction = eventParams[i];
-                            callbackResults.SetResult(eventAction.Initialized());
-
-                            if (callbackResults.Success())
+                            for (int i = 0; i < eventParams.Length; i++)
                             {
-                                await Task.Yield();
+                                var eventAction = eventParams[i];
+                                callbackResults.SetResult(eventAction.Initialized());
 
-                                if (!eventActionList.Contains(eventAction))
+                                if (callbackResults.Success())
                                 {
-                                    eventActionList.Add(eventAction);
+                                    await Task.Yield();
 
-                                    if (eventActionList.Contains(eventAction))
+                                    if (!eventActionList.Contains(eventAction))
                                     {
-                                        callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                        eventActionList.Add(eventAction);
+
+                                        if (eventActionList.Contains(eventAction))
+                                        {
+                                            callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
+                                            callbackResults.resultCode = Helpers.SuccessCode;
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
+                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                        }
                                     }
                                     else
                                     {
-                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
-                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
+                                        callbackResults.resultCode = Helpers.WarningCode;
                                     }
-                                }
-                                else
-                                {
-                                    callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
-                                    callbackResults.resultCode = Helpers.WarningCode;
                                 }
                             }
                         }
-                    }
 
-                }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
+                    }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
+                }
+                else
+                {
+                    callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
 
                 callback?.Invoke(callbackResults);
             }
@@ -26443,11 +26478,12 @@ namespace Com.RedicalGames.Filar
 
             #region Abstract Overrides
 
-            protected abstract void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback);
+            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket>> callback);
 
             #endregion
         }
 
+        [DisallowMultipleComponent]
         [Serializable]
         public abstract class UIScreenWidgetBaseInput<T> : UIScreenWidget<T> where T : Enum
         {
@@ -28077,6 +28113,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [UnityEditor.CanEditMultipleObjects]
         [Serializable]
         public abstract class Widget : UIScreenWidgetBaseInput<WidgetType>, IUIWidget
         {
@@ -28104,13 +28141,6 @@ namespace Com.RedicalGames.Filar
 
             [Space(10)]
             [Header("Widget Settings")]
-
-            //[Space(5)]
-            //public WidgetType widgetType;
-
-            [Space(5)]
-            [SerializeField]
-            protected bool subscribeToActionEvents = false;
 
             [Space(5)]
             public TransitionType transitionType;
@@ -28148,8 +28178,9 @@ namespace Com.RedicalGames.Filar
 
             Coroutine showWidgetAsyncRoutine;
 
-            protected WidgetStatePacket widgetStatePacket;
+            protected WidgetStatePacket widgetStatePacket = new WidgetStatePacket();
 
+            [SerializeField]
             private UIScreenHandler parentWidget;
 
             #region Widgets 
@@ -28158,94 +28189,88 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(UIScreenHandler parentWidget, Action<CallbackParams<EventActionData>> callback = null)
+            public void Init(Action<CallbackData<WidgetStatePacket>> callback, params EventActionData[] eventActions)
             {
-                CallbackParams<EventActionData> callbackResults = new CallbackParams<EventActionData>();
+                var callbackResults = new CallbackData<WidgetStatePacket>(GetType());
 
                 #region Base Initialization
 
-                #region Layout
-
-                WidgetLayoutView layoutView = GetLayoutView();
-
-                if (layoutView.layout)
-                    if (layoutView.layout.GetComponent<RectTransform>())
-                        widgetRect = layoutView.layout.GetComponent<RectTransform>();
-                    else
-                        LogWarning("Value Doesn't Have A Rect Transform Component.", this);
-                else
-                    LogWarning("Value Is Null.", this);
-
-
-                if (dontShowAgainToggleField != null)
-                    dontShowAgainToggleField.onValueChanged.AddListener((value) => SetAlwaysShowWidget(value));
-
-                #endregion
-
-                //AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
-
-                callbackResults.SetResult(GetType());
-
                 if (callbackResults.Success())
                 {
-                    OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                    #region Layout
+
+                    callbackResults.SetResult(GetLayoutView());
+
+                    #endregion
+
+                    #region Widgets
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetType());
-
-                        if (callbackResults.Success())
+                        RegisterEventAction(eventActionRegisteredCallbacResults => 
                         {
-                            var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
+                            callbackResults.SetResult(eventActionRegisteredCallbacResults);
 
-                            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                            //callbackResults.data = widgetStatePacket;
-                        }
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    });
+                            if(callbackResults.Success())
+                            {
+                                InitializeInputs(inputsInitializationCallbackResults =>
+                                {
+                                    callbackResults.SetResult(inputsInitializationCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(onRegisterWidgetCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                parentWidget = GetComponentInParent<UIScreenHandler>();
+                                                callbackResults.SetResult(Helpers.GetAppComponentValid(parentWidget, "Parent Widget", $"Failed To Find Parent Screen Widget For Widget : {GetName()} - Of Type : {GetType().GetData()} - Please Check Here."));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var widgetStatePacket = new WidgetStatePacket(name: GetName(), type: GetType().GetData(), stateType: WidgetStateType.Initialized, value: this);
+
+                                                    SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults => 
+                                                    {
+                                                        callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+
+                                                        if(callbackResults.Success())
+                                                        {
+                                                            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                                            callbackResults.data = widgetStatePacket;
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                });
+                            }
+
+                        }, eventActions);
+                    }
+
+                    #endregion
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback.Invoke(callbackResults);
 
-                #region Initialized Action Group
-
-                InitializeInputs(inputsInitialized => 
-                {
-                    callbackResults.SetResult(inputsInitialized);
-                
-                });
-
                 #endregion
+            }
 
-                #endregion
+            protected void SetWidgetStatePacket(WidgetStatePacket statePacket, Action<Callback> callback = null)
+            {
 
-                #region Widget Initialization
-
-                //Initialize(initializationCallbackResults =>
-                //{
-                //    callbackResults.SetResult(initializationCallbackResults);
-
-                //    if (callbackResults.Success())
-                //    {
-                //        var statePacket = initializationCallbackResults.data;
-                //        SetStatePacket(statePacket);
-
-                //        #region Event Actions
-
-                //        var onWidgetTransitionEvent = new EventActionData("On Widget Transition Event", EventType.OnUpdate, OnWidgetTransition);
-                //        callbackResults.SetData(onWidgetTransitionEvent);
-
-                //        #endregion
-
-                //        this.parentWidget = parentWidget;
-                //    }
-                //    else
-                //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //});
-
-                #endregion
-
-                callback?.Invoke(callbackResults);
             }
 
             public CallbackData<UIScreenHandler> GetParentWidget()
@@ -29992,14 +30017,44 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            protected WidgetLayoutView GetLayoutView()
+            protected CallbackData<WidgetLayoutView> GetLayoutView()
             {
-                return widgetLayouts.Find(layout => layout.layoutViewType == defaultLayoutType);
+                var callbackResults = new CallbackData<WidgetLayoutView>();
+
+                var layout = widgetLayouts.Find(layout => layout.viewType == defaultLayoutType);
+
+                callbackResults.SetResult(layout.Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
+                    callbackResults.data = layout;
+                }
+
+                return callbackResults;
             }
 
-            protected WidgetLayoutView GetLayoutView(WidgetLayoutViewType layoutViewType)
+            protected CallbackData<WidgetLayoutView> GetLayoutView(WidgetLayoutViewType viewType)
             {
-                return widgetLayouts.Find(layout => layout.layoutViewType == layoutViewType);
+                var callbackResults = new CallbackData<WidgetLayoutView>();
+
+                var layout = widgetLayouts.Find(layout => layout.viewType == viewType);
+
+                callbackResults.SetResult(layout.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
+                    callbackResults.data = layout;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Find Layout View Of Type : {viewType} For Widget : {GetName()} Of Type : {GetType().GetData()} - With Results : {callbackResults.GetResult}.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public void OnScrollerValueChangedEvent(Vector2 value) => OnScrollerValueChanged(value);
@@ -30118,7 +30173,7 @@ namespace Com.RedicalGames.Filar
                     {
                         foreach (var layout in widgetLayouts)
                         {
-                            if (layout.layoutViewType == layoutViewType)
+                            if (layout.viewType == layoutViewType)
                                 layout.ShowLayout();
                             else
                                 layout.HideLayout();
@@ -30129,7 +30184,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    WidgetLayoutView layoutView = widgetLayouts.Find(widget => widget.layoutViewType == layoutViewType);
+                    WidgetLayoutView layoutView = widgetLayouts.Find(widget => widget.viewType == layoutViewType);
 
                     if (layoutView.layout)
                         layoutView.ShowLayout();
@@ -30150,7 +30205,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    WidgetLayoutView layoutView = widgetLayouts.Find(widget => widget.layoutViewType == layoutViewType);
+                    WidgetLayoutView layoutView = widgetLayouts.Find(widget => widget.viewType == layoutViewType);
 
                     if (layoutView.layout)
                         layoutView.HideLayout();

@@ -17,38 +17,10 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        AppData.WidgetLayoutView layoutView = widgetLayouts.Find(layout => layout.layoutViewType == defaultLayoutType);
-
-                        if (layoutView.layout)
-                        {
-                            if (layoutView.layout.GetComponent<RectTransform>())
-                                screenRect = layoutView.layout.GetComponent<RectTransform>();
-                            else
-                                Debug.LogWarning("Init : Value Doesn't Have A Rect Transform Component.");
-                        }
-                        else
-                            Debug.LogWarning("--> Failed - Layout Value Missing / Not Assigned In The Inspector.");
-
-                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                        callbackResults.data = widgetStatePacket;
-                    }
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
