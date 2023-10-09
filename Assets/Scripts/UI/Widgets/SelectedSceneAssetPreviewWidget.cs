@@ -189,7 +189,7 @@ namespace Com.RedicalGames.Filar
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            await ScreenUIManager.Instance.RefreshAsync();
+            //await ScreenUIManager.Instance.RefreshAsync();
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
