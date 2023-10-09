@@ -21176,11 +21176,6 @@ namespace Com.RedicalGames.Filar
                 return contentIndex;
             }
 
-            public SceneDataPackets GetDataPackets()
-            {
-                return dataPackets;
-            }
-
             public UIScreenType GetUIWidgetPresenterScreenType()
             {
                 return dataPackets.screenType;
@@ -21404,73 +21399,73 @@ namespace Com.RedicalGames.Filar
                     LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
             }
 
-            public void GetUIImageDisplayer(ScreenImageType imageType, Action<CallbackData<Image>> callback)
-            {
-                CallbackData<Image> callbackResults = new CallbackData<Image>();
+            //public void GetUIImageDisplayer(ScreenImageType imageType, Action<CallbackData<Image>> callback)
+            //{
+            //    CallbackData<Image> callbackResults = new CallbackData<Image>();
 
-                if (GetActive())
-                {
-                    if (actionGroup != null && actionGroup.Count > 0)
-                    {
-                        var initialized = actionGroup.FindAll(widget => widget.initialize);
+            //    if (GetActive())
+            //    {
+            //        if (actionGroup != null && actionGroup.Count > 0)
+            //        {
+            //            var initialized = actionGroup.FindAll(widget => widget.initialize);
 
-                        if (initialized != null && initialized.Count > 0)
-                        {
-                            foreach (var item in initialized)
-                            {
-                                foreach (var widgetData in item.screenActionGroup)
-                                {
-                                    if (widgetData.HasComponent(InputType.Image))
-                                    {
-                                        widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
-                                        {
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var widget = widgetData.GetImageComponent();
+            //            if (initialized != null && initialized.Count > 0)
+            //            {
+            //                foreach (var item in initialized)
+            //                {
+            //                    foreach (var widgetData in item.screenActionGroup)
+            //                    {
+            //                        if (widgetData.HasComponent(InputType.Image))
+            //                        {
+            //                            widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+            //                            {
+            //                                if (dataPacketsCallback.Success())
+            //                                {
+            //                                    var widget = widgetData.GetImageComponent();
 
-                                                if (widget != null && widget.imageType == imageType)
-                                                {
-                                                    if (widget.value)
-                                                    {
-                                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {widget.name} Of Type : {imageType} Found - For Screen Widget : {name}.";
-                                                        callbackResults.data = widget.value;
-                                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.";
-                                                        callbackResults.data = default;
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    callbackResults.result = "Action Group Button Component Not Found";
-                                                    callbackResults.data = default;
-                                                    callbackResults.resultCode = Helpers.ErrorCode;
+            //                                    if (widget != null && widget.imageType == imageType)
+            //                                    {
+            //                                        if (widget.value)
+            //                                        {
+            //                                            callbackResults.result = $"Set Action Button Event Success - Action Button : {widget.name} Of Type : {imageType} Found - For Screen Widget : {name}.";
+            //                                            callbackResults.data = widget.value;
+            //                                            callbackResults.resultCode = Helpers.SuccessCode;
+            //                                        }
+            //                                        else
+            //                                        {
+            //                                            callbackResults.result = $"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.";
+            //                                            callbackResults.data = default;
+            //                                            callbackResults.resultCode = Helpers.ErrorCode;
+            //                                        }
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        callbackResults.result = "Action Group Button Component Not Found";
+            //                                        callbackResults.data = default;
+            //                                        callbackResults.resultCode = Helpers.ErrorCode;
 
-                                                }
-                                            }
-                                            else
-                                                callbackResults.SetResult(dataPacketsCallback);
-                                        });
+            //                                    }
+            //                                }
+            //                                else
+            //                                    callbackResults.SetResult(dataPacketsCallback);
+            //                            });
 
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+            //                            break;
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        callbackResults.result = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
+            //        callbackResults.data = default;
+            //        callbackResults.resultCode = Helpers.ErrorCode;
+            //    }
 
-                callback.Invoke(callbackResults);
-            }
+            //    callback.Invoke(callbackResults);
+            //}
 
             public GameObject GetSceneAssetObject()
             {
@@ -21532,10 +21527,6 @@ namespace Com.RedicalGames.Filar
                 return widgetParentScreen;
             }
 
-            public void Show() => gameObject.SetActive(true);
-
-            public void Hide() => gameObject.SetActive(false);
-
             public void SetDefaultUIWidgetActionState(DefaultUIWidgetActionState actionState)
             {
                 defaultUIWidgetAction = actionState;
@@ -21581,7 +21572,6 @@ namespace Com.RedicalGames.Filar
             {
                 Debug.LogError($"--> Button : {buttonType} State - : {state}");
             }
-
 
             protected void SetActionButtonColor(InputActionButtonType buttonType, Color color)
             {
@@ -28351,38 +28341,79 @@ namespace Com.RedicalGames.Filar
 
             #region UI Image Displayer Value
 
-            public void GetUIImageDisplayerValue(ScreenImageType displayerType, Action<CallbackData<UIImageDisplayer<ImageDataPackets>>> callback)
+            public void GetUIImageDisplayer(ScreenImageType displayerType, Action<CallbackData<UIImageDisplayer<ImageDataPackets>>> callback)
             {
                 CallbackData<UIImageDisplayer<ImageDataPackets>> callbackResults = new CallbackData<UIImageDisplayer<ImageDataPackets>>();
 
-                //if (imageDisplayers.Count > 0)
-                //{
-                //    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
+                if (initializeActionGroup)
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                //    if (imageDisplayer != null)
-                //    {
-                //        callbackResults.result = $"Screen Widget's Get UI Image Displayer Value Success - Findound Image Displayer : {imageDisplayer.name} Of Type : {displayerType}.";
-                //        callbackResults.data = imageDisplayer;
-                //        callbackResults.resultCode = Helpers.SuccessCode;
-                //    }
-                //    else
-                //    {
-                //        callbackResults.result = $"Screen Widget's Get UI Image Displayer Value Failed - Couldn't Find Image Displayer Of Type : {displayerType}.";
-                //        callbackResults.data = default;
-                //        callbackResults.resultCode = Helpers.ErrorCode;
-                //    }
-                //}
-                //else
-                //{
-                //    callbackResults.result = "Screen Widget's Get UI Image Displayer Value Failed - Image Displayers Are Not Yet Initialized.";
-                //    callbackResults.data = default;
-                //    callbackResults.resultCode = Helpers.ErrorCode;
-                //}
+                    if (callbackResults.Success())
+                    {
+                        var initializedActionGroups = actionGroup.FindAll(widget => widget.initialize);
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Are No Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var initializedActionGroup in initializedActionGroups)
+                            {
+                                foreach (var actionGroupData in initializedActionGroup.screenActionGroup)
+                                {
+                                    if (actionGroupData.HasComponent(InputType.Image))
+                                    {
+                                        actionGroupData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetImageComponent();
+
+                                                if (actionGroup != null && actionGroup.imageType == displayerType)
+                                                {
+                                                    if (actionGroup.value)
+                                                    {
+                                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {actionGroup.GetName()} Of Type : {displayerType} Found - For Screen Widget : {name}.";
+                                                        callbackResults.data = actionGroup;
+                                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {actionGroup.GetName()} Of Type : {displayerType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.data = default;
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = "Action Group Button Component Not Found";
+                                                    callbackResults.data = default;
+                                                    callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                }
+                                            }
+                                            else
+                                                callbackResults.SetResult(dataPacketsCallback);
+                                        });
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Get UI Image Displayer Of Type : {displayerType} Failed - Input Actions Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
 
                 callback.Invoke(callbackResults);
             }
 
-            public void SetUIImageDisplayerValue(ScreenImageType displayerType, ImageData screenCaptureData, ImageDataPackets dataPackets)
+            public void SetUIImageDisplayer(ScreenImageType displayerType, ImageData screenCaptureData, ImageDataPackets dataPackets)
             {
                 ////if (imageDisplayers.Count > 0)
                 ////{
@@ -28397,34 +28428,154 @@ namespace Com.RedicalGames.Filar
                 ////    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
             }
 
-            public void SetUIImageDisplayerValue(ScreenImageType displayerType, Texture2D imageData, bool preserveAspectRatio = true)
+            public void SetUIImageDisplayer(ScreenImageType displayerType, Texture2D imageData, bool preserveAspectRatio = true, Action<Callback> callback = null)
             {
-                //if (imageDisplayers.Count > 0)
-                //{
-                //    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
+                var callbackResults = new Callback();
 
-                //    if (imageDisplayer != null)
-                //        imageDisplayer.SetImageData(imageData, preserveAspectRatio);
-                //    else
-                //        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
-                //}
-                //else
-                //    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
+                if (initializeActionGroup)
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                    if (callbackResults.Success())
+                    {
+                        var initializedActionGroups = actionGroup.FindAll(widget => widget.initialize);
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Are No Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var initializedActionGroup in initializedActionGroups)
+                            {
+                                foreach (var actionGroupData in initializedActionGroup.screenActionGroup)
+                                {
+                                    if (actionGroupData.HasComponent(InputType.Image))
+                                    {
+                                        actionGroupData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetImageComponent();
+
+                                                if (actionGroup != null && actionGroup.imageType == displayerType)
+                                                {
+                                                    if (actionGroup.value)
+                                                    {
+                                                        actionGroup.value.sprite = Helpers.Texture2DToSprite(imageData);
+
+                                                        if(actionGroup.value.sprite == Helpers.Texture2DToSprite(imageData))
+                                                            callbackResults.result = $"Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Value Has Been Successfully Set.";
+                                                        else
+                                                        {
+                                                            callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} - Invalid Operation - Please Check Here.";
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Image Displayer Component Not Found";
+                                                    callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                }
+                                            }
+                                            else
+                                                callbackResults.SetResult(dataPacketsCallback);
+                                        });
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Set UI Image Displayer Of Type : {displayerType} Failed - Input Actions Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void SetUIImageDisplayerValue(ScreenImageType displayerType, Sprite image)
+            public void SetUIImageDisplayer(ScreenImageType displayerType, Sprite image, bool preserveAspectRatio = true, Action<Callback> callback = null)
             {
-                //if (imageDisplayers.Count > 0)
-                //{
-                //    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
+                var callbackResults = new Callback();
 
-                //    if (imageDisplayer != null)
-                //        imageDisplayer.SetImageData(image);
-                //    else
-                //        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
-                //}
-                //else
-                //    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
+                if (initializeActionGroup)
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                    if (callbackResults.Success())
+                    {
+                        var initializedActionGroups = actionGroup.FindAll(widget => widget.initialize);
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Are No Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var initializedActionGroup in initializedActionGroups)
+                            {
+                                foreach (var actionGroupData in initializedActionGroup.screenActionGroup)
+                                {
+                                    if (actionGroupData.HasComponent(InputType.Image))
+                                    {
+                                        actionGroupData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        {
+                                            if (dataPacketsCallback.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetImageComponent();
+
+                                                if (actionGroup != null && actionGroup.imageType == displayerType)
+                                                {
+                                                    if (actionGroup.value)
+                                                    {
+                                                        actionGroup.value.sprite = image;
+
+                                                        if (actionGroup.value.sprite == image)
+                                                            callbackResults.result = $"Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Value Has Been Successfully Set.";
+                                                        else
+                                                        {
+                                                            callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} - Invalid Operation - Please Check Here.";
+                                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Image Displayer Component Not Found";
+                                                    callbackResults.resultCode = Helpers.ErrorCode;
+
+                                                }
+                                            }
+                                            else
+                                                callbackResults.SetResult(dataPacketsCallback);
+                                        });
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Set UI Image Displayer Of Type : {displayerType} Failed - Input Actions Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion

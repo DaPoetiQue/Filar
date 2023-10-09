@@ -8,6 +8,9 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        [SerializeField]
+        private Texture2D testImage;
+
         AppData.TransitionableUIComponent transitionableUIScaleComponent, transitionableUITranslateComponent;
         AppData.TimedEventComponent changeSplashImageTimedEventComponent;
 
@@ -26,9 +29,6 @@ namespace Com.RedicalGames.Filar
             Init(initializationCallbackResults =>
             {
                 callbackResults.SetResultsData(initializationCallbackResults);
-
-                if (callbackResults.UnSuccessful())
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             }, initializationProgressCompletionEvent);
 
@@ -203,7 +203,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
+                    GetUIImageDisplayer(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
                     {
                         callbackResults.SetResult(imageDisplayerCallbackResults);
 
@@ -276,41 +276,73 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget()
         {
-        
+            //if (callbackResults.Success())
+            //{
+            //    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
+
+            //    if (callbackResults.Success())
+            //    {
+            //        var appDatabaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+
+            //        callbackResults.SetResult(appDatabaseManager.GetRandomSplashImage());
+
+            //        if (callbackResults.Success())
+            //        {
+
+            //            var image = appDatabaseManager.GetRandomSplashImage().GetData();
+            //            SetUIImageDisplayer(AppData.ScreenImageType.Splash, image, true, imageSetCallbackResults => { });
+            //        }
+            //    }
+            //}
+            //else
+            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
-        protected override async void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
+            SetUIImageDisplayer(AppData.ScreenImageType.Splash, testImage, true, imageSetCallbackResults => { });
+
+            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+
+
             if (callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+                //var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                InvokeTransitionableUI();
-                ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+                //callbackResults.SetResult(databaseManager.GetRandomSplashImage());
 
-                while (!canShowSpinner)
-                    await Task.Yield();
+                //if (callbackResults.Success())
+                //{
+                  
+                //}
 
-                await Task.Delay((int)databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
+            
+                //InvokeTransitionableUI();
+                //ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-                callbackResults.SetResult(GetParentWidget());
+                //while (!canShowSpinner)
+                //    await Task.Yield();
 
-                if (callbackResults.Success())
-                {
-                    var parentWidget = GetParentWidget().GetData();
+                //await Task.Delay((int)databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
 
-                    var loadingSpinnerDataPackets = new AppData.SceneDataPackets
-                    {
-                        screenType = AppData.UIScreenType.LoadingScreen,
-                        widgetType = AppData.WidgetType.LoadingWidget
-                    };
+                //callbackResults.SetResult(GetParentWidget());
 
-                    parentWidget.ShowWidget(loadingSpinnerDataPackets);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //if (callbackResults.Success())
+                //{
+                //    var parentWidget = GetParentWidget().GetData();
+
+                //    var loadingSpinnerDataPackets = new AppData.SceneDataPackets
+                //    {
+                //        screenType = AppData.UIScreenType.LoadingScreen,
+                //        widgetType = AppData.WidgetType.LoadingWidget
+                //    };
+
+                //    parentWidget.ShowWidget(loadingSpinnerDataPackets);
+                //}
+                //else
+                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -333,7 +365,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    GetUIImageDisplayerValue(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
+                    GetUIImageDisplayer(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
                     {
                         callbackResults.SetResult(imageDisplayerCallbackResults);
 
