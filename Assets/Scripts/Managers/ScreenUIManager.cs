@@ -116,7 +116,7 @@ namespace Com.RedicalGames.Filar
 
                 foreach (var screenComponent in loadedScreens)
                 {
-                    screenComponent.Init(initializationCallbackResults => 
+                    screenComponent.Initilize(initializationCallbackResults => 
                     {
                         callbackResults.SetResult(initializationCallbackResults);
 
@@ -152,25 +152,25 @@ namespace Com.RedicalGames.Filar
 
                             callbackResults.SetResult(ScreensInitialized());
 
-                            if(callbackResults.Success())
-                            {
-                                var screenList = callbackResults.GetData();
+                            //if(callbackResults.Success())
+                            //{
+                            //    var screenList = callbackResults.GetData();
 
-                                foreach (var screenView in screenList)
-                                {
-                                    screenView.value.Initilize(screenInitializationCallback =>
-                                    {
-                                        callbackResults.SetResult(screenInitializationCallback);
+                            //    foreach (var screenView in screenList)
+                            //    {
+                            //        screenView.value.Initilize(screenInitializationCallback =>
+                            //        {
+                            //            callbackResults.SetResult(screenInitializationCallback);
 
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
-                                            callbackResults.data = compareDataCallback.tuple_A;
-                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                        }
-                                    });
-                                }
-                            }
+                            //            if (callbackResults.Success())
+                            //            {
+                            //                callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
+                            //                callbackResults.data = compareDataCallback.tuple_A;
+                            //                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                            //            }
+                            //        });
+                            //    }
+                            //}
                         }
                     });
                 }

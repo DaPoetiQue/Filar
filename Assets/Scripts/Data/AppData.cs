@@ -23700,47 +23700,37 @@ namespace Com.RedicalGames.Filar
 
                     Helpers.GetAppComponentValid(screenData, screenData.name, componentValidCallbackResults =>
                     {
-                        callbackResults.result = componentValidCallbackResults.result;
-                        callbackResults.resultCode = componentValidCallbackResults.resultCode;
+                        callbackResults.SetResult(componentValidCallbackResults);
 
                         if (callbackResults.Success())
                         {
-                            bool onShowResults = GetVisibilityValueFromState(screenData.GetUIScreenInitialVisibility());
-
-                            LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> Screen Init : On Show Status : {onShowResults}", this);
-
-                            callbackResults.SetResult(GetScreenViewIsInitialized(onShowResults));
-
-                            if (callbackResults.Success())
+                            OnInitializeScreenDataSetup(screenData.GetUIScreenType(), screenData.GetUIScreenInitialVisibility(), screenDataSetupCallbackResults =>
                             {
-                                OnInitializeScreenDataSetup(screenData.GetUIScreenType(), screenData.GetUIScreenInitialVisibility(), screenDataSetupCallbackResults =>
+                                callbackResults = screenDataSetupCallbackResults;
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults = screenDataSetupCallbackResults;
+                                    callbackResults.result = InitializeViewFaderCallbackResults().result;
+                                    callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.result = InitializeViewFaderCallbackResults().result;
-                                        callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
+                                        callbackResults.result = GetActiveViewFader().result;
+                                        callbackResults.resultCode = GetActiveViewFader().resultCode;
 
                                         if (callbackResults.Success())
-                                        {
-                                            callbackResults.result = GetActiveViewFader().result;
-                                            callbackResults.resultCode = GetActiveViewFader().resultCode;
-
-                                            if (callbackResults.Success())
-                                                GetActiveViewFader().data.Init(this, initializationCallbackResults => { callbackResults = initializationCallbackResults; });
-                                        }
-                                        else
-                                        {
-                                            callbackResults.data = screenDataSetupCallbackResults.data;
-                                            callbackResults.resultCode = Helpers.SuccessCode;
-                                        }
-
-                                        if(callbackResults.Success())
-                                            OnScreenViewVisibility(GetVisibilityValueFromState(screenData.GetUIScreenInitialVisibility()));
+                                            GetActiveViewFader().data.Init(this, initializationCallbackResults => { callbackResults = initializationCallbackResults; });
                                     }
-                                });
-                            }
+                                    else
+                                    {
+                                        callbackResults.data = screenDataSetupCallbackResults.data;
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+
+                                    if (callbackResults.Success())
+                                        OnScreenViewVisibility(GetVisibilityValueFromState(screenData.GetUIScreenInitialVisibility()));
+                                }
+                            });
                         }
                     }, $"Checking App Component Validity For Screen Data Component On View : {name} Failed - Screen UI Data Component Param Is Missing / Null / Not Assigned From Base Init.");
 
@@ -23808,15 +23798,17 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<GameObject> GetScreenViewIsInitialized(bool onShowScreen)
+            public CallbackData<GameObject> Initialized(bool onShowScreen)
             {
                 CallbackData<GameObject> callbackResults = new CallbackData<GameObject>(GetView());
 
                 if(callbackResults.Success())
                 {
-                    bool hasComponents = (onShowScreen) ? GetView().GetData().GetInActive() : GetView().GetData().GetActive();
+                    bool validScreenViewState = (onShowScreen) ? GetView().GetData().GetInActive() : GetView().GetData().GetActive();
 
-                    if (hasComponents)
+                    LogInfo($" _____________________++++++++++++++++++++===== Has Valid Screen State : {validScreenViewState} - Show Screen : {onShowScreen} - Screen Active : {GetView().GetData().GetActive()} - Screen In-Active : {GetView().GetData().GetInActive()}", this);
+
+                    if (validScreenViewState)
                     {
                         callbackResults.result = $"Screen View : {name} - Has Been Initialized Successfully";
                         callbackResults.data = GetView().GetData();
@@ -23837,17 +23829,15 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.result = GetScreenViewIsInitialized(true).result;
-                callbackResults.resultCode = GetScreenViewIsInitialized(true).resultCode;
+                callbackResults.SetResult(Initialized(true));
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = InitializeViewFaderCallbackResults().result;
-                    callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
+                    callbackResults.SetResult(InitializeViewFaderCallbackResults());
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.result = GetActiveViewFader().result;
+                        callbackResults.SetResult(GetActiveViewFader());
                         callbackResults.resultCode = GetActiveViewFader().resultCode;
 
                         if (callbackResults.Success())
@@ -23901,8 +23891,8 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.result = GetScreenViewIsInitialized(false).result;
-                callbackResults.resultCode = GetScreenViewIsInitialized(false).resultCode;
+                callbackResults.result = Initialized(false).result;
+                callbackResults.resultCode = Initialized(false).resultCode;
 
                 if (callbackResults.Success())
                 {
@@ -24091,6 +24081,25 @@ namespace Com.RedicalGames.Filar
                                                 SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        InitializeScreenWidgets(screenWidgetsInitializationCallbackResults => 
+                                                        {
+                                                            callbackResults.SetResult(screenWidgetsInitializationCallbackResults);
+
+                                                            if(callbackResults.Success())
+                                                            {
+                                                                callbackResults.SetResult(GetInitialVisibilityState());
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    LogInfo($" ______________________________________+_______________ Set Screen Initialization State : {GetInitialVisibilityState().GetData()}", this);
+                                                                }
+                                                            }
+
+                                                        });
+                                                    }
                                                 });
                                             }
                                         }
@@ -24147,22 +24156,90 @@ namespace Com.RedicalGames.Filar
 
             protected Dictionary<string, ScreenUIData> GetRegisteredScreens() => registeredScreens;
 
-            protected Callback InitializeScreenWidgets()
+            private void InitializeScreenWidgets(Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
                 if(initializeScreenWidgets)
                 {
-                    callbackResults.result = $"Screen Widgets Initialization Is Enabled For Screen : {GetName()} - Of Type : {GetUIScreenType()}";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $""));
+
+                    if (callbackResults.UnSuccessful())
+                    {
+                        Widget[] widgetComponents = GetComponentsInChildren<Widget>();
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", $""));
+
+                        if (callbackResults.Success())
+                        {
+                            screenWidgetsList = new List<Widget>();
+
+                            foreach (var widget in widgetComponents)
+                            {
+                                callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Screen Widget", $"Screen Widget Null At Index : {widgetComponents.ToList().IndexOf(widget)} For Screen : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                                if (callbackResults.Success())
+                                {
+                                    widget.Initilize(initializationCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(initializationCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            AddScreenWidget(widget, screenWidgetAddedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(screenWidgetAddedCallbackResults);
+
+                                                if (callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                            });
+                                        }
+                                    });
+                                }
+                                else
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                 {
                     callbackResults.result = $"Screen Widgets Initialization Is Not Enabled For Screen : {GetName()} - Of Type : {GetUIScreenType()}";
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
-                return callbackResults;
+                callback?.Invoke(callbackResults);
+            }
+
+            private void AddScreenWidget(Widget widget, Action<Callback> callback = null)
+            {
+                var callbacResults = new Callback();
+
+                if (!screenWidgetsList.Contains(widget))
+                {
+                    screenWidgetsList.Add(widget);
+
+                    if (screenWidgetsList.Contains(widget))
+                    {
+                        callbacResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                        callbacResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbacResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
+                        callbacResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbacResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                    callbacResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbacResults);
             }
 
             public UIScreenWidgetVisibilityState GetUIScreenInitialVisibility()
@@ -24802,11 +24879,6 @@ namespace Com.RedicalGames.Filar
                     if (widgetType != WidgetType.None)
                     {
                         var widget = GetWidgets().GetData().Find(widget => widget.GetType().GetData() == widgetType);
-
-                        for (int i = 0; i < GetWidgets().GetData().Count; i++)
-                        {
-                            LogInfo($" _______________________+++++++ Found Widget : { GetWidgets().GetData()[i].GetName()} - Of Type : { GetWidgets().GetData()[i].GetType()} At Index : {i} For Screen : {GetName()} - Of Type : {GetUIScreenType()} - Requested Widget : {widgetType}", this);
-                        }
 
                         if (widget != null)
                         {
@@ -28463,7 +28535,7 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         case UIScreenWidgetVisibilityState.Visible:
 
-                                                                            ShowScreenWidget(dataPackets: GetDataPackets().GetData(), callback: showWidgetCallbackResults =>
+                                                                            ShowScreenWidget(dataPackets: GetDataPackets().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
                                                                             {
                                                                                 callbackResults.SetResult(showWidgetCallbackResults);
                                                                             });

@@ -22,102 +22,70 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                //GetScreenView().Init(this, screenViewInitializationCallbackResults =>
-                //{
-                //    callbackResults.SetResult(screenViewInitializationCallbackResults);
-                //});
+                Init(initializationCallbackResults => 
+                {
+                    callbackResults.SetResult(initializationCallbackResults);
+                });
             }
-
-            LogInfo($" _____________________+++++++++++ Callback Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
 
             callback.Invoke(callbackResults);
         }
 
-        public void Init(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback();
+        //public void Init(Action<AppData.Callback> callback = null)
+        //{
+        //    var callbackResults = new AppData.Callback();
 
-            if (initializeScreenWidgets)
-            {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $""));
+        //    if (initializeScreenWidgets)
+        //    {
+        //        callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $""));
 
-                if (callbackResults.UnSuccessful())
-                {
-                    AppData.Widget[] widgetComponents = this.GetComponentsInChildren<AppData.Widget>();
+        //        if (callbackResults.UnSuccessful())
+        //        {
+        //            AppData.Widget[] widgetComponents = this.GetComponentsInChildren<AppData.Widget>();
 
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", $""));
+        //            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", $""));
 
-                    if (callbackResults.Success())
-                    {
-                        screenWidgetsList = new List<AppData.Widget>();
+        //            if (callbackResults.Success())
+        //            {
+        //                screenWidgetsList = new List<AppData.Widget>();
 
-                        foreach (var widget in widgetComponents)
-                        {
-                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(widget, "Screen Widget", $"Screen Widget Null At Index : {widgetComponents.ToList().IndexOf(widget)} For Screen : {GetName()} - Of Type : {GetType().GetData()}"));
+        //                foreach (var widget in widgetComponents)
+        //                {
+        //                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(widget, "Screen Widget", $"Screen Widget Null At Index : {widgetComponents.ToList().IndexOf(widget)} For Screen : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                            if (callbackResults.Success())
-                            {
-                                widget.Initilize(initializationCallbackResults =>
-                                {
-                                    callbackResults.SetResult(initializationCallbackResults);
+        //                    if (callbackResults.Success())
+        //                    {
+        //                        widget.Initilize(initializationCallbackResults =>
+        //                        {
+        //                            callbackResults.SetResult(initializationCallbackResults);
 
-                                    LogInfo($" _________________________+++++++++++++++++++++++++++++++++++++__________ Screen : {GetName()} - Of Type : {GetType().GetData()} - Code : {callbackResults.GetResultCode} - Result : {callbackResults.GetResult}", this);
+        //                            if (callbackResults.Success())
+        //                            {
+        //                                AddScreenWidget(widget, screenWidgetAddedCallbackResults =>
+        //                                {
+        //                                    callbackResults.SetResult(screenWidgetAddedCallbackResults);
 
-                                    if(callbackResults.Success())
-                                    {
-                                        AddScreenWidget(widget, screenWidgetAddedCallbackResults => 
-                                        {
-                                            callbackResults.SetResult(screenWidgetAddedCallbackResults);
+        //                                    if (callbackResults.UnSuccessful())
+        //                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        
-                                        });
-                                    }
-                                });
-                            }
-                            else
-                                break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                callbackResults.result = "";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
+        //                                });
+        //                            }
+        //                        });
+        //                    }
+        //                    else
+        //                        break;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        callbackResults.result = "";
+        //        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+        //    }
 
-            callback?.Invoke(callbackResults);
-        }
-
-        private void AddScreenWidget(AppData.Widget widget, Action<AppData.Callback> callback = null)
-        {
-            var callbacResults = new AppData.Callback();
-
-            if(!screenWidgetsList.Contains(widget))
-            {
-                screenWidgetsList.Add(widget);
-
-                if(screenWidgetsList.Contains(widget))
-                {
-                    callbacResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                    callbacResults.resultCode = AppData.Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbacResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
-                    callbacResults.resultCode = AppData.Helpers.ErrorCode;
-                }
-            }
-            else
-            {
-                callbacResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                callbacResults.resultCode = AppData.Helpers.WarningCode;
-            }
-
-            callback?.Invoke(callbacResults);
-        }
+        //    callback?.Invoke(callbackResults);
+        //}
 
         void ActionEventsSubscription(bool subscribe)
         {
