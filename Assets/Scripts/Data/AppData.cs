@@ -23704,33 +23704,36 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            OnInitializeScreenDataSetup(screenData.GetUIScreenType(), screenData.GetUIScreenInitialVisibility(), screenDataSetupCallbackResults =>
+                            if (callbackResults.Success())
                             {
+                                OnInitializeScreenDataSetup(screenData.GetUIScreenType(), screenData.GetUIScreenInitialVisibility(), screenDataSetupCallbackResults =>
+                                {
                                 callbackResults = screenDataSetupCallbackResults;
 
                                 if (callbackResults.Success())
                                 {
-                                    callbackResults.result = InitializeViewFaderCallbackResults().result;
-                                    callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
-
-                                    if (callbackResults.Success())
-                                    {
-                                        callbackResults.result = GetActiveViewFader().result;
-                                        callbackResults.resultCode = GetActiveViewFader().resultCode;
+                                    callbackResults.SetResult(InitializeViewFaderCallbackResults());
 
                                         if (callbackResults.Success())
-                                            GetActiveViewFader().data.Init(this, initializationCallbackResults => { callbackResults = initializationCallbackResults; });
-                                    }
-                                    else
-                                    {
-                                        callbackResults.data = screenDataSetupCallbackResults.data;
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
+                                        {
+                                            callbackResults.SetResult(GetActiveViewFader());
 
-                                    if (callbackResults.Success())
-                                        OnScreenViewVisibility(GetVisibilityValueFromState(screenData.GetUIScreenInitialVisibility()));
-                                }
-                            });
+                                            if (callbackResults.Success())
+                                                GetActiveViewFader().data.Init(this, initializationCallbackResults => { callbackResults = initializationCallbackResults; });
+                                        }
+                                        else
+                                        {
+                                            callbackResults.data = screenDataSetupCallbackResults.data;
+                                            callbackResults.resultCode = Helpers.SuccessCode;
+                                        }
+
+                                        if (callbackResults.Success())
+                                            OnScreenViewVisibility(IsScreenViewVisible(screenData.GetUIScreenInitialVisibility()).Success());
+                                    }
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                     }, $"Checking App Component Validity For Screen Data Component On View : {name} Failed - Screen UI Data Component Param Is Missing / Null / Not Assigned From Base Init.");
 
@@ -23757,15 +23760,27 @@ namespace Com.RedicalGames.Filar
                 callbackResults.result = (this.screenType != UIScreenType.None)? $"Initialized View Fader : {name} For Screen Of Type : {this.screenType}" : $"Failed To Initialize View Fader : {name} - Screen Type Is Set To Default / None.";
                 callbackResults.resultCode = (this.screenType != UIScreenType.None) ? Helpers.SuccessCode : Helpers.WarningCode;
 
-
-
-
                 callback?.Invoke(callbackResults);
             }
 
-            bool GetVisibilityValueFromState(UIScreenWidgetVisibilityState visibilityState)
+            private Callback IsScreenViewVisible(UIScreenWidgetVisibilityState visibilityState)
             {
-                return (visibilityState == UIScreenWidgetVisibilityState.Visible) ? true : false; ;
+                var callbackResults = new Callback();
+
+                var isVisible = visibilityState == UIScreenWidgetVisibilityState.Visible? true : false;
+
+                if (isVisible)
+                {
+                    callbackResults.result = $"Screen View Is Visble.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Screen View Is Not Visble.";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public UIScreenWidgetVisibilityState GetViewerInitialVisibilityState()
@@ -23806,7 +23821,7 @@ namespace Com.RedicalGames.Filar
                 {
                     bool validScreenViewState = (onShowScreen) ? GetView().GetData().GetInActive() : GetView().GetData().GetActive();
 
-                    LogInfo($" _____________________++++++++++++++++++++===== Has Valid Screen State : {validScreenViewState} - Show Screen : {onShowScreen} - Screen Active : {GetView().GetData().GetActive()} - Screen In-Active : {GetView().GetData().GetInActive()}", this);
+                    LogInfo($" _____________________++++++++++++++++++++===== Screen View : {GetName()} Has Valid Screen State : {validScreenViewState} - Show Screen : {onShowScreen} - Screen Active : {GetView().GetData().GetActive()} - Screen In-Active : {GetView().GetData().GetInActive()}", this);
 
                     if (validScreenViewState)
                     {
@@ -23891,18 +23906,15 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<UIScreenViewComponent> callbackResults = new CallbackData<UIScreenViewComponent>();
 
-                callbackResults.result = Initialized(false).result;
-                callbackResults.resultCode = Initialized(false).resultCode;
+                callbackResults.SetResult(Initialized(false));
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = InitializeViewFaderCallbackResults().result;
-                    callbackResults.resultCode = InitializeViewFaderCallbackResults().resultCode;
+                    callbackResults.SetResult(InitializeViewFaderCallbackResults());
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.result = GetActiveViewFader().result;
-                        callbackResults.resultCode = GetActiveViewFader().resultCode;
+                        callbackResults.SetResult(GetActiveViewFader());
 
                         if (callbackResults.Success())
                         {
@@ -23981,7 +23993,42 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            void OnScreenViewVisibility(bool value)=> view.SetActive(value);
+            private void OnScreenViewVisibility(bool value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetView());
+
+                if (callbackResults.Success())
+                {
+                    if (value)
+                    {
+                        GetView().GetData().Show();
+
+                        if(GetView().GetData().GetActive())
+                            callbackResults.result = $"Screen View : {GetName()} Is Showing.";
+                        else
+                        {
+                            callbackResults.result = $"Failed To Show Screen View : {GetName()} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        GetView().GetData().Hide();
+
+                        if (GetView().GetData().GetInActive())
+                            callbackResults.result = $"Screen View : {GetName()} Is Hidden.";
+                        else
+                        {
+                            callbackResults.result = $"Failed To Hide Screen View : {GetName()} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen View Name Is Not Assigned.";
 
             #endregion
         }
