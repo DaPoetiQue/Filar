@@ -26,9 +26,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>> callback)
         {
-            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>();
 
             Init(initializationCallbackResults =>
             {
@@ -180,8 +180,8 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
         {
-            if (!string.IsNullOrEmpty(base.dataPackets.popUpMessage))
-                SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, base.dataPackets.popUpMessage);
+            //if (!string.IsNullOrEmpty(base.dataPackets.popUpMessage))
+            //    SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, base.dataPackets.popUpMessage);
 
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
@@ -296,9 +296,9 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> OnGetState()
         {
-            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
 
             if (callbackResults.Success())
             {

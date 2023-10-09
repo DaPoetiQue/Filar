@@ -7,30 +7,14 @@ namespace Com.RedicalGames.Filar
     {
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>> callback)
         {
-            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>();
 
-            callbackResults.SetResult(GetType());
-
-            if (callbackResults.Success())
+            Init(initializationCallbackResults =>
             {
-                OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
-                {
-                    callbackResults.SetResult(GetType());
-
-                    if (callbackResults.Success())
-                    {
-                        var widgetStatePacket = new AppData.WidgetStatePacket(name: GetName(), type: GetType().data, stateType: AppData.WidgetStateType.Initialized, value: this);
-
-                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().data}'s State Packet Has Been Initialized Successfully.";
-                        callbackResults.data = widgetStatePacket;
-                    }
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
 
             callback.Invoke(callbackResults);
         }
@@ -85,9 +69,9 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> OnGetState()
         {
-            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
 
             if (callbackResults.Success())
             {

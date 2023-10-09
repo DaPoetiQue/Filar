@@ -37,12 +37,6 @@ namespace Com.RedicalGames.Filar
             Init();
         }
 
-
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
-        {
-           
-        }
-
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
         {
             switch (actionButton.dataPackets.action)
@@ -95,6 +89,16 @@ namespace Com.RedicalGames.Filar
         protected override void OnSetUIWidgetData(AppData.Post post)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>> OnGetState()
+        {
+            return null;
+        }
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>>> callback)
+        {
+           
         }
 
         #endregion

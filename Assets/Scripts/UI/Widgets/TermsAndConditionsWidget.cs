@@ -13,9 +13,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>> callback)
         {
-            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>();
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>();
 
             Init(initializationCallbackResults =>
             {
@@ -23,6 +23,37 @@ namespace Com.RedicalGames.Filar
             });
 
             callback.Invoke(callbackResults);
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         protected override void OnHideScreenWidget()
@@ -160,37 +191,6 @@ namespace Com.RedicalGames.Filar
                 var confirmationButtonState = (confirmationButtonEnabled) ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
                 SetActionButtonState(AppData.InputActionButtonType.ConfirmationButton, confirmationButtonState);
             }
-        }
-
-        protected override AppData.CallbackData<AppData.WidgetStatePacket> OnGetState()
-        {
-            AppData.CallbackData<AppData.WidgetStatePacket> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
-
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(GetType());
-
-                if (callbackResults.Success())
-                {
-                    var widgetType = GetType().data;
-
-                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
-
-                    if (callbackResults.Success())
-                    {
-                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
-                        callbackResults.data = GetStatePacket();
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            return callbackResults;
         }
 
         #endregion

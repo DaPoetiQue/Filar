@@ -101,9 +101,14 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>> OnGetState()
         {
-           
+            throw new NotImplementedException();
+        }
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>>> callback)
+        {
+            throw new NotImplementedException();
         }
 
 

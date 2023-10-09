@@ -572,9 +572,16 @@ namespace Com.RedicalGames.Filar
                 await OnShowSelectedScreenViewAsync(callbackResults.data);
 
                 if (callbackResults.Success())
-                    AppData.ActionEvents.OnScreenChangeEvent(callbackResults.data.value.GetScreenData());
+                {
+                    callbackResults.SetResult(callbackResults.data.value.GetDataPackets());
+
+                    if(callbackResults.Success())
+                        AppData.ActionEvents.OnScreenChangeEvent(callbackResults.data.value.GetDataPackets().GetData());
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
                 else
-                    Log(callbackResults.resultCode, callbackResults.result, this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             return callbackResults;
@@ -1011,7 +1018,12 @@ namespace Com.RedicalGames.Filar
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
-                callbackResults.SetResult(await OnScreenRefreshAsync(currentScreen.value.GetScreenData(), refreshDuration));
+            {
+                callbackResults.SetResult(currentScreen.value.GetDataPackets());
+
+                if(callbackResults.Success())
+                    callbackResults.SetResult(await OnScreenRefreshAsync(currentScreen.value.GetDataPackets().GetData(), refreshDuration));
+            }
 
             return callbackResults;
         }
@@ -1218,11 +1230,6 @@ namespace Com.RedicalGames.Filar
             }
             else
                 LogWarning("The Current Scene Asset Info Fields Not Initialized.", this, () => UpdateInfoDisplayer(screen));
-        }
-
-        public AppData.SceneDataPackets GetScreenData()
-        {
-            return currentScreen?.value?.GetScreenData();
         }
 
         public void SetCurrentScreenData(AppData.UIScreenViewComponent screenData)

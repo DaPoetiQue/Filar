@@ -11,19 +11,22 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>>> callback)
         {
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>>();
+
             // Initialize Assets.
-            Init((callback) =>
+            Init(initializationCallbackResults =>
             {
-                if (AppData.Helpers.IsSuccessCode(callback.resultCode))
-                    if (screenManager == null)
-                        screenManager = ScreenUIManager.Instance;
-                    else
-                        Debug.LogWarning($"--> Failed to Initialize Scene Asset UI With Results : {callback.result}.");
-                else
-                    Debug.LogWarning("--> Failed to Initialize Scene Asset UI.");
+                callbackResults.SetResult(initializationCallbackResults);
             });
+
+            callback.Invoke(callbackResults);
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType>> OnGetState()
+        {
+            return null;
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)

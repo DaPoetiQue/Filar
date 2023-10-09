@@ -21035,9 +21035,6 @@ namespace Com.RedicalGames.Filar
             [Space(10)]
             [Header("::: Component Data Packet")]
 
-            [Space(5)]
-            public SceneDataPackets dataPackets;
-
             [Space(10)]
             [Header("::: Component Scene Notifications")]
 
@@ -23999,7 +23996,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public class ScreenUIData : UIScreenWidget<UIScreenType>, IUIScreenData
+        public abstract class ScreenUIData : UIScreenWidget<UIScreenType>, IUIScreenData
         {
             [Header("Screen Info")]
 
@@ -24049,35 +24046,106 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected List<Widget> screenWidgetsList;
 
-            [SerializeField]
-            SceneDataPackets screenData = new SceneDataPackets();
-
             LoadingItemData currentLoadingItem = new LoadingItemData();
 
             bool canResetAssetPose = false;
 
-            #region Event Actions
+            #region Widgets 
 
-            private List<EventAction> eventActionList = new List<EventAction>();
+            protected Dictionary<string, ScreenUIData> registeredScreens = new Dictionary<string, ScreenUIData>();
 
             #endregion
 
-            protected override void OnInitilize(Action<CallbackData<WidgetStatePacket>> callback)
+            public void Init(Action<CallbackData<WidgetStatePacket<UIScreenType>>> callback = null, params EventActionData[] eventActions)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<UIScreenType>>(GetType());
+
+                #region Base Initialization
 
                 if (callbackResults.Success())
                 {
                     GetScreenView().Init(this, screenViewInitializationCallbackResults =>
                     {
                         callbackResults.SetResult(screenViewInitializationCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            RegisterEventAction(eventActionRegisteredCallbacResults => 
+                            {
+                                callbackResults.SetResult(eventActionRegisteredCallbacResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    OnRegisterScreen(this, onRegisterScreenCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(eventActionRegisteredCallbacResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(GetDataPackets());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var widgetStatePacket = new WidgetStatePacket<UIScreenType>(this, WidgetStateType.Initialized);
+
+                                                SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+
+                            }, eventActions);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     });
                 }
 
-                LogInfo($" _____________________+++++++++++ Callback Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
+                #endregion
 
-                callback.Invoke(callbackResults);
+                callback?.Invoke(callbackResults);
             }
+
+            protected void OnRegisterScreen<T>(T screen, Action<Callback> callback = null) where T : ScreenUIData
+            {
+                if (screen != null)
+                {
+                    Callback callbackResults = new Callback(Helpers.GetAppComponentValid(screen, $"{(!string.IsNullOrEmpty(screen?.GetName()) ? screen?.GetName() : "Screen")}", $"Screen : {(!string.IsNullOrEmpty(screen?.GetName()) ? screen?.GetName() : "Screen Name Not Assigned")} Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        if (!GetRegisteredScreens().ContainsKey(screen.GetName()) && !GetRegisteredScreens().ContainsValue(screen))
+                        {
+                            GetRegisteredScreens().Add(screen.GetName(), screen);
+
+                            if (GetRegisteredScreens().ContainsKey(screen.GetName()) && GetRegisteredScreens().ContainsValue(screen))
+                            {
+                                callbackResults.result = $"Widget : {screen.GetName()} Of Type : {screen.GetType()} Has Been Registered Successfully.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"On Register Widget Failed - Widget : {screen.GetName()} - Of Type : {screen.GetType()} Is Not Registred - Unexpected Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"On Register Widget Failed - Widget : {screen.GetName()} - Of Type : {screen.GetType()} Already Exists In Registred Widgets.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+
+                    callback?.Invoke(callbackResults);
+                }
+                else
+                    throw new ArgumentNullException("On Register Widget Failed - Widget Is Null / Missing");
+            }
+
+            protected Dictionary<string, ScreenUIData> GetRegisteredScreens() => registeredScreens;
 
             protected Callback InitializeScreenWidgets()
             {
@@ -24505,13 +24573,13 @@ namespace Com.RedicalGames.Filar
 
                 if (widgetToShow)
                 {
-                    if (widget.GetDataPackets().blurScreen)
-                        Blur(widget.GetDataPackets());
+                    if (widget.GetDataPackets().GetData().blurScreen)
+                        Blur(widget.GetDataPackets().GetData());
 
                     widget.ResetScrollPosition(scrollerResetCallback =>
                     {
                         if (scrollerResetCallback.Success())
-                            widget.ShowScreenWidget(widget.GetDataPackets());
+                            widget.ShowScreenWidget(widget.GetDataPackets().GetData());
                         else
                             Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
                     });
@@ -24939,17 +25007,12 @@ namespace Com.RedicalGames.Filar
 
             public void SetScreenData(SceneDataPackets dataPackets)
             {
-                screenData = dataPackets;
-            }
-
-            public SceneDataPackets GetScreenData()
-            {
-                return screenData;
+                this.dataPackets = dataPackets;
             }
 
             public SceneAsset GetSceneAsset()
             {
-                return GetScreenData().sceneAsset;
+                return GetDataPackets().GetData().sceneAsset;
             }
 
             void SetObjectVisibilityState(GameObject value, bool state) => value.SetActive(state);
@@ -25740,15 +25803,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public class WidgetStatePacket
+        public class WidgetStatePacket<T> where T : Enum
         {
             #region Components
 
             public string name;
-            public WidgetType type;
+            public T type;
             public WidgetStateType state;
-            public SceneDataPackets dataPackets;
-            public Widget value;
+            public UIScreenWidget<T> value;
 
             #endregion
 
@@ -25759,13 +25821,12 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public WidgetStatePacket(string name = null, WidgetType type = WidgetType.None, WidgetStateType stateType = WidgetStateType.None, Widget value = null,  SceneDataPackets dataPackets = null)
+            public WidgetStatePacket(UIScreenWidget<T> value, WidgetStateType stateType)
             {
-                SetName(name);
-                SetType(type);
+                SetName(value.GetName());
+                SetType(value.GetType().GetData());
                 SetStateType(stateType);
                 SetValue(value);
-                SetDataPackets(dataPackets);
             }
 
             #endregion
@@ -25775,23 +25836,42 @@ namespace Com.RedicalGames.Filar
             #region Data Setters
 
             public void SetName(string name) => this.name = name;
-            public void SetType(WidgetType type) => this.type = type;
+            public void SetType(T type) => this.type = type;
             public void SetStateType(WidgetStateType state) => this.state = state;
-            public void SetDataPackets(SceneDataPackets dataPackets) => this.dataPackets = dataPackets;
-            public void SetValue(Widget value) => this.value = value;
+            public void SetValue(UIScreenWidget<T> value) => this.value = value;
 
             #endregion
 
             #region Data Getters
 
             public string GetName() => !string.IsNullOrEmpty(name)? name : "Widget State Object Name Is Not Assigned";
-            public new WidgetType GetType() => type;
-            public WidgetStateType GetStateType() => state;
-            public SceneDataPackets GetDataPackets() => dataPackets;
 
-            public CallbackData<Widget> GetValue()
+
+            public new CallbackData<T> GetType()
             {
-                CallbackData<Widget> callbackResults = new CallbackData<Widget>();
+                var callbackResults = new CallbackData<T>();
+
+                if (state.ToString().ToLower() != "none")
+                {
+                    callbackResults.result = $"Widget State : {GetName()} - Is Set To Type : {state}";
+                    callbackResults.data = type;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get State Type For Widget State Packet : {GetName()} - State Type Is Set To Default : {state}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public WidgetStateType GetStateType() => state;
+
+            public CallbackData<UIScreenWidget<T>> GetValue()
+            {
+                CallbackData<UIScreenWidget<T>> callbackResults = new CallbackData<UIScreenWidget<T>>();
 
                 if(value != null)
                 {
@@ -25809,13 +25889,13 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public Callback Initialized(WidgetType widgetType)
+            public Callback Initialized(T widgetType)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetType());
 
-                if (GetType() != WidgetType.None && GetStateType() != WidgetStateType.None)
+                if (callbackResults.Success())
                 {
-                    if (widgetType == GetType())
+                    if ((Enum)widgetType == (Enum)GetType().GetData())
                     {
                         callbackResults.result = $"Widget State Object : {GetName()} - Of Type : {GetType()} Has Been Successfully Initialized With State : {GetStateType()} Successfully.";
                         callbackResults.resultCode = Helpers.SuccessCode;
@@ -25865,6 +25945,10 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected UIScreenWidgetVisibilityState initialVisibilityState;
 
+            [Space(5)]
+            [SerializeField]
+            protected SceneDataPackets dataPackets = new SceneDataPackets();
+
             #region UI Transitonable Components
 
             private List<TransitionableUIComponent> transitionableUIComponentList = new List<TransitionableUIComponent>();
@@ -25885,6 +25969,8 @@ namespace Com.RedicalGames.Filar
 
             private List<EventAction> eventActionList = new List<EventAction>();
 
+            protected WidgetStatePacket<T> widgetStatePacket;
+
             #endregion
 
             #region Actions
@@ -25898,9 +25984,9 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initilize(Action<CallbackData<WidgetStatePacket>> callback)
+            public void Initilize(Action<CallbackData<WidgetStatePacket<T>>> callback)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket>();
+                var callbackResults = new CallbackData<WidgetStatePacket<T>>();
 
                 OnInitilize(initializationCallbackResults => 
                 {
@@ -25918,6 +26004,30 @@ namespace Com.RedicalGames.Filar
             #region Data Setters
 
             public void SetName(string name) => this.name = name;
+
+            protected void SetWidgetStatePacket(WidgetStatePacket<T> statePacket, Action<CallbackData<WidgetStatePacket<T>>> callback = null)
+            {
+                var callbackResults = new CallbackData<WidgetStatePacket<T>>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    widgetStatePacket = statePacket;
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widgetStatePacket, "Widget State Packet", $"Failed To Set Widget State Packet For Widget : {GetName()} - Of Type : {GetType().GetData()} - Widget State Packet Parameter Is Null - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()}'s State Packet : {widgetStatePacket.GetName()} - With State Type : {widgetStatePacket.GetStateType()} - Have Been Set.";
+                        callbackResults.data = statePacket;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
 
             #endregion
 
@@ -26361,6 +26471,10 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public WidgetStatePacket<T> GetStatePacket() => widgetStatePacket;
+
+            public CallbackData<WidgetStatePacket<T>> GetState() => OnGetState();
+
             #endregion
 
             #region Timed Events
@@ -26520,11 +26634,28 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            protected abstract CallbackData<WidgetStatePacket<T>> OnGetState();
+
+            public CallbackData<SceneDataPackets> GetDataPackets()
+            {
+                var callbackResults = new CallbackData<SceneDataPackets>(Helpers.GetAppComponentValid(dataPackets, "Screen Data Packets", $"Screen Data For Screen : {GetName()} - Of Type : {GetType().GetData()} Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Screen Data For Screen : {GetName()} Of Type : {GetType().GetData()} Has Been Found.";
+                    callbackResults.data = dataPackets;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             #endregion
 
             #region Abstract Overrides
 
-            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket>> callback);
+            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T>>> callback);
 
             #endregion
         }
@@ -28136,11 +28267,11 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public interface IScreenWidget<T>
+        public interface IScreenWidget<T> where T : Enum
         {
             #region Methods
 
-            void Initilize(Action<AppData.CallbackData<AppData.WidgetStatePacket>> callback);
+            void Initilize(Action<CallbackData<WidgetStatePacket<T>>> callback);
 
             #endregion
 
@@ -28205,10 +28336,6 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected UIScreenWidgetContainer widgetContainer = new UIScreenWidgetContainer();
 
-            [Space(5)]
-            [SerializeField]
-            protected SceneDataPackets dataPackets;
-
             //[HideInInspector]
             public bool dontShowAgain;
 
@@ -28220,8 +28347,6 @@ namespace Com.RedicalGames.Filar
 
             Coroutine showWidgetAsyncRoutine;
 
-            protected WidgetStatePacket widgetStatePacket = new WidgetStatePacket();
-
             [SerializeField]
             private UIScreenHandler parentWidget;
 
@@ -28231,9 +28356,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket>> callback, params EventActionData[] eventActions)
+            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType>>> callback, params EventActionData[] eventActions)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType>>(GetType());
 
                 #region Base Initialization
 
@@ -28272,53 +28397,58 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    var widgetStatePacket = new WidgetStatePacket(name: GetName(), type: GetType().GetData(), stateType: WidgetStateType.Initialized, value: this);
+                                                    callbackResults.SetResult(GetDataPackets());
 
-                                                    SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
+                                                    if (callbackResults.Success())
                                                     {
-                                                        callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+                                                        var widgetStatePacket = new WidgetStatePacket<WidgetType>(this, WidgetStateType.Initialized);
 
-                                                        if (callbackResults.Success())
+                                                        SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                         {
-                                                            callbackResults.SetResult(GetInitialVisibilityState());
+                                                            callbackResults.SetResult(widgetStatePacketSetCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                switch (GetInitialVisibilityState().GetData())
-                                                                {
-                                                                    case UIScreenWidgetVisibilityState.Visible:
-
-                                                                        ShowWidget(this, showWidgetCallbackResults => 
-                                                                        {
-                                                                            callbackResults.SetResult(showWidgetCallbackResults);
-                                                                        });
-
-                                                                        break;
-
-                                                                    case UIScreenWidgetVisibilityState.Hidden:
-
-                                                                        HideWidget(callback: hideWidgetCallbackResults => 
-                                                                        {
-                                                                            callbackResults.SetResult(hideWidgetCallbackResults);
-                                                                        });
-
-                                                                        break;
-                                                                }
+                                                                callbackResults.SetResult(GetInitialVisibilityState());
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
-                                                                    callbackResults.data = widgetStatePacket;
+                                                                    switch (GetInitialVisibilityState().GetData())
+                                                                    {
+                                                                        case UIScreenWidgetVisibilityState.Visible:
+
+                                                                            ShowWidget(this, showWidgetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(showWidgetCallbackResults);
+                                                                            });
+
+                                                                            break;
+
+                                                                        case UIScreenWidgetVisibilityState.Hidden:
+
+                                                                            HideWidget(callback: hideWidgetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(hideWidgetCallbackResults);
+                                                                            });
+
+                                                                            break;
+                                                                    }
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                                                        callbackResults.data = widgetStatePacket;
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        }
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    });
+                                                        });
+                                                    }
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28343,11 +28473,6 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
 
                 #endregion
-            }
-
-            protected void SetWidgetStatePacket(WidgetStatePacket statePacket, Action<Callback> callback = null)
-            {
-
             }
 
             public CallbackData<UIScreenHandler> GetParentWidget()
@@ -28402,8 +28527,6 @@ namespace Com.RedicalGames.Filar
             }
 
             protected Dictionary<string, Widget> GetRegisteredWidgets() => registeredWidgets;
-
-            public SceneDataPackets GetDataPackets() => dataPackets;
 
             void OnDropDownOptionValueChange(int value, DropdownDataPackets dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
 
@@ -30342,9 +30465,9 @@ namespace Com.RedicalGames.Filar
                         {
                             case TransitionType.Default:
 
-                                widget.SetWidgetAnchoredPosition(widget.GetDataPackets().widgetScreenPosition);
+                                widget.SetWidgetAnchoredPosition(widget.GetDataPackets().GetData().widgetScreenPosition);
 
-                                OnShowScreenWidget(widget.GetDataPackets());
+                                OnShowScreenWidget(widget.GetDataPackets().GetData());
                                 OnEnabled();
 
                                 break;
@@ -30733,12 +30856,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected void SetStatePacket(WidgetStatePacket widgetStatePacket) => this.widgetStatePacket = widgetStatePacket;
-
-            public WidgetStatePacket GetStatePacket() => widgetStatePacket;
-
-            public CallbackData<WidgetStatePacket> GetState() => OnGetState();
-
             public Callback Initialized()
             {
                 Callback callbackResults = new Callback(GetState());
@@ -30797,8 +30914,6 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
-
-            protected abstract CallbackData<WidgetStatePacket> OnGetState();
 
             #endregion
 
@@ -39416,7 +39531,6 @@ namespace Com.RedicalGames.Filar
         public interface IUIWidget
         {
             string GetName();
-            CallbackData<WidgetStatePacket> GetState();
 
             CallbackData<UIScreenHandler> GetParentWidget();
         }

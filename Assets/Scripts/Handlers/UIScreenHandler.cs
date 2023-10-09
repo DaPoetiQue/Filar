@@ -16,6 +16,23 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>>> callback)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>>(GetType());
+
+            if (callbackResults.Success())
+            {
+                //GetScreenView().Init(this, screenViewInitializationCallbackResults =>
+                //{
+                //    callbackResults.SetResult(screenViewInitializationCallbackResults);
+                //});
+            }
+
+            LogInfo($" _____________________+++++++++++ Callback Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
+
+            callback.Invoke(callbackResults);
+        }
+
         public void Init(Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
@@ -118,6 +135,37 @@ namespace Com.RedicalGames.Filar
                 AppData.ActionEvents._OnScreenTogglableStateEvent -= OnScreenTogglableStateEvent;
                 AppData.ActionEvents._OnSceneModelPoseResetEvent -= OnAssetPoseReset;
             }
+        }
+
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>> OnGetState()
+        {
+            AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Screen : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

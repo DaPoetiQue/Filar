@@ -1785,7 +1785,7 @@ namespace Com.RedicalGames.Filar
                                 if (ScreenUIManager.Instance != null)
                                 {
                                     var screen = ScreenUIManager.Instance.GetCurrentScreenData();
-                                    screen.value.GetScreenData().sceneAsset = currentSceneAsset;
+                                    screen.value.GetDataPackets().GetData().sceneAsset = currentSceneAsset;
 
                                     ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
                                 }
@@ -1890,7 +1890,7 @@ namespace Com.RedicalGames.Filar
                         if (ScreenUIManager.Instance != null)
                         {
                             var screen = ScreenUIManager.Instance.GetCurrentScreenData();
-                            screen.value.GetScreenData().sceneAsset = currentSceneAsset;
+                            screen.value.GetDataPackets().GetData().sceneAsset = currentSceneAsset;
 
                             ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
                         }
