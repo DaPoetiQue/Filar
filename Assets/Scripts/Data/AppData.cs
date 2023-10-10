@@ -19,6 +19,7 @@ using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using System.IO.Compression;
+using UnityEngine.AddressableAssets;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace Com.RedicalGames.Filar
@@ -561,6 +562,7 @@ namespace Com.RedicalGames.Filar
             CachedWidgetsContainer,
             SceneContentsContainer,
             CachedContentsContainer,
+            AppScreenContainer,
             None
         }
 
@@ -1141,6 +1143,35 @@ namespace Com.RedicalGames.Filar
             InitializedAndInActive
         }
 
+        #region Asset Bundles
+
+        [Serializable]
+        public class AssetBundleReference<T> : AssetReferenceT<T> where T : UnityEngine.Object
+        {
+            public AssetBundleReference(string guid) : base(guid) { }
+        }
+
+        [Serializable]
+        public class AssetBundlesLibrary
+        {
+            #region Components
+
+            public List<AssetBundleReference<UIScreenHandler>> appScreens = new List<AssetBundleReference<UIScreenHandler>>();
+
+            #endregion
+
+            #region Main
+
+            public void LoadAppScreens(Action<Callback> callback = null)
+            {
+
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Refresh Data
 
         [Serializable]
@@ -1546,13 +1577,9 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public abstract class DynamicContainer : AppMonoBaseClass, IContainer
+        public abstract class DynamicContainerBase : AppMonoBaseClass, IContainerBase
         {
             #region Components
-
-            [Space(5)]
-            [SerializeField]
-            protected UIScreenType screenType;
 
             [Space(5)]
             [SerializeField]
@@ -1564,11 +1591,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            bool selectableContent;
-
-            [Space(5)]
-            [SerializeField]
-            protected ContentRecycleContainer recycleContainer = new ContentRecycleContainer();
+            protected SceneDataPackets dataPackets = new SceneDataPackets();
 
             #endregion
 
@@ -1580,14 +1603,20 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Dynamic Container Name Is Not Assigned";
+
+
+            public void UpdateContainer()
+            {
+
+            }
+
             #region Content Clear
 
             public void Clear(bool showSpinner = false, Action<Callback> callback = null)
             {
                 try
                 {
-                  
-
                     OnClear(showSpinner, onClearCallbackResults => { callback?.Invoke(onClearCallbackResults); });
 
                     //callback?.Invoke(callbackResults);
@@ -1601,24 +1630,25 @@ namespace Com.RedicalGames.Filar
 
             public async Task<Callback> ClearAsync(bool showSpinner = false) => await OnClearAsync(showSpinner);
 
+
             #endregion
 
             #region Container States
 
             public Callback GetActive()
             {
-                Callback callbackResults = new Callback(GetContainerScreenType());
+                Callback callbackResults = new Callback(Helpers.GetAppComponentValid(gameObject, "Dynamic Container", "Dynamic Container Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    if (gameObject.activeInHierarchy && gameObject.activeSelf && gameObject != null && GetContainerScreenType().data != UIScreenType.None && GetContainerType().Success())
+                    if (gameObject.GetActive() && GetContainerType().Success())
                     {
-                        callbackResults.result = $"Container : {this.name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Active";
+                        callbackResults.result = $"Container : {GetName()} - With View Space : {GetViewSpace().GetData()} - Of Type : {GetContainerType().GetData()} Is Active";
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Container : {name} - For Screen : {GetContainerScreenType()} - With View Space : {GetViewSpace().data} - Of Type : {GetContainerType().data} Is Not Active";
+                        callbackResults.result = $"Container : {GetName()} - With View Space : {GetViewSpace().GetData()} - Of Type : {GetContainerType().GetData()} Is Not Active";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -1626,24 +1656,17 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public bool SelectableContent() => selectableContent;
-
             public CallbackData<int> GetContentCount()
             {
                 CallbackData<int> callbackResults = new CallbackData<int>(GetContainer<Transform>());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"There Are : {GetContainer<Transform>().data.childCount} Contents Inside Container : {name} - Of Type {GetContainerType().data} For Screen : {GetContainerScreenType()}";
+                    callbackResults.result = $"There Are : {GetContainer<Transform>().data.childCount} Contents Inside Container : {GetName()} - Of Type {GetContainerType().GetData()}";
                     callbackResults.data = GetContainer<Transform>().data.childCount;
                 }
 
                 return callbackResults;
-            }
-
-            public void UpdateContainer()
-            {
-
             }
 
             public CallbackData<bool> ContainerHasContent()
@@ -1654,13 +1677,13 @@ namespace Com.RedicalGames.Filar
                 {
                     if (GetContentCount().data > 0)
                     {
-                        callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has : {GetContentCount().data} Content(s).";
+                        callbackResults.result = $"Container : {GetName()} Of Type : {GetContainerType().GetData()} Has : {GetContentCount().GetData()} Content(s).";
                         callbackResults.data = true;
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen : {GetContainerScreenType().data} Has No Content.";
+                        callbackResults.result = $"Container : {GetName()} Of Type : {GetContainerType().GetData()} Has No Content.";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
@@ -1669,17 +1692,12 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<UIScreenWidget> GetScreenContent(string contentName)
-            {
-                return null;
-            }
-
             public CallbackData<int> GetLastContentIndex()
             {
                 CallbackData<int> callbackResults = new CallbackData<int>();
 
-                callbackResults.result = $"Container : {name} Of Type : {GetContainerType().data} For Screen Type : {GetContainerScreenType().data}'s Last Content Index Is At : {GetContentCount().data}";
-                callbackResults.data = GetContentCount().data;
+                callbackResults.result = $"Container : {GetName()} Of Type : {GetContainerType().GetData()}'s Last Content Index Is At : {GetContentCount().GetData()}";
+                callbackResults.data = GetContentCount().GetData();
 
                 return callbackResults;
             }
@@ -1689,26 +1707,6 @@ namespace Com.RedicalGames.Filar
             public bool IsContentActive(int contentID)
             {
                 return false;
-            }
-
-            public CallbackData<UIScreenType> GetContainerScreenType()
-            {
-                CallbackData<UIScreenType> callbackResults = new CallbackData<UIScreenType>();
-
-                if (screenType != UIScreenType.None)
-                {
-                    callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {screenType}";
-                    callbackResults.data = screenType;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                return callbackResults;
             }
 
             #endregion
@@ -1723,7 +1721,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (GetViewSpace().data == ContainerViewSpaceType.Screen)
                     {
-                        callbackResults.result = $"Screen Container : {name} Of Screen Type : {screenType} Found";
+                        callbackResults.result = $"Screen Container : {name} Found";
                         callbackResults.data = GetComponent<RectTransform>() as T;
                         callbackResults.resultCode = Helpers.SuccessCode;
 
@@ -1732,7 +1730,7 @@ namespace Com.RedicalGames.Filar
 
                     if (GetViewSpace().data == ContainerViewSpaceType.Scene)
                     {
-                        callbackResults.result = $"Scene Container : {name} Of Screen Type : {screenType} Found";
+                        callbackResults.result = $"Scene Container : {name} Found";
                         callbackResults.data = GetComponent<Transform>() as T;
                         callbackResults.resultCode = Helpers.SuccessCode;
 
@@ -1750,13 +1748,13 @@ namespace Com.RedicalGames.Filar
 
                 if (containerType != ContentContainerType.None)
                 {
-                    callbackResults.result = $"Container : {name} - Of Screen Type : {screenType}'s Container Type Is Set To : {containerType}";
+                    callbackResults.result = $"Container : {name}'s Container Type Is Set To : {containerType}";
                     callbackResults.data = containerType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Container : {name} - Of Screen Type : {screenType}'s Container Type Is Set To Default : NONE";
+                    callbackResults.result = $"Container : {name}'s Container Type Is Set To Default : NONE";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -1789,18 +1787,33 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<ContainerViewSpaceType> callbackResults = new CallbackData<ContainerViewSpaceType>();
 
-                if(viewSpace != ContainerViewSpaceType.None)
+                if (viewSpace != ContainerViewSpaceType.None)
                 {
-                    callbackResults.result = $"Container : {name} Of Screen Type : {screenType}'s View Space Type Is Set To Default : {viewSpace}";
+                    callbackResults.result = $"Container : {name}'s View Space Type Is Set To Default : {viewSpace}";
                     callbackResults.data = viewSpace;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Container : {name} Of Screen Type : {screenType}'s View Space Type Is Set To Default : None";
+                    callbackResults.result = $"Container : {name}'s View Space Type Is Set To Default : None";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
+
+                return callbackResults;
+            }
+
+            public CallbackData<SceneDataPackets> GetDataPackets()
+            {
+                var callbackResults = new CallbackData<SceneDataPackets>(Helpers.GetAppComponentValid(dataPackets, "Screen Data Packets", $"Dynamic Container Data Packets : {GetName()} - Of Type : {GetContainerType().GetData()} Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Dynamic Container Data Packets : {GetName()} Of Type : {GetContainerType().GetData()} Has Been Found.";
+                    callbackResults.data = dataPackets;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -1812,20 +1825,6 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnInitialization();
             protected abstract void OnClear(bool showSpinner = false, Action<Callback> callback = null);
             protected abstract Task<Callback> OnClearAsync(bool showSpinner = false);
-
-            #region Container Updates
-
-            #region Size Updates
-
-            protected abstract void OnUpdatedContainerSize(Action<CallbackData<Vector2>> callback = null);
-            protected abstract Task<CallbackData<Vector2>> OnUpdatedContainerSizeAsync();
-
-            #endregion
-
-            protected abstract void OnContainerUpdate();
-            protected abstract Task<Callback> OnContainerUpdateAsync();
-
-            #endregion
 
             #endregion
 
@@ -1928,7 +1927,7 @@ namespace Com.RedicalGames.Filar
                     if (updateContainer)
                         await OnUpdatedContainerSizeAsync();
 
-                        return callbackResults;
+                    return callbackResults;
                 }
                 catch (NullReferenceException exception)
                 {
@@ -1945,7 +1944,7 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback(GetViewSpace());
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
                     switch (GetViewSpace().data)
                     {
@@ -1953,7 +1952,7 @@ namespace Com.RedicalGames.Filar
 
                             GetContainer<RectTransform>().data.sizeDelta = (Vector2)size;
 
-                                break;
+                            break;
 
                         case ContainerViewSpaceType.Scene:
 
@@ -1964,6 +1963,74 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Updates
+
+            protected abstract void OnUpdatedContainerSize(Action<CallbackData<Vector2>> callback = null);
+            protected abstract Task<CallbackData<Vector2>> OnUpdatedContainerSizeAsync();
+
+            protected abstract void OnContainerUpdate();
+            protected abstract Task<Callback> OnContainerUpdateAsync();
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public abstract class DynamicContainer : DynamicContainerBase, IContainer
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            bool selectableContent;
+
+            [Space(5)]
+            [SerializeField]
+            protected ContentRecycleContainer recycleContainer = new ContentRecycleContainer();
+
+            #endregion
+
+            #region Main
+
+            #region Container States
+
+            public bool SelectableContent() => selectableContent;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<UIScreenWidget> GetScreenContent(string contentName)
+            {
+                return null;
+            }
+
+            public CallbackData<UIScreenType> GetContainerScreenType()
+            {
+                CallbackData<UIScreenType> callbackResults = new CallbackData<UIScreenType>(GetDataPackets());
+
+                if (callbackResults.Success())
+                {
+                    if (GetDataPackets().GetData().screenType != UIScreenType.None)
+                    {
+                        callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {GetDataPackets().GetData().screenType}";
+                        callbackResults.data = GetDataPackets().GetData().screenType;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
             }
 
             #endregion
@@ -39864,9 +39931,18 @@ namespace Com.RedicalGames.Filar
 
         public interface IContainer
         {
+            bool SelectableContent();
+            CallbackData<UIScreenType> GetContainerScreenType();
+            CallbackData<UIScreenWidget> GetScreenContent(string contentName);
+        }
+
+        public interface IContainerBase
+        {
             void Init();
 
             void Clear(bool showSpinner = false, Action<Callback> callback = null);
+
+            string GetName();
 
             Task<Callback> ClearAsync(bool showSpinner = false);
 
@@ -39875,20 +39951,15 @@ namespace Com.RedicalGames.Filar
             CallbackData<ContainerViewSpaceType> GetViewSpace();
 
             CallbackData<ContentContainerType> GetContainerType();
+            void UpdateContainer();
 
             Callback GetActive();
 
             CallbackData<DynamicContainerData> GetScreenViewDimensions();
 
-            bool SelectableContent();
-
             CallbackData<int> GetContentCount();
 
-            void UpdateContainer();
-
             CallbackData<bool> ContainerHasContent();
-
-            CallbackData<UIScreenWidget> GetScreenContent(string contentName);
 
             CallbackData<int> GetLastContentIndex();
 
@@ -39896,13 +39967,13 @@ namespace Com.RedicalGames.Filar
 
             bool IsContentActive(int contentID);
 
-            CallbackData<UIScreenType> GetContainerScreenType();
-
             void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
 
             Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false) where T : SelectableDynamicContent;
 
             void SetContainerSize(Vector3 size, Action<Callback> callback = null);
+
+            CallbackData<SceneDataPackets> GetDataPackets();
         }
 
         public interface IDebugger

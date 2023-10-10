@@ -163,11 +163,6 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> UpdateWidgetsList Failed : No Widgets Found.");
         }
 
-        public AppData.UIScreenType GetUIScreenType()
-        {
-            return screenType;
-        }
-
         public RectTransform GetItemDragContainer()
         {
             return itemDragContainer;

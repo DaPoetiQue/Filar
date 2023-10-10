@@ -8,6 +8,9 @@ using static TMPro.TMP_Dropdown;
 using Firebase.Messaging;
 using Firebase.Database;
 using Firebase.Storage;
+using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Com.RedicalGames.Filar
 {
@@ -146,7 +149,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        List<AppData.DynamicContainer> dynamicContainerLibrary = new List<AppData.DynamicContainer>();
+        List<AppData.DynamicContainerBase> dynamicContainerLibrary = new List<AppData.DynamicContainerBase>();
 
         #endregion
 
@@ -172,6 +175,10 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         [SerializeField]
         AppData.ShaderLibrabry shaderLibrabry = new AppData.ShaderLibrabry();
+
+        [Space(5)]
+        [SerializeField]
+        AppData.AssetBundlesLibrary assetBundlesLibrary = new AppData.AssetBundlesLibrary();
 
         #endregion
 
@@ -1139,6 +1146,34 @@ namespace Com.RedicalGames.Filar
             {
                 LogError(exception.Message, this);
                 throw exception;
+            }
+        }
+
+        public void InitializeAppScreens(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            Addressables.InitializeAsync().Completed += OnInitializeAppScreensCompleted;
+
+       
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private void OnInitializeAppScreensCompleted(AsyncOperationHandle<IResourceLocator> obj)
+        {
+            if(obj.Status == AsyncOperationStatus.Succeeded)
+            {
+                LogInfo($" _________________________________++++++++++++++++++++++++++++_________ Load Screens Started.", this);
+
+                Addressables.LoadResourceLocationsAsync("App Screens").Completed += (results) => 
+                {
+                    LogInfo($" _________________________________++++++++++++++++++++++++++++_________ Loaded : {results.Result.Count} Screens.", this);
+                };
+            }
+            else
+            {
+                LogInfo($" _________________________________++++++++++++++++++++++++++++_________ Failed Initializing.", this);
             }
         }
 
@@ -2950,7 +2985,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType().data == screenType) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType) as T;
 
                     if (container != null)
                     {
@@ -2980,7 +3015,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType().data == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
 
                     if (container != null)
                     {
@@ -3010,7 +3045,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType().data == screenType && container.GetContainerType().data == containerType && container.GetViewSpace().data == viewSpaceType) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerType && container.GetViewSpace().data == viewSpaceType) as T;
 
                     if (container != null)
                     {
@@ -3030,7 +3065,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetDynamicContainers<T>(AppData.UIScreenType screenType, Action<AppData.CallbackDataList<T>> callback) where T : AppData.DynamicContainer
+        public void GetDynamicContainers<T>(AppData.UIScreenType screenType, Action<AppData.CallbackDataList<T>> callback) where T : AppData.DynamicContainerBase
         {
             AppData.CallbackDataList<T> callbackResults = new AppData.CallbackDataList<T>();
 
@@ -3040,9 +3075,9 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var containers = hasContentCallbackResults.data.FindAll(container => container.GetContainerScreenType().data == screenType) as List<T>;
+                    var containers = hasContentCallbackResults.data.FindAll(container => container.GetDataPackets().GetData().screenType == screenType) as List<T>;
 
-                    AppData.Helpers.GetAppComponentsValid(containers, "Container", hasContainersCallbackResults => 
+                    AppData.Helpers.GetAppComponentsValid(containers, "Container", hasContainersCallbackResults =>
                     {
                         callbackResults.SetResult(hasContentCallbackResults);
 
@@ -3066,58 +3101,58 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        //public void GetDynamicContainer<T>(AppData.UIScreenType screenType, List<AppData.ContainerData> containerDatas, Action<AppData.CallbackDataList<T>> callback) where T : AppData.DynamicContainer
-        //{
-        //    AppData.CallbackDataList<T> callbackResults = new AppData.CallbackDataList<T>();
-
-        //    GetAllDynamicContainers(hasContentCallbackResults =>
-        //    {
-        //        callbackResults.SetResult(hasContentCallbackResults);
-
-        //        if (callbackResults.Success())
-        //        {
-        //            List<T> containers = new List<T>();
-
-        //            AppData.Helpers.GetAppComponentsValid(containerDatas, "Container Datas", containerDataCallbackResults => 
-        //            {
-        //                callbackResults.SetResult(containerDataCallbackResults);
-
-        //                if (callbackResults.Success())
-        //                {
-        //                    foreach (var containerData in containerDataCallbackResults.data)
-        //                    {
-        //                        T container = hasContentCallbackResults.data.Find(container => container.GetContainerScreenType() == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
-
-        //                        if (container != null)
-        //                        {
-        //                            containers.Add(container);
-
-        //                            callbackResults.result = "Success";
-        //                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-        //                        }
-        //                        else
-        //                        {
-        //                            callbackResults.result = $"Failed : Container Of Type : {container.GetContainerScreenType()} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
-        //                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-        //                        }
-
-        //                        if(callbackResults.Success())
-        //                        {
-        //                            callbackResults.result = "Success";
-        //                            callbackResults.data = containers;
-        //                        }
-        //                    }
-        //                }
-        //            });
-        //        }
-        //    });
-
-        //    callback?.Invoke(callbackResults);
-        //}
-
-        public void GetAllDynamicContainers(Action<AppData.CallbackDataList<AppData.DynamicContainer>> callback)
+        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, List<AppData.ContainerData> containerDatas, Action<AppData.CallbackDataList<T>> callback) where T : AppData.DynamicContainer
         {
-            AppData.CallbackDataList<AppData.DynamicContainer> callbackResults = new AppData.CallbackDataList<AppData.DynamicContainer>();
+            AppData.CallbackDataList<T> callbackResults = new AppData.CallbackDataList<T>();
+
+            GetAllDynamicContainers(hasContentCallbackResults =>
+            {
+                callbackResults.SetResult(hasContentCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    List<T> containers = new List<T>();
+
+                    AppData.Helpers.GetAppComponentsValid(containerDatas, "Container Datas", containerDataCallbackResults =>
+                    {
+                        callbackResults.SetResult(containerDataCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var containerData in containerDataCallbackResults.data)
+                            {
+                                T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+
+                                if (container != null)
+                                {
+                                    containers.Add(container);
+
+                                    callbackResults.result = "Success";
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed : Container Of Type : {container.GetContainerScreenType()} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.result = "Success";
+                                    callbackResults.data = containers;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void GetAllDynamicContainers(Action<AppData.CallbackDataList<AppData.DynamicContainerBase>> callback)
+        {
+            AppData.CallbackDataList<AppData.DynamicContainerBase> callbackResults = new AppData.CallbackDataList<AppData.DynamicContainerBase>();
 
             AppData.Helpers.GetAppComponentsValid(dynamicContainerLibrary, "Dynamic Container List", hasContentCallbackResults => 
             {
@@ -3138,28 +3173,28 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackDataList<AppData.DynamicContainer> callbackResults = new AppData.CallbackDataList<AppData.DynamicContainer>();
 
-            GetAllDynamicContainers(hasContentCallbackResults =>
-            {
-                callbackResults.SetResult(hasContentCallbackResults);
+            //GetAllDynamicContainers(hasContentCallbackResults =>
+            //{
+            //    callbackResults.SetResult(hasContentCallbackResults);
 
-                if (callbackResults.Success())
-                {
-                    List<AppData.DynamicContainer> containers = dynamicContainerLibrary.FindAll(container => container.GetContainerScreenType().data != screenType);
+            //    if (callbackResults.Success())
+            //    {
+            //        List<AppData.DynamicContainer> containers = dynamicContainerLibrary.FindAll(container => container.GetContainerScreenType().data != screenType);
 
-                    if (containers != null && containers.Count > 0)
-                    {
-                        callbackResults.result = $"{containers.Count} Containers Found.";
-                        callbackResults.data = containers;
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Failed : There Are No Containers Found.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-            });
+            //        if (containers != null && containers.Count > 0)
+            //        {
+            //            callbackResults.result = $"{containers.Count} Containers Found.";
+            //            callbackResults.data = containers;
+            //            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            //        }
+            //        else
+            //        {
+            //            callbackResults.result = $"Failed : There Are No Containers Found.";
+            //            callbackResults.data = default;
+            //            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            //        }
+            //    }
+            //});
 
             callback?.Invoke(callbackResults);
         }

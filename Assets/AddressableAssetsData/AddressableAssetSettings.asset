@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 1d8f7096a103d2c4ab1090119fb26270
   m_CachedHash:
     serializedVersion: 2
-    Hash: 7063d36733ac6b9a231ab364c2974152
+    Hash: 1c05b20bcb9a563ebcf88766bf21d558
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
     m_Id: 
   m_RemoteCatalogLoadPath:
     m_Id: 
-  m_ContentStateBuildPathProfileVariableName: 
+  m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_GroupAssets:
   - {fileID: 11400000, guid: 8a6e0195aa36e4b4493163366df0c294, type: 2}
   - {fileID: 11400000, guid: de9e7a88aee99574f833e94a494ba3d0, type: 2}
+  - {fileID: 11400000, guid: 5e29728cb0861d845969600b89d32a76, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -87,7 +88,7 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
-    - Shopar
+    - App Screens
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 39bb3e37dcb37364cab85ef96fafb4f2, type: 2}

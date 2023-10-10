@@ -114,6 +114,11 @@ namespace Com.RedicalGames.Filar
                 screens = new List<AppData.UIScreenViewComponent>();
                 var loadedScreens = Initialized().GetData();
 
+                AppDatabaseManager.Instance.InitializeAppScreens(screensInitialized => 
+                {
+                
+                });
+
                 foreach (var screenComponent in loadedScreens)
                 {
                     screenComponent.Initilize(initializationCallbackResults => 
