@@ -19,8 +19,10 @@ using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using System.IO.Compression;
-using UnityEngine.AddressableAssets;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Com.RedicalGames.Filar
 {
@@ -1156,15 +1158,192 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public List<AssetBundleReference<UIScreenHandler>> appScreens = new List<AssetBundleReference<UIScreenHandler>>();
+            [Space(5)]
+            public List<AssetBundleReference<GameObject>> appScreens = new List<AssetBundleReference<GameObject>>();
+
+            [Space(5)]
+            public bool loadScreensOnInitialization = true;
+
+            [Space(5)]
+            public float initializationTimeout = 10.0f;
+
+            [SerializeField] // Remove
+            private List<UIScreenHandler> loadedAppScreens = new List<UIScreenHandler>();
+
+            private bool initialized = false;
+            private bool inProgress = false;
 
             #endregion
 
             #region Main
 
-            public void LoadAppScreens(Action<Callback> callback = null)
-            {
+            public void Initialize() => Addressables.InitializeAsync().Completed += InitializationCompletedEvent;
 
+            private void SetInitialized(bool initialized) => this.initialized = initialized;
+
+            private void SetInprogressStatus(bool status) => inProgress = status;
+            public bool InProgress() => inProgress;
+
+            private void InitializationCompletedEvent(AsyncOperationHandle<IResourceLocator> evt)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    if (evt.Status == AsyncOperationStatus.Succeeded)
+                    {
+                        if (loadScreensOnInitialization)
+                        {
+                            SetInitialized(false);
+
+                            for (int i = 0; i < appScreens.Count; i++)
+                            {
+                                while (!appScreens[i].OperationHandle.IsDone)
+                                {
+                                    SetInprogressStatus(true);
+
+                                    appScreens[i].LoadAssetAsync().Completed += (callback) =>
+                                    {
+                                        var screen = callback.Result.GetComponent<UIScreenHandler>();
+
+                                        callbackResults.SetResult(Helpers.GetAppComponentValid(screen, "Screen", $"Loaded Screen Prefab Game Object : {screen.GetName()} Doesn't Contain A Screen Handler."));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            AddLoadedAppScreenToList(screen, loadedAppScreenCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(loadedAppScreenCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                    SetInprogressStatus(false);
+                                            });
+                                        }
+                                    };
+                                }
+
+                                if (appScreens[i].OperationHandle.Status != AsyncOperationStatus.Succeeded && callbackResults.Success())
+                                {
+                                    SetInprogressStatus(false);
+
+                                    callbackResults.result = $"Asset Bundle Library - Loading App Screen Failed With Status : {appScreens[i].OperationHandle.Status} - Invalid Operation - Please Check Here.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+
+                                    break;
+                                }
+                            }
+
+                            if (callbackResults.Success() && !InProgress())
+                            {
+                                Helpers.ListComponentHasEqualDataSize(appScreens, loadedAppScreens, compareCallbackResults =>
+                                {
+                                    callbackResults.SetResult(compareCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        SetInitialized(true);
+
+                                        callbackResults.result = $"Asset Bundle Library - {appScreens.Count} : App Screens Have Been Initialized Successfully.";
+                                    }
+                                });
+                            }
+                        }
+                        else
+                        {
+                            initialized = true;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Failed To Initialize Addressables - Invalid Operation - Please See Here - Addressables Status : {evt.Status.ToString()}");
+                    }
+                }
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(appScreens, "App Screens", "Asset Bundles Library Initialization Failed - App Screens Are Not Yet Initialized In The Editor Inspector."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = "Asset Library Has Been Initialized";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Asset Library Is Not Yet Initialized";
+                    callbackResults.resultCode = Helpers.WarningCode;                }
+
+                return callbackResults;
+            }
+
+            public Callback AssetsInitialized()
+            {
+                var callbackResults = new Callback();
+
+                if (initialized)
+                {
+                    callbackResults.result = "Asset Library Has Been Initialized";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Asset Library Is Not Yet Initialized";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public async Task<CallbackDataList<UIScreenHandler>> GetAppScreensAsync()
+            {
+                var callbackResults = new CallbackDataList<UIScreenHandler>();
+
+                float timeout = initializationTimeout;
+
+                while (AssetsInitialized().UnSuccessful() && timeout > 0.0f)
+                {
+                    timeout -= 1 * Time.deltaTime;
+                    callbackResults.SetResult(AssetsInitialized());
+                    await Task.Yield();
+                }
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"{loadedAppScreens.Count} : Loaded App Screens Have Been Successfully Found.";
+                    callbackResults.data = loadedAppScreens;
+                }
+                else
+                    callbackResults.result = $"Asset Bundle Library - Get App Screens Async Failed With Results : {callbackResults.GetResult}";
+
+                return callbackResults;
+            }
+
+            private void AddLoadedAppScreenToList(UIScreenHandler screen, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                if(!loadedAppScreens.Contains(screen))
+                {
+                    loadedAppScreens.Add(screen);
+
+                    if(loadedAppScreens.Contains(screen))
+                    {
+                        callbackResults.result = $"App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Has Been Added Successfully To Loaded App Screens.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Asset Bundles Library - Add Loaded App Screen To List Failed - Loaded App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Couldn't Be Added To Loaded App Screens - Invalid Operation - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Asset Bundles Library - Add Loaded App Screen To List Failed - Loaded App Screens Already Contains App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()}.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion

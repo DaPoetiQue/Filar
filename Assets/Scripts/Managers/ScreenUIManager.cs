@@ -86,178 +86,80 @@ namespace Com.RedicalGames.Filar
                 _instance = this;
         }
 
-        public AppData.CallbackDataList<UIScreenHandler> Initialized()
+        public async Task<AppData.CallbackDataList<AppData.UIScreenViewComponent>> OnScreenInitAsync()
         {
-            var callbackResults = new AppData.CallbackDataList<UIScreenHandler>(AppData.Helpers.GetAppComponentsValid(GetComponentsInChildren<UIScreenHandler>(), "Screens", $"There Are No Screens Found. Please Chech {this.name}"));
-
-            if(callbackResults.Success())
-            {
-                callbackResults.result = $"There Are : {GetComponentsInChildren<UIScreenHandler>().Length} Screens Found To Initialize.";
-                callbackResults.data = GetComponentsInChildren<UIScreenHandler>().ToList();
-            }
-            else
-            {
-                callbackResults.result = $"Failed To Initialize Screen Manager With Results : {callbackResults.GetResult}";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
-
-            return callbackResults;
-        }
-
-        public AppData.CallbackDataList<AppData.UIScreenViewComponent> OnScreenInit()
-        {
-            AppData.CallbackDataList<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>(Initialized());
+            var callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>(
+                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                screens = new List<AppData.UIScreenViewComponent>();
-                var loadedScreens = Initialized().GetData();
+                var appDatabaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                AppDatabaseManager.Instance.InitializeAppScreens(screensInitialized => 
-                {
-                
-                });
-
-                foreach (var screenComponent in loadedScreens)
-                {
-                    screenComponent.Initilize(initializationCallbackResults => 
-                    {
-                        callbackResults.SetResult(initializationCallbackResults);
-
-                        if(callbackResults.Success())
-                        {
-                            AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
-                            {
-                                name = screenComponent.GetScreenTitle(),
-                                value = screenComponent
-                            };
-
-                           AddScreen(newScreen, screenAddCallback => 
-                           {
-                               callbackResults.SetDataResults(screenAddCallback); 
-                           });
-                        }
-                    });
-
-
-                    if (callbackResults.UnSuccessful())
-                        break;
-                }
+                callbackResults.SetResult(appDatabaseManager.GetAssetBundlesLibrary());
 
                 if (callbackResults.Success())
                 {
-                    AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.GetData(), loadedScreens, compareDataCallback => 
+                    var assetBundlesLibrary = appDatabaseManager.GetAssetBundlesLibrary().GetData();
+
+                    var loadedScreensTaskResultsCallback = await assetBundlesLibrary.GetAppScreensAsync();
+
+                    callbackResults.SetResult(loadedScreensTaskResultsCallback);
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(compareDataCallback);
+                        screens = new List<AppData.UIScreenViewComponent>();
+                        var loadedScreens = loadedScreensTaskResultsCallback.GetData();
 
-                        if(callbackResults.Success())
+                        foreach (var screenComponent in loadedScreens)
                         {
-                            SetScreensInitialized(callbackResults.Success());
+                            screenComponent.Initilize(initializationCallbackResults =>
+                            {
+                                callbackResults.SetResult(initializationCallbackResults);
 
-                            callbackResults.SetResult(ScreensInitialized());
+                                if (callbackResults.Success())
+                                {
+                                    AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
+                                    {
+                                        name = screenComponent.GetScreenTitle(),
+                                        value = screenComponent
+                                    };
 
-                            //if(callbackResults.Success())
-                            //{
-                            //    var screenList = callbackResults.GetData();
+                                    AddScreen(newScreen, screenAddCallback =>
+                                {
+                                    callbackResults.SetDataResults(screenAddCallback);
+                                });
+                                }
+                            });
 
-                            //    foreach (var screenView in screenList)
-                            //    {
-                            //        screenView.value.Initilize(screenInitializationCallback =>
-                            //        {
-                            //            callbackResults.SetResult(screenInitializationCallback);
 
-                            //            if (callbackResults.Success())
-                            //            {
-                            //                callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
-                            //                callbackResults.data = compareDataCallback.tuple_A;
-                            //                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                            //            }
-                            //        });
-                            //    }
-                            //}
+                            if (callbackResults.UnSuccessful())
+                                break;
                         }
-                    });
+
+                        if (callbackResults.Success())
+                        {
+                            AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.GetData(), loadedScreens, compareDataCallback =>
+                            {
+                                callbackResults.SetResult(compareDataCallback);
+
+                                if (callbackResults.Success())
+                                {
+                                    SetScreensInitialized(callbackResults.Success());
+
+                                    callbackResults.SetResult(ScreensInitialized());
+
+                                    if(callbackResults.UnSuccessful())
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                }
+                            });
+                        }
+                    }
                 }
-
-                //if (callbackResults.Success())
-                //{
-                //    AppData.Helpers.ListComponentHasEqualDataSize(callbackResults.GetData(), loadedScreens, compareDataCallback =>
-                //    {
-                //        callbackResults.SetResult(compareDataCallback);
-
-                    //        if (callbackResults.Success())
-                    //        { 
-
-                    //            SetScreensInitialized(callbackResults.Success(), callbackResults.result);
-
-                    //            if (IsInitialized())
-                    //            {
-                    //                foreach (var screenView in callbackResults.data)
-                    //                {
-                    //                    screenView.value.Initilize(screenInitializationCallback =>
-                    //                    {
-                    //                        callbackResults.SetResult(screenInitializationCallback);
-
-                    //                        if (callbackResults.Success())
-                    //                        {
-                    //                            AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
-                    //                            {
-                    //                                name = screenView.value.GetScreenTitle(),
-                    //                                value = screenView.value
-                    //                            };
-
-                    //                            AddScreen(newScreen, screenAddCallback => { callbackResults = screenAddCallback; });
-
-                    //                            LogInfo($" _____+++++++++++ Loaded Screen : {screenView.value.GetName()}", this);
-                    //                        }
-                    //                    });
-                    //                }
-
-                    //                if (callbackResults.Success())
-                    //                {
-                    //                    //SetCurrentScreenData(GetScreenData(AppManager.Instance.GetInitialLoadDataPackets()));
-                    //                    SetScreensInitialized(callbackResults.Success(), callbackResults.result);
-
-                    //                    if (IsInitialized())
-                    //                    {
-                    //                        callbackResults.result = $"{compareDataCallback.size} Screen(s) Has Been Initialized Successfully.";
-                    //                        callbackResults.data = compareDataCallback.tuple_A;
-                    //                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        callbackResults.result = $"Screens Failed To Initialize.";
-                    //                        callbackResults.data = default;
-                    //                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    //                    }
-                    //                }
-                    //                else
-                    //                    Log(callbackResults.resultCode, callbackResults.result, this);
-                    //            }
-                    //            else
-                    //            {
-                    //                callbackResults.result = $"Screens Failed To Initialize.";
-                    //                callbackResults.data = default;
-                    //                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    //            }
-                    //        }
-                    //            else
-                    //        {
-                    //            callbackResults.result = compareDataCallback.result;
-                    //            callbackResults.data = default;
-                    //            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    //        }
-                    //    });
-                    //}
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
             }
             else
-            {
-                callbackResults.result = $"{GetScreenCount()} Screen(s) Have Already Been Initialized";
-                callbackResults.resultCode = AppData.Helpers.WarningCode;
-            }
-
-            Log(callbackResults.resultCode, callbackResults.result, this);
+                Log(callbackResults.resultCode, callbackResults.result, this);
 
             return callbackResults;
         }
@@ -302,31 +204,6 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetUIScreen(bool first, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
-        {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>(ScreensInitialized());
-
-            string screenPos = (first) ? "First" : "Last";
-
-            if (callbackResults.Success())
-            {
-                AppData.UIScreenViewComponent screen = (first) ? GetScreens()[0] : GetScreens().FindLast(screen => screen.value);
-
-                callbackResults.result = $"{screenPos} Screen Found.";
-                callbackResults.data = screen;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-
-                callbackResults.result = $"Couldn't Get {screenPos} Screen - Possible Issue - Screens Are Missing / Not Found.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
         public AppData.UIScreenType GetCurrentUIScreenType()
         {
             AppData.UIScreenType currentScreenType = AppData.UIScreenType.None;
@@ -339,7 +216,7 @@ namespace Com.RedicalGames.Filar
 
         public AppData.Callback ScreensInitialized()
         {
-            var callbackResults = new AppData.Callback(Initialized());
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(screens, "Screens", "Screen Have Not Been Initialized Yet."));
 
             if (callbackResults.Success())
             {

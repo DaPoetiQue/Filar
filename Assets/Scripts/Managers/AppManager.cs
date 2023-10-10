@@ -93,27 +93,30 @@ namespace Com.RedicalGames.Filar
 
         private void Init(Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
             if(callbackResults.Success())
             {
-                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                callbackResults.SetResult(screenUIManager.OnScreenInit());
-
-                if (callbackResults.Success())
+                databaseManager.InitializeLocalCacheStorage(cacheStorageInitializedCallbackResults =>
                 {
-                    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+                    callbackResults.SetResult(cacheStorageInitializedCallbackResults);
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResults(sceneAssetsManagerCallbackResults);
-
-                        if (callbackResults.Success())
+                        AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, async screenUIManagerInstanceCallbackResults =>
                         {
-                            var databaseManager = sceneAssetsManagerCallbackResults.data;
+                            callbackResults.SetResults(screenUIManagerInstanceCallbackResults);
 
-                            databaseManager.InitializeLocalCacheStorage(cacheStorageInitializedCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(cacheStorageInitializedCallbackResults);
+                                databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
+
+                                var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
+                                var onScreenInitializationTaskResultsCallback = await screenUIManager.OnScreenInitAsync();
+
+                                callbackResults.SetResult(onScreenInitializationTaskResultsCallback);
 
                                 if (callbackResults.Success())
                                 {
@@ -250,24 +253,13 @@ namespace Com.RedicalGames.Filar
                                             #endregion
                                         }
                                     });
-
-                                    //databaseManager.InitializeSplashImageLibrary(splashImagesInitializationCallbackResults => 
-                                    //{
-                                    //    callbackResults.SetResult(splashImagesInitializationCallbackResults);
-
-                                    //    if (callbackResults.Success())
-                                    //    {
-
-                                    //    }
-                                    //});
                                 }
-                            });
-                        }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);                            }
 
-                    }, "Database Manager Instance Is Not Yet Initialized");
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }, "Screen UI Manager Instance Is Not Yet Initialized");
+                    }
+                });
             }
         }
 

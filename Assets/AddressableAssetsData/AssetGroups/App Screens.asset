@@ -16,7 +16,37 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 56c59421ca91cd641ab39ca2c7ab3060
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: cf7ec172355b66a49b3c208a145d7dfe
+    m_Address: Assets/Prefabs/UI/App Screens/__ App Boot Splash Screen Widget.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a60c469687e2cc34f8ba099cee26cdb3
+    m_Address: Assets/Prefabs/UI/App Screens/__ Loading Screen Widget.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 551b3da68c2fe884c809d6f3106f479f
+    m_Address: Assets/Prefabs/UI/App Screens/__ Landing Page Content.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c6485e6e662c4f479b748854faee896
+    m_Address: Assets/Prefabs/UI/App Screens/__ Project Creation Screen Widget.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 70df4d44e59804e44b201942dfcc79ba
+    m_Address: Assets/Prefabs/UI/App Screens/__ Project Dashboard Screen Content.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12f85860245235c4b86d21b4d73606ec
+    m_Address: Assets/Prefabs/UI/App Screens/__ Import Screen Content.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

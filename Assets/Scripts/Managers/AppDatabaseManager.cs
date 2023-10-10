@@ -8847,6 +8847,20 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Asset Bundles
+
+        public AppData.CallbackData<AppData.AssetBundlesLibrary> GetAssetBundlesLibrary()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.AssetBundlesLibrary>(assetBundlesLibrary.Initialized());
+
+            if(callbackResults.Success())
+                callbackResults.data = assetBundlesLibrary;
+
+            return callbackResults;
+        }
+
+        #endregion
+
         #region Storage Sources
 
         AppData.AppDataStorageSourceLibrary GetAppDataStorageSourceLibrary() => storageSourceLibrary;
