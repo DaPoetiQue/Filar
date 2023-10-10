@@ -2605,8 +2605,8 @@ MonoBehaviour:
   - name: Reset Scene Model Pose Button Widget
     value: {fileID: 4340530848846441560}
     widgetType: 1
-  includesLoadingAssets: 1
-  initializeScreenWidgets: 1
+  includesLoadingAssets: 0
+  initializeScreenWidgets: 0
   screenWidgetsList: []
 --- !u!1 &4340530847736914902
 GameObject:

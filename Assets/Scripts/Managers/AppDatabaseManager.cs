@@ -51,9 +51,9 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         List<AppData.StorageDirectoryData> defaultDirectories = new List<AppData.StorageDirectoryData>();
 
-        [Space(5)]
-        [SerializeField]
-        bool strictValidateAssetSearch = false;
+        //[Space(5)]
+        //[SerializeField]
+        //bool strictValidateAssetSearch = false;
 
         [Space(5)]
         [SerializeField]
@@ -119,9 +119,9 @@ namespace Com.RedicalGames.Filar
         //[SerializeField]
         //string profileWidgetPrefabDirectory = "UI Prefabs/Profile";
 
-        [Space(5)]
-        [SerializeField]
-        string colorSwatchButtonHandlerPrefabDirectory = "UI Prefabs/ColorSwatch";
+        //[Space(5)]
+        //[SerializeField]
+        //string colorSwatchButtonHandlerPrefabDirectory = "UI Prefabs/ColorSwatch";
 
         AppData.SceneMode currentSceneMode;
 
@@ -2973,9 +2973,47 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        #region Dynamic Containers
+        #region   #region Dynamic Containers Setters
 
-        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainer
+        public void SetDynamicContainer(Action<AppData.Callback> callback = null, params AppData.DynamicContainerBase[] dynamicContainers)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(dynamicContainers, "Dynamic Containers", "Dynamic Containers Params Array Is Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                for (int i = 0; i < dynamicContainers.Length; i++)
+                {
+                    if(!dynamicContainerLibrary.Contains(dynamicContainers[i]))
+                    {
+                        dynamicContainerLibrary.Add(dynamicContainers[i]);
+
+                        if (dynamicContainerLibrary.Contains(dynamicContainers[i]))
+                        {
+                            callbackResults.result = $"Dynamic Container : {dynamicContainers[i].GetName()} Has Been Added Successfully To Dynamic Containers Library.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Set Dynamic Container Failed - Couldn't Add Dynamic Container : {dynamicContainers[i].GetName()} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Dynamic Containers Already Contains Dynamic Container : {dynamicContainers[i].GetName()}";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
+                }
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Dynamic Containers Getters
+
+        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainerBase
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
@@ -3005,7 +3043,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, AppData.ContainerData containerData, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainer
+        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, AppData.ContainerData containerData, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainerBase
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
@@ -3035,7 +3073,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetDynamicContainer<T>(AppData.UIScreenType screenType,AppData.ContentContainerType containerType,  AppData.ContainerViewSpaceType viewSpaceType, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainer
+        public void GetDynamicContainer<T>(AppData.UIScreenType screenType, AppData.ContentContainerType containerType,  AppData.ContainerViewSpaceType viewSpaceType, Action<AppData.CallbackData<T>> callback) where T : AppData.DynamicContainerBase
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
@@ -3045,7 +3083,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerType && container.GetViewSpace().data == viewSpaceType) as T;
+                    T container = hasContentCallbackResults.data.Find(container => container?.GetDataPackets()?.GetData().screenType == screenType && container?.GetContainerType()?.GetData() == containerType && container?.GetViewSpace()?.GetData() == viewSpaceType) as T;
 
                     if (container != null)
                     {
@@ -3164,6 +3202,7 @@ namespace Com.RedicalGames.Filar
                     callbackResults.data = dynamicContainerLibrary;
                     callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
+
             }, "Failed : dynamicWidgetsContainersList Is Null / Empty.");
 
             callback?.Invoke(callbackResults);

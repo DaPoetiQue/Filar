@@ -14,8 +14,6 @@ namespace Com.RedicalGames.Filar
         AppData.TransitionableUIComponent transitionableUIScaleComponent, transitionableUITranslateComponent;
         AppData.TimedEventComponent changeSplashImageTimedEventComponent;
 
-        bool canShowSpinner = false;
-
         #endregion
 
         #region Main
@@ -246,8 +244,6 @@ namespace Com.RedicalGames.Filar
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
                                     }
-
-                                    canShowSpinner = true;
                                 }
                             });
                         }

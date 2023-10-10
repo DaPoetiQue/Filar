@@ -132,8 +132,6 @@ namespace Com.RedicalGames.Filar
 
         void Init()
         {
-            Debug.Log($"--> Selectable Manager Initialized From : {this.gameObject.name}");
-
             projectStructureSelectionSystem.OnSelection = ShowWidgetOnSelection;
             projectStructureSelectionSystem.OnDeselection = HideWidgetOnDeselection;
         }

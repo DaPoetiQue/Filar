@@ -33,10 +33,6 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.UIScreenType appBootScreen = AppData.UIScreenType.LandingPageScreen;
-
-        [Space(5)]
-        [SerializeField]
         AppData.Compatibility testProjectSupport;
 
         [Space(5)]
@@ -54,10 +50,6 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         [SerializeField]
         string infoFolderName = "Filar";
-
-        AppData.Profile userProfile = new AppData.Profile();
-
-        public AppData.Compatibility Compatibility { get; private set; }
 
         AppData.AppInfo entry = new AppData.AppInfo();
         public bool AppinfoSynced { get; private set; }

@@ -8,9 +8,6 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        [SerializeField]
-        TMP_Text titleDisplayer = null;
-
         [Space(5)]
         [SerializeField]
         AppData.UICheckbox<AppData.SceneDataPackets> profileToggleBox = new AppData.UICheckbox<AppData.SceneDataPackets>();

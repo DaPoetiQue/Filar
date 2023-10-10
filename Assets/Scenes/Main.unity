@@ -2821,7 +2821,6 @@ MonoBehaviour:
           sequenceState: 7
         footer: 
       sequenceID: 4
-  tempLoadDuration: 3
 --- !u!1 &263306657
 GameObject:
   m_ObjectHideFlags: 0
@@ -19484,7 +19483,6 @@ MonoBehaviour:
       debugClassLogCat: 
   appInfo:
     appRestrictions: []
-  appBootScreen: 5
   testProjectSupport: 2
   requestStoragePermissions: 0
   appMode: 0
@@ -24652,7 +24650,6 @@ MonoBehaviour:
     projectDirectory: 
     rootDirectory: 
     directory: 
-  strictValidateAssetSearch: 1
   screenTextList:
   - name: Results Not Found
     text: 'No Results Matches Your Search : {0}'
@@ -24942,7 +24939,6 @@ MonoBehaviour:
   - name: Image Placeholder
     value: {fileID: 21300000, guid: b97f7bfa9495b9648b0c62f01dc7e1cd, type: 3}
     imageType: 20
-  colorSwatchButtonHandlerPrefabDirectory: UI Prefabs/Color Swatch
   rootStructureStorageData:
     name: Root Structure Data
     type: 1
@@ -25074,7 +25070,6 @@ MonoBehaviour:
     dataType: 0
     extension: 5
   dynamicContainerLibrary:
-  - {fileID: 0}
   - {fileID: 786316670}
   - {fileID: 1594336066}
   screenLoadInfoInstanceLibrary:
@@ -26433,6 +26428,7 @@ MonoBehaviour:
       shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
       type: 0
   assetBundlesLibrary:
+    name: 
     appScreens:
     - m_AssetGUID: cf7ec172355b66a49b3c208a145d7dfe
       m_SubObjectName: 
@@ -26458,6 +26454,9 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
+    loadScreensOnInitialization: 1
+    initializationTimeout: 10
+    loadedAppScreens: []
   sceneAssetList: []
   dropDownContentDataList: []
   currentProjectStructureData:

@@ -112,8 +112,6 @@ namespace Com.RedicalGames.Filar
             // Load Skybox Handler From Resources Folder
             if (skyboxUIHandlerPrefab == null)
                 skyboxUIHandlerPrefab = Resources.Load<SkyboxUIHandler>(skyboxWidgetPrefabDirectory);
-
-            LogInfo(" <------------------> This Was Disabled Temp For Development - This Should Be Triggered Someone During Runtime", this);
             // CreateUIWidgets();
         }
 

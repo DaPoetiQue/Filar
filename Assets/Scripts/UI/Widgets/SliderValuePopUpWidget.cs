@@ -15,9 +15,6 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         public float defaultFieldValue = 0.1f;
 
-        [SerializeField]
-        bool updateSliderValue;
-
         #endregion
 
         #region Main
@@ -64,42 +61,6 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
-        }
-
-        public void SetSliderValue(float value, AppData.SliderValueType sliderType)
-        {
-            if (slider != null)
-            {
-                updateSliderValue = true;
-
-                switch (sliderType)
-                {
-                    case AppData.SliderValueType.MaterialGlossinessValue:
-
-                        slider.value = value;
-
-                        break;
-
-                    case AppData.SliderValueType.MaterialBumpScaleValue:
-
-                        slider.value = value;
-
-                        break;
-
-                    case AppData.SliderValueType.MaterialOcclusionIntensityValue:
-
-                        slider.value = value;
-
-                        break;
-                }
-
-                updateSliderValue = false;
-            }
-            else
-            {
-                Debug.LogWarning("--> Slider Required.");
-                return;
-            }
         }
 
         protected override void OnScreenWidget()

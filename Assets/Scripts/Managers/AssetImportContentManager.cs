@@ -879,29 +879,29 @@ namespace Com.RedicalGames.Filar
 
 #else
 
-                var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                //var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                if (sceneAsset.modelAsset != null)
-                {
-                    if (Application.platform == RuntimePlatform.Android)
-                    {
-                        if (filePickerPluginInstance != null)
-                        {
-                            filePickerPluginInstance.Call("SelectThumbnailAssetFile");
-                        }
-                        else
-                            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
-                }
-                else
-                {
-                    if (ScreenUIManager.Instance != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
-                    else
-                        Debug.LogWarning("--> Screen UI Manager Not Found.");
-                }
+                //if (sceneAsset.modelAsset != null)
+                //{
+                //    if (Application.platform == RuntimePlatform.Android)
+                //    {
+                //        if (filePickerPluginInstance != null)
+                //        {
+                //            filePickerPluginInstance.Call("SelectThumbnailAssetFile");
+                //        }
+                //        else
+                //            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
+                //    }
+                //    else
+                //        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
+                //}
+                //else
+                //{
+                //    if (ScreenUIManager.Instance != null)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
+                //    else
+                //        Debug.LogWarning("--> Screen UI Manager Not Found.");
+                //}
 
 #endif
                 }
@@ -951,29 +951,29 @@ namespace Com.RedicalGames.Filar
 
 #else
 
-                var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                //var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                if (sceneAsset.modelAsset != null)
-                {
-                    if (Application.platform == RuntimePlatform.Android)
-                    {
-                        if (filePickerPluginInstance != null)
-                        {
-                            filePickerPluginInstance.Call("SelectMainTextureAssetFile");
-                        }
-                        else
-                            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
-                }
-                else
-                {
-                    if (ScreenUIManager.Instance != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
-                    else
-                        Debug.LogWarning("--> Screen UI Manager Not Found.");
-                }
+                //if (sceneAsset.modelAsset != null)
+                //{
+                //    if (Application.platform == RuntimePlatform.Android)
+                //    {
+                //        if (filePickerPluginInstance != null)
+                //        {
+                //            filePickerPluginInstance.Call("SelectMainTextureAssetFile");
+                //        }
+                //        else
+                //            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
+                //    }
+                //    else
+                //        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
+                //}
+                //else
+                //{
+                //    if (ScreenUIManager.Instance != null)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
+                //    else
+                //        Debug.LogWarning("--> Screen UI Manager Not Found.");
+                //}
 
 #endif
                 }
@@ -1023,29 +1023,29 @@ namespace Com.RedicalGames.Filar
 
 #else
 
-                var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                //var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                if (sceneAsset.modelAsset != null)
-                {
-                    if (Application.platform == RuntimePlatform.Android)
-                    {
-                        if (filePickerPluginInstance != null)
-                        {
-                            filePickerPluginInstance.Call("SelectNormalMapAssetFile");
-                        }
-                        else
-                            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
-                }
-                else
-                {
-                    if (ScreenUIManager.Instance != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
-                    else
-                        Debug.LogWarning("--> Screen UI Manager Not Found.");
-                }
+                //if (sceneAsset.modelAsset != null)
+                //{
+                //    if (Application.platform == RuntimePlatform.Android)
+                //    {
+                //        if (filePickerPluginInstance != null)
+                //        {
+                //            filePickerPluginInstance.Call("SelectNormalMapAssetFile");
+                //        }
+                //        else
+                //            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
+                //    }
+                //    else
+                //        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
+                //}
+                //else
+                //{
+                //    if (ScreenUIManager.Instance != null)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
+                //    else
+                //        Debug.LogWarning("--> Screen UI Manager Not Found.");
+                //}
 
 #endif
                 }
@@ -1096,29 +1096,29 @@ namespace Com.RedicalGames.Filar
 
 #else
 
-                var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                //var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                if (sceneAsset.modelAsset != null)
-                {
-                    if (Application.platform == RuntimePlatform.Android)
-                    {
-                        if (filePickerPluginInstance != null)
-                        {
-                            filePickerPluginInstance.Call("SelectAOMapAssetFile");
-                        }
-                        else
-                            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
-                }
-                else
-                {
-                    if (ScreenUIManager.Instance != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
-                    else
-                        Debug.LogWarning("--> Screen UI Manager Not Found.");
-                }
+                //if (sceneAsset.modelAsset != null)
+                //{
+                //    if (Application.platform == RuntimePlatform.Android)
+                //    {
+                //        if (filePickerPluginInstance != null)
+                //        {
+                //            filePickerPluginInstance.Call("SelectAOMapAssetFile");
+                //        }
+                //        else
+                //            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
+                //    }
+                //    else
+                //        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
+                //}
+                //else
+                //{
+                //    if (ScreenUIManager.Instance != null)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
+                //    else
+                //        Debug.LogWarning("--> Screen UI Manager Not Found.");
+                //}
 
 #endif
                 }
@@ -1168,29 +1168,29 @@ namespace Com.RedicalGames.Filar
 
 #else
 
-                var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                //var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                if (sceneAsset.modelAsset != null)
-                {
-                    if (Application.platform == RuntimePlatform.Android)
-                    {
-                        if (filePickerPluginInstance != null)
-                        {
-                            filePickerPluginInstance.Call("SelectImageAssetFile");
-                        }
-                        else
-                            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
-                }
-                else
-                {
-                    if (ScreenUIManager.Instance != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
-                    else
-                        Debug.LogWarning("--> Screen UI Manager Not Found.");
-                }
+                //if (sceneAsset.modelAsset != null)
+                //{
+                //    if (Application.platform == RuntimePlatform.Android)
+                //    {
+                //        if (filePickerPluginInstance != null)
+                //        {
+                //            filePickerPluginInstance.Call("SelectImageAssetFile");
+                //        }
+                //        else
+                //            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
+                //    }
+                //    else
+                //        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
+                //}
+                //else
+                //{
+                //    if (ScreenUIManager.Instance != null)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
+                //    else
+                //        Debug.LogWarning("--> Screen UI Manager Not Found.");
+                //}
 
 #endif
                 }
@@ -1240,29 +1240,29 @@ namespace Com.RedicalGames.Filar
 
 #else
 
-                var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
+                //var sceneAsset = SceneAssetsManager.Instance.GetCurrentSceneAsset();
 
-                if (sceneAsset.modelAsset != null)
-                {
-                    if (Application.platform == RuntimePlatform.Android)
-                    {
-                        if (filePickerPluginInstance != null)
-                        {
-                            filePickerPluginInstance.Call("SelectImageAssetFile");
-                        }
-                        else
-                            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
-                    }
-                    else
-                        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
-                }
-                else
-                {
-                    if (ScreenUIManager.Instance != null)
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
-                    else
-                        Debug.LogWarning("--> Screen UI Manager Not Found.");
-                }
+                //if (sceneAsset.modelAsset != null)
+                //{
+                //    if (Application.platform == RuntimePlatform.Android)
+                //    {
+                //        if (filePickerPluginInstance != null)
+                //        {
+                //            filePickerPluginInstance.Call("SelectImageAssetFile");
+                //        }
+                //        else
+                //            Debug.LogWarning("--> Android File Picker Plugin Not Properly Initialized.");
+                //    }
+                //    else
+                //        Debug.LogWarning("--> Current Platform Is Not Runtime Android.");
+                //}
+                //else
+                //{
+                //    if (ScreenUIManager.Instance != null)
+                //        ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(currentDataPackets);
+                //    else
+                //        Debug.LogWarning("--> Screen UI Manager Not Found.");
+                //}
 
 #endif
                 }

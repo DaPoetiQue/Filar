@@ -29,15 +29,9 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         AppData.LoadingSequence loadingSequence = new AppData.LoadingSequence();
 
-        [Space(5)]
-        [SerializeField]
-        float tempLoadDuration = 3.0f;
-
         public bool OnInitialLoad { get; private set; }
 
         bool OnShowSplashScreen { get; set; } = true;
-
-        float loadingDuration = 0.0f;
 
         #endregion
 

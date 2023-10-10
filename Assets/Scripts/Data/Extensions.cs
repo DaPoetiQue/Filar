@@ -125,6 +125,8 @@ namespace Com.RedicalGames.Filar
         public static bool GetInActive(this GameObject gameObject) => !gameObject.activeSelf && !gameObject.activeInHierarchy;
         public static void Show(this GameObject gameObject) => gameObject.SetActive(true);
         public static void Hide(this GameObject gameObject) => gameObject.SetActive(false);
+        public static void SetName(this GameObject gameObject, string name) => gameObject.name = name;
+        public static string GetName(this GameObject gameObject) => gameObject.name;
 
         #endregion
     }

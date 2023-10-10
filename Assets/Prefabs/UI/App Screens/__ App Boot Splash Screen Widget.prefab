@@ -712,7 +712,7 @@ MonoBehaviour:
   loadingItemList: []
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
-  initializeScreenWidgets: 1
+  initializeScreenWidgets: 0
   screenWidgetsList: []
 --- !u!1 &3265665340351610166
 GameObject:
