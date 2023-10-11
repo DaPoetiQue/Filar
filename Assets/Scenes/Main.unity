@@ -22256,15 +22256,15 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    screenWidgets:
-    - name: Referenced Screen Widgets Dependencies
-      screenType: 8
+    screenWidgetBundles:
+    - name: ':: Default Referenced Widgets'
+      widgetType: 8
       widgets:
-      - m_AssetGUID: d4e581edca68aab4f8fe12628877bd6b
+      - m_AssetGUID: f843af94970aabd4294feebcde9f6f92
         m_SubObjectName: 
         m_SubObjectType: 
         m_EditorAssetChanged: 0
-      - m_AssetGUID: f843af94970aabd4294feebcde9f6f92
+      - m_AssetGUID: d4e581edca68aab4f8fe12628877bd6b
         m_SubObjectName: 
         m_SubObjectType: 
         m_EditorAssetChanged: 0
@@ -22273,8 +22273,8 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
       initialize: 1
-    - name: Splash Screen Widgets
-      screenType: 7
+    - name: ':: Splash Screen Widgets'
+      widgetType: 7
       widgets:
       - m_AssetGUID: 2f2a21f2e0890dc4ca05c21d829fa955
         m_SubObjectName: 
@@ -22289,14 +22289,10 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
       initialize: 1
-    - name: Loading Screen Widgets
-      screenType: 6
+    - name: ':: Loading Screen Widgets'
+      widgetType: 6
       widgets:
       - m_AssetGUID: c1acba0d110f39c49b605fba6e922357
-        m_SubObjectName: 
-        m_SubObjectType: 
-        m_EditorAssetChanged: 0
-      - m_AssetGUID: cfef472b77482fa4ab9792d6281dedea
         m_SubObjectName: 
         m_SubObjectType: 
         m_EditorAssetChanged: 0
@@ -22305,8 +22301,8 @@ MonoBehaviour:
         m_SubObjectType: 
         m_EditorAssetChanged: 0
       initialize: 1
-    - name: Landing Page Widgets
-      screenType: 5
+    - name: ':: Landing Page Widgets'
+      widgetType: 5
       widgets:
       - m_AssetGUID: f0091390c274c1f4cac698e0078934cc
         m_SubObjectName: 
@@ -22332,7 +22328,7 @@ MonoBehaviour:
     dynamicContainerLibrary:
     - {fileID: 1594336066}
     - {fileID: 786316670}
-    loadedAppScreens: []
+    loadedScreenWidgets: []
   sceneAssetList: []
   dropDownContentDataList: []
   currentProjectStructureData:

@@ -8602,7 +8602,7 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackData<AppData.AssetBundlesLibrary> GetAssetBundlesLibrary()
         {
-            var callbackResults = new AppData.CallbackData<AppData.AssetBundlesLibrary>(assetBundlesLibrary.Initialized());
+            var callbackResults = new AppData.CallbackData<AppData.AssetBundlesLibrary>(assetBundlesLibrary.OnAppScreensInitialized());
 
             if(callbackResults.Success())
                 callbackResults.data = assetBundlesLibrary;

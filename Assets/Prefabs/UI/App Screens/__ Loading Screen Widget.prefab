@@ -331,9 +331,11 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList:
   - {fileID: 3090725572040038037}
   - {fileID: 7921510361603200655}
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Loading Screen
   screenView:
@@ -369,7 +371,7 @@ MonoBehaviour:
   loadingItemList: []
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
-  initializeScreenWidgets: 0
+  initializeScreenWidgets: 1
   screenWidgetsList: []
 --- !u!1 &45980627707284284
 GameObject:

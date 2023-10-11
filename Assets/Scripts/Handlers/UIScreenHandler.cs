@@ -29,62 +29,6 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        //public void Init(Action<AppData.Callback> callback = null)
-        //{
-        //    var callbackResults = new AppData.Callback();
-
-        //    if (initializeScreenWidgets)
-        //    {
-        //        callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(screenWidgetsList, "Screen Widgets List", $""));
-
-        //        if (callbackResults.UnSuccessful())
-        //        {
-        //            AppData.Widget[] widgetComponents = this.GetComponentsInChildren<AppData.Widget>();
-
-        //            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(widgetComponents, "Widget Components", $""));
-
-        //            if (callbackResults.Success())
-        //            {
-        //                screenWidgetsList = new List<AppData.Widget>();
-
-        //                foreach (var widget in widgetComponents)
-        //                {
-        //                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(widget, "Screen Widget", $"Screen Widget Null At Index : {widgetComponents.ToList().IndexOf(widget)} For Screen : {GetName()} - Of Type : {GetType().GetData()}"));
-
-        //                    if (callbackResults.Success())
-        //                    {
-        //                        widget.Initilize(initializationCallbackResults =>
-        //                        {
-        //                            callbackResults.SetResult(initializationCallbackResults);
-
-        //                            if (callbackResults.Success())
-        //                            {
-        //                                AddScreenWidget(widget, screenWidgetAddedCallbackResults =>
-        //                                {
-        //                                    callbackResults.SetResult(screenWidgetAddedCallbackResults);
-
-        //                                    if (callbackResults.UnSuccessful())
-        //                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-        //                                });
-        //                            }
-        //                        });
-        //                    }
-        //                    else
-        //                        break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        callbackResults.result = "";
-        //        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-        //    }
-
-        //    callback?.Invoke(callbackResults);
-        //}
-
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>> OnGetState()
         {
             var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));

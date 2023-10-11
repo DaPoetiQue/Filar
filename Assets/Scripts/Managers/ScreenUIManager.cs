@@ -95,7 +95,8 @@ namespace Com.RedicalGames.Filar
         public async Task<AppData.CallbackDataList<AppData.UIScreenViewComponent>> OnScreenInitAsync()
         {
             var callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>(
-                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+                AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, 
+                "App Database Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
@@ -107,7 +108,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                    while (assetBundlesLibrary.AssetsInitialized().UnSuccessful())
+                    while (assetBundlesLibrary.OnAddressablesManagerInitialized().UnSuccessful())
                         await Task.Yield();
 
                     callbackResults.SetResult(assetBundlesLibrary.GetUnloadedAppScreens());

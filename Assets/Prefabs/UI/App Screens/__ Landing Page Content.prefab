@@ -390,10 +390,12 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList:
   - {fileID: 4194781097295782858}
   - {fileID: 976341724}
   - {fileID: 976341723}
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Filar
   screenView:
@@ -429,7 +431,7 @@ MonoBehaviour:
   loadingItemList: []
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
-  initializeScreenWidgets: 0
+  initializeScreenWidgets: 1
   screenWidgetsList: []
 --- !u!1 &3621854199801398914
 GameObject:
