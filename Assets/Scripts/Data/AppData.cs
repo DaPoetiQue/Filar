@@ -1158,14 +1158,29 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Space(10)]
+            [Header("App Screens")]
+
             [Space(5)]
             public List<AssetBundleReference<GameObject>> appScreens = new List<AssetBundleReference<GameObject>>();
 
             [Space(5)]
             public bool loadScreensOnInitialization = true;
 
+
+            #region Dynamic Container
+
+            [Space(10)]
+            [Header("Dynamic Containers")]
+
             [Space(5)]
-            public float initializationTimeout = 10.0f;
+            [SerializeField]
+            List<DynamicContainerBase> dynamicContainerLibrary = new List<DynamicContainerBase>();
+
+            #endregion
+
+            [Space(5)]
+            private float initializationTimeout = 10.0f;
 
             [SerializeField] // Remove
             private List<UIScreenHandler> loadedAppScreens = new List<UIScreenHandler>();
@@ -1190,72 +1205,6 @@ namespace Com.RedicalGames.Filar
                     SetAddressablesManagerInitialized(true);
                 else
                     throw new Exception($"Failed To Initialize Addressables - Invalid Operation - Please See Here - Addressables Status : {evt.Status}");
-
-                //var callbackResults = new Callback(Initialized());
-
-                //if (callbackResults.Success())
-                //{
-                //    if (evt.Status == AsyncOperationStatus.Succeeded)
-                //    {
-                //        if (loadScreensOnInitialization)
-                //        {
-                //            SetInitialized(false);
-
-                //            for (int i = 0; i < appScreens.Count; i++)
-                //            {
-                //                SetInprogressStatus(true);
-
-                //                appScreens[i].InstantiateAsync().Completed += (callback) => 
-                //                {
-                //                    if(callback.Status == AsyncOperationStatus.Succeeded)
-                //                    {
-                //                        var screen = callback.Result.GetComponent<UIScreenHandler>();
-
-                //                        callbackResults.SetResult(Helpers.GetAppComponentValid(screen, "Screen", $"Loaded Screen Prefab Game Object : {screen.GetName()} Doesn't Contain A Screen Handler."));
-
-                //                        if (callbackResults.Success())
-                //                        {
-                //                            AddLoadedAppScreenToList(screen, loadedAppScreenCallbackResults => 
-                //                            {
-                //                                callbackResults.SetResult(loadedAppScreenCallbackResults);
-
-                //                                if (callbackResults.Success())
-                //                                {
-                //                                    SetInprogressStatus(false);
-
-                //                                    callbackResults.result = $"Asset Bundle Library - App Screen : {callback.Result.GetName()} Has Been Loaded Successfully.";
-                //                                    callbackResults.resultCode = Helpers.SuccessCode;
-                //                                }
-                //                                else
-                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                            });
-                //                        }
-                //                        else
-                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                    }
-                //                    else
-                //                    {
-                //                        callbackResults.result = $"Asset Bundle Library - Loading App Screen Failed - Invalid Operation - Please Check Here.";
-                //                        callbackResults.resultCode = Helpers.ErrorCode;
-                //                    }
-                //                };
-                //            }
-
-                //            if (callbackResults.Success() && !InProgress())
-                //                SetInitialized(true);
-                //            else
-                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //        }
-                //        else
-                //        {
-                //            initialized = true;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        throw new Exception($"Failed To Initialize Addressables - Invalid Operation - Please See Here - Addressables Status : {evt.Status.ToString()}");
-                //    }
-                //}
             }
 
             public CallbackDataList<AssetBundleReference<GameObject>> GetUnloadedAppScreens()
@@ -1422,8 +1371,21 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.result = $"App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Has Been Added Successfully To Loaded App Screens With Dynamic Containers Initialization.";
-                            callbackResults.resultCode = Helpers.SuccessCode;
+                            var dynamicContainersToArray = Helpers.GetArray(screen.GetDynamicContainerList().GetData());
+
+                            SetDynamicContainer(containerSetCallbackResults => 
+                            {
+                                callbackResults.SetResult(containerSetCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.result = $"App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Has Been Added Successfully To Loaded App Screens With Dynamic Containers Initialization.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            }, dynamicContainersToArray);
                         }
                         else
                         {
@@ -1445,6 +1407,325 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
+
+            #region Dynamic Containers Functions
+
+            public void AddContentToDynamicWidgetContainer(UIScreenWidget contentWidget, ContentContainerType containerType, OrientationType orientation, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                GetDynamicContainer<DynamicWidgetsContainer>(containerType, containerCallbackResults => 
+                {
+                    callbackResults.SetResult(containerCallbackResults);
+
+                    if(callbackResults.Success())
+                    {
+                        var container = containerCallbackResults.GetData();
+                        container.AddContent(content: contentWidget, keepWorldPosition: false, updateContainer: true);
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region   #region Dynamic Containers Setters
+
+            public void SetDynamicContainer(Action<Callback> callback = null, params DynamicContainerBase[] dynamicContainers)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(dynamicContainers, "Dynamic Containers", "Dynamic Containers Params Array Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    for (int i = 0; i < dynamicContainers.Length; i++)
+                    {
+                        if (!dynamicContainerLibrary.Contains(dynamicContainers[i]))
+                        {
+                            dynamicContainerLibrary.Add(dynamicContainers[i]);
+
+                            if (dynamicContainerLibrary.Contains(dynamicContainers[i]))
+                            {
+                                callbackResults.result = $"Dynamic Container : {dynamicContainers[i].GetName()} Has Been Added Successfully To Dynamic Containers Library.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Set Dynamic Container Failed - Couldn't Add Dynamic Container : {dynamicContainers[i].GetName()} - Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Dynamic Containers Already Contains Dynamic Container : {dynamicContainers[i].GetName()}";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Dynamic Containers Getters
+
+            public void GetDynamicContainer<T>(UIScreenType screenType, Action<CallbackData<T>> callback) where T : DynamicContainerBase
+            {
+                var callbackResults = new CallbackData<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType) as T;
+
+                        if (container != null)
+                        {
+                            callbackResults.result = $"Container For Screen: {screenType} Has Been Found In Dynamic Widgets Containers List.";
+                            callbackResults.data = container;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed : Container For Screen: {screenType} Not Found In Dynamic Widgets Containers List.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetDynamicContainer<T>(ContentContainerType containerType, Action<CallbackData<T>> callback) where T : DynamicContainerBase
+            {
+                var callbackResults = new CallbackData<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        T container = hasContentCallbackResults.data.Find(container => container.GetContainerType().GetData() == containerType) as T;
+
+                        if (container != null)
+                        {
+                            callbackResults.result = $"Container Of Type : {containerType} Has Been Found In Dynamic Widgets Containers List.";
+                            callbackResults.data = container;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In Dynamic Widgets Containers List.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetDynamicContainer<T>(UIScreenType screenType, ContainerData containerData, Action<CallbackData<T>> callback) where T : DynamicContainerBase
+            {
+                var callbackResults = new CallbackData<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+
+                        if (container != null)
+                        {
+                            callbackResults.result = "Success";
+                            callbackResults.data = container;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed : Container Of Type : {containerData.GetContainerType()} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetDynamicContainer<T>(UIScreenType screenType, ContentContainerType containerType, ContainerViewSpaceType viewSpaceType, Action<CallbackData<T>> callback) where T : DynamicContainerBase
+            {
+                var callbackResults = new CallbackData<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        T container = hasContentCallbackResults.data.Find(container => container?.GetDataPackets()?.GetData().screenType == screenType && container?.GetContainerType()?.GetData() == containerType && container?.GetViewSpace()?.GetData() == viewSpaceType) as T;
+
+                        if (container != null)
+                        {
+                            callbackResults.result = "Success";
+                            callbackResults.data = container;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetDynamicContainers<T>(UIScreenType screenType, Action<CallbackDataList<T>> callback) where T : DynamicContainerBase
+            {
+                var callbackResults = new CallbackDataList<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var containers = hasContentCallbackResults.data.FindAll(container => container.GetDataPackets().GetData().screenType == screenType) as List<T>;
+
+                        Helpers.GetAppComponentsValid(containers, "Container", hasContainersCallbackResults =>
+                        {
+                            callbackResults.SetResult(hasContentCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.result = $"{containers.Count} Containers Found For Screen Type : {screenType}.";
+                                callbackResults.data = containers;
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed : There Were No Containers For Screen Type : {screenType}.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+
+                        }, $"There Were No Containers Found For Screen Type : {screenType}");
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetDynamicContainer<T>(UIScreenType screenType, List<ContainerData> containerDatas, Action<CallbackDataList<T>> callback) where T : DynamicContainer
+            {
+                var callbackResults = new CallbackDataList<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        List<T> containers = new List<T>();
+
+                        Helpers.GetAppComponentsValid(containerDatas, "Container Datas", containerDataCallbackResults =>
+                        {
+                            callbackResults.SetResult(containerDataCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                foreach (var containerData in containerDataCallbackResults.data)
+                                {
+                                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+
+                                    if (container != null)
+                                    {
+                                        containers.Add(container);
+
+                                        callbackResults.result = "Success";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed : Container Of Type : {container.GetContainerScreenType()} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentUIScreenType()}.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                    }
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.result = "Success";
+                                        callbackResults.data = containers;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetAllDynamicContainers(Action<CallbackDataList<DynamicContainerBase>> callback)
+            {
+                var callbackResults = new CallbackDataList<DynamicContainerBase>();
+
+                Helpers.GetAppComponentsValid(dynamicContainerLibrary, "Dynamic Container List", hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{dynamicContainerLibrary.Count} Containers Found.";
+                        callbackResults.data = dynamicContainerLibrary;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+
+                }, "Failed : dynamicWidgetsContainersList Is Null / Empty.");
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetAllDynamicContainersExcludingFromScreen(UIScreenType screenType, Action<CallbackDataList<DynamicContainer>> callback)
+            {
+                var callbackResults = new CallbackDataList<DynamicContainer>();
+
+                //GetAllDynamicContainers(hasContentCallbackResults =>
+                //{
+                //    callbackResults.SetResult(hasContentCallbackResults);
+
+                //    if (callbackResults.Success())
+                //    {
+                //        List<AppData.DynamicContainer> containers = dynamicContainerLibrary.FindAll(container => container.GetContainerScreenType().data != screenType);
+
+                //        if (containers != null && containers.Count > 0)
+                //        {
+                //            callbackResults.result = $"{containers.Count} Containers Found.";
+                //            callbackResults.data = containers;
+                //            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                //        }
+                //        else
+                //        {
+                //            callbackResults.result = $"Failed : There Are No Containers Found.";
+                //            callbackResults.data = default;
+                //            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                //        }
+                //    }
+                //});
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
 
             #endregion
         }
@@ -22831,6 +23112,8 @@ namespace Com.RedicalGames.Filar
 
             IEnumerator ExecuteDeselectionStateChangedAsync()
             {
+                var callbackResults = new Callback();
+
                 yield return new WaitUntil(() => IsFingerDown() == false);
 
                 SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionCallbackResults => 
@@ -22855,19 +23138,36 @@ namespace Com.RedicalGames.Filar
 
                     Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
                     {
+                        callbackResults.SetResult(screenUIManagerCallbackResults);
                     
-                        if(screenUIManagerCallbackResults.Success())
+                        if(callbackResults.Success())
                         {
                             var screenUIManager = screenUIManagerCallbackResults.data;
 
-                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.ScreenWidgetsContainer, ContainerViewSpaceType.Screen, containerCallbackResults =>
-                            {
-                                if (containerCallbackResults.Success())
-                                    containerCallbackResults.data.OnFocusedSelectionStateUpdate();
-                                else
-                                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
-                            });
+                            if (callbackResults.Success())
+                            {
+                                var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                if (callbackResults.Success())
+                                {
+                                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(dynamicContainerCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var container = dynamicContainerCallbackResults.GetData();
+                                            container.OnFocusedSelectionStateUpdate();
+                                        }
+                                    });
+                                }
+                            }
                         }
                     
                     }, "Screen UI Manager Is Not Yet Initialized.");
@@ -29844,13 +30144,19 @@ namespace Com.RedicalGames.Filar
 
             void OnPinItem_ActionEvent(SceneDataPackets dataPackets)
             {
-                if (AppDatabaseManager.Instance != null)
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
                 {
+                    var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
                     SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionCallbackResults => 
                     {
-                        if (projectSelectionCallbackResults.Success())
+                        callbackResults.SetResult(projectSelectionCallbackResults);
+
+                        if (callbackResults.Success())
                         {
-                            var pinData = SelectableManager.Instance.HasPinnedSelection(projectSelectionCallbackResults.data.GetCurrentSelections());
+                            var pinData = SelectableManager.Instance.HasPinnedSelection(projectSelectionCallbackResults.GetData().GetCurrentSelections());
                             DefaultUIWidgetActionState widgetActionState = DefaultUIWidgetActionState.Default;
 
                             if (pinData.pinned)
@@ -29864,13 +30170,12 @@ namespace Com.RedicalGames.Filar
                             {
                                 var currentSelection = projectSelectionCallbackResults.data.GetCurrentSelections();
 
-                                AppDatabaseManager.Instance.SetDefaultUIWidgetActionState(currentSelection, widgetActionState, assetsPinnedCallback =>
+                                appDatabaseManagerInstance.SetDefaultUIWidgetActionState(currentSelection, widgetActionState, assetsPinnedCallback =>
                                 {
                                     if (Helpers.IsSuccessCode(assetsPinnedCallback.resultCode))
                                     {
                                         Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
                                         {
-
                                             if (screenUIManagerCallbackResults.Success())
                                             {
                                                 var screenUIManager = screenUIManagerCallbackResults.data;
@@ -29881,57 +30186,75 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     if (pinItemsCount == 1)
                                                     {
-                                                        string assetName = AppDatabaseManager.Instance.GetFormattedName(currentSelection[0].name, currentSelection[0].GetSelectableWidgetType());
+                                                        string assetName = appDatabaseManagerInstance.GetFormattedName(currentSelection[0].name, currentSelection[0].GetSelectableWidgetType());
                                                         dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{assetName} Pinned" : $"{assetName} Removed From Pinned Items";
                                                     }
 
                                                     if (pinItemsCount > 1)
                                                         dataPackets.notification.message = (widgetActionState == DefaultUIWidgetActionState.Pinned) ? $"{pinItemsCount} Items Pinned" : $"{pinItemsCount} Items Removed From Pinned";
 
-                                                    AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetScreenContainerData().GetContainerViewSpaceType(), containerCallbackResults =>
+                                                    if (callbackResults.Success())
                                                     {
-                                                        if (containerCallbackResults.Success())
+                                                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                                        if (callbackResults.Success())
                                                         {
-                                                            containerCallbackResults.data.GetContent(contentLoadedCallback =>
+                                                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
                                                             {
-                                                                if (contentLoadedCallback.Success())
+                                                                callbackResults.SetResult(dynamicContainerCallbackResults);
+
+                                                                if (callbackResults.Success())
                                                                 {
-                                                                    AppDatabaseManager.Instance.SortScreenWidgets(contentLoadedCallback.data, async widgetsSortedCallbackResults =>
+                                                                    var container = dynamicContainerCallbackResults.GetData();
+
+                                                                    container.GetContent(contentLoadedCallbackResults =>
                                                                     {
-                                                                        if (widgetsSortedCallbackResults.Success())
+                                                                        callbackResults.SetResult(contentLoadedCallbackResults);
+
+                                                                        if (callbackResults.Success())
                                                                         {
-                                                                            if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
+                                                                            appDatabaseManagerInstance.SortScreenWidgets(contentLoadedCallbackResults.data, async widgetsSortedCallbackResults =>
                                                                             {
-                                                                                var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
+                                                                                callbackResults.SetResult(widgetsSortedCallbackResults);
 
-                                                                                if (lastSelectionWidget != null)
-                                                                                    SelectableManager.Instance.Select(lastSelectionWidget.name, FocusedSelectionType.SelectedItem);
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    callbackResults.SetResult(appDatabaseManagerInstance.GetProjectStructureData());
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        var lastSelectionWidget = currentSelection.FindLast(x => x.GetActive());
+
+                                                                                        if (lastSelectionWidget != null)
+                                                                                            SelectableManager.Instance.Select(lastSelectionWidget.name, FocusedSelectionType.SelectedItem);
+                                                                                        else
+                                                                                            LogError("Last Selected Widget Missing / Not Found", this);
+
+                                                                                        await ScreenUIManager.Instance.RefreshAsync();
+
+                                                                                        if (appDatabaseManagerInstance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
+                                                                                            StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
+                                                                                        else if (appDatabaseManagerInstance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
+                                                                                            StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
+
+                                                                                        NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                }
                                                                                 else
-                                                                                    LogError("Last Selected Widget Missing / Not Found", this);
-
-                                                                                await ScreenUIManager.Instance.RefreshAsync();
-
-                                                                                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Pager)
-                                                                                    StartCoroutine(GoToItemPageAsync(currentSelection[pinItemsCount - 1].name));
-                                                                                else if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetPaginationViewType() == PaginationViewType.Scroller)
-                                                                                    StartCoroutine(SctollToItemAsync(currentSelection[pinItemsCount - 1].name));
-
-                                                                                NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
-                                                                            }
-                                                                            else
-                                                                                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
                                                                         }
                                                                         else
-                                                                            Log(widgetsSortedCallbackResults.resultCode, widgetsSortedCallbackResults.result, this);
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     });
                                                                 }
-                                                                else
-                                                                    LogWarning(contentLoadedCallback.result, this);
                                                             });
                                                         }
-                                                        else
-                                                            Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-                                                    });
+                                                    }
                                                 }
                                             }
 
@@ -30555,49 +30878,104 @@ namespace Com.RedicalGames.Filar
 
             void OnScrollToTop_ActionEvent()
             {
-                AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
+                var callbackResults = new Callback();
+
+                Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults => 
                 {
-                    if(screenUIManagerCallbackResults.Success())
+                    callbackResults.SetResult(screenUIManagerCallbackResults);
+
+                    if (callbackResults.Success())
                     {
                         var screenUIManager = screenUIManagerCallbackResults.data;
 
                         if(screenUIManager.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                         {
-                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenData().value.GetUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+
+                            if (callbackResults.Success())
                             {
-                                if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
-                                    dynamicWidgetsContainer.data.ScrollToTop();
+                                var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                if (callbackResults.Success())
+                                {
+                                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(dynamicContainerCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var container = dynamicContainerCallbackResults.GetData();
+                                            container.ScrollToTop();
+                                        }
+                                    });
+                                }
                                 else
-                                    LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToTop_ActionEvent());
-                            });
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
-                
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                 }, "Screen UI Manager Instance Is Not Yet Initialized.");
             }
 
             void OnScrollToBottom_ActionEvent()
             {
+                var callbackResults = new Callback();
+
                 Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
                 {
+                    callbackResults.SetResult(screenUIManagerCallbackResults);
 
-                    if (screenUIManagerCallbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        var screenUIManager = screenUIManagerCallbackResults.data;
+                        var screenUIManager = screenUIManagerCallbackResults.GetData();
 
                         if (screenUIManager.GetCurrentScreenData().value.GetUIScreenType() == UIScreenType.ProjectDashboardScreen)
                         {
-                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicWidgetsContainer =>
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+
+                            if (callbackResults.Success())
                             {
-                                if (Helpers.IsSuccessCode(dynamicWidgetsContainer.resultCode))
-                                    dynamicWidgetsContainer.data.ScrollToBottom();
+                                var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                if (callbackResults.Success())
+                                {
+                                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(dynamicContainerCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var container = dynamicContainerCallbackResults.GetData();
+                                            container.ScrollToBottom();
+                                        }
+                                    });
+                                }
                                 else
-                                    LogWarning(dynamicWidgetsContainer.result, this, () => OnScrollToBottom_ActionEvent());
-                            });
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
-                            LogWarning("Not Asset Screen.", this, () => OnScrollToBottom_ActionEvent());
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 }, "Screen UI Manager Is Not Yet Initialized.");
             }

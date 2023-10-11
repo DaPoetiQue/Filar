@@ -53,7 +53,7 @@ namespace Com.RedicalGames.Filar
 
         #region Manager References
 
-        AppDatabaseManager databaseManagerInstance;
+        AppDatabaseManager appDatabaseManagerInstance;
 
         #endregion
 
@@ -99,13 +99,13 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                databaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+                appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                callbackResults.SetResult(databaseManagerInstance.GetAssetBundlesLibrary());
+                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
                 if (callbackResults.Success())
                 {
-                    var assetBundlesLibrary = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
+                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
                     while (assetBundlesLibrary.AssetsInitialized().UnSuccessful())
                         await Task.Yield();
@@ -183,26 +183,35 @@ namespace Com.RedicalGames.Filar
 
                 if (screens.Contains(screen))
                 {
-                    databaseManagerInstance.GetDynamicContainer<DynamicScreenContainer>(AppData.UIScreenType.None, AppData.ContentContainerType.AppScreenContainer, AppData.ContainerViewSpaceType.Screen, containerCallbackResults =>
+                    callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(containerCallbackResults);
+                        var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                        if (callbackResults.Success())
+                        assetBundlesLibrary.GetDynamicContainer<DynamicScreenContainer>(AppData.UIScreenType.None, AppData.ContentContainerType.AppScreenContainer, AppData.ContainerViewSpaceType.Screen, containerCallbackResults =>
                         {
-                            var screenContainer = containerCallbackResults.GetData();
+                            callbackResults.SetResult(containerCallbackResults);
 
-                            screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType>(screen.value, false, screenAddedCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(screenAddedCallbackResults);
+                                var screenContainer = containerCallbackResults.GetData();
 
-                                if (callbackResults.Success())
+                                screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType>(screen.value, false, screenAddedCallbackResults =>
                                 {
-                                    callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
-                                    callbackResults.data = screens;
-                                }
-                            });
-                        }
-                    });
+                                    callbackResults.SetResult(screenAddedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
+                                        callbackResults.data = screens;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                 {
@@ -944,7 +953,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (hasContentCallbackResults.Success())
                                 {
-                                    AppDatabaseManager.Instance.GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
+                                    appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
                                     {
                                         if (widgetsContentContainers.Success())
                                         {
@@ -980,7 +989,7 @@ namespace Com.RedicalGames.Filar
 
         async Task<AppData.Callback> OnScreenRefreshAsync(AppData.SceneDataPackets dataPackets, int refreshDuration = 0)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.Callback callbackResults = new AppData.Callback(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
             if (dataPackets.blurScreen)
                 currentScreen.value.Blur(dataPackets);
@@ -988,12 +997,8 @@ namespace Com.RedicalGames.Filar
             if (currentScreen.value != null)
                 currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
-
             if (callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
-
                 switch (dataPackets.GetUIScreenType())
                 {
                     case AppData.UIScreenType.LandingPageScreen:
@@ -1002,7 +1007,7 @@ namespace Com.RedicalGames.Filar
 
                         if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                         {
-                            databaseManager.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                            appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
                             {
                                 callbackResults.SetResult(screenContainerCallbackResults);
 
@@ -1010,7 +1015,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     #region Get Scene Content Container
 
-                                    databaseManager.GetDynamicContainer<DynamicContentContainer>(dataPackets.GetUIScreenType(), dataPackets.GetSceneContainerData().GetContainerType(), dataPackets.GetSceneContainerData().GetContainerViewSpaceType(), sceneContainerCallbackResults =>
+                                    appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicContentContainer>(dataPackets.GetUIScreenType(), dataPackets.GetSceneContainerData().GetContainerType(), dataPackets.GetSceneContainerData().GetContainerViewSpaceType(), sceneContainerCallbackResults =>
                                     {
                                         callbackResults.SetResult(sceneContainerCallbackResults);
 
@@ -1018,7 +1023,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             #region Set Refresh Data
 
-                                            databaseManager.SetRefreshData(null, screenContainerCallbackResults.data, sceneContainerCallbackResults.data, dataSetupCallbackResults =>
+                                            appDatabaseManagerInstance.SetRefreshData(null, screenContainerCallbackResults.data, sceneContainerCallbackResults.data, dataSetupCallbackResults =>
                                             {
                                                 Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
                                             });
@@ -1053,7 +1058,7 @@ namespace Com.RedicalGames.Filar
 
                         if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
                         {
-                            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+                            appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetUIScreenType(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
                             {
                                 callbackResults.SetResult(screenContainerCallbackResults);
 
@@ -1101,7 +1106,7 @@ namespace Com.RedicalGames.Filar
 
                 #region On Screen Refresh
 
-                var refreshTask = await databaseManager.RefreshedAsync(GetCurrentScreenData()?.value, databaseManager?.GetCurrentFolder(), databaseManager?.GetRefreshData().screenContainer, databaseManager?.GetRefreshData().sceneContainer, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
+                var refreshTask = await appDatabaseManagerInstance.RefreshedAsync(GetCurrentScreenData()?.value, appDatabaseManagerInstance?.GetCurrentFolder(), appDatabaseManagerInstance?.GetRefreshData().screenContainer, appDatabaseManagerInstance?.GetRefreshData().sceneContainer, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
 
                 if (currentScreen.value != null)
                     currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);

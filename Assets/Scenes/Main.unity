@@ -26498,7 +26498,9 @@ MonoBehaviour:
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     loadScreensOnInitialization: 1
-    initializationTimeout: 10
+    dynamicContainerLibrary:
+    - {fileID: 1594336066}
+    - {fileID: 786316670}
     loadedAppScreens: []
   sceneAssetList: []
   dropDownContentDataList: []

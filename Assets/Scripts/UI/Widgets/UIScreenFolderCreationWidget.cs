@@ -78,77 +78,77 @@ namespace Com.RedicalGames.Filar
         {
             yield return new WaitForEndOfFrame();
 
-            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
-            {
-                if (containerCallbackResults.Success())
-                {
-                    containerCallbackResults.data.GetPlaceHolder(placeHolderCallbackResults =>
-                    {
-                        if (placeHolderCallbackResults.Success())
-                        {
-                            var placeHolderInfo = placeHolderCallbackResults.data.GetInfo();
+            //AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
+            //{
+            //    if (containerCallbackResults.Success())
+            //    {
+            //        containerCallbackResults.data.GetPlaceHolder(placeHolderCallbackResults =>
+            //        {
+            //            if (placeHolderCallbackResults.Success())
+            //            {
+            //                var placeHolderInfo = placeHolderCallbackResults.data.GetInfo();
 
-                            if (placeHolderInfo.isActive)
-                            {
-                                SetWidgetPosition(placeHolderInfo.worldPosition);
-                                SetWidgetSizeDelta(placeHolderInfo.dimensions);
-                            }
-                            else
-                                LogWarning($"GetPlaceHolder Failed - Placeholder Is Not Active In The Scene.", this);
-                        }
-                        else
-                            Log(placeHolderCallbackResults.resultCode, placeHolderCallbackResults.result, this);
-                    });
+            //                if (placeHolderInfo.isActive)
+            //                {
+            //                    SetWidgetPosition(placeHolderInfo.worldPosition);
+            //                    SetWidgetSizeDelta(placeHolderInfo.dimensions);
+            //                }
+            //                else
+            //                    LogWarning($"GetPlaceHolder Failed - Placeholder Is Not Active In The Scene.", this);
+            //            }
+            //            else
+            //                Log(placeHolderCallbackResults.resultCode, placeHolderCallbackResults.result, this);
+            //        });
 
-                    AppDatabaseManager.Instance.CreateNewFolderName = AppDatabaseManager.Instance.GetCreateNewFolderTempName();
-                    SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, AppDatabaseManager.Instance.CreateNewFolderName);
+            //        AppDatabaseManager.Instance.CreateNewFolderName = AppDatabaseManager.Instance.GetCreateNewFolderTempName();
+            //        SetInputFieldValue(AppData.InputFieldActionType.AssetNameField, AppDatabaseManager.Instance.CreateNewFolderName);
 
-                    HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
+            //        HighlightInputFieldValue(AppData.InputFieldActionType.AssetNameField);
 
-                    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-                }
-                else
-                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-            });
+            //        ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+            //    }
+            //    else
+            //        Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
+            //});
         }
 
         protected override void OnHideScreenWidget()
         {
-            if (ScreenUIManager.Instance != null)
-            {
-                if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                {
-                    if (AppDatabaseManager.Instance)
-                    {
-                        AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
-                        {
-                            if (containerCallbackResults.Success())
-                            {
-                                containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
-                                {
-                                    if (AppData.Helpers.IsSuccessCode(placeholderCallbackResults.resultCode))
-                                    {
-                                        if (placeholderCallbackResults.data.IsActive())
-                                            placeholderCallbackResults.data.ResetPlaceHolder();
-                                        else
-                                            LogWarning("Reset Place Holder Failed - Plave Holder Is Not Active In The Scene.", this);
-                                    }
-                                    else
-                                        Log(placeholderCallbackResults.resultCode, placeholderCallbackResults.result, this);
-                                });
-                            }
-                            else
-                                Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
-                        });
-                    }
-                    else
-                        Debug.LogWarning("--> Get Placeholder Failed : SceneAssetsManager.Instance Is Not Yet Initialized");
-                }
-                else
-                    Debug.LogWarning("--> ScreenUIManager.Instance.GetCurrentScreenData Failed : Value Is Missing / Null.");
-            }
-            else
-                Debug.LogWarning("--> GoToProfile Failed : ScreenUIManager.Instance Is Not Yet Initialized");
+            //if (ScreenUIManager.Instance != null)
+            //{
+            //    if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+            //    {
+            //        if (AppDatabaseManager.Instance)
+            //        {
+            //            AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(ScreenUIManager.Instance.GetCurrentUIScreenType(), containerCallbackResults => 
+            //            {
+            //                if (containerCallbackResults.Success())
+            //                {
+            //                    containerCallbackResults.data.GetPlaceHolder(placeholderCallbackResults =>
+            //                    {
+            //                        if (AppData.Helpers.IsSuccessCode(placeholderCallbackResults.resultCode))
+            //                        {
+            //                            if (placeholderCallbackResults.data.IsActive())
+            //                                placeholderCallbackResults.data.ResetPlaceHolder();
+            //                            else
+            //                                LogWarning("Reset Place Holder Failed - Plave Holder Is Not Active In The Scene.", this);
+            //                        }
+            //                        else
+            //                            Log(placeholderCallbackResults.resultCode, placeholderCallbackResults.result, this);
+            //                    });
+            //                }
+            //                else
+            //                    Log(containerCallbackResults.resultCode, containerCallbackResults.result, this);
+            //            });
+            //        }
+            //        else
+            //            Debug.LogWarning("--> Get Placeholder Failed : SceneAssetsManager.Instance Is Not Yet Initialized");
+            //    }
+            //    else
+            //        Debug.LogWarning("--> ScreenUIManager.Instance.GetCurrentScreenData Failed : Value Is Missing / Null.");
+            //}
+            //else
+            //    Debug.LogWarning("--> GoToProfile Failed : ScreenUIManager.Instance Is Not Yet Initialized");
 
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }

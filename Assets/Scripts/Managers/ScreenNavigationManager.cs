@@ -72,7 +72,7 @@ namespace Com.RedicalGames.Filar
 
         public void ReturnFromFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
+            var callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
@@ -93,22 +93,37 @@ namespace Com.RedicalGames.Filar
                         SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
                     }
 
-                    AppDatabaseManager.Instance.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen , folder =>
-                   {
-                       if (AppData.Helpers.IsSuccessCode(folder.resultCode))
-                       {
-                           if (SelectableManager.Instance != null)
-                               SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
-                           else
-                           {
-                               callbackResults.result = "Selectable Manager Instance Not Yet Initialized.";
-                               callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                               callbackResults.data = default;
-                           }
-                       }
-                       else
-                           LogWarning(folder.result, this);
-                   });
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+
+                    if(callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                        if (callbackResults.Success())
+                        {
+                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen, dynamicContainerCallbackResults => 
+                            {
+                                callbackResults.SetResult(dynamicContainerCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    if (SelectableManager.Instance != null)
+                                        SelectableManager.Instance.Select(folderNavigation.folderWidgetInfo.widgetName, AppData.FocusedSelectionType.InteractedItem, selectionCallback => { });
+                                    else
+                                    {
+                                        callbackResults.result = "Selectable Manager Instance Not Yet Initialized.";
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                        callbackResults.data = default;
+                                    }
+                                }
+                            });
+                        }
+
+                    }
 
                     folderNavigation.Execute();
 
