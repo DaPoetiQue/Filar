@@ -129,7 +129,7 @@ namespace Com.RedicalGames.Filar
                                                     screenType = AppData.UIScreenType.LandingPageScreen,
                                                     widgetType = AppData.WidgetType.NetworkNotificationWidget,
                                                     blurScreen = true,
-                                                    blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                                                    blurContainerLayerType = AppData.ScreenUIPlacementType.Default
                                                 };
 
                                                 loadedScreen.value.ShowWidget(networkDataPackets);

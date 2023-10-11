@@ -546,7 +546,8 @@ namespace Com.RedicalGames.Filar
             ProjectCreationScreen,
             LandingPageScreen,
             LoadingScreen,
-            SplashScreen
+            SplashScreen,
+            Default
         }
 
         public enum ContentContainerType
@@ -565,6 +566,7 @@ namespace Com.RedicalGames.Filar
             SceneContentsContainer,
             CachedContentsContainer,
             AppScreenContainer,
+            ScreenWidgetContainer,
             None
         }
 
@@ -844,7 +846,7 @@ namespace Com.RedicalGames.Filar
             None
         }
 
-        public enum ScreenBlurContainerLayerType
+        public enum ScreenUIPlacementType
         {
             Default,
             Background,
@@ -1154,6 +1156,43 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ScreenWidgetAssetBundles
+        {
+            #region Components
+
+            [SerializeField]
+            private string name;
+
+            [Space(5)]
+            [SerializeField]
+            private UIScreenType screenType;
+
+            [Space(5)]
+            [SerializeField]
+            private List<AssetBundleReference<GameObject>> widgets = new List<AssetBundleReference<GameObject>>();
+
+            [Space(5)]
+            [SerializeField]
+            private bool initialize;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            #endregion
+
+            #region Data Getters
+
+         public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen Widget Asset Bundles Name Is Not Assigned.";
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class AssetBundlesLibrary : DataDebugger
         {
             #region Components
@@ -1162,11 +1201,15 @@ namespace Com.RedicalGames.Filar
             [Header("App Screens")]
 
             [Space(5)]
-            public List<AssetBundleReference<GameObject>> appScreens = new List<AssetBundleReference<GameObject>>();
+            [SerializeField]
+            private List<AssetBundleReference<GameObject>> appScreens = new List<AssetBundleReference<GameObject>>();
+
+            [Space(10)]
+            [Header("Screen Widgets")]
 
             [Space(5)]
-            public bool loadScreensOnInitialization = true;
-
+            [SerializeField]
+            private List<ScreenWidgetAssetBundles> screenWidgets = new List<ScreenWidgetAssetBundles>();
 
             #region Dynamic Container
 
@@ -2143,11 +2186,15 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected ContentContainerType containerType;
+            protected ContentContainerType containerType = ContentContainerType.None;
 
             [Space(5)]
             [SerializeField]
-            protected ContainerViewSpaceType viewSpace;
+            protected ContainerViewSpaceType viewSpace = ContainerViewSpaceType.None;
+
+            [Space(5)]
+            [SerializeField]
+            protected ScreenUIPlacementType screenViewUIPlacementType = ScreenUIPlacementType.None;
 
             [Space(5)]
             [SerializeField]
@@ -2308,15 +2355,49 @@ namespace Com.RedicalGames.Filar
 
                 if (containerType != ContentContainerType.None)
                 {
-                    callbackResults.result = $"Container : {name}'s Container Type Is Set To : {containerType}";
+                    callbackResults.result = $"Container : {GetName()}'s Container Type Is Set To : {containerType}";
                     callbackResults.data = containerType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Container : {name}'s Container Type Is Set To Default : NONE";
+                    callbackResults.result = $"Container : {GetName()}'s Container Type Is Set To Default : NONE";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenUIPlacementType> GetScreenViewUIPlacementType()
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(GetViewSpace());
+
+                if (callbackResults.Success())
+                {
+                    var viewSpace = GetViewSpace().GetData();
+
+                    if (viewSpace == ContainerViewSpaceType.Screen)
+                    {
+                        if (screenViewUIPlacementType != ScreenUIPlacementType.None)
+                        {
+                            callbackResults.result = $"Container : {GetName()}'s Container Screen UI Placement Type Is Set To : {screenViewUIPlacementType}";
+                            callbackResults.data = screenViewUIPlacementType;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Container : {GetName()}'s Container Screen UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Container : {GetName()}'s Container Screen UI Placement Type Is Set To : {screenViewUIPlacementType}";
+                        callbackResults.data = screenViewUIPlacementType;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
                 }
 
                 return callbackResults;
@@ -3473,7 +3554,7 @@ namespace Com.RedicalGames.Filar
                                                                             screenType = screenUIManager.GetCurrentUIScreenType(),
                                                                             widgetType = WidgetType.NetworkNotificationWidget,
                                                                             blurScreen = true,
-                                                                            blurContainerLayerType = ScreenBlurContainerLayerType.ForeGround
+                                                                            blurContainerLayerType = ScreenUIPlacementType.ForeGround
                                                                         };
 
                                                                         screenUIManager.GetCurrentScreenData().value.ShowWidget(networkDataPackets);
@@ -12990,7 +13071,7 @@ namespace Com.RedicalGames.Filar
             public bool blurScreen;
 
             [Space(5)]
-            public AppData.ScreenBlurContainerLayerType blurLayer;
+            public AppData.ScreenUIPlacementType blurLayer;
 
             [Space(5)]
             public float delay;
@@ -21410,7 +21491,7 @@ namespace Com.RedicalGames.Filar
             public Transform value;
 
             [Space(5)]
-            public ScreenBlurContainerLayerType containerLayerType;
+            public ScreenUIPlacementType containerLayerType;
 
             #endregion
 
@@ -26819,11 +26900,15 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected TransitionType transitionType;
+            protected ScreenUIPlacementType screenUIPlacementType = ScreenUIPlacementType.None;
 
             [Space(5)]
             [SerializeField]
-            protected UIScreenWidgetVisibilityState initialVisibilityState;
+            protected TransitionType transitionType = TransitionType.None;
+
+            [Space(5)]
+            [SerializeField]
+            protected UIScreenWidgetVisibilityState initialVisibilityState = UIScreenWidgetVisibilityState.None;
 
             [Space(5)]
             [SerializeField]
@@ -26834,7 +26919,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            List<AppData.DynamicContainerBase> dynamicContainerList = new List<AppData.DynamicContainerBase>();
+            List<DynamicContainerBase> dynamicContainerList = new List<DynamicContainerBase>();
 
             #region UI Transitonable Components
 
@@ -26919,17 +27004,44 @@ namespace Com.RedicalGames.Filar
 
             public CallbackDataList<DynamicContainerBase> GetDynamicContainerList()
             {
-                var callbackResults = new CallbackDataList<DynamicContainerBase>(Helpers.GetAppComponentsValid(dynamicContainerList, "Dynamic Container List", $"Dynamic Container List Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                var callbackResults = new CallbackDataList<DynamicContainerBase>(GetType());
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"{dynamicContainerList.Count} : Dynamic Containers Have Been Successfully Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
-                    callbackResults.data = dynamicContainerList;
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(dynamicContainerList, "Dynamic Container List", $"Dynamic Container List Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"{dynamicContainerList.Count} : Dynamic Containers Have Been Successfully Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
+                        callbackResults.data = dynamicContainerList;
+                    }
+                    else
+                    {
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType()
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>();
+
+                if (screenUIPlacementType != ScreenUIPlacementType.None)
+                {
+                    callbackResults.result = $"Screen Widget : {GetName()}'s Screen UI Placement Type Is Set To : {screenUIPlacementType}";
+                    callbackResults.data = screenUIPlacementType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
+                    callbackResults.result = $"Screen Widget : {GetName()}'s Screen UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
                     callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 return callbackResults;
@@ -29387,6 +29499,8 @@ namespace Com.RedicalGames.Filar
 
             CallbackDataList<DynamicContainerBase> GetDynamicContainerList();
 
+            CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
+
             #endregion
         }
 
@@ -30769,7 +30883,7 @@ namespace Com.RedicalGames.Filar
                             screenType = dataPackets.screenType,
                             widgetType = WidgetType.ProjectCreationWarningWidget,
                             blurScreen = true,
-                            blurContainerLayerType = ScreenBlurContainerLayerType.ForeGround
+                            blurContainerLayerType = ScreenUIPlacementType.ForeGround
                         };
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
@@ -30789,7 +30903,7 @@ namespace Com.RedicalGames.Filar
                             screenType = dataPackets.screenType,
                             widgetType = WidgetType.CreateNewProjectWidget,
                             blurScreen = true,
-                            blurContainerLayerType = ScreenBlurContainerLayerType.Default
+                            blurContainerLayerType = ScreenUIPlacementType.Default
                         };
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
@@ -30809,7 +30923,7 @@ namespace Com.RedicalGames.Filar
                             screenType = dataPackets.screenType,
                             widgetType = WidgetType.SignInWidget,
                             blurScreen = true,
-                            blurContainerLayerType = ScreenBlurContainerLayerType.Background
+                            blurContainerLayerType = ScreenUIPlacementType.Background
                         };
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
@@ -35677,7 +35791,7 @@ namespace Com.RedicalGames.Filar
                 if (HasBlurObject())
                 {
                     if (initialVisibilityState)
-                        Show(ScreenBlurContainerLayerType.Default);
+                        Show(ScreenUIPlacementType.Default);
 
                     callbackResults.result = "Screen Blur Initialized.";
                     callbackResults.resultCode = Helpers.SuccessCode;
@@ -35691,7 +35805,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void Show(ScreenBlurContainerLayerType layerType, bool fade = false, Action<Callback> callback = null)
+            public void Show(ScreenUIPlacementType layerType, bool fade = false, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -35729,13 +35843,13 @@ namespace Com.RedicalGames.Filar
                     OnSetBlurObjectVisibilityState(false);
 
                     if (resetDisplayLayer)
-                        AddToSelectedContainer(ScreenBlurContainerLayerType.Default);
+                        AddToSelectedContainer(ScreenUIPlacementType.Default);
                 }
                 else
                     Debug.LogWarning("--> RG_Unity - Show Blur Object Failed : Screen Blur Object Value Is Missing / Null.");
             }
 
-            void AddToSelectedContainer(ScreenBlurContainerLayerType layerType, Action<Callback> callback = null)
+            void AddToSelectedContainer(ScreenUIPlacementType layerType, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -36669,7 +36783,7 @@ namespace Com.RedicalGames.Filar
             public bool blurScreen;
 
             [Space(5)]
-            public ScreenBlurContainerLayerType blurContainerLayerType;
+            public ScreenUIPlacementType blurContainerLayerType;
 
             [Space(5)]
             public ScreenViewState screenViewState;
@@ -40746,6 +40860,9 @@ namespace Com.RedicalGames.Filar
             CallbackData<ContainerViewSpaceType> GetViewSpace();
 
             CallbackData<ContentContainerType> GetContainerType();
+
+            CallbackData<ScreenUIPlacementType> GetScreenViewUIPlacementType();
+
             void UpdateContainer();
 
             Callback GetActive();

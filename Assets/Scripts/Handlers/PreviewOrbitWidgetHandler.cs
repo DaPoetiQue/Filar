@@ -68,16 +68,21 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnFingerDown(Finger finger)
         {
-            Ray ray = eventCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitInfo;
-
-            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
+            if (eventCamera != null)
             {
-                if (hitInfo.transform.GetComponent<PreviewOrbitWidgetHandler>())
-                    onSelection = true;
-                else
-                    onSelection = false;
+                Ray ray = eventCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hitInfo;
+
+                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
+                {
+                    if (hitInfo.transform.GetComponent<PreviewOrbitWidgetHandler>())
+                        onSelection = true;
+                    else
+                        onSelection = false;
+                }
             }
+            else
+                LogWarning("Event Camera Missing - Please Fix This And Assign Event Camera Dynamically.", this);
         }
 
         protected override void OnFingerMoved(Finger finger)

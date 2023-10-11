@@ -150,7 +150,7 @@ namespace Com.RedicalGames.Filar
                             AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
                             {
                                 blurScreen = false,
-                                blurContainerLayerType = AppData.ScreenBlurContainerLayerType.Default
+                                blurContainerLayerType = AppData.ScreenUIPlacementType.Default
                             };
 
                             if (ScreenUIManager.Instance != null)
