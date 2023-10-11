@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Com.RedicalGames.Filar
 {
@@ -16,9 +14,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>> callback)
         {
-            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>>(GetType());
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>(GetType());
 
             if (callbackResults.Success())
             {
@@ -87,27 +85,9 @@ namespace Com.RedicalGames.Filar
         //    callback?.Invoke(callbackResults);
         //}
 
-        void ActionEventsSubscription(bool subscribe)
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>> OnGetState()
         {
-            if (subscribe)
-            {
-                AppData.ActionEvents._OnScreenChangedEvent += OnScreenChangedEvent;
-                AppData.ActionEvents._OnPopUpActionEvent += OnWidgetsEvents;
-                AppData.ActionEvents._OnScreenTogglableStateEvent += OnScreenTogglableStateEvent;
-                AppData.ActionEvents._OnSceneModelPoseResetEvent += OnAssetPoseReset;
-            }
-            else
-            {
-                AppData.ActionEvents._OnPopUpActionEvent -= OnWidgetsEvents;
-                AppData.ActionEvents._OnScreenChangedEvent -= OnScreenChangedEvent;
-                AppData.ActionEvents._OnScreenTogglableStateEvent -= OnScreenTogglableStateEvent;
-                AppData.ActionEvents._OnSceneModelPoseResetEvent -= OnAssetPoseReset;
-            }
-        }
-
-        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>> OnGetState()
-        {
-            AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>> callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
 
             if (callbackResults.Success())
             {
@@ -134,6 +114,24 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
+        }
+
+        void ActionEventsSubscription(bool subscribe)
+        {
+            if (subscribe)
+            {
+                AppData.ActionEvents._OnScreenChangedEvent += OnScreenChangedEvent;
+                AppData.ActionEvents._OnPopUpActionEvent += OnWidgetsEvents;
+                AppData.ActionEvents._OnScreenTogglableStateEvent += OnScreenTogglableStateEvent;
+                AppData.ActionEvents._OnSceneModelPoseResetEvent += OnAssetPoseReset;
+            }
+            else
+            {
+                AppData.ActionEvents._OnPopUpActionEvent -= OnWidgetsEvents;
+                AppData.ActionEvents._OnScreenChangedEvent -= OnScreenChangedEvent;
+                AppData.ActionEvents._OnScreenTogglableStateEvent -= OnScreenTogglableStateEvent;
+                AppData.ActionEvents._OnSceneModelPoseResetEvent -= OnAssetPoseReset;
+            }
         }
 
         #endregion

@@ -1570,7 +1570,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &175065352
 Transform:
   m_ObjectHideFlags: 0
@@ -1578,7 +1578,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 175065351}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1588,7 +1588,7 @@ Transform:
   - {fileID: 868730607}
   - {fileID: 1775453610}
   - {fileID: 1213357640}
-  m_Father: {fileID: 1487733488}
+  m_Father: {fileID: 691654707}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &175065353
@@ -8448,6 +8448,40 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &691654706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 691654707}
+  m_Layer: 0
+  m_Name: ':: Refactor And Delete These'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &691654707
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691654706}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 933787003}
+  - {fileID: 1445833047}
+  - {fileID: 175065352}
+  m_Father: {fileID: 1487733488}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -9905,7 +9939,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &933787003
 Transform:
   m_ObjectHideFlags: 0
@@ -9921,7 +9955,7 @@ Transform:
   - {fileID: 1151431178}
   - {fileID: 1892024580}
   - {fileID: 960794596}
-  m_Father: {fileID: 1487733488}
+  m_Father: {fileID: 691654707}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &945376489
@@ -10917,134 +10951,6 @@ Transform:
   m_Father: {fileID: 175318105}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &976341719
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 2
-    m_TransformParent: {fileID: 1594336065}
-    m_Modifications:
-    - target: {fileID: 3621854199771502746, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_Name
-      value: __ Landing Page Content
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_RootOrder
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 65
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -732.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854200902630591, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854200902630591, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854200902630591, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854200902630591, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854200902630591, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3621854200902630591, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_AddedGameObjects: []
-  m_SourcePrefab: {fileID: 100100000, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
---- !u!224 &976341720 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3621854199771502747, guid: 551b3da68c2fe884c809d6f3106f479f, type: 3}
-  m_PrefabInstance: {fileID: 976341719}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1030360174
 GameObject:
   m_ObjectHideFlags: 0
@@ -14740,209 +14646,6 @@ Transform:
   m_Father: {fileID: 175318105}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1319511749
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1319511750}
-  - component: {fileID: 1319511751}
-  m_Layer: 0
-  m_Name: Landing Page Screen  ==>> Handler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1319511750
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1319511749}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2071218293}
-  - {fileID: 2092849093}
-  m_Father: {fileID: 1487733488}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1319511751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1319511749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f5cf5ad1b87fd147bbcce43d0afd33f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  className: Landing Page Screen Handler
-  logAttributes:
-    enabledInfoLogs: 0
-    enabledExceptionLogs: 0
-    logCatInfo:
-      debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
-  widgetType: 5
-  screenUIPlacementType: 3
-  transitionType: 1
-  initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenType: 5
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 0
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    blurContainerLayerType: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
-  dynamicContainerList: []
-  subscribeToActionEvents: 0
-  screenTitle: Filar
-  screenView:
-    name: 
-    view: {fileID: 0}
-    fader:
-      name: Landing Page Screen Fader
-      value: {fileID: 0}
-      active: 1
-      mode: 0
-  screenBlur:
-    name: Screen Blur
-    value: {fileID: 0}
-    displayLayerContainerList:
-    - name: Default Layer
-      value: {fileID: 0}
-      containerLayerType: 0
-    - name: Background Layer
-      value: {fileID: 0}
-      containerLayerType: 1
-    - name: Foreground Layer
-      value: {fileID: 0}
-      containerLayerType: 2
-    initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList: []
-    widgetsContainer: {fileID: 0}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 0
-  widgetsContainer: {fileID: 0}
-  screenPosition: {x: 3100, y: 0}
-  loadingItemList: []
-  screenTogglableWidgetsList: []
-  includesLoadingAssets: 0
-  initializeScreenWidgets: 1
-  screenWidgetsList: []
 --- !u!1 &1353265208
 GameObject:
   m_ObjectHideFlags: 0
@@ -16191,7 +15894,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1445833047
 Transform:
   m_ObjectHideFlags: 0
@@ -16199,7 +15902,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1445833046}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -16223,7 +15926,7 @@ Transform:
   - {fileID: 270069079}
   - {fileID: 1227771367}
   - {fileID: 1433837152}
-  m_Father: {fileID: 1487733488}
+  m_Father: {fileID: 691654707}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1445833048
@@ -16529,10 +16232,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1319511750}
-  - {fileID: 933787003}
-  - {fileID: 1445833047}
-  - {fileID: 175065352}
+  - {fileID: 691654707}
   m_Father: {fileID: 525955589}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -17122,8 +16822,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 976341720}
+  m_Children: []
   m_Father: {fileID: 511625444}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -22597,318 +22296,6 @@ MonoBehaviour:
     categoryType: 0
     isRootFolder: 0
   storageURL: gs://filar-d7a9d.appspot.com/
---- !u!1 &2071218292
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2071218293}
-  - component: {fileID: 2071218295}
-  m_Layer: 0
-  m_Name: Anonymous Sign In Confirmation Widget
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2071218293
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2071218292}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1319511750}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2071218295
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2071218292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fc004492f43fe8429f882334f166092, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  className: Anonymous Sign In Confirmation Widget
-  logAttributes:
-    enabledInfoLogs: 0
-    enabledExceptionLogs: 0
-    logCatInfo:
-      debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
-  widgetType: 33
-  screenUIPlacementType: 3
-  transitionType: 1
-  initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenType: 5
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 33
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    blurContainerLayerType: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
-  dynamicContainerList: []
-  subscribeToActionEvents: 0
-  actionGroup: []
-  widgetLayouts:
-  - layoutName: Default View
-    layout: {fileID: 0}
-    viewType: 1
-  defaultLayoutType: 1
-  selectableAssetType: 0
-  scroller:
-    value: {fileID: 0}
-    movementType: 0
-    orientation: 0
-    resetScrollerPositionOnHide: 0
-    enableScrollBar: 0
-    scrollBarComponent:
-      value: {fileID: 0}
-      layoutDirection: 0
-      updateHandle: 0
-      scrollBarHandle:
-        value: {fileID: 0}
-        padding: 0
-      scrollBarUIFaderComponent:
-        value: {fileID: 0}
-    fadeUIScrollBar: 0
-    dragViewPort: {fileID: 0}
-    dataPackets:
-      externalLinkURL: 
-      selectionOption: 0
-      screenType: 0
-      screenContainerData:
-        name: 
-        type: 0
-        viewSpace: 0
-      sceneContainerData:
-        name: 
-        type: 0
-        viewSpace: 0
-      layoutViewType: 2
-      stateType: 0
-      notification:
-        title: 
-        message: 
-        notificationType: 0
-        screenType: 0
-        screenPosition: 0
-        blurScreen: 0
-        blurLayer: 0
-        delay: 0
-        duration: 0
-        showNotifications: 0
-        proccessed: 0
-      screenWidgetPrefab: {fileID: 0}
-      dynamicWidgetsContainer: {fileID: 0}
-      clearContentContainer: 0
-      resetContentContainerPose: 0
-      scaleSceneAsset: 0
-      keepAssetWorldPose: 0
-      keepAssetCentered: 0
-      sceneAsset:
-        name: 
-        modelAsset: {fileID: 0}
-        info:
-          fields: []
-        sceneObject:
-          info:
-            fields: []
-          value: {fileID: 0}
-        materialProperties:
-          mainTexturePath: 
-          normalMapTexturePath: 
-          aoMapTexturePath: 
-          glossiness: 0
-          bumpScale: 0
-          aoStrength: 0
-        sceneScale: 0
-        description: 
-        categoryType: 0
-        assetMode: 0
-        creationDateTime:
-          time: 
-          date: 
-          dateTime: 
-          second: 0
-          minute: 0
-          hour: 0
-          day: 
-          month: 
-          year: 
-          monthDay: 
-          dateTimeTick: 0
-        hasMLTFile: 0
-        storageData:
-          name: 
-          type: 0
-          path: 
-          projectDirectory: 
-          rootDirectory: 
-          directory: 
-        assetFields: []
-        dontShowMetadataWidget: 0
-        defaultWidgetActionState: 0
-        assetImportPosition: {x: 0, y: 0, z: 0}
-        assetImportRotation: {x: 0, y: 0, z: 0}
-      selectableAssetType: 0
-      sceneAssetScaleValueType: 0
-      dynamicWidgetsContainerOrientation: 0
-      widgetType: 0
-      widgetScreenPosition: {x: 0, y: 0}
-      assetFieldConfiguration: 0
-      storageDirectoryType: 0
-      folderStructureType: 0
-      requiredPermission: 0
-      screenRefreshLoadingItemType: 0
-      sceneMode: 0
-      sceneAssetMode: 0
-      blurScreen: 0
-      blurContainerLayerType: 0
-      screenViewState: 0
-      refreshScreenOnLoad: 0
-      refreshSceneAssets: 0
-      refreshDuration: 0
-      widgetTitle: 
-      widgetTitleCharacterLimit: 0
-      popUpMessage: 
-      screenTransition: 0
-      screenTransitionSpeed: 0
-      canTransitionSceneAsset: 0
-      overrideSceneAssetTargetPosition: 0
-      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-      overrideSceneAssetTransitionSpeed: 0
-      sceneAssetTransitionSpeed: 0
-      isRootFolder: 0
-      referencedActionButtonDataList: []
-  initializationDelay: 0
-  dontShowAgainToggleField: {fileID: 0}
-  onWidgetTransition: 0
-  showWidget: 0
-  widgetContainer:
-    name: 
-    value: {fileID: 0}
-    notificationType: 0
-    screenType: 0
-    screenPosition: 0
-    visibleScreenPoint: {fileID: 0}
-    hiddenScreenPoint: {fileID: 0}
-  dontShowAgain: 0
-  isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &2084503820
 GameObject:
   m_ObjectHideFlags: 0
@@ -23180,318 +22567,6 @@ MonoBehaviour:
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
       widgetType: 0
-      widgetScreenPosition: {x: 0, y: 0}
-      assetFieldConfiguration: 0
-      storageDirectoryType: 0
-      folderStructureType: 0
-      requiredPermission: 0
-      screenRefreshLoadingItemType: 0
-      sceneMode: 0
-      sceneAssetMode: 0
-      blurScreen: 0
-      blurContainerLayerType: 0
-      screenViewState: 0
-      refreshScreenOnLoad: 0
-      refreshSceneAssets: 0
-      refreshDuration: 0
-      widgetTitle: 
-      widgetTitleCharacterLimit: 0
-      popUpMessage: 
-      screenTransition: 0
-      screenTransitionSpeed: 0
-      canTransitionSceneAsset: 0
-      overrideSceneAssetTargetPosition: 0
-      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-      overrideSceneAssetTransitionSpeed: 0
-      sceneAssetTransitionSpeed: 0
-      isRootFolder: 0
-      referencedActionButtonDataList: []
-  initializationDelay: 0
-  dontShowAgainToggleField: {fileID: 0}
-  onWidgetTransition: 0
-  showWidget: 0
-  widgetContainer:
-    name: 
-    value: {fileID: 0}
-    notificationType: 0
-    screenType: 0
-    screenPosition: 0
-    visibleScreenPoint: {fileID: 0}
-    hiddenScreenPoint: {fileID: 0}
-  dontShowAgain: 0
-  isWidgetVisible: 0
-  parentWidget: {fileID: 0}
---- !u!1 &2092849092
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2092849093}
-  - component: {fileID: 2092849094}
-  m_Layer: 0
-  m_Name: Terms And Conditions Widget
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2092849093
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2092849092}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1319511750}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2092849094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2092849092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bf99427dd33066488f14f17c0b7ee12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  className: Terms And Conditions Widget
-  logAttributes:
-    enabledInfoLogs: 0
-    enabledExceptionLogs: 0
-    logCatInfo:
-      debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
-  widgetType: 34
-  screenUIPlacementType: 3
-  transitionType: 1
-  initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenType: 5
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 34
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    blurContainerLayerType: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
-  dynamicContainerList: []
-  subscribeToActionEvents: 0
-  actionGroup: []
-  widgetLayouts:
-  - layoutName: Default Layout
-    layout: {fileID: 0}
-    viewType: 1
-  defaultLayoutType: 1
-  selectableAssetType: 0
-  scroller:
-    value: {fileID: 0}
-    movementType: 2
-    orientation: 0
-    resetScrollerPositionOnHide: 1
-    enableScrollBar: 1
-    scrollBarComponent:
-      value: {fileID: 0}
-      layoutDirection: 1
-      updateHandle: 0
-      scrollBarHandle:
-        value: {fileID: 0}
-        padding: 0
-      scrollBarUIFaderComponent:
-        value: {fileID: 0}
-    fadeUIScrollBar: 1
-    dragViewPort: {fileID: 0}
-    dataPackets:
-      externalLinkURL: 
-      selectionOption: 0
-      screenType: 0
-      screenContainerData:
-        name: 
-        type: 0
-        viewSpace: 0
-      sceneContainerData:
-        name: 
-        type: 0
-        viewSpace: 0
-      layoutViewType: 2
-      stateType: 0
-      notification:
-        title: 
-        message: 
-        notificationType: 0
-        screenType: 0
-        screenPosition: 0
-        blurScreen: 0
-        blurLayer: 0
-        delay: 0
-        duration: 0
-        showNotifications: 0
-        proccessed: 0
-      screenWidgetPrefab: {fileID: 0}
-      dynamicWidgetsContainer: {fileID: 0}
-      clearContentContainer: 0
-      resetContentContainerPose: 0
-      scaleSceneAsset: 0
-      keepAssetWorldPose: 0
-      keepAssetCentered: 0
-      sceneAsset:
-        name: 
-        modelAsset: {fileID: 0}
-        info:
-          fields: []
-        sceneObject:
-          info:
-            fields: []
-          value: {fileID: 0}
-        materialProperties:
-          mainTexturePath: 
-          normalMapTexturePath: 
-          aoMapTexturePath: 
-          glossiness: 0
-          bumpScale: 0
-          aoStrength: 0
-        sceneScale: 0
-        description: 
-        categoryType: 0
-        assetMode: 0
-        creationDateTime:
-          time: 
-          date: 
-          dateTime: 
-          second: 0
-          minute: 0
-          hour: 0
-          day: 
-          month: 
-          year: 
-          monthDay: 
-          dateTimeTick: 0
-        hasMLTFile: 0
-        storageData:
-          name: 
-          type: 0
-          path: 
-          projectDirectory: 
-          rootDirectory: 
-          directory: 
-        assetFields: []
-        dontShowMetadataWidget: 0
-        defaultWidgetActionState: 0
-        assetImportPosition: {x: 0, y: 0, z: 0}
-        assetImportRotation: {x: 0, y: 0, z: 0}
-      selectableAssetType: 0
-      sceneAssetScaleValueType: 0
-      dynamicWidgetsContainerOrientation: 0
-      widgetType: 34
       widgetScreenPosition: {x: 0, y: 0}
       assetFieldConfiguration: 0
       storageDirectoryType: 0

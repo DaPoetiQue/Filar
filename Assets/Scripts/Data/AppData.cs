@@ -23,6 +23,7 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Events;
 
 namespace Com.RedicalGames.Filar
 {
@@ -1186,6 +1187,76 @@ namespace Com.RedicalGames.Filar
             #region Data Getters
 
          public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen Widget Asset Bundles Name Is Not Assigned.";
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ScreenReferencedWidgetDependencyAssetBundle<T> : DataDebugger where T : Enum
+        {
+            #region Components
+
+            [SerializeField]
+            [Space(5)]
+            private T widgetType;
+
+            [SerializeField]
+            [Space(5)]
+            private SceneDataPackets dataPackets = new SceneDataPackets();
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+           public void SetName(string name) => this.name = name;
+
+            public void SetType(T widgetType) => this.widgetType = widgetType;
+            public void SetDataPackets(SceneDataPackets dataPackets) => this.dataPackets = dataPackets;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen Referenced Widget Dependency Asset Bundle Name Not Assigned.";
+
+            public new CallbackData<T> GetType()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if (widgetType.ToString().ToLower() != "none")
+                {
+                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()} - Is Set To Type : {widgetType}";
+                    callbackResults.data = widgetType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Widget Type - Type Is Set To Default : {widgetType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<SceneDataPackets> GetDataPackets()
+            {
+                var callbackResults = new CallbackData<SceneDataPackets>(Helpers.GetAppComponentValid(dataPackets, "Screen Data Packets", $"Screen Data For Screen Referenced Widget Dependency Asset Bundle : {GetName()} - Of Type : {GetType().GetData()} Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Screen Data For Screen Referenced Widget Dependency Asset Bundle : {GetName()} Of Type : {GetType().GetData()} Has Been Found.";
+                    callbackResults.data = dataPackets;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
 
             #endregion
 
@@ -2527,7 +2598,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void AddContent<T, U>(T content, bool keepWorldPosition = false, Action<Callback> callback = null) where T : UIScreenWidget<U> where U : Enum
+            public void AddContent<T, U, V>(T content, bool keepWorldPosition = false, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
             {
                 try
                 {
@@ -2580,7 +2651,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void AddContent<T, U>(T content, bool keepWorldPosition = false, bool isActive = true, Action<Callback> callback = null) where T : UIScreenWidget<U> where U : Enum
+            public void AddContent<T, U, V>(T content, bool keepWorldPosition = false, bool isActive = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
             {
                 try
                 {
@@ -24118,7 +24189,7 @@ namespace Com.RedicalGames.Filar
 
         #region Content Bsse Abstract
 
-        public abstract class SelectableDynamicContent : UIScreenWidgetBaseInput<SelectableWidgetType>, IContent, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
+        public abstract class SelectableDynamicContent : UIScreenWidgetBaseInput<SelectableWidgetType, WidgetType>, IContent, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
         {
             #region Components
 
@@ -24857,7 +24928,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public abstract class ScreenUIData : UIScreenWidget<UIScreenType>, IUIScreenData
+        public abstract class ScreenUIData : UIScreenWidget<UIScreenType, WidgetType>, IUIScreenData
         {
             [Header("Screen Info")]
 
@@ -24917,9 +24988,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<UIScreenType>>> callback = null, params EventActionData[] eventActions)
+            public void Init(Action<CallbackData<WidgetStatePacket<UIScreenType, WidgetType>>> callback = null, params EventActionData[] eventActions)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<UIScreenType>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<UIScreenType, WidgetType>>(GetType());
 
                 #region Base Initialization
 
@@ -24947,7 +25018,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                var widgetStatePacket = new WidgetStatePacket<UIScreenType>(this, WidgetStateType.Initialized);
+                                                var widgetStatePacket = new WidgetStatePacket<UIScreenType, WidgetType>(this, WidgetStateType.Initialized);
 
                                                 SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                 {
@@ -26746,14 +26817,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public class WidgetStatePacket<T> where T : Enum
+        public class WidgetStatePacket<T, U> where T : Enum where U : Enum
         {
             #region Components
 
             public string name;
             public T type;
             public WidgetStateType state;
-            public UIScreenWidget<T> value;
+            public UIScreenWidget<T, U> value;
 
             #endregion
 
@@ -26764,7 +26835,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public WidgetStatePacket(UIScreenWidget<T> value, WidgetStateType stateType)
+            public WidgetStatePacket(UIScreenWidget<T, U> value, WidgetStateType stateType)
             {
                 SetName(value.GetName());
                 SetType(value.GetType().GetData());
@@ -26781,7 +26852,7 @@ namespace Com.RedicalGames.Filar
             public void SetName(string name) => this.name = name;
             public void SetType(T type) => this.type = type;
             public void SetStateType(WidgetStateType state) => this.state = state;
-            public void SetValue(UIScreenWidget<T> value) => this.value = value;
+            public void SetValue(UIScreenWidget<T, U> value) => this.value = value;
 
             #endregion
 
@@ -26830,9 +26901,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<UIScreenWidget<T>> GetValue()
+            public CallbackData<UIScreenWidget<T, U>> GetValue()
             {
-                CallbackData<UIScreenWidget<T>> callbackResults = new CallbackData<UIScreenWidget<T>>();
+                var callbackResults = new CallbackData<UIScreenWidget<T, U>>();
 
                 if(value != null)
                 {
@@ -26883,7 +26954,7 @@ namespace Com.RedicalGames.Filar
 
         [DisallowMultipleComponent]
         [Serializable]
-        public abstract class UIScreenWidget<T> : AppMonoBaseClass, IScreenWidget<T> where T : Enum
+        public abstract class UIScreenWidget<T, U> : AppMonoBaseClass, IScreenWidget<T, U> where T : Enum where U : Enum
         {
             #region Components
 
@@ -26914,12 +26985,23 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected SceneDataPackets dataPackets = new SceneDataPackets();
 
+            [Space(5)]
+            [SerializeField]
+            protected List<ScreenReferencedWidgetDependencyAssetBundle<U>> referencedWidgetDependencyAssets = new List<ScreenReferencedWidgetDependencyAssetBundle<U>>();
+
             [Space(15)]
             [Header("Dynamic Containers")]
 
             [Space(5)]
             [SerializeField]
             List<DynamicContainerBase> dynamicContainerList = new List<DynamicContainerBase>();
+
+            [Space(15)]
+            [Header("Action Events")]
+
+            [Space(5)]
+            [SerializeField]
+            protected List<EventActionData> eventActions = new List<EventActionData>();
 
             #region UI Transitonable Components
 
@@ -26941,7 +27023,7 @@ namespace Com.RedicalGames.Filar
 
             private List<EventAction> eventActionList = new List<EventAction>();
 
-            protected WidgetStatePacket<T> widgetStatePacket;
+            protected WidgetStatePacket<T, U> widgetStatePacket;
 
             #endregion
 
@@ -26956,9 +27038,9 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initilize(Action<CallbackData<WidgetStatePacket<T>>> callback)
+            public void Initilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<T>>();
+                var callbackResults = new CallbackData<WidgetStatePacket<T, U>>();
 
                 OnInitilize(initializationCallbackResults => 
                 {
@@ -26972,9 +27054,9 @@ namespace Com.RedicalGames.Filar
 
             public void SetName(string name) => this.name = name;
 
-            protected void SetWidgetStatePacket(WidgetStatePacket<T> statePacket, Action<CallbackData<WidgetStatePacket<T>>> callback = null)
+            protected void SetWidgetStatePacket(WidgetStatePacket<T, U> statePacket, Action<CallbackData<WidgetStatePacket<T, U>>> callback = null)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<T>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<T, U>>(GetType());
 
                 if (callbackResults.Success())
                 {
@@ -27042,6 +27124,24 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Screen Widget : {GetName()}'s Screen UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>> GetReferencedWidgetDependencyAssets()
+            {
+                var callbackResults = new CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>>(Helpers.GetAppComponentsValid(referencedWidgetDependencyAssets, "Referenced Widget Dependency Assets", $"There Are Nore Referenced Widget Dependency Assets Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"There Are : {referencedWidgetDependencyAssets.Count} Referenced Widget Dependency Assets Found For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
+                    callbackResults.data = referencedWidgetDependencyAssets;
+                }
+                else
+                {
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 return callbackResults;
@@ -27516,9 +27616,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public WidgetStatePacket<T> GetStatePacket() => widgetStatePacket;
+            public WidgetStatePacket<T, U> GetStatePacket() => widgetStatePacket;
 
-            public CallbackData<WidgetStatePacket<T>> GetState() => OnGetState();
+            public CallbackData<WidgetStatePacket<T, U>> GetState() => OnGetState();
 
             #endregion
 
@@ -27681,7 +27781,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected abstract CallbackData<WidgetStatePacket<T>> OnGetState();
+            protected abstract CallbackData<WidgetStatePacket<T, U>> OnGetState();
 
             public CallbackData<SceneDataPackets> GetDataPackets()
             {
@@ -27702,14 +27802,14 @@ namespace Com.RedicalGames.Filar
 
             #region Abstract Overrides
 
-            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T>>> callback);
+            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback);
 
             #endregion
         }
 
         [DisallowMultipleComponent]
         [Serializable]
-        public abstract class UIScreenWidgetBaseInput<T> : UIScreenWidget<T> where T : Enum
+        public abstract class UIScreenWidgetBaseInput<T, U> : UIScreenWidget<T, U> where T : Enum where U : Enum
         {
             #region Components
 
@@ -29475,11 +29575,11 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public interface IScreenWidget<T> where T : Enum
+        public interface IScreenWidget<T, U> where T : Enum where U : Enum
         {
             #region Methods
 
-            void Initilize(Action<CallbackData<WidgetStatePacket<T>>> callback);
+            void Initilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback);
 
             #endregion
 
@@ -29501,11 +29601,13 @@ namespace Com.RedicalGames.Filar
 
             CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
 
+            CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>> GetReferencedWidgetDependencyAssets();
+
             #endregion
         }
 
         [Serializable]
-        public abstract class Widget : UIScreenWidgetBaseInput<WidgetType>, IUIWidget
+        public abstract class Widget : UIScreenWidgetBaseInput<WidgetType, WidgetType>, IUIWidget
         {
             [Space(15)]
             [Header("Widget Configurations")]
@@ -29570,9 +29672,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType>>> callback, params EventActionData[] eventActions)
+            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, WidgetType>>> callback, params EventActionData[] eventActions)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType, WidgetType>>(GetType());
 
                 #region Base Initialization
 
@@ -29615,7 +29717,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        var widgetStatePacket = new WidgetStatePacket<WidgetType>(this, WidgetStateType.Initialized);
+                                                        var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType>(this, WidgetStateType.Initialized);
 
                                                         SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                         {
@@ -41054,11 +41156,15 @@ namespace Com.RedicalGames.Filar
 
         #region Event Actrion Base
 
+        [Serializable]
         public abstract class EventAction : DataDebugger
         {
             #region Components
 
-            EventType eventType;
+            [Space(5)]
+            [SerializeField]
+            private EventType eventType;
+
             bool isInitialized = false;
 
             #endregion
@@ -41171,11 +41277,14 @@ namespace Com.RedicalGames.Filar
 
         #region Event Action Data
 
+        [Serializable]
         public class EventActionData : EventAction
         {
             #region Components
 
-            public Action eventMethod;
+            [Space(5)]
+            [SerializeField]
+            private UnityEvent eventMethod;
 
             #endregion
 
@@ -41186,7 +41295,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public EventActionData(string name, EventType eventType, Action eventMethod)
+            public EventActionData(string name, EventType eventType, UnityEvent eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -41217,7 +41326,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetEventMethod(Action eventMethod)
+            public void SetEventMethod(UnityEvent eventMethod)
             {
                 this.eventMethod = eventMethod;
 
@@ -41232,9 +41341,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<Action> GetEventMethod()
+            public CallbackData<UnityEvent> GetEventMethod()
             {
-                CallbackData<Action> callbackResults = new CallbackData<Action>();
+                CallbackData<UnityEvent> callbackResults = new CallbackData<UnityEvent>();
                
                 if(eventMethod != null)
                 {
@@ -41306,11 +41415,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [Serializable]
         public class EventActionData<T> : EventAction where T : class
         {
             #region Components
 
-            public Action<T> eventMethod;
+            [Space(5)]
+            [SerializeField]
+            private UnityEvent<T> eventMethod;
 
             #endregion
 
@@ -41321,7 +41433,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public EventActionData(string name, EventType eventType, Action<T> eventMethod)
+            public EventActionData(string name, EventType eventType, UnityEvent<T> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -41352,7 +41464,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetEventMethod(Action<T> eventMethod)
+            public void SetEventMethod(UnityEvent<T> eventMethod)
             {
                 this.eventMethod = eventMethod;
 
@@ -41367,9 +41479,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<Action<T>> GetEventMethod()
+            public CallbackData<UnityEvent<T>> GetEventMethod()
             {
-                CallbackData<Action<T>> callbackResults = new CallbackData<Action<T>>();
+                CallbackData<UnityEvent<T>> callbackResults = new CallbackData<UnityEvent<T>>();
 
                 if (eventMethod != null)
                 {
@@ -41441,11 +41553,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [Serializable]
         public class EventActionData<T, U> : EventAction
         {
             #region Components
 
-            public Action<T, U> eventMethod;
+            [Space(5)]
+            [SerializeField]
+            private UnityEvent<T, U> eventMethod;
 
             #endregion
 
@@ -41456,7 +41571,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public EventActionData(string name, EventType eventType, Action<T, U> eventMethod)
+            public EventActionData(string name, EventType eventType, UnityEvent<T, U> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -41487,7 +41602,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetEventMethod(Action<T, U> eventMethod)
+            public void SetEventMethod(UnityEvent<T, U> eventMethod)
             {
                 this.eventMethod = eventMethod;
 
@@ -41502,9 +41617,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<Action<T, U>> GetEventMethod()
+            public CallbackData<UnityEvent<T, U>> GetEventMethod()
             {
-                CallbackData<Action<T, U>> callbackResults = new CallbackData<Action<T, U>>();
+                CallbackData<UnityEvent<T, U>> callbackResults = new CallbackData<UnityEvent<T, U>>();
 
                 if (eventMethod != null)
                 {
@@ -41577,11 +41692,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [Serializable]
         public class EventActionData<T, U, V> : EventAction
         {
             #region Components
 
-            public Action<T, U, V> eventMethod;
+            [Space(5)]
+            [SerializeField]
+            private UnityEvent<T, U, V> eventMethod;
 
             #endregion
 
@@ -41592,7 +41710,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public EventActionData(string name, EventType eventType, Action<T, U, V> eventMethod)
+            public EventActionData(string name, EventType eventType, UnityEvent<T, U, V> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -41623,7 +41741,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetEventMethod(Action<T, U, V> eventMethod)
+            public void SetEventMethod(UnityEvent<T, U, V> eventMethod)
             {
                 this.eventMethod = eventMethod;
 
@@ -41638,9 +41756,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<Action<T, U, V>> GetEventMethod()
+            public CallbackData<UnityEvent<T, U, V>> GetEventMethod()
             {
-                CallbackData<Action<T, U, V>> callbackResults = new CallbackData<Action<T, U, V>>();
+                CallbackData<UnityEvent<T, U, V>> callbackResults = new CallbackData<UnityEvent<T, U, V>>();
 
                 if (eventMethod != null)
                 {
@@ -41712,11 +41830,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        [Serializable]
         public class EventActionData<T, U, V, W> : EventAction
         {
             #region Components
 
-            public Action<T, U, V, W> eventMethod;
+            [Space(5)]
+            [SerializeField]
+            private UnityEvent<T, U, V, W> eventMethod;
 
             #endregion
 
@@ -41727,7 +41848,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public EventActionData(string name, EventType eventType, Action<T, U, V, W> eventMethod)
+            public EventActionData(string name, EventType eventType, UnityEvent<T, U, V, W> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -41758,7 +41879,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetEventMethod(Action<T, U, V, W> eventMethod)
+            public void SetEventMethod(UnityEvent<T, U, V, W> eventMethod)
             {
                 this.eventMethod = eventMethod;
 
@@ -41773,9 +41894,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<Action<T, U, V, W>> GetEventMethod()
+            public CallbackData<UnityEvent<T, U, V, W>> GetEventMethod()
             {
-                CallbackData<Action<T, U, V, W>> callbackResults = new CallbackData<Action<T, U, V, W>>();
+                CallbackData<UnityEvent<T, U, V, W>> callbackResults = new CallbackData<UnityEvent<T, U, V, W>>();
 
                 if (eventMethod != null)
                 {

@@ -197,7 +197,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 var screenContainer = containerCallbackResults.GetData();
 
-                                screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType>(screen.value, false, screenAddedCallbackResults =>
+                                screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType, AppData.WidgetType>(screen.value, false, screenAddedCallbackResults =>
                                 {
                                     callbackResults.SetResult(screenAddedCallbackResults);
 

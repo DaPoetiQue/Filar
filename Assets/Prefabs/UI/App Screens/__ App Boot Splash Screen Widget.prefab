@@ -323,8 +323,10 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList:
   - {fileID: 4343902750515389455}
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Splash Screen
   screenView:
