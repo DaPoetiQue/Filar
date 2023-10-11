@@ -4994,6 +4994,7 @@ MonoBehaviour:
       debugClassLogCat: 
   containerType: 8
   viewSpace: 0
+  screenViewUIPlacementType: 3
   dataPackets:
     externalLinkURL: 
     selectionOption: 0
@@ -15074,6 +15075,7 @@ MonoBehaviour:
       debugClassLogCat: 
   containerType: 8
   viewSpace: 0
+  screenViewUIPlacementType: 3
   dataPackets:
     externalLinkURL: 
     selectionOption: 0
@@ -18291,6 +18293,7 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 4
+  screenUIPlacementType: 0
   transitionType: 2
   initialVisibilityState: 2
   dataPackets:
@@ -18401,6 +18404,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
+  dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Project Creation Screen
   screenView:

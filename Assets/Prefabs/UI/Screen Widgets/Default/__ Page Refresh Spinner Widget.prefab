@@ -288,12 +288,14 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
   - layoutName: Default Layout
-    layout: {fileID: 0}
+    layout: {fileID: 5229210468645156568}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0

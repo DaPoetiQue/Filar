@@ -220,7 +220,7 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 6
-  screenUIPlacementType: 3
+  screenUIPlacementType: 0
   transitionType: 1
   initialVisibilityState: 2
   dataPackets:

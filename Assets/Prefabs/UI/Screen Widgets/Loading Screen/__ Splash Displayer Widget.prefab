@@ -1796,7 +1796,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 1
   actionGroup:
   - name: Image Displayer
@@ -1806,7 +1808,7 @@ MonoBehaviour:
     initialize: 1
   widgetLayouts:
   - layoutName: Default Layout
-    layout: {fileID: 0}
+    layout: {fileID: 2803885941087977292}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0

@@ -2451,6 +2451,7 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 2
+  screenUIPlacementType: 0
   transitionType: 2
   initialVisibilityState: 2
   dataPackets:
@@ -2561,6 +2562,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
+  dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Import
   screenView:
