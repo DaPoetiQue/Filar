@@ -1202,8 +1202,8 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             private T widgetType;
 
-            [SerializeField]
-            [Space(5)]
+            //[SerializeField]
+            //[Space(5)]
             private SceneDataPackets dataPackets = new SceneDataPackets();
 
             #endregion

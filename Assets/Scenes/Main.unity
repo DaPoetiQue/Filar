@@ -1316,7 +1316,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -1722,7 +1724,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Import
   screenView:
@@ -1969,7 +1973,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -2642,7 +2648,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -2954,7 +2962,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -3349,7 +3359,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -4645,7 +4657,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -7817,7 +7831,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -8129,7 +8145,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -9291,7 +9309,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -10121,7 +10141,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -10771,7 +10793,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -12056,7 +12080,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -12665,7 +12691,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -12977,7 +13005,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -14003,7 +14033,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -15058,7 +15090,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -15618,7 +15652,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -16060,7 +16096,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   screenTitle: Project
   screenView:
@@ -16422,7 +16460,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -17280,7 +17320,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -17684,7 +17726,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -17999,7 +18043,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -18589,7 +18635,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -18901,7 +18949,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -19213,7 +19263,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -19527,7 +19579,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -20115,7 +20169,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -22200,7 +22256,79 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    screenWidgets: []
+    screenWidgets:
+    - name: Referenced Screen Widgets Dependencies
+      screenType: 8
+      widgets:
+      - m_AssetGUID: d4e581edca68aab4f8fe12628877bd6b
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: f843af94970aabd4294feebcde9f6f92
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 32777faf63cd0a74c8e92b3179a39995
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      initialize: 1
+    - name: Splash Screen Widgets
+      screenType: 7
+      widgets:
+      - m_AssetGUID: 2f2a21f2e0890dc4ca05c21d829fa955
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 528a05888bf334c49b0ef0f39bde3071
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 0b50eb62cfe35694895b3b92c2455036
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      initialize: 1
+    - name: Loading Screen Widgets
+      screenType: 6
+      widgets:
+      - m_AssetGUID: c1acba0d110f39c49b605fba6e922357
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: cfef472b77482fa4ab9792d6281dedea
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 2e4e516274ba6164abbf18492dd5d5c4
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      initialize: 1
+    - name: Landing Page Widgets
+      screenType: 5
+      widgets:
+      - m_AssetGUID: f0091390c274c1f4cac698e0078934cc
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 54b0bfffa6a62a549917f9058940ec88
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 6d872bcba00ebb74ca049f87020cb026
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: e4c80c2b86c4484408b5ea7bef4fbdf9
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: cac99e6c78523e544986e557570bee69
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+      initialize: 1
     dynamicContainerLibrary:
     - {fileID: 1594336066}
     - {fileID: 786316670}
@@ -22459,7 +22587,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:

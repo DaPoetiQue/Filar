@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Landing Page Widgets
+  m_EditorClassIdentifier: 
+  m_GroupName: Landing Page Widgets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 9d61eed5079cf7048a80fb9a3f48e77b
+  m_SerializeEntries:
+  - m_GUID: f0091390c274c1f4cac698e0078934cc
+    m_Address: Menu Widget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54b0bfffa6a62a549917f9058940ec88
+    m_Address: Posts Widget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d872bcba00ebb74ca049f87020cb026
+    m_Address: Sign_In_Sign_Up Widget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4c80c2b86c4484408b5ea7bef4fbdf9
+    m_Address: Anonymous Sign_In Widget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cac99e6c78523e544986e557570bee69
+    m_Address: Terms And Condition Widget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
+  m_SchemaSet:
+    m_Schemas: []

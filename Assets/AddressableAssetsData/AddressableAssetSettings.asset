@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 1d8f7096a103d2c4ab1090119fb26270
   m_CachedHash:
     serializedVersion: 2
-    Hash: 1c05b20bcb9a563ebcf88766bf21d558
+    Hash: 56a56865e89c1b37005d3d3b1b3f529c
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -47,6 +47,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8a6e0195aa36e4b4493163366df0c294, type: 2}
   - {fileID: 11400000, guid: de9e7a88aee99574f833e94a494ba3d0, type: 2}
   - {fileID: 11400000, guid: 5e29728cb0861d845969600b89d32a76, type: 2}
+  - {fileID: 11400000, guid: c479529b14275ee4bba566f5e227edca, type: 2}
+  - {fileID: 11400000, guid: aed2f0e6adfebad4184a223e5139d188, type: 2}
+  - {fileID: 11400000, guid: 8e635c37cf40ae84c98eeae8b747ff80, type: 2}
+  - {fileID: 11400000, guid: a5e060e404a640440b1f0c43fcf9d7af, type: 2}
+  - {fileID: 11400000, guid: 013db02704ff2d84885e648d1c112835, type: 2}
+  - {fileID: 11400000, guid: b415c5fcef48bc74c86205131fdc2382, type: 2}
+  - {fileID: 11400000, guid: 033b08d844033034090e045f694a6ca8, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -88,7 +95,8 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
-    - App Screens
+    - App Screen
+    - Screen Widget
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 39bb3e37dcb37364cab85ef96fafb4f2, type: 2}
