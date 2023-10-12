@@ -1712,7 +1712,7 @@ namespace Com.RedicalGames.Filar
                     if(callbackResults.Success())
                     {
                         var container = containerCallbackResults.GetData();
-                        container.AddContent(content: contentWidget, keepWorldPosition: false, updateContainer: true);
+                        container.AddContent(content: contentWidget, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
                     }
                 });
 
@@ -2731,7 +2731,7 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            Helpers.GetAppComponentValid(content, content?.name, hasScreenWidgetCallbackResults =>
+                            Helpers.GetAppComponentValid(content, content.GetName(), hasScreenWidgetCallbackResults =>
                             {
                                 callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
@@ -2766,7 +2766,7 @@ namespace Com.RedicalGames.Filar
                 }
                 catch (NullReferenceException exception)
                 {
-                    LogError($"Adding Dynamic Content To Container : {name} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
+                    LogError($"Adding Dynamic Content To Container : {GetName()} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
                     return;
                 }
                 catch (Exception exception)
@@ -2775,7 +2775,8 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void AddContent<T, U, V>(T content, bool keepWorldPosition = false, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
+
+            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : SelectableDynamicContent
             {
                 try
                 {
@@ -2783,11 +2784,13 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetActive());
+
+                        if(!overrideActiveState)
+                            callbackResults.SetResult(GetActive());
 
                         if (callbackResults.Success())
                         {
-                            Helpers.GetAppComponentValid(content, content?.name, hasScreenWidgetCallbackResults =>
+                            Helpers.GetAppComponentValid(content, content.GetName(), hasScreenWidgetCallbackResults =>
                             {
                                 callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
@@ -2801,7 +2804,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            content.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
+                                            content.GetSceneObject().transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
                                         }
                                     }
                                 }
@@ -2828,7 +2831,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void AddContent<T, U, V>(T content, bool keepWorldPosition = false, bool isActive = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
+            public void AddContent<T, U, V>(T content, bool keepWorldPosition = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
             {
                 try
                 {
@@ -2836,11 +2839,78 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetActive());
+                        if(!overrideActiveState)
+                            callbackResults.SetResult(GetActive());
 
                         if (callbackResults.Success())
                         {
-                            Helpers.GetAppComponentValid(content, content?.name, hasScreenWidgetCallbackResults =>
+                            Helpers.GetAppComponentValid(content, content.GetName(), hasScreenWidgetCallbackResults =>
+                            {
+                                callbackResults.SetResult(hasScreenWidgetCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetContainer<Transform>());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetViewSpace());
+
+                                        if (callbackResults.Success())
+                                            content.GetSceneObject().AddToPlacementContainer(GetContainer<Transform>().GetData(), keepWorldPosition);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                    callback?.Invoke(callbackResults);
+                }
+                catch (NullReferenceException exception)
+                {
+                    LogError($"Adding Dynamic Content To Container : {name} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    throw exception;
+                }
+            }
+
+            /// <summary>
+            /// Adds The UI Widget To A Dynamic Snreen Container.
+            /// </summary>
+            /// <typeparam name="T">The Component Type .eg - UScreenHandler, Widget, etc - Of Type UI Screen Widget</typeparam>
+            /// <typeparam name="U">The Content Type - e.g - Screen Type, Widget Type, Selectable Widget Type, etc - As An Enum Value Type</typeparam>
+            /// <typeparam name="V">The Content Type - e.g - Screen Type, Widget Type, Selectable Widget Type, etc - As An Enum Value Type</typeparam>
+            /// <param name="uiScreenWidgetComponent">The Content To Be Added To Container</param>
+            /// <param name="keepWorldPosition">Optional To Keep The World Position Of The Added Content.</param>
+            /// <param name="isActive">Sets If The State Of The Object Added Should Be Active Or Inactive</param>
+            /// <param name="overrideContainerActiveState">Overrides Checing If The Container Is Active Or Not Before Adding Content - Content Can't Be Added To InACtive Containers.</param>
+            /// <param name="callback">Callback Results Of This Execution</param>
+            public void AddContent<T, U, V>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
+            {
+                try
+                {
+                    Callback callbackResults = new Callback(GetContainer<Transform>());
+
+                    if (callbackResults.Success())
+                    {                 
+                        if(!overrideContainerActiveState)
+                            callbackResults.SetResult(GetActive());
+
+                        if (callbackResults.Success())
+                        {
+                            Helpers.GetAppComponentValid(uiScreenWidgetComponent, uiScreenWidgetComponent.GetName(), hasScreenWidgetCallbackResults =>
                             {
                                 callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
@@ -2854,24 +2924,32 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            content.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
-
                                             if(isActive)
-                                                content.gameObject.Show();
+                                                uiScreenWidgetComponent.GetSceneObject().Show();
                                             else
-                                                content.gameObject.Hide();
+                                                uiScreenWidgetComponent.GetSceneObject().Hide();
+
+                                            uiScreenWidgetComponent.GetSceneObject().AddToPlacementContainer(GetContainer<RectTransform>().GetData(), keepWorldPosition);
+
+                                            if (updateContainer)
+                                                OnUpdatedContainerSize();
                                         }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
-                                {
-                                    callbackResults.result = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
-                                    callbackResults.resultCode = Helpers.ErrorCode;
-                                }
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                             }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                     callback?.Invoke(callbackResults);
                 }
@@ -2886,7 +2964,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public async Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false) where T : SelectableDynamicContent
+            public async Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false) where T : SelectableDynamicContent
             {
                 try
                 {
@@ -2894,7 +2972,8 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetActive());
+                        if(!overrideActiveState)
+                            callbackResults.SetResult(GetActive());
 
                         if (callbackResults.Success())
                         {
@@ -2911,18 +2990,23 @@ namespace Com.RedicalGames.Filar
                                         callbackResults.SetResult(GetViewSpace());
 
                                         if (callbackResults.Success())
-                                            content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
+                                            content.GetSceneObject().AddToPlacementContainer(GetContainer<Transform>().GetData(), keepWorldPosition);
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
-                                {
-                                    callbackResults.result = "Add Dynamic Widget Failed : Screen Widget Is Missing / Null.";
-                                    callbackResults.resultCode = Helpers.ErrorCode;
-                                }
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                             }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                     if (updateContainer)
                         await OnUpdatedContainerSizeAsync();
@@ -2950,7 +3034,7 @@ namespace Com.RedicalGames.Filar
                     {
                         case ContainerViewSpaceType.Screen:
 
-                            GetContainer<RectTransform>().data.sizeDelta = (Vector2)size;
+                            GetContainer<RectTransform>().data.sizeDelta = size;
 
                             break;
 
@@ -25381,29 +25465,32 @@ namespace Com.RedicalGames.Filar
                         {
                             var container = GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()).GetData();
 
-                            container.AddContent<Widget, WidgetType, WidgetType>(widget, false, widgetnAddedCallbackResults =>
-                            {
-                                callbackResults.SetResult(widgetnAddedCallbackResults);
+                            callbackResults.SetResult(widget.GetInitialVisibility());
 
-                                LogInfo($" _______________________________####### Add Widget To Container Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}");
+                            if (callbackResults.Success())                            {
 
-                                if (callbackResults.Success())
+                                container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
                                 {
-                                    widget.SetParentWidget(this, parentSetCallbackResults => 
+                                    callbackResults.SetResult(widgetnAddedCallbackResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(parentSetCallbackResults);
-
-                                        if(callbackResults.Success())
+                                        widget.SetParentWidget(this, parentSetCallbackResults =>
                                         {
-                                            callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Has Been Added To Screen Widgets List.";
-                                            callbackResults.data = screenWidgetsList;
-                                        }
-                                    });
-                                }
-                            });
+                                            callbackResults.SetResult(parentSetCallbackResults);
 
-                            callbackResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                            callbackResults.resultCode = Helpers.SuccessCode;
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Has Been Added To Screen Widgets List.";
+                                                callbackResults.data = screenWidgetsList;
+                                            }
+                                        });
+                                    }
+                                });
+
+                                callbackResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -27099,7 +27186,6 @@ namespace Com.RedicalGames.Filar
 
             public string GetName() => !string.IsNullOrEmpty(name)? name : "Widget State Object Name Is Not Assigned";
 
-
             public new CallbackData<T> GetType()
             {
                 var callbackResults = new CallbackData<T>();
@@ -27374,23 +27460,73 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType()
             {
-                var callbackResults = new CallbackData<ScreenUIPlacementType>();
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(GetType());
 
-                if (screenUIPlacementType != ScreenUIPlacementType.None)
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Screen Widget : {GetName()}'s Screen UI Placement Type Is Set To : {screenUIPlacementType}";
-                    callbackResults.data = screenUIPlacementType;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Screen Widget : {GetName()}'s Screen UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
+                    if (screenUIPlacementType != ScreenUIPlacementType.None)
+                    {
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Screen UI Placement Type Is Set To : {screenUIPlacementType}";
+                        callbackResults.data = screenUIPlacementType;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Screen UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
                 }
 
                 return callbackResults;
             }
+
+            public CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityStateType()
+            {
+                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    if (initialVisibilityState != UIScreenWidgetVisibilityState.None)
+                    {
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Initial Visibilty State Type Is Set To : {initialVisibilityState}";
+                        callbackResults.data = initialVisibilityState;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Initial Visibilty State Type Is Set To Default : {initialVisibilityState} - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<bool> GetInitialVisibility()
+            {
+                var callbackResults = new CallbackData<bool>(GetInitialVisibilityStateType());
+
+                if (callbackResults.Success())
+                {
+                    if(GetInitialVisibilityStateType().GetData() == UIScreenWidgetVisibilityState.Visible)
+                    {
+                        callbackResults.result = $"Initiali Visiblity State For Screen Widget : {GetName()} - Of type : {GetType().GetData()} Is Set To : {GetInitialVisibilityStateType().GetData()} - Widget Should Be Shown";
+                        callbackResults.data = true;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Initiali Visiblity State For Screen Widget : {GetName()} - Of type : {GetType().GetData()} Is Set To : {GetInitialVisibilityStateType().GetData()} - Widget Should Be Hidden";
+                        callbackResults.data = false;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
 
             public CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>> GetReferencedWidgetDependencyAssets()
             {
@@ -29848,23 +29984,67 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
+
+            /// <summary>
+            /// Sets The Name For The Screen Widget Component.
+            /// </summary>
+            /// <param name="name">The New Name To Be Set For The Screen Widget</param>
             void SetName(string name);
 
             #endregion
 
             #region Data Getters
 
+
+            /// <summary>
+            /// Gets The Widgets Name If Assigned.
+            /// </summary>
+            /// <returns>This Returns The Widgets Name If Assigned Or A Message Stating That The Name Is Not Yet Assigned</returns>
             string GetName();
 
+
+            /// <summary>
+            /// Gets The Screen Widget Type - 
+            /// </summary>
+            /// <returns>Returns A Screen Widget Type As A Callback WIth An Enum Data/returns>
             CallbackData<T> GetType();
 
+            /// <summary>
+            /// Gets The Game Obkect Linked To The Screen Widget Component
+            /// </summary>
+            /// <returns>A Unity Game Obkect Linked To The Screen Widget Component</returns>
             GameObject GetSceneObject();
 
+
+            /// <summary>
+            /// Gets The Dynamic Containers Linked To This SCreen Widget- 
+            /// </summary>
+            /// <returns>Returns A Callback Data List With All Assigned Dynamic Container For The Screen Widget/returns>
             CallbackDataList<DynamicContainerBase> GetDynamicContainerList();
 
+            /// <summary>
+            /// Gets The UI Screen Space Placement Type - Screen Depth Ordering.
+            /// </summary>
+            /// <returns>Returns A UI Screen Widgets Screen Placement Type As A Callback WIth Enum Data/returns>
             CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
 
+            /// <summary>
+            /// Gets All Referenced Widget Dependency Assets For The Screen Widget
+            /// </summary>
+            /// <returns>Returns A Callback Data List Of All Referenced Widget Dependency Assets For The Screen Widget As A Callback WIth List Data/returns>
             CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>> GetReferencedWidgetDependencyAssets();
+
+            /// <summary
+            /// Gets A UI Screen Widgets Visibilty State
+            /// </summary>
+            /// <returns>Returns A UI Screen Widgets Visibilty State Type As A Callback WIth Enum Data/returns>
+            CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityStateType();
+
+            /// <summary
+            /// Gets A UI Screen Widgets Visibilty State
+            /// </summary>
+            /// <returns>Returns A UI Screen Widgets Visibilty State Type As A Callback WIth A Boolean Data/returns>
+            CallbackData<bool> GetInitialVisibility();
 
             #endregion
         }
@@ -36913,13 +37093,50 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class UIScreenViewComponent
+        public class UIScreenViewComponent : DataDebugger, IUIScreenViewComponent
         {
+            #region Components
+
             public string name;
 
             [Space(5)]
             public UIScreenHandler value;
+
+            #endregion
+
+            #region Main
+
+            public void SetName(string name) => this.name = name;
+
+            public string GetName() => !string.IsNullOrEmpty(name)? name : GetNameFallbackResults();
+
+            private string GetNameFallbackResults() => value ? value.GetName() : "UI Screen View Component Name Is Not Assigned And Value Is Missing / Null - Invalid Operation.";
+
+            public CallbackData<UIScreenHandler> GetValue()
+            {
+                var callbackResults = new CallbackData<UIScreenHandler>(Helpers.GetAppComponentValid(value, "Screen Value", $"Screen Value Is Not Assigned For UI Screen View Component : {GetName()}"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResults(value.GetType());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Screen Comonent Value : {value.GetName()} Of Type : {value.GetType().GetData()} - Has Been Successfully Found.";
+                        callbackResults.data = value;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
         }
+
 
         [Serializable]
         public class ColorData
@@ -37086,6 +37303,129 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class DataPacketEnum<T> where T : Enum
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public T value;
+
+            #endregion
+
+            #region Main
+
+            public DataPacketEnum()
+            {
+
+            }
+
+            public DataPacketEnum(string name, T value)
+            {
+                this.name = name;
+                this.value = value;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class DataPacketStruct<T> where T : struct
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public T value;
+
+            #endregion
+
+            #region Main
+
+            public DataPacketStruct()
+            {
+
+            }
+
+            public DataPacketStruct(string name, T value)
+            {
+                this.name = name;
+                this.value = value;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class DataPacketGeneric<T> where T : class
+        {
+            #region Components
+
+            public string name;
+
+            [Space(5)]
+            public T value;
+
+            #endregion
+
+            #region Main
+
+            public DataPacketGeneric()
+            {
+
+            }
+
+            public DataPacketGeneric(string name, T value)
+            {
+                this.name = name;
+                this.value = value;
+            }
+
+            #endregion
+        }
+
+
+       [Serializable]
+        public class SceneDataPacketStructGroup<T> where T : struct
+        {
+            #region Components
+
+            [Space(15)]
+            [Header("Configs Group (Value Types)")]
+
+            public string name;
+
+            [Space(5)]
+            public List<DataPacketStruct<T>> confiGroupDatas;
+
+            #endregion
+
+            #region Main
+
+            public SceneDataPacketStructGroup()
+            {
+
+            }
+
+            public SceneDataPacketStructGroup(string name, List<DataPacketStruct<T>> confiGroupDatas)
+            {
+                this.name = name;
+                this.confiGroupDatas = confiGroupDatas;
+            }
+
+            #endregion
+        }
+
+        public enum ObjectStateOverrideType
+        {
+            None,
+            Default,
+            Override
+        }
+
+        [Serializable]
         public class SceneDataPackets : DataPackets
         {
             #region Components
@@ -37098,6 +37438,15 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public DynamicWidgetsContainer dynamicWidgetsContainer;
+
+
+            [Space(5)]
+            public SceneAsset sceneAsset;
+
+            #region Togglable Options (Booleans)
+
+            [Space(5)]
+            public SceneDataPacketStructGroup<bool> booleanOptionsGroup;
 
             [Space(5)]
             public bool clearContentContainer;
@@ -37114,8 +37463,17 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public bool keepAssetCentered;
 
+            #endregion
+
+            #region Selectable Packet Options (Enums)
+
+            [Space(15)]
+            [Header("Selectable Packet Options (Enums)")]
+
             [Space(5)]
-            public SceneAsset sceneAsset;
+            public DataPacketEnum<ObjectStateOverrideType> overrideType = new DataPacketEnum<ObjectStateOverrideType>();
+
+            #endregion
 
             [Space(5)]
             public SelectableWidgetType selectableAssetType;
@@ -41253,9 +41611,9 @@ namespace Com.RedicalGames.Filar
 
             bool IsContentActive(int contentID);
 
-            void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
-
-            Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false) where T : SelectableDynamicContent;
+            void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
+            void AddContent<T, U, V>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum;
+            Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false) where T : SelectableDynamicContent;
 
             void SetContainerSize(Vector3 size, Action<Callback> callback = null);
 
@@ -41330,6 +41688,14 @@ namespace Com.RedicalGames.Filar
             void Deselect();
 
             #endregion
+        }
+
+        public interface IUIScreenViewComponent
+        {
+            void SetName(string name);
+            string GetName();
+
+            CallbackData<UIScreenHandler> GetValue();
         }
 
         public interface IUIScreenData

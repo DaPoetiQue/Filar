@@ -198,17 +198,46 @@ namespace Com.RedicalGames.Filar
                             {
                                 var screenContainer = containerCallbackResults.GetData();
 
-                                screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType, AppData.WidgetType>(screen.value, false, screenAddedCallbackResults =>
+                                callbackResults.SetResult(screen.GetValue());
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(screenAddedCallbackResults);
+                                    callbackResults.SetResult(screen.GetValue().GetData().GetInitialVisibility());
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
-                                        callbackResults.data = screens;
+                                        var screenComponentHandler = screen.GetValue().GetData();
+
+                                        callbackResults.SetResult(screenComponentHandler.GetDataPackets());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var screenData = screenComponentHandler.GetDataPackets().GetData();
+
+                                            screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: screenData.keepAssetWorldPose, isActive: screen.value.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(screenAddedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
+                                                    callbackResults.data = screens;
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
-                                });
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         });
                     }
                     else
@@ -1536,7 +1565,7 @@ namespace Com.RedicalGames.Filar
                                                                                 widgetComponent.SetProjectData(project);
 
                                                                                 projectWidget.name = project.name;
-                                                                                screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                                                screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
 
                                                                                 AppData.Project projectData = new AppData.Project
                                                                                 {
@@ -1701,7 +1730,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                         folderWidget.name = folder.name;
                                                                                         widgetComponent.SetFolderData(folder);
-                                                                                        screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                                                        screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
                                                                                     }
 
                                                                                     if (!loadedWidgetsList.Contains(widgetComponent))
@@ -1842,7 +1871,7 @@ namespace Com.RedicalGames.Filar
                                                                                         widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
                                                                                         widgetComponent.SetWidgetAssetData(asset);
 
-                                                                                        screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                                                        screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
 
                                                                                         sceneAssetList.Add(asset);
 
@@ -2026,7 +2055,7 @@ namespace Com.RedicalGames.Filar
                                                                                     widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
                                                                                     widgetComponent.SetWidgetAssetData(asset);
 
-                                                                                    screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                                                    screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
 
                                                                                     sceneAssetList.Add(asset);
 

@@ -128,6 +128,34 @@ namespace Com.RedicalGames.Filar
         public static void SetName(this GameObject gameObject, string name) => gameObject.name = name;
         public static string GetName(this GameObject gameObject) => gameObject.name;
 
+        #region Container Placements
+
+        /// <summary>
+        /// Adds This Object To A Paraent Object Container
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="container">The Parent To Contain This Object As A Transform Type</param>
+        /// <param name="keepWorldSpace">Keep The Original Object's Position In World Space</param>
+        public static void AddToPlacementContainer(this GameObject gameObject, Transform container, bool keepWorldSpace = false) => gameObject.transform.SetParent(container, keepWorldSpace);
+
+        /// <summary>
+        /// Adds This Object To A Paraent Object Container
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="container">The Parent To Contain This Object As A Game Object Type</param>
+        /// <param name="keepWorldSpace">Keep The Original Object's Position In World Space</param>
+        public static void AddToPlacementContainer(this GameObject gameObject, GameObject container, bool keepWorldSpace = false) => gameObject.transform.SetParent(container.transform, keepWorldSpace);
+
+        /// <summary>
+        /// Adds This Object To A Paraent Object Container
+        /// </summary>
+        /// <param name="gameObject">This Widget Object</param>
+        /// <param name="container">The Parent To Contain This Object As A Rect Transform Type</param>
+        /// <param name="keepWorldSpace">Keep The Original Object's Position In World Space</param>
+        public static void AddToPlacementContainer(this GameObject gameObject, RectTransform container, bool keepWorldSpace = false) => gameObject.transform.SetParent(container.transform, keepWorldSpace);
+
+        #endregion
+
         #endregion
     }
 }

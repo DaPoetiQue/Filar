@@ -853,7 +853,7 @@ namespace Com.RedicalGames.Filar
         {
             if (contentWidget != null)
             {
-                container.AddContent(content: contentWidget, keepWorldPosition: false, updateContainer: true);
+                container.AddContent(content: contentWidget, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
                 container.UpdateContentOnRefresh();
             }
             else
