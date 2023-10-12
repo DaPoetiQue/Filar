@@ -1437,7 +1437,7 @@ namespace Com.RedicalGames.Filar
 
             if (ScreenUIManager.Instance != null)
             {
-                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.screenType)
+                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                     ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
 
                 SetScreenUIStateOnSelection(AppData.InputUIState.Disabled);

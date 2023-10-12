@@ -1771,7 +1771,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType) as T;
+                        T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() == screenType) as T;
 
                         if (container != null)
                         {
@@ -1831,7 +1831,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+                        T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
 
                         if (container != null)
                         {
@@ -1861,7 +1861,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        T container = hasContentCallbackResults.data.Find(container => container?.GetDataPackets()?.GetData().screenType == screenType && container?.GetContainerType()?.GetData() == containerType && container?.GetViewSpace()?.GetData() == viewSpaceType) as T;
+                        T container = hasContentCallbackResults.data.Find(container => container?.GetDataPackets()?.GetData().GetReferencedScreenType().GetData().GetValue().GetData() == screenType && container?.GetContainerType()?.GetData() == containerType && container?.GetViewSpace()?.GetData() == viewSpaceType) as T;
 
                         if (container != null)
                         {
@@ -1891,7 +1891,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var containers = hasContentCallbackResults.data.FindAll(container => container.GetDataPackets().GetData().screenType == screenType) as List<T>;
+                        var containers = hasContentCallbackResults.data.FindAll(container => container.GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() == screenType) as List<T>;
 
                         Helpers.GetAppComponentsValid(containers, "Container", hasContainersCallbackResults =>
                         {
@@ -1937,7 +1937,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 foreach (var containerData in containerDataCallbackResults.data)
                                 {
-                                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().screenType == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
+                                    T container = hasContentCallbackResults.data.Find(container => container.GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() == screenType && container.GetContainerType().data == containerData.GetContainerType() && container.GetViewSpace().data == containerData.GetContainerViewSpaceType()) as T;
 
                                     if (container != null)
                                     {
@@ -3100,17 +3100,22 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if (GetDataPackets().GetData().screenType != UIScreenType.None)
+                    callbackResults.SetResult(GetDataPackets().GetData().GetReferencedScreenType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {GetDataPackets().GetData().screenType}";
-                        callbackResults.data = GetDataPackets().GetData().screenType;
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.WarningCode;
+                        if (GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() != UIScreenType.None)
+                        {
+                            callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data} Is Set To Screen Type : {GetDataPackets().GetData().referencedScreenType}";
+                            callbackResults.data = GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData();
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Container : {name} - Of Type : {GetContainerType().data}'s Screen Type SI Set To Default : NONE.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
                     }
                 }
 
@@ -3419,11 +3424,11 @@ namespace Com.RedicalGames.Filar
 
             public SceneDataPackets GetScreenData() => dataPackets;
 
-            public UIScreenType GetScreenType() => dataPackets.screenType;
+            public UIScreenType GetScreenType() => dataPackets.GetReferencedScreenType().GetData().GetValue().GetData();
 
             public bool InitialScreen() => initialScreen;
 
-            public string GetInstanceName() => name ?? $"{dataPackets.screenType + " Screen Load Info"}";
+            public string GetInstanceName() => name ?? $"{dataPackets.referencedScreenType + " Screen Load Info"}";
 
             public List<SequenceInstance> GetSequenceInstanceList() => sequences;
             public SequenceInstance[] GetSequenceInstanceArray() => sequences.ToArray();
@@ -3881,13 +3886,12 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         screenUIManager.GetCurrentScreenData().value.HideScreenWidget(WidgetType.LoadingWidget);
 
-                                                                        SceneDataPackets networkDataPackets = new SceneDataPackets
-                                                                        {
-                                                                            screenType = screenUIManager.GetCurrentUIScreenType(),
-                                                                            widgetType = WidgetType.NetworkNotificationWidget,
-                                                                            blurScreen = true,
-                                                                            blurContainerLayerType = ScreenUIPlacementType.ForeGround
-                                                                        };
+                                                                        SceneDataPackets networkDataPackets = new SceneDataPackets();
+
+                                                                        networkDataPackets.SetReferencedScreenType(screenUIManager.GetCurrentUIScreenType());
+                                                                        networkDataPackets.SetReferencedWidgetType(WidgetType.NetworkNotificationWidget);
+                                                                        networkDataPackets.SetScreenBlurState(true);
+                                                                        networkDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
 
                                                                         screenUIManager.GetCurrentScreenData().value.ShowWidget(networkDataPackets);
                                                                     }
@@ -17362,7 +17366,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIButton<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIButton<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIButton<T>> callbackResults = new CallbackDataList<UIButton<T>>();
 
@@ -17370,7 +17374,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (buttons == null || buttons.Count > 0)
                     {
-                        var initializedActionInputFieldsList = buttons.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedActionInputFieldsList = buttons.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedActionInputFieldsList != null && initializedActionInputFieldsList.Count == buttons.Count)
                         {
@@ -17429,7 +17433,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIInputField<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIInputField<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIInputField<T>> callbackResults = new CallbackDataList<UIInputField<T>>();
 
@@ -17437,7 +17441,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionInputFields == null || actionInputFields.Count > 0)
                     {
-                        var initializedActionInputFieldsList = actionInputFields.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedActionInputFieldsList = actionInputFields.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedActionInputFieldsList != null && initializedActionInputFieldsList.Count == actionInputFields.Count)
                         {
@@ -17496,7 +17500,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIInputSlider<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIInputSlider<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIInputSlider<T>> callbackResults = new CallbackDataList<UIInputSlider<T>>();
 
@@ -17504,7 +17508,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionInputSliders == null || actionInputSliders.Count > 0)
                     {
-                        var initializedActionInputSlidersList = actionInputSliders.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedActionInputSlidersList = actionInputSliders.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedActionInputSlidersList != null && initializedActionInputSlidersList.Count == actionInputSliders.Count)
                         {
@@ -17563,7 +17567,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UICheckbox<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UICheckbox<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UICheckbox<T>> callbackResults = new CallbackDataList<UICheckbox<T>>();
 
@@ -17571,7 +17575,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionInputCheckboxes == null || actionInputCheckboxes.Count > 0)
                     {
-                        var initializedActionInputCheckboxesList = actionInputCheckboxes.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedActionInputCheckboxesList = actionInputCheckboxes.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedActionInputCheckboxesList != null && initializedActionInputCheckboxesList.Count == actionInputCheckboxes.Count)
                         {
@@ -17630,7 +17634,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIDropDown<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIDropDown<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIDropDown<T>> callbackResults = new CallbackDataList<UIDropDown<T>>();
 
@@ -17638,7 +17642,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionInputDropdowns == null || actionInputDropdowns.Count > 0)
                     {
-                        var initializedActionInputDropdownsList = actionInputDropdowns.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedActionInputDropdownsList = actionInputDropdowns.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedActionInputDropdownsList != null && initializedActionInputDropdownsList.Count == actionInputDropdowns.Count)
                         {
@@ -17697,7 +17701,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UISlider<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UISlider<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UISlider<T>> callbackResults = new CallbackDataList<UISlider<T>>();
 
@@ -17705,7 +17709,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionUISliders == null || actionUISliders.Count > 0)
                     {
-                        var initializedUISliderssList = actionUISliders.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedUISliderssList = actionUISliders.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedUISliderssList != null && initializedUISliderssList.Count == actionUISliders.Count)
                         {
@@ -17890,7 +17894,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(DataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIImageDisplayer<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIImageDisplayer<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIImageDisplayer<T>> callbackResults = new CallbackDataList<UIImageDisplayer<T>>();
 
@@ -17898,7 +17902,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (imageDisplayers == null || imageDisplayers.Count > 0)
                     {
-                        var initializedimageDisplayersList = imageDisplayers.FindAll(button => button.value != null && button.dataPackets.screenType == dataPackets.screenType);
+                        var initializedimageDisplayersList = imageDisplayers.FindAll(button => button.value != null && button.dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
 
                         if (initializedimageDisplayersList != null && initializedimageDisplayersList.Count == imageDisplayers.Count)
                         {
@@ -20128,7 +20132,25 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public SceneDataPackets dataPackets;
 
-            #endregion;
+            #endregion
+
+            #region Main
+
+            public void SetName(string name) => this.name = name;
+
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Data Packet Name Not Assigned.";
+
+            public CallbackData<SceneDataPackets> GetDataPackets()
+            {
+                var callbackResults = new CallbackData<SceneDataPackets>(Helpers.GetAppComponentValid(dataPackets, "Data Packets", $"Data Packets For Data Packet : {GetName()} Is Not Initialized In The Inspector Panel.", $"Data Packets For Data Packet : {GetName()} Has Been Initialized Initialized Successfully."));
+
+                if (callbackResults.Success())
+                    callbackResults.data = dataPackets;
+
+                return callbackResults;
+            }
+
+            #endregion
         }
 
         [Serializable]
@@ -20153,7 +20175,7 @@ namespace Com.RedicalGames.Filar
 
                 if (dataPacketsCollection != null && dataPacketsCollection.Count > 0)
                 {
-                    var dataPacket = dataPacketsCollection.Find(x => x.dataPackets.screenType == screenType);
+                    var dataPacket = dataPacketsCollection.Find(dataPackets => dataPackets.GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() == screenType);
 
                     if(dataPacket != null)
                     {
@@ -22325,7 +22347,7 @@ namespace Com.RedicalGames.Filar
 
             public UIScreenType GetUIWidgetPresenterScreenType()
             {
-                return dataPackets.screenType;
+                return dataPackets.GetReferencedScreenType().GetData().GetValue().GetData();
             }
 
             public bool IsSelected()
@@ -25453,59 +25475,69 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new CallbackDataList<Widget>();
 
-                if (!screenWidgetsList.Contains(widget))
+                var validWidget = screenWidgetsList.Find(widgetHandler => widgetHandler == widget && widgetHandler.GetType().GetData() == widget.GetType().GetData() && widgetHandler.GetScreenUIPlacementType().GetData() == widget.GetScreenUIPlacementType().GetData() && widgetHandler.GetDataPackets().GetData().GetReferencedScreenType().GetData().GetValue().GetData() == GetType().GetData());
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(validWidget, "Valid Widget", "There Is No Valid Widget Component Of Type Found In Screen Widgets List."));
+
+                if (callbackResults.UnSuccessful())
                 {
-                    screenWidgetsList.Add(widget);
-
-                    if (screenWidgetsList.Contains(widget))
+                    if (!screenWidgetsList.Contains(widget))
                     {
-                        callbackResults.SetResult(GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()));
+                        screenWidgetsList.Add(widget);
 
-                        if (callbackResults.Success())
+                        if (screenWidgetsList.Contains(widget))
                         {
-                            var container = GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()).GetData();
+                            callbackResults.SetResult(GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()));
 
-                            callbackResults.SetResult(widget.GetInitialVisibility());
+                            if (callbackResults.Success())
+                            {
+                                var container = GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()).GetData();
 
-                            if (callbackResults.Success())                            {
+                                callbackResults.SetResult(widget.GetInitialVisibility());
 
-                                container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(widgetnAddedCallbackResults);
 
-                                    if (callbackResults.Success())
+                                    container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
                                     {
-                                        widget.SetParentWidget(this, parentSetCallbackResults =>
+                                        callbackResults.SetResult(widgetnAddedCallbackResults);
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(parentSetCallbackResults);
-
-                                            if (callbackResults.Success())
+                                            widget.SetParentWidget(this, parentSetCallbackResults =>
                                             {
-                                                callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Has Been Added To Screen Widgets List.";
-                                                callbackResults.data = screenWidgetsList;
-                                            }
-                                        });
-                                    }
-                                });
+                                                callbackResults.SetResult(parentSetCallbackResults);
 
-                                callbackResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                                callbackResults.resultCode = Helpers.SuccessCode;
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Has Been Added To Screen Widgets List.";
+                                                    callbackResults.data = screenWidgetsList;
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    callbackResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
                             }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        {
+                            callbackResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else
-                {
-                    callbackResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -25938,14 +25970,12 @@ namespace Com.RedicalGames.Filar
                 if (screenWidgetsList.Count == 0)
                     return;
 
-                var widget = screenWidgetsList.Find(widget => widget.GetType().GetData() == dataPackets.widgetType);
+                var widget = screenWidgetsList.Find(widget => widget.GetType().GetData() == dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData());
 
                 if (widget)
                 {
                     if (dataPackets.blurScreen)
                         Blur(dataPackets);
-
-                    LogInfo($" <============================================> Show Widget : {dataPackets.widgetType} Now!", this);
 
                     widget.ResetScrollPosition(scrollerResetCallback => 
                     {
@@ -25959,7 +25989,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (selectionSystemCallbackResults.Success())
                                         {
-                                            selectionSystemCallbackResults.data.OnClearInputSelection(dataPackets.screenType, inputsClearedCallbackResults => 
+                                            selectionSystemCallbackResults.data.OnClearInputSelection(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), inputsClearedCallbackResults => 
                                             {
                                                 if (inputsClearedCallbackResults.Success())
                                                     widget.ShowScreenWidget(dataPackets);
@@ -26309,7 +26339,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (dataPackets.blurScreen)
                 {
-                    screenBlur.Show(dataPackets.blurContainerLayerType);
+                    screenBlur.Show(dataPackets.GetReferencedUIScreenPlacementType().GetData().GetValue().GetData());
 
                     if (dataPackets.screenViewState == ScreenViewState.None)
                         dataPackets.screenViewState = ScreenViewState.Blurred;
@@ -31432,13 +31462,12 @@ namespace Com.RedicalGames.Filar
 
                     case WidgetType.CreateNewProjectWidget:
 
-                        SceneDataPackets sceneDataPackets = new SceneDataPackets
-                        {
-                            screenType = dataPackets.screenType,
-                            widgetType = WidgetType.ProjectCreationWarningWidget,
-                            blurScreen = true,
-                            blurContainerLayerType = ScreenUIPlacementType.ForeGround
-                        };
+                        SceneDataPackets sceneDataPackets = new SceneDataPackets();
+
+                        sceneDataPackets.SetReferencedScreenType(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
+                        sceneDataPackets.SetReferencedWidgetType(WidgetType.ProjectCreationWarningWidget);
+                        sceneDataPackets.SetScreenBlurState(true);
+                        sceneDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(sceneDataPackets);
@@ -31452,13 +31481,12 @@ namespace Com.RedicalGames.Filar
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                        SceneDataPackets projectDataPackets = new SceneDataPackets
-                        {
-                            screenType = dataPackets.screenType,
-                            widgetType = WidgetType.CreateNewProjectWidget,
-                            blurScreen = true,
-                            blurContainerLayerType = ScreenUIPlacementType.Default
-                        };
+                        SceneDataPackets projectDataPackets = new SceneDataPackets();
+
+                        projectDataPackets.SetReferencedScreenType(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
+                        projectDataPackets.SetReferencedWidgetType(WidgetType.CreateNewProjectWidget);
+                        projectDataPackets.SetScreenBlurState(true);
+                        projectDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.Default);
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(projectDataPackets);
@@ -31472,13 +31500,12 @@ namespace Com.RedicalGames.Filar
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                        SceneDataPackets loginViewDataPackets = new SceneDataPackets
-                        {
-                            screenType = dataPackets.screenType,
-                            widgetType = WidgetType.SignInWidget,
-                            blurScreen = true,
-                            blurContainerLayerType = ScreenUIPlacementType.Background
-                        };
+                        SceneDataPackets loginViewDataPackets = new SceneDataPackets();
+
+                        loginViewDataPackets.SetReferencedScreenType(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
+                        loginViewDataPackets.SetReferencedWidgetType(WidgetType.SignInWidget);
+                        loginViewDataPackets.SetScreenBlurState(true);
+                        loginViewDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.Background);
 
                         if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(loginViewDataPackets);
@@ -32746,14 +32773,14 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                if (dataPacket.widgetType == GetType().GetData() && dataPacket.screenType == screenUIManager.GetCurrentUIScreenType())
+                                if (dataPacket.widgetType == GetType().GetData() && dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == screenUIManager.GetCurrentUIScreenType())
                                 {
                                     callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().data} Is Ready.";
                                     callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().data} For Screen Type : {dataPacket.screenType} Can not Be Interacted From Screen : {screenUIManager.GetCurrentUIScreenType()} - Invalid Operation.";
+                                    callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().data} For Screen Type : {dataPacket.referencedScreenType} Can not Be Interacted From Screen : {screenUIManager.GetCurrentUIScreenType()} - Invalid Operation.";
                                     callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             }
@@ -32927,7 +32954,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (ScreenUIManager.Instance?.GetCurrentScreenData()?.value != null)
                     {
-                        if (ScreenUIManager.Instance?.GetCurrentScreenData()?.value.GetUIScreenType() == dataPackets.screenType)
+                        if (ScreenUIManager.Instance?.GetCurrentScreenData()?.GetValue().GetData().GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                             if (this && gameObject)
                                 isActive = gameObject.activeSelf && gameObject.activeInHierarchy;
                     }
@@ -35885,7 +35912,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             {
-                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.screenType)
+                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                                 {
                                     if (dataPackets.tabID == navigationID)
                                     {
@@ -35923,7 +35950,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                             {
-                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.screenType)
+                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                                 {
                                     if (dataPackets.tabID == navigationID)
                                     {
@@ -36226,7 +36253,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                                     {
-                                        if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.screenType)
+                                        if (ScreenUIManager.Instance.GetCurrentScreenData().GetValue().GetData().GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                                         {
                                             if (dataPackets.tabID == NavigationTabID.PostProcessingSettings)
                                             {
@@ -37097,8 +37124,6 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public string name;
-
             [Space(5)]
             public UIScreenHandler value;
 
@@ -37243,7 +37268,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class DataPackets
+        public class DataPackets : IDataPackets
         {
             #region Components
 
@@ -37260,9 +37285,6 @@ namespace Com.RedicalGames.Filar
             public SelectionOption selectionOption;
 
             [Space(5)]
-            public UIScreenType screenType;
-
-            [Space(5)]
             public ContainerData screenContainerData, sceneContainerData;
 
             [Space(5)]
@@ -37270,10 +37292,11 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Delete This
+            #region Delete Deprecated Section
 
-            //[Space(5)]
-            //public ContentContainerType containerType = ContentContainerType.None;
+            [Header("Deprecated - Remove")]
+            [Space(5)]
+            public UIScreenType screenType;
 
             #endregion
 
@@ -37289,8 +37312,12 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
+            #endregion
+
+            #region Data Getters
+
             public string GetExternalLinkURL() => externalLinkURL;
-            public UIScreenType GetUIScreenType() => screenType;
+
             public UIStateType GetStateType() => stateType;
 
 
@@ -37302,8 +37329,9 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+
         [Serializable]
-        public class DataPacketEnum<T> where T : Enum
+        public abstract class DataPacketBase<T> 
         {
             #region Components
 
@@ -37311,6 +37339,50 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public T value;
+
+            #endregion
+
+            #region Main
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetName(string name) => this.name = name;
+
+            public void SetValue(T value) => this.value = value;
+
+            #endregion
+
+            #region Data Getters
+
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Data Packet Object Reference Name Not Assigned.";
+
+            protected CallbackData<T> GetValue()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if(value != null)
+                {
+                    callbackResults.result = $"Get Value Succeeded For Data Packet Object : {GetName()}";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Value Failed For Data Packet Object : {GetName()}";
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class DataPacketEnum<T> : DataPacketBase<T> where T : Enum
+        {
+            #region Components
 
             #endregion
 
@@ -37327,18 +37399,33 @@ namespace Com.RedicalGames.Filar
                 this.value = value;
             }
 
+            public CallbackData<T> GetValue()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if (value.ToString().ToLower() != "none")
+                {
+                    callbackResults.result = $"Data Packet Object : {GetName()}'s Type Is Set To : {value}";
+                    callbackResults.data = value;
+                   callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Data Packet Object : {GetName()} Type Is Set To Default : {value}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             #endregion
         }
 
         [Serializable]
-        public class DataPacketStruct<T> where T : struct
+        public class DataPacketStruct<T> : DataPacketBase<T> where T : struct
         {
             #region Components
-
-            public string name;
-
-            [Space(5)]
-            public T value;
 
             #endregion
 
@@ -37359,14 +37446,9 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class DataPacketGeneric<T> where T : class
+        public class DataPacketGeneric<T> : DataPacketBase<T> where T : class
         {
             #region Components
-
-            public string name;
-
-            [Space(5)]
-            public T value;
 
             #endregion
 
@@ -37426,7 +37508,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SceneDataPackets : DataPackets
+        public class SceneDataPackets : DataPackets, ISceneDataPackets
         {
             #region Components
 
@@ -37442,6 +37524,25 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public SceneAsset sceneAsset;
+
+            #region Selectable Packet Options (Enums)
+
+            [Space(15)]
+            [Header("Selectable Packet Options (Enums)")]
+
+            [Space(5)]
+            public DataPacketEnum<UIScreenType> referencedScreenType = new DataPacketEnum<UIScreenType>();
+
+            [Space(5)]
+            public DataPacketEnum<WidgetType> referencedWidgetType = new DataPacketEnum<WidgetType>();
+
+            [Space(5)]
+            public DataPacketEnum<ScreenUIPlacementType> referencedUIScreenPlacementType = new DataPacketEnum<ScreenUIPlacementType>();
+
+            [Space(5)]
+            public DataPacketEnum<ObjectStateOverrideType> overrideStateType = new DataPacketEnum<ObjectStateOverrideType>();
+
+            #endregion
 
             #region Togglable Options (Booleans)
 
@@ -37465,16 +37566,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Selectable Packet Options (Enums)
-
-            [Space(15)]
-            [Header("Selectable Packet Options (Enums)")]
-
-            [Space(5)]
-            public DataPacketEnum<ObjectStateOverrideType> overrideType = new DataPacketEnum<ObjectStateOverrideType>();
-
-            #endregion
-
             [Space(5)]
             public SelectableWidgetType selectableAssetType;
 
@@ -37484,7 +37575,9 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public OrientationType dynamicWidgetsContainerOrientation;
 
-            [Space(5)]
+
+            [Header("Deprecated - Remove")]
+            [Space(5)] // Deprecated
             public WidgetType widgetType;
 
             [Space(5)]
@@ -37514,8 +37607,9 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public bool blurScreen;
 
+            [Header("Deprecated - Remove")]
             [Space(5)]
-            public ScreenUIPlacementType blurContainerLayerType;
+            public ScreenUIPlacementType referencedUIScreenPlacementTypeDeprecated;
 
             [Space(5)]
             public ScreenViewState screenViewState;
@@ -37567,7 +37661,7 @@ namespace Com.RedicalGames.Filar
 
             public new string ToString()
             {
-                string results = $"Screen Type {screenType.ToString()},  Pop Up Type : {widgetType.ToString()}, asse Field Config : {assetFieldConfiguration.ToString()}, Directory Type : {storageDirectoryType.ToString()}";
+                string results = $"Screen Type {referencedScreenType.ToString()},  Pop Up Type : {widgetType.ToString()}, asse Field Config : {assetFieldConfiguration.ToString()}, Directory Type : {storageDirectoryType.ToString()}";
 
                 return results;
             }
@@ -37575,6 +37669,115 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Main
+
+            #region Data Setters
+
+            public void SetScreenBlurState(bool blurScreen) => this.blurScreen = blurScreen;
+
+            public void SetReferencedScreenType(UIScreenType referencedScreenType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                if (this.referencedScreenType.GetValue().GetData() != referencedScreenType)
+                {
+                    this.referencedScreenType.SetValue(referencedScreenType);
+
+                    callbackResults.result = $"Data Packets Referenced Screen Type Has Been Successfully Set To : {referencedScreenType} - Changes Applied";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Data Packets Referenced Screen Type Was Already Set To : {referencedScreenType} - No Changes Applied";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetReferencedWidgetType(WidgetType referencedWidgetType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                if (this.referencedWidgetType.GetValue().GetData() != referencedWidgetType)
+                {
+                    this.referencedWidgetType.SetValue(referencedWidgetType);
+
+                    callbackResults.result = $"Data Packets Referenced Widget Type Has Been Successfully Set To : {referencedWidgetType} - Changes Applied";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Data Packets Referenced Widget Type Was Already Set To : {referencedWidgetType} - No Changes Applied";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetReferencedUIScreenPlacementType(ScreenUIPlacementType referencedUIScreenPlacementType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                if (this.referencedUIScreenPlacementType.GetValue().GetData() != referencedUIScreenPlacementType)
+                {
+                    this.referencedUIScreenPlacementType.SetValue(referencedUIScreenPlacementType);
+
+                    callbackResults.result = $"Data Packets Referenced Referenced UI Screen Placement Type Has Been Successfully Set To : {referencedUIScreenPlacementType} - Changes Applied";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Data Packets Referenced UI Screen Placement Type Was Already Set To : {referencedUIScreenPlacementType} - No Changes Applied";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<DataPacketEnum<UIScreenType>> GetReferencedScreenType()
+            {
+                var callbackResults = new CallbackData<DataPacketEnum<UIScreenType>>(referencedScreenType.GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Data Packet Get Referenced Screen Type Successfull - Screen Type : {referencedScreenType.GetValue().GetData()}";
+                    callbackResults.data = referencedScreenType;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<DataPacketEnum<WidgetType>> GetReferencedWidgetType()
+            {
+                var callbackResults = new CallbackData<DataPacketEnum<WidgetType>>(referencedWidgetType.GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Data Packet Get Referenced Screen Type Successfull - Screen Type : {referencedWidgetType.GetValue().GetData()}";
+                    callbackResults.data = referencedWidgetType;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<DataPacketEnum<ScreenUIPlacementType>> GetReferencedUIScreenPlacementType()
+            {
+                var callbackResults = new CallbackData<DataPacketEnum<ScreenUIPlacementType>>(referencedUIScreenPlacementType.GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Data Packet Get Referenced UI Screen Placement Type Success - UI Screen Placement Type : {referencedUIScreenPlacementType.GetValue().GetData()}";
+                    callbackResults.data = referencedUIScreenPlacementType;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
         }
@@ -40679,15 +40882,20 @@ namespace Com.RedicalGames.Filar
 
                 if(dataPackets != null)
                 {
-                    if(dataPackets.screenType != UIScreenType.None)
+                    callbackResults.SetResult(dataPackets.GetReferencedScreenType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} For Screen Type : {dataPackets.screenType}.";
-                        callbackResults.resultCode = SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = (warningOperationFallbackResults != null) ? warningOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} Is Not Valid - Screen Of Type Is Set To Default : {dataPackets.screenType}.";
-                        callbackResults.resultCode = WarningCode;
+                        if (dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() != UIScreenType.None)
+                        {
+                            callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} For Screen Type : {dataPackets.referencedScreenType}.";
+                            callbackResults.resultCode = SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = (warningOperationFallbackResults != null) ? warningOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} Is Not Valid - Screen Of Type Is Set To Default : {dataPackets.referencedScreenType}.";
+                            callbackResults.resultCode = WarningCode;
+                        }
                     }
                 }
                 else
@@ -41559,6 +41767,30 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Interfaces
+
+        public interface IDataPackets
+        {
+           
+        }
+
+        public interface ISceneDataPackets
+        {
+            #region Data Setters
+
+            void SetReferencedWidgetType(WidgetType referencedWidgetType, Action<Callback> callback = null);
+            void SetReferencedScreenType(UIScreenType referencedScreenType, Action<Callback> callback = null);
+            void SetReferencedUIScreenPlacementType(ScreenUIPlacementType referencedUIScreenPlacementType, Action<Callback> callback = null);
+
+            #endregion
+
+            #region Data Getters
+
+            CallbackData<DataPacketEnum<WidgetType>> GetReferencedWidgetType();
+            CallbackData<DataPacketEnum<UIScreenType>> GetReferencedScreenType();
+            CallbackData<DataPacketEnum<ScreenUIPlacementType>> GetReferencedUIScreenPlacementType();
+
+            #endregion
+        }
 
         /// <summary>
         /// Interface For UI Widgets.

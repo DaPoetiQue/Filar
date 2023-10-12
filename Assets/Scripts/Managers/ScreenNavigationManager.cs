@@ -236,30 +236,39 @@ namespace Com.RedicalGames.Filar
 
             AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
             {
-                callbackResults.result = validComponentCallbackResults.result;
-                callbackResults.resultCode = validComponentCallbackResults.resultCode;
+                callbackResults.SetResult(validComponentCallbackResults);
             
                 if(callbackResults.Success())
                 {
-                    callbackResults.result = ScreenUIManager.Instance.HasCurrentScreen().result;
-                    callbackResults.resultCode = ScreenUIManager.Instance.HasCurrentScreen().resultCode;
+                    callbackResults.SetResult(ScreenUIManager.Instance.HasCurrentScreen());
 
                     if (callbackResults.Success())
                     {
-                        if (screenType == ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType())
+                        callbackResults.SetResult(ScreenUIManager.Instance.HasCurrentScreen());
+
+                        if (callbackResults.Success())
                         {
-                            AppData.SceneDataPackets dataPackets = GetEmptyFolderDataPackets();
+                            var currentScreen = ScreenUIManager.Instance.HasCurrentScreen().GetData();
 
-                            dataPackets.screenType = screenType;
-                            dataPackets.isRootFolder = contentFolder.IsRootFolder();
+                            callbackResults.SetResult(currentScreen.GetValue());
 
-                            switch (screenType)
+                            if (callbackResults.Success())
                             {
-                                case AppData.UIScreenType.ProjectCreationScreen:
+                                if (screenType == currentScreen.GetValue().GetData().GetUIScreenType())
+                                {
+                                    AppData.SceneDataPackets dataPackets = GetEmptyFolderDataPackets();
 
-                                    dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There Are No Projects Found" : "Project Is Empty";
+                                    dataPackets.GetReferencedScreenType().GetData().SetValue(screenType);
+                                    dataPackets.isRootFolder = contentFolder.IsRootFolder();
 
-                                    dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>
+
+                                    switch (screenType)
+                                    {
+                                        case AppData.UIScreenType.ProjectCreationScreen:
+
+                                            dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There Are No Projects Found" : "Project Is Empty";
+
+                                            dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>
                                     {
                                             new AppData.ReferencedActionButtonData
                                             {
@@ -269,13 +278,13 @@ namespace Com.RedicalGames.Filar
                                             }
                                     };
 
-                                    break;
+                                            break;
 
-                                case AppData.UIScreenType.ProjectDashboardScreen:
+                                        case AppData.UIScreenType.ProjectDashboardScreen:
 
-                                    dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
+                                            dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
 
-                                    dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>
+                                            dataPackets.referencedActionButtonDataList = new List<AppData.ReferencedActionButtonData>
                                     {
                                             new AppData.ReferencedActionButtonData
                                             {
@@ -285,17 +294,19 @@ namespace Com.RedicalGames.Filar
                                             }
                                     };
 
-                                    break;
+                                            break;
+                                    }
+
+                                    callbackResults.result = $"Empty Content Data Packets For Screen Type : {screenType} Found.";
+                                    callbackResults.data = dataPackets;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
                             }
-
-                            callbackResults.result = $"Empty Content Data Packets For Screen Type : {screenType} Found.";
-                            callbackResults.data = dataPackets;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
-                            callbackResults.data = default;
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
                     }
                 }

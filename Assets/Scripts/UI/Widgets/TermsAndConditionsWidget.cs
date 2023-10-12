@@ -124,13 +124,12 @@ namespace Com.RedicalGames.Filar
                                             }
                                             else
                                             {
-                                                AppData.SceneDataPackets networkDataPackets = new AppData.SceneDataPackets
-                                                {
-                                                    screenType = AppData.UIScreenType.LandingPageScreen,
-                                                    widgetType = AppData.WidgetType.NetworkNotificationWidget,
-                                                    blurScreen = true,
-                                                    blurContainerLayerType = AppData.ScreenUIPlacementType.Default
-                                                };
+                                                AppData.SceneDataPackets networkDataPackets = new AppData.SceneDataPackets();
+
+                                                dataPackets.SetReferencedScreenType(AppData.UIScreenType.LandingPageScreen);
+                                                dataPackets.SetReferencedWidgetType(AppData.WidgetType.NetworkNotificationWidget);
+                                                dataPackets.SetScreenBlurState(true);
+                                                dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
 
                                                 loadedScreen.value.ShowWidget(networkDataPackets);
                                                 LogError("Network Connection Failed : Show Network Error Pop-Up", this);

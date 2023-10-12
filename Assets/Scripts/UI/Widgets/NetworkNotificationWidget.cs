@@ -121,11 +121,11 @@ namespace Com.RedicalGames.Filar
 
                             screenUIManager.GetCurrentScreenData().value.HideScreenWidget(this);
 
-                            AppData.SceneDataPackets loadingStateWidgetDataPackets = new AppData.SceneDataPackets
-                            {
-                                screenType = screenUIManager.GetCurrentUIScreenType(),
-                                widgetType = AppData.WidgetType.LoadingWidget
-                            };
+                            AppData.SceneDataPackets loadingStateWidgetDataPackets = new AppData.SceneDataPackets();
+
+                            dataPackets.SetReferencedScreenType(screenUIManager.GetCurrentUIScreenType());
+                            dataPackets.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
+                            dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
 
                             AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, async hasLoadingManagerCallbackResults =>
                             {

@@ -92,13 +92,12 @@ namespace Com.RedicalGames.Filar
                                                 await currentScreen.value.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
 
 
-                                                AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
-                                                {
-                                                    screenType = AppData.UIScreenType.LandingPageScreen,
-                                                    widgetType = AppData.WidgetType.SignInWidget,
-                                                    blurScreen = true,
-                                                    blurContainerLayerType = AppData.ScreenUIPlacementType.Background
-                                                };
+                                                AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets();
+
+                                                dataPackets.SetReferencedScreenType(AppData.UIScreenType.LandingPageScreen);
+                                                dataPackets.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                                dataPackets.SetScreenBlurState(true);
+                                                dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Background);
 
                                                 currentScreen.value.ShowWidget(dataPackets);
                                             }

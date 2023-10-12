@@ -485,10 +485,6 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        #region Publishing
-
-        #endregion
-
         #region App Info Database
 
         void OnAppInfoDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
@@ -1004,7 +1000,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Init(AppData.Folder rootFolder, DynamicWidgetsContainer container, Action<AppData.Callback> callback = null)
+        public void Init(AppData.Folder rootFolder = null, DynamicWidgetsContainer container = null, Action<AppData.Callback> callback = null)
         {
             try
             {
@@ -1724,7 +1720,7 @@ namespace Com.RedicalGames.Filar
 
         void OnSceneAssetScreenPreviewSetup(AppData.SceneDataPackets dataPackets)
         {
-            if (GetSceneAssetsContainer(dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.screenType))
+            if (GetSceneAssetsContainer(dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetReferencedScreenType().GetData().GetValue().GetData()))
             {
                 if (sceneAssetLibrary.SceneAssetExists(dataPackets.sceneAsset.name))
                 {
@@ -1740,7 +1736,7 @@ namespace Com.RedicalGames.Filar
 
                             if (SelectableManager.Instance)
                             {
-                                SelectableManager.Instance.UpdateSelectableAssetContainer(dataPackets.sceneAsset.sceneObject.value, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.screenType, (results) =>
+                                SelectableManager.Instance.UpdateSelectableAssetContainer(dataPackets.sceneAsset.sceneObject.value, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), (results) =>
                                 {
                                     if (!results)
                                         Debug.LogError($"--> Update Selectable Asset Container Failed - Scene Asset Model : {dataPackets.sceneAsset.name} Not Found In The Selectable Game Object List.");
@@ -1752,7 +1748,7 @@ namespace Com.RedicalGames.Filar
 
                             Debug.Log($"--------------> Loaded Re-Used Asset : {dataPackets.sceneAsset.name}'s Position Is : {dataPackets.sceneAsset.assetImportPosition} - Rotation : {dataPackets.sceneAsset.assetImportRotation}");
 
-                            AddAssetToContainer(dataPackets.sceneAsset.sceneObject.value, dataPackets.keepAssetWorldPose, true, true, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.screenType, dataPackets.sceneAssetScaleValueType, dataPackets.keepAssetCentered, dataPackets.scaleSceneAsset, dataPackets.clearContentContainer, false);
+                            AddAssetToContainer(dataPackets.sceneAsset.sceneObject.value, dataPackets.keepAssetWorldPose, true, true, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.sceneAssetScaleValueType, dataPackets.keepAssetCentered, dataPackets.scaleSceneAsset, dataPackets.clearContentContainer, false);
 
                             //if (RenderingManager.Instance)
                             //{
@@ -1841,7 +1837,7 @@ namespace Com.RedicalGames.Filar
                     }
 
                     if (SelectableManager.Instance)
-                        SelectableManager.Instance.AddToSelectableList(dataPackets.sceneAsset.sceneObject.value, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.screenType);
+                        SelectableManager.Instance.AddToSelectableList(dataPackets.sceneAsset.sceneObject.value, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
                     else
                         Debug.LogWarning("--> Selectable Manager Not Yet Initialized.");
 
@@ -1857,7 +1853,7 @@ namespace Com.RedicalGames.Filar
 
                     dataPackets.sceneAsset.SetMaterialProperties(materialProperties);
 
-                    AddAssetToContainer(dataPackets.sceneAsset.sceneObject.value, dataPackets.keepAssetWorldPose, true, true, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.screenType, dataPackets.sceneAssetScaleValueType, dataPackets.keepAssetCentered, dataPackets.scaleSceneAsset, dataPackets.clearContentContainer, false);
+                    AddAssetToContainer(dataPackets.sceneAsset.sceneObject.value, dataPackets.keepAssetWorldPose, true, true, dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.sceneAssetScaleValueType, dataPackets.keepAssetCentered, dataPackets.scaleSceneAsset, dataPackets.clearContentContainer, false);
 
                     if (RenderingSettingsManager.Instance)
                     {
@@ -2933,9 +2929,7 @@ namespace Com.RedicalGames.Filar
             return folders;
         }
 
-        #region On Create Functions
-
-        #region Create Data
+        #region Create Functions
 
         public void CreateNewProjectStructureData(AppData.ProjectStructureData newProject, Action<AppData.CallbackData<AppData.ProjectStructureData>> callback = null)
         {
@@ -3319,8 +3313,6 @@ namespace Com.RedicalGames.Filar
                 throw exception;
             }
         }
-
-        #endregion
 
         #endregion
 
@@ -3742,6 +3734,8 @@ namespace Com.RedicalGames.Filar
             }, "Folder Not Assigned");
 
             callback?.Invoke(callbackResults);
+
+            #endregion
         }
 
         #endregion
@@ -3838,11 +3832,12 @@ namespace Com.RedicalGames.Filar
                                                 var filterListParam = GetUIScreenGroupContentTemplate("Filter Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.FilterList, placeHolder: "Filter", state: AppData.InputUIState.Disabled);
                                                 var sortingListParam = GetUIScreenGroupContentTemplate("Sorting Content", AppData.InputType.DropDown, dropdownActionType: AppData.InputDropDownActionType.SortingList, placeHolder: "Sort", state: AppData.InputUIState.Disabled);
 
-                                            #endregion
+                                                #endregion
 
-                                            #region Setup Project Structure
+                                                #region Setup Project Structure
 
-                                            if (callbackResults.Success())
+
+                                                if (callbackResults.Success())
                                                 {
                                                     loadedProjectData = new List<AppData.Project>();
 
@@ -3912,14 +3907,19 @@ namespace Com.RedicalGames.Filar
                                                         refreshAsyncRoutine = null;
                                                     }
 
-                                                    if (refreshAsyncRoutine == null)
+                                                    callbackResults.SetResult(dataPackets.GetReferencedScreenType());
+
+                                                    if (callbackResults.Success())
                                                     {
-                                                        if (GetProjectRootStructureData().Success())
-                                                            callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                        else
+                                                        if (refreshAsyncRoutine == null)
                                                         {
-                                                            callbackResults.result = "Failed To Refresh Async";
-                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                            if (GetProjectRootStructureData().Success())
+                                                                callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                            else
+                                                            {
+                                                                callbackResults.result = "Failed To Refresh Async";
+                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                            }
                                                         }
                                                     }
 
@@ -3932,12 +3932,17 @@ namespace Com.RedicalGames.Filar
                                                         refreshAsyncRoutine = null;
                                                     }
 
-                                                    if (refreshAsyncRoutine == null)
-                                                        callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.screenType, GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
-                                                    else
+                                                    callbackResults.SetResult(dataPackets.GetReferencedScreenType());
+
+                                                    if (callbackResults.Success())
                                                     {
-                                                        callbackResults.result = "Failed To Refresh Async";
-                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                        if (refreshAsyncRoutine == null)
+                                                            callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), GetProjectRootStructureData().data.GetProjectStructureData().rootFolder, paginationButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                        else
+                                                        {
+                                                            callbackResults.result = "Failed To Refresh Async";
+                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                        }
                                                     }
                                                 }
 
@@ -4116,7 +4121,7 @@ namespace Com.RedicalGames.Filar
                                                     }
 
                                                     if (refreshAsyncRoutine == null)
-                                                        callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.screenType, GetCurrentFolder(), clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
+                                                        callbackResults.SetResult(await RefreshAssetsAsync(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), GetCurrentFolder(), clipBoardButtonParam, paginationButtonParam, layoutViewButtonParam, searchFieldParam, filterListParam, sortingListParam));
                                                     else
                                                     {
                                                         callbackResults.result = "Failed To Refresh Async";
@@ -4230,6 +4235,8 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #endregion
+
         #region Post Content
 
         public async Task<AppData.Callback> LoadSelectedPostContent(AppData.Post post)
@@ -4331,8 +4338,6 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
-
-        #endregion
 
         #endregion
 
@@ -5516,6 +5521,7 @@ namespace Com.RedicalGames.Filar
                 return null;
             }
         }
+
         #region App Time Data
 
         public AppData.RuntimeValue<float> GetDefaultExecutionValue(AppData.RuntimeExecution valueType)
@@ -8384,6 +8390,8 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #endregion
+
         public void GetProjectFolderDirectoryEntries(AppData.SelectableWidgetType selectableWidgetType, AppData.StorageDirectoryData storageData, Action<AppData.CallbackDataList<AppData.StorageDirectoryData>> callback)
         {
             AppData.CallbackDataList<AppData.StorageDirectoryData> callbackResults = new AppData.CallbackDataList<AppData.StorageDirectoryData>();
@@ -8668,22 +8676,14 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #endregion
+
         #region Delete This
 
         public AppData.DataPacketsLibrary GetDataPacketsLibrary()
         {
             return dataPacketsLibrary;
         }
-
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #region Database
 
         #endregion
     }

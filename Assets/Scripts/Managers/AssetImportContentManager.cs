@@ -160,7 +160,7 @@ namespace Com.RedicalGames.Filar
         {
             userPermissionsDataPackets = dataPackets;
 
-            Debug.Log($"RG_Unity : UserRequestedAppPermissions Called From Unity - Data Packet : {dataPackets.screenType}");
+            Debug.Log($"RG_Unity : UserRequestedAppPermissions Called From Unity - Data Packet : {dataPackets.referencedScreenType}");
 
             if (Application.platform == RuntimePlatform.Android)
             {
@@ -196,14 +196,14 @@ namespace Com.RedicalGames.Filar
                 else
                     Debug.LogWarning("--> Screen Manager Missing.");
 
-                Debug.Log($"RG_Unity : SetPermissionGrantedState Called In Unity - Screen Type : {userPermissionsDataPackets.screenType}");
+                Debug.Log($"RG_Unity : SetPermissionGrantedState Called In Unity - Screen Type : {userPermissionsDataPackets.referencedScreenType}");
 
                 if (AppDatabaseManager.Instance)
                     AppDatabaseManager.Instance.SetCurrentSceneMode(userPermissionsDataPackets.sceneMode);
                 else
                     Debug.LogWarning("--> Scene Assets Not Yet Initialized.");
 
-                Debug.Log($"RG_Unity : UserRequestedAppPermissions Called In Unity - Data Packet : {userPermissionsDataPackets.screenType}");
+                Debug.Log($"RG_Unity : UserRequestedAppPermissions Called In Unity - Data Packet : {userPermissionsDataPackets.referencedScreenType}");
             }
         }
 
@@ -223,14 +223,14 @@ namespace Com.RedicalGames.Filar
                 else
                     Debug.LogWarning("--> Screen Manager Missing.");
 
-                Debug.Log($"RG_Unity : SetPermissionGrantedState Called In Unity - Screen Type : {userPermissionsDataPackets.screenType}");
+                Debug.Log($"RG_Unity : SetPermissionGrantedState Called In Unity - Screen Type : {userPermissionsDataPackets.referencedScreenType}");
 
                 if (AppDatabaseManager.Instance)
                     AppDatabaseManager.Instance.SetCurrentSceneMode(userPermissionsDataPackets.sceneMode);
                 else
                     Debug.LogWarning("--> Scene Assets Not Yet Initialized.");
 
-                Debug.Log($"RG_Unity : UserRequestedAppPermissions Called In Unity - Data Packet : {userPermissionsDataPackets.screenType}");
+                Debug.Log($"RG_Unity : UserRequestedAppPermissions Called In Unity - Data Packet : {userPermissionsDataPackets.referencedScreenType}");
             }
         }
 

@@ -92,11 +92,10 @@ namespace Com.RedicalGames.Filar
                                 notificationRoutine = null;
                             }
 
-                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
-                            {
-                                blurScreen = notification.blurScreen,
-                                blurContainerLayerType = notification.blurLayer
-                            };
+                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets();
+
+                            dataPackets.SetScreenBlurState(notification.blurScreen);
+                            dataPackets.SetReferencedUIScreenPlacementType(notification.blurLayer);
 
                             notificationRoutine = StartCoroutine(OnExecuteNotificationState(true, dataPackets));
                         }
@@ -147,11 +146,10 @@ namespace Com.RedicalGames.Filar
                     {
                         if (notification.blurScreen)
                         {
-                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets
-                            {
-                                blurScreen = false,
-                                blurContainerLayerType = AppData.ScreenUIPlacementType.Default
-                            };
+                            AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets();
+
+                            dataPackets.SetScreenBlurState(false);
+                            dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
 
                             if (ScreenUIManager.Instance != null)
                                 ScreenUIManager.Instance.GetCurrentScreenData().value.Blur(dataPackets);
