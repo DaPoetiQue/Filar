@@ -5,25 +5,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ScreenCaptureManager : AppMonoBaseClass
+    public class ScreenCaptureManager : AppData.SingletonBaseComponent<ScreenCaptureManager>
     {
-        #region Static Instance
-
-        static ScreenCaptureManager _instance;
-
-        public static ScreenCaptureManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<ScreenCaptureManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

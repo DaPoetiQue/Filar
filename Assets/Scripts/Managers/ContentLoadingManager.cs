@@ -1,29 +1,10 @@
-using System;
-using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ContentLoadingManager : AppMonoBaseClass
+    public class ContentLoadingManager : AppData.SingletonBaseComponent<ContentLoadingManager>
     {
-        #region Static
-
-        private static ContentLoadingManager _instance;
-
-        public static ContentLoadingManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<ContentLoadingManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

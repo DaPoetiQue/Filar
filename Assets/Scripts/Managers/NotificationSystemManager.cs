@@ -4,25 +4,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class NotificationSystemManager : AppMonoBaseClass
+    public class NotificationSystemManager : AppData.SingletonBaseComponent<NotificationSystemManager>
     {
-        #region Static Instance
-
-        static NotificationSystemManager _instance;
-
-        public static NotificationSystemManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<NotificationSystemManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

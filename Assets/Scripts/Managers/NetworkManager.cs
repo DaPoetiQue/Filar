@@ -5,25 +5,8 @@ using Firebase.Database;
 namespace Com.RedicalGames.Filar
 {
 
-    public class NetworkManager : AppMonoBaseClass
+    public class NetworkManager : AppData.SingletonBaseComponent<NetworkManager>
     {
-        #region Static
-
-        private static NetworkManager _instance;
-
-        public static NetworkManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<NetworkManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         public NetworkReachability status;

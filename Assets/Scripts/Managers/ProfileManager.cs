@@ -6,25 +6,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ProfileManager : AppMonoBaseClass
+    public class ProfileManager : AppData.SingletonBaseComponent<ProfileManager>
     {
-        #region Static
-
-        private static ProfileManager _instance;
-
-        public static ProfileManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<ProfileManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [Space(5)]

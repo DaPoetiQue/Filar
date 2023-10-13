@@ -6,25 +6,8 @@ using static UnityEngine.InputSystem.InputAction;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SelectableManager : AppMonoBaseClass
+    public class SelectableManager : AppData.SingletonBaseComponent<SelectableManager>
     {
-        #region Static
-
-        private static SelectableManager _instance;
-
-        public static SelectableManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<SelectableManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

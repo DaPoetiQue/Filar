@@ -8,26 +8,8 @@ using Newtonsoft.Json;
 
 namespace Com.RedicalGames.Filar
 {
-    public class PublishingManager : AppMonoBaseClass
+    public class PublishingManager : AppData.SingletonBaseComponent<PublishingManager>
     {
-        #region Static
-
-        private static PublishingManager _instance;
-
-        public static PublishingManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<PublishingManager>();
-
-                return _instance;
-            }
-        }
-
-
-        #endregion
-
         #region Components
 
         [SerializeField]
@@ -43,10 +25,6 @@ namespace Com.RedicalGames.Filar
 
         DatabaseReference databaseReference;
         StorageReference storageReference;
-
-        #endregion
-
-        #region Unity Callbacks
 
         #endregion
 

@@ -14,25 +14,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Com.RedicalGames.Filar
 {
-    public class AppDatabaseManager : AppMonoBaseClass
+    public class AppDatabaseManager : AppData.SingletonBaseComponent<AppDatabaseManager>
     {
-        #region Static
-
-        static AppDatabaseManager _instance;
-
-        public static AppDatabaseManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<AppDatabaseManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [Space(5)]
@@ -281,23 +264,11 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Awake() => SetupInstance();
-
         void OnEnable() => OnActionEventSubscription(true);
 
         void OnDisable() => OnActionEventSubscription(false);
 
         #endregion
-
-        void SetupInstance()
-        {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(_instance.gameObject);
-            }
-
-            _instance = this;
-        }
 
         public async Task<AppData.Callback> InitializeDatabase()
         {

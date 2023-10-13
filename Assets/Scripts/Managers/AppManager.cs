@@ -7,25 +7,8 @@ using UnityEngine.Android;
 
 namespace Com.RedicalGames.Filar
 {
-    public class AppManager : AppMonoBaseClass
+    public class AppManager : AppData.SingletonBaseComponent<AppManager>
     {
-        #region Static
-
-        private static AppManager _instance;
-
-        public static AppManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<AppManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]
@@ -62,26 +45,11 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Awake() => SetupInstance();
-
         void Start() => Init();
 
         #endregion
 
         #region Main
-
-        void SetupInstance()
-        {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(_instance.gameObject);
-            }
-
-            _instance = this;
-
-            if (requestStoragePermissions)
-                StoragePermissionRequest();
-        }
 
         private void Init(Action<AppData.Callback> callback = null)
         {

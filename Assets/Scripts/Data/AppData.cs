@@ -30,6 +30,14 @@ namespace Com.RedicalGames.Filar
 
     public class AppData
     {
+        [Serializable]
+        public class OptionalDataTypeLibrary
+        {
+            // Move All Enums Here...........
+        }
+
+        #region Data Types
+
         public enum AssetFieldType
         {
             None,
@@ -1147,6 +1155,20 @@ namespace Com.RedicalGames.Filar
             InitializedAndActive,
             InitializedAndInActive
         }
+
+
+        public enum StorableType
+        {
+            None,
+            Profile,
+            Project,
+            Folder,
+            Asset,
+            Info,
+            License
+        }
+
+        #endregion
 
         #region Asset Bundles
 
@@ -33919,7 +33941,6 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-
         [Serializable]
         public class SettingsDataWidget<T>
         {
@@ -34048,17 +34069,6 @@ namespace Com.RedicalGames.Filar
         #region Class Data
 
         #region Serialization Data
-
-        public enum StorableType
-        {
-            None,
-            Profile,
-            Project,
-            Folder,
-            Asset,
-            Info,
-            License
-        }
 
         [Serializable]
         public class SerializableData
@@ -42005,6 +42015,53 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
+
+        #endregion
+
+        #region Singleton Template
+
+        public class SingletonBaseComponent<T> : AppMonoBaseClass where T : AppMonoBaseClass
+        {
+            #region Componets Static Instance 
+
+            private static T _instance;
+
+            public static T Instance
+            {
+                get
+                {
+                    if(_instance == null)
+                        _instance = FindObjectOfType<T>();
+
+                    return _instance;
+                }
+            }
+
+            #endregion
+
+
+            #region Unity Callbacks
+
+            private void Awake() => SetupInstance();
+
+            #endregion
+
+            #region Main
+
+            private void SetupInstance()
+            {
+                DontDestroyOnLoad(this);
+
+                if (_instance != null && _instance != this)
+                {
+                    Destroy(_instance.gameObject);
+                }
+                else
+                    _instance = this as T;
+            }
+
+            #endregion
+        }
 
         #endregion
 

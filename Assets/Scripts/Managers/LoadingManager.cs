@@ -4,25 +4,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class LoadingManager : AppMonoBaseClass
+    public class LoadingManager : AppData.SingletonBaseComponent<LoadingManager>
     {
-        #region Static
-
-        private static LoadingManager _instance;
-
-        public static LoadingManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<LoadingManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [Space(5)]

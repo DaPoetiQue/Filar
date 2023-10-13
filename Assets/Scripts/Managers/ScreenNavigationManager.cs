@@ -4,26 +4,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ScreenNavigationManager : AppMonoBaseClass
+    public class ScreenNavigationManager : AppData.SingletonBaseComponent<ScreenNavigationManager>
     {
-        #region Static
-
-
-        private static ScreenNavigationManager _instance;
-
-        public static ScreenNavigationManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<ScreenNavigationManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

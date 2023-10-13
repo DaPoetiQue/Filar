@@ -4,25 +4,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UserHelpManager : AppMonoBaseClass
+    public class UserHelpManager : AppData.SingletonBaseComponent<UserHelpManager>
     {
-        #region Static
-
-        private static UserHelpManager _instance;
-
-        public static UserHelpManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<UserHelpManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

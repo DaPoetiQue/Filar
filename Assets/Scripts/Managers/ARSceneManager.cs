@@ -6,25 +6,8 @@ using UnityEngine.XR.ARFoundation;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ARSceneManager : MonoBehaviour
+    public class ARSceneManager : AppData.SingletonBaseComponent<ARSceneManager>
     {
-        #region Static
-
-        private static ARSceneManager _instance;
-
-        public static ARSceneManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<ARSceneManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

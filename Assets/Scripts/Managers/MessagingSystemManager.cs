@@ -4,25 +4,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class MessagingSystemManager : AppMonoBaseClass
+    public class MessagingSystemManager : AppData.SingletonBaseComponent<MessagingSystemManager>
     {
-        #region Static
-
-        private static MessagingSystemManager _instance;
-
-        public static MessagingSystemManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<MessagingSystemManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [Header("Message Group")]

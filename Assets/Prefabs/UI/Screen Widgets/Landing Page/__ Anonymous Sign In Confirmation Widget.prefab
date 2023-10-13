@@ -1835,7 +1835,6 @@ MonoBehaviour:
   dataPackets:
     externalLinkURL: 
     selectionOption: 0
-    screenType: 5
     screenContainerData:
       name: 
       type: 0
@@ -1845,6 +1844,7 @@ MonoBehaviour:
       type: 0
       viewSpace: 0
     layoutViewType: 2
+    screenType: 5
     stateType: 0
     notification:
       title: 
@@ -1860,11 +1860,6 @@ MonoBehaviour:
       proccessed: 0
     screenWidgetPrefab: {fileID: 0}
     dynamicWidgetsContainer: {fileID: 0}
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
     sceneAsset:
       name: 
       modelAsset: {fileID: 0}
@@ -1910,6 +1905,26 @@ MonoBehaviour:
       defaultWidgetActionState: 0
       assetImportPosition: {x: 0, y: 0, z: 0}
       assetImportRotation: {x: 0, y: 0, z: 0}
+    referencedScreenType:
+      name: Referenced Screen
+      value: 5
+    referencedWidgetType:
+      name: 
+      value: 0
+    referencedUIScreenPlacementType:
+      name: 
+      value: 0
+    overrideStateType:
+      name: 
+      value: 0
+    booleanOptionsGroup:
+      name: 
+      confiGroupDatas: []
+    clearContentContainer: 0
+    resetContentContainerPose: 0
+    scaleSceneAsset: 0
+    keepAssetWorldPose: 0
+    keepAssetCentered: 0
     selectableAssetType: 0
     sceneAssetScaleValueType: 0
     dynamicWidgetsContainerOrientation: 0
@@ -1923,7 +1938,7 @@ MonoBehaviour:
     sceneMode: 0
     sceneAssetMode: 0
     blurScreen: 0
-    blurContainerLayerType: 0
+    referencedUIScreenPlacementTypeDeprecated: 0
     screenViewState: 0
     refreshScreenOnLoad: 0
     refreshSceneAssets: 0
@@ -1940,7 +1955,9 @@ MonoBehaviour:
     sceneAssetTransitionSpeed: 0
     isRootFolder: 0
     referencedActionButtonDataList: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
   widgetLayouts:
@@ -1969,7 +1986,6 @@ MonoBehaviour:
     dataPackets:
       externalLinkURL: 
       selectionOption: 0
-      screenType: 0
       screenContainerData:
         name: 
         type: 0
@@ -1979,6 +1995,7 @@ MonoBehaviour:
         type: 0
         viewSpace: 0
       layoutViewType: 2
+      screenType: 0
       stateType: 0
       notification:
         title: 
@@ -1994,11 +2011,6 @@ MonoBehaviour:
         proccessed: 0
       screenWidgetPrefab: {fileID: 0}
       dynamicWidgetsContainer: {fileID: 0}
-      clearContentContainer: 0
-      resetContentContainerPose: 0
-      scaleSceneAsset: 0
-      keepAssetWorldPose: 0
-      keepAssetCentered: 0
       sceneAsset:
         name: 
         modelAsset: {fileID: 0}
@@ -2044,6 +2056,26 @@ MonoBehaviour:
         defaultWidgetActionState: 0
         assetImportPosition: {x: 0, y: 0, z: 0}
         assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
       selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
@@ -2057,7 +2089,7 @@ MonoBehaviour:
       sceneMode: 0
       sceneAssetMode: 0
       blurScreen: 0
-      blurContainerLayerType: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
       screenViewState: 0
       refreshScreenOnLoad: 0
       refreshSceneAssets: 0

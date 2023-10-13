@@ -9,10 +9,6 @@ namespace Com.RedicalGames.Filar
         [Header("::: Component Info")]
 
         [Space(5)]
-        [SerializeField]
-        protected string className;
-
-        [Space(5)]
         [Header("::: Component Debug Attributes")]
 
         [Space(5)]
@@ -42,11 +38,23 @@ namespace Com.RedicalGames.Filar
 
         public string GetUniqueClassName()
         {
-            if (string.IsNullOrEmpty(className))
-                className = name;
+            if (string.IsNullOrEmpty(name))
+                name = base.name;
 
-            return className;
+            return name;
         }
+
+        #endregion
+
+        #region Data Setters
+
+        public void SetName(string name) => this.name = name;
+
+        #endregion
+
+        #region Data Setters
+
+        public string GetName() => !string.IsNullOrEmpty(name) ? name : "Mono Base Class Name Is Not Assigned.";
 
         #endregion
 

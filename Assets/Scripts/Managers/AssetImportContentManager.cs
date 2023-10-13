@@ -8,25 +8,8 @@ using UnityEngine.Android;
 
 namespace Com.RedicalGames.Filar
 {
-    public class AssetImportContentManager : MonoBehaviour
+    public class AssetImportContentManager : AppData.SingletonBaseComponent<AssetImportContentManager>
     {
-        #region Static
-
-        private static AssetImportContentManager _instance;
-
-        public static AssetImportContentManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<AssetImportContentManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]

@@ -7,25 +7,8 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ScreenUIManager : AppMonoBaseClass
+    public class ScreenUIManager : AppData.SingletonBaseComponent<ScreenUIManager>
     {
-        #region Static
-
-        private static ScreenUIManager _instance;
-
-        public static ScreenUIManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<ScreenUIManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]
@@ -61,36 +44,11 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Awake() => SetupInstance();
-
-        //void Start()
-        //{
-        //    Init(initializationCallback => 
-        //    {
-        //        if (initializationCallback.Success())
-        //            AppData.ActionEvents.OnAppScreensInitializedEvent();
-        //        else
-        //            Log(initializationCallback.resultsCode, initializationCallback.results, this, () => Start());
-        //    });
-        //}
-
         void Update() => OnScreenTransition();
 
         #endregion
 
         #region Main
-
-        void SetupInstance()
-        {
-            DontDestroyOnLoad(this);
-
-            if (_instance != null && _instance != this)
-            {
-                Destroy(_instance.gameObject);
-            }
-            else
-                _instance = this;
-        }
 
         public async Task<AppData.CallbackDataList<AppData.UIScreenViewComponent>> OnScreenInitAsync()
         {

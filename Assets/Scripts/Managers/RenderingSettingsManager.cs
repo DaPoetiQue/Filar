@@ -5,25 +5,8 @@ using System;
 
 namespace Com.RedicalGames.Filar
 {
-    public class RenderingSettingsManager : AppMonoBaseClass
+    public class RenderingSettingsManager : AppData.SingletonBaseComponent<RenderingSettingsManager>
     {
-        #region Static
-
-        private static RenderingSettingsManager _instance;
-
-        public static RenderingSettingsManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<RenderingSettingsManager>();
-
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Components
 
         [SerializeField]
@@ -72,8 +55,6 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Awake() => SetupInstance();
-
         void Start() => Init();
 
         //void Update() => RotateSkybox();
@@ -81,16 +62,6 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Main
-
-        void SetupInstance()
-        {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(_instance.gameObject);
-            }
-
-            _instance = this;
-        }
 
         void Init()
         {
