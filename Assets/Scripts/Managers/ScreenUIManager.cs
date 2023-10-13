@@ -172,7 +172,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var screenData = screenComponentHandler.GetDataPackets().GetData();
 
-                                            screenContainer.AddContent<UIScreenHandler, AppData.UIScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: screenData.keepAssetWorldPose, isActive: screen.value.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                            screenContainer.AddContent<ScreenWidget, AppData.UIScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: screenData.keepAssetWorldPose, isActive: screen.value.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
                                             {
                                                 callbackResults.SetResult(screenAddedCallbackResults);
 

@@ -1357,7 +1357,7 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             private float initializationTimeout = 10.0f;
 
-            private List<UIScreenHandler> loadedAppScreens = new List<UIScreenHandler>();
+            private List<ScreenWidget> loadedAppScreens = new List<ScreenWidget>();
 
             [SerializeField] // <<<< Remove Serialization And Hide This In Inspector.
             private List<Widget> loadedScreenWidgets = new List<Widget>();
@@ -1422,15 +1422,15 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, Action<CallbackData<UIScreenHandler>> callback)
+            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, Action<CallbackData<ScreenWidget>> callback)
             {
-                var callbackResults = new CallbackData<UIScreenHandler>();
+                var callbackResults = new CallbackData<ScreenWidget>();
 
                 screenAssetBundle.InstantiateAsync().Completed += (callbackData) =>
                 {
                     if(callbackData.Status == AsyncOperationStatus.Succeeded)
                     {
-                        var screen = callbackData.Result.GetComponent<UIScreenHandler>();
+                        var screen = callbackData.Result.GetComponent<ScreenWidget>();
 
                         callbackResults.SetResult(Helpers.GetAppComponentValid(screen, "Screen", $"Loaded Screen Prefab Game Object : {screen.GetName()} Doesn't Contain A Screen Handler."));
 
@@ -1498,9 +1498,9 @@ namespace Com.RedicalGames.Filar
                 };
             }
 
-            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, bool initialVisibilityState, Action<CallbackData<UIScreenHandler>> callback)
+            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, bool initialVisibilityState, Action<CallbackData<ScreenWidget>> callback)
             {
-                var callbackResults = new CallbackData<UIScreenHandler>();
+                var callbackResults = new CallbackData<ScreenWidget>();
 
                 screenAssetBundle.InstantiateAsync().Completed += (callbackData) =>
                 {
@@ -1511,7 +1511,7 @@ namespace Com.RedicalGames.Filar
                         else
                             callbackData.Result.Hide();
 
-                        var screen = callbackData.Result.GetComponent<UIScreenHandler>();
+                        var screen = callbackData.Result.GetComponent<ScreenWidget>();
 
                         callbackResults.SetResult(Helpers.GetAppComponentValid(screen, "Screen", $"Loaded Screen Prefab Game Object : {screen.GetName()} Doesn't Contain A Screen Handler."));
 
@@ -1595,9 +1595,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public async Task<CallbackDataList<UIScreenHandler>> GetAppScreensAsync()
+            public async Task<CallbackDataList<ScreenWidget>> GetAppScreensAsync()
             {
-                var callbackResults = new CallbackDataList<UIScreenHandler>();
+                var callbackResults = new CallbackDataList<ScreenWidget>();
 
                 float timeout = initializationTimeout;
 
@@ -1619,7 +1619,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private void AddLoadedAppScreenToList(UIScreenHandler screen, Action<Callback> callback = null)
+            private void AddLoadedAppScreenToList(ScreenWidget screen, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
 
@@ -3393,7 +3393,7 @@ namespace Com.RedicalGames.Filar
             public List<RuntimeInstanceInfo> runtimeInstanceInfoList = new List<RuntimeInstanceInfo>();
 
             [HideInInspector]
-            public UIScreenHandler referencedScreen;
+            public ScreenWidget referencedScreen;
 
             #endregion
 
@@ -3438,7 +3438,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetReferencedScreen(UIScreenHandler referencedScreen) => this.referencedScreen = referencedScreen;
+            public void SetReferencedScreen(ScreenWidget referencedScreen) => this.referencedScreen = referencedScreen;
 
             #endregion
 
@@ -3455,9 +3455,9 @@ namespace Com.RedicalGames.Filar
             public List<SequenceInstance> GetSequenceInstanceList() => sequences;
             public SequenceInstance[] GetSequenceInstanceArray() => sequences.ToArray();
 
-            public CallbackData<UIScreenHandler> GetReferencedScreen()
+            public CallbackData<ScreenWidget> GetReferencedScreen()
             {
-                CallbackData<UIScreenHandler> callbackResults = new CallbackData<UIScreenHandler>();
+                CallbackData<ScreenWidget> callbackResults = new CallbackData<ScreenWidget>();
 
                 if(referencedScreen != null)
                 {
@@ -37135,7 +37135,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public UIScreenHandler value;
+            public ScreenWidget value;
 
             #endregion
 
@@ -37147,9 +37147,9 @@ namespace Com.RedicalGames.Filar
 
             private string GetNameFallbackResults() => value ? value.GetName() : "UI Screen View Component Name Is Not Assigned And Value Is Missing / Null - Invalid Operation.";
 
-            public CallbackData<UIScreenHandler> GetValue()
+            public CallbackData<ScreenWidget> GetValue()
             {
-                var callbackResults = new CallbackData<UIScreenHandler>(Helpers.GetAppComponentValid(value, "Screen Value", $"Screen Value Is Not Assigned For UI Screen View Component : {GetName()}"));
+                var callbackResults = new CallbackData<ScreenWidget>(Helpers.GetAppComponentValid(value, "Screen Value", $"Screen Value Is Not Assigned For UI Screen View Component : {GetName()}"));
 
                 if(callbackResults.Success())
                 {
@@ -41937,7 +41937,7 @@ namespace Com.RedicalGames.Filar
             void SetName(string name);
             string GetName();
 
-            CallbackData<UIScreenHandler> GetValue();
+            CallbackData<ScreenWidget> GetValue();
         }
 
         public interface IUIScreenData
