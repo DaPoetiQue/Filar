@@ -80,7 +80,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType.SplashScreen, async splashScreenLoadInfoCallbackResults =>
+                                    databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, async splashScreenLoadInfoCallbackResults =>
                                     {
                                         callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
 
@@ -90,7 +90,7 @@ namespace Com.RedicalGames.Filar
 
                                             #region Trigger Splash Image
 
-                                            screenUIManager.GetScreen(AppData.UIScreenType.LoadingScreen, loadingScreenCallbackResults =>
+                                            screenUIManager.GetScreen(AppData.ScreenType.LoadingScreen, loadingScreenCallbackResults =>
                                             {
                                                 callbackResults.SetResults(loadingScreenCallbackResults);
 
@@ -162,7 +162,7 @@ namespace Com.RedicalGames.Filar
                                                                                                     {
                                                                                                         var screen = currentScreenCallbackResults.data;
 
-                                                                                                        if (screen.value.GetUIScreenType() == AppData.UIScreenType.LandingPageScreen)
+                                                                                                        if (screen.value.GetUIScreenType() == AppData.ScreenType.LandingPageScreen)
                                                                                                         {
                                                                                                             var widget = screen.value.GetWidget(AppData.WidgetType.PostsWidget);
 
@@ -190,7 +190,7 @@ namespace Com.RedicalGames.Filar
                                                                                                         }
                                                                                                         else
                                                                                                         {
-                                                                                                            callbackResults.result = $"Screen : {screen.value.GetUIScreenType()} Does Not Match Expected Screen Type : {AppData.UIScreenType.LandingPageScreen}";
+                                                                                                            callbackResults.result = $"Screen : {screen.value.GetUIScreenType()} Does Not Match Expected Screen Type : {AppData.ScreenType.LandingPageScreen}";
                                                                                                             callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                                                         }
                                                                                                     }

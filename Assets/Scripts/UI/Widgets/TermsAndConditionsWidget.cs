@@ -126,7 +126,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 AppData.SceneDataPackets networkDataPackets = new AppData.SceneDataPackets();
 
-                                                dataPackets.SetReferencedScreenType(AppData.UIScreenType.LandingPageScreen);
+                                                dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
                                                 dataPackets.SetReferencedWidgetType(AppData.WidgetType.NetworkNotificationWidget);
                                                 dataPackets.SetScreenBlurState(true);
                                                 dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);

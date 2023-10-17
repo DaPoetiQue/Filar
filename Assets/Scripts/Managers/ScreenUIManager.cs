@@ -148,7 +148,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                        assetBundlesLibrary.GetDynamicContainer<DynamicScreenContainer>(AppData.UIScreenType.None, AppData.ContentContainerType.AppScreenContainer, AppData.ContainerViewSpaceType.Screen, containerCallbackResults =>
+                        assetBundlesLibrary.GetDynamicContainer<DynamicScreenContainer>(AppData.ScreenType.None, AppData.ContentContainerType.AppScreenContainer, AppData.ContainerViewSpaceType.Screen, containerCallbackResults =>
                         {
                             callbackResults.SetResult(containerCallbackResults);
 
@@ -166,27 +166,18 @@ namespace Com.RedicalGames.Filar
                                     {
                                         var screenComponentHandler = screen.GetValue().GetData();
 
-                                        callbackResults.SetResult(screenComponentHandler.GetDataPackets());
-
-                                        if (callbackResults.Success())
+                                        screenContainer.AddContent<ScreenWidget, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: false, isActive: screen.value.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
                                         {
-                                            var screenData = screenComponentHandler.GetDataPackets().GetData();
+                                            callbackResults.SetResult(screenAddedCallbackResults);
 
-                                            screenContainer.AddContent<ScreenWidget, AppData.UIScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: screenData.keepAssetWorldPose, isActive: screen.value.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                            if (callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(screenAddedCallbackResults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
-                                                    callbackResults.data = screens;
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
+                                                callbackResults.data = screens;
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -218,9 +209,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public AppData.UIScreenType GetCurrentUIScreenType()
+        public AppData.ScreenType GetCurrentUIScreenType()
         {
-            AppData.UIScreenType currentScreenType = AppData.UIScreenType.None;
+            AppData.ScreenType currentScreenType = AppData.ScreenType.None;
 
             if (currentScreen?.value)
                 currentScreenType = currentScreen.value.GetUIScreenType();
@@ -346,10 +337,10 @@ namespace Com.RedicalGames.Filar
 
                                 currentScreen = screen;
 
-                                if (currentScreen.value != null)
-                                    currentScreen.value.SetScreenData(dataPackets);
-                                else
-                                    Debug.LogWarning("--> Unity - Current Screen Value Is Null.");
+                                //if (currentScreen.value != null)
+                                //    currentScreen.value.SetScreenData(dataPackets);
+                                //else
+                                //    Debug.LogWarning("--> Unity - Current Screen Value Is Null.");
 
                                 AppData.ActionEvents.OnScreenChangeEvent(dataPackets);
 
@@ -404,10 +395,10 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        if(GetCurrentUIScreenType() != AppData.UIScreenType.None && GetCurrentUIScreenType() != AppData.UIScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.UIScreenType.LoadingScreen)
+                        if(GetCurrentUIScreenType() != AppData.ScreenType.None && GetCurrentUIScreenType() != AppData.ScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.ScreenType.LoadingScreen)
                              AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
 
-                        callbackResults.GetData().GetValue().GetData().SetScreenData(dataPackets);
+                        //callbackResults.GetData().GetValue().GetData().SetScreenData(dataPackets);
                         SetCurrentScreenData(callbackResults.GetData());
 
                         OnCheckIfScreenLoadedAsync(dataPackets, screenLoadedCallbackResults =>
@@ -469,12 +460,14 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(callbackResults.data.value.GetDataPackets());
+                    LogWarning(" _______________+++++++++++ Please Fix Commented Out Code.", this);
 
-                    if(callbackResults.Success())
-                        AppData.ActionEvents.OnScreenChangeEvent(callbackResults.data.value.GetDataPackets().GetData());
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    //callbackResults.SetResult(callbackResults.data.value.GetDataPackets());
+
+                    //if(callbackResults.Success())
+                    //    AppData.ActionEvents.OnScreenChangeEvent(callbackResults.data.value.GetDataPackets().GetData());
+                    //else
+                    //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -601,7 +594,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public AppData.Callback ScreenOfTypeExists(AppData.UIScreenType screenType)
+        public AppData.Callback ScreenOfTypeExists(AppData.ScreenType screenType)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -683,7 +676,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.Callback CheckIfScreensAreValid(AppData.UIScreenType screenType)
+        public AppData.Callback CheckIfScreensAreValid(AppData.ScreenType screenType)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -707,7 +700,7 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            if (screens[i].value.GetUIScreenType() == AppData.UIScreenType.None)
+                            if (screens[i].value.GetUIScreenType() == AppData.ScreenType.None)
                             {
                                 callbackResults.result = $"Checking If Screens Are Valid Failed - Screen At Index : {i} Type Is Set To Default : {GetScreens().Count} Loaded Valid Screens.";
                                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
@@ -726,7 +719,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public void ScreenOfTypeExists(AppData.UIScreenType screenType, Action<AppData.Callback> callback)
+        public void ScreenOfTypeExists(AppData.ScreenType screenType, Action<AppData.Callback> callback)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -819,7 +812,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch(screen.value.GetUIScreenType())
                     {
-                        case AppData.UIScreenType.ProjectDashboardScreen:
+                        case AppData.ScreenType.ProjectDashboardScreen:
 
                             if(AppDatabaseManager.Instance.GetWidgetsContentCount() == 0)
                                 screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
@@ -878,7 +871,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.UIScreenType.ContentImportExportScreen:
+                        case AppData.ScreenType.ContentImportExportScreen:
 
                             screen.value.DisplaySceneAssetInfo(screen, displaySeneAssetInfoCallback => 
                             {
@@ -920,10 +913,12 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                callbackResults.SetResult(currentScreen.value.GetDataPackets());
+                LogWarning(" _______++++ Please Fix Commented Out Code.", this);
 
-                if(callbackResults.Success())
-                    callbackResults.SetResult(await OnScreenRefreshAsync(currentScreen.value.GetDataPackets().GetData(), refreshDuration));
+                //callbackResults.SetResult(currentScreen.value.GetDataPackets());
+
+                //if(callbackResults.Success())
+                //    callbackResults.SetResult(await OnScreenRefreshAsync(currentScreen.value.GetDataPackets().GetData(), refreshDuration));
             }
 
             return callbackResults;
@@ -998,7 +993,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                     {
-                        case AppData.UIScreenType.LandingPageScreen:
+                        case AppData.ScreenType.LandingPageScreen:
 
                             #region Get Content Container
 
@@ -1051,7 +1046,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.UIScreenType.ProjectCreationScreen:
+                        case AppData.ScreenType.ProjectCreationScreen:
 
                             #region Get Content Container
 
@@ -1067,7 +1062,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (appDatabaseManagerInstance.GetProjectStructureData().Success())
                                             {
-                                                var rootFolder = (GetCurrentUIScreenType() == AppData.UIScreenType.ProjectCreationScreen) ? appDatabaseManagerInstance.GetProjectRootStructureData().GetData().GetProjectStructureData().rootFolder : appDatabaseManagerInstance.GetProjectStructureData().GetData().rootFolder;
+                                                var rootFolder = (GetCurrentUIScreenType() == AppData.ScreenType.ProjectCreationScreen) ? appDatabaseManagerInstance.GetProjectRootStructureData().GetData().GetProjectStructureData().rootFolder : appDatabaseManagerInstance.GetProjectStructureData().GetData().rootFolder;
                                                 var container = screenContainerCallbackResults.GetData();
 
                                                 appDatabaseManagerInstance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
@@ -1094,11 +1089,11 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.UIScreenType.ProjectDashboardScreen:
+                        case AppData.ScreenType.ProjectDashboardScreen:
 
                             break;
 
-                        case AppData.UIScreenType.ContentImportExportScreen:
+                        case AppData.ScreenType.ContentImportExportScreen:
 
                             break;
                     }
@@ -1125,15 +1120,15 @@ namespace Com.RedicalGames.Filar
 
         public void UpdateInfoDisplayer(AppData.UIScreenViewComponent screen)
         {
-            if (AppData.Helpers.ComponentIsNotNullOrEmpty(screen.value.GetSceneAsset().info.fields))
-            {
-                if (GetCurrentScreenData().value != null)
-                    GetCurrentScreenData().value.DisplaySceneAssetInfo(screen);
-                else
-                    LogWarning("Current Screen Data Not Found.", this, () => UpdateInfoDisplayer(screen));
-            }
-            else
-                LogWarning("The Current Scene Asset Info Fields Not Initialized.", this, () => UpdateInfoDisplayer(screen));
+            //if (AppData.Helpers.ComponentIsNotNullOrEmpty(screen.value.GetSceneAsset().info.fields))
+            //{
+            //    if (GetCurrentScreenData().value != null)
+            //        GetCurrentScreenData().value.DisplaySceneAssetInfo(screen);
+            //    else
+            //        LogWarning("Current Screen Data Not Found.", this, () => UpdateInfoDisplayer(screen));
+            //}
+            //else
+            //    LogWarning("The Current Scene Asset Info Fields Not Initialized.", this, () => UpdateInfoDisplayer(screen));
         }
 
         public void SetCurrentScreenData(AppData.UIScreenViewComponent screenData)
@@ -1256,7 +1251,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetScreen(AppData.UIScreenType screenType, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
+        public void GetScreen(AppData.ScreenType screenType, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
         {
             AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
 
@@ -1287,7 +1282,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public AppData.CallbackData<AppData.UIScreenViewComponent> GetScreen(AppData.UIScreenType screenType)
+        public AppData.CallbackData<AppData.UIScreenViewComponent> GetScreen(AppData.ScreenType screenType)
         {
             AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
 
@@ -1336,7 +1331,7 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataList<AppData.Post>> CreateUIScreenPostWidgetAsync(AppData.UIScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.Post>> CreateUIScreenPostWidgetAsync(AppData.ScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1470,7 +1465,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.Project>> CreateUIScreenProjectSelectionWidgetsAsync(AppData.UIScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.Project>> CreateUIScreenProjectSelectionWidgetsAsync(AppData.ScreenType screenType, List<AppData.ProjectStructureData> projectData, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1627,7 +1622,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFolderWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFolderWidgetsAsync(AppData.ScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1641,7 +1636,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (screenType)
                         {
-                            case AppData.UIScreenType.ProjectDashboardScreen:
+                            case AppData.ScreenType.ProjectDashboardScreen:
 
                                 bool loadTaskIsRunning = true;
 
@@ -1763,7 +1758,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.ScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1777,7 +1772,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (screenType)
                         {
-                            case AppData.UIScreenType.ProjectDashboardScreen:
+                            case AppData.ScreenType.ProjectDashboardScreen:
 
                                 bool loadTaskIsRunning = true;
 
@@ -1952,7 +1947,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.UIScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.ScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
@@ -1966,7 +1961,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (screenType)
                         {
-                            case AppData.UIScreenType.ProjectDashboardScreen:
+                            case AppData.ScreenType.ProjectDashboardScreen:
 
                                 bool loadTaskIsRunning = true;
 

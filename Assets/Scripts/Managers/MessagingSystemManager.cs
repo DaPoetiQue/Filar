@@ -19,7 +19,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void GetMessageGroup(AppData.UIScreenType screenIdentifier, Action<AppData.CallbackData<AppData.MessageGroup>> callback)
+        public void GetMessageGroup(AppData.ScreenType screenIdentifier, Action<AppData.CallbackData<AppData.MessageGroup>> callback)
         {
             AppData.CallbackData<AppData.MessageGroup> callbackResults = new AppData.CallbackData<AppData.MessageGroup>();
 

@@ -243,7 +243,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void AddToSelectableList(GameObject asset, AppData.ContentContainerType containerType, AppData.UIScreenType screenType)
+        public void AddToSelectableList(GameObject asset, AppData.ContentContainerType containerType, AppData.ScreenType screenType)
         {
             selectableGameObjectList = new List<GameObject>();
             selectableSceneAssetsHandlerList = new Dictionary<string, SelectableSceneAssetHandler>();
@@ -325,7 +325,7 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning($"--> Failed To Add Selectable Asset To List. Asset : {asset.name} Already Exist.");
         }
 
-        public void UpdateSelectableAssetContainer(GameObject asset, AppData.ContentContainerType containerType, AppData.UIScreenType screenType, Action<bool> callback)
+        public void UpdateSelectableAssetContainer(GameObject asset, AppData.ContentContainerType containerType, AppData.ScreenType screenType, Action<bool> callback)
         {
             bool assetUpdatedSuccessfully = false;
 
@@ -421,7 +421,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(assetUpdatedSuccessfully);
         }
 
-        public void UpdateSelectableAssetContainers(GameObject asset, AppData.ContentContainerType containerType, AppData.UIScreenType screenType, Action<bool> callback)
+        public void UpdateSelectableAssetContainers(GameObject asset, AppData.ContentContainerType containerType, AppData.ScreenType screenType, Action<bool> callback)
         {
 
             bool assetUpdatedSuccessfully = false;
@@ -915,17 +915,17 @@ namespace Com.RedicalGames.Filar
             return newPageItemSelectedWidget.Count > 0;
         }
 
-        void OnScreenChangedEvent(AppData.UIScreenType screenType)
+        void OnScreenChangedEvent(AppData.ScreenType screenType)
         {
             switch (screenType)
             {
-                case AppData.UIScreenType.ContentImportExportScreen:
+                case AppData.ScreenType.ContentImportExportScreen:
 
                     sceneAssetInteractableMode = AppData.SceneAssetInteractableMode.Rotation;
 
                     break;
 
-                case AppData.UIScreenType.ProjectDashboardScreen:
+                case AppData.ScreenType.ProjectDashboardScreen:
 
                     // Reset Preview Pose.
                     AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
@@ -935,7 +935,7 @@ namespace Com.RedicalGames.Filar
 
                     break;
 
-                case AppData.UIScreenType.ARViewScreen:
+                case AppData.ScreenType.ARViewScreen:
 
                     sceneAssetInteractableMode = AppData.SceneAssetInteractableMode.All;
 
@@ -1219,7 +1219,7 @@ namespace Com.RedicalGames.Filar
         {
             switch (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType())
             {
-                case AppData.UIScreenType.ProjectDashboardScreen:
+                case AppData.ScreenType.ProjectDashboardScreen:
 
                     //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewAsset, state);
                     //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewFolderButton, state);

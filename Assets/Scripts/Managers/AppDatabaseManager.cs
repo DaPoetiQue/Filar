@@ -1465,7 +1465,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        private void ActionEvents__OnScreenExitEvent(AppData.UIScreenType screenType)
+        private void ActionEvents__OnScreenExitEvent(AppData.ScreenType screenType)
         {
             var callbackResults = new AppData.Callback();
 
@@ -1526,7 +1526,7 @@ namespace Com.RedicalGames.Filar
 
         void OnScreenRefreshedEvent(AppData.UIScreenViewComponent screenData)
         {
-            if (screenData.value.GetUIScreenType() == AppData.UIScreenType.ContentImportExportScreen)
+            if (screenData.value.GetUIScreenType() == AppData.ScreenType.ContentImportExportScreen)
             {
                 #region OBJ Field
 
@@ -1746,15 +1746,15 @@ namespace Com.RedicalGames.Filar
 
                                 if (ScreenUIManager.Instance != null)
                                 {
-                                    var screen = ScreenUIManager.Instance.GetCurrentScreenData();
-                                    screen.value.GetDataPackets().GetData().sceneAsset = currentSceneAsset;
+                                    //var screen = ScreenUIManager.Instance.GetCurrentScreenData();
+                                    //screen.value.GetDataPackets().GetData().sceneAsset = currentSceneAsset;
 
-                                    ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
+                                    //ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
                                 }
                                 else
                                     Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
 
-                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() != AppData.UIScreenType.ARViewScreen)
+                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() != AppData.ScreenType.ARViewScreen)
                                     dataPackets.sceneAsset.sceneObject.value.transform.position = dataPackets.sceneAsset.assetImportPosition;
                                 else
                                 {
@@ -1767,7 +1767,7 @@ namespace Com.RedicalGames.Filar
 
                                 AppData.ActionEvents.OnCreatedAssetDataEditEvent(currentSceneAsset);
 
-                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ARViewScreen)
+                                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.ScreenType.ARViewScreen)
                                     AppData.ActionEvents.OnARSceneAssetStateEvent(AppData.ARSceneContentState.Place);
                             }
                             else
@@ -1851,10 +1851,10 @@ namespace Com.RedicalGames.Filar
 
                         if (ScreenUIManager.Instance != null)
                         {
-                            var screen = ScreenUIManager.Instance.GetCurrentScreenData();
-                            screen.value.GetDataPackets().GetData().sceneAsset = currentSceneAsset;
+                            //var screen = ScreenUIManager.Instance.GetCurrentScreenData();
+                            //screen.value.GetDataPackets().GetData().sceneAsset = currentSceneAsset;
 
-                            ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
+                            //ScreenUIManager.Instance.UpdateInfoDisplayer(screen);
                         }
                         else
                             Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
@@ -1868,7 +1868,7 @@ namespace Com.RedicalGames.Filar
                     dataPackets.sceneAsset.sceneObject.value.transform.rotation = GetSceneAssetImportRotation(dataPackets.sceneAsset.assetImportRotation);
                     sceneAssetLibrary.AddSceneAssetObjectToLibrary(dataPackets.sceneAsset);
 
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ARViewScreen)
+                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.ScreenType.ARViewScreen)
                         AppData.ActionEvents.OnARSceneAssetStateEvent(AppData.ARSceneContentState.Place);
                 }
             }
@@ -1921,7 +1921,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        void AddAssetToContainer(GameObject asset, bool keepWorldPos, bool fitInsideContainer, bool isEnabled, AppData.ContentContainerType containerType, AppData.UIScreenType screenType, AppData.RuntimeExecution sceneAssetScaleValueType, bool keepAssetCentered, bool scaleContent, bool clearContainer = false, bool isImport = false)
+        void AddAssetToContainer(GameObject asset, bool keepWorldPos, bool fitInsideContainer, bool isEnabled, AppData.ContentContainerType containerType, AppData.ScreenType screenType, AppData.RuntimeExecution sceneAssetScaleValueType, bool keepAssetCentered, bool scaleContent, bool clearContainer = false, bool isImport = false)
         {
             if (assetContainerList.Count > 0)
             {
@@ -1946,7 +1946,7 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> No Asset Container Found.");
         }
 
-        public Transform GetSceneAssetsContainer(AppData.ContentContainerType containerType, AppData.UIScreenType screenType)
+        public Transform GetSceneAssetsContainer(AppData.ContentContainerType containerType, AppData.ScreenType screenType)
         {
             Transform container = null;
 
@@ -1974,7 +1974,7 @@ namespace Com.RedicalGames.Filar
             return container;
         }
 
-        public List<Transform> GetSceneAssetsContainerList(AppData.UIScreenType screenType = AppData.UIScreenType.None)
+        public List<Transform> GetSceneAssetsContainerList(AppData.ScreenType screenType = AppData.ScreenType.None)
         {
             List<Transform> containers = new List<Transform>();
 
@@ -1984,7 +1984,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (content.value)
                     {
-                        if (screenType != AppData.UIScreenType.None)
+                        if (screenType != AppData.ScreenType.None)
                         {
                             if (content.screenType == screenType)
                             {
@@ -2012,7 +2012,7 @@ namespace Com.RedicalGames.Filar
             return screenWidgetPrefabLibrary;
         }
 
-        public AppData.CallbackDataList<AppData.UIScreenWidgetsPrefabData> GetWidgetsPrefabDataLibrary(AppData.UIScreenType screenType)
+        public AppData.CallbackDataList<AppData.UIScreenWidgetsPrefabData> GetWidgetsPrefabDataLibrary(AppData.ScreenType screenType)
         {
             AppData.CallbackDataList<AppData.UIScreenWidgetsPrefabData> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidgetsPrefabData>();
 
@@ -2024,7 +2024,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public Transform GetSceneAssetsContainer(AppData.UIScreenType screenType = AppData.UIScreenType.None)
+        public Transform GetSceneAssetsContainer(AppData.ScreenType screenType = AppData.ScreenType.None)
         {
             Transform container = null;
 
@@ -2034,7 +2034,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (content.value)
                     {
-                        if (screenType != AppData.UIScreenType.None)
+                        if (screenType != AppData.ScreenType.None)
                         {
                             if (content.screenType == screenType)
                             {
@@ -2055,7 +2055,7 @@ namespace Com.RedicalGames.Filar
             return container;
         }
 
-        public AppData.SceneAssetDynamicContentContainer GetSceneAssetsContainerData(AppData.UIScreenType screenType = AppData.UIScreenType.None)
+        public AppData.SceneAssetDynamicContentContainer GetSceneAssetsContainerData(AppData.ScreenType screenType = AppData.ScreenType.None)
         {
             AppData.SceneAssetDynamicContentContainer container = new AppData.SceneAssetDynamicContentContainer();
 
@@ -2065,7 +2065,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (content.value)
                     {
-                        if (screenType != AppData.UIScreenType.None)
+                        if (screenType != AppData.ScreenType.None)
                         {
                             if (content.screenType == screenType)
                             {
@@ -2109,7 +2109,7 @@ namespace Com.RedicalGames.Filar
 
                     AppData.SceneAsset sceneAsset = assetData.ToSceneAsset();
 
-                    if (GetSceneAssetsContainer(AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen) != null)
+                    if (GetSceneAssetsContainer(AppData.ContentContainerType.AssetImport, AppData.ScreenType.ContentImportExportScreen) != null)
                     {
                         SetCurrentSceneMode(AppData.SceneMode.EditMode);
 
@@ -2171,7 +2171,7 @@ namespace Com.RedicalGames.Filar
                     }
 
                     if (SelectableManager.Instance)
-                        SelectableManager.Instance.AddToSelectableList(sceneObject.value, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen);
+                        SelectableManager.Instance.AddToSelectableList(sceneObject.value, AppData.ContentContainerType.AssetImport, AppData.ScreenType.ContentImportExportScreen);
                     else
                         Debug.LogWarning("--> Selectable Manager Not Yet Initialized.");
                 }
@@ -2209,7 +2209,7 @@ namespace Com.RedicalGames.Filar
                     else
                         Debug.LogWarning("--> Screen Manager Not Yet Initialized.");
 
-                    AddAssetToContainer(sceneObject.value, false, true, true, AppData.ContentContainerType.AssetImport, AppData.UIScreenType.ContentImportExportScreen, AppData.RuntimeExecution.InspectorModeAsseScaleDeviderValue, true, false, true, true);
+                    AddAssetToContainer(sceneObject.value, false, true, true, AppData.ContentContainerType.AssetImport, AppData.ScreenType.ContentImportExportScreen, AppData.RuntimeExecution.InspectorModeAsseScaleDeviderValue, true, false, true, true);
 
                     sceneAssetLibrary.AddSceneAssetObjectToLibrary(sceneAsset);
 
@@ -2631,7 +2631,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
                 {
-                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectDashboardScreen)
+                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.ScreenType.ProjectDashboardScreen)
                     {
                         SetCurrentFolder(folder);
 
@@ -3573,9 +3573,9 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void HasContentToLoadForSelectedScreen(AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.UIScreenType>> callback)
+        public void HasContentToLoadForSelectedScreen(AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.ScreenType>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenType> callbackResults = new AppData.CallbackData<AppData.UIScreenType>();
+            AppData.CallbackData<AppData.ScreenType> callbackResults = new AppData.CallbackData<AppData.ScreenType>();
 
             if (ScreenUIManager.Instance.HasCurrentScreen().Success())
             {
@@ -3606,7 +3606,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public AppData.CallbackData<AppData.Folder> GetRootFolder(AppData.UIScreenType screenType)
+        public AppData.CallbackData<AppData.Folder> GetRootFolder(AppData.ScreenType screenType)
         {
             AppData.CallbackData<AppData.Folder> callbackResults = new AppData.CallbackData<AppData.Folder>();
 
@@ -3617,7 +3617,7 @@ namespace Com.RedicalGames.Filar
             {
                 switch (screenType)
                 {
-                    case AppData.UIScreenType.ProjectCreationScreen:
+                    case AppData.ScreenType.ProjectCreationScreen:
 
                         callbackResults.result = GetProjectRootStructureData().result;
                         callbackResults.resultCode = GetProjectRootStructureData().resultCode;
@@ -3630,7 +3630,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ProjectDashboardScreen:
+                    case AppData.ScreenType.ProjectDashboardScreen:
 
                         callbackResults.result = $"Found Root Folder : {GetCurrentFolder().name} For Screen : {screenType}";
                         callbackResults.data = GetCurrentFolder();
@@ -3730,7 +3730,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
 
-                        if (refreshedScreen.GetUIScreenType() != AppData.UIScreenType.None)
+                        if (refreshedScreen.GetUIScreenType() != AppData.ScreenType.None)
                         {
                             //widgetsContainer.SetAssetsLoaded(false);
 
@@ -3738,7 +3738,7 @@ namespace Com.RedicalGames.Filar
 
                             switch (refreshedScreen.GetUIScreenType())
                             {
-                                case AppData.UIScreenType.LandingPageScreen:
+                                case AppData.ScreenType.LandingPageScreen:
 
                                     refreshedScreen.ShowWidget(AppData.WidgetType.LoadingWidget);
 
@@ -3781,7 +3781,7 @@ namespace Com.RedicalGames.Filar
 
                                     break;
 
-                                case AppData.UIScreenType.ProjectCreationScreen:
+                                case AppData.ScreenType.ProjectCreationScreen:
 
                                     while (!IsLocalStorageInitialized)
                                         await Task.Yield();
@@ -3814,7 +3814,7 @@ namespace Com.RedicalGames.Filar
 
                                                     SetCurrentFolder(folder);
 
-                                                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.UIScreenType.ProjectCreationScreen)
+                                                    if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == AppData.ScreenType.ProjectCreationScreen)
                                                     {
 
 
@@ -3924,7 +3924,7 @@ namespace Com.RedicalGames.Filar
 
                                     break;
 
-                                case AppData.UIScreenType.ProjectDashboardScreen:
+                                case AppData.ScreenType.ProjectDashboardScreen:
 
                                     while (!IsLocalStorageInitialized)
                                         await Task.Yield();
@@ -4109,7 +4109,7 @@ namespace Com.RedicalGames.Filar
 
                                     break;
 
-                                case AppData.UIScreenType.ContentImportExportScreen:
+                                case AppData.ScreenType.ContentImportExportScreen:
 
                                     while (!IsLocalStorageInitialized)
                                         await Task.Yield();
@@ -4137,7 +4137,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        async Task<AppData.Callback> RefreshAssetsAsync(AppData.UIScreenType screenType, AppData.Folder refreshFolder, params AppData.UIScreenGroupContent[] actions)
+        async Task<AppData.Callback> RefreshAssetsAsync(AppData.ScreenType screenType, AppData.Folder refreshFolder, params AppData.UIScreenGroupContent[] actions)
         {
             try
             {
@@ -4388,7 +4388,7 @@ namespace Com.RedicalGames.Filar
             return loadedWidgets;
         }
 
-        public void DisableUIOnScreenEnter(AppData.UIScreenType screenType, Action<AppData.Callback> callback = null)
+        public void DisableUIOnScreenEnter(AppData.ScreenType screenType, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -5500,15 +5500,15 @@ namespace Com.RedicalGames.Filar
             return defaultExecutionTimes.Find((x) => x.valueType == valueType);
         }
 
-        public AppData.RuntimeValue<float> GetDefaultScreenFadeExecutionValue(AppData.UIScreenType screenType, UIScreenFadeDirection direction)
+        public AppData.RuntimeValue<float> GetDefaultScreenFadeExecutionValue(AppData.ScreenType screenType, UIScreenFadeDirection direction)
         {
             AppData.RuntimeExecution valueType = AppData.RuntimeExecution.None;
 
-            if (screenType != AppData.UIScreenType.None && direction != UIScreenFadeDirection.None)
+            if (screenType != AppData.ScreenType.None && direction != UIScreenFadeDirection.None)
             {
                 switch (screenType)
                 {
-                    case AppData.UIScreenType.SplashScreen:
+                    case AppData.ScreenType.SplashScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.SplashScreenFadeInDuration;
@@ -5518,7 +5518,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.LoadingScreen:
+                    case AppData.ScreenType.LoadingScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.LoadingScreenFadeInDuration;
@@ -5528,7 +5528,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.LandingPageScreen:
+                    case AppData.ScreenType.LandingPageScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.LandingPageScreenFadeInDuration;
@@ -5538,7 +5538,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ProjectCreationScreen:
+                    case AppData.ScreenType.ProjectCreationScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.ProjectCreationScreenFadeInDuration;
@@ -5548,7 +5548,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ProjectDashboardScreen:
+                    case AppData.ScreenType.ProjectDashboardScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.ProjectDashboardScreenFadeInDuration;
@@ -5558,7 +5558,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ContentImportExportScreen:
+                    case AppData.ScreenType.ContentImportExportScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.ContentImportExportScreenFadeInDuration;
@@ -5568,7 +5568,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.UIScreenType.ARViewScreen:
+                    case AppData.ScreenType.ARViewScreen:
 
                         if (direction == UIScreenFadeDirection.FadeIn)
                             valueType = AppData.RuntimeExecution.ARViewScreenFadeInDuration;
@@ -6039,7 +6039,7 @@ namespace Com.RedicalGames.Filar
                         {
                             switch (screenUIManager.GetCurrentUIScreenType())
                             {
-                                case AppData.UIScreenType.ProjectCreationScreen:
+                                case AppData.ScreenType.ProjectCreationScreen:
 
                                     //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.CreateNewProjectButton, AppData.InputUIState.Enabled);
                                     //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.OpenProjectFolderButton, AppData.InputUIState.Enabled);
@@ -6047,7 +6047,7 @@ namespace Com.RedicalGames.Filar
 
                                     break;
 
-                                case AppData.UIScreenType.ProjectDashboardScreen:
+                                case AppData.ScreenType.ProjectDashboardScreen:
 
                                     //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.LayoutViewButton, AppData.InputUIState.Enabled);
                                     //screenUIManager.GetCurrentScreenData().value.SetActionButtonState(AppData.InputActionButtonType.PaginationButton, AppData.InputUIState.Enabled);
@@ -6685,7 +6685,7 @@ namespace Com.RedicalGames.Filar
                         {
                             switch (currentScreenCallbackResults.data.value.GetUIScreenType())
                             {
-                                case AppData.UIScreenType.ProjectCreationScreen:
+                                case AppData.ScreenType.ProjectCreationScreen:
 
                                     GetDropdownContentTypeFromIndex<AppData.ProjectCategoryType>(filterIndex, enumCallbackResults =>
                                     {
@@ -6959,7 +6959,7 @@ namespace Com.RedicalGames.Filar
 
                                     break;
 
-                                case AppData.UIScreenType.ProjectDashboardScreen:
+                                case AppData.ScreenType.ProjectDashboardScreen:
 
                                     GetDropdownContentTypeFromIndex<AppData.AssetCategoryType>(filterIndex, async enumCallbackResults =>
                                     {
@@ -8515,7 +8515,7 @@ namespace Com.RedicalGames.Filar
 
         AppData.ScreenLoadInfoInstanceLibrary GetScreenLoadInfoInstanceLibrary() => screenLoadInfoInstanceLibrary;
 
-        public void GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType screenType, Action<AppData.CallbackData<AppData.ScreenLoadInfoInstance>> callback)
+        public void GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType screenType, Action<AppData.CallbackData<AppData.ScreenLoadInfoInstance>> callback)
         {
             AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
 
@@ -8530,7 +8530,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public AppData.CallbackData<AppData.ScreenLoadInfoInstance> GetScreenLoadInfoInstanceFromLibrary(AppData.UIScreenType screenType)
+        public AppData.CallbackData<AppData.ScreenLoadInfoInstance> GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType screenType)
         {
             AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
 

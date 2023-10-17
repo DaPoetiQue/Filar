@@ -102,8 +102,8 @@ namespace Com.RedicalGames.Filar
         {
             if (SelectableManager.Instance != null)
             {
-                //Debug.LogError("=============> Please Fix Here............. Important");
-                SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
+                Debug.LogError("=============> Please Fix Here............. Important");
+                //SelectableManager.Instance.Select(this, dataPackets, isInitialSelection);
                 Selected();
             }
             else

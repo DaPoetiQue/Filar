@@ -105,7 +105,7 @@ namespace Com.RedicalGames.Filar
 
                                 AppData.CallbackData<AppData.SceneDataPackets> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
 
-                                AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.UIScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
+                                AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.ScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                                 {
                                     loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.result;
                                     loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.data.dataPackets;

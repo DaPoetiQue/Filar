@@ -14,9 +14,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.ScreenType, AppData.WidgetType>>> callback)
         {
-            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>(GetType());
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.ScreenType, AppData.WidgetType>>(GetType());
 
             if (callbackResults.Success())
             {
@@ -29,9 +29,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>> OnGetState()
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.ScreenType, AppData.WidgetType>> OnGetState()
         {
-            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.UIScreenType, AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.ScreenType, AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
 
             if (callbackResults.Success())
             {

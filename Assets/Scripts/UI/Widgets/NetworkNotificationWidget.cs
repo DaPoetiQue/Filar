@@ -117,7 +117,7 @@ namespace Com.RedicalGames.Filar
 
                     switch (screenUIManager.GetCurrentUIScreenType())
                     {
-                        case AppData.UIScreenType.LoadingScreen:
+                        case AppData.ScreenType.LoadingScreen:
 
                             screenUIManager.GetCurrentScreenData().value.HideScreenWidget(this);
 

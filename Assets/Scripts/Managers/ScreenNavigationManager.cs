@@ -212,7 +212,7 @@ namespace Com.RedicalGames.Filar
             return scrollerNavigationWidgetDataPackets;
         }
 
-        public void GetEmptyContentDataPacketsForScreen(AppData.UIScreenType screenType, AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback)
+        public void GetEmptyContentDataPacketsForScreen(AppData.ScreenType screenType, AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback)
         {
             AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
 
@@ -246,7 +246,7 @@ namespace Com.RedicalGames.Filar
 
                                     switch (screenType)
                                     {
-                                        case AppData.UIScreenType.ProjectCreationScreen:
+                                        case AppData.ScreenType.ProjectCreationScreen:
 
                                             dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There Are No Projects Found" : "Project Is Empty";
 
@@ -262,7 +262,7 @@ namespace Com.RedicalGames.Filar
 
                                             break;
 
-                                        case AppData.UIScreenType.ProjectDashboardScreen:
+                                        case AppData.ScreenType.ProjectDashboardScreen:
 
                                             dataPackets.popUpMessage = (dataPackets.isRootFolder) ? "There's No Content Found. Create New" : "Folder Is Empty";
 

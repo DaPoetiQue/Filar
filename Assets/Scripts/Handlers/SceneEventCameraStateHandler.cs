@@ -157,7 +157,7 @@ namespace Com.RedicalGames.Filar
                 interactable = true;
         }
 
-        private void ActionEvents__OnScreenChangedEvent(AppData.UIScreenType tValue)
+        private void ActionEvents__OnScreenChangedEvent(AppData.ScreenType tValue)
         {
             OnResetCameraPose();
         }

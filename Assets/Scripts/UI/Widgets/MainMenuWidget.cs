@@ -94,7 +94,7 @@ namespace Com.RedicalGames.Filar
 
                                                 AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets();
 
-                                                dataPackets.SetReferencedScreenType(AppData.UIScreenType.LandingPageScreen);
+                                                dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
                                                 dataPackets.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
                                                 dataPackets.SetScreenBlurState(true);
                                                 dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Background);
