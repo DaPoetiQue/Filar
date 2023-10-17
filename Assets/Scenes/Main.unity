@@ -342,6 +342,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9727029af2d77794d8efd500aa782727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
   assetInfoDisplayer:
     infoWidgetFieldList: []
     widgetsContainer: {fileID: 0}
@@ -928,132 +933,10 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  screenType: 0
   containerType: 0
   viewSpace: 0
   screenViewUIPlacementType: 3
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 0
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 0
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -1280,140 +1163,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 15
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Folder Creation Default View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -1613,6 +1375,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed860fd11e4dfd6448385d99721d962e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
   sceneTrackingData:
     session: {fileID: 633275383}
     rayCastManager: {fileID: 795621439}
@@ -1717,129 +1484,6 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 2
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 0
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
@@ -1980,140 +1624,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 1
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -2697,140 +2220,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 24
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Loading Widget
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -3040,140 +2442,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 22
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Selection Widget
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -3466,140 +2747,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 23
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Selected Copy Options Widget
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -4835,140 +3995,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 10
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Rendering Settings Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -8277,140 +7316,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 13
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Color Picker Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -8620,140 +7538,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 17
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Scroller Navigation Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -9318,132 +8115,10 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  screenType: 5
   containerType: 11
   viewSpace: 1
   screenViewUIPlacementType: 3
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 5
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 0
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   selectableContent: 0
   recycleContainer:
     container: {fileID: 2012478901}
@@ -9825,140 +8500,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 5
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -10745,140 +9299,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 9
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -11456,140 +9889,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 4
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 18
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Default Text Displayer
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -12831,140 +11143,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 4
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 27
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Default View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -13470,140 +11661,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 12
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Warning Notifications Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -13813,140 +11883,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 5
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -14915,140 +12864,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 25
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Main View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -16015,140 +13843,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 14
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Snap Shot Displayer Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -16621,140 +14328,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 26
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Main View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -17109,129 +14695,6 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 2
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 0
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
@@ -17485,140 +14948,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 4
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Asset Preview Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -18051,132 +15393,10 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  screenType: 8
   containerType: 13
   viewSpace: 2
-  screenViewUIPlacementType: 3
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 0
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 0
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
+  screenViewUIPlacementType: 0
   selectableWidgetType: 5
   orientation: 0
 --- !u!1 &1613394468
@@ -18388,140 +15608,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 11
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Publishing Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -18823,140 +15922,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 1
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Confirmation Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -19169,140 +16147,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 6
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -19790,140 +16647,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 4
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 1
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Default View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -20133,140 +16869,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 18
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Text Displayer Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -20476,140 +17091,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 20
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -20821,140 +17315,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 16
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Selected File Options Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 1
@@ -21437,140 +17810,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 1
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 1
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 19
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: Pager Navigation Layout View
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -24059,140 +20311,19 @@ MonoBehaviour:
   screenUIPlacementType: 3
   transitionType: 1
   initialVisibilityState: 2
-  dataPackets:
-    externalLinkURL: 
-    selectionOption: 0
-    screenContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    sceneContainerData:
-      name: 
-      type: 0
-      viewSpace: 0
-    layoutViewType: 2
-    screenType: 2
-    stateType: 0
-    notification:
-      title: 
-      message: 
-      notificationType: 0
-      screenType: 0
-      screenPosition: 0
-      blurScreen: 0
-      blurLayer: 0
-      delay: 0
-      duration: 0
-      showNotifications: 0
-      proccessed: 0
-    screenWidgetPrefab: {fileID: 0}
-    dynamicWidgetsContainer: {fileID: 0}
-    sceneAsset:
-      name: 
-      modelAsset: {fileID: 0}
-      info:
-        fields: []
-      sceneObject:
-        info:
-          fields: []
-        value: {fileID: 0}
-      materialProperties:
-        mainTexturePath: 
-        normalMapTexturePath: 
-        aoMapTexturePath: 
-        glossiness: 0
-        bumpScale: 0
-        aoStrength: 0
-      sceneScale: 0
-      description: 
-      categoryType: 0
-      assetMode: 0
-      creationDateTime:
-        time: 
-        date: 
-        dateTime: 
-        second: 0
-        minute: 0
-        hour: 0
-        day: 
-        month: 
-        year: 
-        monthDay: 
-        dateTimeTick: 0
-      hasMLTFile: 0
-      storageData:
-        name: 
-        type: 0
-        path: 
-        projectDirectory: 
-        rootDirectory: 
-        directory: 
-      assetFields: []
-      dontShowMetadataWidget: 0
-      defaultWidgetActionState: 0
-      assetImportPosition: {x: 0, y: 0, z: 0}
-      assetImportRotation: {x: 0, y: 0, z: 0}
-    referencedScreenType:
-      name: 
-      value: 0
-    referencedWidgetType:
-      name: 
-      value: 0
-    referencedUIScreenPlacementType:
-      name: 
-      value: 0
-    overrideStateType:
-      name: 
-      value: 0
-    booleanOptionsGroup:
-      name: 
-      confiGroupDatas: []
-    clearContentContainer: 0
-    resetContentContainerPose: 0
-    scaleSceneAsset: 0
-    keepAssetWorldPose: 0
-    keepAssetCentered: 0
-    selectableAssetType: 0
-    sceneAssetScaleValueType: 0
-    dynamicWidgetsContainerOrientation: 0
-    widgetType: 3
-    widgetScreenPosition: {x: 0, y: 0}
-    assetFieldConfiguration: 0
-    storageDirectoryType: 0
-    folderStructureType: 0
-    requiredPermission: 0
-    screenRefreshLoadingItemType: 0
-    sceneMode: 0
-    sceneAssetMode: 0
-    blurScreen: 0
-    referencedUIScreenPlacementTypeDeprecated: 0
-    screenViewState: 0
-    refreshScreenOnLoad: 0
-    refreshSceneAssets: 0
-    refreshDuration: 0
-    widgetTitle: 
-    widgetTitleCharacterLimit: 0
-    popUpMessage: 
-    screenTransition: 0
-    screenTransitionSpeed: 0
-    canTransitionSceneAsset: 0
-    overrideSceneAssetTargetPosition: 0
-    sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
-    overrideSceneAssetTransitionSpeed: 0
-    sceneAssetTransitionSpeed: 0
-    isRootFolder: 0
-    referencedActionButtonDataList: []
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   widgetLayouts:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
   defaultLayoutType: 1
   selectableAssetType: 0
+  blurScreen: 0
   scroller:
     value: {fileID: 0}
     movementType: 0

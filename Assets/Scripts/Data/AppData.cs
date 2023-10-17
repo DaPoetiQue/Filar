@@ -3419,7 +3419,7 @@ namespace Com.RedicalGames.Filar
 
             public SceneDataPackets GetScreenData() => dataPackets;
 
-            public ScreenType GetScreenType() => dataPackets.GetReferencedScreenType().GetData().GetValue().GetData();
+            public ScreenType GetScreenType() => dataPackets.screenType;
 
             public bool InitialScreen() => initialScreen;
 
