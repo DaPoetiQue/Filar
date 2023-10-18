@@ -541,7 +541,7 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 30
-  screenUIPlacementType: 0
+  screenUIPlacementType: 2
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []

@@ -166,7 +166,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         var screenComponentHandler = screen.GetValue().GetData();
 
-                                        screenContainer.AddContent<ScreenWidget, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: false, isActive: screen.value.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                        screenContainer.AddContent<ScreenWidget, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
                                         {
                                             callbackResults.SetResult(screenAddedCallbackResults);
 
