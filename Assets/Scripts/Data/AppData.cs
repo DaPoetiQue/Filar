@@ -25468,13 +25468,9 @@ namespace Com.RedicalGames.Filar
 
             private void AddWidget(Widget widget, Action<CallbackDataList<Widget>> callback = null)
             {
-                var callbackResults = new CallbackDataList<Widget>();
+                var callbackResults = new CallbackDataList<Widget>(GetType());
 
-                var validWidget = screenWidgetsList.Find(widgetHandler => widgetHandler == widget && widgetHandler.GetType().GetData() == widget.GetType().GetData() && widgetHandler.GetScreenUIPlacementType().GetData() == widget.GetScreenUIPlacementType().GetData() && widgetHandler.GetScreenType().GetData() == GetType().GetData());
-
-                callbackResults.SetResult(Helpers.GetAppComponentValid(validWidget, "Valid Widget", "There Is No Valid Widget Component Of Type Found In Screen Widgets List."));
-
-                if (callbackResults.UnSuccessful())
+                if (callbackResults.Success())
                 {
                     if (!screenWidgetsList.Contains(widget))
                     {
@@ -25482,17 +25478,16 @@ namespace Com.RedicalGames.Filar
 
                         if (screenWidgetsList.Contains(widget))
                         {
-                            callbackResults.SetResult(GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()));
+                            callbackResults.SetResult(GetDynamicContainer(GetType().GetData(), ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()));
 
                             if (callbackResults.Success())
                             {
-                                var container = GetDynamicContainer(ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()).GetData();
+                                var container = GetDynamicContainer(GetType().GetData(), ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()).GetData();
 
                                 callbackResults.SetResult(widget.GetInitialVisibility());
 
                                 if (callbackResults.Success())
                                 {
-
                                     container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
                                     {
                                         callbackResults.SetResult(widgetnAddedCallbackResults);
@@ -27410,8 +27405,6 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetName(string name) => this.name = name;
-
             protected void SetWidgetStatePacket(WidgetStatePacket<T, U> statePacket, Action<CallbackData<WidgetStatePacket<T, U>>> callback = null)
             {
                 var callbackResults = new CallbackData<WidgetStatePacket<T, U>>(GetType());
@@ -27465,13 +27458,13 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<DynamicContainerBase> GetDynamicContainer(ContentContainerType containerType, ScreenUIPlacementType screenPlacementType)
+            public CallbackData<DynamicContainerBase> GetDynamicContainer(ScreenType screenType, ContentContainerType containerType, ScreenUIPlacementType screenPlacementType)
             {
                 var callbackResults = new CallbackData<DynamicContainerBase>(GetDynamicContainerList());
 
                 if (callbackResults.Success())
                 {
-                    var dynamicContainer = GetDynamicContainerList().GetData().Find(container => container.GetContainerType().GetData() == containerType && container.GetScreenViewUIPlacementType().GetData() == screenPlacementType);
+                    var dynamicContainer = GetDynamicContainerList().GetData().Find(container => container.GetContainerType().GetData() == containerType && container.GetScreenViewUIPlacementType().GetData() == screenPlacementType && container.GetScreenType().GetData() == screenType);
 
                     callbackResults.SetResult(Helpers.GetAppComponentValid(dynamicContainer, "Dynamic Container", $"Get Dynamic Container Failed - Couldn't Find Dynamic Container Of Type : {containerType} - With Placement Type : {screenPlacementType} - Invalid Operation - Please Chec Here."));
 
@@ -28155,7 +28148,7 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new CallbackData<T>();
 
-                if (widgetType.ToString().ToLower() != "none")
+                if (!widgetType.ToString().ToLower().Equals("none"))
                 {
                     callbackResults.result = $"Screen : {name} - Is Set To Type : {widgetType.ToString()}";
                     callbackResults.data = widgetType;
