@@ -1168,6 +1168,7 @@ namespace Com.RedicalGames.Filar
             License
         }
 
+
         #endregion
 
         #region Asset Bundles
@@ -1255,7 +1256,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ScreenReferencedWidgetDependencyAssetBundle<T> : DataDebugger where T : Enum
+        public class ScreenReferencedWidgetDependencyAssetBundle<T> : DataDebugger, IScreenReferencedWidgetDependencyAssetBundle<T> where T : Enum
         {
             #region Components
 
@@ -1263,9 +1264,13 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             private T widgetType;
 
-            //[SerializeField]
-            //[Space(5)]
-            private SceneDataPackets dataPackets = new SceneDataPackets();
+            [SerializeField]
+            [Space(5)]
+            private ScreenUIPlacementType screenUIPlacementType = ScreenUIPlacementType.None;
+
+            [SerializeField]
+            [Space(5)]
+            private UIScreenWidgetVisibilityState initialVisibilityState = UIScreenWidgetVisibilityState.None;
 
             #endregion
 
@@ -1276,7 +1281,10 @@ namespace Com.RedicalGames.Filar
            public void SetName(string name) => this.name = name;
 
             public void SetType(T widgetType) => this.widgetType = widgetType;
-            public void SetDataPackets(SceneDataPackets dataPackets) => this.dataPackets = dataPackets;
+
+            public void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType) => this.screenUIPlacementType = screenUIPlacementType;
+
+            public void SetInitialVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
             #endregion
 
@@ -1304,22 +1312,207 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<SceneDataPackets> GetDataPackets()
+            public CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType()
             {
-                var callbackResults = new CallbackData<SceneDataPackets>(Helpers.GetAppComponentValid(dataPackets, "Screen Data Packets", $"Screen Data For Screen Referenced Widget Dependency Asset Bundle : {GetName()} - Of Type : {GetType().GetData()} Is Null - Invalid Operation."));
+                var callbackResults = new CallbackData<ScreenUIPlacementType>();
+                if (screenUIPlacementType != ScreenUIPlacementType.None)
+                {
+                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Placement Type Is Set To : {screenUIPlacementType}";
+                    callbackResults.data = screenUIPlacementType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Screen Placement Type Is Set To Default : {screenUIPlacementType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityState()
+            {
+                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>();
+                if (initialVisibilityState != UIScreenWidgetVisibilityState.None)
+                {
+                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Initial Visibility State Type Is Set To : {initialVisibilityState}";
+                    callbackResults.data = initialVisibilityState;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Initial Visibility State Type Is Set To Default : {initialVisibilityState}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class LoadedAssetsCacheObject<T, U> : DataDebugger where T : Enum where U : AppMonoBaseClass
+        {
+            #region Components
+
+            public T cacheKey;
+            public List<U> cachedAssetList = new List<U>();
+
+            #endregion
+
+            #region Main
+
+            public LoadedAssetsCacheObject()
+            {
+
+            }
+
+            public LoadedAssetsCacheObject(string name, T cacheKey, List<U> cachedAssetList = null)
+            {
+                this.cacheKey = cacheKey;
+                this.cachedAssetList = cachedAssetList;
+                SetName(name);
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(cachedAssetList, "Cached Asset List", 
+                    $"Assets Cache List Initialization Failed - Loaded Assets Cache For Cache Key : {cacheKey} Is Not Initialized - Invalid Operation.", 
+                    $"Assets Cache List Initialization Success - Loaded Assets Cache For Cache Key : {cacheKey} Has Been Initialized Successfully With : {cachedAssetList.Count} Assets."));
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class LoadedAssetCache<T, U> : DataDebugger where T : Enum where U : AppMonoBaseClass
+        {
+            #region Components
+
+            public List<LoadedAssetsCacheObject<T, U>> loadedAssetsCache = new List<LoadedAssetsCacheObject<T, U>>();
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(loadedAssetsCache, "Loaded Asset Cache",
+                    $"Loaded Assets Cache Initialization Failed - Loaded Assets Cache Is Not Initialized - Invalid Operation.",
+                    $"Loaded Assets Cache List Initialization Success - Loaded Assets Cache Has Been Initialized Successfully With : {loadedAssetsCache.Count} Assets Cache(s)."));
+
+                return callbackResults;
+            }
+
+            public void CacheAsset(T key, U value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(value, "Cache Value", $"Could Add Asset To Cache Data Of Key : {key}, Value Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Screen Data For Screen Referenced Widget Dependency Asset Bundle : {GetName()} Of Type : {GetType().GetData()} Has Been Found.";
-                    callbackResults.data = dataPackets;
+                    var loadedAssetsCacheData = loadedAssetsCache.Find(cachedData => cachedData.cacheKey.ToString().Equals(key.ToString()));
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(loadedAssetsCacheData, "Loaded Assets Cache Data", $"Loaded Assets Cache Data Of Category Type : {key} Not Found - A New Loaded Assets Cache Data Instance Of Type Will Be Created."));
+
+                    if (callbackResults.Success())
+                    {
+                        if (!loadedAssetsCacheData.cachedAssetList.Contains(value))
+                        {
+                            loadedAssetsCacheData.cachedAssetList.Add(value);
+
+                            if (loadedAssetsCacheData.cachedAssetList.Contains(value))
+                            {
+                                callbackResults.result = $"Add Asset To cache List Success : Value Has Been Successfully Added To Cached Assets Data Of Type : {key}.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Add Asset To cache List Failed : Value Failed To Be Added To Cached Assets Data Of Type : {key} - Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Add Asset To cache List Unsuccessful : Value Couldn't Be Added To Cached Assets Data Of Type : {key} - Asset Already Exists - Invalid Operation.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                    else
+                    {
+                        var newLoadedAssetsCacheData = new LoadedAssetsCacheObject<T, U>(key.ToString(), key);
+
+                        newLoadedAssetsCacheData.cachedAssetList = new List<U>() { value };
+
+                        if (newLoadedAssetsCacheData.cachedAssetList.Contains(value))
+                        {
+                            if(!loadedAssetsCache.Contains(newLoadedAssetsCacheData))
+                            {
+                                loadedAssetsCache.Add(newLoadedAssetsCacheData);
+
+                                if (loadedAssetsCache.Contains(newLoadedAssetsCacheData))
+                                {
+                                    callbackResults.result = $"Add Asset To cache List Success : Value Has Been Successfully Added To A Newely Created Cached Assets Data Of Type : {key}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Add Asset To cache List Failed - The Newely Created Cache Assets Data Of Type : {key} Failed To Be Added For Some Wiered Reasons - Invalid Operation - Please Check Here.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Add Asset To cache List Failed - The Newely Created Cache Assets Data Of Type : {key} Already Exists In Loaded Asssets Cache - Invalid Operation.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Add Asset To cache List Failed : Value Failed To Be Added To Cached Assets Data Of Type : {key} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackDataList<U> GetCachedAssets(T key)
+            {
+                var callbackResults = new CallbackDataList<U>(Helpers.GetAppComponentValid(loadedAssetsCache, "Loaded Assets Cache", $"Get Cached Assets Failed - Couldn't Find Loaded Asset Cache For Cache Key : {key} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var cachedAssets = loadedAssetsCache.Find(cachedData => cachedData.cacheKey.ToString().Equals(key.ToString()));
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(cachedAssets, "Cached Assets", $"Get Cached Asset Failed : Couldn't Find Cached Assets For Cache Key : {key} - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(cachedAssets.Initialized());
+
+                        if(callbackResults.Success())
+                            callbackResults.data = cachedAssets.cachedAssetList;
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
-
-            #endregion
 
             #endregion
         }
@@ -1357,10 +1550,12 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             private float initializationTimeout = 10.0f;
 
-            private List<ScreenWidget> loadedAppScreens = new List<ScreenWidget>();
+            private List<AppScreen> loadedAppScreens = new List<AppScreen>();
 
+            [Tooltip("Do Not Initialize - Loaded Dynamically")]
+            [Space(5)]
             [SerializeField] // <<<< Remove Serialization And Hide This In Inspector.
-            private List<Widget> loadedScreenWidgets = new List<Widget>();
+            private LoadedAssetCache<ScreenType, Widget> loadedAssetCache = new LoadedAssetCache<ScreenType, Widget>();
 
             private bool addressablesManagerInitialized = false;
             private bool inProgress = false;
@@ -1379,7 +1574,15 @@ namespace Com.RedicalGames.Filar
             private void InitializationCompletedEvent(AsyncOperationHandle<IResourceLocator> evt)
             {
                 if (evt.Status == AsyncOperationStatus.Succeeded)
-                    SetAddressablesManagerInitialized(true);
+                {
+                    LoadAllWidegtsToMemory(callbackResults => 
+                    { 
+                        if(callbackResults.Success())
+                            SetAddressablesManagerInitialized(true);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
                 else
                     throw new Exception($"Failed To Initialize Addressables - Invalid Operation - Please See Here - Addressables Status : {evt.Status}");
             }
@@ -1422,85 +1625,87 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, Action<CallbackData<ScreenWidget>> callback)
+            public void LoadAllWidegtsToMemory(Action<Callback> callback = null)
             {
-                var callbackResults = new CallbackData<ScreenWidget>();
+                var callbackResults = new CallbackDataList<AssetBundleReference<GameObject>>(OnScreenWidgetsInitialized());
 
-                screenAssetBundle.InstantiateAsync().Completed += (callbackData) =>
+                if (callbackResults.Success())
                 {
-                    if(callbackData.Status == AsyncOperationStatus.Succeeded)
+                    for (int i = 0; i < screenWidgetBundles.Count; i++)
                     {
-                        var screen = callbackData.Result.GetComponent<ScreenWidget>();
+                        var widgetsBundleCallbackResults = screenWidgetBundles[i].GetWidgets();
 
-                        callbackResults.SetResult(Helpers.GetAppComponentValid(screen, "Screen", $"Loaded Screen Prefab Game Object : {screen.GetName()} Doesn't Contain A Screen Handler."));
+                        callbackResults.SetResult(widgetsBundleCallbackResults);
 
                         if (callbackResults.Success())
                         {
-                            AddLoadedAppScreenToList(screen, loadedAppScreenCallbackResults =>
-                            {
-                                callbackResults.SetResult(loadedAppScreenCallbackResults);
+                            var widgetsBundle = widgetsBundleCallbackResults.GetData();
 
-                                if (callbackResults.Success())
-                                {
-                                    callbackResults.result = $"Asset Bundle Library - App Screen : {screen.GetName()} Has Been Loaded Successfully.";
-                                    callbackResults.data = screen;
-                                    callbackResults.resultCode = Helpers.SuccessCode;
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                callback.Invoke(callbackResults);
-                            });
+                            for (int j = 0; j < widgetsBundle.Count; j++)
+                                widgetsBundle[j].LoadAssetAsync<GameObject>().Completed += OnAllWidgetsLoaeded;
                         }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
                     }
-                    else
-                        throw new Exception($"Failed To Instantiate Screen Asset Bundle - Invalid Operation - Please See Here - Screen Asset Bundle Status : {callbackData.Status}");
-                };
+                }
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void LoadScreenWidgetBundle(AssetBundleReference<GameObject> screenWidgetBundle, Action<CallbackData<Widget>> callback)
+            private void OnAllWidgetsLoaeded(AsyncOperationHandle<GameObject> obj)
             {
-                var callbackResults = new CallbackData<Widget>();
+                var callbackResults = new Callback();
 
-                screenWidgetBundle.InstantiateAsync().Completed += (callbackData) =>
+                if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    if (callbackData.Status == AsyncOperationStatus.Succeeded)
+                    var widget = obj.Result.GetComponent<Widget>();
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Loaded Widget Prefab Game Object : {widget.GetName()} Doesn't Contain A Widget Component."));
+
+                    if (callbackResults.Success())
                     {
-                        var widget = callbackData.Result.GetComponent<Widget>();
-
-                        callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Loaded Screen Prefab Game Object : {widget.GetName()} Doesn't Contain A Widget Handler."));
-
-                        if (callbackResults.Success())
+                        CacheLoadedScreenWidget(widget, loadedAppScreenCallbackResults =>
                         {
-                            AddLoadedScreenWidgetToList(widget, loadedAppScreenCallbackResults =>
+                            callbackResults.SetResult(loadedAppScreenCallbackResults);
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(loadedAppScreenCallbackResults);
-
-                                if (callbackResults.Success())
-                                {
-                                    callbackResults.result = $"Asset Bundle Library - Screen Widget : {widget.GetName()} Has Been Loaded Successfully.";
-                                    callbackResults.data = widget;
-                                    callbackResults.resultCode = Helpers.SuccessCode;
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                callback.Invoke(callbackResults);
-                            });
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                callbackResults.result = $"Asset Bundle Library - Screen Widget : {widget.GetName()} Has Been Loaded Successfully.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
                     }
                     else
-                        throw new Exception($"Failed To Instantiate Screen Asset Bundle - Invalid Operation - Please See Here - Screen Asset Bundle Status : {callbackData.Status}");
-                };
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    throw new ArgumentNullException($"On All Widgets Loaeded Failed : Results : {obj.Status}");
             }
 
-            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, bool initialVisibilityState, Action<CallbackData<ScreenWidget>> callback)
+            public CallbackDataList<Widget> GetScreenWidgets(ScreenType screenType)
             {
-                var callbackResults = new CallbackData<ScreenWidget>();
+                var callbackResults = new CallbackDataList<Widget>(loadedAssetCache.Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(loadedAssetCache.GetCachedAssets(screenType));
+
+                    if(callbackResults.Success())
+                        callbackResults.data = loadedAssetCache.GetCachedAssets(screenType).GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public void LoadAppScreenAssetBundle(AssetBundleReference<GameObject> screenAssetBundle, bool initialVisibilityState, Action<CallbackData<AppScreen>> callback)
+            {
+                var callbackResults = new CallbackData<AppScreen>();
 
                 screenAssetBundle.InstantiateAsync().Completed += (callbackData) =>
                 {
@@ -1511,7 +1716,7 @@ namespace Com.RedicalGames.Filar
                         else
                             callbackData.Result.Hide();
 
-                        var screen = callbackData.Result.GetComponent<ScreenWidget>();
+                        var screen = callbackData.Result.GetComponent<AppScreen>();
 
                         callbackResults.SetResult(Helpers.GetAppComponentValid(screen, "Screen", $"Loaded Screen Prefab Game Object : {screen.GetName()} Doesn't Contain A Screen Handler."));
 
@@ -1595,9 +1800,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public async Task<CallbackDataList<ScreenWidget>> GetAppScreensAsync()
+            public async Task<CallbackDataList<AppScreen>> GetAppScreensAsync()
             {
-                var callbackResults = new CallbackDataList<ScreenWidget>();
+                var callbackResults = new CallbackDataList<AppScreen>();
 
                 float timeout = initializationTimeout;
 
@@ -1619,7 +1824,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private void AddLoadedAppScreenToList(ScreenWidget screen, Action<Callback> callback = null)
+            private void AddLoadedAppScreenToList(AppScreen screen, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
 
@@ -1670,53 +1875,17 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void AddLoadedScreenWidgetToList(Widget widget, Action<Callback> callback = null)
+            private void CacheLoadedScreenWidget(Widget widget, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
 
-                if (!loadedScreenWidgets.Contains(widget))
+                loadedAssetCache.CacheAsset(widget.GetScreenType().GetData(), widget, widgetCachedCallbackResults => 
                 {
-                    loadedScreenWidgets.Add(widget);
+                    callbackResults.SetResult(widgetCachedCallbackResults);
 
-                    if (loadedScreenWidgets.Contains(widget))
-                    {
-                        callbackResults.SetResult(widget.GetDynamicContainerList());
-
-                        if (callbackResults.Success())
-                        {
-                            var dynamicContainersToArray = Helpers.GetArray(widget.GetDynamicContainerList().GetData());
-
-                            SetDynamicContainer(containerSetCallbackResults =>
-                            {
-                                callbackResults.SetResult(containerSetCallbackResults);
-
-                                if (callbackResults.Success())
-                                {
-                                    callbackResults.result = $"Screen Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Has Been Added Successfully To Loaded Screen Widgets With Dynamic Containers Initialization.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                            }, dynamicContainersToArray);
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Screen Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Has Been Added Successfully To Loaded Screen Widgets Without Dynamic Containers Initialization.";
-                            callbackResults.resultCode = Helpers.SuccessCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Asset Bundles Library - Add Loaded Screen Widget To List Failed - Loaded Screen Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Couldn't Be Added To Loaded Screen Widgets - Invalid Operation - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Asset Bundles Library - Add Loaded Screen Widget To List Failed - Loaded Screen Widgets Already Contains Screen Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()}.";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
 
                 callback?.Invoke(callbackResults);
             }
@@ -3366,7 +3535,7 @@ namespace Com.RedicalGames.Filar
             public List<RuntimeInstanceInfo> runtimeInstanceInfoList = new List<RuntimeInstanceInfo>();
 
             [HideInInspector]
-            public ScreenWidget referencedScreen;
+            public AppScreen referencedScreen;
 
             #endregion
 
@@ -3411,7 +3580,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetReferencedScreen(ScreenWidget referencedScreen) => this.referencedScreen = referencedScreen;
+            public void SetReferencedScreen(AppScreen referencedScreen) => this.referencedScreen = referencedScreen;
 
             #endregion
 
@@ -3428,9 +3597,9 @@ namespace Com.RedicalGames.Filar
             public List<SequenceInstance> GetSequenceInstanceList() => sequences;
             public SequenceInstance[] GetSequenceInstanceArray() => sequences.ToArray();
 
-            public CallbackData<ScreenWidget> GetReferencedScreen()
+            public CallbackData<AppScreen> GetReferencedScreen()
             {
-                CallbackData<ScreenWidget> callbackResults = new CallbackData<ScreenWidget>();
+                CallbackData<AppScreen> callbackResults = new CallbackData<AppScreen>();
 
                 if(referencedScreen != null)
                 {
@@ -25401,52 +25570,142 @@ namespace Com.RedicalGames.Filar
                                 while (assetBundlesLibrary.OnAddressablesManagerInitialized().UnSuccessful())
                                     await Task.Yield();
 
-                                callbackResults.SetResult(assetBundlesLibrary.GetUnloadedScreenWidgets(GetType().GetData()));
+                                callbackResults.SetResult(assetBundlesLibrary.GetScreenWidgets(GetType().GetData()));
 
-                                if (callbackResults.Success())
+                                if(callbackResults.Success())
                                 {
-                                    var unloadedScreenWidgets = assetBundlesLibrary.GetUnloadedScreenWidgets(GetType().GetData()).GetData();
+                                    var loadedScreenWidgets = assetBundlesLibrary.GetScreenWidgets(GetType().GetData()).GetData();
 
-                                    for (int i = 0; i < unloadedScreenWidgets.Count; i++)
+                                    for (int i = 0; i < loadedScreenWidgets.Count; i++)
                                     {
-                                        assetBundlesLibrary.LoadScreenWidgetBundle(unloadedScreenWidgets[i], loadedScreenWidgetsCallbackResults => 
-                                        {
-                                            callbackResults.SetResult(loadedScreenWidgetsCallbackResults);
+                                        // Instantiate
+                                    }
+                                }
 
-                                            if(callbackResults.Success())
+                                if(callbackResults.Success())
+                                {
+                                    if(referencedWidgetDependencyAssets.Count > 0)
+                                    {
+                                        callbackResults.SetResult(assetBundlesLibrary.GetScreenWidgets(ScreenType.Default));
+
+                                        if(callbackResults.Success())
+                                        {
+                                            var loadedScreenWidgets = assetBundlesLibrary.GetScreenWidgets(GetType().GetData()).GetData();
+
+                                            for (int i = 0; i < loadedScreenWidgets.Count; i++)
                                             {
-                                                var widget = loadedScreenWidgetsCallbackResults.GetData();
+                                                var referencedWidget = referencedWidgetDependencyAssets.Find(referencedWidget => referencedWidget.GetType().GetData() == loadedScreenWidgets[i].GetType().GetData());
 
-                                                widget.Initilize(initializationCallbackResults =>
+                                                callbackResults.SetResult(Helpers.GetAppComponentValid(referencedWidget, "Referenced Widget", $"Get Referenced Widget Failed - Widget Of Type : {loadedScreenWidgets[i].GetType().GetData()} - Is Not Referenced By Screen : {GetName()} Of Type : {GetType().GetData()}"));
+
+                                                if(callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        AddWidget(widget, screenWidgetAddedCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(screenWidgetAddedCallbackResults);
-
-                                                            if (callbackResults.UnSuccessful())
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        });
-                                                    }
-                                                });
+                                                    // Instantiate
+                                                }
                                             }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-
-                                        if (callbackResults.UnSuccessful())
-                                        {
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                            break;
                                         }
                                     }
                                 }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                //if (callbackResults.Success())
+                                //{
+                                //    var unloadedScreenWidgets = assetBundlesLibrary.GetUnloadedScreenWidgets(GetType().GetData()).GetData();
+
+                                //    for (int i = 0; i < unloadedScreenWidgets.Count; i++)
+                                //    {
+                                //        assetBundlesLibrary.LoadScreenWidgetBundle(unloadedScreenWidgets[i], loadedScreenWidgetsCallbackResults => 
+                                //        {
+                                //            callbackResults.SetResult(loadedScreenWidgetsCallbackResults);
+
+                                //            if(callbackResults.Success())
+                                //            {
+                                //                var widget = loadedScreenWidgetsCallbackResults.GetData();
+
+                                //                widget.Initilize(initializationCallbackResults =>
+                                //                {
+                                //                    callbackResults.SetResult(initializationCallbackResults);
+
+                                //                    if (callbackResults.Success())
+                                //                    {
+                                //                        AddWidget(widget, screenWidgetAddedCallbackResults =>
+                                //                        {
+                                //                            callbackResults.SetResult(screenWidgetAddedCallbackResults);
+
+                                //                            if (callbackResults.UnSuccessful())
+                                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //                        });
+                                //                    }
+                                //                });
+                                //            }
+                                //            else
+                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //        });
+
+                                //        if (callbackResults.UnSuccessful())
+                                //        {
+                                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                //            break;
+                                //        }
+                                //    }
+                                //}
+                                //else
+                                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                //if(callbackResults.Success())
+                                //{
+                                //    callbackResults.SetResult(Helpers.GetAppComponentsValid(referencedWidgetDependencyAssets, "Referenced Widget Dependency Assets", $"There Are No Referenced Widget Dependency Assets Assigned / Initialized For Screen : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                                //    if (callbackResults.Success())
+                                //    {
+                                //        for (int i = 0; i < referencedWidgetDependencyAssets.Count; i++)
+                                //        {
+                                //            assetBundlesLibrary.LoadScreenWidgetBundle(ScreenType.Default, referencedWidgetDependencyAssets[i].GetType().GetData(), loadedDefaultScreenWidgetsCallbackResults =>
+                                //            {
+                                //                callbackResults.SetResult(loadedDefaultScreenWidgetsCallbackResults);
+
+                                //                if (callbackResults.Success())
+                                //                {
+                                //                    var widget = loadedDefaultScreenWidgetsCallbackResults.GetData();
+
+                                //                    widget.Initilize(initializationCallbackResults =>
+                                //                    {
+                                //                        callbackResults.SetResult(initializationCallbackResults);
+
+                                //                        if (callbackResults.Success())
+                                //                        {
+                                //                            widget.SetScreenUIPlacementType(referencedWidgetDependencyAssets[i].GetScreenUIPlacementType().GetData());
+
+                                //                            AddWidget(widget, screenWidgetAddedCallbackResults =>
+                                //                            {
+                                //                                callbackResults.SetResult(screenWidgetAddedCallbackResults);
+
+                                //                                if (callbackResults.UnSuccessful())
+                                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //                            });
+                                //                        }
+                                //                    });
+                                //                }
+                                //                else
+                                //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //            });
+
+                                //            if (callbackResults.UnSuccessful())
+                                //            {
+                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                //                break;
+                                //            }
+                                //        }
+                                //    }
+                                //    else
+                                //    {
+                                //        callbackResults.result = $"There's No Referenced Widget Dependency Assets Required To Be Initialized For Screen : {GetName()} - Of Type : {GetType().GetData()}. Successfully Continuing Execution Un-interupted";
+                                //        callbackResults.resultCode = Helpers.SuccessCode;
+                                //    }
+                                //}
+                                //else
+                                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -27338,21 +27597,24 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected UIScreenWidgetVisibilityState initialVisibilityState = UIScreenWidgetVisibilityState.None;
 
-            [Space(5)]
+            [Space(15)]
+            [Header("Referenced Dependencies")]
+
+            [Space(10)]
             [SerializeField]
             protected List<ScreenReferencedWidgetDependencyAssetBundle<U>> referencedWidgetDependencyAssets = new List<ScreenReferencedWidgetDependencyAssetBundle<U>>();
 
-            [Space(15)]
+            [Space(10)]
             [Header("Dynamic Containers")]
 
-            [Space(5)]
+            [Space(15)]
             [SerializeField]
             List<DynamicContainerBase> dynamicContainerList = new List<DynamicContainerBase>();
 
             [Space(15)]
             [Header("Action Events")]
 
-            [Space(5)]
+            [Space(10)]
             [SerializeField]
             protected List<EventActionData> eventActions = new List<EventActionData>();
 
@@ -27428,6 +27690,8 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
+
+            public void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType) => this.screenUIPlacementType = screenUIPlacementType;
 
             #endregion
 
@@ -37225,7 +37489,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public ScreenWidget value;
+            public AppScreen value;
 
             #endregion
 
@@ -37237,9 +37501,9 @@ namespace Com.RedicalGames.Filar
 
             private string GetNameFallbackResults() => value ? value.GetName() : "UI Screen View Component Name Is Not Assigned And Value Is Missing / Null - Invalid Operation.";
 
-            public CallbackData<ScreenWidget> GetValue()
+            public CallbackData<AppScreen> GetValue()
             {
-                var callbackResults = new CallbackData<ScreenWidget>(Helpers.GetAppComponentValid(value, "Screen Value", $"Screen Value Is Not Assigned For UI Screen View Component : {GetName()}"));
+                var callbackResults = new CallbackData<AppScreen>(Helpers.GetAppComponentValid(value, "Screen Value", $"Screen Value Is Not Assigned For UI Screen View Component : {GetName()}"));
 
                 if(callbackResults.Success())
                 {
@@ -38087,6 +38351,9 @@ namespace Com.RedicalGames.Filar
             {
 
             }
+
+            public void SetName(string name) => this.name = name;
+            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Component Name Is Not Assigned.";
 
             #region Log Functions
 
@@ -42025,7 +42292,30 @@ namespace Com.RedicalGames.Filar
             void SetName(string name);
             string GetName();
 
-            CallbackData<ScreenWidget> GetValue();
+            CallbackData<AppScreen> GetValue();
+        }
+
+        public interface IScreenReferencedWidgetDependencyAssetBundle<T> where T : Enum
+        {
+            #region Data Setters
+
+            void SetName(string name);
+
+            void SetType(T widgetType);
+            void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType);
+            void SetInitialVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState);
+
+            #endregion
+
+            #region Data Getters
+
+            string GetName();
+
+            CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
+
+            CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityState();
+
+            #endregion
         }
 
         public interface IUIScreenData

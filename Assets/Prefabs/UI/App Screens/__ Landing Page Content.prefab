@@ -281,7 +281,11 @@ MonoBehaviour:
   screenUIPlacementType: 0
   transitionType: 1
   initialVisibilityState: 2
-  referencedWidgetDependencyAssets: []
+  referencedWidgetDependencyAssets:
+  - name: Page Refresh Status Loader
+    widgetType: 24
+    screenUIPlacementType: 2
+    initialVisibilityState: 2
   dynamicContainerList:
   - {fileID: 4194781097295782858}
   - {fileID: 976341724}

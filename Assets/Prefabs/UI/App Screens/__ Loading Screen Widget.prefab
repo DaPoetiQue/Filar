@@ -222,7 +222,15 @@ MonoBehaviour:
   screenUIPlacementType: 0
   transitionType: 1
   initialVisibilityState: 2
-  referencedWidgetDependencyAssets: []
+  referencedWidgetDependencyAssets:
+  - name: Network Warning Notification pop Up
+    widgetType: 12
+    screenUIPlacementType: 2
+    initialVisibilityState: 2
+  - name: Page Loading Spinner
+    widgetType: 24
+    screenUIPlacementType: 0
+    initialVisibilityState: 2
   dynamicContainerList:
   - {fileID: 788115758341435691}
   - {fileID: 3090725572040038037}

@@ -20165,7 +20165,9 @@ MonoBehaviour:
     dynamicContainerLibrary:
     - {fileID: 1594336066}
     - {fileID: 786316670}
-    loadedScreenWidgets: []
+    loadedAssetCache:
+      name: Loaded Widgets Caches
+      loadedAssetsCache: []
   sceneAssetList: []
   dropDownContentDataList: []
   currentProjectStructureData:
