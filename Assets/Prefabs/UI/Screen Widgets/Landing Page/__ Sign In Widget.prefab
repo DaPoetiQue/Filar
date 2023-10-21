@@ -5319,7 +5319,7 @@ MonoBehaviour:
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
-  screenType: 5
+  screenType: 7
   widgetLayouts:
   - layoutName: Default View
     layout: {fileID: 5756737564961562909}

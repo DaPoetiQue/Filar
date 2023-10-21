@@ -166,7 +166,7 @@ namespace Com.RedicalGames.Filar
         RenderProfileUIHandler renderProfileUIHandlerPrefab = null;
         ColorSwatchButtonHandler colorSwatchButtonHandlerPrefab = null;
 
-        AppData.Folder<AppScreen> folderList = new AppData.Folder<AppScreen>();
+        AppData.Folder<Screen> folderList = new AppData.Folder<Screen>();
 
         [SerializeField] // Hide
         AppData.ProjectStructureData currentProjectStructureData;
@@ -3713,7 +3713,7 @@ namespace Com.RedicalGames.Filar
 
         #region Refresh
 
-        public async Task<AppData.Callback> RefreshedAsync(AppScreen refreshedScreen, AppData.Folder folder = null, DynamicWidgetsContainer widgetsContainer = null, DynamicContentContainer contentContainer = null, AppData.SceneDataPackets dataPackets = null, int refreshDuration = 0)
+        public async Task<AppData.Callback> RefreshedAsync(Screen refreshedScreen, AppData.Folder folder = null, DynamicWidgetsContainer widgetsContainer = null, DynamicContentContainer contentContainer = null, AppData.SceneDataPackets dataPackets = null, int refreshDuration = 0)
         {
             try
             {

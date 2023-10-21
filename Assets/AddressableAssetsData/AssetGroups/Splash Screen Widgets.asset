@@ -20,17 +20,20 @@ MonoBehaviour:
   - m_GUID: 2f2a21f2e0890dc4ca05c21d829fa955
     m_Address: Splash Image Displayer Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 528a05888bf334c49b0ef0f39bde3071
     m_Address: Message Displayer Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0b50eb62cfe35694895b3b92c2455036
     m_Address: Copyright Text Displayer Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}

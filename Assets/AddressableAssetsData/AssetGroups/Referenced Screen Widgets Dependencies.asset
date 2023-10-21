@@ -21,19 +21,19 @@ MonoBehaviour:
     m_Address: Network Notification Widget
     m_ReadOnly: 0
     m_SerializedLabels:
-    - default
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f843af94970aabd4294feebcde9f6f92
     m_Address: Page Refresh Loader Widget
     m_ReadOnly: 0
     m_SerializedLabels:
-    - default
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 32777faf63cd0a74c8e92b3179a39995
     m_Address: Permissions Widget
     m_ReadOnly: 0
     m_SerializedLabels:
-    - default
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}

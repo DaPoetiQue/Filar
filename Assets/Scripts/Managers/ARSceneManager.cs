@@ -47,8 +47,8 @@ namespace Com.RedicalGames.Filar
 
             #region Scene Tracking Data Initialization
 
-            sceneTrackingData.screenCenter.x = Screen.width / 2.0f;
-            sceneTrackingData.screenCenter.y = Screen.height / 2.0f;
+            sceneTrackingData.screenCenter.x = UnityEngine.Screen.width / 2.0f;
+            sceneTrackingData.screenCenter.y = UnityEngine.Screen.height / 2.0f;
             sceneTrackingData.screenCenter.z = sceneTrackingData.trackingDistance;
 
             sceneTrackingData.hitInfoList = new List<ARRaycastHit>();

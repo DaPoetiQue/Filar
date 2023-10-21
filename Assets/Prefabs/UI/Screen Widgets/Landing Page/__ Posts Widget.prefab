@@ -66,7 +66,7 @@ MonoBehaviour:
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
-  screenType: 5
+  screenType: 7
   widgetLayouts:
   - layoutName: Default Layout
     layout: {fileID: 6256656635047167111}

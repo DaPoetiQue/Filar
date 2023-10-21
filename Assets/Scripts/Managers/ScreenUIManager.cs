@@ -69,59 +69,59 @@ namespace Com.RedicalGames.Filar
                     while (assetBundlesLibrary.OnAddressablesManagerInitialized().UnSuccessful())
                         await Task.Yield();
 
-                    callbackResults.SetResult(assetBundlesLibrary.GetUnloadedAppScreens());
+                    //callbackResults.SetResult(assetBundlesLibrary.GetUnloadedAppScreens());
 
-                    if (callbackResults.Success())
-                    {
-                        var unloadedAppScreens = assetBundlesLibrary.GetUnloadedAppScreens().GetData();
+                    //if (callbackResults.Success())
+                    //{
+                    //    var unloadedAppScreens = assetBundlesLibrary.GetUnloadedAppScreens().GetData();
 
-                        screens = new List<AppData.UIScreenViewComponent>();
+                    //    screens = new List<AppData.UIScreenViewComponent>();
 
-                        for (int i = 0; i < unloadedAppScreens.Count; i++)
-                        {
-                            assetBundlesLibrary.LoadAppScreenAssetBundle(unloadedAppScreens[i], true, loadedAppScreenCallbackResults => 
-                            {
-                                callbackResults.SetResult(loadedAppScreenCallbackResults);
+                    //    for (int i = 0; i < unloadedAppScreens.Count; i++)
+                    //    {
+                    //        assetBundlesLibrary.LoadAppScreenAssetBundle(unloadedAppScreens[i], true, loadedAppScreenCallbackResults => 
+                    //        {
+                    //            callbackResults.SetResult(loadedAppScreenCallbackResults);
 
-                                if(callbackResults.Success())
-                                {
-                                    var loadedAppScreen = loadedAppScreenCallbackResults.GetData();
+                    //            if(callbackResults.Success())
+                    //            {
+                    //                var loadedAppScreen = loadedAppScreenCallbackResults.GetData();
 
-                                    loadedAppScreen.Initilize(initializationCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(initializationCallbackResults);
+                    //                loadedAppScreen.Initilize(initializationCallbackResults =>
+                    //                {
+                    //                    callbackResults.SetResult(initializationCallbackResults);
 
-                                        if (callbackResults.Success())
-                                        {
-                                            AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
-                                            {
-                                                name = loadedAppScreen.GetScreenTitle(),
-                                                value = loadedAppScreen
-                                            };
+                    //                    if (callbackResults.Success())
+                    //                    {
+                    //                        AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
+                    //                        {
+                    //                            name = loadedAppScreen.GetScreenTitle(),
+                    //                            value = loadedAppScreen
+                    //                        };
 
-                                            AddScreen(newScreen, screenAddCallback =>
-                                            {
-                                                callbackResults.SetDataResults(screenAddCallback);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.resultCode, callbackResults.result, this);
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                            });
+                    //                        AddScreen(newScreen, screenAddCallback =>
+                    //                        {
+                    //                            callbackResults.SetDataResults(screenAddCallback);
+                    //                        });
+                    //                    }
+                    //                    else
+                    //                        Log(callbackResults.resultCode, callbackResults.result, this);
+                    //                });
+                    //            }
+                    //            else
+                    //                Log(callbackResults.resultCode, callbackResults.result, this);
+                    //        });
 
-                            if(callbackResults.UnSuccessful())
-                            {
-                                Log(callbackResults.resultCode, callbackResults.result, this);
+                    //        if(callbackResults.UnSuccessful())
+                    //        {
+                    //            Log(callbackResults.resultCode, callbackResults.result, this);
 
-                                break;
-                            }
-                        }
+                    //            break;
+                    //        }
+                    //    }
 
-                        SetScreensInitialized(callbackResults.Success());
-                    }
+                    //    SetScreensInitialized(callbackResults.Success());
+                    //}
                 }
                 else
                     Log(callbackResults.resultCode, callbackResults.result, this);
@@ -166,7 +166,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         var screenComponentHandler = screen.GetValue().GetData();
 
-                                        screenContainer.AddContent<AppScreen, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                        screenContainer.AddContent<Screen, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
                                         {
                                             callbackResults.SetResult(screenAddedCallbackResults);
 
@@ -1314,9 +1314,9 @@ namespace Com.RedicalGames.Filar
         public void SetScreenSleepTime(bool neverSleep)
         {
             if (neverSleep)
-                Screen.sleepTimeout = SleepTimeout.NeverSleep;
+                UnityEngine.Screen.sleepTimeout = SleepTimeout.NeverSleep;
             else
-                Screen.sleepTimeout = SleepTimeout.SystemSetting;
+                UnityEngine.Screen.sleepTimeout = SleepTimeout.SystemSetting;
         }
 
         public List<AppData.UIScreenViewComponent> GetScreens()

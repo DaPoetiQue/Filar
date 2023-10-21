@@ -20,12 +20,14 @@ MonoBehaviour:
   - m_GUID: c1acba0d110f39c49b605fba6e922357
     m_Address: Splash Image Displayer Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2e4e516274ba6164abbf18492dd5d5c4
     m_Address: Message Displayer Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}

@@ -2,7 +2,7 @@ using System;
 
 namespace Com.RedicalGames.Filar
 {
-    public class AppScreen : AppData.ScreenUIData
+    public class Screen : AppData.ScreenUIData
     {
         #region Unity Callbacks
 

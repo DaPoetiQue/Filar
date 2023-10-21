@@ -1816,7 +1816,7 @@ MonoBehaviour:
     screenActionGroup:
     - {fileID: 0}
     initialize: 1
-  screenType: 6
+  screenType: 8
   widgetLayouts:
   - layoutName: Default Layout
     layout: {fileID: 2803885941087977292}

@@ -22,42 +22,42 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - App Screens
-    - Screen Widget
+    - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a60c469687e2cc34f8ba099cee26cdb3
     m_Address: Loading Screen
     m_ReadOnly: 0
     m_SerializedLabels:
     - App Screens
-    - Screen Widget
+    - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 551b3da68c2fe884c809d6f3106f479f
     m_Address: Landing Page
     m_ReadOnly: 0
     m_SerializedLabels:
     - App Screens
-    - Screen Widget
+    - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9c6485e6e662c4f479b748854faee896
     m_Address: Project Creation Screen
     m_ReadOnly: 0
     m_SerializedLabels:
     - App Screens
-    - Screen Widget
+    - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 70df4d44e59804e44b201942dfcc79ba
     m_Address: Project Dashboard Screen
     m_ReadOnly: 0
     m_SerializedLabels:
     - App Screens
-    - Screen Widget
+    - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 12f85860245235c4b86d21b4d73606ec
     m_Address: Asset Import-Export Screen
     m_ReadOnly: 0
     m_SerializedLabels:
     - App Screens
-    - Screen Widget
+    - Screen
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}

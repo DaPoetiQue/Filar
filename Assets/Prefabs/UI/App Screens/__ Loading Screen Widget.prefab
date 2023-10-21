@@ -218,7 +218,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 6
+  widgetType: 8
   screenUIPlacementType: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -327,7 +327,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  screenType: 6
+  screenType: 8
   containerType: 14
   viewSpace: 2
   screenViewUIPlacementType: 0
@@ -536,7 +536,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  screenType: 6
+  screenType: 8
   containerType: 14
   viewSpace: 2
   screenViewUIPlacementType: 2
@@ -951,7 +951,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  screenType: 6
+  screenType: 8
   containerType: 14
   viewSpace: 2
   screenViewUIPlacementType: 1

@@ -20,27 +20,32 @@ MonoBehaviour:
   - m_GUID: f0091390c274c1f4cac698e0078934cc
     m_Address: Menu Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 54b0bfffa6a62a549917f9058940ec88
     m_Address: Posts Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6d872bcba00ebb74ca049f87020cb026
     m_Address: Sign_In_Sign_Up Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e4c80c2b86c4484408b5ea7bef4fbdf9
     m_Address: Anonymous Sign_In Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cac99e6c78523e544986e557570bee69
     m_Address: Terms And Condition Widget
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Widget
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}

@@ -549,7 +549,7 @@ MonoBehaviour:
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
-  screenType: 6
+  screenType: 8
   widgetLayouts:
   - layoutName: Default VIew
     layout: {fileID: 3046965486587628298}

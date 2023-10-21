@@ -65,7 +65,7 @@ MonoBehaviour:
   eventActions: []
   subscribeToActionEvents: 0
   actionGroup: []
-  screenType: 7
+  screenType: 9
   widgetLayouts:
   - layoutName: Default Text Displayer
     layout: {fileID: 2502762273286867382}

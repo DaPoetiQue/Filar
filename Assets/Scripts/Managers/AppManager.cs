@@ -71,151 +71,161 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
-
-                                var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
-                                var onScreenInitializationTaskResultsCallback = await screenUIManager.OnScreenInitAsync();
-
-                                callbackResults.SetResult(onScreenInitializationTaskResultsCallback);
+                                callbackResults.SetResults(databaseManager.GetAssetBundlesLibrary());
 
                                 if (callbackResults.Success())
                                 {
-                                    databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, async splashScreenLoadInfoCallbackResults =>
-                                    {
-                                        callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
+                                    databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
 
-                                        if (callbackResults.Success())
+                                    var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
+                                    var onScreenInitializationTaskResultsCallback = await screenUIManager.OnScreenInitAsync();
+
+                                    callbackResults.SetResult(onScreenInitializationTaskResultsCallback);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, async splashScreenLoadInfoCallbackResults =>
                                         {
-                                            var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.data;
+                                            callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.data;
 
                                             #region Trigger Splash Image
 
                                             screenUIManager.GetScreen(AppData.ScreenType.LoadingScreen, loadingScreenCallbackResults =>
-                                            {
-                                                callbackResults.SetResults(loadingScreenCallbackResults);
-
-                                                if (callbackResults.Success())
                                                 {
-                                                    if (splashScreenLoadInfo != null)
+                                                    callbackResults.SetResults(loadingScreenCallbackResults);
+
+                                                    if (callbackResults.Success())
                                                     {
-                                                        AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, async loadingManagerCallbackResults =>
+                                                        if (splashScreenLoadInfo != null)
                                                         {
-                                                            callbackResults.SetResults(loadingManagerCallbackResults);
-
-                                                            if (callbackResults.Success())
+                                                            AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, async loadingManagerCallbackResults =>
                                                             {
-                                                                var loadingManager = loadingManagerCallbackResults.data;
-                                                                var currentScreenView = loadingScreenCallbackResults.data.value;
-
-                                                                splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
-
-                                                                var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidgetOfType(AppData.WidgetType.ImageDisplayerWidget);
-
-                                                                callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
-
-                                                                LogInfo($" __________________________________________++++++++++++++ Geting Widget From Screen : {currentScreenView.name} - Of Type : {currentScreenView.GetUIScreenType()} With : {currentScreenView.GetWidgets().GetData().Count} Widget(s) - Code : {callbackResults.GetResultCode} - Resuts : {callbackResults.GetResult}", this);
+                                                                callbackResults.SetResults(loadingManagerCallbackResults);
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    callbackResults.SetResult(splashDisplayerWidgetCallbackResults.GetData().Initialized());
+                                                                    var loadingManager = loadingManagerCallbackResults.data;
+                                                                    var currentScreenView = loadingScreenCallbackResults.data.value;
+
+                                                                    splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
+
+                                                                    var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidgetOfType(AppData.WidgetType.ImageDisplayerWidget);
+
+                                                                    callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
+
+                                                                    LogInfo($" __________________________________________++++++++++++++ Geting Widget From Screen : {currentScreenView.name} - Of Type : {currentScreenView.GetUIScreenType()} With : {currentScreenView.GetWidgets().GetData().Count} Widget(s) - Code : {callbackResults.GetResultCode} - Resuts : {callbackResults.GetResult}", this);
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.GetData();
+                                                                        callbackResults.SetResult(splashDisplayerWidgetCallbackResults.GetData().Initialized());
 
-                                                                        await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
+                                                                        if (callbackResults.Success())
                                                                         {
-                                                                            callbackResults.SetResult(showSplashScreenCallbackResults);
+                                                                            var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.GetData();
 
-                                                                            if (callbackResults.Success())
+                                                                            await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
                                                                             {
-                                                                                currentScreenView.ShowWidget(splashDisplayerWidget);
-
-                                                                                callbackResults.SetResult(databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary());
+                                                                                callbackResults.SetResult(showSplashScreenCallbackResults);
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().data;
+                                                                                    currentScreenView.ShowWidget(splashDisplayerWidget);
 
-                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
+                                                                                    callbackResults.SetResult(databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary());
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
+                                                                                        var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().data;
 
-                                                                                        if (networkManager.Connected)
-                                                                                            initialLoadInfo.RemoveSequenceInstanceData(AppData.LoadingSequenceID.CheckingNetworkConnection);
+                                                                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
 
-                                                                                        initialLoadInfo.SetReferencedScreen(currentScreenView);
-
-                                                                                        await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
+                                                                                        if (callbackResults.Success())
                                                                                         {
-                                                                                            callbackResults.SetResult(initialLoadInfoCallbackResults);
+                                                                                            var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
 
-                                                                                            if (callbackResults.Success())
+                                                                                            if (networkManager.Connected)
+                                                                                                initialLoadInfo.RemoveSequenceInstanceData(AppData.LoadingSequenceID.CheckingNetworkConnection);
+
+                                                                                            initialLoadInfo.SetReferencedScreen(currentScreenView);
+
+                                                                                            await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
                                                                                             {
-                                                                                                screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
+                                                                                                callbackResults.SetResult(initialLoadInfoCallbackResults);
+
+                                                                                                if (callbackResults.Success())
                                                                                                 {
-                                                                                                    callbackResults.SetResult(currentScreenCallbackResults);
-
-                                                                                                    if (callbackResults.Success())
+                                                                                                    screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
                                                                                                     {
-                                                                                                        var screen = currentScreenCallbackResults.data;
+                                                                                                        callbackResults.SetResult(currentScreenCallbackResults);
 
-                                                                                                        if (screen.value.GetUIScreenType() == AppData.ScreenType.LandingPageScreen)
+                                                                                                        if (callbackResults.Success())
                                                                                                         {
-                                                                                                            var widget = screen.value.GetWidget(AppData.WidgetType.PostsWidget);
+                                                                                                            var screen = currentScreenCallbackResults.data;
 
-                                                                                                            if (widget != null)
+                                                                                                            if (screen.value.GetUIScreenType() == AppData.ScreenType.LandingPageScreen)
                                                                                                             {
-                                                                                                                widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
-                                                                                                                widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                                                                                                var widget = screen.value.GetWidget(AppData.WidgetType.PostsWidget);
 
-                                                                                                                await screenUIManager.RefreshAsync();
+                                                                                                                if (widget != null)
+                                                                                                                {
+                                                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
 
-                                                                                                                screen.value.ShowWidget(widget);
+                                                                                                                    await screenUIManager.RefreshAsync();
 
-                                                                                                                widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
-                                                                                                                widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+                                                                                                                    screen.value.ShowWidget(widget);
 
-                                                                                                                await Task.Delay(1000);
+                                                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
+                                                                                                                    widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
 
-                                                                                                                await databaseManager.LoadSelectedPostContent(databaseManager.GetCurrentSelectedPost());
+                                                                                                                    await Task.Delay(1000);
+
+                                                                                                                    await databaseManager.LoadSelectedPostContent(databaseManager.GetCurrentSelectedPost());
+                                                                                                                }
+                                                                                                                else
+                                                                                                                {
+                                                                                                                    callbackResults.result = $"Widget Type : {AppData.WidgetType.PostsWidget} For Screen : {screen.value.GetUIScreenType()} Not Found.";
+                                                                                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                                                                                                }
                                                                                                             }
                                                                                                             else
                                                                                                             {
-                                                                                                                callbackResults.result = $"Widget Type : {AppData.WidgetType.PostsWidget} For Screen : {screen.value.GetUIScreenType()} Not Found.";
+                                                                                                                callbackResults.result = $"Screen : {screen.value.GetUIScreenType()} Does Not Match Expected Screen Type : {AppData.ScreenType.LandingPageScreen}";
                                                                                                                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                                                             }
                                                                                                         }
-                                                                                                        else
-                                                                                                        {
-                                                                                                            callbackResults.result = $"Screen : {screen.value.GetUIScreenType()} Does Not Match Expected Screen Type : {AppData.ScreenType.LandingPageScreen}";
-                                                                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                                                                        }
-                                                                                                    }
-                                                                                                });
-                                                                                            }
-                                                                                        });
+                                                                                                    });
+                                                                                                }
+                                                                                            });
+                                                                                        }
                                                                                     }
                                                                                 }
-                                                                            }
-                                                                        });
+                                                                            });
+                                                                        }
                                                                     }
                                                                 }
-                                                            }
 
-                                                        }, "Screen UI Manager Instance Is Not Yet Initialized");
+                                                            }, "Screen UI Manager Instance Is Not Yet Initialized");
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
 
                                             #endregion
                                         }
-                                    });
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);                            }
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         }, "Screen UI Manager Instance Is Not Yet Initialized");
                     }
