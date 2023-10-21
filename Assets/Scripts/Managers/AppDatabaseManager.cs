@@ -8581,7 +8581,7 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackData<AppData.AssetBundlesLibrary> GetAssetBundlesLibrary()
         {
-            var callbackResults = new AppData.CallbackData<AppData.AssetBundlesLibrary>(assetBundlesLibrary.OnAppScreensInitialized());
+            var callbackResults = new AppData.CallbackData<AppData.AssetBundlesLibrary>(assetBundlesLibrary.OnResourceLocatorsInitialized());
 
             if(callbackResults.Success())
                 callbackResults.data = assetBundlesLibrary;
