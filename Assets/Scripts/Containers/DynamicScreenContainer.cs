@@ -74,10 +74,29 @@ namespace Com.RedicalGames.Filar
 
                             if(callbackResults.Success())
                             {
-                                screens.Sort((screenA, screenB) => (GetOrderInLayerType().GetData() == AppData.OrderInLayerType.Ascending)? screenA.GetOrderInLayer().CompareTo(screenB.GetOrderInLayer()) : screenB.GetOrderInLayer().CompareTo(screenA.GetOrderInLayer()));
+                                bool sort = false;
 
-                                for (int i = 0; i < screens.Count; i++)
-                                    screens[i].SetOrderInLayer(i);
+                                switch(GetOrderInLayerType().GetData())
+                                {
+                                    case AppData.OrderInLayerType.Ascending:
+
+                                        screens.Sort((screenA, screenB) => screenA.GetOrderInLayer().CompareTo(screenB.GetOrderInLayer()));
+                                        sort = true;
+
+                                        break;
+
+                                    case AppData.OrderInLayerType.Descending:
+
+
+                                        screens.Sort((screenA, screenB) => screenB.GetOrderInLayer().CompareTo(screenA.GetOrderInLayer()));
+                                        sort = true;
+
+                                        break;
+                                }
+
+                                if(sort)
+                                    for (int i = 0; i < screens.Count; i++)
+                                        screens[i].SetOrderInLayer(i);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

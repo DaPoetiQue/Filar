@@ -1181,6 +1181,7 @@ namespace Com.RedicalGames.Filar
         public enum OrderInLayerType
         {
             None,
+            Default,
             Ascending,
             Descending
         }
@@ -28052,11 +28053,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
-            public void SetOrderInLayer(int orderInLayer)
-            {
-                this.orderInLayer = orderInLayer;
-                transform.SetSiblingIndex(orderInLayer);
-            }
+            public void SetOrderInLayer(int orderInLayer) => transform.SetSiblingIndex(orderInLayer);
 
             #endregion
 

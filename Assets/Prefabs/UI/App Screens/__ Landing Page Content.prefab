@@ -1322,6 +1322,7 @@ MonoBehaviour:
   containerType: 14
   viewSpace: 2
   screenViewUIPlacementType: 0
+  orderInLayerType: 1
   selectableWidgetType: 0
   orientation: 0
 --- !u!1 &3621854200248769577
@@ -3570,6 +3571,7 @@ MonoBehaviour:
   containerType: 14
   viewSpace: 2
   screenViewUIPlacementType: 2
+  orderInLayerType: 1
   selectableWidgetType: 0
   orientation: 0
 --- !u!1 &3621854200981143696
@@ -3706,6 +3708,7 @@ MonoBehaviour:
   containerType: 14
   viewSpace: 2
   screenViewUIPlacementType: 1
+  orderInLayerType: 1
   selectableWidgetType: 0
   orientation: 0
 --- !u!1 &3621854201067661909

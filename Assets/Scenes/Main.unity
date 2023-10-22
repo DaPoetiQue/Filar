@@ -14683,7 +14683,7 @@ MonoBehaviour:
   containerType: 13
   viewSpace: 2
   screenViewUIPlacementType: 0
-  orderInLayerType: 2
+  orderInLayerType: 3
   selectableWidgetType: 5
   orientation: 0
 --- !u!1 &1613394468
