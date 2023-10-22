@@ -38692,6 +38692,98 @@ namespace Com.RedicalGames.Filar
             public NavigationWidgetVisibilityState visibilityState;
         }
 
+        #region Config Data Packets
+
+        [Serializable]
+        public class ConfigDataPacket<T> : DataDebugger where T : Enum
+        {
+            #region Components
+
+            [SerializeField]
+            protected T type;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetType(T type) => this.type = type;
+
+            #endregion
+
+            #region Data Getters
+
+            public new CallbackData<T> GetType()
+            {
+                var callbacResults = new CallbackData<T>();
+
+                if(!type.ToString().ToLower().Equals("none"))
+                {
+                    callbacResults.result = $"Config Data Packet : {GetName()} Is Set To Type : {type}";
+                    callbacResults.data = type;
+                    callbacResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbacResults.result = $"Config Data Packet : {GetName()} Get Type Failed : Type Is Set To Default : {type} - Invalid Operation, Possible Fix - Assign Value In The Inspector Panel.";
+                    callbacResults.data = default;
+                    callbacResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbacResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ScreenConfigDataPacket : ConfigDataPacket<ScreenType>
+        {
+            #region Components
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            #endregion
+
+            #region Data Getters
+
+            #endregion
+            #endregion
+        }
+
+        [Serializable]
+        public class WidgetConfigDataPacket : ConfigDataPacket<ScreenType>
+        {
+            #region Components
+
+            [SerializeField]
+            protected bool blurScreen;
+
+            #endregion
+
+            #region Main
+
+
+            #region Data Setters
+
+            #endregion
+
+            #region Data Getters
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
         #endregion
 
         #endregion

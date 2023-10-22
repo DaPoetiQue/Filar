@@ -92,9 +92,9 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.data;
 
-                                            #region Trigger Splash Image
+                                                #region Trigger Splash Image
 
-                                            screenUIManager.GetScreen(AppData.ScreenType.LoadingScreen, loadingScreenCallbackResults =>
+                                                screenUIManager.GetScreen(AppData.ScreenType.LoadingScreen, loadingScreenCallbackResults =>
                                                 {
                                                     callbackResults.SetResults(loadingScreenCallbackResults);
 
@@ -208,14 +208,22 @@ namespace Com.RedicalGames.Filar
                                                                         }
                                                                     }
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             }, "Screen UI Manager Instance Is Not Yet Initialized");
                                                         }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 });
 
-                                            #endregion
-                                        }
+                                                #endregion
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
                                     }
                                     else
@@ -229,71 +237,12 @@ namespace Com.RedicalGames.Filar
 
                         }, "Screen UI Manager Instance Is Not Yet Initialized");
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
             }
-        }
-
-        void DeleteThis()
-        {
-            //if (SceneAssetsManager.Instance != null)
-            //    SceneAssetsManager.Instance.SetCurrentSceneAsset(SceneAssetsManager.Instance.GetSceneAssets()[0]);;
-
-            //OnProjectSupport(projectSupportCallbackResults => 
-            //{
-            //    if (projectSupportCallbackResults.Success())
-            //    {
-            //        AppData.Helpers.GetComponent(SceneAssetsManager.Instance, hasComponentCallbackResults =>
-            //        {
-            //            if (hasComponentCallbackResults.Success())
-            //            {
-            //                SceneAssetsManager.Instance.InitializeStorage(storageInitializedCallbackResults =>
-            //                {
-            //                    if (storageInitializedCallbackResults.Success())
-            //                    {
-            //                        SceneAssetsManager.Instance.LoadRootStructureData(loadedProjectDataResultsCallback =>
-            //                        {
-            //                            if (loadedProjectDataResultsCallback.Success())
-            //                            {
-            //                                var rootProjectStructure = loadedProjectDataResultsCallback.data.GetProjectStructureData();
-
-            //                                SceneAssetsManager.Instance.SetCurrentProjectStructureData(rootProjectStructure, projectStructureInitializedCallbackResults => 
-            //                                {
-            //                                    if (projectStructureInitializedCallbackResults.Success())
-            //                                        OnLoadAppInitializationBootScreen();
-            //                                    else
-            //                                        Log(projectStructureInitializedCallbackResults.resultsCode, projectStructureInitializedCallbackResults.results, this);
-            //                                });
-
-            //                                // Check This Later On.......................................................................................................................................
-
-            //                                //SceneAssetsManager.Instance.GetDynamicWidgetsContainer(SceneAssetsManager.Instance.GetContainerType(initialLoadDataPackets.screenType), containerResults =>
-            //                                //{
-            //                                //    if (containerResults.Success())
-            //                                //    {
-            //                                //        var rootFolder = rootProjectStructure.rootFolder;
-            //                                //        var container = containerResults.data;
-
-            //                                //        SceneAssetsManager.Instance.SetWidgetsRefreshData(rootFolder, container);
-
-            //                                //        LogInfo($" <<<<<<<<<<<-------------->>>>>>>>>>> On Load App", this);
-            //                                //    }
-            //                                //    else
-            //                                //        Log(containerResults.resultsCode, containerResults.results, this);
-            //                                //});
-            //                            }
-            //                            else
-            //                                Log(loadedProjectDataResultsCallback.resultsCode, loadedProjectDataResultsCallback.results, this);
-            //                        });
-            //                    }
-            //                    else
-            //                        Log(storageInitializedCallbackResults.resultsCode, storageInitializedCallbackResults.results, this);
-            //                });
-            //            }
-            //        });
-            //    }
-            //    else
-            //        Log(projectSupportCallbackResults.resultsCode, projectSupportCallbackResults.results, this);
-            //});
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         void OnProjectSupport(Action<AppData.CallbackData<AppData.ProjectRestriction>> callback)
