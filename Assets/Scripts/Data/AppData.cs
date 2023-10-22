@@ -1169,6 +1169,14 @@ namespace Com.RedicalGames.Filar
             License
         }
 
+        public enum AssetBundleResourceLocatorType
+        {
+            None,
+            Screen,
+            Widget,
+            Selectable,
+            Model
+        }
 
         #endregion
 
@@ -1389,6 +1397,45 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public void SetKey(T key) => this.cacheKey = key;
+
+            public CallbackDataList<U> GetCache()
+            {
+                var callbackResults = new CallbackDataList<U>(GetKey());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(cachedAssetList, "Cached Asset List", $"Cache Assets Are Not Yet Initialized For Cache Object : {GetName()} - Of Type : {cacheKey} - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                        callbackResults.data = cachedAssetList;
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<T> GetKey()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if(!cacheKey.ToString().ToLower().Equals("none"))
+                {
+                    callbackResults.result = $"Cache Object : {GetName()}'s Cache Key Type Is Set To : {cacheKey}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Cacke Key Failed - Cache Object : {GetName()}'s Cache Key Type Is Set To Default : {cacheKey} - Invalid Operation, Possible Fix, Varify If Cache Is Initialized .";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
             #endregion
         }
 
@@ -1413,9 +1460,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void CacheLoadedAssets(T key, U value, Action<Callback> callback = null)
+            public void CacheLoadedAssets(T key, U value, Action<CallbackData<T>> callback = null)
             {
-                var callbackResults = new Callback(Helpers.GetAppComponentValid(value, "Cache Value", $"Could Add Asset To Cache Data Of Key : {key}, Value Is Null - Invalid Operation."));
+                var callbackResults = new CallbackData<T>(Helpers.GetAppComponentValid(value, "Cache Value", $"Could Add Asset To Cache Data Of Key : {key}, Value Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
@@ -1432,6 +1479,7 @@ namespace Com.RedicalGames.Filar
                             if (loadedAssetsCacheData.cachedAssetList.Contains(value))
                             {
                                 callbackResults.result = $"Add Asset To cache List Success : Value Has Been Successfully Added To Cached Assets Data Of Type : {key}.";
+                                callbackResults.data = key;
                                 callbackResults.resultCode = Helpers.SuccessCode;
                             }
                             else
@@ -1461,6 +1509,7 @@ namespace Com.RedicalGames.Filar
                                 if (assetBundles.Contains(newLoadedAssetsCacheData))
                                 {
                                     callbackResults.result = $"Add Asset To cache List Success : Value Has Been Successfully Added To A Newely Created Cached Assets Data Of Type : {key}.";
+                                    callbackResults.data = key;
                                     callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
@@ -1494,25 +1543,24 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var cachedAssets = assetBundles.Find(cachedData => cachedData.cacheKey.ToString().Equals(key.ToString()));
-
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(cachedAssets, "Cached Assets", $"Get Cached Asset Failed : Couldn't Find Cached Assets For Cache Key : {key} - Invalid Operation."));
-
-                    if(callbackResults.Success())
+                    for (int i = 0; i < assetBundles.Count; i++)
                     {
-                        callbackResults.SetResult(cachedAssets.Initialized());
-
-                        if (callbackResults.Success())
+                        if(assetBundles[i].cacheKey.ToString().Equals(key.ToString()))
                         {
-                            callbackResults.data = cachedAssets.cachedAssetList;
+                            callbackResults.SetResult(assetBundles[i].Initialized());
 
-                            LogInfo($" _______________++++++++++++++++_____!! Found : {cachedAssets.cachedAssetList.Count} Widgets For Key : {key}", this);
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.data = assetBundles[i].cachedAssetList;
+
+                                LogInfo($" _______________++++++++++++++++_____!! Found Cache Key : {assetBundles[i].cacheKey} With : {assetBundles[i].cachedAssetList.Count} Assets At Index : {i} - Searching For Key : {key}", this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
                         }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -1521,15 +1569,6 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
-        }
-
-        public enum AssetBundleResourceLocatorType
-        {
-            None,
-            Screen,
-            Widget,
-            Selectable,
-            Model
         }
 
         [Serializable]
@@ -1544,6 +1583,7 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private bool initialize = false;
 
+            [SerializeField] // Remove Serializer - Hide This Value In The Editor Inspector.
             private bool loaded = false;
 
             #endregion
@@ -1806,8 +1846,21 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            AddLoadedAssetsToCache(locatorType, callbackResults =>
+                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
                             {
+                                callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(loadedScreens.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                    if (callbackResults.Success())
+                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult,this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                             }, loadedBundleScreen.ToArray());
                         }
@@ -1824,8 +1877,21 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            AddLoadedAssetsToCache(locatorType, callbackResults =>
+                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
                             {
+                                callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(loadedWidgets.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                    if(callbackResults.Success())
+                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                             }, loadedBundleWidgets.ToArray());
                         }
@@ -2070,9 +2136,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void AddLoadedAssetsToCache<T>(AssetBundleResourceLocatorType locatorType, Action<Callback> callback = null, params T[] loadedAssets)
+            private void AddLoadedAssetsToCache<T>(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ScreenType>> callback = null, params T[] loadedAssets)
             {
-                var callbackResults = new Callback(Helpers.GetAppComponentsValid(loadedAssets, "Loaded Assets", 
+                var callbackResults = new CallbackData<ScreenType>(Helpers.GetAppComponentsValid(loadedAssets, "Loaded Assets", 
                     "Add Loaded Screen Widget To Cache Failed - There Are No Loaded Assets To Cache."));
 
                 if (callbackResults.Success())
@@ -2089,13 +2155,29 @@ namespace Com.RedicalGames.Filar
                                 loadedScreens.CacheLoadedAssets(ScreenType.Default, loadedAsset, widgetCachedCallbackResults =>
                                 {
                                     callbackResults.SetResult(widgetCachedCallbackResults);
+
+                                    if(callbackResults.Success())
+                                    {
+                                        if(widgetCachedCallbackResults.GetData() == ScreenType.Default)
+                                        {
+                                            callbackResults.result = $"Added Loaded Asset For Screen : {ScreenType.Default}.";
+                                            callbackResults.data = widgetCachedCallbackResults.GetData();
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Failed To Add Loaded Asset For Screen : {ScreenType.Default} - Invalid Operation - Please Chec Here.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                                 });
 
                                 if (callbackResults.UnSuccessful())
                                     break;
                             }
-
-                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == AssetBundleResourceLocatorType.Screen).SetLoadedState(callbackResults.Success());
 
                             break;
 
@@ -2113,6 +2195,22 @@ namespace Com.RedicalGames.Filar
                                     {
                                         callbackResults.SetResult(widgetCachedCallbackResults);
 
+                                        if (callbackResults.Success())
+                                        {
+                                            if (widgetCachedCallbackResults.GetData() == loadedAsset.GetScreenType().GetData())
+                                            {
+                                                callbackResults.result = $"Added Loaded Asset For Screen : {widgetCachedCallbackResults.GetData()}.";
+                                                callbackResults.data = widgetCachedCallbackResults.GetData();
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Failed To Add Loaded Asset For Screen : {loadedAsset.GetScreenType().GetData()} - Invalid Operation - Please Check Here.";
+                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                                     });
 
                                     if (callbackResults.UnSuccessful())
@@ -2121,8 +2219,6 @@ namespace Com.RedicalGames.Filar
                                 else
                                     break;
                             }
-
-                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == AssetBundleResourceLocatorType.Widget).SetLoadedState(callbackResults.Success());
 
                             break;
                     }

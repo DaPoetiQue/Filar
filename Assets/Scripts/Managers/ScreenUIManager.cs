@@ -85,6 +85,7 @@ namespace Com.RedicalGames.Filar
                             for (int i = 0; i < loadedScreens.Count; i++)
                             {
                                 var screenComponent = Instantiate(loadedScreens[i].gameObject).GetComponent<Screen>();
+                                screenComponent.gameObject.SetName(loadedScreens[i].GetName());
 
                                 callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screenComponent, "Screen Component", $"On Screen Init Async Failed - Screen Component Not Found From Instantiated Object For Screen : {loadedScreens[i].GetName()} - Of Type : {loadedScreens[i].GetType().GetData()} - Invalid Operation, Please Check Here."));
 
