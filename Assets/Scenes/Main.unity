@@ -937,6 +937,7 @@ MonoBehaviour:
   containerType: 0
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -1161,6 +1162,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 15
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -1482,6 +1484,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 2
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 2
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -1622,6 +1625,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 1
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -2218,6 +2222,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 24
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -2440,6 +2445,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 22
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -2745,6 +2751,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 23
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -3199,7 +3206,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 3100, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 339.99997, y: 690}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &511625445
@@ -3993,6 +4000,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 10
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -7314,6 +7322,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 13
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -7536,6 +7545,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 17
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -8119,6 +8129,7 @@ MonoBehaviour:
   containerType: 11
   viewSpace: 1
   screenViewUIPlacementType: 0
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 2012478901}
@@ -8498,6 +8509,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 5
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -9297,6 +9309,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 9
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -9887,6 +9900,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 18
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -10405,6 +10419,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 27
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -10923,6 +10938,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 12
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -11145,6 +11161,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 5
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -12126,6 +12143,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 25
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -13105,6 +13123,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 14
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -13590,6 +13609,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 26
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -13957,6 +13977,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 1
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 2
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -14210,6 +14231,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 4
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -14661,6 +14683,7 @@ MonoBehaviour:
   containerType: 13
   viewSpace: 2
   screenViewUIPlacementType: 0
+  orderInLayerType: 2
   selectableWidgetType: 5
   orientation: 0
 --- !u!1 &1613394468
@@ -14870,6 +14893,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 11
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -15184,6 +15208,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 1
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -15409,6 +15434,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 6
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -15909,6 +15935,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 1
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -16131,6 +16158,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 18
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -16353,6 +16381,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 20
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -16577,6 +16606,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 16
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -17072,6 +17102,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 19
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -19336,10 +19367,15 @@ MonoBehaviour:
     - name: App Screen Resource Locator
       bundleKey: 1
       initialize: 1
+      loaded: 0
     - name: Screen Widget Resource Locator
       bundleKey: 2
       initialize: 1
-    loadedAssetBundles:
+      loaded: 0
+    loadedScreens:
+      name: 
+      assetBundles: []
+    loadedWidgets:
       name: 
       assetBundles: []
     dynamicContainerLibrary:
@@ -19488,6 +19524,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 3
   screenUIPlacementType: 3
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []

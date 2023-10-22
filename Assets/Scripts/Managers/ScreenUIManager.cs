@@ -106,6 +106,20 @@ namespace Com.RedicalGames.Filar
                                             AddScreen(newScreen, screenAddCallback =>
                                             {
                                                 callbackResults.SetDataResults(screenAddCallback);
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(screenComponent.GetDynamicContainerList());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        assetBundlesLibrary.AddLoadedDynamicContainersToLibrary(containerAddedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(containerAddedCallbackResults);
+
+                                                        }, AppData.Helpers.GetArray(screenComponent.GetDynamicContainerList().GetData()));
+                                                    }
+                                                }
                                             });
                                         }
                                         else
@@ -135,6 +149,43 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.resultCode, callbackResults.result, this);
 
             return callbackResults;
+        }
+
+        private void OnSetOrderInLayer()
+        {
+
+            var callbackResults = new AppData.Callback(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+            if (callbackResults.Success())
+            {
+                var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                assetBundlesLibrary.GetDynamicContainer<DynamicScreenContainer>(AppData.ScreenType.Default, AppData.ContentContainerType.AppScreenContainer, AppData.ContainerViewSpaceType.Screen, containerCallbackResults =>
+                {
+                    if (containerCallbackResults.Success())
+                    {
+                        var container = containerCallbackResults.GetData();
+
+                        callbackResults.SetResult(container.GetOrderInLayerType());
+
+                        if(callbackResults.Success())
+                        {
+                            screens.Sort((screenA, screenB) => (container.GetOrderInLayerType().GetData() == AppData.OrderInLayerType.Ascending)? 
+                            screenA.GetValue().GetData().GetOrderInLayer().CompareTo(screenB.GetValue().GetData().GetOrderInLayer()) : 
+                            screenB.GetValue().GetData().GetOrderInLayer().CompareTo(screenA.GetValue().GetData().GetOrderInLayer()));
+
+                            for (int i = 0; i < screens.Count; i++)
+                                screens[i].GetValue().GetData().SetOrderInLayer(i);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         public void AddScreen(AppData.UIScreenViewComponent screen, Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
@@ -242,7 +293,13 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        private void SetScreensInitialized(bool isInitialized) => screensInitialized = isInitialized;
+        private void SetScreensInitialized(bool isInitialized)
+        {
+            screensInitialized = isInitialized;
+
+            if (screensInitialized)
+                OnSetOrderInLayer();
+        }
 
         public bool IsInitialized() => screensInitialized;
 

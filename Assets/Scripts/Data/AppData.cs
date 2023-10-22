@@ -1178,6 +1178,13 @@ namespace Com.RedicalGames.Filar
             Model
         }
 
+        public enum OrderInLayerType
+        {
+            None,
+            Ascending,
+            Descending
+        }
+
         #endregion
 
         #region Asset Bundles
@@ -2978,6 +2985,10 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected ScreenUIPlacementType screenViewUIPlacementType = ScreenUIPlacementType.None;
 
+            [Space(5)]
+            [SerializeField]
+            protected OrderInLayerType orderInLayerType = OrderInLayerType.None;
+
             #endregion
 
             #region Main
@@ -3089,6 +3100,20 @@ namespace Com.RedicalGames.Filar
             {
                 return false;
             }
+
+            #endregion
+
+            #region Data Setters
+
+            public void SetScreenType(ScreenType screenType) => this.screenType = screenType;
+
+            public void SetContentContainerType(ContentContainerType containerType) => this.containerType = containerType;
+
+            public void SetContainerViewSpaceType(ContainerViewSpaceType viewSpace) => this.viewSpace = viewSpace;
+
+            public void SetScreenUIPlacementType(ScreenUIPlacementType screenViewUIPlacementType) => this.screenViewUIPlacementType = screenViewUIPlacementType;
+
+            public void SetOrderInLayerType(OrderInLayerType orderInLayerType) => this.orderInLayerType = orderInLayerType;
 
             #endregion
 
@@ -3224,13 +3249,33 @@ namespace Com.RedicalGames.Filar
 
                 if (viewSpace != ContainerViewSpaceType.None)
                 {
-                    callbackResults.result = $"Container : {name}'s View Space Type Is Set To Default : {viewSpace}";
+                    callbackResults.result = $"Container : {GetName()}'s View Space Type Is Set To : {viewSpace}";
                     callbackResults.data = viewSpace;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Container : {name}'s View Space Type Is Set To Default : None";
+                    callbackResults.result = $"Container : {GetName()}'s View Space Type Is Set To Default : {orderInLayerType} - Invalid Operation - Possible Fix, Please Assign Value In The Editor Inspector Panel.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<OrderInLayerType> GetOrderInLayerType()
+            {
+                var callbackResults = new CallbackData<OrderInLayerType>();
+
+                if (orderInLayerType != OrderInLayerType.None)
+                {
+                    callbackResults.result = $"Container : {GetName()}'s View Order In Layer Type Is Set To : {orderInLayerType}";
+                    callbackResults.data = orderInLayerType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Container : {GetName()}'s View Space Type Is Set To Default : {orderInLayerType}- Invalid Operation - Possible Fix, Please Assign Value In The Editor Inspector Panel.";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -25938,7 +25983,66 @@ namespace Com.RedicalGames.Filar
                                         }
                                     }
                                 }
+
+                                if(callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(Helpers.GetAppComponentsValid(referencedWidgetDependencyAssets, "Referenced Widget Dependency Assets", $"There Are No Referenced Widget Dependency Assets To Be Initialized For Screen : {GetName()} - Of Type : {GetType().GetData()} - Resuming Execution Un-interrupted."));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedWidgets(screenReferencedWidgets: Helpers.GetArray(referencedWidgetDependencyAssets)));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var loadedWidgets = assetBundlesLibrary.GetLoadedWidgets(screenReferencedWidgets: Helpers.GetArray(referencedWidgetDependencyAssets)).GetData();
+
+                                            for (int i = 0; i < loadedWidgets.Count; i++)
+                                            {
+                                                var widgetComponent = Instantiate(loadedWidgets[i].gameObject).GetComponent<Widget>();
+                                                widgetComponent.gameObject.SetName(loadedWidgets[i].GetName());
+
+                                                widgetComponent.SetScreenUIPlacementType(referencedWidgetDependencyAssets[i].GetScreenUIPlacementType().GetData());
+                                                widgetComponent.SetUIScreenWidgetVisibilityState(referencedWidgetDependencyAssets[i].GetInitialVisibilityState().GetData());
+
+                                                callbackResults.SetResult(Helpers.GetAppComponentValid(widgetComponent, "Widget Component", $"Initialize Widgets Failed - Widget Component Not Found From Instantiated Object For Widget : {loadedWidgets[i].GetName()} - Of Type : {loadedWidgets[i].GetType().GetData()} - Invalid Operation, Please Check Here."));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    widgetComponent.Initilize(initializationCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(initializationCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            AddWidget(widgetComponent, screenWidgetAddedCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(screenWidgetAddedCallbackResults);
+
+                                                                if (callbackResults.UnSuccessful())
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                    });
+                                                }
+
+                                                if (callbackResults.UnSuccessful())
+                                                {
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -27821,6 +27925,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            protected int orderInLayer = 0;
+
+            [Space(5)]
+            [SerializeField]
             protected TransitionType transitionType = TransitionType.None;
 
             [Space(5)]
@@ -27923,6 +28031,14 @@ namespace Com.RedicalGames.Filar
 
             public void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType) => this.screenUIPlacementType = screenUIPlacementType;
 
+            public void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
+
+            public void SetOrderInLayer(int orderInLayer)
+            {
+                this.orderInLayer = orderInLayer;
+                transform.SetSiblingIndex(orderInLayer);
+            }
+
             #endregion
 
             #region Data Getters
@@ -27999,6 +28115,8 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public int GetOrderInLayer() => orderInLayer;
+
             public CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityStateType()
             {
                 var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>(GetType());
@@ -28044,7 +28162,6 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
-
 
             public CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>> GetReferencedWidgetDependencyAssets()
             {
@@ -42424,6 +42541,18 @@ namespace Com.RedicalGames.Filar
 
             Task<Callback> ClearAsync(bool showSpinner = false);
 
+            #region Data Setters
+
+            void SetScreenType(ScreenType screenType);
+            void SetContentContainerType(ContentContainerType containerType);
+            void SetContainerViewSpaceType(ContainerViewSpaceType viewSpace);
+            void SetScreenUIPlacementType(ScreenUIPlacementType screenViewUIPlacementType);
+            void SetOrderInLayerType(OrderInLayerType orderInLayerType);
+
+            #endregion
+
+            #region Data Getters
+
             CallbackData<T> GetContainer<T>() where T : Transform;
 
             CallbackData<ContainerViewSpaceType> GetViewSpace();
@@ -42431,6 +42560,10 @@ namespace Com.RedicalGames.Filar
             CallbackData<ContentContainerType> GetContainerType();
 
             CallbackData<ScreenUIPlacementType> GetScreenViewUIPlacementType();
+
+            CallbackData<OrderInLayerType> GetOrderInLayerType();
+
+            #endregion
 
             void UpdateContainer();
 

@@ -2451,6 +2451,7 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   widgetType: 4
   screenUIPlacementType: 0
+  orderInLayer: 5
   transitionType: 2
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
