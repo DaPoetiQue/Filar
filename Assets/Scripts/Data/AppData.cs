@@ -3351,7 +3351,6 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-
             public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : SelectableDynamicContent
             {
                 try
@@ -3508,7 +3507,25 @@ namespace Com.RedicalGames.Filar
                                             uiScreenWidgetComponent.GetSceneObject().AddToPlacementContainer(GetContainer<RectTransform>().GetData(), keepWorldPosition);
 
                                             if (updateContainer)
-                                                OnUpdatedContainerSize();
+                                            {
+                                                UpdateContentOrderInLayer(updateOrderInLayerCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(updateOrderInLayerCallbackResults);
+
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        OnUpdatedContainerSize(updateContainerSizeCallbackResults => 
+                                                        {
+                                                            callbackResults.SetResult(updateContainerSizeCallbackResults);
+
+                                                            if(callbackResults.UnSuccessful())
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -3628,6 +3645,8 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Updates
+
+            protected abstract void UpdateContentOrderInLayer(Action<Callback> callback = null);
 
             protected abstract void OnUpdatedContainerSize(Action<CallbackData<Vector2>> callback = null);
             protected abstract Task<CallbackData<Vector2>> OnUpdatedContainerSizeAsync();

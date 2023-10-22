@@ -95,6 +95,11 @@ namespace Com.RedicalGames.Filar
             return null;
         }
 
+        protected override void UpdateContentOrderInLayer(Action<AppData.Callback> callback = null)
+        {
+            LogInfo("This Type Of Container Doesn't Implement This Method.");
+        }
+
         #endregion
 
         #endregion
