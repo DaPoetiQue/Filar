@@ -15,10 +15,10 @@ MonoBehaviour:
   m_DefaultGroup: 1d8f7096a103d2c4ab1090119fb26270
   m_CachedHash:
     serializedVersion: 2
-    Hash: f1391b71f2052b98c20045cb5426da52
-  m_OptimizeCatalogSize: 0
+    Hash: 00000000000000000000000000000000
+  m_OptimizeCatalogSize: 1
   m_BuildRemoteCatalog: 0
-  m_BundleLocalCatalog: 0
+  m_BundleLocalCatalog: 1
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
   m_IgnoreUnsupportedFilesInBuild: 0

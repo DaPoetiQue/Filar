@@ -21,25 +21,22 @@ MonoBehaviour:
     m_Address: App Boot Screen
     m_ReadOnly: 0
     m_SerializedLabels:
-    - App Screens
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a60c469687e2cc34f8ba099cee26cdb3
     m_Address: Loading Screen
     m_ReadOnly: 0
     m_SerializedLabels:
-    - App Screens
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 551b3da68c2fe884c809d6f3106f479f
     m_Address: Landing Page
     m_ReadOnly: 0
     m_SerializedLabels:
-    - App Screens
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5583e83b16a88894ba7e39260c4656a2, type: 2}
+    - {fileID: 11400000, guid: 8c1e1246e9c897f408fa0018f93a7aa6, type: 2}
