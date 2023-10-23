@@ -17842,9 +17842,9 @@ MonoBehaviour:
       referencedScreen: {fileID: 0}
     - name: Initial Load Info Instance
       screenConfigDataPacket:
-        name: 
-        type: 0
-        loadTransitionType: 0
+        name: Landing Page
+        type: 7
+        loadTransitionType: 1
       sequences:
       - name: Network Initialization Sequence
         sequenceID: 1
@@ -18622,36 +18622,36 @@ MonoBehaviour:
     dataPacketsCollection:
     - name: Splash Screen Data
       screenConfigDataPacket:
-        name: 
-        type: 0
-        loadTransitionType: 0
+        name: Splash Screen Config Data
+        type: 9
+        loadTransitionType: 1
       widgetConfigDataPacket:
         name: 
         type: 0
         blurScreen: 0
     - name: Loading Screen Data
       screenConfigDataPacket:
-        name: 
-        type: 0
-        loadTransitionType: 0
+        name: Loading Screen Config Data
+        type: 8
+        loadTransitionType: 1
       widgetConfigDataPacket:
         name: 
         type: 0
         blurScreen: 0
     - name: App's Boot Screen Data
       screenConfigDataPacket:
-        name: 
-        type: 0
-        loadTransitionType: 0
+        name: Landing Page Config Data
+        type: 7
+        loadTransitionType: 1
       widgetConfigDataPacket:
         name: 
         type: 0
         blurScreen: 0
     - name: Project Creation Widget Data
       screenConfigDataPacket:
-        name: 
-        type: 0
-        loadTransitionType: 0
+        name: Project Creation Screen Config
+        type: 6
+        loadTransitionType: 1
       widgetConfigDataPacket:
         name: 
         type: 0

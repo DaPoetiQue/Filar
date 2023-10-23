@@ -4089,19 +4089,18 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var screenLoadInfo = sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(GetScreenType().GetData()).GetData();
+                            //var screenLoadInfo = sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(GetScreenType().GetData()).GetData();
 
-                            var runtimeInstanceInfo = GetRuntimeInstanceInfo(runtimeReference).GetData();
+                            callbackResults.SetResult(GetRuntimeInstanceInfo(runtimeReference));
 
-                            if (runtimeInstanceInfo != null)
+                            if (callbackResults.Success())
                             {
-                                if (runtimeInstanceInfo?.GetScreenDelayTime() != null)
-                                {
-                                    await Task.Delay(runtimeInstanceInfo.GetScreenDelayTime());
+                                var runtimeInstanceInfo = GetRuntimeInstanceInfo(runtimeReference).GetData();
 
-                                    callbackResults.result = $"Screen Of Type : {GetScreenType()} On Loaded Delay Completed.";
-                                    callbackResults.data = runtimeInstanceInfo.GetScreenDelayTime();
-                                }
+                                await Task.Delay(runtimeInstanceInfo.GetScreenDelayTime());
+
+                                callbackResults.result = $"Screen Of Type : {GetScreenType()} On Loaded Delay Completed.";
+                                callbackResults.data = runtimeInstanceInfo.GetScreenDelayTime();
                             }
                         }
                     }
@@ -33496,7 +33495,7 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                if (selectedWidgetType == GetType().GetData() && dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == screenUIManager.GetCurrentScreenType().GetData())
+                                if (selectedWidgetType == GetType().GetData() && GetScreenType().GetData() == screenUIManager.GetCurrentScreenType().GetData())
                                 {
                                     callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} Is Ready.";
                                     callbackResults.resultCode = Helpers.SuccessCode;
