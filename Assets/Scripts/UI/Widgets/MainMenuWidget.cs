@@ -85,11 +85,11 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var currentScreen = currentScreenCallbackResults.data;
 
-                                                currentScreen.value.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
 
-                                                currentScreen.value.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
 
-                                                await currentScreen.value.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                                                await currentScreen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
 
 
                                                 AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets();
@@ -99,7 +99,7 @@ namespace Com.RedicalGames.Filar
                                                 dataPackets.SetScreenBlurState(true);
                                                 dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Background);
 
-                                                currentScreen.value.ShowWidget(dataPackets);
+                                                currentScreen.ShowWidget(dataPackets);
                                             }
                                         });
                                     }

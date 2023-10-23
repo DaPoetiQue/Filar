@@ -85,8 +85,8 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
                                             {
-                                                if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
-                                                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(dataPackets.widgetType, dataPackets);
+                                                if (ScreenUIManager.Instance.GetCurrentScreen().Success())
+                                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
 
                                                 StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults => 
                                                 {

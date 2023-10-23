@@ -62,7 +62,7 @@ namespace Com.RedicalGames.Filar
         {
             if (ScreenUIManager.Instance != null)
             {
-                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() != AppData.ScreenType.ContentImportExportScreen)
+                if (ScreenUIManager.Instance.GetCurrentScreen().GetData().GetType().GetData() != AppData.ScreenType.ContentImportExportScreen)
                     return;
 
                 if (state == AppData.ScreenViewState.None)

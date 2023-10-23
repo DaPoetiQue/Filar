@@ -483,27 +483,27 @@ namespace Com.RedicalGames.Filar
             if (orientation == AppData.OrientationType.Vertical)
             {
                 if (scroller.value.verticalNormalizedPosition == 1.0f)
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Disabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Disabled);
                 else
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Enabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Enabled);
 
                 if (scroller.value.verticalNormalizedPosition == 0.0f)
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Disabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Disabled);
                 else
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Enabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Enabled);
             }
 
             if (orientation == AppData.OrientationType.Horizontal)
             {
                 if (scroller.value.horizontalNormalizedPosition == 1.0f)
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Disabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Disabled);
                 else
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Enabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToTopButton, AppData.InputUIState.Enabled);
 
                 if (scroller.value.horizontalNormalizedPosition == 0.0f)
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Disabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Disabled);
                 else
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Enabled);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.ScrollerNavigationWidget).SetActionButtonState(AppData.InputActionButtonType.ScrollToBottomButton, AppData.InputUIState.Enabled);
             }
         }
 

@@ -90,7 +90,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.data;
+                                                var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.GetData();
 
                                                 #region Trigger Splash Image
 
@@ -109,7 +109,7 @@ namespace Com.RedicalGames.Filar
                                                                 if (callbackResults.Success())
                                                                 {
                                                                     var loadingManager = loadingManagerCallbackResults.data;
-                                                                    var currentScreenView = loadingScreenCallbackResults.data.value;
+                                                                    var currentScreenView = loadingScreenCallbackResults.data;
 
                                                                     splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
 
@@ -166,9 +166,9 @@ namespace Com.RedicalGames.Filar
                                                                                                         {
                                                                                                             var screen = currentScreenCallbackResults.data;
 
-                                                                                                            if (screen.value.GetUIScreenType() == AppData.ScreenType.LandingPageScreen)
+                                                                                                            if (screen.GetType().GetData() == AppData.ScreenType.LandingPageScreen)
                                                                                                             {
-                                                                                                                var widget = screen.value.GetWidget(AppData.WidgetType.PostsWidget);
+                                                                                                                var widget = screen.GetWidget(AppData.WidgetType.PostsWidget);
 
                                                                                                                 if (widget != null)
                                                                                                                 {
@@ -177,7 +177,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                                                     await screenUIManager.RefreshAsync();
 
-                                                                                                                    screen.value.ShowWidget(widget);
+                                                                                                                    screen.ShowWidget(widget);
 
                                                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                                                                                                     widget.SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
@@ -188,13 +188,13 @@ namespace Com.RedicalGames.Filar
                                                                                                                 }
                                                                                                                 else
                                                                                                                 {
-                                                                                                                    callbackResults.result = $"Widget Type : {AppData.WidgetType.PostsWidget} For Screen : {screen.value.GetUIScreenType()} Not Found.";
+                                                                                                                    callbackResults.result = $"Widget Type : {AppData.WidgetType.PostsWidget} For Screen : {screen.GetType().GetData()} Not Found.";
                                                                                                                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                                                                 }
                                                                                                             }
                                                                                                             else
                                                                                                             {
-                                                                                                                callbackResults.result = $"Screen : {screen.value.GetUIScreenType()} Does Not Match Expected Screen Type : {AppData.ScreenType.LandingPageScreen}";
+                                                                                                                callbackResults.result = $"Screen : {screen.GetType().GetData()} Does Not Match Expected Screen Type : {AppData.ScreenType.LandingPageScreen}";
                                                                                                                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                                                                             }
                                                                                                         }

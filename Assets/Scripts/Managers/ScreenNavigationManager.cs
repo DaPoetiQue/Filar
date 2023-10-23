@@ -87,7 +87,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentUIScreenType(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen, dynamicContainerCallbackResults => 
+                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen, dynamicContainerCallbackResults => 
                             {
                                 callbackResults.SetResult(dynamicContainerCallbackResults);
 
@@ -114,7 +114,9 @@ namespace Com.RedicalGames.Filar
 
                     if (ScreenUIManager.Instance != null)
                     {
-                        if (ScreenUIManager.Instance.GetCurrentScreenData().value != null)
+                        callbackResults.SetResult(ScreenUIManager.Instance.GetCurrentScreen());
+
+                        if (callbackResults.Success())
                         {
                             if (folderNavigationCommands.Count == 0)
                             {
@@ -230,13 +232,13 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var currentScreen = ScreenUIManager.Instance.HasCurrentScreen().GetData();
+                            var currentScreen = ScreenUIManager.Instance.GetCurrentScreen().GetData();
 
-                            callbackResults.SetResult(currentScreen.GetValue());
+                            callbackResults.SetResult(currentScreen.GetType());
 
                             if (callbackResults.Success())
                             {
-                                if (screenType == currentScreen.GetValue().GetData().GetUIScreenType())
+                                if (screenType == currentScreen.GetType().GetData())
                                 {
                                     AppData.SceneDataPackets dataPackets = GetEmptyFolderDataPackets();
 
@@ -284,7 +286,7 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    callbackResults.result = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.HasCurrentScreen().data.value.GetUIScreenType()}";
+                                    callbackResults.result = $"Requested Data Packets For Screen Type : {screenType} Not Found - Scrren Type Mismatched - Current Found Screen Is Of Type : {ScreenUIManager.Instance.GetCurrentScreen().GetData().GetType().GetData()}";
                                     callbackResults.data = default;
                                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                 }

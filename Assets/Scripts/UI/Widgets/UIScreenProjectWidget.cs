@@ -73,10 +73,10 @@ namespace Com.RedicalGames.Filar
 
         void OnGoToProfile_ActionEvent(AppData.ButtonDataPackets dataPackets)
         {
-            if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
-            else
-                LogWarning("Screen Manager Missing.", this, () => OnGoToProfile_ActionEvent(dataPackets));
+            //if (ScreenUIManager.Instance != null)
+            //    ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
+            //else
+            //    LogWarning("Screen Manager Missing.", this, () => OnGoToProfile_ActionEvent(dataPackets));
         }
 
         protected override void OnSetUIWidgetData(AppData.Folder folder)

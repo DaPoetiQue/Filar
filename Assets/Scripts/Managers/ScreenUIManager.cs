@@ -12,11 +12,11 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         [SerializeField]
-        List<AppData.UIScreenViewComponent> screens = new List<AppData.UIScreenViewComponent>();
+        List<Screen> screens = new List<Screen>();
 
         [Space(5)]
         [SerializeField]
-        AppData.UIScreenViewComponent currentScreen = new AppData.UIScreenViewComponent();
+        Screen currentScreen = new Screen();
 
         [Space(5)]
         [SerializeField]
@@ -50,9 +50,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenViewComponent>> OnScreenInitAsync()
+        public async Task<AppData.CallbackDataList<Screen>> OnScreenInitAsync()
         {
-            var callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>(
+            var callbackResults = new AppData.CallbackDataList<Screen>(
                 AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, 
                 "App Database Manager Instance Is Not Yet Initialized."));
 
@@ -78,8 +78,6 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            screens = new List<AppData.UIScreenViewComponent>();
-
                             var loadedScreens = assetBundlesLibrary.GetLoadedScreens().GetData();
 
                             for (int i = 0; i < loadedScreens.Count; i++)
@@ -97,13 +95,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            AppData.UIScreenViewComponent newScreen = new AppData.UIScreenViewComponent
-                                            {
-                                                name = screenComponent.GetScreenTitle(),
-                                                value = screenComponent
-                                            };
-
-                                            AddScreen(newScreen, screenAddCallback =>
+                                            AddScreen(screenComponent, screenAddCallback =>
                                             {
                                                 callbackResults.SetDataResults(screenAddCallback);
 
@@ -151,9 +143,9 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public void AddScreen(AppData.UIScreenViewComponent screen, Action<AppData.CallbackDataList<AppData.UIScreenViewComponent>> callback = null)
+        public void AddScreen(Screen screen, Action<AppData.CallbackDataList<Screen>> callback = null)
         {
-            AppData.CallbackDataList<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackDataList<AppData.UIScreenViewComponent>();
+            AppData.CallbackDataList<Screen> callbackResults = new AppData.CallbackDataList<Screen>();
 
             if (!screens.Contains(screen))
             {
@@ -175,31 +167,23 @@ namespace Com.RedicalGames.Filar
                             {
                                 var screenContainer = containerCallbackResults.GetData();
 
-                                callbackResults.SetResult(screen.GetValue());
+                                callbackResults.SetResult(screen.GetInitialVisibility());
 
                                 if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(screen.GetValue().GetData().GetInitialVisibility());
 
-                                    if (callbackResults.Success())
+                                    screenContainer.AddContent<Screen, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screen, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
                                     {
-                                        var screenComponentHandler = screen.GetValue().GetData();
+                                        callbackResults.SetResult(screenAddedCallbackResults);
 
-                                        screenContainer.AddContent<Screen, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screenComponentHandler, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(screenAddedCallbackResults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Has Been Added To Screen List.";
-                                                callbackResults.data = screens;
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            callbackResults.result = $"Screen : {screen.name} Of Type : {screen.GetType().GetData()} Has Been Added To Screen List.";
+                                            callbackResults.data = screens;
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -213,14 +197,14 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    callbackResults.result = $"Couldn't Add Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} For Unknown Reasons - Please Check Here.";
+                    callbackResults.result = $"Couldn't Add Screen : {screen.name} Of Type : {screen.GetType().GetData()} For Unknown Reasons - Please Check Here.";
                     callbackResults.data = default;
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
             }
             else
             {
-                callbackResults.result = $"Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} Already Exists In The Screen List.";
+                callbackResults.result = $"Screen : {screen.name} Of Type : {screen.GetType().GetData()} Already Exists In The Screen List.";
                 callbackResults.data = default;
                 callbackResults.resultCode = AppData.Helpers.WarningCode;
             }
@@ -228,14 +212,16 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public AppData.ScreenType GetCurrentUIScreenType()
+        public AppData.CallbackData<AppData.ScreenType> GetCurrentScreenType()
         {
-            AppData.ScreenType currentScreenType = AppData.ScreenType.None;
+            var callbackResults = new AppData.CallbackData<AppData.ScreenType>(HasCurrentScreen());
 
-            if (currentScreen?.value)
-                currentScreenType = currentScreen.value.GetUIScreenType();
+            if (callbackResults.Success())
+                callbackResults.data = currentScreen.GetType().GetData();
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            return currentScreenType;
+            return callbackResults;
         }
 
         public AppData.Callback ScreensInitialized()
@@ -304,7 +290,7 @@ namespace Com.RedicalGames.Filar
                     {
                         foreach (var screen in screens)
                         {
-                            if (screen.GetValue().GetData().GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
+                            if (screen.GetType().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
                             {
                                 //if (assetsManager == null)
                                 //    assetsManager = SceneAssetsManager.Instance;
@@ -367,7 +353,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (screenWidgetsContainer != null)
                                     {
-                                        targetScreenPoint = screen.value.GetScreenPosition();
+                                        targetScreenPoint = screen.GetScreenPosition();
                                         transitionType = dataPackets.screenTransition;
                                         screenTransitionSpeed = dataPackets.screenTransitionSpeed;
                                     }
@@ -395,44 +381,44 @@ namespace Com.RedicalGames.Filar
 
         #region On Show Screen Async
 
-        public async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> ShowScreenAsync(AppData.SceneDataPackets dataPackets) { return await OnTriggerShowScreenAsync(dataPackets); }
+        public async Task<AppData.CallbackData<Screen>> ShowScreenAsync(AppData.ScreenConfigDataPacket dataPacket) { return await OnTriggerShowScreenAsync(dataPacket); }
 
-        async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnTriggerShowScreenAsync(AppData.SceneDataPackets dataPackets)
+        async Task<AppData.CallbackData<Screen>> OnTriggerShowScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
         {
-            return await OnShowScreenAsync(dataPackets);
+            return await OnShowScreenAsync(dataPacket);
         }
 
-        async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnShowScreenAsync(AppData.SceneDataPackets dataPackets)
+        async Task<AppData.CallbackData<Screen>> OnShowScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
         {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>(ScreensInitialized());
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(ScreensInitialized());
 
             if (callbackResults.Success())
             {
-                GetScreenData(dataPackets, screenFoundCallback =>
+                GetScreen(dataPacket.GetType().GetData(), screenFoundCallback =>
                 {
                     callbackResults = screenFoundCallback;
 
                     if (callbackResults.Success())
                     {
-                        if(GetCurrentUIScreenType() != AppData.ScreenType.None && GetCurrentUIScreenType() != AppData.ScreenType.SplashScreen && GetCurrentUIScreenType() != AppData.ScreenType.LoadingScreen)
-                             AppData.ActionEvents.OnScreenExitEvent(GetCurrentUIScreenType());
+                        if(GetCurrentScreenType().GetData() != AppData.ScreenType.None && GetCurrentScreenType().GetData() != AppData.ScreenType.SplashScreen && GetCurrentScreenType().GetData() != AppData.ScreenType.LoadingScreen)
+                             AppData.ActionEvents.OnScreenExitEvent(GetCurrentScreenType().GetData());
 
                         //callbackResults.GetData().GetValue().GetData().SetScreenData(dataPackets);
-                        SetCurrentScreenData(callbackResults.GetData());
+                        SetCurrentScreen(callbackResults.GetData());
 
-                        OnCheckIfScreenLoadedAsync(dataPackets, screenLoadedCallbackResults =>
+                        OnCheckIfScreenLoadedAsync(dataPacket, screenLoadedCallbackResults =>
                         {
                             callbackResults.result = screenLoadedCallbackResults.result;
                             callbackResults.resultCode = screenLoadedCallbackResults.resultCode;
 
                             if (screenLoadedCallbackResults.data != null)
                             {
-                                callbackResults.result = $"Screen : {dataPackets.referencedScreenType} Has Been Loaded Successfully.";
+                                callbackResults.result = $"Screen : {dataPacket.GetType().GetData()} Has Been Loaded Successfully.";
                                 callbackResults.data = screenLoadedCallbackResults.data;
                             }
                             else
                             {
-                                callbackResults.result = $"Failed To Load Screen : {dataPackets.referencedScreenType}";
+                                callbackResults.result = $"Failed To Load Screen : {dataPacket.GetType().GetData()}";
                                 callbackResults.data = default;
                                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
                             }
@@ -475,7 +461,7 @@ namespace Com.RedicalGames.Filar
                     }
                 });
 
-                await OnShowSelectedScreenViewAsync(callbackResults.data);
+                await OnShowSelectedScreenViewAsync(callbackResults.GetData());
 
                 if (callbackResults.Success())
                 {
@@ -496,27 +482,27 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        public async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnShowSelectedScreenViewAsync(AppData.UIScreenViewComponent screen)
+        public async Task<AppData.CallbackData<Screen>> OnShowSelectedScreenViewAsync(Screen screen)
         {
-            return await screen.value.ShowViewAsync();
+            return await screen.ShowViewAsync();
         }
 
         #endregion
 
         #region On Hide Screen Async
 
-        public async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> HideScreenAsync(AppData.SceneDataPackets dataPackets) { return await OnTriggerHideScreenAsync(dataPackets); }
+        public async Task<AppData.CallbackData<Screen>> HideScreenAsync(AppData.ScreenConfigDataPacket dataPacket) { return await OnTriggerHideScreenAsync(dataPacket); }
 
-        async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnTriggerHideScreenAsync(AppData.SceneDataPackets dataPackets)
+        async Task<AppData.CallbackData<Screen>> OnTriggerHideScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
         {
-            return await OnHideScreenAsync(dataPackets);
+            return await OnHideScreenAsync(dataPacket);
         }
 
-        async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnHideScreenAsync(AppData.SceneDataPackets dataPackets)
+        async Task<AppData.CallbackData<Screen>> OnHideScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
         {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>();
 
-            GetScreenData(dataPackets, screenFoundCallback =>
+            GetScreen(dataPacket, screenFoundCallback =>
             {
                 callbackResults = screenFoundCallback;
             });
@@ -526,24 +512,24 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public async Task<AppData.CallbackData<AppData.UIScreenViewComponent>> OnHideSelectedScreenViewAsync(AppData.UIScreenViewComponent screen)
+        public async Task<AppData.CallbackData<Screen>> OnHideSelectedScreenViewAsync(Screen screen)
         {
-            return await screen.value.HideViewSync();
+            return await screen.HideViewSync();
         }
 
         #endregion
 
         #region Go To Screen
 
-        public async Task GoToSelectedScreenAsync(AppData.SceneDataPackets dataPackets, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback = null)
+        public async Task GoToSelectedScreenAsync(AppData.ScreenConfigDataPacket dataPacket, Action<AppData.CallbackData<AppData.ScreenConfigDataPacket>> callback = null)
         {
             try
             {
-                AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>(AppData.Helpers.GetScreenDataPacketsValid(dataPackets, $"Go To Screen : {dataPackets.referencedScreenType}'s Data Packets Validation"));
+                AppData.CallbackData<AppData.ScreenConfigDataPacket> callbackResults = new AppData.CallbackData<AppData.ScreenConfigDataPacket>(dataPacket.Initialized());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(ScreenOfTypeExists(dataPackets));
+                    callbackResults.SetResult(ScreenOfTypeExists(dataPacket.GetType().GetData()));
 
                     if (callbackResults.Success())
                     {
@@ -551,21 +537,21 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+                            var sceneAssetsManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                            callbackResults.SetResults(dataPackets.GetReferencedScreenType());
+                            callbackResults.SetResults(sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(dataPacket.GetType().GetData()));
 
                             if (callbackResults.Success())
                             {
-                                callbackResults.SetResults(sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData()));
+                                var screenLoadInfo = sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(dataPacket.GetType().GetData()).GetData();
+
+                                callbackResults.SetResult(dataPacket.GetScreenLoadTransitionType());
 
                                 if (callbackResults.Success())
                                 {
-                                    var screenLoadInfo = sceneAssetsManager.GetScreenLoadInfoInstanceFromLibrary(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData()).data;
-
                                     #region Load Screen
 
-                                    if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.LoadingScreen)
+                                    if (dataPacket.GetScreenLoadTransitionType().GetData() == AppData.ScreenLoadTransitionType.LoadingScreen)
                                     {
                                         callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, "Loading Manager Instance Is Not Yet Initialized."));
 
@@ -591,7 +577,7 @@ namespace Com.RedicalGames.Filar
 
                                     #region Transition To Screen
 
-                                    if (dataPackets.screenTransition == AppData.ScreenLoadTransitionType.Translate)
+                                    if (dataPacket.GetScreenLoadTransitionType().GetData() == AppData.ScreenLoadTransitionType.Translate)
                                     {
 
                                     }
@@ -615,168 +601,8 @@ namespace Com.RedicalGames.Filar
 
         public AppData.Callback ScreenOfTypeExists(AppData.ScreenType screenType)
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            AppData.Helpers.GetAppComponentsValid(GetScreens(), "Screens", validScreensCallbackResults =>
-            {
-                callbackResults.SetResults(validScreensCallbackResults);
-
-                if(callbackResults.Success())
-                {
-                    var screens = validScreensCallbackResults.data;
-
-                    bool success = false;
-
-                    for (int i = 0; i < screens.Count; i++)
-                    {
-                        if (screens[i].value.GetUIScreenType() == screenType)
-                        {
-                            callbackResults.result = $"Screen Of Type : {screenType} Exists And Has Been Loaded Successfully.";
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                            success = true;
-
-                            break;
-                        }
-                        else
-                            continue;
-                    }
-
-                    if(!success)
-                    {
-                        callbackResults.result = $"Screen Of Type : {screenType} Doesn't Exists In The Loaded Screens List.";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-
-            }, failedOperationFallbackResults: $"Checking For Screen Of Type : {screenType} Failed - Get Screens Failed Because Screens Are Invalid.",  successOperationFallbackResults: $"Checking For Screen Of Type : {screenType} Success - Get Screens Valid - Found : {GetScreens().Count} Valid Loaded Screens");
-
+            AppData.Callback callbackResults = new AppData.Callback(GetScreenScreenOfType(screenType));
             return callbackResults;
-        }
-
-        public AppData.Callback ScreenOfTypeExists(AppData.SceneDataPackets dataPackets)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            AppData.Helpers.GetAppComponentsValid(GetScreens(), "Screens", validScreensCallbackResults =>
-            {
-                callbackResults.SetResults(validScreensCallbackResults);
-
-                if (callbackResults.Success())
-                {
-                    var screens = validScreensCallbackResults.data;
-
-                    bool success = false;
-
-                    for (int i = 0; i < screens.Count; i++)
-                    {
-                        if (screens[i].value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
-                        {
-                            callbackResults.result = $"Screen Of Type : {dataPackets.referencedScreenType} Exists And Has Been Loaded Successfully.";
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                            success = true;
-
-                            break;
-                        }
-                        else
-                            continue;
-                    }
-
-                    if (!success)
-                    {
-                        callbackResults.result = $"Screen Of Type : {dataPackets.referencedScreenType} Doesn't Exists In The Loaded Screens List.";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-
-            }, failedOperationFallbackResults: $"Checking For Screen Of Type : {dataPackets.referencedScreenType} Failed - Get Screens Failed Because Screens Are Invalid.", successOperationFallbackResults: $"Checking For Screen Of Type : {dataPackets.referencedScreenType} Success - Get Screens Valid - Found : {GetScreens().Count} Valid Loaded Screens");
-
-            return callbackResults;
-        }
-
-        public AppData.Callback CheckIfScreensAreValid(AppData.ScreenType screenType)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            AppData.Helpers.GetAppComponentsValid(GetScreens(), "Screens", validScreensCallbackResults =>
-            {
-                callbackResults.SetResults(validScreensCallbackResults);
-
-                if (callbackResults.Success())
-                {
-                    var screens = validScreensCallbackResults.data;
-
-                    for (int i = 0; i < screens.Count; i++)
-                    {
-                        if(screens[i].value == null)
-                        {
-                            int breakIndex = (i + 1) - GetScreens().Count;
-                            callbackResults.result = $"Checking If Screens Are Valid Failed - Screen At Index : {i}'s Value Is Missing / Not Assigned : Varified {breakIndex} Screens Of : {GetScreens().Count}.";
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-
-                            break;
-                        }
-                        else
-                        {
-                            if (screens[i].value.GetUIScreenType() == AppData.ScreenType.None)
-                            {
-                                callbackResults.result = $"Checking If Screens Are Valid Failed - Screen At Index : {i} Type Is Set To Default : {GetScreens().Count} Loaded Valid Screens.";
-                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-
-                                break;
-                            }
-                        }
-                    }
-
-                    if (callbackResults.Success())
-                        callbackResults.result = $"Checking If Screens Are Valid Success - Found {GetScreens().Count} Loaded Valid Screens.";
-                }
-
-            }, failedOperationFallbackResults: $"Checking For Screen Of Type : {screenType} Failed - Get Screens Failed Because Screens Are Invalid.", successOperationFallbackResults: $"Checking For Screen Of Type : {screenType} Success - Get Screens Valid - Found : {GetScreens().Count} Valid Loaded Screens");
-
-            return callbackResults;
-        }
-
-        public void ScreenOfTypeExists(AppData.ScreenType screenType, Action<AppData.Callback> callback)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            AppData.Helpers.GetAppComponentsValid(GetScreens(), "Screens", validScreensCallbackResults =>
-            {
-                callbackResults.SetResults(validScreensCallbackResults);
-
-                if (callbackResults.Success())
-                {
-                    var screens = validScreensCallbackResults.data;
-
-                    bool success = false;
-
-                    for (int i = 0; i < screens.Count; i++)
-                    {
-                        if (screens[i].value.GetUIScreenType() == screenType)
-                        {
-                            callbackResults.result = $"Screen Of Type : {screenType} Exists And Has Been Loaded Successfully.";
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                            success = true;
-
-                            break;
-                        }
-                        else
-                            continue;
-                    }
-
-                    if (!success)
-                    {
-                        callbackResults.result = $"Screen Of Type : {screenType} Doesn't Exists In The Loaded Screens List.";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-
-            }, failedOperationFallbackResults: $"Checking For Screen Of Type : {screenType} Failed - Get Screens Failed Because Screens Are Invalid.", successOperationFallbackResults: $"Checking For Screen Of Type : {screenType} Success - Get Screens Valid - Found : {GetScreens().Count} Valid Loaded Screens");
-
-            callback.Invoke(callbackResults);
         }
 
         void CachePreviousScreenData(AppData.SceneDataPackets screenDataPackets) => previousScreenData = screenDataPackets;
@@ -801,19 +627,19 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        void OnCheckIfScreenLoadedAsync(AppData.SceneDataPackets dataPackets, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback = null)
+        void OnCheckIfScreenLoadedAsync(AppData.ScreenConfigDataPacket dataPacket, Action<AppData.CallbackData<Screen>> callback = null)
         {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(GetScreenScreenOfType(dataPacket.GetType().GetData()));
 
-            if (GetScreenData(dataPackets) != null && GetScreenData(dataPackets).value != null && dataPackets.GetReferencedScreenType().GetData().GetValue().GetData() == GetCurrentUIScreenType())
+            if (dataPacket.GetType().GetData() == GetCurrentScreenType().GetData())
             {
-                callbackResults.result = $"Screen Of Type : {GetCurrentUIScreenType()} Loaded Successfully.";
-                callbackResults.data = GetScreenData(dataPackets);
+                callbackResults.result = $"Screen Of Type : {GetCurrentScreenType()} Loaded Successfully.";
+                callbackResults.data = GetScreenScreenOfType(dataPacket.GetType().GetData()).GetData();
                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.result = $"Screen : {dataPackets.referencedScreenType} Failed To Load.";
+                callbackResults.result = $"Screen : {dataPacket.GetType().GetData()} Failed To Load.";
                 callbackResults.data = default;
                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
@@ -821,7 +647,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        void OnUpdateUIScreenOnEnter(AppData.UIScreenViewComponent screen, Action<AppData.Callback> callback = null)
+        void OnUpdateUIScreenOnEnter(Screen screen, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(ScreensInitialized());
 
@@ -829,22 +655,22 @@ namespace Com.RedicalGames.Filar
             {
                 if (AppDatabaseManager.Instance != null)
                 {
-                    switch(screen.value.GetUIScreenType())
+                    switch(screen.GetType().GetData())
                     {
                         case AppData.ScreenType.ProjectDashboardScreen:
 
                             if(AppDatabaseManager.Instance.GetWidgetsContentCount() == 0)
-                                screen.value.ShowWidget(AppData.WidgetType.LoadingWidget);
+                                screen.ShowWidget(AppData.WidgetType.LoadingWidget);
 
                             AppDatabaseManager.Instance.GetFolderContentCount(AppDatabaseManager.Instance.GetCurrentFolder(), folderFound =>
                             {
                                 if (!AppData.Helpers.IsSuccessCode(folderFound.resultCode))
-                                    AppDatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                                    AppDatabaseManager.Instance.DisableUIOnScreenEnter(screen.GetType().GetData());
                             });
 
                             if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
                             {
-                                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ItemView)
+                                if (AppDatabaseManager.Instance.GetProjectStructureData().GetData().GetLayoutViewType() == AppData.LayoutViewType.ItemView)
                                 {
                                     //screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewIcon, setUIStateCallback =>
                                     //{
@@ -853,7 +679,7 @@ namespace Com.RedicalGames.Filar
                                     //});
                                 }
 
-                                if (AppDatabaseManager.Instance.GetProjectStructureData().data.GetLayoutViewType() == AppData.LayoutViewType.ListView)
+                                if (AppDatabaseManager.Instance.GetProjectStructureData().GetData().GetLayoutViewType() == AppData.LayoutViewType.ListView)
                                 {
                                     //screen.value.SetActionButtonUIImageValue(AppData.InputActionButtonType.LayoutViewButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewIcon, setUIStateCallback =>
                                     //{
@@ -876,14 +702,14 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (!AppData.Helpers.IsSuccessCode(folderFound.resultCode))
                                 {
-                                    AppDatabaseManager.Instance.DisableUIOnScreenEnter(screen.value.GetUIScreenType());
+                                    AppDatabaseManager.Instance.DisableUIOnScreenEnter(screen.GetType().GetData());
 
-                                    callbackResults.result = $"UI Scene View Of Type {screen.value.GetUIScreenType()} Has Been Updated - UI Disabled On Enter.";
+                                    callbackResults.result = $"UI Scene View Of Type {screen.GetType().GetData()} Has Been Updated - UI Disabled On Enter.";
                                     callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    callbackResults.result = $"UI Scene View Of Type {screen.value.GetUIScreenType()} Has Been Updated.";
+                                    callbackResults.result = $"UI Scene View Of Type {screen.GetType().GetData()} Has Been Updated.";
                                     callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                 }
                             });
@@ -892,7 +718,7 @@ namespace Com.RedicalGames.Filar
 
                         case AppData.ScreenType.ContentImportExportScreen:
 
-                            screen.value.DisplaySceneAssetInfo(screen, displaySeneAssetInfoCallback => 
+                            screen.DisplaySceneAssetInfo(screen, displaySeneAssetInfoCallback => 
                             {
                                 callbackResults.result = displaySeneAssetInfoCallback.result;
                                 callbackResults.resultCode = displaySeneAssetInfoCallback.resultCode;
@@ -909,7 +735,7 @@ namespace Com.RedicalGames.Filar
             }
             else
             {
-                callbackResults.result = $"Couldn't Update Screen : {screen.name} Of Type : {screen.value.GetUIScreenType()} on Enter - Possible Issue - Screens Are Missing / Not Found.";
+                callbackResults.result = $"Couldn't Update Screen : {screen.name} Of Type : {screen.GetType().GetData()} on Enter - Possible Issue - Screens Are Missing / Not Found.";
                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
@@ -918,10 +744,10 @@ namespace Com.RedicalGames.Filar
 
         public void ShowLoadingItem(AppData.LoadingItemType loadingItemType, bool status)
         {
-            if (currentScreen.value != null)
-                currentScreen.value.ShowLoadingItem(loadingItemType, status);
+            if (GetCurrentScreen().Success())
+                GetCurrentScreen().GetData().ShowLoadingItem(loadingItemType, status);
             else
-                LogWarning($"Couldn't Execute : {loadingItemType}. Current Screen Missing.", this, () => ShowLoadingItem(loadingItemType, status));
+                Log(GetCurrentScreen().GetResultCode, GetCurrentScreen().GetResult, this);
         }
 
         #region Screen Refresh
@@ -943,248 +769,224 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public void ScreenRefresh()
-        {
-            if (AppDatabaseManager.Instance != null)
-            {
-                if (SelectableManager.Instance != null)
-                {
-                    if (SelectableManager.Instance.HasFocusedWidgetInfo())
-                        SelectableManager.Instance.OnClearFocusedSelectionsInfo();
+        //public void ScreenRefresh()
+        //{
+        //    if (AppDatabaseManager.Instance != null)
+        //    {
+        //        if (SelectableManager.Instance != null)
+        //        {
+        //            if (SelectableManager.Instance.HasFocusedWidgetInfo())
+        //                SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                    if (HasCurrentScreen().Success())
-                    {
-                        if (AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
-                        {
-                            AppDatabaseManager.Instance.HasContentToLoadForSelectedScreen(AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
-                            {
-                                if (hasContentCallbackResults.Success())
-                                {
-                                    appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
-                                    {
-                                        if (widgetsContentContainers.Success())
-                                        {
-                                            LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
+        //            if (HasCurrentScreen().Success())
+        //            {
+        //                if (AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).Success())
+        //                {
+        //                    AppDatabaseManager.Instance.HasContentToLoadForSelectedScreen(AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).data, hasContentCallbackResults =>
+        //                    {
+        //                        if (hasContentCallbackResults.Success())
+        //                        {
+        //                            appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainers<DynamicWidgetsContainer>(GetCurrentUIScreenType(), widgetsContentContainers =>
+        //                            {
+        //                                if (widgetsContentContainers.Success())
+        //                                {
+        //                                    LogError("Check Here -Has Something To Do Regarding Ambushed Selection Data.", this);
 
-                                            foreach (var container in widgetsContentContainers.data)
-                                                container.DeselectAllContentWidgets();
-                                        }
-                                        else
-                                            Log(widgetsContentContainers.GetResultCode, widgetsContentContainers.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(hasContentCallbackResults.resultCode, hasContentCallbackResults.result, this);
-                            });
-                        }
-                        else
-                            Log(AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultCode, AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).result, this);
-                    }
-                    else
-                        Log(HasCurrentScreen().resultCode, HasCurrentScreen().result, this);
-                }
-                else
-                    LogWarning("Refresh Button Failed : SelectableManager.Instance Is Not Yet Initialized", this);
+        //                                    foreach (var container in widgetsContentContainers.data)
+        //                                        container.DeselectAllContentWidgets();
+        //                                }
+        //                                else
+        //                                    Log(widgetsContentContainers.GetResultCode, widgetsContentContainers.GetResult, this);
+        //                            });
+        //                        }
+        //                        else
+        //                            Log(hasContentCallbackResults.resultCode, hasContentCallbackResults.result, this);
+        //                    });
+        //                }
+        //                else
+        //                    Log(AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).resultCode, AppDatabaseManager.Instance.GetRootFolder(HasCurrentScreen().data.value.GetUIScreenType()).result, this);
+        //            }
+        //            else
+        //                Log(HasCurrentScreen().resultCode, HasCurrentScreen().result, this);
+        //        }
+        //        else
+        //            LogWarning("Refresh Button Failed : SelectableManager.Instance Is Not Yet Initialized", this);
 
-                AppData.ActionEvents.OnScreenUIRefreshed();
+        //        AppData.ActionEvents.OnScreenUIRefreshed();
 
-                Canvas.ForceUpdateCanvases();
-            }
-            else
-                LogError("Refresh Button Failed : Scene Assets Manager Instance Is Not Yet Initialized", this);
-        }
+        //        Canvas.ForceUpdateCanvases();
+        //    }
+        //    else
+        //        LogError("Refresh Button Failed : Scene Assets Manager Instance Is Not Yet Initialized", this);
+        //}
 
-        async Task<AppData.Callback> OnScreenRefreshAsync(AppData.SceneDataPackets dataPackets, int refreshDuration = 0)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+        //async Task<AppData.Callback> OnScreenRefreshAsync(AppData.SceneDataPackets dataPackets, int refreshDuration = 0)
+        //{
+        //    AppData.Callback callbackResults = new AppData.Callback(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
-            if (dataPackets.blurScreen)
-                currentScreen.value.Blur(dataPackets);
+        //    if (dataPackets.blurScreen)
+        //        currentScreen.value.Blur(dataPackets);
 
-            if (currentScreen.value != null)
-                currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
+        //    if (currentScreen.value != null)
+        //        currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);
 
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(dataPackets.GetReferencedScreenType());
+        //    if (callbackResults.Success())
+        //    {
+        //        callbackResults.SetResult(dataPackets.GetReferencedScreenType());
 
-                if (callbackResults.Success())
-                {
-                    switch (dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
-                    {
-                        case AppData.ScreenType.LandingPageScreen:
+        //        if (callbackResults.Success())
+        //        {
+        //            switch (dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
+        //            {
+        //                case AppData.ScreenType.LandingPageScreen:
 
-                            #region Get Content Container
+        //                    #region Get Content Container
 
-                            if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
-                            {
-                                appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
-                                {
-                                    callbackResults.SetResult(screenContainerCallbackResults);
+        //                    if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
+        //                    {
+        //                        appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+        //                        {
+        //                            callbackResults.SetResult(screenContainerCallbackResults);
 
-                                    if (callbackResults.Success())
-                                    {
-                                        var screenContainer = screenContainerCallbackResults.GetData();
+        //                            if (callbackResults.Success())
+        //                            {
+        //                                var screenContainer = screenContainerCallbackResults.GetData();
 
-                                        #region Get Scene Content Container
+        //                                #region Get Scene Content Container
 
-                                        appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicContentContainer>(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.GetSceneContainerData().GetContainerType(), dataPackets.GetSceneContainerData().GetContainerViewSpaceType(), sceneContainerCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(sceneContainerCallbackResults);
+        //                                appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicContentContainer>(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.GetSceneContainerData().GetContainerType(), dataPackets.GetSceneContainerData().GetContainerViewSpaceType(), sceneContainerCallbackResults =>
+        //                                {
+        //                                    callbackResults.SetResult(sceneContainerCallbackResults);
 
-                                            if (callbackResults.Success())
-                                            {
-                                                #region Set Refresh Data
+        //                                    if (callbackResults.Success())
+        //                                    {
+        //                                        #region Set Refresh Data
 
-                                                appDatabaseManagerInstance.SetRefreshData(folder: null, screenContainer: screenContainer, sceneContainer: sceneContainerCallbackResults.GetData(), callback: dataSetupCallbackResults =>
-                                                {
-                                                    Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
-                                                });
+        //                                        appDatabaseManagerInstance.SetRefreshData(folder: null, screenContainer: screenContainer, sceneContainer: sceneContainerCallbackResults.GetData(), callback: dataSetupCallbackResults =>
+        //                                        {
+        //                                            Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
+        //                                        });
 
-                                                #endregion
-                                            }
-                                            else
-                                            {
-                                                #region Set Refresh Data
+        //                                        #endregion
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        #region Set Refresh Data
 
-                                                appDatabaseManagerInstance.SetRefreshData(folder: null, screenContainer: screenContainerCallbackResults.data, sceneContainer: null, callback: dataSetupCallbackResults =>
-                                                {
-                                                    Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
-                                                });
+        //                                        appDatabaseManagerInstance.SetRefreshData(folder: null, screenContainer: screenContainerCallbackResults.data, sceneContainer: null, callback: dataSetupCallbackResults =>
+        //                                        {
+        //                                            Log(dataSetupCallbackResults.GetResultCode, dataSetupCallbackResults.GetResult, this);
+        //                                        });
 
-                                                #endregion
-                                            }
-                                        });
+        //                                        #endregion
+        //                                    }
+        //                                });
 
-                                        #endregion
-                                    }
-                                });
-                            }
+        //                                #endregion
+        //                            }
+        //                        });
+        //                    }
 
-                            #endregion
+        //                    #endregion
 
-                            break;
+        //                    break;
 
-                        case AppData.ScreenType.ProjectCreationScreen:
+        //                case AppData.ScreenType.ProjectCreationScreen:
 
-                            #region Get Content Container
+        //                    #region Get Content Container
 
-                            if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
-                            {
-                                appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
-                                {
-                                    callbackResults.SetResult(screenContainerCallbackResults);
+        //                    if (dataPackets.GetScreenContainerData().GetContainerType() != AppData.ContentContainerType.None && dataPackets.GetScreenContainerData().GetContainerViewSpaceType() != AppData.ContainerViewSpaceType.None)
+        //                    {
+        //                        appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicWidgetsContainer>(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), dataPackets.GetScreenContainerData(), screenContainerCallbackResults =>
+        //                        {
+        //                            callbackResults.SetResult(screenContainerCallbackResults);
 
-                                    if (callbackResults.Success())
-                                    {
-                                        if (appDatabaseManagerInstance.GetProjectRootStructureData().Success())
-                                        {
-                                            if (appDatabaseManagerInstance.GetProjectStructureData().Success())
-                                            {
-                                                var rootFolder = (GetCurrentUIScreenType() == AppData.ScreenType.ProjectCreationScreen) ? appDatabaseManagerInstance.GetProjectRootStructureData().GetData().GetProjectStructureData().rootFolder : appDatabaseManagerInstance.GetProjectStructureData().GetData().rootFolder;
-                                                var container = screenContainerCallbackResults.GetData();
+        //                            if (callbackResults.Success())
+        //                            {
+        //                                if (appDatabaseManagerInstance.GetProjectRootStructureData().Success())
+        //                                {
+        //                                    if (appDatabaseManagerInstance.GetProjectStructureData().Success())
+        //                                    {
+        //                                        var rootFolder = (GetCurrentUIScreenType() == AppData.ScreenType.ProjectCreationScreen) ? appDatabaseManagerInstance.GetProjectRootStructureData().GetData().GetProjectStructureData().rootFolder : appDatabaseManagerInstance.GetProjectStructureData().GetData().rootFolder;
+        //                                        var container = screenContainerCallbackResults.GetData();
 
-                                                appDatabaseManagerInstance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
-                                                {
-                                                    if (dataSetupCallbackResults.Success())
-                                                    {
-                                                        appDatabaseManagerInstance.Init(rootFolder, container, assetsInitializedCallback =>
-                                                        {
-                                                            Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                            else
-                                                Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
-                                        }
-                                        else
-                                            Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
-                                    }
-                                });
-                            }
+        //                                        appDatabaseManagerInstance.SetRefreshData(rootFolder, container, null, dataSetupCallbackResults =>
+        //                                        {
+        //                                            if (dataSetupCallbackResults.Success())
+        //                                            {
+        //                                                appDatabaseManagerInstance.Init(rootFolder, container, assetsInitializedCallback =>
+        //                                                {
+        //                                                    Log(assetsInitializedCallback.resultCode, assetsInitializedCallback.result, this);
+        //                                                });
+        //                                            }
+        //                                        });
+        //                                    }
+        //                                    else
+        //                                        Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
+        //                                }
+        //                                else
+        //                                    Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
+        //                            }
+        //                        });
+        //                    }
 
-                            #endregion
+        //                    #endregion
 
-                            break;
+        //                    break;
 
-                        case AppData.ScreenType.ProjectDashboardScreen:
+        //                case AppData.ScreenType.ProjectDashboardScreen:
 
-                            break;
+        //                    break;
 
-                        case AppData.ScreenType.ContentImportExportScreen:
+        //                case AppData.ScreenType.ContentImportExportScreen:
 
-                            break;
-                    }
+        //                    break;
+        //            }
 
-                    #region On Screen Refresh
+        //            #region On Screen Refresh
 
-                    var refreshTask = await appDatabaseManagerInstance.RefreshedAsync(GetCurrentScreenData()?.value, appDatabaseManagerInstance?.GetCurrentFolder(), appDatabaseManagerInstance?.GetRefreshData().screenContainer, appDatabaseManagerInstance?.GetRefreshData().sceneContainer, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
+        //            var refreshTask = await appDatabaseManagerInstance.RefreshedAsync(GetCurrentScreen()?.value, appDatabaseManagerInstance?.GetCurrentFolder(), appDatabaseManagerInstance?.GetRefreshData().screenContainer, appDatabaseManagerInstance?.GetRefreshData().sceneContainer, dataPackets, refreshDuration); // Wait For Assets To Be Refreshed.
 
-                    if (currentScreen.value != null)
-                        currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
+        //            if (currentScreen.value != null)
+        //                currentScreen.value.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, false);
 
-                    currentScreen.value.Focus();
+        //            currentScreen.Focus();
 
-                    AppData.ActionEvents.OnScreenRefreshed(currentScreen);
+        //            AppData.ActionEvents.OnScreenRefreshed(currentScreen);
 
-                    #endregion
-                }
-            }
+        //            #endregion
+        //        }
+        //    }
 
-            return callbackResults;
-        }
+        //    return callbackResults;
+        //}
 
         #endregion
 
-        public void UpdateInfoDisplayer(AppData.UIScreenViewComponent screen)
-        {
-            //if (AppData.Helpers.ComponentIsNotNullOrEmpty(screen.value.GetSceneAsset().info.fields))
-            //{
-            //    if (GetCurrentScreenData().value != null)
-            //        GetCurrentScreenData().value.DisplaySceneAssetInfo(screen);
-            //    else
-            //        LogWarning("Current Screen Data Not Found.", this, () => UpdateInfoDisplayer(screen));
-            //}
-            //else
-            //    LogWarning("The Current Scene Asset Info Fields Not Initialized.", this, () => UpdateInfoDisplayer(screen));
-        }
+        public void SetCurrentScreen(Screen screenData) => currentScreen = screenData;
 
-        public void SetCurrentScreenData(AppData.UIScreenViewComponent screenData)
+        public AppData.CallbackData<Screen> GetScreenScreenOfType(AppData.ScreenType screenType)
         {
-            currentScreen = screenData;
-        }
-
-        public AppData.UIScreenViewComponent GetScreenData(AppData.SceneDataPackets dataPackets)
-        {
-            AppData.UIScreenViewComponent screenData = screens.Find((screen) => screen.value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
-            return screenData;
-        }
-
-        public void GetScreenData(AppData.SceneDataPackets dataPackets, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
-        {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>(ScreensInitialized());
+            var callbackResults = new AppData.CallbackData<Screen>(AppData.Helpers.GetAppComponentsValid(screens, "Screens", "GetScreenScreenOfType Failed - There Are No Screens Initialized Yet - Invalid Operation - Please Investigate Screen UI Manager Screens List Initialization."));
 
             if (callbackResults.Success())
             {
-                AppData.Helpers.GetComponentIsNotNullOrEmpty(GetScreens().Find(screen => screen?.value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData()), componentCheckCallback => 
+                var screen = screens.Find((screen) => screen.GetType().GetData() == screenType);
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screen, "Screen", $"Screen Of Type : {screenType} Not Found In Screen List - Invalid Operation."));
+
+                if(callbackResults.Success())
                 {
-                    callbackResults = componentCheckCallback;
-                });
+                    callbackResults.result = $"Screen : {screen.GetName()} Of Type : {screen.GetType().GetData()} Has Been Successfully Found.";
+                    callbackResults.data = screen;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
-            {
-                callbackResults.result = $"UI Screen Of Type : {dataPackets.referencedScreenType} Not Found / Missing / Null. Possible Bug - Screen Initialization Might Have Failed.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            callback?.Invoke(callbackResults);
-        }
-
-        public Transform GetScreenWidgetsContainer()
-        {
-            return currentScreen.value?.GetWidgetsContainer();
+            return callbackResults;
         }
 
         //public Transform GetScreenWidgetsContainer(AppData.UIScreenType screenType)
@@ -1206,104 +1008,69 @@ namespace Com.RedicalGames.Filar
         //    return widgetsContainer;
         //}
 
-        public AppData.UIScreenViewComponent GetCurrentScreenData()
+        public AppData.CallbackData<Screen> GetCurrentScreen()
         {
-            return currentScreen;
-        }
+            var callbackResults = new AppData.CallbackData<Screen>(HasCurrentScreen());
 
-        public bool ScreenInitialized(AppData.UIScreenViewComponent screen)
-        {
-            return screen?.value != null;
-        }
-
-        public AppData.CallbackData<AppData.UIScreenViewComponent> HasCurrentScreen()
-        {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
-
-            if(currentScreen != null && currentScreen?.value != null)
-            {
-                callbackResults.result = $"Current Screen : {currentScreen.name} Of Type : {currentScreen.value.GetUIScreenType()} Found.";
+            if(callbackResults.Success())
                 callbackResults.data = currentScreen;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
             else
-            {
-                callbackResults.result = "Current Screen Not Yet Initialized / Missing / Not Found.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
         }
 
-        public void HasCurrentScreen(Action<AppData.Callback> callback)
+        public AppData.Callback HasCurrentScreen()
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(currentScreen, "Current Screen", "Current Screen Missing / Not Found. Invalid Operation - Please Make Sure Current Screen Value Is AssignedOn Screen Selection / Initialization."));
 
-            if(currentScreen != null && currentScreen?.value != null)
-            {
-                callbackResults.result = $"Screen Data : {currentScreen.name} Loaded.";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
+            if (callbackResults.Success())
+                callbackResults.result = $"Current Screen : {currentScreen.name} Of Type : {currentScreen.GetType().GetData()} Found.";
             else
-            {
-                callbackResults.result = "Has No Current Screen Data";
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public void GetCurrentScreen(Action<AppData.CallbackData<Screen>> callback)
+        {
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(HasCurrentScreen());
+
+            if (callbackResults.Success())
+                callbackResults.data = currentScreen;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void GetScreen(AppData.ScreenType screenType, Action<AppData.CallbackData<Screen>> callback)
+        {
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(GetScreenScreenOfType(screenType));
+
+            if (callbackResults.Success())
+                callbackResults.data = GetScreenScreenOfType(screenType).GetData();
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback.Invoke(callbackResults);
         }
 
-        public void GetCurrentScreen(Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
+        public void GetScreen(AppData.ScreenConfigDataPacket dataPacket, Action<AppData.CallbackData<Screen>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(GetScreenScreenOfType(dataPacket.GetType().GetData()));
 
-            HasCurrentScreen(currentScreenCallbackResults => 
-            {
-                callbackResults.result = currentScreenCallbackResults.result;
-                callbackResults.resultCode = currentScreenCallbackResults.resultCode;
+            if (callbackResults.Success())
+                callbackResults.data = GetScreenScreenOfType(dataPacket.GetType().GetData()).GetData();
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                if (callbackResults.Success())
-                    callbackResults.data = currentScreen;
-            });
-
-            callback?.Invoke(callbackResults);
+            callback.Invoke(callbackResults);
         }
 
-        public void GetScreen(AppData.ScreenType screenType, Action<AppData.CallbackData<AppData.UIScreenViewComponent>> callback)
+        public AppData.CallbackData<Screen> GetScreen(AppData.ScreenType screenType)
         {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
-
-            AppData.Helpers.GetAppComponentsValid(screens, "App Screen List", hasScreensCallbackResults => 
-            {
-                callbackResults.result = hasScreensCallbackResults.result;
-                callbackResults.resultCode = hasScreensCallbackResults.resultCode;
-
-                if(callbackResults.Success())
-                {
-                    var screen = screens.Find(screen => screen.value.GetUIScreenType() == screenType);
-
-                    if (screen != null)
-                    {
-                        callbackResults.result = $"Successfully Found Screen Of Type : {screenType}.";
-                        callbackResults.data = screen;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Failed To Find Screen Of Type : {screenType} - Screen Not Loaded - Please Check Screen UI Manager In The Inspector Panel.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                }
-
-            }, "There Are No App Screens Initialized. Plsease Check Screen UI Manager In The Inspector Panel.", $"{screens.Count} Screens Are Scuccessfully Loaded And Initialized.");
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public AppData.CallbackData<AppData.UIScreenViewComponent> GetScreen(AppData.ScreenType screenType)
-        {
-            AppData.CallbackData<AppData.UIScreenViewComponent> callbackResults = new AppData.CallbackData<AppData.UIScreenViewComponent>();
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(GetScreenScreenOfType(screenType));
 
             AppData.Helpers.GetAppComponentsValid(screens, "App Screen List", hasScreensCallbackResults =>
             {
@@ -1312,7 +1079,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var screen = screens.Find(screen => screen.value.GetUIScreenType() == screenType);
+                    var screen = screens.Find(screen => screen.GetType().GetData() == screenType);
 
                     AppData.Helpers.GetAppComponentValid(screen, screen?.name, hasScreenCallbackResults => 
                     {
@@ -1338,14 +1105,19 @@ namespace Com.RedicalGames.Filar
                 UnityEngine.Screen.sleepTimeout = SleepTimeout.SystemSetting;
         }
 
-        public List<AppData.UIScreenViewComponent> GetScreens()
+        public AppData.CallbackDataList<Screen> GetScreens()
         {
-            return screens;
-        }
+            var callbackResults = new AppData.CallbackDataList<Screen>(AppData.Helpers.GetAppComponentsValid(screens, "Screens", "Get Screens Failed, Screens Are Not Initialized Yet - Invalid Operation"));
 
-        public int GetScreenCount()
-        {
-            return screens.Count;
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"{screens.Count} : Screens Found.";
+                callbackResults.data = screens;
+            }
+            else
+                Log(callbackResults.resultCode, callbackResults.result, this);
+
+            return callbackResults;
         }
 
         #region Screen UI Widgets Creation
@@ -1358,7 +1130,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if (screenType == GetCurrentUIScreenType())
+                    if (screenType == GetCurrentScreenType().GetData())
                     {
                         var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
@@ -1469,7 +1241,7 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.result = $"Current Screen Type : {GetCurrentUIScreenType()} Dosen't Match Requested Screen Type : {screenType} - Operation Is Not Valid.";
+                        callbackResults.result = $"Current Screen Type : {GetCurrentScreenType()} Dosen't Match Requested Screen Type : {screenType} - Operation Is Not Valid.";
                         callbackResults.data = default;
                         callbackResults.resultCode = AppData.Helpers.WarningCode;
                     }
@@ -1496,7 +1268,7 @@ namespace Com.RedicalGames.Filar
 
                     if (screenContentContainer != null && screenContentContainer.GetActive().Success())
                     {
-                        if (screenType == GetCurrentUIScreenType())
+                        if (screenType == GetCurrentScreenType().GetData())
                         {
                             bool loadTaskIsRunning = true;
 
@@ -1619,7 +1391,7 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            callbackResults.result = $"Current Screen Type : {GetCurrentUIScreenType()} Dosen't Match Requested Screen Type : {screenType} - Operation Is Not Valid.";
+                            callbackResults.result = $"Current Screen Type : {GetCurrentScreenType()} Dosen't Match Requested Screen Type : {screenType} - Operation Is Not Valid.";
                             callbackResults.data = default;
                             callbackResults.resultCode = AppData.Helpers.WarningCode;
                         }
@@ -1846,13 +1618,13 @@ namespace Com.RedicalGames.Filar
                                                                                     {
                                                                                         widgetComponent.SetDefaultUIWidgetActionState(asset.defaultWidgetActionState);
 
-                                                                                        if (databaseManager.GetProjectStructureData().data.paginationViewType == AppData.PaginationViewType.Pager)
+                                                                                        if (databaseManager.GetProjectStructureData().GetData().paginationViewType == AppData.PaginationViewType.Pager)
                                                                                             widgetComponent.Hide();
 
                                                                                         newWidget.name = asset.name;
 
                                                                                         widgetComponent.SetAssetData(asset);
-                                                                                        widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
+                                                                                        widgetComponent.SetWidgetParentScreen(GetCurrentScreen().GetData());
                                                                                         widgetComponent.SetWidgetAssetData(asset);
 
                                                                                         screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);
@@ -2036,7 +1808,7 @@ namespace Com.RedicalGames.Filar
                                                                                     newWidget.name = asset.name;
 
                                                                                     widgetComponent.SetAssetData(asset);
-                                                                                    widgetComponent.SetWidgetParentScreen(ScreenUIManager.Instance.GetCurrentScreenData().value);
+                                                                                    widgetComponent.SetWidgetParentScreen(GetCurrentScreen().GetData());
                                                                                     widgetComponent.SetWidgetAssetData(asset);
 
                                                                                     screenContentContainer.AddContent(content: widgetComponent, keepWorldPosition: false, overrideActiveState: false, updateContainer: true);

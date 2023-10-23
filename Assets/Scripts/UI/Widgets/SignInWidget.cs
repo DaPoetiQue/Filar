@@ -156,7 +156,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputActionButtonType.Cancel:
 
-                                    await screen.value.HideScreenWidgetAsync(this);
+                                    await screen.HideScreenWidgetAsync(this);
 
                                     break;
 

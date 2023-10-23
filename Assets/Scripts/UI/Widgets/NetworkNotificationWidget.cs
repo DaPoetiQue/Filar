@@ -115,15 +115,15 @@ namespace Com.RedicalGames.Filar
                 {
                     var screenUIManager = hasScreenUIManagerCallbackResults.data;
 
-                    switch (screenUIManager.GetCurrentUIScreenType())
+                    switch (screenUIManager.GetCurrentScreenType().GetData())
                     {
                         case AppData.ScreenType.LoadingScreen:
 
-                            screenUIManager.GetCurrentScreenData().value.HideScreenWidget(this);
+                            screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(this);
 
                             AppData.SceneDataPackets loadingStateWidgetDataPackets = new AppData.SceneDataPackets();
 
-                            dataPackets.SetReferencedScreenType(screenUIManager.GetCurrentUIScreenType());
+                            dataPackets.SetReferencedScreenType(screenUIManager.GetCurrentScreenType().GetData());
                             dataPackets.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
                             dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
 
@@ -137,7 +137,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (loadingManager.OnInitialLoad)
                                     {
-                                        screenUIManager.GetCurrentScreenData().value.ShowWidget(loadingStateWidgetDataPackets);
+                                        screenUIManager.GetCurrentScreen().GetData().ShowWidget(loadingStateWidgetDataPackets);
                                         await loadingManager.GetLoadingSequence().ProcessQueueSequenceAsync();
                                     }
                                     else

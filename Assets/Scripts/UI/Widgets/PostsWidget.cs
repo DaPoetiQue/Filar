@@ -72,19 +72,19 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputActionButtonType.ShowPostsButton:
 
-                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
-                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
+                                    screen.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+                                    screen.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
 
-                                    screen.value.ShowWidget(this);
+                                    screen.ShowWidget(this);
 
                                     break;
 
                                 case AppData.InputActionButtonType.HidePostsButton:
 
-                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
-                                    screen.value.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                    screen.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                    screen.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
 
-                                    await screen.value.HideScreenWidgetAsync(this);
+                                    await screen.HideScreenWidgetAsync(this);
 
                                     break;
                             }

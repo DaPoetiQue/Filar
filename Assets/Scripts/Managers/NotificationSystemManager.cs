@@ -135,7 +135,7 @@ namespace Com.RedicalGames.Filar
                             dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
 
                             if (ScreenUIManager.Instance != null)
-                                ScreenUIManager.Instance.GetCurrentScreenData().value.Blur(dataPackets);
+                                ScreenUIManager.Instance.GetCurrentScreen().GetData().Blur(dataPackets);
                             else
                                 LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
                         }
@@ -159,7 +159,7 @@ namespace Com.RedicalGames.Filar
                     if (dataPackets.blurScreen)
                     {
                         if (ScreenUIManager.Instance != null)
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.Blur(dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().Blur(dataPackets);
                         else
                             LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
                     }

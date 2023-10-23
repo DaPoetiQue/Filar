@@ -99,7 +99,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var screenManager = screenManagerComponentCallbackResults.data;
 
-                    screenManager.GetScreen(screenManager.GetCurrentUIScreenType(), loadedScreenCallbacResults =>
+                    screenManager.GetScreen(screenManager.GetCurrentScreenType().GetData(), loadedScreenCallbacResults =>
                     {
                         if (loadedScreenCallbacResults.Success())
                         {
@@ -131,7 +131,7 @@ namespace Com.RedicalGames.Filar
                                                 dataPackets.SetScreenBlurState(true);
                                                 dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
 
-                                                loadedScreen.value.ShowWidget(networkDataPackets);
+                                                loadedScreen.ShowWidget(networkDataPackets);
                                                 LogError("Network Connection Failed : Show Network Error Pop-Up", this);
                                             }
                                         }
@@ -160,7 +160,7 @@ namespace Com.RedicalGames.Filar
 
                                 case AppData.InputActionButtonType.CloseButton:
 
-                                    loadedScreen.value.HideScreenWidget(widgetType);
+                                    loadedScreen.HideScreenWidget(widgetType);
 
                                     break;
                             }

@@ -131,13 +131,13 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.LayoutViewType.ItemView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
 
                             break;
 
                         case AppData.LayoutViewType.ListView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
 
                             break;
                     }
@@ -160,9 +160,9 @@ namespace Com.RedicalGames.Filar
                             AppDatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(selectionCallback =>
                             {
                                 if (selectionCallback.Success())
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewDeselectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewDeselectionIcon);
                                 else
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
                             });
 
                             break;
@@ -172,9 +172,9 @@ namespace Com.RedicalGames.Filar
                             AppDatabaseManager.Instance.GetRefreshData().screenContainer.HasAllWidgetsSelected(selectionCallback =>
                             {
                                 if (selectionCallback.Success())
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewDeselectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewDeselectionIcon);
                                 else
-                                    ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
+                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
                             });
 
 
@@ -192,17 +192,17 @@ namespace Com.RedicalGames.Filar
             {
                 if (layoutViewCallbackResults.Success())
                 {
-                    switch (layoutViewCallbackResults.data)
+                    switch (layoutViewCallbackResults.GetData())
                     {
                         case AppData.LayoutViewType.ItemView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ItemViewSelectionIcon);
 
                             break;
 
                         case AppData.LayoutViewType.ListView:
 
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ListViewSelectionIcon);
 
                             break;
                     }
@@ -929,7 +929,7 @@ namespace Com.RedicalGames.Filar
 
                     // Reset Preview Pose.
                     AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(focusedModeDataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(focusedModeDataPackets);
 
                     sceneAssetInteractableMode = AppData.SceneAssetInteractableMode.Orbit;
 
@@ -983,7 +983,7 @@ namespace Com.RedicalGames.Filar
 
                 if (ScreenUIManager.Instance)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.AssetImportWidget, inspectorModeDataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.AssetImportWidget, inspectorModeDataPackets);
                     inspectorModeDataPackets.sceneAssetMode = AppData.EventCameraState.InspectorMode;
 
                     if (assetWidgetRoutine != null)
@@ -1002,7 +1002,7 @@ namespace Com.RedicalGames.Filar
 
                 if (ScreenUIManager.Instance)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.SceneAssetPropertiesWidget, inspectorModeDataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.SceneAssetPropertiesWidget, inspectorModeDataPackets);
                     inspectorModeDataPackets.sceneAssetMode = AppData.EventCameraState.FocusedMode;
 
                     if (eventCameraTransition)
@@ -1036,11 +1036,11 @@ namespace Com.RedicalGames.Filar
         {
             if (ScreenUIManager.Instance)
             {
-                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreenData().value.GeWidget(AppData.WidgetType.AssetImportWidget).IsTransitionState() == false);
+                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreen().GetData().GeWidget(AppData.WidgetType.AssetImportWidget).IsTransitionState() == false);
                 yield return new WaitForSecondsRealtime(widgetsTransitionDelayDuration);
 
                 AppData.ActionEvents.OnTransitionSceneEventCamera(inspectorModeDataPackets);
-                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(inspectorModeDataPackets);
+                ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(inspectorModeDataPackets);
             }
             else
                 Debug.LogWarning("--> Screen UI Manager Not Yet Initialized.");
@@ -1054,11 +1054,11 @@ namespace Com.RedicalGames.Filar
         {
             if (ScreenUIManager.Instance)
             {
-                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreenData().value.GeWidget(AppData.WidgetType.SceneAssetPropertiesWidget).IsTransitionState() == false);
+                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreen().GetData().GeWidget(AppData.WidgetType.SceneAssetPropertiesWidget).IsTransitionState() == false);
                 AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
 
                 yield return new WaitForSecondsRealtime(widgetsTransitionDelayDuration);
-                ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(focusedModeDataPackets);
+                ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(focusedModeDataPackets);
             }
             else
                 Debug.LogWarning("--> Screen UI Manager Not Yet Initialized.");
@@ -1217,7 +1217,7 @@ namespace Com.RedicalGames.Filar
 
         public void SetScreenUIStateOnSelection(AppData.InputUIState state)
         {
-            switch (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType())
+            switch (ScreenUIManager.Instance.GetCurrentScreen().GetData().GetType().GetData())
             {
                 case AppData.ScreenType.ProjectDashboardScreen:
 
@@ -1259,20 +1259,20 @@ namespace Com.RedicalGames.Filar
 
                     if (pinData.disableButton)
                     {
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
                         return;
                     }
                     else
                     {
                         if (pinData.pinned)
                         {
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PinDisabledIcon);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PinDisabledIcon);
                         }
                         else
                         {
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
-                            ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PinEnabledIcon);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Enabled);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.PinButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PinEnabledIcon);
                         }
                     }
 
@@ -1282,19 +1282,19 @@ namespace Com.RedicalGames.Filar
 
                     if (selectionCount == 1)
                     {
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Enabled);
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Enabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
                     }
                     else if (selectionCount > 1)
                     {
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Enabled);
                     }
                     else
                     {
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
-                        ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Edit, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.PinButton, AppData.InputUIState.Disabled);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Delete, AppData.InputUIState.Disabled);
                         //ScreenUIManager.Instance.GetCurrentScreenData().value.GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonState(AppData.InputActionButtonType.Hide, AppData.InputUIState.Disabled);
                     }
                 }
@@ -1420,8 +1420,8 @@ namespace Com.RedicalGames.Filar
 
             if (ScreenUIManager.Instance != null)
             {
-                if (ScreenUIManager.Instance.GetCurrentScreenData().value.GetUIScreenType() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
-                    ScreenUIManager.Instance.GetCurrentScreenData().value.ShowWidget(dataPackets);
+                if (ScreenUIManager.Instance.GetCurrentScreen().GetData().GetType().GetData() == dataPackets.GetReferencedScreenType().GetData().GetValue().GetData())
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(dataPackets);
 
                 SetScreenUIStateOnSelection(AppData.InputUIState.Disabled);
             }
@@ -1513,7 +1513,7 @@ namespace Com.RedicalGames.Filar
             yield return new WaitForSeconds(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetHideDelayValue).value);
 
             if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.GetCurrentScreenData().value.HideScreenWidget(AppData.WidgetType.FileSelectionOptionsWidget);
+                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.FileSelectionOptionsWidget);
             else
                 Debug.LogWarning("--> Select Failed : ScreenUIManager.Instance Is Not Yet Initialized.");
 

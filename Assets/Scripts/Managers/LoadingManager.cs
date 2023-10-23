@@ -63,52 +63,59 @@ namespace Com.RedicalGames.Filar
 
                             if(OnShowSplashScreen && !screenLoadInfoInstance.InitialScreen())
                             {
-                                #region Show Splash Screen
-
-                                var showScreenTaskResults = await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenData());
-
-                                callbackResults.SetResults(showScreenTaskResults);
+                                callbackResults.SetResults(screenLoadInfoInstance.GetScreenConfigDataPacket());
 
                                 if (callbackResults.Success())
                                 {
-                                    var screenLoadedDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnSplashScreenExitDelay);
+                                    #region Show Splash Screen
 
-                                    callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
+                                    var showScreenTaskResults = await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+
+                                    callbackResults.SetResults(showScreenTaskResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        var hideScreenTaskResults = await screenUIManager.HideScreenAsync(screenLoadInfoInstance.GetScreenData());
+                                        var screenLoadedDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnSplashScreenExitDelay);
 
-                                        callbackResults.SetResults(hideScreenTaskResults);
+                                        callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var screenExitDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnScreenChangedExitDelay);
-                                            callbackResults.SetResults(screenExitDelayTimeTaskResults);
+                                            var hideScreenTaskResults = await screenUIManager.HideScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+
+                                            callbackResults.SetResults(hideScreenTaskResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                OnShowSplashScreen = false;
-                                                //OnInitialLoad = true;
+                                                var screenExitDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnScreenChangedExitDelay);
+                                                callbackResults.SetResults(screenExitDelayTimeTaskResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    OnShowSplashScreen = false;
+                                                    //OnInitialLoad = true;
+                                                }
                                             }
                                         }
                                     }
+
+                                    callback.Invoke(callbackResults);
+
+                                    #endregion
                                 }
-
-                                callback.Invoke(callbackResults);
-
-                                #endregion
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else if (screenLoadInfoInstance.InitialScreen() && !OnShowSplashScreen)
                             {
                                 #region Loading Data Initialization
 
-                                AppData.CallbackData<AppData.SceneDataPackets> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+                                AppData.CallbackData<AppData.ScreenConfigDataPacket> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.ScreenConfigDataPacket>();
 
                                 AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.ScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                                 {
                                     loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.result;
-                                    loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.data.dataPackets;
+                                    loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.GetData().screenConfigDataPacket;
                                     loadingScreenDataPacketsCallbackResults.resultCode = getLoadingScreenDataPacketsCallbackResults.resultCode;
                                 });
 
@@ -166,7 +173,7 @@ namespace Com.RedicalGames.Filar
                                             if (callbackResults.Success())
                                             {
                                                 referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
-                                                await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenData());
+                                                await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
                                             }
                                         }
                                         else
