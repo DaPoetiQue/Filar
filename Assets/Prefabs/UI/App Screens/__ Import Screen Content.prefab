@@ -2450,7 +2450,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 4
-  screenUIPlacementType: 0
+  uIPlacementContainerType: 13
+  uIPlacementType: 0
   orderInLayer: 5
   transitionType: 2
   initialVisibilityState: 2
@@ -2503,7 +2504,7 @@ MonoBehaviour:
     widgetType: 1
   includesLoadingAssets: 0
   initializeScreenWidgets: 0
-  screenWidgetsList: []
+  widgets: []
 --- !u!1 &4340530847736914902
 GameObject:
   m_ObjectHideFlags: 0

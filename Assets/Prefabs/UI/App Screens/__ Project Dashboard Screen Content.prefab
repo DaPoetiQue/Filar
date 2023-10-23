@@ -181,7 +181,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 0
-  screenUIPlacementType: 3
+  uIPlacementContainerType: 16
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
   initialVisibilityState: 0
@@ -9262,7 +9263,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 0
-  screenUIPlacementType: 3
+  uIPlacementContainerType: 16
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
   initialVisibilityState: 0
@@ -12000,6 +12002,7 @@ MonoBehaviour:
   containerType: 4
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -23608,6 +23611,7 @@ MonoBehaviour:
   containerType: 6
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -26956,7 +26960,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 0
-  screenUIPlacementType: 3
+  uIPlacementContainerType: 16
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
   initialVisibilityState: 0
@@ -28570,7 +28575,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 3
-  screenUIPlacementType: 0
+  uIPlacementContainerType: 13
+  uIPlacementType: 0
   orderInLayer: 4
   transitionType: 2
   initialVisibilityState: 2
@@ -28617,7 +28623,7 @@ MonoBehaviour:
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 0
-  screenWidgetsList: []
+  widgets: []
 --- !u!1 &6931779519318655670
 GameObject:
   m_ObjectHideFlags: 0
@@ -64388,6 +64394,7 @@ MonoBehaviour:
   containerType: 0
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -78997,6 +79004,7 @@ MonoBehaviour:
   containerType: 7
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -95518,6 +95526,7 @@ MonoBehaviour:
   containerType: 5
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -97518,7 +97527,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 0
-  screenUIPlacementType: 3
+  uIPlacementContainerType: 16
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
   initialVisibilityState: 0

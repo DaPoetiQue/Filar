@@ -1803,7 +1803,9 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 36
-  screenUIPlacementType: 1
+  uIPlacementContainerType: 14
+  uIPlacementType: 1
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -1814,7 +1816,7 @@ MonoBehaviour:
   - name: Image Displayer
     inputGroup: 8
     screenActionGroup:
-    - {fileID: 0}
+    - {fileID: 2803885940288519432}
     initialize: 1
   screenType: 8
   widgetLayouts:

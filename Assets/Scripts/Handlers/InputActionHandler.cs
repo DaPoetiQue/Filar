@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIScreenInputWidget : AppData.UIScreenInputComponent
+    public class InputActionHandler : AppData.UIScreenInputComponent
     {
         #region Components
 

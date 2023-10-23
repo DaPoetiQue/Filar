@@ -4995,6 +4995,7 @@ MonoBehaviour:
   containerType: 8
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -14983,6 +14984,7 @@ MonoBehaviour:
   containerType: 8
   viewSpace: 0
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
     container: {fileID: 0}
@@ -18106,7 +18108,8 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 6
-  screenUIPlacementType: 0
+  uIPlacementContainerType: 13
+  uIPlacementType: 0
   orderInLayer: 3
   transitionType: 2
   initialVisibilityState: 2
@@ -18153,7 +18156,7 @@ MonoBehaviour:
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 0
-  screenWidgetsList: []
+  widgets: []
 --- !u!1 &6372227949195448212
 GameObject:
   m_ObjectHideFlags: 0

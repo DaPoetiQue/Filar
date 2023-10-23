@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    [CustomEditor(typeof(UIScreenInputWidget)), CanEditMultipleObjects]
+    [CustomEditor(typeof(InputActionHandler)), CanEditMultipleObjects]
 
     public class UIScreenWidgetEditor : Editor
     {
@@ -69,7 +69,7 @@ namespace Com.RedicalGames.Filar
 
         public override void OnInspectorGUI()
         {
-            UIScreenInputWidget widget = target as UIScreenInputWidget;
+            InputActionHandler widget = target as InputActionHandler;
 
             serializedObject.Update();
 

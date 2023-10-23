@@ -58,7 +58,9 @@ MonoBehaviour:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
   widgetType: 35
-  screenUIPlacementType: 0
+  uIPlacementContainerType: 14
+  uIPlacementType: 0
+  orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -785,6 +787,7 @@ MonoBehaviour:
   containerType: 9
   viewSpace: 2
   screenViewUIPlacementType: 3
+  orderInLayerType: 0
   selectableContent: 1
   recycleContainer:
     container: {fileID: 0}

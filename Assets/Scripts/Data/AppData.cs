@@ -161,7 +161,8 @@ namespace Com.RedicalGames.Filar
             AnonymousSignInConfirmationWidget,
             TermsAndConditionsWidget,
             PostsWidget,
-            ImageDisplayerWidget
+            ImageDisplayerWidget,
+            TitleDisplayerWidget
         }
 
         public enum SubWidgetType
@@ -577,6 +578,8 @@ namespace Com.RedicalGames.Filar
             CachedContentsContainer,
             AppScreenContainer,
             ScreenWidgetContainer,
+            ScreenTitleContainer,
+            LoadingStatusWidgetContainer,
             None
         }
 
@@ -1283,7 +1286,11 @@ namespace Com.RedicalGames.Filar
 
             [SerializeField]
             [Space(5)]
-            private ScreenUIPlacementType screenUIPlacementType = ScreenUIPlacementType.None;
+            private ScreenUIPlacementType uIPlacementType = ScreenUIPlacementType.None;
+
+            [SerializeField]
+            [Space(5)]
+            private ContentContainerType containerType = ContentContainerType.None;
 
             [SerializeField]
             [Space(5)]
@@ -1295,19 +1302,17 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-           public void SetName(string name) => this.name = name;
-
             public void SetType(T widgetType) => this.widgetType = widgetType;
 
-            public void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType) => this.screenUIPlacementType = screenUIPlacementType;
-
             public void SetInitialVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
+
+            public void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType) => this.uIPlacementType = uIPlacementType;
+
+            public void SetContentContainerType(ContentContainerType containerType) => this.containerType = containerType;
 
             #endregion
 
             #region Data Getters
-
-            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen Referenced Widget Dependency Asset Bundle Name Not Assigned.";
 
             public new CallbackData<T> GetType()
             {
@@ -1329,25 +1334,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType()
-            {
-                var callbackResults = new CallbackData<ScreenUIPlacementType>();
-                if (screenUIPlacementType != ScreenUIPlacementType.None)
-                {
-                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Placement Type Is Set To : {screenUIPlacementType}";
-                    callbackResults.data = screenUIPlacementType;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Screen Placement Type Is Set To Default : {screenUIPlacementType}";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
-            }
-
             public CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityState()
             {
                 var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>();
@@ -1360,6 +1346,44 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Initial Visibility State Type Is Set To Default : {initialVisibilityState}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ContentContainerType> GetContentContainerType()
+            {
+                var callbackResults = new CallbackData<ContentContainerType>();
+                if (containerType != ContentContainerType.None)
+                {
+                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Container Type Is Set To : {containerType}";
+                    callbackResults.data = containerType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Container Type Is Set To Default : {containerType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType()
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>();
+                if (uIPlacementType != ScreenUIPlacementType.None)
+                {
+                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Screen Placement Type Is Set To : {uIPlacementType}";
+                    callbackResults.data = uIPlacementType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Screen Placement Type Is Set To Default : {uIPlacementType}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
@@ -17914,7 +17938,7 @@ namespace Com.RedicalGames.Filar
 
             public AppData.InputType inputGroup;
 
-            public List<UIScreenInputWidget> screenActionGroup;
+            public List<InputActionHandler> screenActionGroup;
 
             public bool initialize;
 
@@ -26049,6 +26073,7 @@ namespace Com.RedicalGames.Filar
                                                 var widgetComponent = Instantiate(loadedWidgets[i].gameObject).GetComponent<Widget>();
                                                 widgetComponent.gameObject.SetName(loadedWidgets[i].GetName());
 
+                                                widgetComponent.SetContentContainerType(referencedWidgetDependencyAssets[i].GetContentContainerType().GetData());
                                                 widgetComponent.SetScreenUIPlacementType(referencedWidgetDependencyAssets[i].GetScreenUIPlacementType().GetData());
                                                 widgetComponent.SetUIScreenWidgetVisibilityState(referencedWidgetDependencyAssets[i].GetInitialVisibilityState().GetData());
 
@@ -26119,11 +26144,11 @@ namespace Com.RedicalGames.Filar
 
                         if (widgets.Contains(widget))
                         {
-                            callbackResults.SetResult(GetDynamicContainer(GetType().GetData(), ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()));
+                            callbackResults.SetResult(GetDynamicContainer(GetType().GetData(), widget.GetContentContainerType().GetData(), widget.GetScreenUIPlacementType().GetData()));
 
                             if (callbackResults.Success())
                             {
-                                var container = GetDynamicContainer(GetType().GetData(), ContentContainerType.ScreenWidgetContainer, widget.GetScreenUIPlacementType().GetData()).GetData();
+                                var container = GetDynamicContainer(GetType().GetData(), widget.GetContentContainerType().GetData(), widget.GetScreenUIPlacementType().GetData()).GetData();
 
                                 callbackResults.SetResult(widget.GetInitialVisibility());
 
@@ -27969,7 +27994,11 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected ScreenUIPlacementType screenUIPlacementType = ScreenUIPlacementType.None;
+            protected ContentContainerType uIPlacementContainerType = ContentContainerType.None;
+
+            [Space(5)]
+            [SerializeField]
+            protected ScreenUIPlacementType uIPlacementType;
 
             [Space(5)]
             [SerializeField]
@@ -28077,7 +28106,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType) => this.screenUIPlacementType = screenUIPlacementType;
+            public void SetContentContainerType(ContentContainerType containerType) => this.uIPlacementContainerType = containerType;
+
+            public void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType) => this.uIPlacementType = uIPlacementType;
 
             public void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
@@ -28142,15 +28173,38 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if (screenUIPlacementType != ScreenUIPlacementType.None)
+                    if (uIPlacementType != ScreenUIPlacementType.None)
                     {
-                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Screen UI Placement Type Is Set To : {screenUIPlacementType}";
-                        callbackResults.data = screenUIPlacementType;
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s UI Pacement Type Is Set To : {uIPlacementType}";
+                        callbackResults.data = uIPlacementType;
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Screen UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s UI Placement Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ContentContainerType> GetContentContainerType()
+            {
+                var callbackResults = new CallbackData<ContentContainerType>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    if (uIPlacementContainerType != ContentContainerType.None)
+                    {
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s UI Pacement Container Type Is Set To : {uIPlacementContainerType}";
+                        callbackResults.data = uIPlacementContainerType;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s UI Placement Container Type Is Set To Default : NONE - Invalid Operation - Not Applicable To Screen Space UI - Please Check Here";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.ErrorCode;
                     }
@@ -30648,6 +30702,10 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
+            void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType);
+            void SetContentContainerType(ContentContainerType containerType);
+            void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState);
+
 
             /// <summary>
             /// Sets The Name For The Screen Widget Component.
@@ -30686,11 +30744,13 @@ namespace Com.RedicalGames.Filar
             /// <returns>Returns A Callback Data List With All Assigned Dynamic Container For The Screen Widget/returns>
             CallbackDataList<DynamicContainerBase> GetDynamicContainerList();
 
+            CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
+
             /// <summary>
             /// Gets The UI Screen Space Placement Type - Screen Depth Ordering.
             /// </summary>
             /// <returns>Returns A UI Screen Widgets Screen Placement Type As A Callback WIth Enum Data/returns>
-            CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
+            CallbackData<ContentContainerType> GetContentContainerType();
 
             /// <summary>
             /// Gets All Referenced Widget Dependency Assets For The Screen Widget
@@ -42799,14 +42859,15 @@ namespace Com.RedicalGames.Filar
             void SetName(string name);
 
             void SetType(T widgetType);
-            void SetScreenUIPlacementType(ScreenUIPlacementType screenUIPlacementType);
             void SetInitialVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState);
+            void SetContentContainerType(ContentContainerType containerType);
+            void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType);
 
             #endregion
 
             #region Data Getters
 
-            string GetName();
+            CallbackData<ContentContainerType> GetContentContainerType();
 
             CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
 
