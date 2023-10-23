@@ -15104,6 +15104,11 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Header("::: Input Component Info")]
+
+            [Space(5)]
+            new public string name;
+
             #endregion
 
             #region Main
