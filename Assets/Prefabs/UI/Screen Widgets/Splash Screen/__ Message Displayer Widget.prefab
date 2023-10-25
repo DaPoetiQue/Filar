@@ -208,6 +208,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -393,6 +394,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -580,6 +582,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -768,6 +771,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -954,6 +958,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1139,6 +1144,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1322,6 +1328,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 11981458005094225}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1504,6 +1511,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1639,7 +1647,6 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
 --- !u!1 &11981458640266837
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,10 +1715,10 @@ MonoBehaviour:
   subscribeToActionEvents: 0
   actionGroup:
   - name: App License Info Displayer
-    inputGroup: 7
-    screenActionGroup:
+    inputActionGroupType: 7
+    inputActionGroup:
     - {fileID: 1743718610057634577}
-    initialize: 0
+    initialize: 1
   screenType: 9
   widgetLayouts:
   - layoutName: Default VIew
@@ -1738,6 +1745,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:

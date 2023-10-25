@@ -1582,11 +1582,7 @@ namespace Com.RedicalGames.Filar
                             callbackResults.SetResult(assetBundles[i].Initialized());
 
                             if (callbackResults.Success())
-                            {
                                 callbackResults.data = assetBundles[i].cachedAssetList;
-
-                                LogInfo($" _______________++++++++++++++++_____!! Found Cache Key : {assetBundles[i].cacheKey} With : {assetBundles[i].cachedAssetList.Count} Assets At Index : {i} - Searching For Key : {key}", this);
-                            }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
@@ -17336,10 +17332,7 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetScreenUITextValue Failed - Value Is Missing / Null.");
             }
 
-            public override void SelectableInit(Action<Callback> callback = null)
-            {
-                throw new NotImplementedException();
-            }
+            public override void SelectableInit(Action<Callback> callback = null){}
 
             public override void SetSelectionState(SelectionVisualizationType visualizationType, SelectionState selectionState)
             {
@@ -17467,10 +17460,7 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning(InputValueAssigned().results);
             }
 
-            public override void SelectableInit(Action<Callback> callback = null)
-            {
-                throw new NotImplementedException();
-            }
+            public override void SelectableInit(Action<Callback> callback = null) {}
 
             public override void SetSelectionState(SelectionVisualizationType visualizationType, SelectionState selectionState)
             {
@@ -25629,13 +25619,20 @@ namespace Com.RedicalGames.Filar
                                                                 LogInfo($" ______________________________________+_______________ Set Screen Initialization State : {GetInitialVisibilityState().GetData()}", this);
                                                             }
                                                         }
-
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     });
                                                 }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             });
                                         }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     });
                                 }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                             }, eventActions);
                         }
@@ -25643,6 +25640,8 @@ namespace Com.RedicalGames.Filar
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     });
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 #endregion
 
@@ -42137,15 +42136,36 @@ namespace Com.RedicalGames.Filar
 
             #region Check Component Validation
 
-            public static void GetAppComponentsValid<T>(List<T> components, string listIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            public static void GetAppComponentsValid<T>(List<T> components, string componentsIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
                 CallbackDataList<T> callbackResults = new CallbackDataList<T>();
 
-                if (components != null && components.Count > 0)
+                if (components != null)
                 {
-                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Count} Components Are Assigned And Valid.";
-                    callbackResults.data = components;
-                    callbackResults.resultCode = SuccessCode;
+                    if (components.Count > 0)
+                    {
+                        for (int i = 0; i < components.Count; i++)
+                        {
+                            if (components[i] != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = components;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {componentsIdentifier} Is Null At Index : {i}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
                 }
                 else
                 {
@@ -42159,15 +42179,36 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void GetAppComponentsValid<T>(T[] components, string listIdentifier = null, Action<CallbackDataArray<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
+            public static void GetAppComponentsValid<T>(T[] components, string componentsIdentifier = null, Action<CallbackDataArray<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
                 CallbackDataArray<T> callbackResults = new CallbackDataArray<T>();
 
-                if (components != null && components.Length > 0)
+                if (components != null)
                 {
-                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{components.Length} Components Are Assigned And Valid.";
-                    callbackResults.data = components;
-                    callbackResults.resultCode = SuccessCode;
+                    if (components.Length > 0)
+                    {
+                        for (int i = 0; i < components.Length; i++)
+                        {
+                            if (components[i] != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = components;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {componentsIdentifier} Is Null At Index : {i}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
                 }
                 else
                 {
@@ -42234,9 +42275,21 @@ namespace Com.RedicalGames.Filar
                 {
                     if (components.Count > 0)
                     {
-                        callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
-                        callbackResults.data = components;
-                        callbackResults.resultCode = SuccessCode;
+                        for (int i = 0; i < components.Count; i++)
+                        {
+                            if(components[i] != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = components;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {componentsIdentifier} Is Null At Index : {i}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        } 
                     }
                     else
                     {
@@ -42261,10 +42314,32 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataArray<T> callbackResults = new CallbackDataArray<T>();
 
-                if (components != null && components.Length > 0)
+                if (components != null)
                 {
-                    callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
-                    callbackResults.data = components;
+                    if (components.Length > 0)
+                    {
+                        for (int i = 0; i < components.Length; i++)
+                        {
+                            if (components[i] != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = components;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {componentsIdentifier} Is Null At Index : {i}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
                     callbackResults.resultCode = SuccessCode;
                 }
                 else
@@ -42283,11 +42358,32 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackDataQueue<T> callbackResults = new CallbackDataQueue<T>();
 
-                if (queueComponent != null && queueComponent.Count > 0)
+                if (queueComponent != null)
                 {
-                    callbackResults.result = successOperationFallbackResults ?? $"Component : {queueIdentifier ?? "Name Unsassigned"} Is Valid.";
-                    callbackResults.data = queueComponent;
-                    callbackResults.resultCode = SuccessCode;
+                    if (queueComponent.Count > 0)
+                    {
+                        foreach (var component in queueComponent)
+                        {
+                            if (component != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {queueIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = queueComponent;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {queueIdentifier} Is Null At Index : {queueComponent.ToList().IndexOf(component)}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
                 }
                 else
                 {

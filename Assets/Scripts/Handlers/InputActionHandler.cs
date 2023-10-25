@@ -63,12 +63,87 @@ namespace Com.RedicalGames.Filar
                     });
 
                     break;
+
+                case AppData.InputType.InputField:
+
+                    GetInputDataPacket<AppData.InputFieldConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.InputSlider:
+
+                    GetInputDataPacket<AppData.InputSliderConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.Slider:
+
+                    GetInputDataPacket<AppData.SliderConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.DropDown:
+
+                    GetInputDataPacket<AppData.DropdownConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.Checkbox:
+
+                    GetInputDataPacket<AppData.CheckboxConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.Text:
+
+                    GetInputDataPacket<AppData.TextConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.Image:
+
+                    GetInputDataPacket<AppData.ImageConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
             }
 
             callback?.Invoke(callbackResults);
         }
-
-        public void SetName(string name) => this.name = name;
 
         public new AppData.CallbackData<AppData.InputType> GetType()
         {
@@ -245,8 +320,6 @@ namespace Com.RedicalGames.Filar
 
             callback.Invoke(callbackResults);
         }
-
-        public string GetName() => !string.IsNullOrEmpty(name) ? name : "UI Screen Input Widget Name Not Assigned";
 
         public bool HasComponent(AppData.InputType inputType)
         {

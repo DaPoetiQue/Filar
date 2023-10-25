@@ -283,6 +283,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -468,6 +469,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -655,6 +657,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -843,6 +846,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1029,6 +1033,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1214,6 +1219,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1397,6 +1403,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3046965485454435812}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1579,6 +1586,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1714,7 +1722,6 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
 --- !u!1 &3046965486235780719
 GameObject:
   m_ObjectHideFlags: 0
@@ -1922,6 +1929,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2107,6 +2115,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2294,6 +2303,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2482,6 +2492,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2668,6 +2679,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2853,6 +2865,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3036,6 +3049,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3046965486235780717}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3218,6 +3232,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3353,7 +3368,6 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
 --- !u!1 &3046965486587628298
 GameObject:
   m_ObjectHideFlags: 0
@@ -3424,8 +3438,8 @@ MonoBehaviour:
   subscribeToActionEvents: 0
   actionGroup:
   - name: Loading Status Text
-    inputGroup: 7
-    screenActionGroup:
+    inputActionGroupType: 7
+    inputActionGroup:
     - {fileID: 7338522638899953132}
     - {fileID: 2474287121284689378}
     initialize: 1
@@ -3455,6 +3469,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:

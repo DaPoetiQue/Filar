@@ -311,6 +311,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -496,6 +497,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -683,6 +685,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -871,6 +874,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1057,6 +1061,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1242,6 +1247,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1425,6 +1431,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1607,6 +1614,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 2803885940288519434}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1742,7 +1750,6 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 3
 --- !u!1 &2803885941087977292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1814,8 +1821,8 @@ MonoBehaviour:
   subscribeToActionEvents: 0
   actionGroup:
   - name: Image Displayer
-    inputGroup: 8
-    screenActionGroup:
+    inputActionGroupType: 8
+    inputActionGroup:
     - {fileID: 2803885940288519432}
     initialize: 1
   screenType: 8
@@ -1844,6 +1851,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
