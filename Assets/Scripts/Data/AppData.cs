@@ -28764,8 +28764,66 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetInputFieldComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionInputField = action.GetInputFieldComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionInputField.Initialized());
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(actionInputField.Selectable());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(structureCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var selectionSystem = structureCallbackResults.GetData();
+
+                                                                                    selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), actionInputField, selectableCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            actionInputField.Initialize(initializationCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            actionInputField.Initialize(initializationCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                if (callbackResults.UnSuccessful())
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             }
                                                             else
@@ -28783,9 +28841,66 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetInputSliderComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionInputSlider = action.GetInputSliderComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionInputSlider.Initialized());
 
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(actionInputSlider.Selectable());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(structureCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var selectionSystem = structureCallbackResults.GetData();
+
+                                                                                    selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), actionInputSlider, selectableCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            actionInputSlider.Initialize(initializationCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            actionInputSlider.Initialize(initializationCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                if (callbackResults.UnSuccessful())
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28802,9 +28917,66 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetSliderComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionSlider = action.GetSliderComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionSlider.Initialized());
 
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(actionSlider.Selectable());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(structureCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var selectionSystem = structureCallbackResults.GetData();
+
+                                                                                    selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), actionSlider, selectableCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            actionSlider.Initialize(initializationCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            actionSlider.Initialize(initializationCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                if (callbackResults.UnSuccessful())
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28821,9 +28993,66 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetDropdownComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionDropdown = action.GetDropdownComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionDropdown.Initialized());
 
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(actionDropdown.Selectable());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(structureCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var selectionSystem = structureCallbackResults.GetData();
+
+                                                                                    selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), actionDropdown, selectableCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            actionDropdown.Initialize(initializationCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            actionDropdown.Initialize(initializationCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                if (callbackResults.UnSuccessful())
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28840,13 +29069,69 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetCheckboxComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionCheckbox = action.GetCheckboxComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionCheckbox.Initialized());
 
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(actionCheckbox.Selectable());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(structureCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var selectionSystem = structureCallbackResults.GetData();
+
+                                                                                    selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), actionCheckbox, selectableCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            actionCheckbox.Initialize(initializationCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            actionCheckbox.Initialize(initializationCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                if (callbackResults.UnSuccessful())
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                                                         });
 
                                                         break;
@@ -28859,9 +29144,29 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetTextComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionText = action.GetTextComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionText.Initialized());
 
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        actionText.Initialize(initializationCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(initializationCallbackResults);
+
+                                                                            if (callbackResults.UnSuccessful())
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28878,9 +29183,29 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
+                                                                callbackResults.SetResult(action.GetImageComponent());
 
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var actionImage = action.GetImageComponent().GetData();
 
+                                                                    callbackResults.SetResult(actionImage.Initialized());
 
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        actionImage.Initialize(initializationCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(initializationCallbackResults);
+
+                                                                            if (callbackResults.UnSuccessful())
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28915,7 +29240,10 @@ namespace Com.RedicalGames.Filar
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    {
+                        callbackResults.result = $"There Are No Action Groups To Initialize For : {GetName()} - Of Type : {GetType().GetData()} - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Resuming Excecution.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
