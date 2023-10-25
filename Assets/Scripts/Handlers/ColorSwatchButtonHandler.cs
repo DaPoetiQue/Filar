@@ -54,9 +54,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            if (actionButton.dataPackets.action == AppData.InputActionButtonType.ColorPickerButton)
+            if (actionButton.dataPackets.GetAction().GetData() == AppData.InputActionButtonType.ColorPickerButton)
             {
                 AppData.ActionEvents.OnSwatchColorPickedEvent(colorInfo, true, false);
 
@@ -106,7 +106,7 @@ namespace Com.RedicalGames.Filar
         public void SetInputUIButtonState(AppData.InputActionButtonType type, AppData.InputUIState state)
         {
             var buttonList = GetActionInputUIButtonList();
-            var button = buttonList.Find((x) => x.dataPackets.action == type);
+            var button = buttonList.Find((x) => x.dataPackets.GetAction().GetData() == type);
 
             if (button != null)
                 button.SetUIInputState(state);

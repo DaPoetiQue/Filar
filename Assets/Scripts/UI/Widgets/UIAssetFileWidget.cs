@@ -31,9 +31,9 @@ namespace Com.RedicalGames.Filar
         }
 
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            switch (actionButton.dataPackets.action)
+            switch (actionButton.dataPackets.GetAction().GetData())
             {
                 case AppData.InputActionButtonType.Delete:
 
@@ -181,16 +181,16 @@ namespace Com.RedicalGames.Filar
                             if (field.path != null)
                             {
                                 Texture2D thumbnail = AppData.Helpers.LoadTextureFile(field.path);
-                                SetUIImageDisplayerValue(AppData.Helpers.Texture2DToSprite(thumbnail), AppData.UIImageDisplayerType.ItemThumbnail);
+                                SetUIImageDisplayerValue(AppData.Helpers.GetSprite(thumbnail), AppData.UIImageDisplayerType.ItemThumbnail);
                             }
                         }
                     }
                 }
 
                 // Set Info
-                SetUITextDisplayerValue(assetData.name, AppData.ScreenTextType.TitleDisplayer);
-                SetUITextDisplayerValue(assetData.description, AppData.ScreenTextType.InfoDisplayer);
-                SetUITextDisplayerValue(assetData.creationDateTime.dateTime, AppData.ScreenTextType.DateTimeDisplayer);
+                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, assetData.name);
+                SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, assetData.description);
+                SetUITextDisplayerValue(AppData.ScreenTextType.DateTimeDisplayer, assetData.creationDateTime.dateTime);
             }
         }
 

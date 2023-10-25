@@ -7246,7 +7246,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void CreateNewRenderProfile(AppData.ButtonDataPackets dataPackets, Action<AppData.Callback> callback = null)
+        public void CreateNewRenderProfile(AppData.ButtonConfigDataPacket dataPackets, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -7258,7 +7258,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void CreateNewFolderWidget(AppData.ButtonDataPackets dataPackets, Action<AppData.Callback> callback = null)
+        public void CreateNewFolderWidget(AppData.ButtonConfigDataPacket dataPackets, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -7320,7 +7320,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        void CreateProfileWidget(AppData.ButtonDataPackets dataPackets, Action<AppData.Callback> callback = null)
+        void CreateProfileWidget(AppData.ButtonConfigDataPacket dataPackets, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 

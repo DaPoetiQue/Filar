@@ -69,37 +69,42 @@ namespace Com.RedicalGames.Filar
                                 {
                                     #region Show Splash Screen
 
-                                    var showScreenTaskResults = await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
-
-                                    callbackResults.SetResults(showScreenTaskResults);
-
                                     if (callbackResults.Success())
                                     {
-                                        var screenLoadedDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnSplashScreenExitDelay);
+                                        var showScreenTaskResults = await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
 
-                                        callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
+                                        callbackResults.SetResults(showScreenTaskResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var hideScreenTaskResults = await screenUIManager.HideScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+                                            var screenLoadedDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnSplashScreenExitDelay);
 
-                                            callbackResults.SetResults(hideScreenTaskResults);
+                                            callbackResults.SetResults(screenLoadedDelayTimeTaskResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                var screenExitDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnScreenChangedExitDelay);
-                                                callbackResults.SetResults(screenExitDelayTimeTaskResults);
+                                                var hideScreenTaskResults = await screenUIManager.HideScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+
+                                                callbackResults.SetResults(hideScreenTaskResults);
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    OnShowSplashScreen = false;
-                                                    //OnInitialLoad = true;
+                                                    var screenExitDelayTimeTaskResults = await screenLoadInfoInstance.OnScreenLoadExecutionTime(AppData.RuntimeExecution.OnScreenChangedExitDelay);
+                                                    callbackResults.SetResults(screenExitDelayTimeTaskResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        OnShowSplashScreen = false;
+                                                        //OnInitialLoad = true;
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    callback.Invoke(callbackResults);
+                                        callback.Invoke(callbackResults);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                     #endregion
                                 }

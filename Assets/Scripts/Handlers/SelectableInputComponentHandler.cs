@@ -3,7 +3,7 @@ using TMPro;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SelectableInputComponentHandler : AppData.SelectableUIInputComponent<TMP_Dropdown, AppData.DropdownDataPackets, AppData.UIDropDown<AppData.DropdownDataPackets>>
+    public class SelectableInputComponentHandler : AppData.SelectableUIInputComponent<TMP_Dropdown, AppData.DropdownConfigDataPacket, AppData.UIDropDown<AppData.DropdownConfigDataPacket>>
     {
 
         #region Components
@@ -36,7 +36,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnInputSelected() => selectable.OnInputPointerDownEvent();
 
-        protected override void OnInputSelected(AppData.UIInputComponent<TMP_Dropdown, AppData.DropdownDataPackets, AppData.UIDropDown<AppData.DropdownDataPackets>> input)
+        protected override void OnInputSelected(AppData.UIInputComponent<TMP_Dropdown, AppData.DropdownConfigDataPacket, AppData.UIDropDown<AppData.DropdownConfigDataPacket>> input)
         {
 
         }

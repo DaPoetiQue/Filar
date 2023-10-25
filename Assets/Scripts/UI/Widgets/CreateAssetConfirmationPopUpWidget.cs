@@ -179,7 +179,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (thumbnailDisplayer)
                         {
-                            thumbnailDisplayer.sprite = AppData.Helpers.Texture2DToSprite(AppData.Helpers.LoadTextureFile(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetAssetField(AppData.AssetFieldType.Thumbnail).path));
+                            thumbnailDisplayer.sprite = AppData.Helpers.GetSprite(AppData.Helpers.LoadTextureFile(AppDatabaseManager.Instance.GetCurrentSceneAsset().GetAssetField(AppData.AssetFieldType.Thumbnail).path));
                         }
                         else
                             Debug.LogWarning("--> Pop Up Thumbanil Displayer Missing / Not Assigned In The Inspector Panel.");
@@ -277,12 +277,12 @@ namespace Com.RedicalGames.Filar
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
         }
 
-        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
         }
@@ -292,7 +292,7 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
         }
@@ -302,7 +302,7 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
         }

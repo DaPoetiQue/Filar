@@ -42,9 +42,9 @@ namespace Com.RedicalGames.Filar
             return null;
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            switch (actionButton.dataPackets.action)
+            switch (actionButton.dataPackets.GetAction().GetData())
             {
                 case AppData.InputActionButtonType.OpenFolderButton:
 
@@ -82,12 +82,12 @@ namespace Com.RedicalGames.Filar
         {
             if (!string.IsNullOrEmpty(folder.storageData.projectDirectory))
             {
-                SetUITextDisplayerValue(folder.name, AppData.ScreenTextType.TitleDisplayer);
+                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, folder.name);
 
                 string fileCountString = folder.GetFileCount().ToString() + " Files";
-                SetUITextDisplayerValue(fileCountString, AppData.ScreenTextType.FileCountDisplayer);
+                SetUITextDisplayerValue(AppData.ScreenTextType.FileCountDisplayer, fileCountString);
 
-                SetUITextDisplayerValue(folder?.creationDateTime?.dateTime, AppData.ScreenTextType.DateTimeDisplayer);
+                SetUITextDisplayerValue(AppData.ScreenTextType.DateTimeDisplayer, folder?.creationDateTime?.dateTime);
 
                 if (folder.GetFileCount() == 0)
                     SetUIImageDisplayerValue(AppData.UIImageDisplayerType.ItemThumbnail, AppData.UIImageType.EmptyFolderIcon);

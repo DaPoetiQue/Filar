@@ -14091,10 +14091,10 @@ namespace Com.RedicalGames.Filar
             public RectTransform value;
 
             [Space(5)]
-            public UIText<TextDataPackets> titleDisplayer;
+            public UITextDisplayer<TextConfigDataPacket> titleDisplayer;
 
             [Space(5)]
-            public UIText<TextDataPackets> messageDisplayer;
+            public UITextDisplayer<TextConfigDataPacket> messageDisplayer;
 
             [Space(5)]
             public NotificationType notificationType;
@@ -15252,9 +15252,6 @@ namespace Com.RedicalGames.Filar
 
             public void Initialize(Action<Callback> callback = null) => SelectableInit(callbackResults => { callback?.Invoke(callbackResults); });
 
-            public void SetName(string name) => this.name = name;
-            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Selectable Component Name Is Not Assigned.";
-
             public Callback Selectable()
             {
                 Callback callbackResults = new Callback();
@@ -15641,9 +15638,9 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<T> GetValue()
             {
-                var callbackResults = new CallbackData<T>();
+                var callbackResults = new CallbackData<T>(Helpers.GetAppComponentValid(value, "Value", $"Value For : {GetName()} Is Not Assigned - Invalid Operation, Possible Fix, Please Assign Value Component For : {GetName()} In The Inspector Panel."));
 
-                if (value != null)
+                if (callbackResults.Success())
                 {
                     callbackResults.result = $"Value Has Been Successfully Assigned For Component : {GetName()}.";
                     callbackResults.data = value;
@@ -15659,24 +15656,23 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             public new CallbackData<ScreenImageType> GetType()
             {
                 var callbackResults = new CallbackData<ScreenImageType>(GetDataPackets());
 
                 if (callbackResults.Success())
                 {
-                    var dataPacketsResults = GetDataPackets().GetData() as ImageDataPackets;
+                    var dataPacketsResults = GetDataPackets().GetData() as ImageConfigDataPacket;
 
-                    if (dataPacketsResults.imageType != ScreenImageType.None)
+                    if (dataPacketsResults.GetImageType().GetData() != ScreenImageType.None)
                     {
-                        callbackResults.result = $"Image Displayer : {GetName()}'s Component Type Is Set To : {dataPacketsResults.imageType}";
-                        callbackResults.data = dataPacketsResults.imageType;
+                        callbackResults.result = $"Image Displayer : {GetName()}'s Component Type Is Set To : {dataPacketsResults.GetImageType().GetData()}";
+                        callbackResults.data = dataPacketsResults.GetImageType().GetData();
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Image Displayer : {GetName()}'s Component Type Is Set To Default : {dataPacketsResults.imageType} - Invalid Operation.";
+                        callbackResults.result = $"Image Displayer : {GetName()}'s Component Type Is Set To Default : {dataPacketsResults.GetImageType().GetData()} - Invalid Operation.";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.ErrorCode;
                     }
@@ -17276,7 +17272,7 @@ namespace Com.RedicalGames.Filar
         #region Displayer Components
 
         [Serializable]
-        public class UIText<T> : UIInputComponent<TMP_Text, T, UIText<T>>
+        public class UITextDisplayer<T> : UIInputComponent<TMP_Text, T, UITextDisplayer<T>>
         {
             #region Main
 
@@ -17370,16 +17366,10 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public class UIImageDisplayer<T> : UIInputComponent<Image, T, UIInputSlider<T>>
         {
-            #region Components
-
-            [Space(5)]
-            public ScreenImageType imageType;
-
-            #endregion
 
             #region Main
 
-            public void SetImageData(ImageData screenCaptureData, ImageDataPackets dataPackets)
+            public void SetImageData(ImageData screenCaptureData, ImageConfigDataPacket dataPackets)
             {
                 if (dataPackets.useData)
                 {
@@ -17387,14 +17377,14 @@ namespace Com.RedicalGames.Filar
                     value.preserveAspect = dataPackets.preserveAspectRatio;
 
                     if (screenCaptureData.texture != null)
-                        value.sprite = Helpers.Texture2DToSprite(screenCaptureData.texture);
+                        value.sprite = Helpers.GetSprite(screenCaptureData.texture);
                     else
                         Debug.LogWarning("--> Failed : screenCaptureData.texture Is Null.");
                 }
                 else
                 {
                     if (screenCaptureData.texture != null)
-                        value.sprite = Helpers.Texture2DToSprite(screenCaptureData.texture);
+                        value.sprite = Helpers.GetSprite(screenCaptureData.texture);
                     else
                         Debug.LogWarning("--> Failed : screenCaptureData.texture Is Null.");
                 }
@@ -17415,7 +17405,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (value != null)
                 {
-                    value.sprite = Helpers.Texture2DToSprite(image);
+                    value.sprite = Helpers.GetSprite(image);
                     value.preserveAspect = preserveAspectRatio;
                 }
                 else
@@ -17930,17 +17920,94 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class UIScreenActionGroup
+        public class UIScreenActionGroup : DataDebugger
         {
             #region Components
 
-            public string name;
+            [SerializeField]
+            private InputType inputActionGroupType;
 
-            public AppData.InputType inputGroup;
+            [Space(5)]
+            [SerializeField]
+            private List<InputActionHandler> inputActionGroup;
 
-            public List<InputActionHandler> screenActionGroup;
+            [Space(5)]
+            [SerializeField]
+            private bool initialize;
 
-            public bool initialize;
+            private bool initialized;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetInitializedState(bool initialized) => this.initialized = initialized;
+            public void SetInputGroupType(InputType inputGroup) => this.inputActionGroupType = inputGroup;
+
+            #endregion
+
+            #region Data Getters
+
+            public Callback CanBeInitialized() => new Callback(Helpers.GetAppComponentsValid(inputActionGroup,
+                "Input Action Group", $"There Are No Input Actions Found For Group : {GetName()} - Group can Not Be Initialized.",
+                $"Inputs Action Group Can Be Initialized With : {inputActionGroup.Count} Items."));
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(CanBeInitialized());
+
+                if (callbackResults.Success())
+                {
+                    if(initialized)
+                    {
+                        callbackResults.result = $"Action Group : {GetName()} Has Been Initialized.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Check Action Group : {GetName()}'s Initialization Failed With Results : {callbackResults.GetResult}.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<InputActionHandler> GetInputActionGroup()
+            {
+                var callbackResults = new CallbackDataList<InputActionHandler>(CanBeInitialized());
+
+                if (callbackResults.Success())
+                    callbackResults.data = inputActionGroup;
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<InputType> GetInputGroupType()
+            {
+                var callbackResults = new CallbackData<InputType>();
+
+                if(inputActionGroupType != InputType.None)
+                {
+                    callbackResults.result = $"Get Action Group Input Type Success : {GetName()}'s Group Input Type Is Set To : {inputActionGroupType}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Action Group Input Type Failed : {GetName()}'s Group Input Type Is Set To Default : {inputActionGroupType} Invalid Operation - Please Assign Input Type From Associated Screen Widget.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
         }
@@ -18418,7 +18485,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public List<UIText<T>> uiTexts = new List<UIText<T>>();
+            public List<UITextDisplayer<T>> uiTexts = new List<UITextDisplayer<T>>();
 
             [Space(5)]
             public bool initialize;
@@ -18427,9 +18494,9 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(U fromClass = null, Action<CallbackDataList<UIText<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(U fromClass = null, Action<CallbackDataList<UITextDisplayer<T>>> callback = null) where U : AppMonoBaseClass
             {
-                CallbackDataList<UIText<T>> callbackResults = new CallbackDataList<UIText<T>>();
+                CallbackDataList<UITextDisplayer<T>> callbackResults = new CallbackDataList<UITextDisplayer<T>>();
 
                 if (IsInitialized())
                 {
@@ -22986,7 +23053,7 @@ namespace Com.RedicalGames.Filar
             public void SetFileData() => OnSetAssetData(assetData);
 
             public void SetFileData(SceneAsset assetData) => OnSetAssetData(assetData);
-            protected abstract void OnActionButtonInputs(UIButton<ButtonDataPackets> actionButton);
+            protected abstract void OnActionButtonInputs(UIButton<ButtonConfigDataPacket> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetUIWidgetData(ProjectStructureData structureData);
             protected abstract void OnSetUIWidgetData(Post post);
@@ -23071,117 +23138,6 @@ namespace Com.RedicalGames.Filar
             public UIScreenWidget GetWidgetComponent()
             {
                 return widgetComponent;
-            }
-
-            public void SetUIImageDisplayerValue(Sprite image, UIImageDisplayerType displayerType)
-            {
-                //if (imageDisplayerList.Count > 0)
-                //{
-                //    foreach (var displayer in imageDisplayerList)
-                //        if (displayer.imageDisplayerType == displayerType)
-                //            displayer.value.sprite = image;
-                //}
-                //else
-                //    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : imageDisplayerList Is Null / Empty.");
-            }
-
-            public void SetUIImageDisplayerValue(Sprite value, ScreenImageType imageType)
-            {
-                if (GetActive())
-                {
-                    if (actionGroup != null && actionGroup.Count > 0)
-                    {
-                        var initialized = actionGroup.FindAll(widget => widget.initialize);
-
-                        if (initialized != null && initialized.Count > 0)
-                        {
-                            foreach (var item in initialized)
-                            {
-                                foreach (var widgetData in item.screenActionGroup)
-                                {
-                                    if (widgetData.inputType == InputType.Image)
-                                    {
-                                        widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
-                                        {
-
-                                            LogInfo($" +++++==============>>>> Found Image Data - Code : {dataPacketsCallback.GetResultCode} - Results : {dataPacketsCallback.GetResult}", this);
-
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var widget = widgetData.GetImageComponent();
-
-                                                LogInfo($" +++++==============>>>> Found Image Displayer : {widget.name} - Of Type : {widget.imageType}", this);
-
-                                                if (widget != null && widget.imageType == imageType)
-                                                {
-                                                    if (widget.value)
-                                                        widget.SetImageData(value);
-                                                    else
-                                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
-                                                }
-                                                else
-                                                    LogError("Action Group Button Component Not Found", this);
-                                            }
-                                            else
-                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                        });
-
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
-            }
-
-            public void SetUIImageDisplayerValue(Texture2D value, ScreenImageType imageType)
-            {
-                if (GetActive())
-                {
-                    if (actionGroup != null && actionGroup.Count > 0)
-                    {
-                        var initialized = actionGroup.FindAll(widget => widget.initialize);
-
-                        if (initialized != null && initialized.Count > 0)
-                        {
-                            foreach (var item in initialized)
-                            {
-                                foreach (var widgetData in item.screenActionGroup)
-                                {
-                                    if (widgetData.inputType == InputType.Image)
-                                    {
-                                        widgetData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
-                                        {
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var widget = widgetData.GetImageComponent();
-
-                                                if (widget != null && widget.imageType == imageType)
-                                                {
-                                                    if (widget.value)
-                                                        widget.SetImageData(value);
-                                                    else
-                                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
-                                                }
-                                                else
-                                                    LogError("Action Group Button Component Not Found", this);
-                                            }
-                                            else
-                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                        });
-
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
             }
 
             //public void GetUIImageDisplayer(ScreenImageType imageType, Action<CallbackData<Image>> callback)
@@ -23353,118 +23309,12 @@ namespace Com.RedicalGames.Filar
                 return defaultUIWidgetAction;
             }
 
-            protected void SetActionButtonState(InputActionButtonType buttonType, UIStateType state)
-            {
-                Debug.LogError($"--> Button : {buttonType} State - : {state}");
-            }
+  
 
-            protected void SetActionButtonColor(InputActionButtonType buttonType, Color color)
-            {
-                if (GetActive())
-                {
-                    if (actionGroup != null && actionGroup.Count > 0)
-                    {
-                        var initialized = actionGroup.FindAll(input => input.initialize);
-
-                        if (initialized != null && initialized.Count > 0)
-                        {
-                            foreach (var item in initialized)
-                            {
-                                foreach (var widget in item.screenActionGroup)
-                                {
-                                    if (widget.inputType == InputType.Button)
-                                    {
-                                        widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
-                                        {
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var button = widget.GetButtonComponent();
-
-                                                if (button != null)
-                                                {
-                                                    if (button.value)
-                                                        button.SetUIColor(color);
-                                                    else
-                                                        LogError($"Set Action Button Event Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
-                                                }
-                                                else
-                                                    LogError("Action Group Button Component Not Found", this);
-                                            }
-                                            else
-                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
-            }
-
-            protected void CancelActionButtonInvoke(InputActionButtonType buttonType)
-            {
-                if (GetActive())
-                {
-                    if (actionGroup != null && actionGroup.Count > 0)
-                    {
-                        var initialized = actionGroup.FindAll(input => input.initialize);
-
-                        if (initialized != null && initialized.Count > 0)
-                        {
-                            foreach (var item in initialized)
-                            {
-                                foreach (var widget in item.screenActionGroup)
-                                {
-                                    if (widget.inputType == InputType.Button)
-                                    {
-                                        widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
-                                        {
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var button = widget.GetButtonComponent();
-
-                                                if (button != null)
-                                                {
-                                                    if (button.value)
-                                                        button.value.CancelInvoke();
-                                                    else
-                                                        LogError($"Cancel Action Button Invoke Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
-                                                }
-                                                else
-                                                    LogError("Action Group Button Component Not Found", this);
-                                            }
-                                            else
-                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
-            }
-
-            protected void SetActionButtonState(UIButton<ButtonDataPackets> button, InputUIState state)
-            {
-                var actionButtons = actionGroup.FindAll(inputs => inputs.screenActionGroup.Find(input => input.inputType == InputType.Button));
-
-                if(actionButtons != null && actionButtons.Count > 0)
-                {
-                    
-                }
-                else
-                    LogError($"=============> Button Action Group Not Found.", this);
-                       
-            }
-
-            public List<UIButton<ButtonDataPackets>> GetActionInputUIButtonList()
+            public List<UIButton<ButtonConfigDataPacket>> GetActionInputUIButtonList()
             {
                 LogError("===========> Fix This Now - Return Proper Data", this);
-                return new List<UIButton<ButtonDataPackets>>();
+                return new List<UIButton<ButtonConfigDataPacket>>();
             }
 
             public SelectableWidgetType GetSelectableType()
@@ -23482,61 +23332,6 @@ namespace Com.RedicalGames.Filar
             public RectTransform GetFolderContentContainer()
             {
                 return selectableComponent.GetUISelectionContentContainer();
-            }
-
-            protected void SetUITextDisplayerValue(string value, ScreenTextType textType)
-            {
-                if (actionGroup != null && actionGroup.Count > 0)
-                {
-                    var initialized = actionGroup.FindAll(input => input.initialize);
-
-                    if (initialized != null && initialized.Count > 0)
-                    {
-                        foreach (var item in initialized)
-                        {
-                            if (item != null)
-                            {
-                                foreach (var widget in item.screenActionGroup)
-                                {
-                                    if (widget != null)
-                                    {
-                                        if (widget.HasComponent(textType))
-                                        {
-                                            if (widget.inputType == InputType.Text)
-                                            {
-                                                widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
-                                                {
-                                                    if (dataPacketsCallback.Success())
-                                                    {
-                                                        if (dataPacketsCallback.data.textType == textType)
-                                                        {
-                                                            LogSuccess($"===> Yes - Now About To Set Widget Data Folder Name : {value} To Text Type : {textType}", this);
-                                                            widget.GetTextComponent().SetScreenUITextValue(value);
-                                                        }
-                                                        else
-                                                            LogError($"===> No Text Displayer Set To Type : {textType}", this);
-                                                    }
-                                                    else
-                                                        Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                                });
-                                            }
-                                            else
-                                                LogWarning($"Action Group Widget Is Not Set To Text Type : {textType}.", this);
-                                        }
-                                        else
-                                            LogWarning($"Action Group Widget Of Text Type : {textType} Doesn't Exist.", this);
-                                    }
-                                    else
-                                        LogError($"Action Group : {item.name} Widget Is Null / Invalid.", this);
-                                }
-                            }
-                            else
-                                LogError("Action Group Is Null / Invalid.", this);
-                        }
-                    }
-                }
-                else
-                    LogWarning("Action Group Is Null / Empty / Not Yet Initialized.", this);
             }
 
             protected void SetUIImageDisplayerValue(UIImageDisplayerType displayerType, UIImageType imageType)
@@ -23658,106 +23453,6 @@ namespace Com.RedicalGames.Filar
                     container = GetComponentInParent<DynamicWidgetsContainer>();
 
                 return container;
-            }
-
-            protected void OnSetActionButtonEvent(InputActionButtonType actionType, ActionEvents.ButtonAction<ButtonDataPackets> buttonAction = null, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                if (GetActive())
-                {
-                    if (actionGroup != null && actionGroup.Count > 0)
-                    {
-                        var initialized = actionGroup.FindAll(input => input.initialize);
-
-                        if (initialized != null && initialized.Count > 0)
-                        {
-                            foreach (var item in initialized)
-                            {
-                                foreach (var widget in item.screenActionGroup)
-                                {
-                                    if (widget.inputType == InputType.Button)
-                                    {
-                                        widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
-                                        {
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var button = widget.GetButtonComponent();
-
-                                                if (button != null)
-                                                {
-                                                    if (button.value)
-                                                    {
-                                                        button.SetButtonActionEvent(buttonAction);
-
-                                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {button.name} Of Type : {actionType} Found.";
-                                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {button.name} Of Type : {actionType} Found With Missing Value - For Screen Widget : {name}.";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    LogError("Action Group Button Component Not Found", this);
-                                            }
-                                            else
-                                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void OnSetActionButtonState(InputActionButtonType actionType, InputUIState state)
-            {
-                if (actionGroup != null && actionGroup.Count > 0)
-                {
-                    var initialized = actionGroup.FindAll(input => input.initialize);
-
-                    if (initialized != null && initialized.Count > 0)
-                    {
-                        foreach (var item in initialized)
-                        {
-                            foreach (var widget in item.screenActionGroup)
-                            {
-                                if (widget.inputType == InputType.Button)
-                                {
-                                    widget.GetInputDataPacket<TextDataPackets>(dataPacketsCallback =>
-                                    {
-                                        if (dataPacketsCallback.Success())
-                                        {
-                                            var button = widget.GetButtonComponent();
-
-                                            if (button != null)
-                                            {
-                                                if (button.value)
-                                                    button.SetUIInputState(state);
-                                                else
-                                                    LogError("Action Group Button Value Missing", this);
-                                            }
-                                            else
-                                                LogError("Action Group Button Component Not Found", this);
-                                        }
-                                        else
-                                            Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
             }
 
             void ResetWidgetOnBeginDrag(PointerEventData eventData, Vector2 pos)
@@ -28941,9 +28636,6 @@ namespace Com.RedicalGames.Filar
             [Space(10)]
             public List<UIScreenActionGroup> actionGroup = new List<UIScreenActionGroup>();
 
-            [Space(10)]
-            private bool initializeActionGroup = false;
-
             #endregion
 
             #endregion
@@ -28954,831 +28646,332 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new Callback(GetType());
 
-                if (callbackResults.Success())
+                if(callbackResults.Success())
                 {
-                    if (initializeActionGroup)
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups Found For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                        var initializedActionGroups = actionGroup.FindAll(input => input.CanBeInitialized().Success());
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Were No Initialized Action Groups Found For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
                         if (callbackResults.Success())
                         {
-                            var initialized = actionGroup.FindAll(input => input.initialize);
-
-                            callbackResults.SetResult(Helpers.GetAppComponentsValid(initialized, "Initialized Action Group", $"There Were No Initialized Action Groups Found For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.GetName(), $"Selectable Manager Instance Is Not Yet Initialized In : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
 
                             if (callbackResults.Success())
                             {
-                                foreach (var item in initialized)
+                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.GetName()).GetData();
+
+                                foreach (var actionGroup in initializedActionGroups)
                                 {
-                                    foreach (var action in item.screenActionGroup)
+                                    callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(action.GetType());
+                                        var actions = actionGroup.GetInputActionGroup().GetData();
 
-                                        if (callbackResults.Success())
+                                        foreach (var action in actions)
                                         {
-                                            switch (action.GetType().GetData())
+                                            callbackResults.SetResult(action.GetType());
+
+                                            if (callbackResults.Success())
                                             {
-                                                case InputType.Button:
+                                                switch (action.GetType().GetData())
+                                                {
+                                                    case InputType.Button:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<ButtonConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionButton = action.GetButtonComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionButton.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                callbackResults.SetResult(action.GetButtonComponent());
+
+                                                                if (callbackResults.Success())
                                                                 {
-                                                                    callbackResults.SetResult(structureCallbackResults);
+                                                                    var actionButton = action.GetButtonComponent().GetData();
+
+                                                                    callbackResults.SetResult(actionButton.Initialized());
 
                                                                     if (callbackResults.Success())
                                                                     {
                                                                         callbackResults.SetResult(actionButton.Selectable());
 
-
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
-
-                                                                            if (callbackResults.Success())
+                                                                            selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults => 
                                                                             {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
+                                                                                callbackResults.SetResult(structureCallbackResults);
 
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                                if (callbackResults.Success())
                                                                                 {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
+                                                                                    var selectionSystem = structureCallbackResults.GetData();
 
-                                                                                    if (callbackResults.Success())
+                                                                                    selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), actionButton, selectableCallbackResults => 
                                                                                     {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionButton, selectableCallbackResults =>
+                                                                                        callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                        if (callbackResults.Success())
                                                                                         {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
+                                                                                            actionButton.Initialize(initializationCallbackResults =>
                                                                                             {
-                                                                                                actionButton.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
+                                                                                                callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
+                                                                                                if(callbackResults.UnSuccessful())
+                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
                                                                         }
-                                                                        else if (callbackResults.Warning())
+                                                                        else
                                                                         {
-                                                                            callbackResults.result = $"Button : {actionButton.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
                                                                             actionButton.Initialize(initializationCallbackResults =>
                                                                             {
                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
                                                                                 if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                             });
                                                                         }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
                                                                     }
-                                                                });
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionButton.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.InputField:
+                                                    case InputType.InputField:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<InputFieldConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionInputField = action.GetInputFieldComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionInputField.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionInputField.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionInputField, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionInputField.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionInputField.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionInputField.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionInputField.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.InputSlider:
+                                                    case InputType.InputSlider:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<InputSliderConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionInputSlider = action.GetInputSliderComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionInputSlider.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionInputSlider.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionInputSlider, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionInputSlider.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionInputSlider.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionInputSlider.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionInputSlider.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.Slider:
+                                                    case InputType.Slider:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<SliderConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionSlider = action.GetSliderComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionSlider.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionSlider.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionSlider, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionSlider.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionSlider.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionSlider.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionSlider.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.DropDown:
+                                                    case InputType.DropDown:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<DropdownConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionDropdown = action.GetDropdownComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionDropdown.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionDropdown.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionDropdown, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionDropdown.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionDropdown.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionDropdown.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionDropdown.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.Checkbox:
+                                                    case InputType.Checkbox:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<CheckboxConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionCheckbox = action.GetCheckboxComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionCheckbox.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionCheckbox.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionCheckbox, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionCheckbox.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionCheckbox.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionCheckbox.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionCheckbox.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.Text:
+                                                    case InputType.Text:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<TextConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionText = action.GetTextComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionText.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionText.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionText, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionText.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionText.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionText.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionText.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
 
-                                                case InputType.Image:
+                                                    case InputType.Image:
 
-                                                    action.Init<ButtonDataPackets>(initializationCallback =>
-                                                    {
-                                                        callbackResults.SetResult(initializationCallback);
-
-                                                        if (callbackResults.Success())
+                                                        action.Init<ImageConfigDataPacket>(initializationCallbackResults =>
                                                         {
-                                                            var actionImage = action.GetImageComponent();
-
-                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(actionImage.value, "Action Input", $"Action Input At Index : {item.screenActionGroup.IndexOf(action)}'s Value Not Found For Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                                                            callbackResults.SetResult(initializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                SelectableManager.Instance.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(structureCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(actionImage.Selectable());
 
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                               $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}",
-                                                                               $"Selectable Manager Instance Been Successfully Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name,
-                                                                                $"Selectable Manager Instance Is Not Yet Initialized In Screen Widget : {GetName()} - Of Type : {GetType().GetData()}").GetData();
-
-                                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(structureCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        structureCallbackResults.GetData().OnRegisterInputToSelectableEventListener(GetType().GetData(), actionImage, selectableCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(selectableCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                actionImage.Initialize(initializationCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                                    if (callbackResults.UnSuccessful())
-                                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            };
-                                                                        }
-                                                                        else if (callbackResults.Warning())
-                                                                        {
-                                                                            callbackResults.result = $"Button : {actionImage.GetName()} - Is Not A Selectable Type  - Results : {callbackResults.GetResult}";
-                                                                            callbackResults.resultCode = Helpers.SuccessCode;
-
-                                                                            actionImage.Initialize(initializationCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(initializationCallbackResults);
-
-                                                                                if (callbackResults.UnSuccessful())
-                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                             else
-                                                            {
-                                                                callbackResults.result = $"Button : {actionImage.name}'s Value Missing / Not Assigned In The Editor Inspector.";
-                                                                callbackResults.resultCode = Helpers.ErrorCode;
-                                                            }
-                                                        }
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                        Log(initializationCallback.resultCode, initializationCallback.result, this);
-                                                    });
+                                                        });
 
-                                                    break;
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                break;
                                             }
                                         }
+
+                                        actionGroup.SetInitializedState(callbackResults.Success());
+                                    }
+
+                                    if (callbackResults.UnSuccessful())
+                                    {
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        break;
                                     }
                                 }
                             }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
+            protected CallbackDataList<UIScreenActionGroup> Initialized(InputType actionType)
+            {
+                var callbackResults = new CallbackDataList<UIScreenActionGroup>(GetInitializedInputActionGroup());
+
+                if(callbackResults.Success())
+                {
+                    var actionInputsOfType = GetInitializedInputActionGroup().GetData().FindAll(inputs => inputs.GetInputGroupType().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionInputsOfType, "Action Inputs Of Type", 
+                        $"There Are No Initialized Action Group Of Type : {actionType} Found For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation.", 
+                        $"Found : {GetInitializedInputActionGroup().GetData().Count} Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = actionInputsOfType;
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected CallbackDataList<UIScreenActionGroup> GetInitializedInputActionGroup()
+            {
+                var callbackResults = new CallbackDataList<UIScreenActionGroup>(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups Found For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                if(callbackResults.Success())
+                {
+                    var initialized = actionGroup.FindAll(input => input.Initialized().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(initialized, "Initialized Action Group", $"There Are No Initialized Action Groups Found For Widget : {GetName()} - Of Type : {GetType().GetData()}", $"Found : {initialized.Count} Initialized Action Groups"));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = initialized;
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             #region UI Accessors
 
-            public void GetActionButtonOfType(InputActionButtonType actionType, Action<CallbackData<List<UIButton<ButtonDataPackets>>>> callback)
+            public void GetActionButtonOfType(InputActionButtonType actionType, Action<CallbackData<List<UIButton<ButtonConfigDataPacket>>>> callback)
             {
-                CallbackData<List<UIButton<ButtonDataPackets>>> callbackResults = new CallbackData<List<UIButton<ButtonDataPackets>>>();
+                CallbackData<List<UIButton<ButtonConfigDataPacket>>> callbackResults = new CallbackData<List<UIButton<ButtonConfigDataPacket>>>();
 
                 //if (buttons != null && buttons.Count > 0)
                 //{
@@ -29805,6 +28998,13 @@ namespace Com.RedicalGames.Filar
                 //}
 
                 callback.Invoke(callbackResults);
+            }
+
+            public CallbackDataList<UIScreenActionGroup> GetActionGroup()
+            {
+                var callbackResults = new CallbackDataList<UIScreenActionGroup>();
+
+                return callbackResults;
             }
 
             #endregion
@@ -29944,7 +29144,6 @@ namespace Com.RedicalGames.Filar
                 //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
             }
 
-
             protected void HighlightInputFieldValue(InputFieldActionType actionType, bool highlight = true)
             {
                 //if (inputFields.Count > 0)
@@ -29958,27 +29157,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Checkbox
-
-            protected void SetCheckboxValue(bool value, CheckboxInputActionType actionType)
-            {
-                //if (checkboxes.Count > 0)
-                //{
-                //    UICheckbox<CheckboxDataPackets> checkbox = checkboxes.Find((checkbox) => checkbox.dataPackets.action == actionType);
-
-                //    if (checkbox.value != null)
-                //        checkbox.SetSelectionState(value);
-                //    else
-                //        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this, () => SetCheckboxValue(value, actionType));
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this, () => SetCheckboxValue(value, actionType));
-            }
-
             #endregion
-
-            #endregion
-
 
             #region UI Action Button States
 
@@ -30041,6 +29220,327 @@ namespace Com.RedicalGames.Filar
                 //}
                 //else
                 //    LogWarning("Screen Action Button List Is Null / Empty.", this, () => SetActionButtonState(actionType, state));
+            }
+
+            public void OnSetActionButtonEvent(InputActionButtonType actionType, ActionEvents.ButtonAction<ButtonConfigDataPacket> buttonAction = null, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                //if (GetActive())
+                //{
+                //    if (actionGroup != null && actionGroup.Count > 0)
+                //    {
+                //        var initialized = actionGroup.FindAll(input => input.initialize);
+
+                //        if (initialized != null && initialized.Count > 0)
+                //        {
+                //            foreach (var item in initialized)
+                //            {
+                //                foreach (var widget in item.GetInputActionGroup().GetData())
+                //                {
+                //                    if (widget.inputType == InputType.Button)
+                //                    {
+                //                        widget.GetInputDataPacket<TextDataPacket>(dataPacketsCallback =>
+                //                        {
+                //                            if (dataPacketsCallback.Success())
+                //                            {
+                //                                var button = widget.GetButtonComponent();
+
+                //                                if (button != null)
+                //                                {
+                //                                    if (button.value)
+                //                                    {
+                //                                        button.SetButtonActionEvent(buttonAction);
+
+                //                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {button.name} Of Type : {actionType} Found.";
+                //                                        callbackResults.resultCode = Helpers.SuccessCode;
+                //                                    }
+                //                                    else
+                //                                    {
+                //                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {button.name} Of Type : {actionType} Found With Missing Value - For Screen Widget : {name}.";
+                //                                        callbackResults.resultCode = Helpers.ErrorCode;
+                //                                    }
+                //                                }
+                //                                else
+                //                                    LogError("Action Group Button Component Not Found", this);
+                //                            }
+                //                            else
+                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                //                        });
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    callbackResults.result = $"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.";
+                //    callbackResults.resultCode = Helpers.ErrorCode;
+                //}
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetActionButtonState(InputActionButtonType buttonType, UIStateType state)
+            {
+                Debug.LogError($"--> Button : {buttonType} State - : {state}");
+            }
+
+            public void SetActionButtonColor(InputActionButtonType buttonType, Color color)
+            {
+                //var callbackResults = new Callback();
+
+                //if (callbackResults.Success())
+                //{
+                //    if (actionGroup != null && actionGroup.Count > 0)
+                //    {
+                //        var initialized = actionGroup.FindAll(input => input.Initialized().Success());
+
+                //        if (initialized != null && initialized.Count > 0)
+                //        {
+                //            foreach (var item in initialized)
+                //            {
+                //                foreach (var widget in item.GetInputActionGroup().GetData())
+                //                {
+                //                    if (widget.inputType == InputType.Button)
+                //                    {
+                //                        widget.GetInputDataPacket<TextDataPacket>(dataPacketsCallback =>
+                //                        {
+                //                            if (dataPacketsCallback.Success())
+                //                            {
+                //                                var button = widget.GetButtonComponent();
+
+                //                                if (button != null)
+                //                                {
+                //                                    if (button.value)
+                //                                        button.SetUIColor(color);
+                //                                    else
+                //                                        LogError($"Set Action Button Event Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
+                //                                }
+                //                                else
+                //                                    LogError("Action Group Button Component Not Found", this);
+                //                            }
+                //                            else
+                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                //                        });
+                //                    }
+                //    }
+                //}
+                //                }
+                //            }
+                //        }
+                //else
+                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
+            protected void CancelActionButtonInvoke(InputActionButtonType buttonType)
+            {
+                //if (GetActive())
+                //{
+                //    if (actionGroup != null && actionGroup.Count > 0)
+                //    {
+                //        var initialized = actionGroup.FindAll(input => input.initialize);
+
+                //        if (initialized != null && initialized.Count > 0)
+                //        {
+                //            foreach (var item in initialized)
+                //            {
+                //                foreach (var widget in item.inputActionGroup)
+                //                {
+                //                    if (widget.inputType == InputType.Button)
+                //                    {
+                //                        widget.GetInputDataPacket<TextDataPacket>(dataPacketsCallback =>
+                //                        {
+                //                            if (dataPacketsCallback.Success())
+                //                            {
+                //                                var button = widget.GetButtonComponent();
+
+                //                                if (button != null)
+                //                                {
+                //                                    if (button.value)
+                //                                        button.value.CancelInvoke();
+                //                                    else
+                //                                        LogError($"Cancel Action Button Invoke Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
+                //                                }
+                //                                else
+                //                                    LogError("Action Group Button Component Not Found", this);
+                //                            }
+                //                            else
+                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                //                        });
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
+            protected void SetActionButtonState(UIButton<ButtonConfigDataPacket> button, InputUIState state)
+            {
+                //var actionButtons = actionGroup.FindAll(inputs => inputs.screenActionGroup.Find(input => input.inputType == InputType.Button));
+
+                //if (actionButtons != null && actionButtons.Count > 0)
+                //{
+
+                //}
+                //else
+                //    LogError($"=============> Button Action Group Not Found.", this);
+
+            }
+
+            public void OnSetActionButtonState(InputActionButtonType actionType, InputUIState state)
+            {
+                //if (actionGroup != null && actionGroup.Count > 0)
+                //{
+                //    var initialized = actionGroup.FindAll(input => input.initialize);
+
+                //    if (initialized != null && initialized.Count > 0)
+                //    {
+                //        foreach (var item in initialized)
+                //        {
+                //            foreach (var widget in item.inputActionGroup)
+                //            {
+                //                if (widget.inputType == InputType.Button)
+                //                {
+                //                    widget.GetInputDataPacket<TextDataPacket>(dataPacketsCallback =>
+                //                    {
+                //                        if (dataPacketsCallback.Success())
+                //                        {
+                //                            var button = widget.GetButtonComponent();
+
+                //                            if (button != null)
+                //                            {
+                //                                if (button.value)
+                //                                    button.SetUIInputState(state);
+                //                                else
+                //                                    LogError("Action Group Button Value Missing", this);
+                //                            }
+                //                            else
+                //                                LogError("Action Group Button Component Not Found", this);
+                //                        }
+                //                        else
+                //                            Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                //                    });
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            }
+
+            public void SetUIImageDisplayerValue(Sprite image, UIImageDisplayerType displayerType)
+            {
+                //if (imageDisplayerList.Count > 0)
+                //{
+                //    foreach (var displayer in imageDisplayerList)
+                //        if (displayer.imageDisplayerType == displayerType)
+                //            displayer.value.sprite = image;
+                //}
+                //else
+                //    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : imageDisplayerList Is Null / Empty.");
+            }
+
+            public void SetUIImageDisplayerValue(Sprite value, ScreenImageType imageType)
+            {
+                //if (GetActive())
+                //{
+                //    if (actionGroup != null && actionGroup.Count > 0)
+                //    {
+                //        var initialized = actionGroup.FindAll(widget => widget.Initialized().Success());
+
+                //        if (initialized != null && initialized.Count > 0)
+                //        {
+                //            foreach (var item in initialized)
+                //            {
+                //                foreach (var widgetData in item.GetInputActionGroup().GetData())
+                //                {
+                //                    if (widgetData.inputType == InputType.Image)
+                //                    {
+                //                        widgetData.GetInputDataPacket<ImageDataPacket>(dataPacketsCallback =>
+                //                        {
+
+                //                            LogInfo($" +++++==============>>>> Found Image Data - Code : {dataPacketsCallback.GetResultCode} - Results : {dataPacketsCallback.GetResult}", this);
+
+                //                            if (dataPacketsCallback.Success())
+                //                            {
+                //                                var widget = widgetData.GetImageComponent();
+
+                //                                LogInfo($" +++++==============>>>> Found Image Displayer : {widget.name} - Of Type : {widget.imageType}", this);
+
+                //                                if (widget != null && widget.imageType == imageType)
+                //                                {
+                //                                    if (widget.value)
+                //                                        widget.SetImageData(value);
+                //                                    else
+                //                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
+                //                                }
+                //                                else
+                //                                    LogError("Action Group Button Component Not Found", this);
+                //                            }
+                //                            else
+                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                //                        });
+
+                //                        break;
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+            }
+
+            public void SetUIImageDisplayerValue(Texture2D value, ScreenImageType imageType)
+            {
+                //if (GetActive())
+                //{
+                //    if (actionGroup != null && actionGroup.Count > 0)
+                //    {
+                //        var initialized = actionGroup.FindAll(widget => widget.Initialized().Success());
+
+                //        if (initialized != null && initialized.Count > 0)
+                //        {
+                //            foreach (var item in initialized)
+                //            {
+                //                foreach (var widgetData in item.GetInputActionGroup().GetData())
+                //                {
+                //                    if (widgetData.inputType == InputType.Image)
+                //                    {
+                //                        widgetData.GetInputDataPacket<ImageDataPacket>(dataPacketsCallback =>
+                //                        {
+                //                            if (dataPacketsCallback.Success())
+                //                            {
+                //                                var widget = widgetData.GetImageComponent();
+
+                //                                if (widget != null && widget.imageType == imageType)
+                //                                {
+                //                                    if (widget.value)
+                //                                        widget.SetImageData(value);
+                //                                    else
+                //                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
+                //                                }
+                //                                else
+                //                                    LogError("Action Group Button Component Not Found", this);
+                //                            }
+                //                            else
+                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
+                //                        });
+
+                //                        break;
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
             }
 
             #endregion
@@ -30381,308 +29881,705 @@ namespace Com.RedicalGames.Filar
 
             #region UI Action Checkbox Value
 
-            public void SetActionCheckboxValue(CheckboxInputActionType actionType, bool value)
+            public CallbackData<UICheckbox<CheckboxConfigDataPacket>> GetActionCheckbox(CheckboxInputActionType actionType)
             {
-                //if (checkboxes.Count > 0)
-                //{
-                //    UICheckbox<CheckboxDataPackets> checkbox = checkboxes.Find(checkbox => checkbox.dataPackets.action == actionType);
+                var callbackResults = new CallbackData<UICheckbox<CheckboxConfigDataPacket>>(Initialized(InputType.Checkbox));
 
-                //    if (checkbox != null)
-                //        checkbox.SetSelectionState(value);
-                //    else
-                //        Debug.LogWarning($"--> Failed : Checkbox Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {checkboxes.Count} Checkboxes");
-                //}
-                //else
-                //    Debug.LogWarning("--> SetActionCheckboxValue Failed : screenActionCheckboxList Is Null / Empty.");
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = Initialized(InputType.Checkbox).GetData();
+
+                    foreach (var actionGroup in initializedActionGroup)
+                    {
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                            {
+                                if (actionGroupData.HasComponent(InputType.Checkbox))
+                                {
+                                    actionGroupData.GetInputDataPacket<CheckboxConfigDataPacket>(dataPacketsCallback =>
+                                    {
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetCheckboxComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetCheckboxComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetAction());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (actionGroup.GetDataPackets().GetData().GetAction().GetData() == actionType)
+                                                    {
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                            callbackResults.data = actionGroup;
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Action Group Component Not Found";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            callbackResults.SetResult(dataPacketsCallback);
+                                    });
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
-            public void SetActionCheckboxValue(bool value)
+            public void SetActionCheckboxValue(CheckboxInputActionType actionType, bool value, Action<Callback> callback = null)
             {
-                //if (checkboxes.Count > 0)
-                //{
-                //    foreach (var checkbox in checkboxes)
-                //    {
-                //        if (checkbox != null)
-                //            checkbox.SetSelectionState(value);
-                //        else
-                //            Debug.LogWarning($"--> Failed : Checkbox Of Type : {checkbox.actionType}'s Value Missing.");
-                //    }
-                //}
-                //else
-                //    Debug.LogWarning("--> SetActionCheckboxValue Failed : screenActionCheckboxList Is Null / Empty.");
+                var callbackResults = new Callback(Initialized(InputType.Checkbox));
+
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = Initialized(InputType.Checkbox).GetData();
+
+                    foreach (var actionGroup in initializedActionGroup)
+                    {
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                            {
+                                if (actionGroupData.HasComponent(InputType.Checkbox))
+                                {
+                                    actionGroupData.GetInputDataPacket<CheckboxConfigDataPacket>(dataPacketsCallback =>
+                                    {
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetCheckboxComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetCheckboxComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetAction());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (actionGroup.GetDataPackets().GetData().GetAction().GetData() == actionType)
+                                                    {
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Action Group Component Not Found";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
 
             #region UI Text Displayer Value
 
-            public void SetUITextDisplayerValue(ScreenTextType textType, string value)
+            public CallbackData<UITextDisplayer<TextConfigDataPacket>> GetUITextDisplayer(ScreenTextType textType)
             {
-                //if (textDisplayerList.Count > 0)
-                //{
-                //    UIText<TextDataPackets> textDisplayer = textDisplayerList.Find(textDisplayer => textDisplayer.dataPackets.textType == textType);
+                var callbackResults = new CallbackData<UITextDisplayer<TextConfigDataPacket>>(Initialized(InputType.Text));
 
-                //    if (textDisplayer != null)
-                //        textDisplayer.SetScreenUITextValue(value);
-                //    else
-                //        Debug.LogWarning($"--> Failed : Text Displayer Of Type : {textType} Not Found In Widget Type : {widgetType} With Input Field List With : {textDisplayerList.Count} Text Displayers");
-                //}
-                //else
-                //    Debug.LogWarning("--> SetUITextDisplayerValue Failed : screenTextList Is Null / Empty.");
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = Initialized(InputType.Text).GetData();
+
+                    foreach (var actionGroup in initializedActionGroup)
+                    {
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                            {
+                                if (actionGroupData.HasComponent(InputType.Text))
+                                {
+                                    actionGroupData.GetInputDataPacket<TextConfigDataPacket>(dataPacketsCallback =>
+                                    {
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetTextComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetTextType());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (actionGroup.GetDataPackets().GetData().GetTextType().GetData() == textType)
+                                                    {
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                            callbackResults.data = actionGroup;
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Action Group Component Not Found";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
-            //public void SetUITextDisplayerValue(ScreenTextType textType, int value)
-            //{
-            //    if (textDisplayerList.Count > 0)
-            //    {
-            //        UIText<TextDataPackets> textDisplayer = textDisplayerList.Find(textDisplayer => textDisplayer.dataPackets.textType == textType);
+            public void SetUITextDisplayerValue(ScreenTextType textType, string value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized(InputType.Text));
 
-            //        if (textDisplayer != null)
-            //            textDisplayer.SetScreenUITextValue(value.ToString());
-            //        else
-            //            Debug.LogWarning($"--> Failed : Text Displayer Of Type : {textType} Not Found In Widget Type : {widgetType} With Input Field List With : {textDisplayerList.Count} Text Displayers");
-            //    }
-            //    else
-            //        Debug.LogWarning("--> SetUITextDisplayerValue Failed : screenTextList Is Null / Empty.");
-            //}
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = Initialized(InputType.Text).GetData();
+
+                    foreach (var actionGroup in initializedActionGroup)
+                    {
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                            {
+                                if (actionGroupData.HasComponent(InputType.Text))
+                                {
+                                    actionGroupData.GetInputDataPacket<TextConfigDataPacket>(dataPacketsCallback =>
+                                    {
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetTextComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetTextType());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (actionGroup.GetDataPackets().GetData().GetTextType().GetData() == textType)
+                                                    {
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                            actionGroup.SetScreenUITextValue(value);
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Action Group Component Not Found";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if(callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetUITextDisplayerValue(ScreenTextType textType, int value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized(InputType.Text));
+
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = Initialized(InputType.Text).GetData();
+
+                    foreach (var actionGroup in initializedActionGroup)
+                    {
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                            {
+                                if (actionGroupData.HasComponent(InputType.Text))
+                                {
+                                    actionGroupData.GetInputDataPacket<TextConfigDataPacket>(dataPacketsCallback =>
+                                    {
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetTextComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetTextType());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (actionGroup.GetDataPackets().GetData().GetTextType().GetData() == textType)
+                                                    {
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                            actionGroup.SetScreenUITextValue(value.ToString());
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Action Group Component Not Found";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
 
             #endregion
 
             #region UI Image Displayer Value
 
-            public void GetUIImageDisplayer(ScreenImageType displayerType, Action<CallbackData<UIImageDisplayer<ImageDataPackets>>> callback)
+            public CallbackData<UIImageDisplayer<ImageConfigDataPacket>> GetUIImageDisplayer(ScreenImageType displayerType)
             {
-                CallbackData<UIImageDisplayer<ImageDataPackets>> callbackResults = new CallbackData<UIImageDisplayer<ImageDataPackets>>();
+                var callbackResults = new CallbackData<UIImageDisplayer<ImageConfigDataPacket>>(Initialized(InputType.Image));
 
-                if (initializeActionGroup)
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                    var initializedActionGroup = Initialized(InputType.Image).GetData();
 
-                    if (callbackResults.Success())
+                    foreach (var actionGroup in initializedActionGroup)
                     {
-                        var initializedActionGroups = actionGroup.FindAll(widget => widget.initialize);
-
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Are No Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
 
                         if (callbackResults.Success())
                         {
-                            foreach (var initializedActionGroup in initializedActionGroups)
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
                             {
-                                foreach (var actionGroupData in initializedActionGroup.screenActionGroup)
+                                if (actionGroupData.HasComponent(InputType.Image))
                                 {
-                                    if (actionGroupData.HasComponent(InputType.Image))
+                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
                                     {
-                                        actionGroupData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
-                                        {
-                                            if (dataPacketsCallback.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetImageComponent();
+                                        callbackResults.SetResult(dataPacketsCallback);
 
-                                                if (actionGroup != null && actionGroup.imageType == displayerType)
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    if (actionGroup.value)
+                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
                                                     {
-                                                        callbackResults.result = $"Set Action Button Event Success - Action Button : {actionGroup.GetName()} Of Type : {displayerType} Found - For Screen Widget : {name}.";
-                                                        callbackResults.data = actionGroup;
-                                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                            callbackResults.data = actionGroup;
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.result = $"Set Action Button Event Failed - Action Button : {actionGroup.GetName()} Of Type : {displayerType} Found With Missing Value - For Screen Widget : {name}.";
-                                                        callbackResults.data = default;
+                                                        callbackResults.result = "Action Group Component Not Found";
                                                         callbackResults.resultCode = Helpers.ErrorCode;
                                                     }
                                                 }
                                                 else
-                                                {
-                                                    callbackResults.result = "Action Group Button Component Not Found";
-                                                    callbackResults.data = default;
-                                                    callbackResults.resultCode = Helpers.ErrorCode;
-
-                                                }
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
-                                                callbackResults.SetResult(dataPacketsCallback);
-                                        });
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
 
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
                         }
                     }
                 }
                 else
-                {
-                    callbackResults.result = $"Get UI Image Displayer Of Type : {displayerType} Failed - Input Actions Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                callback.Invoke(callbackResults);
+                return callbackResults;
             }
 
-            public void SetUIImageDisplayer(ScreenImageType displayerType, ImageData screenCaptureData, ImageDataPackets dataPackets)
+            public void SetUIImageDisplayer(ScreenImageType displayerType, ImageData screenCaptureData, ImageConfigDataPacket dataPacket, Action<Callback> callback = null)
             {
-                ////if (imageDisplayers.Count > 0)
-                ////{
-                ////    UIImageDisplayer<ImageDataPackets> imageDisplayer = imageDisplayers.Find(imageDisplayer => imageDisplayer.dataPackets.imageType == displayerType);
+                var callbackResults = new Callback(Initialized(InputType.Image));
 
-                ////    if (imageDisplayer != null)
-                ////        imageDisplayer.SetImageData(screenCaptureData, dataPackets);
-                ////    else
-                ////        Debug.LogWarning($"--> Failed : Image Displayer Of Type : {displayerType} Not Found In Widget Type : {widgetType} With Input Field List With : {imageDisplayers.Count} Image Displayers");
-                ////}
-                ////else
-                ////    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : screenImageDisplayerList Is Null / Empty.");
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = Initialized(InputType.Image).GetData();
+
+                    foreach (var actionGroup in initializedActionGroup)
+                    {
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+
+                        if (callbackResults.Success())
+                        {
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                            {
+                                if (actionGroupData.HasComponent(InputType.Image))
+                                {
+                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
+                                    {
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
+
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
+                                                    {
+                                                        callbackResults.SetResult(actionGroup.GetValue());
+
+                                                        if (callbackResults.Success())
+                                                            actionGroup.SetImageData(screenCaptureData, dataPacket);
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        callbackResults.result = "Action Group Component Not Found";
+                                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void SetUIImageDisplayer(ScreenImageType displayerType, Texture2D imageData, bool preserveAspectRatio = true, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback();
+                var callbackResults = new Callback(Initialized(InputType.Image));
 
-                if (initializeActionGroup)
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                    var initializedActionGroup = Initialized(InputType.Image).GetData();
 
-                    if (callbackResults.Success())
+                    foreach (var actionGroup in initializedActionGroup)
                     {
-                        var initializedActionGroups = actionGroup.FindAll(widget => widget.initialize);
-
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Are No Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
 
                         if (callbackResults.Success())
                         {
-                            foreach (var initializedActionGroup in initializedActionGroups)
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
                             {
-                                foreach (var actionGroupData in initializedActionGroup.screenActionGroup)
+                                if (actionGroupData.HasComponent(InputType.Image))
                                 {
-                                    if (actionGroupData.HasComponent(InputType.Image))
+                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
                                     {
-                                        actionGroupData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
                                         {
-                                            if (dataPacketsCallback.Success())
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
                                             {
-                                                var actionGroup = actionGroupData.GetImageComponent();
+                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
 
-                                                if (actionGroup != null && actionGroup.imageType == displayerType)
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    if (actionGroup.value)
+                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
                                                     {
-                                                        actionGroup.value.sprite = Helpers.Texture2DToSprite(imageData);
+                                                        callbackResults.SetResult(actionGroup.GetValue());
 
-                                                        if(actionGroup.value.sprite == Helpers.Texture2DToSprite(imageData))
-                                                            callbackResults.result = $"Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Value Has Been Successfully Set.";
+                                                        if (callbackResults.Success())
+                                                            actionGroup.SetImageData(Helpers.GetSprite(imageData), preserveAspectRatio);
                                                         else
-                                                        {
-                                                            callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} - Invalid Operation - Please Check Here.";
-                                                            callbackResults.resultCode = Helpers.ErrorCode;
-                                                        }
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.result = "Action Group Component Not Found";
                                                         callbackResults.resultCode = Helpers.ErrorCode;
                                                     }
                                                 }
                                                 else
-                                                {
-                                                    callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Image Displayer Component Not Found";
-                                                    callbackResults.resultCode = Helpers.ErrorCode;
-
-                                                }
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
-                                                callbackResults.SetResult(dataPacketsCallback);
-                                        });
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
 
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
                         }
                     }
                 }
                 else
-                {
-                    callbackResults.result = $"Set UI Image Displayer Of Type : {displayerType} Failed - Input Actions Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
             public void SetUIImageDisplayer(ScreenImageType displayerType, Sprite image, bool preserveAspectRatio = true, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback();
+                var callbackResults = new Callback(Initialized(InputType.Image));
 
-                if (initializeActionGroup)
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionGroup, "Action Group", $"There Are No Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                    var initializedActionGroup = Initialized(InputType.Image).GetData();
 
-                    if (callbackResults.Success())
+                    foreach (var actionGroup in initializedActionGroup)
                     {
-                        var initializedActionGroups = actionGroup.FindAll(widget => widget.initialize);
-
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedActionGroups, "Initialized Action Group", $"There Are No Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
+                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
 
                         if (callbackResults.Success())
                         {
-                            foreach (var initializedActionGroup in initializedActionGroups)
+                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
                             {
-                                foreach (var actionGroupData in initializedActionGroup.screenActionGroup)
+                                if (actionGroupData.HasComponent(InputType.Image))
                                 {
-                                    if (actionGroupData.HasComponent(InputType.Image))
+                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
                                     {
-                                        actionGroupData.GetInputDataPacket<ImageDataPackets>(dataPacketsCallback =>
+                                        callbackResults.SetResult(dataPacketsCallback);
+
+                                        if (callbackResults.Success())
                                         {
-                                            if (dataPacketsCallback.Success())
+                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+
+                                            if (callbackResults.Success())
                                             {
-                                                var actionGroup = actionGroupData.GetImageComponent();
+                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
 
-                                                if (actionGroup != null && actionGroup.imageType == displayerType)
+                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    if (actionGroup.value)
+                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
                                                     {
-                                                        actionGroup.value.sprite = image;
+                                                        callbackResults.SetResult(actionGroup.GetValue());
 
-                                                        if (actionGroup.value.sprite == image)
-                                                            callbackResults.result = $"Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Value Has Been Successfully Set.";
+                                                        if (callbackResults.Success())
+                                                            actionGroup.SetImageData(image, preserveAspectRatio);
                                                         else
-                                                        {
-                                                            callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} - Invalid Operation - Please Check Here.";
-                                                            callbackResults.resultCode = Helpers.ErrorCode;
-                                                        }
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType} Found With Missing Value - For Screen Widget : {name}.";
+                                                        callbackResults.result = "Action Group Button Component Not Found";
                                                         callbackResults.resultCode = Helpers.ErrorCode;
                                                     }
                                                 }
                                                 else
-                                                {
-                                                    callbackResults.result = $"Set Image Displayer Failed - Image Displayer : {actionGroup.GetName()} Of Type : {displayerType}'s Image Displayer Component Not Found";
-                                                    callbackResults.resultCode = Helpers.ErrorCode;
-
-                                                }
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
-                                                callbackResults.SetResult(dataPacketsCallback);
-                                        });
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
 
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
                         }
                     }
                 }
                 else
-                {
-                    callbackResults.result = $"Set UI Image Displayer Of Type : {displayerType} Failed - Input Actions Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -31024,7 +30921,7 @@ namespace Com.RedicalGames.Filar
 
             protected Dictionary<string, Widget> GetRegisteredWidgets() => registeredWidgets;
 
-            void OnDropDownOptionValueChange(int value, DropdownDataPackets dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
+            void OnDropDownOptionValueChange(int value, DropdownConfigDataPacket dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
 
             public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets)
             {
@@ -32830,11 +32727,11 @@ namespace Com.RedicalGames.Filar
 
             public void OnScrollerValueChangedEvent(Vector2 value) => OnScrollerValueChanged(value);
 
-            public void SetOnInputValueChanged(string value, InputFieldDataPackets dataPackets) => OnInputFieldValueChanged(value, dataPackets);
+            public void SetOnInputValueChanged(string value, InputFieldConfigDataPacket dataPackets) => OnInputFieldValueChanged(value, dataPackets);
 
-            public void SetOnInputValueChanged(int value, InputFieldDataPackets dataPackets) => OnInputFieldValueChanged(value, dataPackets);
+            public void SetOnInputValueChanged(int value, InputFieldConfigDataPacket dataPackets) => OnInputFieldValueChanged(value, dataPackets);
 
-            public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxDataPackets dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
+            public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
 
             public void ShowScreenWidget(SceneDataPackets dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
@@ -33146,11 +33043,11 @@ namespace Com.RedicalGames.Filar
             #region Overrides
 
             protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets);
-            protected abstract void OnActionDropdownValueChanged(int value, DropdownDataPackets dataPackets);
+            protected abstract void OnActionDropdownValueChanged(int value, DropdownConfigDataPacket dataPackets);
             protected abstract void OnScrollerValueChanged(Vector2 value);
-            protected abstract void OnInputFieldValueChanged(string value, InputFieldDataPackets dataPackets);
-            protected abstract void OnInputFieldValueChanged(int value, InputFieldDataPackets dataPackets);
-            protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxDataPackets dataPackets);
+            protected abstract void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket dataPackets);
+            protected abstract void OnInputFieldValueChanged(int value, InputFieldConfigDataPacket dataPackets);
+            protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets);
 
             protected abstract void ScrollerPosition(Vector2 position);
 
@@ -33664,7 +33561,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UIButton<ButtonDataPackets>> actionButtonList = new List<UIButton<ButtonDataPackets>>();
+            protected List<UIButton<ButtonConfigDataPacket>> actionButtonList = new List<UIButton<ButtonConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeActionButtonList = false;
@@ -33674,7 +33571,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UIInputField<InputFieldDataPackets>> actionInputFieldList = new List<UIInputField<InputFieldDataPackets>>();
+            protected List<UIInputField<InputFieldConfigDataPacket>> actionInputFieldList = new List<UIInputField<InputFieldConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeActionInputFieldList = false;
@@ -33684,7 +33581,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UISlider<SliderDataPackets>> actionSliderList = new List<UISlider<SliderDataPackets>>();
+            protected List<UISlider<SliderConfigDataPacket>> actionSliderList = new List<UISlider<SliderConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeActionSliderList = false;
@@ -33694,7 +33591,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UIInputSlider<InputSliderDataPackets>> actionInputSliderList = new List<UIInputSlider<InputSliderDataPackets>>();
+            protected List<UIInputSlider<InputSliderConfigDataPacket>> actionInputSliderList = new List<UIInputSlider<InputSliderConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeActionInputSliderList = false;
@@ -33704,7 +33601,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UIDropDown<DropdownDataPackets>> actionDropdownList = new List<UIDropDown<DropdownDataPackets>>();
+            protected List<UIDropDown<DropdownConfigDataPacket>> actionDropdownList = new List<UIDropDown<DropdownConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeActionDropDownList = false;
@@ -33714,7 +33611,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UICheckbox<CheckboxDataPackets>> actionCheckboxList = new List<UICheckbox<CheckboxDataPackets>>();
+            protected List<UICheckbox<CheckboxConfigDataPacket>> actionCheckboxList = new List<UICheckbox<CheckboxConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeActionCheckboxList = false;
@@ -33724,7 +33621,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<UIText<TextDataPackets>> screenUITextList = new List<UIText<TextDataPackets>>();
+            protected List<UITextDisplayer<TextConfigDataPacket>> screenUITextList = new List<UITextDisplayer<TextConfigDataPacket>>();
 
             [SerializeField]
             protected bool initializeUITextList = false;
@@ -33966,7 +33863,7 @@ namespace Com.RedicalGames.Filar
                 foreach (var actionButton in actionButtonList)
                     if (actionButton.value)
                     {
-                        if (actionButton.dataPackets.action == buttonType)
+                        if (actionButton.dataPackets.GetAction().GetData() == buttonType)
                         {
                             actionButton.SetUIInputState(buttonState);
                             break;
@@ -33975,7 +33872,7 @@ namespace Com.RedicalGames.Filar
                             continue;
                     }
                     else
-                        LogWarning($"Action Button : {actionButton.dataPackets.action} Not Found", this, () => SetActionButtonState(buttonType, buttonState));
+                        LogWarning($"Action Button : {actionButton.dataPackets.GetAction().GetData()} Not Found", this, () => SetActionButtonState(buttonType, buttonState));
             }
 
             protected void SetActionDropdownState(InputDropDownActionType dropdownType, InputUIState dropdownState)
@@ -33983,7 +33880,7 @@ namespace Com.RedicalGames.Filar
                 foreach (var dropdown in actionDropdownList)
                     if (dropdown.value)
                     {
-                        if (dropdown.dataPackets.action == dropdownType)
+                        if (dropdown.dataPackets.GetAction().GetData() == dropdownType)
                         {
                             dropdown.SetUIInputState(dropdownState);
                             break;
@@ -33992,7 +33889,7 @@ namespace Com.RedicalGames.Filar
                             continue;
                     }
                     else
-                        LogError($"Action Dropdown : {dropdown.dataPackets.action} Not Found", this, () => SetActionDropdownState(dropdownType, dropdownState));
+                        LogError($"Action Dropdown : {dropdown.dataPackets.GetAction().GetData()} Not Found", this, () => SetActionDropdownState(dropdownType, dropdownState));
             }
 
             protected void SetActionButtons(InputUIState buttonState)
@@ -34018,9 +33915,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
-                        UIInputField<InputFieldDataPackets> inputField = actionInputFieldList.Find((x) => x.dataPackets.action == actionType);
+                        UIInputField<InputFieldConfigDataPacket> inputField = actionInputFieldList.Find((x) => x.dataPackets.GetAction().GetData() == actionType);
 
-                        if (inputField.value)
+                        if (inputField.GetValue().Success())
                         {
                             inputField.value.text = value;
                         }
@@ -34038,7 +33935,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
-                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
+                        UIInputSlider<InputSliderConfigDataPacket> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.GetAction().GetData() == actionType);
 
                         if (inputSlider.IsInitialized())
                         {
@@ -34059,7 +33956,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
-                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
+                        UIInputSlider<InputSliderConfigDataPacket> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.GetAction().GetData() == actionType);
 
                         if (inputSlider.IsInitialized())
                             inputSlider.slider.value = sliderValue;
@@ -34077,7 +33974,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (Helpers.IsSuccessCode(callbackResults.resultCode))
                     {
-                        UIInputSlider<InputSliderDataPackets> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.action == actionType);
+                        UIInputSlider<InputSliderConfigDataPacket> inputSlider = actionInputSliderList.Find((x) => x.dataPackets.GetAction().GetData() == actionType);
 
                         if (inputSlider.IsInitialized())
                             inputSlider.inputField.text = inputValue;
@@ -34193,7 +34090,7 @@ namespace Com.RedicalGames.Filar
             protected void OnInputDropdownSelectedEvent(InputDropDownActionType actionType)
             {
                 foreach (var dropdown in actionDropdownList)
-                    if (dropdown.dataPackets.action != actionType && dropdown.selectable)
+                    if (dropdown.dataPackets.GetAction().GetData() != actionType && dropdown.selectable)
                         dropdown.value.Hide();
             }
 
@@ -34271,7 +34168,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropdown.value != null)
                         {
-                            if (dropdown.dataPackets.action == dropdownType)
+                            if (dropdown.dataPackets.GetAction().GetData() == dropdownType)
                             {
                                 if (contentList != null)
                                 {
@@ -34467,7 +34364,7 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionInputFieldList != null && actionInputFieldList?.Count > 0)
                     {
-                        UIInputField<InputFieldDataPackets> inputField = actionInputFieldList?.Find((x) => x.dataPackets.action == type);
+                        UIInputField<InputFieldConfigDataPacket> inputField = actionInputFieldList?.Find((x) => x.dataPackets.GetAction().GetData() == type);
 
                         if (inputField != null)
                         {
@@ -34512,7 +34409,7 @@ namespace Com.RedicalGames.Filar
                     if (Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var inputSlider in actionInputSliderList)
                         {
-                            if (inputSlider.dataPackets.action == actionType)
+                            if (inputSlider.dataPackets.GetAction().GetData() == actionType)
                             {
                                 inputSlider.SetTitle(fieldName);
                                 inputSlider.SetUIColor(fieldColor);
@@ -34534,7 +34431,7 @@ namespace Com.RedicalGames.Filar
                     {
                         foreach (var checkbox in actionCheckboxList)
                         {
-                            if (checkbox.dataPackets.action == actionType)
+                            if (checkbox.dataPackets.GetAction().GetData() == actionType)
                             {
                                 if (checkbox.value != null)
                                     checkbox.SetSelectionState(isSelected);
@@ -34556,7 +34453,7 @@ namespace Com.RedicalGames.Filar
                         foreach (var inputSlider in actionInputSliderList)
                         {
 
-                            if (inputSlider.dataPackets.action == actionType)
+                            if (inputSlider.dataPackets.GetAction().GetData() == actionType)
                             {
                                 inputSlider.SetUIInputState(state);
                                 break;
@@ -34573,7 +34470,7 @@ namespace Com.RedicalGames.Filar
             {
                 OnScreenUITextInitialized((screenTextCallbackResults) =>
                 {
-                    var screenText = screenUITextList.Find((x) => x.dataPackets.textType == textType);
+                    var screenText = screenUITextList.Find((x) => x.dataPackets.GetTextType().GetData() == textType);
 
                     if (screenText != null)
                         screenText.SetScreenUITextValue(value);
@@ -34590,7 +34487,7 @@ namespace Com.RedicalGames.Filar
                         foreach (var inputSlider in actionInputSliderList)
                         {
 
-                            if (inputSlider.dataPackets.action == actionType)
+                            if (inputSlider.dataPackets.GetAction().GetData() == actionType)
                             {
                                 inputSlider.SetValue(value.ToString(), value);
                                 break;
@@ -34691,20 +34588,20 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void OnWidgetClosed();
 
-            protected abstract void OnActionButtonClickedEvent(ButtonDataPackets dataPackets);
+            protected abstract void OnActionButtonClickedEvent(ButtonConfigDataPacket dataPackets);
 
-            protected abstract void OnActionInputFieldValueChangedEvent(string value, InputFieldDataPackets dataPackets);
+            protected abstract void OnActionInputFieldValueChangedEvent(string value, InputFieldConfigDataPacket dataPackets);
 
-            protected abstract void OnActionSliderValueChangedEvent(float value, SliderDataPackets dataPackets);
+            protected abstract void OnActionSliderValueChangedEvent(float value, SliderConfigDataPacket dataPackets);
 
-            protected abstract void OnActionDropdownValueChangedEvent(string value, DropdownDataPackets dataPackets);
-            protected abstract void OnActionDropdownValueChangedEvent(int value, DropdownDataPackets dataPackets);
-            protected abstract void OnActionDropdownValueChangedEvent(int value, List<string> contentList, DropdownDataPackets dataPackets);
+            protected abstract void OnActionDropdownValueChangedEvent(string value, DropdownConfigDataPacket dataPackets);
+            protected abstract void OnActionDropdownValueChangedEvent(int value, DropdownConfigDataPacket dataPackets);
+            protected abstract void OnActionDropdownValueChangedEvent(int value, List<string> contentList, DropdownConfigDataPacket dataPackets);
 
-            protected abstract void OnInputSliderValueChangedEvent(float value, InputSliderDataPackets dataPackets);
-            protected abstract void OnInputSliderValueChangedEvent(string value, InputSliderDataPackets dataPackets);
+            protected abstract void OnInputSliderValueChangedEvent(float value, InputSliderConfigDataPacket dataPackets);
+            protected abstract void OnInputSliderValueChangedEvent(string value, InputSliderConfigDataPacket dataPackets);
 
-            protected abstract void OnActionCheckboxValueChangedEvent(bool value, CheckboxDataPackets dataPackets);
+            protected abstract void OnActionCheckboxValueChangedEvent(bool value, CheckboxConfigDataPacket dataPackets);
 
             protected abstract void OnResetWidgetData(SettingsWidgetType widgetType);
 
@@ -36350,10 +36247,10 @@ namespace Com.RedicalGames.Filar
             public List<NavigationTabWidget> navigationTabWidgetsList = new List<NavigationTabWidget>();
 
             [Space(5)]
-            public List<UIButton<ButtonDataPackets>> actionButtonsList = new List<UIButton<ButtonDataPackets>>();
+            public List<UIButton<ButtonConfigDataPacket>> actionButtonsList = new List<UIButton<ButtonConfigDataPacket>>();
 
             [Space(5)]
-            public List<UISlider<SliderDataPackets>> actionSlidersList = new List<UISlider<SliderDataPackets>>();
+            public List<UISlider<SliderConfigDataPacket>> actionSlidersList = new List<UISlider<SliderConfigDataPacket>>();
 
             [Space(5)]
             public bool initialVisibilityState;
@@ -36380,7 +36277,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (button.value != null)
                             {
-                                button.value.onClick.AddListener(() => OnActionButtonPressedEvent(button.dataPackets, button.dataPackets.action));
+                                button.value.onClick.AddListener(() => OnActionButtonPressedEvent(button.dataPackets, button.dataPackets.GetAction().GetData()));
 
                                 callbackResults.result = "Initialized Successfully";
                                 callbackResults.resultCode = Helpers.SuccessCode;
@@ -36671,7 +36568,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            void OnActionButtonPressedEvent(ButtonDataPackets dataPackets, InputActionButtonType actionType, Action<Callback> callback = null)
+            void OnActionButtonPressedEvent(ButtonConfigDataPacket dataPackets, InputActionButtonType actionType, Action<Callback> callback = null)
             {
                 Debug.LogError($"==> Open Settings : {actionType}");
 
@@ -36799,9 +36696,9 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnActionSliderValueChangedEvent(SliderDataPackets dataPackets, float value)
+            void OnActionSliderValueChangedEvent(SliderConfigDataPacket dataPackets, float value)
             {
-                switch (dataPackets.valueType)
+                switch (dataPackets.GetValueType().GetData())
                 {
                     case SliderValueType.LightIntensity:
 
@@ -36938,10 +36835,10 @@ namespace Com.RedicalGames.Filar
             public GameObject value;
 
             [Space(5)]
-            public List<UIButton<ButtonDataPackets>> actionButtonsList = new List<UIButton<ButtonDataPackets>>();
+            public List<UIButton<ButtonConfigDataPacket>> actionButtonsList = new List<UIButton<ButtonConfigDataPacket>>();
 
             [Space(5)]
-            public List<UIDropDown<DropdownDataPackets>> actionDropDownList = new List<UIDropDown<DropdownDataPackets>>();
+            public List<UIDropDown<DropdownConfigDataPacket>> actionDropDownList = new List<UIDropDown<DropdownConfigDataPacket>>();
 
             [Space(5)]
             public NavigationTabType tabType;
@@ -36992,7 +36889,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dropDown.value)
                         {
-                            switch (dropDown.dataPackets.action)
+                            switch (dropDown.dataPackets.GetAction().GetData())
                             {
                                 case InputDropDownActionType.RenderingProfileType:
 
@@ -37052,11 +36949,11 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            void OnActionButtonClickedEvent(ButtonDataPackets dataPackets)
+            void OnActionButtonClickedEvent(ButtonConfigDataPacket dataPackets)
             {
-                Debug.Log($"----> Clicked On Button Type : {dataPackets.action}");
+                Debug.Log($"----> Clicked On Button Type : {dataPackets.GetAction().GetData()}");
 
-                switch (dataPackets.action)
+                switch (dataPackets.GetAction().GetData())
                 {
                     case InputActionButtonType.ConfirmationButton:
 
@@ -38039,7 +37936,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class DataPackets : IDataPackets
+        public class DataPackets : DataDebugger, IDataPackets
         {
             #region Components
 
@@ -38554,170 +38451,504 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ButtonDataPackets : SceneDataPackets
+        public class ButtonConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Button")]
 
             [Space(5)]
-            public InputActionButtonType action;
+            [SerializeField]
+            protected InputActionButtonType action;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabType navigationTabWidgetType;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState navigationWidgetVisibilityState;
 
             [Space(5)]
+            [SerializeField]
             public OrientationType containerContentOrientation;
 
             [Space(5)]
+            [SerializeField]
             public FocusedWidgetOrderType contentFocusedWidgetOrderType;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetActionType(InputActionButtonType action) => this.action = action;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<InputActionButtonType> GetAction()
+            {
+                var callbackResults = new CallbackData<InputActionButtonType>();
+
+                if(action != InputActionButtonType.None)
+                {
+                    callbackResults.result = $"Action Type For : {GetName()} Is Set To : {action}";
+                    callbackResults.data = action;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Action Type For : {GetName()} - Action Is Set To Default : {action} - Invalid Operation, Please Assign Action Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class InputFieldDataPackets : SceneDataPackets
+        public class InputFieldConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Input Field")]
 
             [Space(5)]
-            public InputFieldActionType action;
+            [SerializeField]
+            protected InputFieldActionType action;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState visibilityState;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetActionType(InputFieldActionType action) => this.action = action;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<InputFieldActionType> GetAction()
+            {
+                var callbackResults = new CallbackData<InputFieldActionType>();
+
+                if (action != InputFieldActionType.None)
+                {
+                    callbackResults.result = $"Action Type For : {GetName()} Is Set To : {action}";
+                    callbackResults.data = action;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Action Type For : {GetName()} - Action Is Set To Default : {action} - Invalid Operation, Please Assign Action Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class DropdownDataPackets : SceneDataPackets
+        public class DropdownConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Drop Down")]
 
             [Space(5)]
-            public InputDropDownActionType action;
+            [SerializeField]
+            protected InputDropDownActionType action;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState visibilityState;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetActionType(InputDropDownActionType action) => this.action = action;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<InputDropDownActionType> GetAction()
+            {
+                var callbackResults = new CallbackData<InputDropDownActionType>();
+
+                if (action != InputDropDownActionType.None)
+                {
+                    callbackResults.result = $"Action Type For : {GetName()} Is Set To : {action}";
+                    callbackResults.data = action;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Action Type For : {GetName()} - Action Is Set To Default : {action} - Invalid Operation, Please Assign Action Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class SliderDataPackets : SceneDataPackets
+        public class SliderConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
-            public SliderValueType valueType;
+            [SerializeField]
+            protected SliderValueType valueType;
 
             [Space(5)]
+            [SerializeField]
             public ColorValueType colorValue;
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState visibilityState;
 
             [Space(5)]
+            [SerializeField]
             public bool initialVisibilityState;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetValueType(SliderValueType valueType) => this.valueType = valueType;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<SliderValueType> GetValueType()
+            {
+                var callbackResults = new CallbackData<SliderValueType>();
+
+                if (valueType != SliderValueType.None)
+                {
+                    callbackResults.result = $"Value Type For : {GetName()} Is Set To : {valueType}";
+                    callbackResults.data = valueType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Value Type For : {GetName()} - Value Is Set To Default : {valueType} - Invalid Operation, Please Assign Value Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class InputSliderDataPackets : SceneDataPackets
+        public class InputSliderConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Input Slider")]
 
             [Space(5)]
-            public InputSliderActionType action;
+            [SerializeField]
+            protected InputSliderActionType action;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState visibilityState;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetActionType(InputSliderActionType action) => this.action = action;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<InputSliderActionType> GetAction()
+            {
+                var callbackResults = new CallbackData<InputSliderActionType>();
+
+                if (action != InputSliderActionType.None)
+                {
+                    callbackResults.result = $"Action Type For : {GetName()} Is Set To : {action}";
+                    callbackResults.data = action;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Action Type For : {GetName()} - Action Is Set To Default : {action} - Invalid Operation, Please Assign Action Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class CheckboxDataPackets : SceneDataPackets
+        public class CheckboxConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Checkbox")]
 
             [Space(5)]
-            public CheckboxInputActionType action;
+            [SerializeField]
+            protected CheckboxInputActionType action;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState visibilityState;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetActionType(CheckboxInputActionType action) => this.action = action;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<CheckboxInputActionType> GetAction()
+            {
+                var callbackResults = new CallbackData<CheckboxInputActionType>();
+
+                if (action != CheckboxInputActionType.None)
+                {
+                    callbackResults.result = $"Action Type For : {GetName()} Is Set To : {action}";
+                    callbackResults.data = action;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Action Type For : {GetName()} - Action Is Set To Default : {action} - Invalid Operation, Please Assign Action Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class TextDataPackets : SceneDataPackets
+        public class TextConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Text Displayer")]
 
             [Space(5)]
-            public ScreenTextType textType;
+            [SerializeField]
+            protected ScreenTextType textType;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public NavigationTabID tabID;
 
             [Space(5)]
+            [SerializeField]
             public NavigationWidgetVisibilityState visibilityState;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetTextType(ScreenTextType textType) => this.textType = textType;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<ScreenTextType> GetTextType()
+            {
+                var callbackResults = new CallbackData<ScreenTextType>();
+
+                if (textType != ScreenTextType.None)
+                {
+                    callbackResults.result = $"Text Type For : {GetName()} Is Set To : {textType}";
+                    callbackResults.data = textType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Text Type For : {GetName()} - Text Is Set To Default : {textType} - Invalid Operation, Please Assign Text Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
-        public class ImageDataPackets : SceneDataPackets
+        public class ImageConfigDataPacket : SceneDataPackets
         {
+            #region Components
+
             [Space(5)]
             [Header("Image Displayer")]
 
             [Space(5)]
-            public ScreenImageType imageType;
+            [SerializeField]
+            protected ScreenImageType imageType;
 
             [Space(5)]
             [Header("Config Data")]
 
             [Space(5)]
+            [SerializeField]
             public UIScreenDimensions resolution;
 
             [Space(5)]
+            [SerializeField]
             public bool preserveAspectRatio;
 
             [Space(5)]
+            [SerializeField]
             public bool useData;
+
+            #endregion
+
+            #region Main
+
+            #region Data Setters
+
+            public void SetImageType(ScreenImageType imageType) => this.imageType = imageType;
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<ScreenImageType> GetImageType()
+            {
+                var callbackResults = new CallbackData<ScreenImageType>();
+
+                if (imageType != ScreenImageType.None)
+                {
+                    callbackResults.result = $"Action Type For : {GetName()} Is Set To : {imageType}";
+                    callbackResults.data = imageType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Image Type For : {GetName()} - Image Type Is Set To Default : {imageType} - Invalid Operation, Please Assign Image Type For : {GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
         }
 
         [Serializable]
@@ -39478,7 +39709,7 @@ namespace Com.RedicalGames.Filar
                 return eventCamera.WorldToScreenPoint(worldPosition);
             }
 
-            public static Sprite Texture2DToSprite(Texture2D texture)
+            public static Sprite GetSprite(Texture2D texture)
             {
                 Rect newRect = new Rect(Vector2.zero, new Vector2(texture.width, texture.height));
                 return Sprite.Create(texture, newRect, Vector2.zero);
@@ -39739,7 +39970,7 @@ namespace Com.RedicalGames.Filar
                                 imageDisplayer.sprite = AppDatabaseManager.Instance.GetAssetsLibrary().GetImageAsset(asset.GetAssetField(AssetFieldType.Thumbnail).path);
                             else
                             {
-                                imageDisplayer.sprite = Texture2DToSprite(LoadTextureFile(asset.GetAssetField(AssetFieldType.Thumbnail).path));
+                                imageDisplayer.sprite = GetSprite(LoadTextureFile(asset.GetAssetField(AssetFieldType.Thumbnail).path));
                                 AppDatabaseManager.Instance.GetAssetsLibrary().AddImageAsset(imageDisplayer.sprite, asset.GetAssetField(AssetFieldType.Thumbnail).path);
                             }
                         }
@@ -41213,7 +41444,7 @@ namespace Com.RedicalGames.Filar
 
             #region Action Components
 
-            public static void UIActionButtonComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<Button, ButtonDataPackets, UIButton<ButtonDataPackets>>
+            public static void UIActionButtonComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<Button, ButtonConfigDataPacket, UIButton<ButtonConfigDataPacket>>
             {
                 Callback callbackResults = new Callback();
 
@@ -41231,7 +41462,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public static void UIActionDropdownComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownDataPackets, UIDropDown<DropdownDataPackets>>
+            public static void UIActionDropdownComponentValid<T>(T component, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownConfigDataPacket, UIDropDown<DropdownConfigDataPacket>>
             {
                 Callback callbackResults = new Callback();
 
@@ -41267,7 +41498,7 @@ namespace Com.RedicalGames.Filar
             //    callback.Invoke(callbackResults);
             //}
 
-            public static void UIActionDropdownComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownDataPackets, UIDropDown<DropdownDataPackets>>
+            public static void UIActionDropdownComponentsValid<T>(List<T> components, Action<Callback> callback) where T : UIInputComponent<TMP_Dropdown, DropdownConfigDataPacket, UIDropDown<DropdownConfigDataPacket>>
             {
                 Callback callbackResults = new Callback();
 
@@ -43889,7 +44120,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public static event ParamVoid<ButtonDataPackets> _OnNavigationTabWidgetEvent;
+            public static event ParamVoid<ButtonConfigDataPacket> _OnNavigationTabWidgetEvent;
             public static event ParamVoid<ScreenViewState> _OnScreenViewStateChangedEvent;
             public static event ParamVoid<NavigationTabID, NavigationRenderSettingsProfileID> _OnNavigationSubTabChangedEvent;
             public static event ParamVoid<SceneAsset> _OnCreatedAssetDataEditEvent;
@@ -43958,7 +44189,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public static void OnNavigationTabWidgetEvent(ButtonDataPackets dataPackets) => _OnNavigationTabWidgetEvent?.Invoke(dataPackets);
+            public static void OnNavigationTabWidgetEvent(ButtonConfigDataPacket dataPackets) => _OnNavigationTabWidgetEvent?.Invoke(dataPackets);
             public static void OnNavigationSubTabChangedEvent(NavigationTabID navigationTab, NavigationRenderSettingsProfileID selectionTypedID) => _OnNavigationSubTabChangedEvent?.Invoke(navigationTab, selectionTypedID);
             public static void OnScreenViewStateChangedEvent(ScreenViewState state) => _OnScreenViewStateChangedEvent?.Invoke(state);
             public static void OnScreenExitEvent(ScreenType screenType) => _OnScreenExitEvent?.Invoke(screenType);

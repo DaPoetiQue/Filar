@@ -53,7 +53,7 @@ namespace Com.RedicalGames.Filar
                     if (AppData.Helpers.IsSuccessCode(callbackResults.resultCode))
                         foreach (var dropdown in actionDropdownList)
                         {
-                            switch (dropdown.dataPackets.action)
+                            switch (dropdown.dataPackets.GetAction().GetData())
                             {
                                 case AppData.InputDropDownActionType.SettingsSelectionType:
 
@@ -85,7 +85,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        void OnInitializeDropDown(AppData.UIDropDown<AppData.DropdownDataPackets> dropdown, List<string> contentList, bool isUpdate)
+        void OnInitializeDropDown(AppData.UIDropDown<AppData.DropdownConfigDataPacket> dropdown, List<string> contentList, bool isUpdate)
         {
             if (contentList != null)
             {
@@ -139,9 +139,9 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        protected override void OnActionButtonClickedEvent(AppData.ButtonDataPackets dataPackets)
+        protected override void OnActionButtonClickedEvent(AppData.ButtonConfigDataPacket dataPackets)
         {
-            switch (dataPackets.action)
+            switch (dataPackets.GetAction().GetData())
             {
                 case AppData.InputActionButtonType.CreateSkyboxButton:
 
@@ -171,28 +171,28 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        protected override void OnActionCheckboxValueChangedEvent(bool value, AppData.CheckboxDataPackets dataPackets)
+        protected override void OnActionCheckboxValueChangedEvent(bool value, AppData.CheckboxConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionDropdownValueChangedEvent(string value, AppData.DropdownDataPackets dataPackets)
+        protected override void OnActionDropdownValueChangedEvent(string value, AppData.DropdownConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionDropdownValueChangedEvent(int value, AppData.DropdownDataPackets dataPackets)
+        protected override void OnActionDropdownValueChangedEvent(int value, AppData.DropdownConfigDataPacket dataPackets)
         {
 
         }
 
-        protected override void OnActionDropdownValueChangedEvent(int value, List<string> contentList, AppData.DropdownDataPackets dataPackets)
+        protected override void OnActionDropdownValueChangedEvent(int value, List<string> contentList, AppData.DropdownConfigDataPacket dataPackets)
         {
-            switch (dataPackets.action)
+            switch (dataPackets.GetAction().GetData())
             {
                 case AppData.InputDropDownActionType.SettingsSelectionType:
 
-                    ShowWidgetOnDropDownSelection(AppData.Helpers.GetStringToEnum<AppData.SettingsWidgetTabID>(contentList[value]), dataPackets.action);
+                    ShowWidgetOnDropDownSelection(AppData.Helpers.GetStringToEnum<AppData.SettingsWidgetTabID>(contentList[value]), dataPackets.GetAction().GetData());
 
                     break;
 
@@ -204,22 +204,22 @@ namespace Com.RedicalGames.Filar
         }
 
 
-        protected override void OnActionInputFieldValueChangedEvent(string value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnActionInputFieldValueChangedEvent(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionSliderValueChangedEvent(float value, AppData.SliderDataPackets dataPackets)
+        protected override void OnActionSliderValueChangedEvent(float value, AppData.SliderConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnInputSliderValueChangedEvent(float value, AppData.InputSliderDataPackets dataPackets)
+        protected override void OnInputSliderValueChangedEvent(float value, AppData.InputSliderConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnInputSliderValueChangedEvent(string value, AppData.InputSliderDataPackets dataPackets)
+        protected override void OnInputSliderValueChangedEvent(string value, AppData.InputSliderConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }

@@ -41,7 +41,7 @@ namespace Com.RedicalGames.Filar
             return null;
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
             throw new System.NotImplementedException();
         }

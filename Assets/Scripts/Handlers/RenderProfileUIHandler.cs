@@ -34,9 +34,9 @@ namespace Com.RedicalGames.Filar
             Init();
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            switch (actionButton.dataPackets.action)
+            switch (actionButton.dataPackets.GetAction().GetData())
             {
                 case AppData.InputActionButtonType.Edit:
 

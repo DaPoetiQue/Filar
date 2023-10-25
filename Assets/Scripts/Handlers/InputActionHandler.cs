@@ -25,19 +25,19 @@ namespace Com.RedicalGames.Filar
 
         #region Actions Config
 
-        public AppData.UIButton<AppData.ButtonDataPackets> buttonComponentConfig;
-        public AppData.UIInputField<AppData.InputFieldDataPackets> inputFieldComponentConfig;
-        public AppData.UIInputSlider<AppData.InputSliderDataPackets> inputSliderComponentConfig;
-        public AppData.UISlider<AppData.SliderDataPackets> sliderComponentConfig;
-        public AppData.UICheckbox<AppData.CheckboxDataPackets> checkboxComponentConfig;
-        public AppData.UIDropDown<AppData.DropdownDataPackets> dropdownComponentConfig;
+        public AppData.UIButton<AppData.ButtonConfigDataPacket> buttonComponentConfig;
+        public AppData.UIInputField<AppData.InputFieldConfigDataPacket> inputFieldComponentConfig;
+        public AppData.UIInputSlider<AppData.InputSliderConfigDataPacket> inputSliderComponentConfig;
+        public AppData.UISlider<AppData.SliderConfigDataPacket> sliderComponentConfig;
+        public AppData.UICheckbox<AppData.CheckboxConfigDataPacket> checkboxComponentConfig;
+        public AppData.UIDropDown<AppData.DropdownConfigDataPacket> dropdownComponentConfig;
 
         #endregion
 
         #region Displayers Config
 
-        public AppData.UIText<AppData.TextDataPackets> textComponentConfig;
-        public AppData.UIImageDisplayer<AppData.ImageDataPackets> imageComponentConfig;
+        public AppData.UITextDisplayer<AppData.TextConfigDataPacket> textComponentConfig;
+        public AppData.UIImageDisplayer<AppData.ImageConfigDataPacket> imageComponentConfig;
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
             {
                 case AppData.InputType.Button:
 
-                    GetInputDataPacket<AppData.ButtonDataPackets>(inputCallbackResults =>
+                    GetInputDataPacket<AppData.ButtonConfigDataPacket>(inputCallbackResults =>
                     {
                         callbackResults.data = inputCallbackResults.data as T;
                         callbackResults.result = inputCallbackResults.result;
@@ -312,32 +312,32 @@ namespace Com.RedicalGames.Filar
 
         public bool HasComponent(AppData.InputActionButtonType action)
         {
-            return buttonComponentConfig != null && buttonComponentConfig.value != null && buttonComponentConfig.dataPackets.action == action;
+            return buttonComponentConfig != null && buttonComponentConfig.value != null && buttonComponentConfig.dataPackets.GetAction().GetData() == action;
         }
 
         public bool HasComponent(AppData.InputFieldActionType action)
         {
-            return inputFieldComponentConfig != null && inputFieldComponentConfig.value != null && inputFieldComponentConfig.dataPackets.action == action;
+            return inputFieldComponentConfig != null && inputFieldComponentConfig.value != null && inputFieldComponentConfig.dataPackets.GetAction().GetData() == action;
         }
 
         public bool HasComponent(AppData.InputSliderActionType action)
         {
-            return inputSliderComponentConfig != null && inputSliderComponentConfig.value != null && inputSliderComponentConfig.dataPackets.action == action;
+            return inputSliderComponentConfig != null && inputSliderComponentConfig.value != null && inputSliderComponentConfig.dataPackets.GetAction().GetData() == action;
         }
 
         public bool HasComponent(AppData.SliderValueType value)
         {
-            return sliderComponentConfig != null && sliderComponentConfig.value != null && sliderComponentConfig.dataPackets.valueType == value;
+            return sliderComponentConfig != null && sliderComponentConfig.value != null && sliderComponentConfig.dataPackets.GetValueType().GetData() == value;
         }
 
         public bool HasComponent(AppData.CheckboxInputActionType action)
         {
-            return checkboxComponentConfig != null && checkboxComponentConfig.value != null && checkboxComponentConfig.dataPackets.action == action;
+            return checkboxComponentConfig != null && checkboxComponentConfig.value != null && checkboxComponentConfig.dataPackets.GetAction().GetData() == action;
         }
 
         public bool HasComponent(AppData.InputDropDownActionType action)
         {
-            return dropdownComponentConfig != null && dropdownComponentConfig.value != null && dropdownComponentConfig.dataPackets.action == action;
+            return dropdownComponentConfig != null && dropdownComponentConfig.value != null && dropdownComponentConfig.dataPackets.GetAction().GetData() == action;
         }
 
         #endregion
@@ -346,12 +346,12 @@ namespace Com.RedicalGames.Filar
 
         public bool HasComponent(AppData.ScreenTextType type)
         {
-            return textComponentConfig != null && textComponentConfig.value != null && textComponentConfig.dataPackets.textType == type;
+            return textComponentConfig != null && textComponentConfig.value != null && textComponentConfig.dataPackets.GetTextType().GetData() == type;
         }
 
         public bool HasComponent(AppData.ScreenImageType type)
         {
-            return imageComponentConfig != null && imageComponentConfig.value != null && imageComponentConfig.dataPackets.imageType == type;
+            return imageComponentConfig != null && imageComponentConfig.value != null && imageComponentConfig.dataPackets.GetImageType().GetData() == type;
         }
 
         #endregion
@@ -360,48 +360,120 @@ namespace Com.RedicalGames.Filar
 
         #region Get Action Components
 
-        public AppData.UIButton<AppData.ButtonDataPackets> GetButtonComponent()
+        public AppData.CallbackData<AppData.UIButton<AppData.ButtonConfigDataPacket>> GetButtonComponent()
         {
-            return buttonComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UIButton<AppData.ButtonConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(buttonComponentConfig, "Button Component Config",
+            $"Button Component Config Not found For : {GetName()} - Invalid Operation.",
+            $"Button Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = buttonComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        public AppData.UIInputField<AppData.InputFieldDataPackets> GetInputFieldComponent()
+        public AppData.CallbackData<AppData.UIInputField<AppData.InputFieldConfigDataPacket>> GetInputFieldComponent()
         {
-            return inputFieldComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UIInputField<AppData.InputFieldConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(inputFieldComponentConfig, "Input Field Component Config",
+            $"Input Field Component Config Not found For : {GetName()} - Invalid Operation.",
+            $"Input Field Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = inputFieldComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        public AppData.UIInputSlider<AppData.InputSliderDataPackets> GetInputSliderComponent()
+        public AppData.CallbackData<AppData.UIInputSlider<AppData.InputSliderConfigDataPacket>> GetInputSliderComponent()
         {
-            return inputSliderComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UIInputSlider<AppData.InputSliderConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(inputSliderComponentConfig, "Input Slider Component Config",
+            $"Input Slider Component Config Not found For : {GetName()} - Invalid Operation.",
+            $"Input Slider Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = inputSliderComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        public AppData.UISlider<AppData.SliderDataPackets> GetSliderComponent()
+        public AppData.CallbackData<AppData.UISlider<AppData.SliderConfigDataPacket>> GetSliderComponent()
         {
-            return sliderComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UISlider<AppData.SliderConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(sliderComponentConfig, "Slider Component Config",
+            $"Slider Component Config Not found For : {GetName()} - Invalid Operation.",
+            $"Slider Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = sliderComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        public AppData.UICheckbox<AppData.CheckboxDataPackets> GetCheckboxComponent()
+        public AppData.CallbackData<AppData.UICheckbox<AppData.CheckboxConfigDataPacket>> GetCheckboxComponent()
         {
-            return checkboxComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UICheckbox<AppData.CheckboxConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(checkboxComponentConfig, "Checkbox Component Config",
+            $"Checkbox Component Config Not found For : {GetName()} - Invalid Operation.",
+            $"Checkbox Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = checkboxComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        public AppData.UIDropDown<AppData.DropdownDataPackets> GetDropdownComponent()
+        public AppData.CallbackData<AppData.UIDropDown<AppData.DropdownConfigDataPacket>> GetDropdownComponent()
         {
-            return dropdownComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UIDropDown<AppData.DropdownConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(dropdownComponentConfig, "Dropdown Component Config",
+             $"Dropdown Component Config Not found For : {GetName()} - Invalid Operation.",
+             $"Dropdown Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = dropdownComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion
 
         #region Get Displayer Components
 
-        public AppData.UIText<AppData.TextDataPackets> GetTextComponent()
+        public AppData.CallbackData<AppData.UITextDisplayer<AppData.TextConfigDataPacket>> GetTextComponent()
         {
-            return textComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UITextDisplayer<AppData.TextConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(textComponentConfig, "Text Component Config",
+              $"Text Component Config Not found For : {GetName()} - Invalid Operation.",
+              $"Text Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = textComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        public AppData.UIImageDisplayer<AppData.ImageDataPackets> GetImageComponent()
+        public AppData.CallbackData<AppData.UIImageDisplayer<AppData.ImageConfigDataPacket>> GetImageComponent()
         {
-            return imageComponentConfig;
+            var callbackResults = new AppData.CallbackData<AppData.UIImageDisplayer<AppData.ImageConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(imageComponentConfig, "Image Component Config", 
+                $"Image Component tConfig Not found For : {GetName()} - Invalid Operation.",
+                $"Image Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = imageComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

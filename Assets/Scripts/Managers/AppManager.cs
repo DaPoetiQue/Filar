@@ -352,6 +352,76 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        #region Info
+
+        public AppData.CallbackData<string> GetApplicationName()
+        {
+            var callbackResults = new AppData.CallbackData<string>();
+
+            string appName = Application.productName;
+
+            if(!string.IsNullOrEmpty(appName))
+            {
+                callbackResults.result = $"Application Name Is Set To : {appName}.";
+                callbackResults.data = appName;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Application Name Not Assigned.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<string> GetCompanyName()
+        {
+            var callbackResults = new AppData.CallbackData<string>();
+
+            string companyName = Application.companyName;
+
+            if (!string.IsNullOrEmpty(companyName))
+            {
+                callbackResults.result = $"Application's Company Name Is Set To : {companyName}.";
+                callbackResults.data = companyName;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Application's Company Name Not Assigned.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<string> GetApplicationVersion()
+        {
+            var callbackResults = new AppData.CallbackData<string>();
+
+            string version = Application.version;
+
+            if (!string.IsNullOrEmpty(version))
+            {
+                callbackResults.result = $"Application's Version Is Set To : {version}.";
+                callbackResults.data = version;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Application's Version Not Assigned.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
+        }
+
+        #endregion
+
         #region Synchronizing App Info
 
         public async Task<AppData.CallbackData<AppData.AppInfo>> SynchronizingAppInfo()

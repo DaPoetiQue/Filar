@@ -200,55 +200,50 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    GetUIImageDisplayer(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
+                    callbackResults.SetResult(GetUIImageDisplayer(AppData.ScreenImageType.Splash));
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(imageDisplayerCallbackResults);
-
-                        if (callbackResults.Success())
+                        InvokeTimedEvents(timeEventInvokedCallbackResults =>
                         {
-                            InvokeTimedEvents(timeEventInvokedCallbackResults =>
+                            callbackResults.SetResult(timeEventInvokedCallbackResults);
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(timeEventInvokedCallbackResults);
+                                var imageDisplayer = GetUIImageDisplayer(AppData.ScreenImageType.Splash).GetData();
+                                var image = appDatabaseManager.GetRandomSplashImage().GetData();
+                                imageDisplayer.SetImageData(image, true);
 
-                                if (callbackResults.Success())
+                                var randomPointIndex = GetRandomIndex();
+
+                                if (randomPointIndex >= 1)
                                 {
-                                    var imageDisplayer = imageDisplayerCallbackResults.data;
-                                    var image = appDatabaseManager.GetRandomSplashImage().GetData();
-                                    imageDisplayer.SetImageData(image, true);
-
-                                    var randomPointIndex = GetRandomIndex();
-
-                                    if (randomPointIndex >= 1)
+                                    SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
                                     {
-                                        SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(targetSetCallbackResults);
+                                        callbackResults.SetResult(targetSetCallbackResults);
 
-                                            if (callbackResults.Success())
-                                                imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-
-                                    if (randomPointIndex <= 0)
-                                    {
-                                        SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(targetSetCallbackResults);
-
-                                            if (callbackResults.Success())
-                                                imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
+                                        if (callbackResults.Success())
+                                            imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
-                            });
-                        }
-                        else
-                            Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
-                    });
+
+                                if (randomPointIndex <= 0)
+                                {
+                                    SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(targetSetCallbackResults);
+
+                                        if (callbackResults.Success())
+                                            imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                            }
+                        });
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -259,12 +254,12 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -360,19 +355,14 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    GetUIImageDisplayer(AppData.ScreenImageType.Splash, imageDisplayerCallbackResults =>
-                    {
-                        callbackResults.SetResult(imageDisplayerCallbackResults);
+                    callbackResults.SetResult(GetUIImageDisplayer(AppData.ScreenImageType.Splash));
 
-                        if (callbackResults.Success())
-                        {
-                            var imageDisplayer = imageDisplayerCallbackResults.data;
-                            var image = appDatabaseManager.GetRandomSplashImage().GetData();
-                            imageDisplayer.SetImageData(image, true);
-                        }
-                        else
-                            Log(imageDisplayerCallbackResults.GetResultCode, imageDisplayerCallbackResults.GetResult, this);
-                    });
+                    if (callbackResults.Success())
+                    {
+                        var imageDisplayer = GetUIImageDisplayer(AppData.ScreenImageType.Splash).GetData();
+                        var image = appDatabaseManager.GetRandomSplashImage().GetData();
+                        imageDisplayer.SetImageData(image, true);
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -390,7 +380,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -400,7 +390,7 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }

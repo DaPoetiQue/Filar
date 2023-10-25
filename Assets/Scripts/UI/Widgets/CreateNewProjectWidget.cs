@@ -182,9 +182,9 @@ namespace Com.RedicalGames.Filar
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
-            switch(dataPackets.action)
+            switch(dataPackets.GetAction().GetData())
             {
                 case AppData.InputFieldActionType.AssetNameField:
 
@@ -201,7 +201,7 @@ namespace Com.RedicalGames.Filar
                                     if (inputFieldCallbackResults.Success())
                                     {
                                         if (inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Warning || inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Error)
-                                            OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+                                            OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.GetData());
                                     }
                                     else
                                         Log(inputFieldCallbackResults.resultCode, inputFieldCallbackResults.result, this);
@@ -214,7 +214,7 @@ namespace Com.RedicalGames.Filar
                                     if (inputFieldCallbackResults.Success())
                                     {
                                         if (inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Success)
-                                            OnInputFieldValidation(AppData.ValidationResultsType.Warning, dataValidCallbackResults.data);
+                                            OnInputFieldValidation(AppData.ValidationResultsType.Warning, dataValidCallbackResults.GetData());
                                     }
                                     else
                                         Log(inputFieldCallbackResults.resultCode, inputFieldCallbackResults.result, this);
@@ -229,7 +229,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldDataPackets dataPackets)
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -244,7 +244,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (restrictionCallbackResults.Success())
                         {
-                            newProjectStructureData = newProjectCallbackResults.data;
+                            newProjectStructureData = newProjectCallbackResults.GetData();
          
                             SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name");
 
@@ -254,7 +254,7 @@ namespace Com.RedicalGames.Filar
                             var projectTypeContentParam = AppDatabaseManager.Instance.GetUIScreenGroupContentTemplate("Project Type Content", AppData.InputType.DropDown, state: AppData.InputUIState.Disabled,  dropdownActionType: AppData.InputDropDownActionType.ProjectType, placeHolder: "Project Type");
                             var projectTemplateContentParam = AppDatabaseManager.Instance.GetUIScreenGroupContentTemplate("Project Template Content", AppData.InputType.DropDown, state: AppData.InputUIState.Enabled, dropdownActionType: AppData.InputDropDownActionType.ProjectTamplate, placeHolder: "Templates", contents: AppDatabaseManager.Instance.GetDropdownContent<AppData.ProjectTamplateType>().data);
 
-                            switch (restrictionCallbackResults.data.GetProjectSupportType())
+                            switch (restrictionCallbackResults.GetData().GetProjectSupportType())
                             {
                                 case AppData.Compatibility.Supports_3D:
 
@@ -286,11 +286,11 @@ namespace Com.RedicalGames.Filar
                             SetActionDropdownSelection(AppData.InputDropDownActionType.ProjectTamplate, (int)newProjectStructureData.GetProjectInfo().GetTamplateType());
                         }
                         else
-                            Log(restrictionCallbackResults.resultCode, restrictionCallbackResults.result, this);
+                            Log(restrictionCallbackResults.GetResultCode, restrictionCallbackResults.GetResult, this);
                     });
                 }
                 else
-                    Log(newProjectCallbackResults.resultCode, newProjectCallbackResults.result, this);
+                    Log(newProjectCallbackResults.GetResultCode, newProjectCallbackResults.GetResult, this);
             });
         }
 
@@ -298,7 +298,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
 
-        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxDataPackets dataPackets)
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -325,9 +325,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownDataPackets dataPackets)
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {
-           switch(dataPackets.action)
+           switch(dataPackets.GetAction().GetData())
             {
                 case AppData.InputDropDownActionType.ProjectType:
 

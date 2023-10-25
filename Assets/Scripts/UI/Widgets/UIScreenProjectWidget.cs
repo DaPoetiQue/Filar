@@ -29,49 +29,48 @@ namespace Com.RedicalGames.Filar
             return null;
         }
 
-        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonDataPackets> actionButton)
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            LogInfo($"===> Button Action : {actionButton.dataPackets.action}");
 
-            switch (actionButton.dataPackets.action)
-            {
-                case AppData.InputActionButtonType.OpenProject:
+            //switch (actionButton.dataPackets.action)
+            //{
+            //    case AppData.InputActionButtonType.OpenProject:
 
-                    if (SelectableManager.Instance != null)
-                    {
-                        if (SelectableManager.Instance.GetCurrentSelectionType() != AppData.FocusedSelectionType.SelectedItem)
-                        {
-                            if (SelectableManager.Instance.HasActiveSelection())
-                                SelectableManager.Instance.OnClearFocusedSelectionsInfo();
+            //        if (SelectableManager.Instance != null)
+            //        {
+            //            if (SelectableManager.Instance.GetCurrentSelectionType() != AppData.FocusedSelectionType.SelectedItem)
+            //            {
+            //                if (SelectableManager.Instance.HasActiveSelection())
+            //                    SelectableManager.Instance.OnClearFocusedSelectionsInfo();
 
-                            if (AppDatabaseManager.Instance != null)
-                            {
-                                AppDatabaseManager.Instance.SetCurrentProjectStructureData(structureData);
-                                //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "New Project Name");
+            //                if (AppDatabaseManager.Instance != null)
+            //                {
+            //                    AppDatabaseManager.Instance.SetCurrentProjectStructureData(structureData);
+            //                    //ScreenUIManager.Instance.GetCurrentScreenData().value.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "New Project Name");
 
-                                AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
-                                {
-                                    widgetName = name,
-                                    position = GetWidgetLocalPosition(),
-                                    selectionState = AppData.InputUIState.Highlighted
-                                };
+            //                    AppData.UIWidgetInfo selectedWidget = new AppData.UIWidgetInfo
+            //                    {
+            //                        widgetName = name,
+            //                        position = GetWidgetLocalPosition(),
+            //                        selectionState = AppData.InputUIState.Highlighted
+            //                    };
 
-                                Selected();
+            //                    Selected();
 
-                                OnGoToProfile_ActionEvent(actionButton.dataPackets);
-                            }
-                            else
-                                Debug.LogWarning("--> OnActionButtonInputs Failed : SceneAssetsManager.Instance Is Not Yet Initialized.");
-                        }
-                    }
-                    else
-                        Debug.LogWarning("--> OnActionButtonInputs Failed : SelectableManager.Instance Is Not Yet Initialized.");
+            //                    OnGoToProfile_ActionEvent(actionButton.dataPackets);
+            //                }
+            //                else
+            //                    Debug.LogWarning("--> OnActionButtonInputs Failed : SceneAssetsManager.Instance Is Not Yet Initialized.");
+            //            }
+            //        }
+            //        else
+            //            Debug.LogWarning("--> OnActionButtonInputs Failed : SelectableManager.Instance Is Not Yet Initialized.");
 
-                    break;
-            }
+            //        break;
+            //}
         }
 
-        void OnGoToProfile_ActionEvent(AppData.ButtonDataPackets dataPackets)
+        void OnGoToProfile_ActionEvent(AppData.ButtonConfigDataPacket dataPackets)
         {
             //if (ScreenUIManager.Instance != null)
             //    ScreenUIManager.Instance.ShowScreenAsync(dataPackets);
@@ -110,24 +109,24 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetUIWidgetData(AppData.ProjectStructureData structureData)
         {
-            if (!string.IsNullOrEmpty(structureData.projectInfo.name))
-            {
-                SetUITextDisplayerValue(structureData?.projectInfo?.name, AppData.ScreenTextType.TitleDisplayer);
+            //if (!string.IsNullOrEmpty(structureData.projectInfo.name))
+            //{
+            //    SetUITextDisplayerValue(structureData?.projectInfo?.name, AppData.ScreenTextType.TitleDisplayer);
 
-                string lastModified = structureData?.creationDateTime.date;
-                SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.DateTimeDisplayer);
+            //    string lastModified = structureData?.creationDateTime.date;
+            //    SetUITextDisplayerValue(lastModified, AppData.ScreenTextType.DateTimeDisplayer);
 
-                string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
-                SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
+            //    string projectType = structureData?.GetProjectInfo()?.GetCategoryType().ToString().Replace("Project_", "");
+            //    SetUITextDisplayerValue(projectType, AppData.ScreenTextType.TypeDisplayer);
 
-                AppDatabaseManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
-                {
-                    if (projectInfoCallbackResults.Success())
-                        SetActionButtonColor(AppData.InputActionButtonType.OpenProject, projectInfoCallbackResults.data.color);
-                    else
-                        Log(projectInfoCallbackResults.resultCode, projectInfoCallbackResults.result, this);
-                });
-            }
+            //    AppDatabaseManager.Instance.GetProjectCategoryInfo(structureData.GetProjectInfo().GetCategoryType(), projectInfoCallbackResults => 
+            //    {
+            //        if (projectInfoCallbackResults.Success())
+            //            SetActionButtonColor(AppData.InputActionButtonType.OpenProject, projectInfoCallbackResults.data.color);
+            //        else
+            //            Log(projectInfoCallbackResults.resultCode, projectInfoCallbackResults.result, this);
+            //    });
+            //}
         }
 
         protected override void OnSetUIWidgetData(AppData.Post post)
