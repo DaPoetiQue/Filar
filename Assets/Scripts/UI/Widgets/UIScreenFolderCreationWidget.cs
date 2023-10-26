@@ -57,7 +57,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
             if (showWidgetRoutine != null)
             {
@@ -69,7 +69,7 @@ namespace Com.RedicalGames.Filar
         }
 
         // Get Default Folder Name From Scene Assets Folder Lists.
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
 
         }
@@ -112,7 +112,7 @@ namespace Com.RedicalGames.Filar
             //});
         }
 
-        protected override void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             //if (ScreenUIManager.Instance != null)
             //{
@@ -173,7 +173,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             
         }

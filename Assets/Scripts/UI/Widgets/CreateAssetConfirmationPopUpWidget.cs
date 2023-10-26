@@ -146,7 +146,7 @@ namespace Com.RedicalGames.Filar
             //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
             if (AppDatabaseManager.Instance)
             {
@@ -267,12 +267,12 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> Asset Manager Not Initialized.");
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        protected override void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
@@ -297,7 +297,7 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
         }

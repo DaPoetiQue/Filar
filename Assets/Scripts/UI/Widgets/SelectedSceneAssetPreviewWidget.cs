@@ -185,12 +185,12 @@ namespace Com.RedicalGames.Filar
 
         #region Overrides
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
           
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
@@ -201,7 +201,7 @@ namespace Com.RedicalGames.Filar
                     if (GetLayoutView(defaultLayoutType).Success())
                         OnScreenTogglableStateEvent(AppData.TogglableWidgetType.ResetAssetModelRotationButton, false);
                     else
-                        LogError("Pop Up Value Required.", this, () => OnShowScreenWidget(dataPackets));
+                        LogError("Pop Up Value Required.", this);
 
                     break;
 
@@ -213,10 +213,10 @@ namespace Com.RedicalGames.Filar
             if (AppDatabaseManager.Instance)
                 SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
             else
-                LogWarning("Scene Assets Manager Not Yet Initialized.", this, () => OnShowScreenWidget(dataPackets));
+                LogWarning("Scene Assets Manager Not Yet Initialized.", this);
         }
 
-        protected override async void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
@@ -243,7 +243,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }

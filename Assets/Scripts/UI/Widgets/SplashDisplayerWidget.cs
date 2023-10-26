@@ -264,7 +264,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
             //if (callbackResults.Success())
             //{
@@ -288,7 +288,7 @@ namespace Com.RedicalGames.Filar
             //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
@@ -373,7 +373,7 @@ namespace Com.RedicalGames.Filar
             LogInfo(" ____________________________++++++++++++++++ OnChange Splash Image Event Called.", this);
         }
 
-        protected override void OnHideScreenWidget() => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null) => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
         protected override void OnScrollerValueChanged(Vector2 value)
         {
@@ -385,7 +385,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
 
         }

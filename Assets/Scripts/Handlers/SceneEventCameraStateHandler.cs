@@ -249,7 +249,7 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> There Are Not Scene Event Cameras Assigned.");
         }
 
-        void OnTransitionSceneEventCamera(AppData.SceneDataPackets dataPackets)
+        void OnTransitionSceneEventCamera(AppData.SceneConfigDataPacket dataPackets)
         {
             transitionToTarget = true;
 

@@ -1661,7 +1661,7 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        public void OnSceneAssetEditMode(AppData.SceneDataPackets dataPackets)
+        public void OnSceneAssetEditMode(AppData.SceneConfigDataPacket dataPackets)
         {
             try
             {
@@ -1676,7 +1676,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void OnSceneAssetPreviewMode(AppData.SceneDataPackets dataPackets)
+        public void OnSceneAssetPreviewMode(AppData.SceneConfigDataPacket dataPackets)
         {
             try
             {
@@ -1691,7 +1691,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        void OnSceneAssetScreenPreviewSetup(AppData.SceneDataPackets dataPackets)
+        void OnSceneAssetScreenPreviewSetup(AppData.SceneConfigDataPacket dataPackets)
         {
             if (GetSceneAssetsContainer(dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.GetReferencedScreenType().GetData().GetValue().GetData()))
             {
@@ -2795,7 +2795,7 @@ namespace Com.RedicalGames.Filar
             return assetFormattedName;
         }
 
-        public async void ChangeFolderLayoutView(AppData.LayoutViewType viewType, AppData.SceneDataPackets dataPackets)
+        public async void ChangeFolderLayoutView(AppData.LayoutViewType viewType, AppData.SceneConfigDataPacket dataPackets)
         {
             if (GetProjectStructureData().Success())
             {
@@ -2816,7 +2816,7 @@ namespace Com.RedicalGames.Filar
                 Log(GetProjectStructureData().resultCode, GetProjectStructureData().result, this);
         }
 
-        public void ChangePaginationView(AppData.PaginationViewType paginationView, AppData.SceneDataPackets dataPackets)
+        public void ChangePaginationView(AppData.PaginationViewType paginationView, AppData.SceneConfigDataPacket dataPackets)
         {
             if (GetProjectStructureData().Success())
             {
@@ -3003,11 +3003,11 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void CreateNewProjectFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
+        public void CreateNewProjectFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback)
         {
             try
             {
-                AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+                AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
                 string newFolderDataFileName = !string.IsNullOrEmpty(CreateNewFolderName) ? CreateNewFolderName : GetCreateNewFolderTempName();
 
@@ -3092,7 +3092,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneDataPackets>
+                                                                AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>
                                                                 {
                                                                     name = newFolderDataFileName,
                                                                     selectionInfoType = AppData.FocusedSelectionType.NewItem
@@ -3105,7 +3105,7 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                     else
                                                     {
-                                                        AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneDataPackets>
+                                                        AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket> selectionInfo = new AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>
                                                         {
                                                             name = newFolderDataFileName,
                                                             selectionInfoType = AppData.FocusedSelectionType.NewItem
@@ -3715,7 +3715,7 @@ namespace Com.RedicalGames.Filar
 
         #region Refresh
 
-        public async Task<AppData.Callback> RefreshedAsync(Screen refreshedScreen, AppData.Folder folder = null, DynamicWidgetsContainer widgetsContainer = null, DynamicContentContainer contentContainer = null, AppData.SceneDataPackets dataPackets = null, int refreshDuration = 0)
+        public async Task<AppData.Callback> RefreshedAsync(Screen refreshedScreen, AppData.Folder folder = null, DynamicWidgetsContainer widgetsContainer = null, DynamicContentContainer contentContainer = null, AppData.SceneConfigDataPacket dataPackets = null, int refreshDuration = 0)
         {
             try
             {

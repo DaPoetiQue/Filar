@@ -54,7 +54,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
@@ -69,25 +69,24 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
 
-        }
+            SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, configDataPacket.widgetTitle);
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
-        {
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, dataPackets.widgetTitle);
-
-            if (dataPackets.referencedActionButtonDataList.Count > 0)
+            if (configDataPacket.referencedActionButtonDataList.Count > 0)
             {
-                foreach (var referencedActionButton in dataPackets.referencedActionButtonDataList)
+                foreach (var referencedActionButton in configDataPacket.referencedActionButtonDataList)
                 {
                     SetActionButtonTitle(referencedActionButton.type, referencedActionButton.title);
                     SetActionButtonState(referencedActionButton.type, referencedActionButton.state);
                 }
             }
+        }
+
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        {
+            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
         protected override void OnScrollerValueChanged(Vector2 value)
@@ -100,7 +99,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
 
         }

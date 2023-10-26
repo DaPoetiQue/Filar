@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
             {
@@ -92,7 +92,7 @@ namespace Com.RedicalGames.Filar
                                                 await currentScreen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
 
 
-                                                AppData.SceneDataPackets dataPackets = new AppData.SceneDataPackets();
+                                                AppData.SceneConfigDataPacket dataPackets = new AppData.SceneConfigDataPacket();
 
                                                 dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
                                                 dataPackets.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
@@ -114,7 +114,7 @@ namespace Com.RedicalGames.Filar
             }, "Screen UI Manager Instance Is Not Yet Initialized.");
         }
 
-        protected override void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(defaultLayoutType);
         }
@@ -129,12 +129,12 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
-            ShowSelectedLayout(defaultLayoutType);
+        
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
 

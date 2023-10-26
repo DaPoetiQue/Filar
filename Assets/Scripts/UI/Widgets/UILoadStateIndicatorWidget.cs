@@ -62,7 +62,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
@@ -77,12 +77,12 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
 
         }
 
-        protected override async void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override async void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
@@ -187,7 +187,7 @@ namespace Com.RedicalGames.Filar
         protected void TriggerOnAbortRefreshEvent() => _OnAbortRefresh_AddEventListener?.Invoke();
         protected void TriggerOnRefreshFailedEvent() => _OnRefreshFailed_AddEventListener?.Invoke();
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
         }

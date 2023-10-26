@@ -4487,7 +4487,7 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.LoadingWidget);
 
-                                                                        SceneDataPackets networkDataPackets = new SceneDataPackets();
+                                                                        SceneConfigDataPacket networkDataPackets = new SceneConfigDataPacket();
 
                                                                         networkDataPackets.SetReferencedScreenType(screenUIManager.GetCurrentScreenType().GetData());
                                                                         networkDataPackets.SetReferencedWidgetType(WidgetType.NetworkNotificationWidget);
@@ -12101,7 +12101,7 @@ namespace Com.RedicalGames.Filar
 
             public Dictionary<Enum, UISelectableGroup> selectableUIGroups = new Dictionary<Enum, UISelectableGroup>();
 
-            public Action<SceneDataPackets> OnSelection { get; set; }
+            public Action<SceneConfigDataPacket> OnSelection { get; set; }
             public Action OnDeselection { get; set; }
 
             #endregion
@@ -12122,7 +12122,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Select(UIScreenWidget selectable, SceneDataPackets dataPackets, bool isInitialSelection = false)
+            public void Select(UIScreenWidget selectable, SceneConfigDataPacket dataPackets, bool isInitialSelection = false)
             {
                 if(isInitialSelection)
                 {
@@ -12312,9 +12312,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetCachedSelectionInfo(Action<CallbackDataList<FocusedSelectionInfo<SceneDataPackets>>> callback)
+            public void GetCachedSelectionInfo(Action<CallbackDataList<FocusedSelectionInfo<SceneConfigDataPacket>>> callback)
             {
-                CallbackDataList<FocusedSelectionInfo<SceneDataPackets>> callbackResults = new CallbackDataList<FocusedSelectionInfo<SceneDataPackets>>();
+                CallbackDataList<FocusedSelectionInfo<SceneConfigDataPacket>> callbackResults = new CallbackDataList<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
                 if(HasCachedSelectionInfo())
                 {
@@ -12372,7 +12372,7 @@ namespace Com.RedicalGames.Filar
                 return cachedSelectionData.isActiveSelection && cachedSelectionData.selections.Count > 0;
             }
 
-            public void SelectWidgets(List<FocusedSelectionInfo<SceneDataPackets>> selections, Action<Callback> callback = null)
+            public void SelectWidgets(List<FocusedSelectionInfo<SceneConfigDataPacket>> selections, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -12397,7 +12397,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void DeselectWidgets(List<FocusedSelectionInfo<SceneDataPackets>> selections, Action<Callback> callback = null)
+            public void DeselectWidgets(List<FocusedSelectionInfo<SceneConfigDataPacket>> selections, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -12488,11 +12488,11 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public void Select(string selectionName, FocusedSelectionType selectionType, Action<CallbackData<FocusedSelectionInfo<SceneDataPackets>>> callback = null)
+            public void Select(string selectionName, FocusedSelectionType selectionType, Action<CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>> callback = null)
             {
-                CallbackData<FocusedSelectionInfo<SceneDataPackets>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneDataPackets>>();
+                CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
-                FocusedSelectionInfo<SceneDataPackets> selectionInfo = new FocusedSelectionInfo<SceneDataPackets>
+                FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo = new FocusedSelectionInfo<SceneConfigDataPacket>
                 {
                     name = selectionName,
                     selectionInfoType = selectionType
@@ -12546,9 +12546,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void OnAddSelection(string selectionName, FocusedSelectionType selectionType, Action<CallbackData<FocusedSelectionInfo<SceneDataPackets>>> callback = null)
+            public void OnAddSelection(string selectionName, FocusedSelectionType selectionType, Action<CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>> callback = null)
             {
-                CallbackData<FocusedSelectionInfo<SceneDataPackets>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneDataPackets>>();
+                CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
                 if (HasActiveSelections())
                 {
@@ -12556,7 +12556,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (!Helpers.IsSuccessCode(selectionCheckCallback.resultCode))
                         {
-                            FocusedSelectionInfo<SceneDataPackets> selectionInfo = new FocusedSelectionInfo<SceneDataPackets>
+                            FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo = new FocusedSelectionInfo<SceneConfigDataPacket>
                             {
                                 name = selectionName,
                                 selectionInfoType = selectionType
@@ -12660,11 +12660,11 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetSelectionInfo(string selectionName, Action<CallbackData<FocusedSelectionInfo<SceneDataPackets>>> callback)
+            public void GetSelectionInfo(string selectionName, Action<CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>> callback)
             {
-                CallbackData<FocusedSelectionInfo<SceneDataPackets>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneDataPackets>>();
+                CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
-                FocusedSelectionInfo<SceneDataPackets> selectionInfo = focusedSelectionData.selections.Find(selection => selection.name == selectionName);
+                FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo = focusedSelectionData.selections.Find(selection => selection.name == selectionName);
 
                 if(selectionInfo != null)
                 {
@@ -12682,22 +12682,22 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public List<FocusedSelectionInfo<SceneDataPackets>> GetFocusedSelectionInfoList()
+            public List<FocusedSelectionInfo<SceneConfigDataPacket>> GetFocusedSelectionInfoList()
             {
                 return focusedSelectionData.selections;
             }
 
-            public void Select(List<string> selectionNames, FocusedSelectionType selectionType, Action<CallbackData<FocusedSelectionInfo<SceneDataPackets>>> callback = null)
+            public void Select(List<string> selectionNames, FocusedSelectionType selectionType, Action<CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>> callback = null)
             {
-                CallbackData<FocusedSelectionInfo<SceneDataPackets>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneDataPackets>>();
+                CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>> callbackResults = new CallbackData<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
-                List<FocusedSelectionInfo<SceneDataPackets>> selectionInfoList = new List<FocusedSelectionInfo<SceneDataPackets>>();
+                List<FocusedSelectionInfo<SceneConfigDataPacket>> selectionInfoList = new List<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
                 if (selectionNames.Count > 0)
                 {
                     foreach (var name in selectionNames)
                     {
-                        FocusedSelectionInfo<SceneDataPackets> selectionInfo = new FocusedSelectionInfo<SceneDataPackets>
+                        FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo = new FocusedSelectionInfo<SceneConfigDataPacket>
                         {
                             name = name,
                             selectionInfoType = selectionType
@@ -12979,7 +12979,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void OnSetFocusedWidgetSelectionInfo(FocusedSelectionInfo<SceneDataPackets> newSelectionInfo, bool isActiveSelection = true, Action<Callback> callback = null)
+            public void OnSetFocusedWidgetSelectionInfo(FocusedSelectionInfo<SceneConfigDataPacket> newSelectionInfo, bool isActiveSelection = true, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -12989,7 +12989,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (Helpers.IsSuccessCode(cleared.resultCode))
                         {
-                            focusedSelectionData.selections = new List<FocusedSelectionInfo<SceneDataPackets>>();
+                            focusedSelectionData.selections = new List<FocusedSelectionInfo<SceneConfigDataPacket>>();
                             focusedSelectionData.selections.Add(newSelectionInfo);
 
                             focusedSelectionData.selectionType = newSelectionInfo.selectionInfoType;
@@ -13015,7 +13015,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                 {
-                    focusedSelectionData.selections = new List<FocusedSelectionInfo<SceneDataPackets>>();
+                    focusedSelectionData.selections = new List<FocusedSelectionInfo<SceneConfigDataPacket>>();
                     focusedSelectionData.selections.Add(newSelectionInfo);
                     focusedSelectionData.selectionType = newSelectionInfo.selectionInfoType;
                     focusedSelectionData.isActiveSelection = isActiveSelection;
@@ -13035,7 +13035,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void OnSetFocusedWidgetSelectionInfo(List<FocusedSelectionInfo<SceneDataPackets>> newSelectionInfoList, FocusedSelectionType selectionType, bool isActiveSelection = true, Action<Callback> callback = null)
+            public void OnSetFocusedWidgetSelectionInfo(List<FocusedSelectionInfo<SceneConfigDataPacket>> newSelectionInfoList, FocusedSelectionType selectionType, bool isActiveSelection = true, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -13088,9 +13088,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void OnAddFocusedWidgetSelectionInfo(FocusedSelectionInfo<SceneDataPackets> newSelectionInfo, bool isActiveSelection = true, Action<CallbackDataList<FocusedSelectionInfo<SceneDataPackets>>> callback = null)
+            public void OnAddFocusedWidgetSelectionInfo(FocusedSelectionInfo<SceneConfigDataPacket> newSelectionInfo, bool isActiveSelection = true, Action<CallbackDataList<FocusedSelectionInfo<SceneConfigDataPacket>>> callback = null)
             {
-                CallbackDataList<FocusedSelectionInfo<SceneDataPackets>> callbackResults = new CallbackDataList<FocusedSelectionInfo<SceneDataPackets>>();
+                CallbackDataList<FocusedSelectionInfo<SceneConfigDataPacket>> callbackResults = new CallbackDataList<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
                 focusedSelectionData.selections.Add(newSelectionInfo);
                 focusedSelectionData.selectionType = newSelectionInfo.selectionInfoType;
@@ -13112,7 +13112,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void OnRemoveFocusedWidgetSelectionInfo(FocusedSelectionInfo<SceneDataPackets> selectionToRemove, Action<Callback> callback = null)
+            public void OnRemoveFocusedWidgetSelectionInfo(FocusedSelectionInfo<SceneConfigDataPacket> selectionToRemove, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -13340,9 +13340,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SelectScreenUI(IUIComponent<SceneDataPackets> selectable, Action<CallbackData<IUIComponent<SceneDataPackets>>> callback)
+            public void SelectScreenUI(IUIComponent<SceneConfigDataPacket> selectable, Action<CallbackData<IUIComponent<SceneConfigDataPacket>>> callback)
             {
-                CallbackData<IUIComponent<SceneDataPackets>> callbackResults = new CallbackData<IUIComponent<SceneDataPackets>>();
+                CallbackData<IUIComponent<SceneConfigDataPacket>> callbackResults = new CallbackData<IUIComponent<SceneConfigDataPacket>>();
 
                 if(selectableUIGroups != null && selectableUIGroups.Count > 0)
                 {
@@ -16057,7 +16057,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class UIDropDown<T> : UIInputComponent<TMP_Dropdown, T, UIDropDown<T>> where T : SceneDataPackets
+        public class UIDropDown<T> : UIInputComponent<TMP_Dropdown, T, UIDropDown<T>> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18009,7 +18009,7 @@ namespace Com.RedicalGames.Filar
         #region Action Button Group
 
         [Serializable]
-        public class UIButtonGroupComponent<T> where T : SceneDataPackets
+        public class UIButtonGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18023,7 +18023,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIButton<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UIButton<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIButton<T>> callbackResults = new CallbackDataList<UIButton<T>>();
 
@@ -18076,7 +18076,7 @@ namespace Com.RedicalGames.Filar
         #region Action UI Input Field Group
 
         [Serializable]
-        public class UIInputFieldGroupComponent<T> where T : SceneDataPackets
+        public class UIInputFieldGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18090,7 +18090,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIInputField<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UIInputField<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIInputField<T>> callbackResults = new CallbackDataList<UIInputField<T>>();
 
@@ -18143,7 +18143,7 @@ namespace Com.RedicalGames.Filar
         #region Action UI Input Slider Group
 
         [Serializable]
-        public class UIInputSliderGroupComponent<T> where T : SceneDataPackets
+        public class UIInputSliderGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18157,7 +18157,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIInputSlider<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UIInputSlider<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIInputSlider<T>> callbackResults = new CallbackDataList<UIInputSlider<T>>();
 
@@ -18210,7 +18210,7 @@ namespace Com.RedicalGames.Filar
         #region Action UI Checkbox Group
 
         [Serializable]
-        public class UIInputCheckboxGroupComponent<T> where T : SceneDataPackets
+        public class UIInputCheckboxGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18224,7 +18224,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UICheckbox<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UICheckbox<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UICheckbox<T>> callbackResults = new CallbackDataList<UICheckbox<T>>();
 
@@ -18277,7 +18277,7 @@ namespace Com.RedicalGames.Filar
         #region Action UI Dropdown Group
 
         [Serializable]
-        public class UIInputDropdownGroupComponent<T> where T : SceneDataPackets
+        public class UIInputDropdownGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18291,7 +18291,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIDropDown<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UIDropDown<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIDropDown<T>> callbackResults = new CallbackDataList<UIDropDown<T>>();
 
@@ -18344,7 +18344,7 @@ namespace Com.RedicalGames.Filar
         #region Action UI Slider Group
 
         [Serializable]
-        public class InputUISliderGroupComponent<T> where T : SceneDataPackets
+        public class InputUISliderGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18358,7 +18358,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UISlider<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UISlider<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UISlider<T>> callbackResults = new CallbackDataList<UISlider<T>>();
 
@@ -18411,7 +18411,7 @@ namespace Com.RedicalGames.Filar
         #region Action UI Components Group
 
         [Serializable]
-        public class ActionUIComponentsGroup<T> where T : SceneDataPackets
+        public class ActionUIComponentsGroup<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18470,7 +18470,7 @@ namespace Com.RedicalGames.Filar
         #region UI Text Group
 
         [Serializable]
-        public class UITextGroupComponent<T> where T : SceneDataPackets
+        public class UITextGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18537,7 +18537,7 @@ namespace Com.RedicalGames.Filar
         #region UI Image Displayer Group
 
         [Serializable]
-        public class UIImageDisplayerGroupComponent<T> where T : SceneDataPackets
+        public class UIImageDisplayerGroupComponent<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -18551,7 +18551,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init<U>(SceneDataPackets dataPackets, U fromClass = null, Action<CallbackDataList<UIImageDisplayer<T>>> callback = null) where U : AppMonoBaseClass
+            public void Init<U>(SceneConfigDataPacket dataPackets, U fromClass = null, Action<CallbackDataList<UIImageDisplayer<T>>> callback = null) where U : AppMonoBaseClass
             {
                 CallbackDataList<UIImageDisplayer<T>> callbackResults = new CallbackDataList<UIImageDisplayer<T>>();
 
@@ -18604,7 +18604,7 @@ namespace Com.RedicalGames.Filar
         #region UI Components Group
 
         [Serializable]
-        public class UIComponentsGroup<T> where T : SceneDataPackets
+        public class UIComponentsGroup<T> where T : SceneConfigDataPacket
         {
             #region Components
 
@@ -22334,7 +22334,7 @@ namespace Com.RedicalGames.Filar
             public List<TutorialInfo> tutorialInfoList = new List<TutorialInfo>();
 
             [Space(5)]
-            public SceneDataPackets dataPackets = new SceneDataPackets();
+            public SceneConfigDataPacket dataPackets = new SceneConfigDataPacket();
 
             #endregion
 
@@ -22359,7 +22359,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public SceneDataPackets GetDataPackets()
+            public SceneConfigDataPacket GetDataPackets()
             {
                 return dataPackets;
             }
@@ -22446,7 +22446,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public List<FocusedSelectionInfo<SceneDataPackets>> selections;
+            public List<FocusedSelectionInfo<SceneConfigDataPacket>> selections;
 
             [Space(5)]
             public FocusedSelectionType selectionType;
@@ -22463,7 +22463,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public FocusedSelectionData(List<FocusedSelectionInfo<SceneDataPackets>> selections, FocusedSelectionType selectionType, bool isActiveSelection)
+            public FocusedSelectionData(List<FocusedSelectionInfo<SceneConfigDataPacket>> selections, FocusedSelectionType selectionType, bool isActiveSelection)
             {
                 this.selections = selections;
                 this.selectionType = selectionType;
@@ -22472,7 +22472,7 @@ namespace Com.RedicalGames.Filar
 
             public void Clear()
             {
-                selections = new List<FocusedSelectionInfo<SceneDataPackets>>();
+                selections = new List<FocusedSelectionInfo<SceneConfigDataPacket>>();
 
                 selectionType = FocusedSelectionType.Default;
                 isActiveSelection = false;
@@ -24002,7 +24002,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     string widgetTitle = (selectableComponent.GetSelectableAssetType() == SelectableWidgetType.Folder) ? $"Folder Already Exist" : "File Already Exist";
 
-                                                                    SceneDataPackets dataPackets = new SceneDataPackets
+                                                                    SceneConfigDataPacket dataPackets = new SceneConfigDataPacket
                                                                     {
                                                                         widgetTitle = widgetTitle,
                                                                         widgetType = WidgetType.UIAssetActionWarningWidget,
@@ -24898,11 +24898,11 @@ namespace Com.RedicalGames.Filar
             ScreenUIManager screenManager;
 
             [SerializeField]
-            SceneDataPackets currentDataPackets;
+            SceneConfigDataPacket currentDataPackets;
 
 
             // Fix This To Display Models
-            protected void OnScreenChangeEvent(SceneDataPackets dataPackets)
+            protected void OnScreenChangeEvent(SceneConfigDataPacket dataPackets)
             {
 
                 // Temp Fix. Do Proper Checks
@@ -25785,7 +25785,7 @@ namespace Com.RedicalGames.Filar
                                                 var widgetComponent = Instantiate(loadedWidgets[i].gameObject).GetComponent<Widget>();
                                                 widgetComponent.gameObject.SetName(loadedWidgets[i].GetName());
 
-                                                //widgetComponent.SetScreenType(GetType().GetData());
+                                                widgetComponent.SetScreenType(GetType().GetData());
                                                 widgetComponent.SetContentContainerType(referencedWidgetDependencyAssets[i].GetContentContainerType().GetData());
                                                 widgetComponent.SetScreenUIPlacementType(referencedWidgetDependencyAssets[i].GetScreenUIPlacementType().GetData());
                                                 widgetComponent.SetUIScreenWidgetVisibilityState(referencedWidgetDependencyAssets[i].GetInitialVisibilityState().GetData());
@@ -25922,7 +25922,7 @@ namespace Com.RedicalGames.Filar
                 return initialVisibilityState;
             }
 
-            protected void OnWidgetsEvents(WidgetType widgetType, InputActionButtonType actionType, SceneDataPackets dataPackets)
+            protected void OnWidgetsEvents(WidgetType widgetType, InputActionButtonType actionType, SceneConfigDataPacket dataPackets)
             {
                 if (widgets.Count == 0)
                     return;
@@ -25985,7 +25985,7 @@ namespace Com.RedicalGames.Filar
                 if (screenType == ScreenType.ARViewScreen)
                 {
                     ActionEvents.OnSetCurrentActiveSceneCameraEvent(SceneEventCameraType.ARViewCamera);
-                    HideScreenWidget(WidgetType.SceneAssetPreviewWidget, new SceneDataPackets());
+                    HideScreenWidget(WidgetType.SceneAssetPreviewWidget, new SceneConfigDataPacket());
                 }
                 else
                     ActionEvents.OnSetCurrentActiveSceneCameraEvent(SceneEventCameraType.AssetPreviewCamera);
@@ -26249,7 +26249,7 @@ namespace Com.RedicalGames.Filar
 
                 if (widget)
                 {
-                    SceneDataPackets dataPackets = new SceneDataPackets
+                    SceneConfigDataPacket dataPackets = new SceneConfigDataPacket
                     {
                         widgetTitle = title,
                         widgetType = widgetType,
@@ -26291,7 +26291,7 @@ namespace Com.RedicalGames.Filar
 
                     if (widget)
                     {
-                        SceneDataPackets dataPackets = new SceneDataPackets
+                        SceneConfigDataPacket dataPackets = new SceneConfigDataPacket
                         {
                             widgetTitle = title,
                             widgetType = widgetType,
@@ -26340,55 +26340,63 @@ namespace Com.RedicalGames.Filar
                     LogError($"Widget Of Type : {widget.GetType().GetData()} - Missing / Not Found.", this);
             }
 
-            public void ShowWidget(SceneDataPackets dataPackets)
+            public void ShowWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
             {
-                if (widgets.Count == 0)
-                    return;
+                var callbackResults = new Callback(GetWidgetOfType(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()));
 
-                var widget = widgets.Find(widget => widget.GetType().GetData() == dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData());
-
-                if (widget)
+                if (callbackResults.Success())
                 {
-                    if (dataPackets.blurScreen)
-                        Blur(dataPackets);
+                    var widget = GetWidgetOfType(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
 
-                    widget.ResetScrollPosition(scrollerResetCallback => 
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name, "Selectable Manager Is Not Yet Initialized - Invalid Operation"));
+
+                    if(callbackResults.Success())
                     {
-                        if (scrollerResetCallback.Success())
+                        var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name).GetData();
+
+                        if (dataPackets.blurScreen)
+                            Blur(dataPackets);
+
+                        widget.ShowScreenWidget(dataPackets, widgetShownCallbackResults =>
                         {
-                            Helpers.GetComponent(SelectableManager.Instance, validComponentCallbackResults => 
-                            {
-                                if (validComponentCallbackResults.Success())
-                                {
-                                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults => 
-                                    {
-                                        if (selectionSystemCallbackResults.Success())
-                                        {
-                                            selectionSystemCallbackResults.data.OnClearInputSelection(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), inputsClearedCallbackResults => 
-                                            {
-                                                if (inputsClearedCallbackResults.Success())
-                                                    widget.ShowScreenWidget(dataPackets);
-                                                else
-                                                    Log(inputsClearedCallbackResults.resultCode, inputsClearedCallbackResults.result, this);
-                                            });
-                                        }
-                                        else
-                                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
-                                    });
-                                }
-                                else
-                                    Log(validComponentCallbackResults.resultCode, validComponentCallbackResults.result, this);
-                            });
-                        }
-                        else
-                            Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
-                    });
+                            callbackResults.SetResult(widgetShownCallbackResults);
+
+                            if (callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+
+                        // Fix Code Below Regarding Selectables - To Be Fixed In UI Branch.
+
+                        //selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                        //{
+                        //    if (selectionSystemCallbackResults.Success())
+                        //    {
+                        //        selectionSystemCallbackResults.GetData().OnClearInputSelection(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), inputsClearedCallbackResults =>
+                        //        {
+                        //            if (inputsClearedCallbackResults.Success())
+                        //                widget.ShowScreenWidget(dataPackets, widgetShownCallbackResults => 
+                        //                {
+                        //                    callbackResults.SetResult(widgetShownCallbackResults);
+
+                        //                    if(callbackResults.UnSuccessful())
+                        //                        Log(inputsClearedCallbackResults.resultCode, inputsClearedCallbackResults.result, this);
+                        //                });
+                        //            else
+                        //                Log(inputsClearedCallbackResults.resultCode, inputsClearedCallbackResults.result, this);
+                        //        });
+                        //    }
+                        //    else
+                        //        Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
+                        //});
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    LogError($"Widget Of Type : {dataPackets.widgetType} - Missing / Not Found.", this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
-            public void ShowWidget(SceneDataPackets dataPackets, Action<bool> callback)
+            public void ShowWidget(SceneConfigDataPacket dataPackets, Action<bool> callback)
             {
                 if (widgets.Count == 0)
                     return;
@@ -26602,7 +26610,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void HideScreenWidget(WidgetType widgetType, SceneDataPackets dataPackets, Action<Callback> callback = null)
+            public void HideScreenWidget(WidgetType widgetType, SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback(GetWidgets());
 
@@ -26710,7 +26718,7 @@ namespace Com.RedicalGames.Filar
                 ActionEvents.OnScreenViewStateChangedEvent(ScreenViewState.Focused);
             }
 
-            public void Blur(SceneDataPackets dataPackets)
+            public void Blur(SceneConfigDataPacket dataPackets)
             {
                 if (dataPackets.blurScreen)
                 {
@@ -26762,7 +26770,7 @@ namespace Com.RedicalGames.Filar
                 return GetType().GetData();
             }
 
-            void OnButtonClicked(Widget widget, InputActionButtonType actionType, SceneDataPackets dataPackets)
+            void OnButtonClicked(Widget widget, InputActionButtonType actionType, SceneConfigDataPacket dataPackets)
             {
                 widget.OnWidgetActionEvent(widget.GetType().GetData(), actionType, dataPackets);
             }
@@ -26774,9 +26782,9 @@ namespace Com.RedicalGames.Filar
 
             void SetObjectVisibilityState(GameObject value, bool state) => value.SetActive(state);
         
-            public SceneDataPackets GetActionButtonDataPackets(InputActionButtonType actionType)
+            public SceneConfigDataPacket GetActionButtonDataPackets(InputActionButtonType actionType)
             {
-                SceneDataPackets dataPackets = new SceneDataPackets();
+                SceneConfigDataPacket dataPackets = new SceneConfigDataPacket();
 
                 //if (screenActionButtonList.Count > 0)
                 //{
@@ -31056,7 +31064,7 @@ namespace Com.RedicalGames.Filar
             [Header("Widget Scroller")]
 
             [Space(5)]
-            public UIScroller<SceneDataPackets> scroller = new UIScroller<SceneDataPackets>();
+            public UIScroller<SceneConfigDataPacket> scroller = new UIScroller<SceneConfigDataPacket>();
 
             #endregion
 
@@ -31279,7 +31287,7 @@ namespace Com.RedicalGames.Filar
 
             void OnDropDownOptionValueChange(int value, DropdownConfigDataPacket dataPackets) => OnActionDropdownValueChanged(value, dataPackets);
 
-            public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets)
+            public void OnWidgetActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetComponent(AppDatabaseManager.Instance, validComponentCallbackResults => 
                 {
@@ -31511,7 +31519,7 @@ namespace Com.RedicalGames.Filar
 
             #region Action Inputs Callbacks
 
-            void OnSelectionOptions_ActionEvents(SceneDataPackets dataPackets)
+            void OnSelectionOptions_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -31542,7 +31550,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnSelection_ActionEvents(SceneDataPackets dataPackets)
+            void OnSelection_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 if (AppDatabaseManager.Instance != null && ScreenUIManager.Instance != null)
                 {
@@ -31637,7 +31645,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Scene Assets Manager / Screen UI Manager Instance Is Not Yet Initialized", this);
             }
 
-            void OnDelete_ActionEvent(SceneDataPackets dataPackets)
+            void OnDelete_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 int selectionCount = SelectableManager.Instance.GetFocusedSelectionDataCount();
 
@@ -31789,9 +31797,9 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnOpenFilePicker_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets) => ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(popUpType, dataPackets);
+            void OnOpenFilePicker_ActionEvent(WidgetType popUpType, SceneConfigDataPacket dataPackets) => ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(popUpType, dataPackets);
 
-            void OnPinItem_ActionEvent(SceneDataPackets dataPackets)
+            void OnPinItem_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 var callbackResults = new Callback(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
@@ -31924,7 +31932,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnBuildNewAsset_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
+            void OnBuildNewAsset_ActionEvent(WidgetType widgetType, SceneConfigDataPacket dataPackets)
             {
                 #region Double Check
 
@@ -31962,7 +31970,7 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
 
-            async void OnHideScreenWidget_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
+            async void OnHideScreenWidget_ActionEvent(WidgetType widgetType, SceneConfigDataPacket dataPackets)
             {
                 try
                 {
@@ -32055,7 +32063,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnOpenARView_ActionEvent(SceneDataPackets dataPackets)
+            void OnOpenARView_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 //if (Application.platform == RuntimePlatform.Android)
                 //{
@@ -32118,7 +32126,7 @@ namespace Com.RedicalGames.Filar
                 //}
             }
 
-            async void OnConfirm_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets)
+            async void OnConfirm_ActionEvent(WidgetType popUpType, SceneConfigDataPacket dataPackets)
             {
                 switch (dataPackets.widgetType)
                 {
@@ -32176,7 +32184,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnAssetPublishing_ActionEvent(SceneDataPackets dataPackets)
+            void OnAssetPublishing_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32191,7 +32199,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnAssetPublishing_ActionEvent(dataPackets));
             }
 
-            void OnNetworkNotification_ActionEvent(SceneDataPackets dataPackets)
+            void OnNetworkNotification_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32206,7 +32214,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Publishing Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnNetworkNotification_ActionEvent(dataPackets));
             }
 
-            void OnSceneAssetExport_ActionEvent(WidgetType popUpType, SceneDataPackets dataPackets)
+            void OnSceneAssetExport_ActionEvent(WidgetType popUpType, SceneConfigDataPacket dataPackets)
             {
                 if (AssetImportContentManager.Instance != null)
                     if (AppDatabaseManager.Instance != null)
@@ -32226,7 +32234,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Export Asset Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnSceneAssetExport_ActionEvent(popUpType, dataPackets));
             }
 
-            async void OnPermissionsReques_ActionEvents(WidgetType popUpType, SceneDataPackets dataPackets)
+            async void OnPermissionsReques_ActionEvents(WidgetType popUpType, SceneConfigDataPacket dataPackets)
             {
                 try
                 {
@@ -32265,7 +32273,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnDeleteAssetWidget_ActionEvent(SceneDataPackets dataPackets)
+            void OnDeleteAssetWidget_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 try
                 {
@@ -32327,7 +32335,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            void OnCreateNewFolder_ActionEvent(SceneDataPackets dataPackets)
+            void OnCreateNewFolder_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32395,7 +32403,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Publishing Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCreateNewFolder_ActionEvent(dataPackets));
             }
 
-            void OnCancel_ActionEvent(SceneDataPackets dataPackets)
+            void OnCancel_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 switch (dataPackets.widgetType)
                 {
@@ -32413,7 +32421,7 @@ namespace Com.RedicalGames.Filar
 
                     case WidgetType.CreateNewProjectWidget:
 
-                        SceneDataPackets sceneDataPackets = new SceneDataPackets();
+                        SceneConfigDataPacket sceneDataPackets = new SceneConfigDataPacket();
 
                         sceneDataPackets.SetReferencedScreenType(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
                         sceneDataPackets.SetReferencedWidgetType(WidgetType.ProjectCreationWarningWidget);
@@ -32432,7 +32440,7 @@ namespace Com.RedicalGames.Filar
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
                             ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                        SceneDataPackets projectDataPackets = new SceneDataPackets();
+                        SceneConfigDataPacket projectDataPackets = new SceneConfigDataPacket();
 
                         projectDataPackets.SetReferencedScreenType(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
                         projectDataPackets.SetReferencedWidgetType(WidgetType.CreateNewProjectWidget);
@@ -32451,7 +32459,7 @@ namespace Com.RedicalGames.Filar
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
                             ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                        SceneDataPackets loginViewDataPackets = new SceneDataPackets();
+                        SceneConfigDataPacket loginViewDataPackets = new SceneConfigDataPacket();
 
                         loginViewDataPackets.SetReferencedScreenType(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData());
                         loginViewDataPackets.SetReferencedWidgetType(WidgetType.SignInWidget);
@@ -32469,7 +32477,7 @@ namespace Com.RedicalGames.Filar
 
             void OnResetAssetPreviewPose_ActionEvent(AssetModeType modeType) => ActionEvents.OnResetSceneAssetPreviewPoseEvent(modeType);
 
-            void OnExportAsset_ActionEvent(SceneDataPackets dataPackets)
+            void OnExportAsset_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32479,7 +32487,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnOpenRendererSettings_ActionEvent(SceneDataPackets dataPackets)
+            void OnOpenRendererSettings_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32489,7 +32497,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnPublishAsset_ActionEvent(SceneDataPackets dataPackets)
+            void OnPublishAsset_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32499,7 +32507,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnCaptureSnapShot_ActionEvent(SceneDataPackets dataPackets)
+            void OnCaptureSnapShot_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenCaptureManager.Instance != null)
                 {
@@ -32628,7 +32636,7 @@ namespace Com.RedicalGames.Filar
 
             void OnPaginationNavigation_ActionEvent(PaginationNavigationActionType actionType) => AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnPaginationActionButtonPressed(actionType);
 
-            void OnProject_FolderActions_ActionEvent(SceneDataPackets dataPackets)
+            void OnProject_FolderActions_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32660,7 +32668,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.UITextDisplayerWidget);
 
-                                    SceneDataPackets packets = dataPackets;
+                                    SceneConfigDataPacket packets = dataPackets;
                                     packets.widgetType = WidgetType.FolderCreationWidget;
 
                                     if (ScreenUIManager.Instance.GetCurrentScreen().Success())
@@ -32713,7 +32721,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Screen UI Manager Instance Is Not Yet Initialized", this, () => OnProject_FolderActions_ActionEvent(dataPackets));
             }
 
-            void OnDeselect_ActionEvent(SceneDataPackets dataPackets)
+            void OnDeselect_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (SelectableManager.Instance)
                 {
@@ -32729,7 +32737,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Selectable Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnCopyPasteOptions_ActionEvent(SceneDataPackets dataPackets)
+            void OnCopyPasteOptions_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32747,7 +32755,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Screen UI Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnEdit_ActionEvent(SceneDataPackets dataPackets)
+            void OnEdit_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (AppDatabaseManager.Instance != null)
                 {
@@ -32846,7 +32854,7 @@ namespace Com.RedicalGames.Filar
                     LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
             }
 
-            void OnHelp_ActionEvent(WidgetType widgetType, SceneDataPackets dataPackets)
+            void OnHelp_ActionEvent(WidgetType widgetType, SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32872,7 +32880,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
-            void OnInfo_ActionEvent(SceneDataPackets dataPackets)
+            void OnInfo_ActionEvent(SceneConfigDataPacket dataPackets)
             {
                 if (ScreenUIManager.Instance != null)
                 {
@@ -32882,7 +32890,7 @@ namespace Com.RedicalGames.Filar
                     LogWarning("Asset Export Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnCaptureSnapShot_ActionEvent(dataPackets));
             }
 
-            async void OnGoToSelectedScreen_ActionEvents(SceneDataPackets dataPackets)
+            async void OnGoToSelectedScreen_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 var screenManagerCallbackResults = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, $"Screen UI Manager Instance Is Not Yet Initialized.");
 
@@ -32907,7 +32915,7 @@ namespace Com.RedicalGames.Filar
                     Log(screenManagerCallbackResults.resultCode, screenManagerCallbackResults.result, this);
             }
 
-            void OnOpenProfile_ActionEvents(SceneDataPackets dataPackets)
+            void OnOpenProfile_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
                 {
@@ -32920,7 +32928,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnOpenInbox_ActionEvents(SceneDataPackets dataPackets)
+            void OnOpenInbox_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
                 {
@@ -32933,7 +32941,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnOpenSettings_ActionEvents(SceneDataPackets dataPackets)
+            void OnOpenSettings_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
                 {
@@ -32946,7 +32954,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnSignUp_ActionEvents(SceneDataPackets dataPackets)
+            void OnSignUp_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
                 {
@@ -32959,7 +32967,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnSignIn_ActionEvents(SceneDataPackets dataPackets)
+            void OnSignIn_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetComponent(ScreenUIManager.Instance, screenManagerValidCallbackResults =>
                 {
@@ -32972,7 +32980,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnSkipSignIn_ActionEvents(SceneDataPackets dataPackets)
+            void OnSkipSignIn_ActionEvents(SceneConfigDataPacket dataPackets)
             {
                 Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerValidCallbackResults =>
                 {
@@ -33019,7 +33027,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            IEnumerator ShowWidgetAsync(SceneDataPackets dataPackets)
+            IEnumerator ShowWidgetAsync(SceneConfigDataPacket dataPackets)
             {
                 yield return new WaitForEndOfFrame();
                 //yield return new WaitForSeconds(1.0f);
@@ -33089,7 +33097,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
 
-            public void ShowScreenWidget(SceneDataPackets dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
+            public void ShowScreenWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
                 var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
 
@@ -33099,7 +33107,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        if (dataPackets.widgetType == GetType().GetData())
+                        if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                         {
                             if (subscribeToActionEvents)
                             {
@@ -33110,7 +33118,8 @@ namespace Com.RedicalGames.Filar
                                 });
                             }
 
-                            OnScreenWidget();
+                            OnScreenWidget(dataPackets);
+                            OnShowScreenWidget();
                         }
                         else
                         {
@@ -33146,7 +33155,7 @@ namespace Com.RedicalGames.Filar
                                 });
                             }
 
-                            OnScreenWidget();
+                            OnShowScreenWidget();
                         }
                         else
                         {
@@ -33208,7 +33217,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            protected void ShowWidget(TransitionType transitionType, SceneDataPackets dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
+            protected void ShowWidget(TransitionType transitionType, SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
                 var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
 
@@ -33220,6 +33229,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (transitionType == GetTransitionType().GetData())
                         {
+                            OnScreenWidget(dataPackets);
+
                             switch (transitionType)
                             {
                                 case TransitionType.Default:
@@ -33230,7 +33241,7 @@ namespace Com.RedicalGames.Filar
                                         else
                                             LogWarning("Screen Rect Is Null.", this, () => ShowWidget(transitionType, dataPackets));
 
-                                    OnShowScreenWidget(dataPackets);
+                                    OnShowScreenWidget();
                                     OnEnabled();
 
                                     break;
@@ -33251,8 +33262,6 @@ namespace Com.RedicalGames.Filar
                                         Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
                                 });
                             }
-
-                            OnScreenWidget();
                         }
                     }
                 }
@@ -33281,6 +33290,8 @@ namespace Com.RedicalGames.Filar
                                 //}
 
                                 //OnShowScreenWidget(widget.GetDataPackets().GetData());
+
+                                OnShowScreenWidget();
                                 OnEnabled();
 
                                 break;
@@ -33301,8 +33312,6 @@ namespace Com.RedicalGames.Filar
                                     Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
                             });
                         }
-
-                        OnScreenWidget();
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33334,6 +33343,8 @@ namespace Com.RedicalGames.Filar
                                 //}
 
                                 //OnShowScreenWidget(widgetType.GetDataPackets().GetData());
+
+                                OnShowScreenWidget();
                                 OnEnabled();
 
                                 break;
@@ -33354,8 +33365,6 @@ namespace Com.RedicalGames.Filar
                                     Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
                             });
                         }
-
-                        OnScreenWidget();
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33398,7 +33407,7 @@ namespace Com.RedicalGames.Filar
 
             #region Overrides
 
-            protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets);
+            protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneConfigDataPacket dataPackets);
             protected abstract void OnActionDropdownValueChanged(int value, DropdownConfigDataPacket dataPackets);
             protected abstract void OnScrollerValueChanged(Vector2 value);
             protected abstract void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket dataPackets);
@@ -33407,9 +33416,9 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void ScrollerPosition(Vector2 position);
 
-            protected abstract void OnScreenWidget();
-            protected abstract void OnShowScreenWidget(SceneDataPackets dataPackets);
-            protected abstract void OnHideScreenWidget();
+            protected abstract void OnScreenWidget(SceneConfigDataPacket configDataPacket);
+            protected abstract void OnShowScreenWidget(Action<Callback> callback = null);
+            protected abstract void OnHideScreenWidget(Action<Callback> callback = null);
 
             #endregion
 
@@ -33780,7 +33789,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public Callback WidgetReady(SceneDataPackets dataPackets = null, bool ignoreScreenData = false)
+            public Callback WidgetReady(SceneConfigDataPacket dataPackets = null, bool ignoreScreenData = false)
             {
                 Callback callbackResults = new Callback(Initialized());
 
@@ -33894,7 +33903,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected SceneDataPackets dataPackets;
+            protected SceneConfigDataPacket dataPackets;
 
             [Space(5)]
             [SerializeField]
@@ -35417,7 +35426,7 @@ namespace Com.RedicalGames.Filar
             public FileExtensionType storableFileExtension = FileExtensionType.NONE;
 
             [Space(5)]
-            public SceneDataPackets dataPackets = new SceneDataPackets();
+            public SceneConfigDataPacket dataPackets = new SceneConfigDataPacket();
 
             #endregion
 
@@ -35457,7 +35466,7 @@ namespace Com.RedicalGames.Filar
 
             public FileExtensionType GetStorableFileExtension() => storableFileExtension;
 
-            public SceneDataPackets GetSceneDataPackets() => dataPackets;
+            public SceneConfigDataPacket GetSceneDataPackets() => dataPackets;
 
             #endregion
 
@@ -38532,7 +38541,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SceneDataPackets : DataPackets, ISceneDataPackets
+        public class SceneConfigDataPacket : DataPackets, ISceneDataPackets
         {
             #region Components
 
@@ -38807,7 +38816,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ButtonConfigDataPacket : SceneDataPackets
+        public class ButtonConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -38879,7 +38888,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class InputFieldConfigDataPacket : SceneDataPackets
+        public class InputFieldConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -38939,7 +38948,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class DropdownConfigDataPacket : SceneDataPackets
+        public class DropdownConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -38999,7 +39008,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SliderConfigDataPacket : SceneDataPackets
+        public class SliderConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -39064,7 +39073,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class InputSliderConfigDataPacket : SceneDataPackets
+        public class InputSliderConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -39124,7 +39133,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class CheckboxConfigDataPacket : SceneDataPackets
+        public class CheckboxConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -39184,7 +39193,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class TextConfigDataPacket : SceneDataPackets
+        public class TextConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -39244,7 +39253,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class ImageConfigDataPacket : SceneDataPackets
+        public class ImageConfigDataPacket : SceneConfigDataPacket
         {
             #region Components
 
@@ -39308,7 +39317,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SettingsDataPackets : SceneDataPackets
+        public class SettingsDataPackets : SceneConfigDataPacket
         {
             [Space(5)]
             [Header("Panel Widget Data Packet")]
@@ -42468,7 +42477,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public static Callback GetScreenDataPacketsValid(SceneDataPackets dataPackets, string name = null, string failedOperationFallbackResults = null, string warningOperationFallbackResults = null, string successOperationFallbackResults = null)
+            public static Callback GetScreenDataPacketsValid(SceneConfigDataPacket dataPackets, string name = null, string failedOperationFallbackResults = null, string warningOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -43572,7 +43581,7 @@ namespace Com.RedicalGames.Filar
 
             void Focus();
 
-            void Blur(SceneDataPackets dataPackets);
+            void Blur(SceneConfigDataPacket dataPackets);
 
             string GetScreenTitle();
             ScreenType GetUIScreenType();
@@ -44577,18 +44586,18 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<ScreenViewState> _OnScreenViewStateChangedEvent;
             public static event ParamVoid<NavigationTabID, NavigationRenderSettingsProfileID> _OnNavigationSubTabChangedEvent;
             public static event ParamVoid<SceneAsset> _OnCreatedAssetDataEditEvent;
-            public static event ParamVoid<SceneDataPackets> _OnScreenChangeEvent;
+            public static event ParamVoid<SceneConfigDataPacket> _OnScreenChangeEvent;
             public static event ParamVoid<ScreenType> _OnScreenChangedEvent;
             public static event ParamVoid<ScreenType> _OnScreenExitEvent;
             public static event ParamVoid<Screen> _OnScreenRefreshed;
-            public static event ParamVoid<WidgetType, InputActionButtonType, SceneDataPackets> _OnPopUpActionEvent;
+            public static event ParamVoid<WidgetType, InputActionButtonType, SceneConfigDataPacket> _OnPopUpActionEvent;
             public static event ParamVoid<AssetModeType> _OnResetSceneAssetPreviewPoseEvent;
             public static event ParamVoid<ARSceneContentState> _OnARSceneAssetStateEvent;
             public static event ParamVoid<SceneEventCameraType> _OnSetCurrentActiveSceneCameraEvent;
             public static event ParamVoid<InputActionButtonType, bool, bool> _OnActionButtonFieldUploadedEvent;
             public static event ParamVoid<TogglableWidgetType, bool, bool> _OnScreenTogglableStateEvent;
             public static event ParamVoid<Quaternion> _OnUpdateSceneAssetDefaultRotation;
-            public static event ParamVoid<SceneDataPackets> _OnTransitionSceneEventCamera;
+            public static event ParamVoid<SceneConfigDataPacket> _OnTransitionSceneEventCamera;
             public static event ParamVoid<InputActionButtonType> _OnActionButtonClickedEvent;
             public static event ParamVoid<CheckboxInputActionType, bool> _OnActionCheckboxToggledEvent;
             public static event ParamVoid<bool, bool> _OnActionCheckboxStateEvent;
@@ -44602,7 +44611,7 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<string> _OnNavigateAndFocusToSelectionEvent;
             public static event ParamVoid<bool> _OnAllWidgetsSelectionEvent;
             public static event ParamVoid<FocusedSelectionData> _OnWidgetsSelectionDataEvent;
-            public static event ParamVoid<FocusedSelectionInfo<SceneDataPackets>> _OnWidgetSelectionDataEvent;
+            public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
             public static event TransformNoParam _OnGetContentPreviewContainer;
 
@@ -44655,13 +44664,13 @@ namespace Com.RedicalGames.Filar
             public static void OnActionButtonClicked(InputActionButtonType actionType) => _OnActionButtonClickedEvent?.Invoke(actionType);
             public static void OnActionCheckboxToggledEvent(CheckboxInputActionType actionType, bool value) => _OnActionCheckboxToggledEvent?.Invoke(actionType, value);
             public static void OnCreatedAssetDataEditEvent(SceneAsset asset) => _OnCreatedAssetDataEditEvent?.Invoke(asset);
-            public static void OnScreenChangeEvent(SceneDataPackets dataPackets) => _OnScreenChangeEvent?.Invoke(dataPackets);
+            public static void OnScreenChangeEvent(SceneConfigDataPacket dataPackets) => _OnScreenChangeEvent?.Invoke(dataPackets);
             public static void OnScreenChangedEvent(ScreenType screenType) => _OnScreenChangedEvent?.Invoke(screenType);
             public static void OnScreenRefreshed(Screen screenData) => _OnScreenRefreshed?.Invoke(screenData);
             public static void OnActionButtonFieldUploadedEvent(InputActionButtonType actionType = InputActionButtonType.None, bool interactable = false, bool isSelected = false) => _OnActionButtonFieldUploadedEvent?.Invoke(actionType, interactable, isSelected);
             public static void OnClearPreviewedSceneAssetObjectEvent() => _OnClearPreviewedSceneAssetObjectEvent?.Invoke();
-            public static void OnPopUpActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneDataPackets dataPackets) => _OnPopUpActionEvent?.Invoke(popUpType, actionType, dataPackets);
-            public static void OnTransitionSceneEventCamera(SceneDataPackets dataPackets) => _OnTransitionSceneEventCamera?.Invoke(dataPackets);
+            public static void OnPopUpActionEvent(WidgetType popUpType, InputActionButtonType actionType, SceneConfigDataPacket dataPackets) => _OnPopUpActionEvent?.Invoke(popUpType, actionType, dataPackets);
+            public static void OnTransitionSceneEventCamera(SceneConfigDataPacket dataPackets) => _OnTransitionSceneEventCamera?.Invoke(dataPackets);
             public static void OnActionCheckboxStateEvent(bool interactable, bool visible) => _OnActionCheckboxStateEvent?.Invoke(interactable, visible);
             public static void OnSwatchColorPickedEvent(ColorInfo colorID, bool fromButtonPress, bool onOpenColorSettings) => _OnSwatchColorPickedEvent?.Invoke(colorID, fromButtonPress, onOpenColorSettings);
             public static void OnToggleColorDropPickerEvent(bool enabled) => _OnToggleColorDropPickerEvent?.Invoke(enabled);
@@ -44671,7 +44680,7 @@ namespace Com.RedicalGames.Filar
             public static void ScrollAndFocusToSelectionEvent(Vector2 position, bool transition = false) => _OnScrollAndFocusToSelectionEvent?.Invoke(position, transition);
             public static void OnNavigateAndFocusToSelectionEvent(string widgetName) => _OnNavigateAndFocusToSelectionEvent?.Invoke(widgetName);
             public static void OnAllWidgetsSelectionEvent(bool currentPage = false) => _OnAllWidgetsSelectionEvent?.Invoke(currentPage);
-            public static void OnWidgetSelectionEvent(FocusedSelectionInfo<SceneDataPackets> selectionInfo) => _OnWidgetSelectionDataEvent?.Invoke(selectionInfo);
+            public static void OnWidgetSelectionEvent(FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo) => _OnWidgetSelectionDataEvent?.Invoke(selectionInfo);
             public static void OnWidgetsSelectionEvent(FocusedSelectionData selectionData) => _OnWidgetsSelectionDataEvent?.Invoke(selectionData);
 
             public static Transform OnGetContentPreviewContainer()

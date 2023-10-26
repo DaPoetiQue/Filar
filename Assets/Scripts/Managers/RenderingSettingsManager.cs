@@ -387,7 +387,7 @@ namespace Com.RedicalGames.Filar
             return currentSceneAssetMeshRendererList;
         }
 
-        public float GetGlobalMaterialIntensity(AppData.SceneDataPackets dataPackets)
+        public float GetGlobalMaterialIntensity(AppData.SceneConfigDataPacket dataPackets)
         {
             var renderers = currentSceneAssetMeshRendererList;
 

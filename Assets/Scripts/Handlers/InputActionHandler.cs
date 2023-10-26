@@ -47,7 +47,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void Init<T>(Action<AppData.CallbackData<T>> callback = null) where T: AppData.SceneDataPackets
+        public void Init<T>(Action<AppData.CallbackData<T>> callback = null) where T: AppData.SceneConfigDataPacket
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
@@ -165,7 +165,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public void GetInputDataPacket<T>(Action<AppData.CallbackData<T>> callback) where T : AppData.SceneDataPackets
+        public void GetInputDataPacket<T>(Action<AppData.CallbackData<T>> callback) where T : AppData.SceneConfigDataPacket
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 

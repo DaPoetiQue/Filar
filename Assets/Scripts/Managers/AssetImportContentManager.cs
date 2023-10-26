@@ -21,7 +21,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets userPermissionsDataPackets;
+        AppData.SceneConfigDataPacket userPermissionsDataPackets;
 
         [Space(5)]
         [SerializeField]
@@ -30,7 +30,7 @@ namespace Com.RedicalGames.Filar
         Vector3 importPosition = Vector3.zero;
 
         [SerializeField]
-        AppData.SceneDataPackets currentDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket currentDataPackets = new AppData.SceneConfigDataPacket();
 
         [SerializeField]
         AppData.AssetData currentSceneAssetData;
@@ -47,7 +47,7 @@ namespace Com.RedicalGames.Filar
         AppData.PermissionType requestedPermissionType;
 
         [SerializeField]
-        AppData.SceneDataPackets permissionDialogDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket permissionDialogDataPackets = new AppData.SceneConfigDataPacket();
 
         #endregion
 
@@ -139,7 +139,7 @@ namespace Com.RedicalGames.Filar
 
         #region Permissions
 
-        public void UserRequestedAppPermissions(AppData.SceneDataPackets dataPackets)
+        public void UserRequestedAppPermissions(AppData.SceneConfigDataPacket dataPackets)
         {
             userPermissionsDataPackets = dataPackets;
 
@@ -234,13 +234,13 @@ namespace Com.RedicalGames.Filar
             return showPermissionDialogue;
         }
 
-        public void SetRequestedPermissionData(AppData.SceneDataPackets dataPackets)
+        public void SetRequestedPermissionData(AppData.SceneConfigDataPacket dataPackets)
         {
             requestedPermissionType = dataPackets.requiredPermission;
             permissionDialogDataPackets = dataPackets;
         }
 
-        public AppData.SceneDataPackets GetRequestedPermissionData()
+        public AppData.SceneConfigDataPacket GetRequestedPermissionData()
         {
             return permissionDialogDataPackets;
         }
@@ -716,12 +716,12 @@ namespace Com.RedicalGames.Filar
         #region Asset Data Setup
 
 
-        public void SetCurrentDataPacket(AppData.SceneDataPackets dataPackets)
+        public void SetCurrentDataPacket(AppData.SceneConfigDataPacket dataPackets)
         {
             currentDataPackets = dataPackets;
         }
 
-        public AppData.SceneDataPackets GetCurrentDataPacket()
+        public AppData.SceneConfigDataPacket GetCurrentDataPacket()
         {
             return currentDataPackets;
         }

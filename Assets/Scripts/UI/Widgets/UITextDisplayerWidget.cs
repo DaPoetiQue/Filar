@@ -54,7 +54,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnHideScreenWidget()
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
@@ -69,25 +69,25 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget()
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
 
         }
 
-        protected override void OnShowScreenWidget(AppData.SceneDataPackets dataPackets)
+        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, dataPackets.popUpMessage);
+            //SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, dataPackets.popUpMessage);
 
-            if (dataPackets.referencedActionButtonDataList.Count > 0)
-            {
-                foreach (var referencedActionButton in dataPackets.referencedActionButtonDataList)
-                {
-                    SetActionButtonTitle(referencedActionButton.type, referencedActionButton.title);
-                    SetActionButtonState(referencedActionButton.type, referencedActionButton.state);
-                }
-            }
+            //if (dataPackets.referencedActionButtonDataList.Count > 0)
+            //{
+            //    foreach (var referencedActionButton in dataPackets.referencedActionButtonDataList)
+            //    {
+            //        SetActionButtonTitle(referencedActionButton.type, referencedActionButton.title);
+            //        SetActionButtonState(referencedActionButton.type, referencedActionButton.state);
+            //    }
+            //}
         }
 
         protected override void OnScrollerValueChanged(Vector2 value)
@@ -100,7 +100,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneDataPackets dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             
         }

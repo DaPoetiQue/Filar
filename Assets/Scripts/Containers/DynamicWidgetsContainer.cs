@@ -30,7 +30,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.UIScroller<AppData.SceneDataPackets> scroller;
+        AppData.UIScroller<AppData.SceneConfigDataPacket> scroller;
 
         [Space(5)]
         [SerializeField]
@@ -175,7 +175,7 @@ namespace Com.RedicalGames.Filar
 
         public AppData.SelectableWidgetType GetSelectableWidgetType() => selectableWidgetType;
 
-        public AppData.UIScroller<AppData.SceneDataPackets> GetUIScroller()
+        public AppData.UIScroller<AppData.SceneConfigDataPacket> GetUIScroller()
         {
             return scroller;
         }
@@ -1287,7 +1287,7 @@ namespace Com.RedicalGames.Filar
             return GetWidgetNamed(widgetName).IsSelected();
         }
 
-        public void OnWidgetSelectionState(AppData.FocusedSelectionInfo<AppData.SceneDataPackets> selection, Action<AppData.Callback> callback = null)
+        public void OnWidgetSelectionState(AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket> selection, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1322,7 +1322,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void OnWidgetSelectionState(List<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> selections, Action<AppData.Callback> callback = null)
+        public void OnWidgetSelectionState(List<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> selections, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1372,7 +1372,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void OnWidgetSelectionState(List<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> selections, AppData.FocusedSelectionType selectionType, Action<AppData.Callback> callback = null)
+        public void OnWidgetSelectionState(List<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> selections, AppData.FocusedSelectionType selectionType, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 

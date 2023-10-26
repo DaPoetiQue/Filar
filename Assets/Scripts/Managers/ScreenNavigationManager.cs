@@ -13,19 +13,19 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets folderNavigationDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket folderNavigationDataPackets = new AppData.SceneConfigDataPacket();
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets emptyFolderDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket emptyFolderDataPackets = new AppData.SceneConfigDataPacket();
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets pagerNavigationWidgetDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket pagerNavigationWidgetDataPackets = new AppData.SceneConfigDataPacket();
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets scrollerNavigationWidgetDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket scrollerNavigationWidgetDataPackets = new AppData.SceneConfigDataPacket();
 
         AppData.UIWidgetInfo currentUIFolderWidgetInfo = new AppData.UIWidgetInfo();
         List<string> folderNavigationNameList = new List<string>();
@@ -52,9 +52,9 @@ namespace Com.RedicalGames.Filar
             navigationCommand.Execute();
         }
 
-        public void ReturnFromFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
+        public void ReturnFromFolder(Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback)
         {
-            var callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
+            var callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
@@ -198,25 +198,25 @@ namespace Com.RedicalGames.Filar
                 Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
         }
 
-        public AppData.SceneDataPackets GetEmptyFolderDataPackets()
+        public AppData.SceneConfigDataPacket GetEmptyFolderDataPackets()
         {
             return emptyFolderDataPackets;
         }
 
 
-        public AppData.SceneDataPackets GetPagerNavigationWidgetDataPackets()
+        public AppData.SceneConfigDataPacket GetPagerNavigationWidgetDataPackets()
         {
             return pagerNavigationWidgetDataPackets;
         }
 
-        public AppData.SceneDataPackets GetScrollerNavigationWidgetDataPackets()
+        public AppData.SceneConfigDataPacket GetScrollerNavigationWidgetDataPackets()
         {
             return scrollerNavigationWidgetDataPackets;
         }
 
-        public void GetEmptyContentDataPacketsForScreen(AppData.ScreenType screenType, AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.SceneDataPackets>> callback)
+        public void GetEmptyContentDataPacketsForScreen(AppData.ScreenType screenType, AppData.Folder contentFolder, Action<AppData.CallbackData<AppData.SceneConfigDataPacket>> callback)
         {
-            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+            AppData.CallbackData<AppData.SceneConfigDataPacket> callbackResults = new AppData.CallbackData<AppData.SceneConfigDataPacket>();
 
             AppData.Helpers.GetComponent(ScreenUIManager.Instance, validComponentCallbackResults => 
             {
@@ -240,7 +240,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (screenType == currentScreen.GetType().GetData())
                                 {
-                                    AppData.SceneDataPackets dataPackets = GetEmptyFolderDataPackets();
+                                    AppData.SceneConfigDataPacket dataPackets = GetEmptyFolderDataPackets();
 
                                     dataPackets.GetReferencedScreenType().GetData().SetValue(screenType);
                                     dataPackets.isRootFolder = contentFolder.IsRootFolder();

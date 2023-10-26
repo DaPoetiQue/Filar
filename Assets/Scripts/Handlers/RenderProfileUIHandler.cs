@@ -10,7 +10,7 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.UICheckbox<AppData.SceneDataPackets> profileToggleBox = new AppData.UICheckbox<AppData.SceneDataPackets>();
+        AppData.UICheckbox<AppData.SceneConfigDataPacket> profileToggleBox = new AppData.UICheckbox<AppData.SceneConfigDataPacket>();
 
         AppData.NavigationRenderSettingsProfileID profileID;
 

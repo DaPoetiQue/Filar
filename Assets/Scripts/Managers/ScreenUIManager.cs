@@ -22,7 +22,7 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         RectTransform screenWidgetsContainer = null;
 
-        AppData.SceneDataPackets previousScreenData;
+        AppData.SceneConfigDataPacket previousScreenData;
 
         float screenTransitionSpeed = 0.0f;
 
@@ -280,7 +280,7 @@ namespace Com.RedicalGames.Filar
             //}
         }
 
-        public void ShowNewAssetScreen(AppData.SceneDataPackets dataPackets)
+        public void ShowNewAssetScreen(AppData.SceneConfigDataPacket dataPackets)
         {
             try
             {
@@ -605,11 +605,11 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        void CachePreviousScreenData(AppData.SceneDataPackets screenDataPackets) => previousScreenData = screenDataPackets;
+        void CachePreviousScreenData(AppData.SceneConfigDataPacket screenDataPackets) => previousScreenData = screenDataPackets;
 
-        AppData.CallbackData<AppData.SceneDataPackets> GetPreviousCachedScreenData()
+        AppData.CallbackData<AppData.SceneConfigDataPacket> GetPreviousCachedScreenData()
         {
-            AppData.CallbackData<AppData.SceneDataPackets> callbackResults = new AppData.CallbackData<AppData.SceneDataPackets>();
+            AppData.CallbackData<AppData.SceneConfigDataPacket> callbackResults = new AppData.CallbackData<AppData.SceneConfigDataPacket>();
 
             if(previousScreenData != null)
             {

@@ -27,11 +27,11 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets inspectorModeDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket inspectorModeDataPackets = new AppData.SceneConfigDataPacket();
 
         [Space(5)]
         [SerializeField]
-        AppData.SceneDataPackets focusedModeDataPackets = new AppData.SceneDataPackets();
+        AppData.SceneConfigDataPacket focusedModeDataPackets = new AppData.SceneConfigDataPacket();
 
         [Space(5)]
         [SerializeField]
@@ -490,9 +490,9 @@ namespace Com.RedicalGames.Filar
 
         #region On Widgets Selections
 
-        public void Select(string selectionName, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
+        public void Select(string selectionName, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults => 
             {
@@ -510,9 +510,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
+        public void Select(AppData.UIScreenWidget selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -525,9 +525,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.SceneAsset selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
+        public void Select(AppData.SceneAsset selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -540,9 +540,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(List<string> selectionNames, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
+        public void Select(List<string> selectionNames, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -555,7 +555,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget selectable, AppData.SceneDataPackets dataPackets, bool isInitialSelection = false)
+        public void Select(AppData.UIScreenWidget selectable, AppData.SceneConfigDataPacket dataPackets, bool isInitialSelection = false)
         {
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -622,9 +622,9 @@ namespace Com.RedicalGames.Filar
             return hasCachedInfo;
         }
 
-        public void GetCachedSelectionInfo(Action<AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback)
+        public void GetCachedSelectionInfo(Action<AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback)
         {
-            AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackDataList<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -652,9 +652,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void OnAddSelection(string selectionName, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>> callback = null)
+        public void OnAddSelection(string selectionName, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
         {
-            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>>();
+            AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -723,7 +723,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void OnSetFocusedWidgetSelectionInfo(AppData.FocusedSelectionInfo<AppData.SceneDataPackets> newSelectionInfo, bool isActiveSelection = true, Action<AppData.Callback> callback = null)
+        public void OnSetFocusedWidgetSelectionInfo(AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket> newSelectionInfo, bool isActiveSelection = true, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -738,7 +738,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void OnSetFocusedWidgetSelectionInfo(List<AppData.FocusedSelectionInfo<AppData.SceneDataPackets>> newSelectionInfoList, AppData.FocusedSelectionType selectionType, bool isActiveSelection = true, Action<AppData.Callback> callback = null)
+        public void OnSetFocusedWidgetSelectionInfo(List<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> newSelectionInfoList, AppData.FocusedSelectionType selectionType, bool isActiveSelection = true, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1213,7 +1213,7 @@ namespace Com.RedicalGames.Filar
 
         #region On UI Selection
 
-        void ShowWidgetOnSelection(AppData.SceneDataPackets dataPackets) => StartCoroutine(ShowWidgetOnSelectionAsync(dataPackets));
+        void ShowWidgetOnSelection(AppData.SceneConfigDataPacket dataPackets) => StartCoroutine(ShowWidgetOnSelectionAsync(dataPackets));
 
         public void SetScreenUIStateOnSelection(AppData.InputUIState state)
         {
@@ -1230,7 +1230,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        IEnumerator ShowWidgetOnSelectionAsync(AppData.SceneDataPackets dataPackets)
+        IEnumerator ShowWidgetOnSelectionAsync(AppData.SceneConfigDataPacket dataPackets)
         {
             yield return new WaitUntil(() => HasActiveSelection());
 
@@ -1414,7 +1414,7 @@ namespace Com.RedicalGames.Filar
             projectStructureSelectionSystem.DeselectAll();
         }
 
-        IEnumerator OnShowSelectionOptions(AppData.SceneDataPackets dataPackets)
+        IEnumerator OnShowSelectionOptions(AppData.SceneConfigDataPacket dataPackets)
         {
             yield return new WaitForSeconds(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetShowDelayValue).value);
 
