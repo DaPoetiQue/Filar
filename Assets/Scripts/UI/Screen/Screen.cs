@@ -23,11 +23,58 @@ namespace Com.RedicalGames.Filar
                 Init(initializationCallbackResults => 
                 {
                     callbackResults.SetResult(initializationCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        #region Screen Initializations
+
+                        switch(GetType().GetData())
+                        {
+                            case AppData.ScreenType.SplashScreen:
+
+                                InitializeSplashScreen(initializationCallbackResults => 
+                                {
+                                    callbackResults.SetResult(initializationCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+
+                                break;
+
+                            case AppData.ScreenType.LoadingScreen:
+
+                                InitializeLoadingScreen(initializationCallbackResults =>
+                                {
+
+                                });
+
+                                break;
+                        }
+
+                        #endregion
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
             }
 
             callback.Invoke(callbackResults);
         }
+
+        #region Screens Initialization
+
+        private void InitializeSplashScreen(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
+        private void InitializeLoadingScreen(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
+        #endregion
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.ScreenType, AppData.WidgetType>> OnGetState()
         {

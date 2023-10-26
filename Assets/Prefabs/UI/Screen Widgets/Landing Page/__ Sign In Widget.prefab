@@ -5310,7 +5310,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 31
+  type: 31
   uIPlacementContainerType: 14
   uIPlacementType: 2
   orderInLayer: 0
@@ -5347,6 +5347,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:

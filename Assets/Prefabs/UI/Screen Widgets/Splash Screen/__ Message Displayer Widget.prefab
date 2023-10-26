@@ -1703,7 +1703,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 30
+  type: 30
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0

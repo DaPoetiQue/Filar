@@ -160,7 +160,7 @@ namespace Com.RedicalGames.Filar
 
                                 case AppData.InputActionButtonType.CloseButton:
 
-                                    loadedScreen.HideScreenWidget(widgetType);
+                                    loadedScreen.HideScreenWidget(type);
 
                                     break;
                             }

@@ -2449,7 +2449,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 4
+  type: 4
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 5

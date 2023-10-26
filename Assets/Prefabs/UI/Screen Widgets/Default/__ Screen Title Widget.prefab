@@ -155,7 +155,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 37
+  type: 37
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0

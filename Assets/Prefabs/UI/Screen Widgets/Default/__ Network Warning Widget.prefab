@@ -542,9 +542,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 12
+  type: 12
   uIPlacementContainerType: 14
-  uIPlacementType: 0
+  uIPlacementType: 2
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -579,6 +579,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:

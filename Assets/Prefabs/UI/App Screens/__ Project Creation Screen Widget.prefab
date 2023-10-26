@@ -5021,6 +5021,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -15010,6 +15011,7 @@ MonoBehaviour:
     fadeUIScrollBar: 1
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -18107,7 +18109,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 6
+  type: 6
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 3

@@ -78,7 +78,7 @@ namespace Com.RedicalGames.Filar
         {
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, dataPackets.popUpMessage);
+            SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, dataPackets.widgetTitle);
 
             if (dataPackets.referencedActionButtonDataList.Count > 0)
             {
