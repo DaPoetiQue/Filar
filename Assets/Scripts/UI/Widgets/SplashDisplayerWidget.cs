@@ -292,7 +292,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
-            SetUIImageDisplayer(AppData.ScreenImageType.Splash, testImage, true, imageSetCallbackResults => { });
+            //SetUIImageDisplayer(AppData.ScreenImageType.Splash, testImage, true, imageSetCallbackResults => { });
 
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 

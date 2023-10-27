@@ -1622,7 +1622,7 @@ MonoBehaviour:
       selectableAssetType: 0
       sceneAssetScaleValueType: 0
       dynamicWidgetsContainerOrientation: 0
-      widgetType: 0
+      widgetType: 37
       widgetScreenPosition: {x: 0, y: 0}
       assetFieldConfiguration: 0
       storageDirectoryType: 0

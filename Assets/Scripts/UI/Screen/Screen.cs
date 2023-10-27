@@ -66,7 +66,15 @@ namespace Com.RedicalGames.Filar
 
         private void InitializeSplashScreen(Action<AppData.Callback> callback = null)
         {
+            var callbackResults = new AppData.Callback(GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget));
 
+            if (callbackResults.Success())
+            {
+                var titleWidget = GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget).GetData();
+                titleWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "Filar");
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         private void InitializeLoadingScreen(Action<AppData.Callback> callback = null)

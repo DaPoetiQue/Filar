@@ -235,6 +235,11 @@ MonoBehaviour:
     uIPlacementType: 0
     containerType: 16
     initialVisibilityState: 1
+  - name: Message Displayer
+    widgetType: 30
+    uIPlacementType: 0
+    containerType: 14
+    initialVisibilityState: 1
   dynamicContainerList:
   - {fileID: 788115758341435691}
   - {fileID: 3090725572040038037}

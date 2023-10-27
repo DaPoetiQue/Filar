@@ -17986,11 +17986,13 @@ namespace Com.RedicalGames.Filar
                 if(inputActionGroupType != InputType.None)
                 {
                     callbackResults.result = $"Get Action Group Input Type Success : {GetName()}'s Group Input Type Is Set To : {inputActionGroupType}.";
+                    callbackResults.data = inputActionGroupType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
                     callbackResults.result = $"Get Action Group Input Type Failed : {GetName()}'s Group Input Type Is Set To Default : {inputActionGroupType} Invalid Operation - Please Assign Input Type From Associated Screen Widget.";
+                    callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
@@ -29296,6 +29298,16 @@ namespace Com.RedicalGames.Filar
                     callbackResults.SetResult(Helpers.GetAppComponentsValid(actionInputsOfType, "Action Inputs Of Type", 
                         $"There Are No Initialized Action Group Of Type : {actionType} Found For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation.", 
                         $"Found : {GetInitializedInputActionGroup().GetData().Count} Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                    if(GetInitializedInputActionGroup().GetData().Count > 0)
+                    {
+                        for (int i = 0; i < GetInitializedInputActionGroup().GetData().Count; i++)
+                        {
+
+
+                            LogError($" _________________________________________+++++++++++++++++++++++++__++ Finding Action Of Type : {actionType} Failed : Items Found : {GetInitializedInputActionGroup().GetData()[i].GetName()} - Of Type : {GetInitializedInputActionGroup().GetData()[i].GetInputGroupType().GetData()} - Results = {callbackResults.GetResult}", this);
+                        }
+                    }
 
                     if (callbackResults.Success())
                         callbackResults.data = actionInputsOfType;

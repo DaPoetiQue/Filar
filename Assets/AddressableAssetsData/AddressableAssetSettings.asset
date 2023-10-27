@@ -95,8 +95,8 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
-    - App Screen
-    - Screen Widget
+    - Screen
+    - Widget
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 39bb3e37dcb37364cab85ef96fafb4f2, type: 2}
