@@ -1379,7 +1379,7 @@ MonoBehaviour:
     selectionFrame:
       name: 
       value: {fileID: 0}
-    inputType: 0
+    inputType: 7
     validationStatesInfo:
       validate: 0
       validationStates:
@@ -1526,7 +1526,7 @@ MonoBehaviour:
       sceneAssetTransitionSpeed: 0
       isRootFolder: 0
       referencedActionButtonDataList: []
-      textType: 5
+      textType: 8
       tabID: 0
       visibilityState: 0
     widgets:
@@ -3025,7 +3025,7 @@ MonoBehaviour:
     selectionFrame:
       name: 
       value: {fileID: 0}
-    inputType: 0
+    inputType: 7
     validationStatesInfo:
       validate: 0
       validationStates:

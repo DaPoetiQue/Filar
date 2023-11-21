@@ -66,12 +66,28 @@ namespace Com.RedicalGames.Filar
 
         private void InitializeSplashScreen(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
             if (callbackResults.Success())
             {
-                var titleWidget = GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget).GetData();
-                titleWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "Filar");
+                var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name).GetData();
+
+                callbackResults.SetResult(GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(appManagerInstance.GetApplicationName());
+
+                    if (callbackResults.Success())
+                    {
+                        var titleWidget = GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget).GetData();
+                        titleWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, appManagerInstance.GetApplicationName().GetData());
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

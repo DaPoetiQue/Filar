@@ -4477,7 +4477,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
 
                                                                     callbackResults = await networkManager.CheckConnectionStatus();
 
@@ -4517,7 +4517,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
+                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
                                                                         callbackResults = await networkManager.ServerConnected();
                                                                     }
                                                                 }
@@ -4530,7 +4530,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
                                                                     callbackResults = await appManager.SynchronizingAppInfo();
                                                                 }
 
@@ -4542,7 +4542,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
                                                                     callbackResults = await appManager.CheckEntryPointAsync();
                                                                 }
 
@@ -4566,7 +4566,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).data.message);
+                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).data.message);
                                                                     callbackResults = await appManager.GetCompatibilityStatusAsync();
                                                                 }
 
@@ -4596,7 +4596,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
+                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
                                                                         callbackResults = await profileManager.SynchronizingProfile();
                                                                     }
 
@@ -4608,7 +4608,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.MessageDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
+                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
                                                                         callbackResults = await profileManager.AppSignInAsync();
                                                                     }
 
@@ -15298,7 +15298,7 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"Selectable Component : {GetName()}'s Visualization Type Is Set To : {visualizationType}.";
                     callbackResults.data = visualizationType;
-                    callbackResults.resultCode = Helpers.ErrorCode;
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
@@ -15647,31 +15647,6 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Get Value Failed - There Is No Value Assigned For Component : {GetName()}.";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
-            }
-
-            public new CallbackData<ScreenImageType> GetType()
-            {
-                var callbackResults = new CallbackData<ScreenImageType>(GetDataPackets());
-
-                if (callbackResults.Success())
-                {
-                    var dataPacketsResults = GetDataPackets().GetData() as ImageConfigDataPacket;
-
-                    if (dataPacketsResults.GetImageType().GetData() != ScreenImageType.None)
-                    {
-                        callbackResults.result = $"Image Displayer : {GetName()}'s Component Type Is Set To : {dataPacketsResults.GetImageType().GetData()}";
-                        callbackResults.data = dataPacketsResults.GetImageType().GetData();
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Image Displayer : {GetName()}'s Component Type Is Set To Default : {dataPacketsResults.GetImageType().GetData()} - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
                 }
 
                 return callbackResults;
@@ -17332,6 +17307,26 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> SetScreenUITextValue Failed - Value Is Missing / Null.");
             }
 
+
+            public new CallbackData<ScreenTextType> GetType()
+            {
+                var callbackResults = new CallbackData<ScreenTextType>(GetDataPackets());
+
+                if (callbackResults.Success())
+                {
+                    var dataPacketsResults = GetDataPackets().GetData() as TextConfigDataPacket;
+
+                    callbackResults.SetResult(dataPacketsResults.GetTextType());
+
+                    if (callbackResults.Success())
+                        callbackResults.data = dataPacketsResults.GetTextType().GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+
+                return callbackResults;
+            }
+
             public override void SelectableInit(Action<Callback> callback = null){}
 
             public override void SetSelectionState(SelectionVisualizationType visualizationType, SelectionState selectionState)
@@ -17403,6 +17398,25 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Debug.LogWarning("--> SetImageData Failed - Displayer Value Missing.");
+            }
+
+            public new CallbackData<ScreenImageType> GetType()
+            {
+                var callbackResults = new CallbackData<ScreenImageType>(GetDataPackets());
+
+                if (callbackResults.Success())
+                {
+                    var dataPacketsResults = GetDataPackets().GetData() as ImageConfigDataPacket;
+
+                    callbackResults.SetResult(dataPacketsResults.GetImageType());
+
+                    if (callbackResults.Success())
+                        callbackResults.data = dataPacketsResults.GetImageType().GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+
+                return callbackResults;
             }
 
             public override bool GetInteractableState()
@@ -29287,30 +29301,29 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected CallbackDataList<UIScreenActionGroup> Initialized(InputType actionType)
+            protected CallbackDataList<InputActionHandler> Initialized(InputType actionType)
             {
-                var callbackResults = new CallbackDataList<UIScreenActionGroup>(GetInitializedInputActionGroup());
+                var callbackResults = new CallbackDataList<InputActionHandler>(GetInitializedInputActionGroup());
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    var actionInputsOfType = GetInitializedInputActionGroup().GetData().FindAll(inputs => inputs.GetInputGroupType().GetData() == actionType);
+                    var initializedInputs = GetInitializedInputActionGroup().GetData().FindAll(x => x.GetInputGroupType().GetData() == actionType);
 
-                    callbackResults.SetResult(Helpers.GetAppComponentsValid(actionInputsOfType, "Action Inputs Of Type", 
-                        $"There Are No Initialized Action Group Of Type : {actionType} Found For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation.", 
-                        $"Found : {GetInitializedInputActionGroup().GetData().Count} Initialized Action Groups For Widget : {GetName()} - Of Type : {GetType().GetData()}."));
-
-                    if(GetInitializedInputActionGroup().GetData().Count > 0)
-                    {
-                        for (int i = 0; i < GetInitializedInputActionGroup().GetData().Count; i++)
-                        {
-
-
-                            LogError($" _________________________________________+++++++++++++++++++++++++__++ Finding Action Of Type : {actionType} Failed : Items Found : {GetInitializedInputActionGroup().GetData()[i].GetName()} - Of Type : {GetInitializedInputActionGroup().GetData()[i].GetInputGroupType().GetData()} - Results = {callbackResults.GetResult}", this);
-                        }
-                    }
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedInputs, "Initialized Inputs", "There Are No Initialized Inputs Found - Please See Here."));
 
                     if (callbackResults.Success())
-                        callbackResults.data = actionInputsOfType;
+                    {
+                        for (int i = 0; i < initializedInputs.Count; i++)
+                        {
+                            callbackResults.SetResult(initializedInputs[i].GetInputActionGroup());
+
+                            if (callbackResults.Success())
+                            {
+                                var actionInputs = initializedInputs[i].GetInputActionGroup().GetData();
+                                callbackResults.data = actionInputs;
+                            }
+                        }
+                    }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
@@ -30261,70 +30274,21 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var initializedActionGroup = Initialized(InputType.Checkbox).GetData();
+                    var inputActionHandler = Initialized(InputType.Checkbox).GetData().Find(input => input.GetCheckboxComponent().GetData().actionType == actionType);
 
-                    foreach (var actionGroup in initializedActionGroup)
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+                        callbackResults.SetResult(inputActionHandler.GetCheckboxComponent());
 
                         if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Checkbox))
-                                {
-                                    actionGroupData.GetInputDataPacket<CheckboxConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetCheckboxComponent());
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetCheckboxComponent().GetData();
-
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetAction());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetAction().GetData() == actionType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                                                        if (callbackResults.Success())
-                                                            callbackResults.data = actionGroup;
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            callbackResults.SetResult(dataPacketsCallback);
-                                    });
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (callbackResults.UnSuccessful())
-                        {
+                            callbackResults.data = inputActionHandler.GetCheckboxComponent().GetData();
+                        else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30334,76 +30298,12 @@ namespace Com.RedicalGames.Filar
 
             public void SetActionCheckboxValue(CheckboxInputActionType actionType, bool value, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Initialized(InputType.Checkbox));
+                var callbackResults = new Callback(GetActionCheckbox(actionType));
 
                 if (callbackResults.Success())
                 {
-                    var initializedActionGroup = Initialized(InputType.Checkbox).GetData();
-
-                    foreach (var actionGroup in initializedActionGroup)
-                    {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
-
-                        if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Checkbox))
-                                {
-                                    actionGroupData.GetInputDataPacket<CheckboxConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetCheckboxComponent());
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetCheckboxComponent().GetData();
-
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetAction());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetAction().GetData() == actionType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            
-                                                        }
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (callbackResults.UnSuccessful())
-                        {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
-                    }
+                    var initializedAction = GetActionCheckbox(actionType).GetData();
+                    //initializedAction.va.(value);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30421,70 +30321,21 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var initializedActionGroup = Initialized(InputType.Text).GetData();
+                    var inputActionHandler = Initialized(InputType.Text).GetData().Find(input => input.GetTextComponent().GetData().GetType().GetData() == textType);
 
-                    foreach (var actionGroup in initializedActionGroup)
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {textType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+                        callbackResults.SetResult(inputActionHandler.GetTextComponent());
 
                         if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Text))
-                                {
-                                    actionGroupData.GetInputDataPacket<TextConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetTextComponent().GetData();
-
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetTextType());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetTextType().GetData() == textType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                                                        if (callbackResults.Success())
-                                                            callbackResults.data = actionGroup;
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (callbackResults.UnSuccessful())
-                        {
+                            callbackResults.data = inputActionHandler.GetTextComponent().GetData();
+                        else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30494,151 +30345,12 @@ namespace Com.RedicalGames.Filar
 
             public void SetUITextDisplayerValue(ScreenTextType textType, string value, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Initialized(InputType.Text));
+                var callbackResults = new Callback(GetUITextDisplayer(textType));
 
                 if (callbackResults.Success())
                 {
-                    var initializedActionGroup = Initialized(InputType.Text).GetData();
-
-                    foreach (var actionGroup in initializedActionGroup)
-                    {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
-
-                        if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Text))
-                                {
-                                    actionGroupData.GetInputDataPacket<TextConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetTextComponent().GetData();
-
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetTextType());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetTextType().GetData() == textType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                                                        if (callbackResults.Success())
-                                                            actionGroup.SetScreenUITextValue(value);
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if(callbackResults.UnSuccessful())
-                        {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
-                    }
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void SetUITextDisplayerValue(ScreenTextType textType, int value, Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback(Initialized(InputType.Text));
-
-                if (callbackResults.Success())
-                {
-                    var initializedActionGroup = Initialized(InputType.Text).GetData();
-
-                    foreach (var actionGroup in initializedActionGroup)
-                    {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
-
-                        if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Text))
-                                {
-                                    actionGroupData.GetInputDataPacket<TextConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetTextComponent().GetData();
-
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetTextType());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetTextType().GetData() == textType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                                                        if (callbackResults.Success())
-                                                            actionGroup.SetScreenUITextValue(value.ToString());
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (callbackResults.UnSuccessful())
-                        {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
-                    }
+                    var initializedAction = GetUITextDisplayer(textType).GetData();
+                    initializedAction.SetScreenUITextValue(value);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30656,74 +30368,24 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var initializedActionGroup = Initialized(InputType.Image).GetData();
+                    var inputActionHandler = Initialized(InputType.Image).GetData().Find(input => input.GetImageComponent().GetData().GetType().GetData() == displayerType);
 
-                    foreach (var actionGroup in initializedActionGroup)
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {displayerType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+                        callbackResults.SetResult(inputActionHandler.GetImageComponent());
 
                         if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Image))
-                                {
-                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
-
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                                                        if (callbackResults.Success())
-                                                            callbackResults.data = actionGroup;
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (callbackResults.UnSuccessful())
-                        {
+                            callbackResults.data = inputActionHandler.GetImageComponent().GetData();
+                        else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                 return callbackResults;
             }
 
@@ -30731,75 +30393,75 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new Callback(Initialized(InputType.Image));
 
-                if (callbackResults.Success())
-                {
-                    var initializedActionGroup = Initialized(InputType.Image).GetData();
+                //if (callbackResults.Success())
+                //{
+                //    var initializedActionGroup = Initialized(InputType.Image).GetData();
 
-                    foreach (var actionGroup in initializedActionGroup)
-                    {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+                //    foreach (var actionGroup in initializedActionGroup)
+                //    {
+                //        callbackResults.SetResult(actionGroup.GetInputActionGroup());
 
-                        if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Image))
-                                {
-                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
+                //        if (callbackResults.Success())
+                //        {
+                //            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                //            {
+                //                if (actionGroupData.HasComponent(InputType.Image))
+                //                {
+                //                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
+                //                    {
+                //                        callbackResults.SetResult(dataPacketsCallback);
 
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+                //                        if (callbackResults.Success())
+                //                        {
+                //                            callbackResults.SetResult(actionGroupData.GetTextComponent());
 
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
+                //                            if (callbackResults.Success())
+                //                            {
+                //                                var actionGroup = actionGroupData.GetImageComponent().GetData();
 
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+                //                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
 
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
+                //                                if (callbackResults.Success())
+                //                                {
+                //                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
+                //                                    {
+                //                                        callbackResults.SetResult(actionGroup.GetValue());
 
-                                                        if (callbackResults.Success())
-                                                            actionGroup.SetImageData(screenCaptureData, dataPacket);
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                //                                        if (callbackResults.Success())
+                //                                            actionGroup.SetImageData(screenCaptureData, dataPacket);
+                //                                        else
+                //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                                    }
+                //                                    else
+                //                                    {
+                //                                        callbackResults.result = "Action Group Component Not Found";
+                //                                        callbackResults.resultCode = Helpers.ErrorCode;
+                //                                    }
+                //                                }
+                //                                else
+                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                            }
+                //                            else
+                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                        }
+                //                        else
+                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                    });
 
-                                    break;
-                                }
-                            }
-                        }
+                //                    break;
+                //                }
+                //            }
+                //        }
 
-                        if (callbackResults.UnSuccessful())
-                        {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
-                    }
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //        if (callbackResults.UnSuccessful())
+                //        {
+                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //            break;
+                //        }
+                //    }
+                //}
+                //else
+                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -30808,75 +30470,75 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new Callback(Initialized(InputType.Image));
 
-                if (callbackResults.Success())
-                {
-                    var initializedActionGroup = Initialized(InputType.Image).GetData();
+                //if (callbackResults.Success())
+                //{
+                //    var initializedActionGroup = Initialized(InputType.Image).GetData();
 
-                    foreach (var actionGroup in initializedActionGroup)
-                    {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+                //    foreach (var actionGroup in initializedActionGroup)
+                //    {
+                //        callbackResults.SetResult(actionGroup.GetInputActionGroup());
 
-                        if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Image))
-                                {
-                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
+                //        if (callbackResults.Success())
+                //        {
+                //            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                //            {
+                //                if (actionGroupData.HasComponent(InputType.Image))
+                //                {
+                //                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
+                //                    {
+                //                        callbackResults.SetResult(dataPacketsCallback);
 
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+                //                        if (callbackResults.Success())
+                //                        {
+                //                            callbackResults.SetResult(actionGroupData.GetTextComponent());
 
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
+                //                            if (callbackResults.Success())
+                //                            {
+                //                                var actionGroup = actionGroupData.GetImageComponent().GetData();
 
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+                //                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
 
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
+                //                                if (callbackResults.Success())
+                //                                {
+                //                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
+                //                                    {
+                //                                        callbackResults.SetResult(actionGroup.GetValue());
 
-                                                        if (callbackResults.Success())
-                                                            actionGroup.SetImageData(Helpers.GetSprite(imageData), preserveAspectRatio);
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                //                                        if (callbackResults.Success())
+                //                                            actionGroup.SetImageData(Helpers.GetSprite(imageData), preserveAspectRatio);
+                //                                        else
+                //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                                    }
+                //                                    else
+                //                                    {
+                //                                        callbackResults.result = "Action Group Component Not Found";
+                //                                        callbackResults.resultCode = Helpers.ErrorCode;
+                //                                    }
+                //                                }
+                //                                else
+                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                            }
+                //                            else
+                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                        }
+                //                        else
+                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                    });
 
-                                    break;
-                                }
-                            }
-                        }
+                //                    break;
+                //                }
+                //            }
+                //        }
 
-                        if (callbackResults.UnSuccessful())
-                        {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
-                    }
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //        if (callbackResults.UnSuccessful())
+                //        {
+                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //            break;
+                //        }
+                //    }
+                //}
+                //else
+                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -30885,75 +30547,75 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new Callback(Initialized(InputType.Image));
 
-                if (callbackResults.Success())
-                {
-                    var initializedActionGroup = Initialized(InputType.Image).GetData();
+                //if (callbackResults.Success())
+                //{
+                //    var initializedActionGroup = Initialized(InputType.Image).GetData();
 
-                    foreach (var actionGroup in initializedActionGroup)
-                    {
-                        callbackResults.SetResult(actionGroup.GetInputActionGroup());
+                //    foreach (var actionGroup in initializedActionGroup)
+                //    {
+                //        callbackResults.SetResult(actionGroup.GetInputActionGroup());
 
-                        if (callbackResults.Success())
-                        {
-                            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                            {
-                                if (actionGroupData.HasComponent(InputType.Image))
-                                {
-                                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                                    {
-                                        callbackResults.SetResult(dataPacketsCallback);
+                //        if (callbackResults.Success())
+                //        {
+                //            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
+                //            {
+                //                if (actionGroupData.HasComponent(InputType.Image))
+                //                {
+                //                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
+                //                    {
+                //                        callbackResults.SetResult(dataPacketsCallback);
 
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(actionGroupData.GetTextComponent());
+                //                        if (callbackResults.Success())
+                //                        {
+                //                            callbackResults.SetResult(actionGroupData.GetTextComponent());
 
-                                            if (callbackResults.Success())
-                                            {
-                                                var actionGroup = actionGroupData.GetImageComponent().GetData();
+                //                            if (callbackResults.Success())
+                //                            {
+                //                                var actionGroup = actionGroupData.GetImageComponent().GetData();
 
-                                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
+                //                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
 
-                                                if (callbackResults.Success())
-                                                {
-                                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                                                    {
-                                                        callbackResults.SetResult(actionGroup.GetValue());
+                //                                if (callbackResults.Success())
+                //                                {
+                //                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
+                //                                    {
+                //                                        callbackResults.SetResult(actionGroup.GetValue());
 
-                                                        if (callbackResults.Success())
-                                                            actionGroup.SetImageData(image, preserveAspectRatio);
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Action Group Button Component Not Found";
-                                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                                    }
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                //                                        if (callbackResults.Success())
+                //                                            actionGroup.SetImageData(image, preserveAspectRatio);
+                //                                        else
+                //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                                    }
+                //                                    else
+                //                                    {
+                //                                        callbackResults.result = "Action Group Button Component Not Found";
+                //                                        callbackResults.resultCode = Helpers.ErrorCode;
+                //                                    }
+                //                                }
+                //                                else
+                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                            }
+                //                            else
+                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                        }
+                //                        else
+                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //                    });
 
-                                    break;
-                                }
-                            }
-                        }
+                //                    break;
+                //                }
+                //            }
+                //        }
 
-                        if (callbackResults.UnSuccessful())
-                        {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
-                    }
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //        if (callbackResults.UnSuccessful())
+                //        {
+                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                //            break;
+                //        }
+                //    }
+                //}
+                //else
+                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
