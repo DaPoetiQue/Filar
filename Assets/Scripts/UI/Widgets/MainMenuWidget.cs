@@ -85,9 +85,9 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var currentScreen = currentScreenCallbackResults.data;
 
-                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
 
-                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
 
                                                 await currentScreen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
 

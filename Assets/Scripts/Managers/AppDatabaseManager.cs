@@ -4072,7 +4072,7 @@ namespace Com.RedicalGames.Filar
                                                                         Log(layoutViewCallbackResults.resultCode, layoutViewCallbackResults.result, this);
                                                                 });
 
-                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, selectionOptionImageViewType);
+                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.FileSelectionOptionsWidget).GetData().SetActionButtonUIImageValue(AppData.InputActionButtonType.SelectionOptionsButton, AppData.UIImageDisplayerType.InputIcon, selectionOptionImageViewType);
                                                             }
 
 

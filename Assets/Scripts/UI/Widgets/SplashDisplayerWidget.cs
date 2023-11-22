@@ -204,45 +204,47 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        InvokeTimedEvents(timeEventInvokedCallbackResults =>
+                        var imageDisplayer = GetUIImageDisplayer(AppData.ScreenImageType.Splash).GetData();
+                        var image = appDatabaseManager.GetRandomSplashImage().GetData();
+                        imageDisplayer.SetImageData(image, true);
+
+                        var randomPointIndex = GetRandomIndex();
+
+                        if (randomPointIndex >= 1)
                         {
-                            callbackResults.SetResult(timeEventInvokedCallbackResults);
-
-                            if (callbackResults.Success())
+                            SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
                             {
-                                var imageDisplayer = GetUIImageDisplayer(AppData.ScreenImageType.Splash).GetData();
-                                var image = appDatabaseManager.GetRandomSplashImage().GetData();
-                                imageDisplayer.SetImageData(image, true);
+                                callbackResults.SetResult(targetSetCallbackResults);
 
-                                var randomPointIndex = GetRandomIndex();
+                                if (callbackResults.Success())
+                                    imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
 
-                                if (randomPointIndex >= 1)
-                                {
-                                    SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(targetSetCallbackResults);
+                        if (randomPointIndex <= 0)
+                        {
+                            SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(targetSetCallbackResults);
 
-                                        if (callbackResults.Success())
-                                            imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
+                                if (callbackResults.Success())
+                                    imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
 
-                                if (randomPointIndex <= 0)
-                                {
-                                    SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(targetSetCallbackResults);
+                        //InvokeTimedEvents(timeEventInvokedCallbackResults =>
+                        //{
+                        //    callbackResults.SetResult(timeEventInvokedCallbackResults);
 
-                                        if (callbackResults.Success())
-                                            imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                            }
-                        });
+                        //    if (callbackResults.Success())
+                        //    {
+
+                        //    }
+                        //});
                     }
                 }
                 else
@@ -256,12 +258,12 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override void OnInputFieldValueChanged(int value, AppData.InputFieldConfigDataPacket dataPackets)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
@@ -290,52 +292,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
         {
-            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
-
-            //SetUIImageDisplayer(AppData.ScreenImageType.Splash, testImage, true, imageSetCallbackResults => { });
-
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-
-
-            if (callbackResults.Success())
-            {
-                //var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
-
-                //callbackResults.SetResult(databaseManager.GetRandomSplashImage());
-
-                //if (callbackResults.Success())
-                //{
-                  
-                //}
-
-            
-                //InvokeTransitionableUI();
-                //ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-
-                //while (!canShowSpinner)
-                //    await Task.Yield();
-
-                //await Task.Delay((int)databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
-
-                //callbackResults.SetResult(GetParentWidget());
-
-                //if (callbackResults.Success())
-                //{
-                //    var parentWidget = GetParentWidget().GetData();
-
-                //    var loadingSpinnerDataPackets = new AppData.SceneDataPackets
-                //    {
-                //        screenType = AppData.UIScreenType.LoadingScreen,
-                //        widgetType = AppData.WidgetType.LoadingWidget
-                //    };
-
-                //    parentWidget.ShowWidget(loadingSpinnerDataPackets);
-                //}
-                //else
-                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         void OnInitializationCompletedEvent()

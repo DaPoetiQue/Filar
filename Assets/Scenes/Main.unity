@@ -387,6 +387,7 @@ MonoBehaviour:
     fieldType: 8
     active: 1
   userPermissionsDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -511,6 +512,7 @@ MonoBehaviour:
     referencedActionButtonDataList: []
   filePickerPluginBundleID: com.redicalgames.designar.UnityLauncherActivity
   currentDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -683,6 +685,7 @@ MonoBehaviour:
   showPermissionDialogue: 0
   requestedPermissionType: 0
   permissionDialogDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -963,6 +966,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1160,8 +1164,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 15
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -1196,6 +1201,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1482,8 +1488,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 2
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
   initialVisibilityState: 2
@@ -1623,8 +1630,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 1
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -1659,6 +1667,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1991,6 +2000,7 @@ MonoBehaviour:
           sequenceState: 7
         footer: 
       sequenceID: 4
+  imageTest: {fileID: 21300000, guid: 0a77879f33c46264f84d274c59bfdbb6, type: 3}
 --- !u!1 &263306657
 GameObject:
   m_ObjectHideFlags: 0
@@ -2048,6 +2058,7 @@ MonoBehaviour:
   initialVisibilityState: 0
   assetsManager: {fileID: 0}
   currentDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -2220,8 +2231,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 24
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -2256,6 +2268,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2443,8 +2456,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 22
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -2479,6 +2493,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2749,8 +2764,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 23
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -2785,6 +2801,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3545,6 +3562,7 @@ MonoBehaviour:
   - name: Selection Options Tutorial View
     tutorialInfoList: []
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3670,6 +3688,7 @@ MonoBehaviour:
   - name: Copy Options Tutorial View
     tutorialInfoList: []
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3795,6 +3814,7 @@ MonoBehaviour:
   - name: File Selection Tutorial View
     tutorialInfoList: []
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3998,8 +4018,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 10
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -4034,6 +4055,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -4229,6 +4251,7 @@ MonoBehaviour:
           fieldUIImageList: []
           value: {fileID: 0}
           dataPackets:
+            name: 
             externalLinkURL: 
             selectionOption: 0
             screenContainerData:
@@ -4420,6 +4443,7 @@ MonoBehaviour:
           fieldUIImageList: []
           value: {fileID: 0}
           dataPackets:
+            name: 
             externalLinkURL: 
             selectionOption: 0
             screenContainerData:
@@ -4609,6 +4633,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -4793,6 +4818,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -4977,6 +5003,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -5162,6 +5189,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -5347,6 +5375,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -5532,6 +5561,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -5729,6 +5759,7 @@ MonoBehaviour:
           fieldUIImageList: []
           value: {fileID: 0}
           dataPackets:
+            name: 
             externalLinkURL: 
             selectionOption: 0
             screenContainerData:
@@ -5913,6 +5944,7 @@ MonoBehaviour:
           fieldUIImageList: []
           value: {fileID: 0}
           dataPackets:
+            name: 
             externalLinkURL: 
             selectionOption: 0
             screenContainerData:
@@ -6098,6 +6130,7 @@ MonoBehaviour:
           fieldUIImageList: []
           value: {fileID: 0}
           dataPackets:
+            name: 
             externalLinkURL: 
             selectionOption: 0
             screenContainerData:
@@ -6284,6 +6317,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -6468,6 +6502,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -6652,6 +6687,7 @@ MonoBehaviour:
         fieldUIImageList: []
         value: {fileID: 0}
         dataPackets:
+          name: 
           externalLinkURL: 
           selectionOption: 0
           screenContainerData:
@@ -6978,6 +7014,7 @@ MonoBehaviour:
     runtimeType: 0
     valueType: 10
   inspectorModeDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -7101,6 +7138,7 @@ MonoBehaviour:
     isRootFolder: 0
     referencedActionButtonDataList: []
   focusedModeDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -7320,8 +7358,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 13
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -7356,6 +7395,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -7543,8 +7583,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 17
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -7579,6 +7620,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8507,8 +8549,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 5
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -8543,6 +8586,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8732,6 +8776,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   folderNavigationDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -8855,6 +8900,7 @@ MonoBehaviour:
     isRootFolder: 0
     referencedActionButtonDataList: []
   emptyFolderDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -8978,6 +9024,7 @@ MonoBehaviour:
     isRootFolder: 0
     referencedActionButtonDataList: []
   pagerNavigationWidgetDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -9101,6 +9148,7 @@ MonoBehaviour:
     isRootFolder: 0
     referencedActionButtonDataList: []
   scrollerNavigationWidgetDataPackets:
+    name: 
     externalLinkURL: 
     selectionOption: 0
     screenContainerData:
@@ -9307,8 +9355,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 9
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -9343,6 +9392,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9531,6 +9581,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9715,6 +9766,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9898,8 +9950,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 18
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -9934,6 +9987,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10417,8 +10471,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 27
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -10453,6 +10508,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10936,8 +10992,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 12
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -10972,6 +11029,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -11159,8 +11217,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 5
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -11195,6 +11254,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -11382,6 +11442,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -11569,6 +11630,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -11756,6 +11818,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -12141,8 +12204,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 25
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -12177,6 +12241,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -12318,6 +12383,7 @@ MonoBehaviour:
     name: 
     tutorialInfoList: []
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -13121,8 +13187,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 14
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -13157,6 +13224,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -13344,6 +13412,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -13479,7 +13548,6 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 1
-    imageType: 1
 --- !u!1 &1395046590
 GameObject:
   m_ObjectHideFlags: 0
@@ -13607,8 +13675,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 26
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -13643,6 +13712,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -13784,6 +13854,7 @@ MonoBehaviour:
     name: 
     tutorialInfoList: []
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -13975,8 +14046,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 1
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
   initialVisibilityState: 2
@@ -14227,8 +14299,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 4
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -14263,6 +14336,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -14889,8 +14963,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 11
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -14925,6 +15000,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -15204,8 +15280,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 1
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -15240,6 +15317,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -15430,8 +15508,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 6
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -15466,6 +15545,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -15931,8 +16011,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 1
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -15967,6 +16048,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -16154,8 +16236,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 18
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -16190,6 +16273,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -16377,8 +16461,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 20
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -16413,6 +16498,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -16602,8 +16688,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 16
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -16638,6 +16725,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -17098,8 +17186,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 19
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 1
@@ -17134,6 +17223,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -17866,6 +17956,7 @@ MonoBehaviour:
       storableType: 1
       storableFileExtension: 5
       dataPackets:
+        name: 
         externalLinkURL: 
         selectionOption: 0
         screenContainerData:
@@ -17992,6 +18083,7 @@ MonoBehaviour:
       storableType: 2
       storableFileExtension: 5
       dataPackets:
+        name: 
         externalLinkURL: 
         selectionOption: 0
         screenContainerData:
@@ -18118,6 +18210,7 @@ MonoBehaviour:
       storableType: 3
       storableFileExtension: 5
       dataPackets:
+        name: 
         externalLinkURL: 
         selectionOption: 0
         screenContainerData:
@@ -18244,6 +18337,7 @@ MonoBehaviour:
       storableType: 4
       storableFileExtension: 5
       dataPackets:
+        name: 
         externalLinkURL: 
         selectionOption: 0
         screenContainerData:
@@ -18370,6 +18464,7 @@ MonoBehaviour:
       storableType: 5
       storableFileExtension: 5
       dataPackets:
+        name: 
         externalLinkURL: 
         selectionOption: 0
         screenContainerData:
@@ -18496,6 +18591,7 @@ MonoBehaviour:
       storableType: 6
       storableFileExtension: 5
       dataPackets:
+        name: 
         externalLinkURL: 
         selectionOption: 0
         screenContainerData:
@@ -18822,8 +18918,9 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 3
-  screenUIPlacementType: 3
+  type: 0
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
   initialVisibilityState: 2
@@ -18858,6 +18955,7 @@ MonoBehaviour:
     fadeUIScrollBar: 0
     dragViewPort: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:

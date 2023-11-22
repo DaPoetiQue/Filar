@@ -4443,7 +4443,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (screenUIManager.GetCurrentScreenType().GetData() == ScreenType.LoadingScreen)
                                 {
-                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader());
+                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader());
 
                                     Run();
 
@@ -4477,7 +4477,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
 
                                                                     callbackResults = await networkManager.CheckConnectionStatus();
 
@@ -4517,7 +4517,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
                                                                         callbackResults = await networkManager.ServerConnected();
                                                                     }
                                                                 }
@@ -4530,7 +4530,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
                                                                     callbackResults = await appManager.SynchronizingAppInfo();
                                                                 }
 
@@ -4542,7 +4542,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
                                                                     callbackResults = await appManager.CheckEntryPointAsync();
                                                                 }
 
@@ -4566,7 +4566,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).data.message);
                                                                     callbackResults = await appManager.GetCompatibilityStatusAsync();
                                                                 }
 
@@ -4596,7 +4596,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
                                                                         callbackResults = await profileManager.SynchronizingProfile();
                                                                     }
 
@@ -4608,7 +4608,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
                                                                         callbackResults = await profileManager.AppSignInAsync();
                                                                     }
 
@@ -10436,7 +10436,7 @@ namespace Com.RedicalGames.Filar
 
             public void Initialize()
             {
-                paginationWidget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.PagerNavigationWidget);
+                paginationWidget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.PagerNavigationWidget).GetData();
             }
 
             public void Paginate(List<UIScreenWidget> source, int itemsPerPage)
@@ -26557,14 +26557,16 @@ namespace Com.RedicalGames.Filar
                     LogError($"Couldn't Hide Widget Of Type : {widget} - Widget Missing / Not Found.", this);
             }
 
-            public Widget GetWidget(WidgetType widgetType)
+            public CallbackData<Widget> GetWidget(WidgetType widgetType)
             {
-                if (GetWidgetOfType(widgetType).Success())
-                    return GetWidgetOfType(widgetType).GetData();
-                else
-                    Log(GetWidgetOfType(widgetType).GetResultCode, GetWidgetOfType(widgetType).GetResult, this);
+                var callbackResults = new CallbackData<Widget>(GetWidgetOfType(widgetType));
 
-                return null;
+                if (callbackResults.Success())
+                    callbackResults.data = GetWidgetOfType(widgetType).GetData();
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             public CallbackData<Widget> GetWidgetOfType(WidgetType widgetType)
@@ -30386,236 +30388,51 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                 return callbackResults;
             }
 
             public void SetUIImageDisplayer(ScreenImageType displayerType, ImageData screenCaptureData, ImageConfigDataPacket dataPacket, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Initialized(InputType.Image));
+                var callbackResults = new Callback(GetUIImageDisplayer(displayerType));
 
-                //if (callbackResults.Success())
-                //{
-                //    var initializedActionGroup = Initialized(InputType.Image).GetData();
-
-                //    foreach (var actionGroup in initializedActionGroup)
-                //    {
-                //        callbackResults.SetResult(actionGroup.GetInputActionGroup());
-
-                //        if (callbackResults.Success())
-                //        {
-                //            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                //            {
-                //                if (actionGroupData.HasComponent(InputType.Image))
-                //                {
-                //                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                //                    {
-                //                        callbackResults.SetResult(dataPacketsCallback);
-
-                //                        if (callbackResults.Success())
-                //                        {
-                //                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                //                            if (callbackResults.Success())
-                //                            {
-                //                                var actionGroup = actionGroupData.GetImageComponent().GetData();
-
-                //                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
-
-                //                                if (callbackResults.Success())
-                //                                {
-                //                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                //                                    {
-                //                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                //                                        if (callbackResults.Success())
-                //                                            actionGroup.SetImageData(screenCaptureData, dataPacket);
-                //                                        else
-                //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                                    }
-                //                                    else
-                //                                    {
-                //                                        callbackResults.result = "Action Group Component Not Found";
-                //                                        callbackResults.resultCode = Helpers.ErrorCode;
-                //                                    }
-                //                                }
-                //                                else
-                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                            }
-                //                            else
-                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                        }
-                //                        else
-                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                    });
-
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (callbackResults.UnSuccessful())
-                //        {
-                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //            break;
-                //        }
-                //    }
-                //}
-                //else
-                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUIImageDisplayer(displayerType).GetData();
+                    initializedAction.SetImageData(screenCaptureData, dataPacket);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
             public void SetUIImageDisplayer(ScreenImageType displayerType, Texture2D imageData, bool preserveAspectRatio = true, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Initialized(InputType.Image));
+                var callbackResults = new Callback(GetUIImageDisplayer(displayerType));
 
-                //if (callbackResults.Success())
-                //{
-                //    var initializedActionGroup = Initialized(InputType.Image).GetData();
-
-                //    foreach (var actionGroup in initializedActionGroup)
-                //    {
-                //        callbackResults.SetResult(actionGroup.GetInputActionGroup());
-
-                //        if (callbackResults.Success())
-                //        {
-                //            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                //            {
-                //                if (actionGroupData.HasComponent(InputType.Image))
-                //                {
-                //                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                //                    {
-                //                        callbackResults.SetResult(dataPacketsCallback);
-
-                //                        if (callbackResults.Success())
-                //                        {
-                //                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                //                            if (callbackResults.Success())
-                //                            {
-                //                                var actionGroup = actionGroupData.GetImageComponent().GetData();
-
-                //                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
-
-                //                                if (callbackResults.Success())
-                //                                {
-                //                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                //                                    {
-                //                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                //                                        if (callbackResults.Success())
-                //                                            actionGroup.SetImageData(Helpers.GetSprite(imageData), preserveAspectRatio);
-                //                                        else
-                //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                                    }
-                //                                    else
-                //                                    {
-                //                                        callbackResults.result = "Action Group Component Not Found";
-                //                                        callbackResults.resultCode = Helpers.ErrorCode;
-                //                                    }
-                //                                }
-                //                                else
-                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                            }
-                //                            else
-                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                        }
-                //                        else
-                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                    });
-
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (callbackResults.UnSuccessful())
-                //        {
-                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //            break;
-                //        }
-                //    }
-                //}
-                //else
-                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUIImageDisplayer(displayerType).GetData();
+                    initializedAction.SetImageData(imageData);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
             public void SetUIImageDisplayer(ScreenImageType displayerType, Sprite image, bool preserveAspectRatio = true, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Initialized(InputType.Image));
+                var callbackResults = new Callback(GetUIImageDisplayer(displayerType));
 
-                //if (callbackResults.Success())
-                //{
-                //    var initializedActionGroup = Initialized(InputType.Image).GetData();
-
-                //    foreach (var actionGroup in initializedActionGroup)
-                //    {
-                //        callbackResults.SetResult(actionGroup.GetInputActionGroup());
-
-                //        if (callbackResults.Success())
-                //        {
-                //            foreach (var actionGroupData in actionGroup.GetInputActionGroup().GetData())
-                //            {
-                //                if (actionGroupData.HasComponent(InputType.Image))
-                //                {
-                //                    actionGroupData.GetInputDataPacket<ImageConfigDataPacket>(dataPacketsCallback =>
-                //                    {
-                //                        callbackResults.SetResult(dataPacketsCallback);
-
-                //                        if (callbackResults.Success())
-                //                        {
-                //                            callbackResults.SetResult(actionGroupData.GetTextComponent());
-
-                //                            if (callbackResults.Success())
-                //                            {
-                //                                var actionGroup = actionGroupData.GetImageComponent().GetData();
-
-                //                                callbackResults.SetResult(actionGroup.GetDataPackets().GetData().GetImageType());
-
-                //                                if (callbackResults.Success())
-                //                                {
-                //                                    if (actionGroup.GetDataPackets().GetData().GetImageType().GetData() == displayerType)
-                //                                    {
-                //                                        callbackResults.SetResult(actionGroup.GetValue());
-
-                //                                        if (callbackResults.Success())
-                //                                            actionGroup.SetImageData(image, preserveAspectRatio);
-                //                                        else
-                //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                                    }
-                //                                    else
-                //                                    {
-                //                                        callbackResults.result = "Action Group Button Component Not Found";
-                //                                        callbackResults.resultCode = Helpers.ErrorCode;
-                //                                    }
-                //                                }
-                //                                else
-                //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                            }
-                //                            else
-                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                        }
-                //                        else
-                //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //                    });
-
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (callbackResults.UnSuccessful())
-                //        {
-                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                //            break;
-                //        }
-                //    }
-                //}
-                //else
-                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUIImageDisplayer(displayerType).GetData();
+                    initializedAction.SetImageData(image, preserveAspectRatio);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -31282,13 +31099,13 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             case LayoutViewType.ItemView:
 
-                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
+                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).GetData().SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
 
                                                                 break;
 
                                                             case LayoutViewType.ListView:
 
-                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
+                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).GetData().SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
 
                                                                 break;
                                                         }
@@ -31511,7 +31328,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var screenUIManager = screenUIManagerCallbackResults.data;
 
-                                                screenUIManager.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.InputIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
+                                                screenUIManager.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).GetData().SetActionButtonUIImageValue(InputActionButtonType.PinButton, UIImageDisplayerType.InputIcon, (widgetActionState == DefaultUIWidgetActionState.Pinned) ? UIImageType.PinDisabledIcon : UIImageType.PinEnabledIcon);
 
                                                 if (dataPackets.notification.showNotifications)
                                                 {
@@ -31708,7 +31525,7 @@ namespace Com.RedicalGames.Filar
 
                     if (widgetType == WidgetType.UserHelpScreenWidget)
                     {
-                        var widget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(widgetType).GetComponent<UserHelpInfoScreenWidget>();
+                        var widget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(widgetType).GetData().GetComponent<UserHelpInfoScreenWidget>();
 
                         if (widget != null)
                         {
@@ -32532,7 +32349,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    var widget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.UserHelpScreenWidget).GetComponent<UserHelpInfoScreenWidget>();
+                    var widget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.UserHelpScreenWidget).GetData().GetComponent<UserHelpInfoScreenWidget>();
 
                     if (widget != null)
                     {
@@ -32683,13 +32500,13 @@ namespace Com.RedicalGames.Filar
                         {
                             case LayoutViewType.ItemView:
 
-                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
+                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).GetData().SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ItemViewDeselectionIcon);
 
                                 break;
 
                             case LayoutViewType.ListView:
 
-                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
+                                ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.FileSelectionOptionsWidget).GetData().SetActionButtonUIImageValue(InputActionButtonType.SelectionOptionsButton, UIImageDisplayerType.InputIcon, UIImageType.ListViewDeselectionIcon);
 
                                 break;
                         }
