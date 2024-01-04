@@ -35,6 +35,13 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Displayers Transitions Properties
+
+        public SerializedProperty textDisplayerTransitionConfigProperty,
+                                  imageDisplayerTransitionConfigProperty;
+
+        #endregion
+
         #endregion
 
         #region Main
@@ -63,6 +70,13 @@ namespace Com.RedicalGames.Filar
 
             textDisplayerComponentConfigProperty = serializedObject.FindProperty("textComponentConfig");
             imageDisplayerComponentConfigProperty = serializedObject.FindProperty("imageComponentConfig");
+
+            #endregion
+
+            #region Displayer Transitions Properties
+
+            textDisplayerTransitionConfigProperty = serializedObject.FindProperty("textTransitionableUIData");
+            imageDisplayerTransitionConfigProperty = serializedObject.FindProperty("imageTransitionableUIData");
 
             #endregion
         }
@@ -133,12 +147,18 @@ namespace Com.RedicalGames.Filar
                         GUILayout.Space(2);
                         EditorGUILayout.PropertyField(textDisplayerComponentConfigProperty, new GUIContent("Config"));
 
+                        GUILayout.Space(2);
+                        EditorGUILayout.PropertyField(textDisplayerTransitionConfigProperty, new GUIContent("Text Transition Data"));
+
                         break;
 
                     case AppData.InputType.Image:
 
                         GUILayout.Space(2);
                         EditorGUILayout.PropertyField(imageDisplayerComponentConfigProperty, new GUIContent("Config"));
+
+                        GUILayout.Space(2);
+                        EditorGUILayout.PropertyField(imageDisplayerTransitionConfigProperty, new GUIContent("Image Transition Data"));
 
                         break;
                 }

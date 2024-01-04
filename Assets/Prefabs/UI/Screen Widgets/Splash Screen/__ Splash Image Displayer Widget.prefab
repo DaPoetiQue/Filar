@@ -1663,6 +1663,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &3124893730721323488
 GameObject:
   m_ObjectHideFlags: 0
@@ -2087,6 +2089,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}

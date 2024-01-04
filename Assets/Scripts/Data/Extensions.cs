@@ -82,6 +82,13 @@ namespace Com.RedicalGames.Filar
             reference.SetWidgetRotation(rotationAngle);
         }
 
+        public static void SetWidgetPose(this RectTransform reference, (Vector2 position, Vector2 scale, Vector3 rotationAngle) pose)
+        {
+            reference.SetWidgetPosition(pose.position);
+            reference.SetWidgetScale(pose.scale);
+            reference.SetWidgetRotation(pose.rotationAngle);
+        }
+
         public static void SetWidgetPose(this RectTransform reference, Vector2 position, Vector2 scale, Quaternion rotation)
         {
             reference.SetWidgetPosition(position);
