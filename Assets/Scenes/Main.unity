@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 91990599}
   - component: {fileID: 91990601}
   m_Layer: 0
-  m_Name: Input Manager
+  m_Name: __Input Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1336,6 +1336,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -1802,6 +1803,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -2000,7 +2002,6 @@ MonoBehaviour:
           sequenceState: 7
         footer: 
       sequenceID: 4
-  imageTest: {fileID: 21300000, guid: 0a77879f33c46264f84d274c59bfdbb6, type: 3}
 --- !u!1 &263306657
 GameObject:
   m_ObjectHideFlags: 0
@@ -2403,6 +2404,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -2628,6 +2630,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -2936,6 +2939,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -3018,7 +3022,7 @@ GameObject:
   - component: {fileID: 428251001}
   - component: {fileID: 428251002}
   m_Layer: 0
-  m_Name: __App Time Events Handler
+  m_Name: __App Time Events Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3031,12 +3035,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 428251000}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1204500053}
+  m_Father: {fileID: 1089471241}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &428251002
@@ -4190,6 +4194,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -7530,6 +7535,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -7755,6 +7761,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -8453,7 +8460,7 @@ GameObject:
   - component: {fileID: 860849113}
   - component: {fileID: 860849114}
   m_Layer: 0
-  m_Name: Profile Manager
+  m_Name: __Profile Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8721,6 +8728,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -9527,6 +9535,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -10122,6 +10131,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -10418,6 +10428,7 @@ Transform:
   - {fileID: 860849113}
   - {fileID: 91990599}
   - {fileID: 1975130540}
+  - {fileID: 428251001}
   m_Father: {fileID: 1039201967}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10643,6 +10654,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -10938,7 +10950,6 @@ Transform:
   - {fileID: 1975152759}
   - {fileID: 263306658}
   - {fileID: 352969773}
-  - {fileID: 428251001}
   m_Father: {fileID: 1039201967}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11164,6 +11175,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -11389,6 +11401,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -12376,6 +12389,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -13041,7 +13055,7 @@ GameObject:
   - component: {fileID: 1393967519}
   - component: {fileID: 1393967520}
   m_Layer: 0
-  m_Name: Messaging System Manager
+  m_Name: __Messaging System Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13359,6 +13373,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -13847,6 +13862,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -14471,6 +14487,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -15135,6 +15152,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -15452,6 +15470,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -15680,6 +15699,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -16183,6 +16203,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -16408,6 +16429,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -16633,6 +16655,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -16860,6 +16883,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -16971,7 +16995,7 @@ GameObject:
   - component: {fileID: 1975130540}
   - component: {fileID: 1975130541}
   m_Layer: 0
-  m_Name: Network Manager
+  m_Name: __Network Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17358,6 +17382,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -17649,7 +17674,7 @@ MonoBehaviour:
     runtimeType: 0
     valueType: 45
   - name: Splash Image Change Interval
-    value: 10
+    value: 5
     runtimeType: 0
     valueType: 46
   colorSwatchData:
@@ -19090,6 +19115,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}

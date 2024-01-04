@@ -22132,6 +22132,174 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        public class CallbackDataDict<T, U> : Callback
+        {
+            #region Components
+
+            public Dictionary<T, U> data = new Dictionary<T, U>();
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public CallbackDataDict()
+            {
+
+            }
+
+            public CallbackDataDict(string name, Dictionary<T, U> data, string results, LogInfoChannel resultsCode)
+            {
+                this.name = name;
+                this.data = data;
+                this.result = results;
+                this.resultCode = resultsCode;
+            }
+
+            public CallbackDataDict(string name, Dictionary<T, U> data, string results, LogInfoChannel resultsCode, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            public CallbackDataDict(Callback callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+
+            public CallbackDataDict(CallbackData<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataDict(CallbackDataList<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataDict(CallbackDataArray<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            public CallbackDataDict(CallbackDataQueue<T> callbackResults)
+            {
+                name = callbackResults.GetName;
+                result = callbackResults.GetResult;
+                resultCode = callbackResults.GetResultCode;
+                resultClass = callbackResults.GetClassInfo;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public Dictionary<T, U> GetData()
+            {
+                if (data != null && data.Count > 0)
+                    return data;
+                else
+                {
+                    SetResults($"Call back Get Data failed - {GetName} Data Is Not Yet Assigned But You Are trying To Access It From Class {GetClassInfo}", Helpers.ErrorCode);
+                    Log(GetResultCode, GetResult, this);
+
+                    throw new NullReferenceException(message: $"Get Callback Data Failed With Code : {GetResultCode} And Result Message : {GetResult}");
+                }
+            }
+
+            public Dictionary<T, U> Data => GetData();
+
+            #endregion
+
+            #region Data Setters
+
+            public CallbackDataDict(Dictionary<T, U> data) => this.data = data;
+
+            public void SetData(Dictionary<T, U> data) => this.data = data;
+
+            #endregion
+
+            #region Callbacks Results
+
+            #region Callback Results Setters
+
+            public void SetDataResults(CallbackData<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                //SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataArray<T> callbackResults)
+            {
+                result = callbackResults.result;
+                //SetData(Helpers.GetList(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackDataQueue<T> callbackResults)
+            {
+                result = callbackResults.result;
+                //SetData(Helpers.GetList(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults(CallbackSizeDataTuple<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackTuple<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            #endregion
+
+
+            #region Parameter Assignable Results
+
+            public void SetResults(string results = null, LogInfoChannel resultsCode = LogInfoChannel.Debug, Dictionary<T, U> data = default, string name = null, string classInfo = null)
+            {
+                this.name = name;
+                this.result = results;
+                this.data = data;
+                this.resultCode = resultsCode;
+                this.resultClass = classInfo;
+            }
+
+            #endregion
+
+            #endregion
+
+            #endregion
+        }
+
         public class CallbackDataArray<T> : Callback
         {
             #region Components
@@ -41912,6 +42080,49 @@ namespace Com.RedicalGames.Filar
                                 callbackResults.resultCode = ErrorCode;
                             }
                         } 
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataDict<T, U> GetAppComponentsValid<T, U>(Dictionary<T, U> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class where U : class
+            {
+                CallbackDataDict<T, U> callbackResults = new CallbackDataDict<T, U>();
+
+                if (components != null)
+                {
+                    if (components.Count > 0)
+                    {
+                        for (int i = 0; i < components.Count; i++)
+                        {
+                            if (components.ElementAtOrDefault(i).Value != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = components;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {componentsIdentifier} Is Null At Index : {i}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        }
                     }
                     else
                     {

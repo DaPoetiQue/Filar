@@ -4,7 +4,6 @@ using Firebase.Database;
 
 namespace Com.RedicalGames.Filar
 {
-
     public class NetworkManager : AppData.SingletonBaseComponent<NetworkManager>
     {
         #region Components
