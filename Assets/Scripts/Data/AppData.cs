@@ -26105,7 +26105,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<ScreenType, WidgetType>>> callback = null, params EventActionData[] eventActions)
+            public void Init(Action<CallbackData<WidgetStatePacket<ScreenType, WidgetType>>> callback = null)
             {
                 var callbackResults = new CallbackData<WidgetStatePacket<ScreenType, WidgetType>>(GetType());
 
@@ -26167,7 +26167,7 @@ namespace Com.RedicalGames.Filar
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                            }, eventActions);
+                            }, eventActions.ToArray());
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28288,6 +28288,8 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             List<DynamicContainerBase> dynamicContainerList = new List<DynamicContainerBase>();
 
+            #region Event Actions
+
             [Space(15)]
             [Header("Action Events")]
 
@@ -28295,23 +28297,20 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected List<EventActionData> eventActions = new List<EventActionData>();
 
+            private List<EventAction> eventActionList = new List<EventAction>();
+
+            protected WidgetStatePacket<T, U> widgetStatePacket;
+
+            #endregion
+
+
             #region Timed Events
 
             private List<TimedEventComponent> timedEventComponentList = new List<TimedEventComponent>();
 
             #endregion
 
-            #region Event Actions
-
-            [Space(5)]
-            [SerializeField]
-            protected bool subscribeToActionEvents = false;
-
-            private List<EventAction> eventActionList = new List<EventAction>();
-
-            protected WidgetStatePacket<T, U> widgetStatePacket;
-
-            #endregion
+           
 
             #region Actions
 
@@ -28545,54 +28544,53 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                if (subscribeToActionEvents)
+                Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
                 {
-                    Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
+                    callbackResults.SetResult(componentsValidCallbackResults);
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(componentsValidCallbackResults);
-
-                        if (callbackResults.Success())
+                        for (int i = 0; i < eventParams.Length; i++)
                         {
-                            for (int i = 0; i < eventParams.Length; i++)
+                            var eventAction = eventParams[i];
+                            eventAction.SetInitialized();
+
+                            callbackResults.SetResult(eventAction.Initialized());
+
+                            if (callbackResults.Success())
                             {
-                                var eventAction = eventParams[i];
-                                callbackResults.SetResult(eventAction.Initialized());
+                                await Task.Yield();
 
-                                if (callbackResults.Success())
+                                if (!eventActionList.Contains(eventAction))
                                 {
-                                    await Task.Yield();
+                                    eventActionList.Add(eventAction);
 
-                                    if (!eventActionList.Contains(eventAction))
+                                    if (eventActionList.Contains(eventAction))
                                     {
-                                        eventActionList.Add(eventAction);
-
-                                        if (eventActionList.Contains(eventAction))
-                                        {
-                                            callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
-                                            callbackResults.resultCode = Helpers.SuccessCode;
-                                        }
-                                        else
-                                        {
-                                            callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
-                                            callbackResults.resultCode = Helpers.ErrorCode;
-                                        }
+                                        callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
                                     }
                                     else
                                     {
-                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
-                                        callbackResults.resultCode = Helpers.WarningCode;
+                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
                                     }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
+                                    callbackResults.resultCode = Helpers.WarningCode;
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
 
-                    }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
-                }
-                else
-                {
-                    callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
+                }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
 
                 callback?.Invoke(callbackResults);
             }
@@ -30861,7 +30859,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, WidgetType>>> callback, params EventActionData[] eventActions)
+            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, WidgetType>>> callback)
             {
                 var callbackResults = new CallbackData<WidgetStatePacket<WidgetType, WidgetType>>(GetType());
 
@@ -30950,7 +30948,7 @@ namespace Com.RedicalGames.Filar
                                 });
                             }
 
-                        }, eventActions);
+                        }, eventActions.ToArray());
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -32861,14 +32859,11 @@ namespace Com.RedicalGames.Filar
                     {
                         if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                         {
-                            if (subscribeToActionEvents)
+                            SubscribeToEvents(callback: subscriptionCallbackResults =>
                             {
-                                SubscribeToEvents(callback: subscriptionCallbackResults =>
-                                {
-                                    if (subscriptionCallbackResults.UnSuccessful())
-                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                                });
-                            }
+                                if (subscriptionCallbackResults.UnSuccessful())
+                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                            });
 
                             OnScreenWidget(dataPackets);
                             OnShowScreenWidget();
@@ -32898,14 +32893,11 @@ namespace Com.RedicalGames.Filar
                     {
                         if (widgetType == GetType().GetData())
                         {
-                            if (subscribeToActionEvents)
+                            SubscribeToEvents(callback: subscriptionCallbackResults =>
                             {
-                                SubscribeToEvents(callback: subscriptionCallbackResults =>
-                                {
-                                    if (subscriptionCallbackResults.UnSuccessful())
-                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                                });
-                            }
+                                if (subscriptionCallbackResults.UnSuccessful())
+                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                            });
 
                             OnShowScreenWidget();
                         }
@@ -33006,14 +32998,11 @@ namespace Com.RedicalGames.Filar
                                     break;
                             }
 
-                            if (subscribeToActionEvents)
+                            SubscribeToEvents(callback: subscriptionCallbackResults =>
                             {
-                                SubscribeToEvents(callback: subscriptionCallbackResults =>
-                                {
-                                    if (subscriptionCallbackResults.UnSuccessful())
-                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                                });
-                            }
+                                if (subscriptionCallbackResults.UnSuccessful())
+                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                            });
                         }
                     }
                 }
@@ -33056,14 +33045,11 @@ namespace Com.RedicalGames.Filar
                                 break;
                         }
 
-                        if (subscribeToActionEvents)
+                        SubscribeToEvents(callback: subscriptionCallbackResults =>
                         {
-                            SubscribeToEvents(callback: subscriptionCallbackResults =>
-                            {
-                                if (subscriptionCallbackResults.UnSuccessful())
-                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                            });
-                        }
+                            if (subscriptionCallbackResults.UnSuccessful())
+                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                        });
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33109,14 +33095,11 @@ namespace Com.RedicalGames.Filar
                                 break;
                         }
 
-                        if (subscribeToActionEvents)
+                        SubscribeToEvents(callback: subscriptionCallbackResults =>
                         {
-                            SubscribeToEvents(callback: subscriptionCallbackResults =>
-                            {
-                                if (subscriptionCallbackResults.UnSuccessful())
-                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                            });
-                        }
+                            if (subscriptionCallbackResults.UnSuccessful())
+                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                        });
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33220,32 +33203,29 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            if (subscribeToActionEvents)
+                            callbackResults.SetResult(SubscribedToEvents());
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(SubscribedToEvents());
-
-                                if (callbackResults.Success())
+                                UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
                                 {
-                                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(subscriptionCallbackResults);
+                                    callbackResults.SetResult(subscriptionCallbackResults);
 
-                                        if (callbackResults.UnSuccessful())
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                            {
+                                if (onInitialization)
+                                {
+                                    callbackResults.result = $"Action Events Are Not Subcribed Yet On Initialization For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
                                 }
                                 else
                                 {
-                                    if (onInitialization)
-                                    {
-                                        callbackResults.result = $"Action Events Are Not Subcribed Yet On Initialization For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
-                                    else
-                                    {
-                                        callbackResults.result = $"Action Events For Screen : {GetName()}- Of Type : {GetType().GetData()} - Failed On Initialization With Results : {callbackResults.GetResult}";
-                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                    }
+                                    callbackResults.result = $"Action Events For Screen : {GetName()}- Of Type : {GetType().GetData()} - Failed On Initialization With Results : {callbackResults.GetResult}";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
                                 }
                             }
                         }
@@ -33305,16 +33285,13 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            if (subscribeToActionEvents)
+                            UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
                             {
-                                UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
-                                {
-                                    callbackResults.SetResult(subscriptionCallbackResults);
+                                callbackResults.SetResult(subscriptionCallbackResults);
 
-                                    if (callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-                            }
+                                if (callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -43542,11 +43519,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetName(string name) => this.name = name;
+            public void SetInitialized(bool isInitialized = true) => this.isInitialized = isInitialized;
 
             public void SetEventType(EventType eventType) => this.eventType = eventType;
-
-            protected void SetInitialized(bool isInitialized = true) => this.isInitialized = isInitialized;
 
             #endregion
 
@@ -43708,7 +43683,7 @@ namespace Com.RedicalGames.Filar
                     {
                         callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
                         callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else

@@ -5,6 +5,11 @@ namespace Com.RedicalGames.Filar
 {
     public class SplashDisplayerWidget : AppData.Widget
     {
+
+        #region Components
+
+        #endregion
+
         #region Main
 
         protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType>>> callback)
@@ -157,29 +162,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
         {
-
-            LogInfo("", this);
-
-            //if (callbackResults.Success())
-            //{
-            //    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
-
-            //    if (callbackResults.Success())
-            //    {
-            //        var appDatabaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
-
-            //        callbackResults.SetResult(appDatabaseManager.GetRandomSplashImage());
-
-            //        if (callbackResults.Success())
-            //        {
-
-            //            var image = appDatabaseManager.GetRandomSplashImage().GetData();
-            //            SetUIImageDisplayer(AppData.ScreenImageType.Splash, image, true, imageSetCallbackResults => { });
-            //        }
-            //    }
-            //}
-            //else
-            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            throw new NotImplementedException();
         }
 
         protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
@@ -264,6 +247,28 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             LogInfo(" ____________________________++++++++++++++++ OnChange Splash Image Event Called.", this);
+        }
+
+        public void OnLoadInProgressEvent()
+        {
+            LogInfo("____________________________++++++++++++++++_______________________ On Load In Progress... Event", this);
+        }
+
+        public void OnLoadCompletedEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var timeManager = AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
+
+                timeManager.CancelEvent("Randomize Displayed Image", invokeRandomizeDisplayedImageCallbackResults =>
+                {
+                    callbackResults.SetResult(invokeRandomizeDisplayedImageCallbackResults);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null) => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);

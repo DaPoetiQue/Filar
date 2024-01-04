@@ -1841,18 +1841,19 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions:
-  - name: 
-    eventType: 1
+  - name: On Loading Completed Event
+    eventType: 2
     eventMethod:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2803885941087977292}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: 
+        - m_Target: {fileID: 7374042135323048747}
+          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
+            Assembly-CSharp
+          m_MethodName: OnLoadCompletedEvent
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: 
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -2030,7 +2031,6 @@ MonoBehaviour:
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
-  testImage: {fileID: 2800000, guid: 52f5b4654f54ed14c9681ffd4f8bff57, type: 3}
 --- !u!1 &2803885941493698669
 GameObject:
   m_ObjectHideFlags: 0

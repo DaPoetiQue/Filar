@@ -86,7 +86,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Cancel(Action<AppData.Callback> callback = null)
+        public void CancelEvents(Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(timedEventComponents, "Timed Event Components", "There Are No Timed Event Components Initialized."));
 
@@ -97,7 +97,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Cancel(string eventName, Action<AppData.Callback> callback = null)
+        public void CancelEvent(string eventName, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(timedEventComponents, "Timed Event Components", "There Are No Timed Event Components Initialized."));
 
