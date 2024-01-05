@@ -165,6 +165,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  name: 
   inputType: 8
   textView: 12
   imagenView: 12
@@ -218,6 +219,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -403,6 +405,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -590,6 +593,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -778,6 +782,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -964,6 +969,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1149,6 +1155,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1332,6 +1339,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1514,6 +1522,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3079849901925572078}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -1649,7 +1658,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &3079849902213022002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2102,6 +2112,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  name: 
   inputType: 7
   textView: 12
   imagenView: 12
@@ -2155,6 +2166,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2340,6 +2352,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2527,6 +2540,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2715,6 +2729,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -2901,6 +2916,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3086,6 +3102,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3269,6 +3286,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3079849902301085567}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3451,6 +3469,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3586,7 +3605,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &3079849902528060640
 GameObject:
   m_ObjectHideFlags: 0
@@ -3759,6 +3779,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  name: 
   inputType: 1
   textView: 12
   imagenView: 12
@@ -3812,6 +3833,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3090973556645856756}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -3997,6 +4019,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -4184,6 +4207,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -4372,6 +4396,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -4558,6 +4583,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -4743,6 +4769,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -4926,6 +4953,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -5108,6 +5136,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -5243,7 +5272,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!114 &3090973556645856756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5516,7 +5546,7 @@ GameObject:
   - component: {fileID: 1183393482}
   - component: {fileID: 2458186588677585713}
   m_Layer: 0
-  m_Name: Post View Widget
+  m_Name: __Post View Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5665,34 +5695,29 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
-  widgetType: 0
-  screenUIPlacementType: 3
+  type: 4
+  uIPlacementContainerType: 17
+  uIPlacementType: 0
   orderInLayer: 0
-  transitionType: 0
-  initialVisibilityState: 0
+  transitionType: 1
+  initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup:
   - name: Post Button Components
-    inputGroup: 1
-    screenActionGroup:
-    - {fileID: 2458186588677585713}
-    - {fileID: 7496718884208744729}
+    inputActionGroupType: 0
+    inputActionGroup: []
     initialize: 1
   - name: Post Image Components
-    inputGroup: 8
-    screenActionGroup:
-    - {fileID: 4301459112818135300}
+    inputActionGroupType: 0
+    inputActionGroup: []
     initialize: 1
   - name: Post Text Components
-    inputGroup: 7
-    screenActionGroup:
-    - {fileID: 4597557962471122315}
-    - {fileID: 5232370638753608818}
-    - {fileID: 3714669051969464914}
+    inputActionGroupType: 0
+    inputActionGroup: []
     initialize: 1
+  screenType: 7
   selectableComponent:
     selectionInfo:
       selectionThreshHold: 0
@@ -5745,6 +5770,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  name: 
   inputType: 1
   textView: 12
   imagenView: 12
@@ -5798,6 +5824,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3079849903044494201}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -5983,6 +6010,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -6170,6 +6198,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -6358,6 +6387,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -6544,6 +6574,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -6729,6 +6760,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -6912,6 +6944,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -7094,6 +7127,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -7229,7 +7263,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &3079849903067978314
 GameObject:
   m_ObjectHideFlags: 0
@@ -7602,6 +7637,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  name: 
   inputType: 7
   textView: 12
   imagenView: 12
@@ -7655,6 +7691,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -7840,6 +7877,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8027,6 +8065,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8215,6 +8254,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8401,6 +8441,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8586,6 +8627,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8769,6 +8811,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3079849903360569824}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -8951,6 +8994,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9086,7 +9130,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &3079849903398797090
 GameObject:
   m_ObjectHideFlags: 0
@@ -9240,6 +9285,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  name: 
   inputType: 7
   textView: 12
   imagenView: 12
@@ -9293,6 +9339,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9478,6 +9525,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9665,6 +9713,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -9853,6 +9902,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10039,6 +10089,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10224,6 +10275,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10407,6 +10459,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 3079849903398797092}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10589,6 +10642,7 @@ MonoBehaviour:
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
+      name: 
       externalLinkURL: 
       selectionOption: 0
       screenContainerData:
@@ -10724,7 +10778,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-    imageType: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &3079849903403660679
 GameObject:
   m_ObjectHideFlags: 0

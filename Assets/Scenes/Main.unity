@@ -8261,7 +8261,7 @@ GameObject:
   - component: {fileID: 818607994}
   - component: {fileID: 818607995}
   m_Layer: 0
-  m_Name: Rendering Settings Manager
+  m_Name: __Rendering Settings Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18765,10 +18765,17 @@ MonoBehaviour:
       bundleKey: 2
       initialize: 1
       loaded: 0
+    - name: Screen Selectable Widget Resource Locator
+      bundleKey: 3
+      initialize: 1
+      loaded: 0
     loadedScreens:
       name: 
       assetBundles: []
     loadedWidgets:
+      name: 
+      assetBundles: []
+    loadedSelectableWidgets:
       name: 
       assetBundles: []
     dynamicContainerLibrary:
