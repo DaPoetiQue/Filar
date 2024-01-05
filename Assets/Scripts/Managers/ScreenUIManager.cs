@@ -1133,93 +1133,91 @@ namespace Com.RedicalGames.Filar
                 {
                     if (screenType == GetCurrentScreenType().GetData())
                     {
-                        var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+                        var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                        if (posts != null && posts.Count > 0)
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(posts, "Posts", "Failed to Get Loaded Posts. Please Check Here."));
+
+                        if (callbackResults.Success())
                         {
-                            if (screenContentContainer != null && screenContentContainer.GetActive().Success())
+                            callbackResults.SetResult(screenContentContainer.GetActive());
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(databaseManager.GetWidgetsPrefabDataLibrary(screenType));
+                                callbackResults.SetResult(databaseManager.GetAssetBundlesLibrary());
 
                                 if (callbackResults.Success())
                                 {
-                                    var widgetsLibraryData = databaseManager.GetWidgetsPrefabDataLibrary(screenType).data;
+                                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                    var widgetPrefabData = widgetsLibraryData.Find(x => x.screenType == screenType);
+                                    callbackResults.SetResult(assetBundlesLibrary.GetLoadedSelectableWidgets(screenType));
 
-                                    if (widgetPrefabData != null)
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType));
+                                        var loadedSelectableWidgets = assetBundlesLibrary.GetLoadedSelectableWidgets(screenType).GetData();
+
+                                        var postWidget = loadedSelectableWidgets.Find(widget => widget.GetType().GetData() == AppData.SelectableWidgetType.Post);
+
+                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(postWidget, "Post Widget", "Failed To Find Selectable Widget Of Type : Post."));
 
                                         if (callbackResults.Success())
                                         {
-                                            var prefabData = widgetPrefabData.GetUIScreenWidgetData(screenContentContainer.GetSelectableWidgetType(), screenContentContainer.GetLayout().viewType).data;
-                                            var prefab = prefabData.gameObject;
+                                            var widget = AppData.Helpers.UnityComponentValid(postWidget, "Post Widget Prefab Value").GetData();
 
-                                            callbackResults.SetResult(AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value"));
+                                            List<AppData.Post> postDatas = new List<AppData.Post>();
 
-                                            if (callbackResults.Success())
+                                            callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
+
+                                            foreach (var post in posts)
                                             {
-                                                var widget = AppData.Helpers.UnityComponentValid(prefab, "Post Widget Prefab Value").data;
+                                                GameObject postWidgetInstance = Instantiate(widget.gameObject);
 
-                                                List<AppData.Post> postDatas = new List<AppData.Post>();
-
-                                                callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
-
-                                                foreach (var post in posts)
+                                                if (postWidgetInstance != null)
                                                 {
-                                                    GameObject postWidget = Instantiate(widget);
+                                                    AppData.UIScreenWidget widgetComponent = postWidgetInstance.GetComponent<AppData.UIScreenWidget>();
 
-                                                    if (postWidget != null)
+                                                    if (widgetComponent != null)
                                                     {
-                                                        AppData.UIScreenWidget widgetComponent = postWidget.GetComponent<AppData.UIScreenWidget>();
+                                                        widgetComponent.SetPost(post);
 
-                                                        if (widgetComponent != null)
-                                                        {
-                                                            widgetComponent.SetPost(post);
+                                                        postWidgetInstance.name = post.GetIdentifier();
 
-                                                            postWidget.name = post.GetIdentifier();
+                                                        var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
-                                                            var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                        callbackResults.SetResult(addContentAsyncTaskResults);
 
-                                                            callbackResults.SetResult(addContentAsyncTaskResults);
+                                                        postDatas.Add(post);
 
-                                                            postDatas.Add(post);
-
-                                                            callbackResults.result = $"Post Widget : { postWidget.name} Created.";
-                                                        }
-                                                        else
-                                                        {
-                                                            callbackResults.result = "Post Widget Component Is Null.";
-                                                            callbackResults.data = default;
-                                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                        }
+                                                        callbackResults.result = $"Post Widget : { postWidgetInstance.name} Created.";
                                                     }
                                                     else
                                                     {
-                                                        callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                        callbackResults.result = "Post Widget Component Is Null.";
                                                         callbackResults.data = default;
                                                         callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                     }
-
-                                                    await Task.Yield();
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                    callbackResults.data = default;
+                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                 }
 
-                                                while (screenContentContainer.GetContentCount().data != posts.Count)
-                                                    await Task.Yield();
-
-                                                callbackResults.result = "Posts Widgets Loaded.";
-                                                callbackResults.data = postDatas;
-                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                await Task.Yield();
                                             }
+
+                                            while (screenContentContainer.GetContentCount().data != posts.Count)
+                                                await Task.Yield();
+
+                                            callbackResults.result = "Posts Widgets Loaded.";
+                                            callbackResults.data = postDatas;
+                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
+                                        else
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
                                     }
                                     else
-                                    {
-                                        callbackResults.result = $"Widget Prefab For Screen Type : {screenType} Missing / Null.";
-                                        callbackResults.data = default;
-                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                    }
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
                                 }
                                 else
                                     Log(callbackResults.resultCode, callbackResults.result, this);

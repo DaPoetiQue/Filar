@@ -3834,7 +3834,7 @@ namespace Com.RedicalGames.Filar
                                                                     var sortedWidgets = GetSortedList(getPostsTaskResults.data, AppData.SortType.DateModified).data;
                                                                     await Task.Yield();
 
-                                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentScreenType().GetData(), sortedWidgets, widgetsContainer);
+                                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentScreenType().GetData(), sortedWidgets, container);
 
                                                                     callbackResults.SetResult(widgetsLoadTaskCallbacResults);
 
