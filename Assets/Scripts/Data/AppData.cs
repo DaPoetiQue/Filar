@@ -561,6 +561,14 @@ namespace Com.RedicalGames.Filar
             SplashScreen,     
         }
 
+        public enum SceneModelType
+        {
+            None,
+            Default,
+            Backdrop,
+            Prop
+        }
+
         public enum ContentContainerType
         {
             ARPreview,
@@ -580,6 +588,7 @@ namespace Com.RedicalGames.Filar
             ScreenWidgetContainer,
             ScreenTitleContainer,
             LoadingStatusWidgetContainer,
+            PostWidgetContainer,
             None
         }
 
@@ -1542,6 +1551,88 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Model Data
+
+        public class SceneModelComponent : SelectableObject<SceneModelType>
+        {
+            #region Components
+
+            [Space(10)]
+            [Header("::: Model Screen Config")]
+
+            [Space(5)]
+            [SerializeField]
+            protected ScreenType screenType = ScreenType.None;
+
+            #endregion
+
+            #region Main
+
+            public CallbackData<ScreenType> GetScreenType()
+            {
+                var callbackResults = new CallbackData<ScreenType>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    if (screenType != ScreenType.None)
+                    {
+                        callbackResults.result = $"Screen Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Successfully Set To : {screenType}.";
+                        callbackResults.data = screenType;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Set To Default : {screenType} - Invalid Operation - Please Assign Screent Type Value.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+      
+
+            #endregion
+        }
+
+        public class SelectableObject<T> : AppMonoBaseClass where T : Enum
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            protected T type;
+
+            #endregion
+
+            #region Main
+
+            public new CallbackData<T> GetType()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if (!type.ToString().ToLower().Equals("none"))
+                {
+                    callbackResults.result = $"Screen : {name} - Is Set To Type : {type.ToString()}";
+                    callbackResults.data = type;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Screen Type For Screen : {name} - Screen Type Is Set To Default : {type.ToString()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Asset Bundles
 
         [Serializable]
@@ -2059,6 +2150,11 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private LoadedAssetCache<ScreenType, UIScreenWidget> loadedSelectableWidgets = new LoadedAssetCache<ScreenType, UIScreenWidget>();
 
+            [Tooltip("Do Not Initialize - Models Are Loaded Dynamically")]
+            [Space(10)]
+            [SerializeField]
+            private LoadedAssetCache<ScreenType, SceneModelComponent> loadedModels = new LoadedAssetCache<ScreenType, SceneModelComponent>();
+
             #region Dynamic Container
 
             [Space(10)]
@@ -2317,6 +2413,33 @@ namespace Com.RedicalGames.Filar
 
                     case AssetBundleResourceLocatorType.Model:
 
+                        var loadedBundleModels = loadedAssetBundles.Select(asset => asset.GetComponent<SceneModelComponent>()).Where(asset => asset != null).ToList();
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleModels, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
+
+                        if (callbackResults.Success())
+                        {
+                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
+                            {
+                                callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(loadedModels.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                    if (callbackResults.Success())
+                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            }, loadedBundleModels.ToArray());
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                         break;
                 }
 
@@ -2460,8 +2583,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            #endregion
-
             public CallbackDataList<Widget> GetWidgets(ScreenType screenType)
             {
                 var callbackResults = new CallbackDataList<Widget>(loadedWidgets.Initialized());
@@ -2572,6 +2693,100 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
+
+            #endregion
+
+            #region Models
+
+            public CallbackDataList<SceneModelComponent> GetLoadedModels(ScreenType screenType)
+            {
+                var callbackResults = new CallbackDataList<SceneModelComponent>(loadedModels.GetCachedAssets(screenType));
+
+                if (callbackResults.Success())
+                    callbackResults.data = loadedModels.GetCachedAssets(screenType).GetData();
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SceneModelComponent> GetLoadedModels(ScreenType screenType = ScreenType.Any, params ScreenReferencedWidgetDependencyAssetBundle<SceneModelType>[] screenReferencedWidgets)
+            {
+                var callbackResults = new CallbackDataList<SceneModelComponent>(loadedModels.GetCachedAssets(screenType));
+
+                if (callbackResults.Success())
+                {
+                    var selectableWidgets = new List<SceneModelComponent>();
+
+                    var loadedAssets = loadedModels.GetCachedAssets(screenType).GetData();
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(screenReferencedWidgets, "Screen Referenced Widgets",
+                        "Get Loaded Widgets Failed - There Are No Screen Referenced Widgets Assigned As param Value - Invalid Operation, Please Check Here."));
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < screenReferencedWidgets.Length; i++)
+                        {
+                            var screenReferenced = loadedAssets.Find(screenReferenced => screenReferenced.GetType().GetData() == screenReferencedWidgets[i].GetType().GetData());
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(screenReferenced, "Screen Referenced", $"Get Loaded Widget For Screen Type : {screenType} Failed - Couldn't Find Widget Of Type : {screenReferencedWidgets[i].GetType().GetData()} - Invalid Operation. Please Check If Widgets Were Initialized/Loaded Properly."));
+
+                            if (callbackResults.Success())
+                            {
+                                if (!selectableWidgets.Contains(screenReferenced))
+                                    selectableWidgets.Add(screenReferenced);
+                                else
+                                {
+                                    callbackResults.result = $"";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+
+                            if (callbackResults.UnSuccessful())
+                            {
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                break;
+                            }
+                        }
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"{selectableWidgets.Count} Widgets Have Been Loaded Successfully For Screen Type : {screenType}";
+                            callbackResults.data = selectableWidgets;
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SceneModelComponent> GetModels(ScreenType screenType)
+            {
+                var callbackResults = new CallbackDataList<SceneModelComponent>(loadedModels.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(loadedModels.GetCachedAssets(screenType));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = loadedModels.GetCachedAssets(screenType).GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
 
@@ -2775,6 +2990,43 @@ namespace Com.RedicalGames.Filar
                             break;
 
                         case AssetBundleResourceLocatorType.Model:
+
+                            for (int i = 0; i < loadedAssets.Length; i++)
+                            {
+                                var loadedAsset = loadedAssets[i] as SceneModelComponent;
+
+                                callbackResults.SetResult(loadedAsset.GetScreenType());
+
+                                if (callbackResults.Success())
+                                {
+                                    loadedModels.CacheLoadedAssets(loadedAsset.GetScreenType().GetData(), loadedAsset, selectableWidgetCachedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(selectableWidgetCachedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            if (selectableWidgetCachedCallbackResults.GetData() == loadedAsset.GetScreenType().GetData())
+                                            {
+                                                callbackResults.result = $"Added Loaded Asset For Screen : {selectableWidgetCachedCallbackResults.GetData()}.";
+                                                callbackResults.data = selectableWidgetCachedCallbackResults.GetData();
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Failed To Add Loaded Asset For Screen : {loadedAsset.GetScreenType().GetData()} - Invalid Operation - Please Check Here.";
+                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    });
+
+                                    if (callbackResults.UnSuccessful())
+                                        break;
+                                }
+                                else
+                                    break;
+                            }
 
                             break;
                     }
