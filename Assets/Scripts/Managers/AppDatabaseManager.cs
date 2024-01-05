@@ -3774,7 +3774,7 @@ namespace Com.RedicalGames.Filar
                 AppData.Callback callbackResults = new AppData.Callback();
 
                 callbackResults.resultCode = (refreshedScreen != null) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
-                callbackResults.result = (callbackResults.Success()) ? $"Refreshed Screen Of Type : {refreshedScreen.GetUIScreenType()} Has Been Loaded Successfully." : "There Is No Screen To Refresh : Refreshed Screen Is Null / Not Assigned From Screen UI Manager.";
+                callbackResults.result = (callbackResults.Success()) ? $"Refreshed Screen Of Type : {refreshedScreen.GetScreenType()} Has Been Loaded Successfully." : "There Is No Screen To Refresh : Refreshed Screen Is Null / Not Assigned From Screen UI Manager.";
 
                 if (callbackResults.Success())
                 {
@@ -3784,54 +3784,73 @@ namespace Com.RedicalGames.Filar
                     {
                         var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
 
-                        if (refreshedScreen.GetUIScreenType() != AppData.ScreenType.None)
+                        callbackResults.SetResult(refreshedScreen.GetScreenType());
+
+                        if (callbackResults.Success())
                         {
                             //widgetsContainer.SetAssetsLoaded(false);
 
                             //var currentScreen = screenUIManager.GetCurrentScreenData().value;
 
-                            switch (refreshedScreen.GetUIScreenType())
+                            switch (refreshedScreen.GetScreenType().GetData())
                             {
                                 case AppData.ScreenType.LandingPageScreen:
 
-                                    refreshedScreen.ShowWidget(AppData.WidgetType.LoadingWidget);
-
-                                    while (!IsServerPostsDatabaseInitialized)
-                                        await Task.Yield();
-
-                                    if (IsServerAppInfoDatabaseInitialized)
+                                    refreshedScreen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults => 
                                     {
-                                        var clearWidgetsTaskResults = await widgetsContainer.ClearAsync();
+                                        callbackResults.SetResult(widgetShownCallbackResults);
 
-                                        callbackResults.SetResult(clearWidgetsTaskResults);
-
-                                        if (callbackResults.Success())
+                                        if(callbackResults.Success())
                                         {
-                                            var getPostsTaskResults = await GetPostsAsync();
+                                            while (!IsServerPostsDatabaseInitialized)
+                                                await Task.Yield();
 
-                                            callbackResults.SetResult(getPostsTaskResults);
-
-                                            if (callbackResults.Success())
+                                            if (IsServerAppInfoDatabaseInitialized)
                                             {
-                                                callbackResults.SetResult(GetSortedList(getPostsTaskResults.data, AppData.SortType.DateModified));
-
-                                                if (callbackResults.Success())
+                                                assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(refreshedScreen.GetScreenType().GetData(), AppData.ContentContainerType.PostWidgetContainer, AppData.ContainerViewSpaceType.Screen, async containerCallbackResults => 
                                                 {
-                                                    var sortedWidgets = GetSortedList(getPostsTaskResults.data, AppData.SortType.DateModified).data;
-                                                    await Task.Yield();
-                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentScreenType().GetData(), sortedWidgets, widgetsContainer);
+                                                    callbackResults.SetResult(containerCallbackResults);
 
-                                                    callbackResults.SetResult(widgetsLoadTaskCallbacResults);
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        var container = containerCallbackResults.GetData();
 
-                                                    if (callbackResults.Success())
-                                                        refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                        var clearWidgetsTaskResults = await container.ClearAsync();
 
-                                                    while (!callbackResults.Success())
-                                                        await Task.Yield();
-                                                }
+                                                        callbackResults.SetResult(clearWidgetsTaskResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var getPostsTaskResults = await GetPostsAsync();
+
+                                                            callbackResults.SetResult(getPostsTaskResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                callbackResults.SetResult(GetSortedList(getPostsTaskResults.data, AppData.SortType.DateModified));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var sortedWidgets = GetSortedList(getPostsTaskResults.data, AppData.SortType.DateModified).data;
+                                                                    await Task.Yield();
+
+                                                                    var widgetsLoadTaskCallbacResults = await screenUIManager.CreateUIScreenPostWidgetAsync(screenUIManager.GetCurrentScreenType().GetData(), sortedWidgets, widgetsContainer);
+
+                                                                    callbackResults.SetResult(widgetsLoadTaskCallbacResults);
+
+                                                                    if (callbackResults.Success())
+                                                                        refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                                    while (!callbackResults.Success())
+                                                                        await Task.Yield();
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                });
                                             }
                                         }
-                                    }
+                                    });
 
                                     break;
 
@@ -4296,7 +4315,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         var currentScreen = currentScreenCallbackResults.GetData();
 
-                                        currentScreen.ShowWidget(AppData.WidgetType.LoadingWidget);
+                                        currentScreen.ShowWidget(AppData.WidgetType.LoadingWidget, showLoadingWidgetCallbackResults => { });
 
                                         AppData.SessionStorage<AppData.Post, PostContentHandler>.GetStoredSessionData(post, async modelCallbackResults =>
                                         {

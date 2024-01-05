@@ -118,7 +118,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
 
-                                                                    LogInfo($" __________________________________________++++++++++++++ Geting Widget From Screen : {currentScreenView.name} - Of Type : {currentScreenView.GetUIScreenType()} With : {currentScreenView.GetWidgets().GetData().Count} Widget(s) - Code : {callbackResults.GetResultCode} - Resuts : {callbackResults.GetResult}", this);
+                                                                    LogInfo($" __________________________________________++++++++++++++ Geting Widget From Screen : {currentScreenView.name} - Of Type : {currentScreenView.GetScreenType()} With : {currentScreenView.GetWidgets().GetData().Count} Widget(s) - Code : {callbackResults.GetResultCode} - Resuts : {callbackResults.GetResult}", this);
 
                                                                     if (callbackResults.Success())
                                                                     {

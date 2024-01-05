@@ -64,7 +64,8 @@ MonoBehaviour:
   transitionType: 1
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
-  dynamicContainerList: []
+  dynamicContainerList:
+  - {fileID: 6256656634447667956}
   eventActions: []
   actionGroup: []
   screenType: 7
@@ -715,7 +716,7 @@ GameObject:
   - component: {fileID: 6256656634447667959}
   - component: {fileID: 6256656634447667956}
   m_Layer: 0
-  m_Name: ':: Landing View Dynamic Widgets Container'
+  m_Name: ':: Posts Widget View Dynamic Widgets Container'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -784,11 +785,11 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  screenType: 0
-  containerType: 9
+  screenType: 7
+  containerType: 17
   viewSpace: 2
-  screenViewUIPlacementType: 3
-  orderInLayerType: 0
+  screenViewUIPlacementType: 0
+  orderInLayerType: 1
   selectableContent: 1
   recycleContainer:
     container: {fileID: 0}
