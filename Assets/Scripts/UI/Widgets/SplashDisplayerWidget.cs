@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -82,74 +83,6 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        void InitializeDisplayer(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
-
-            if (callbackResults.Success())
-            {
-                var appDatabaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
-
-                callbackResults.SetResult(appDatabaseManager.GetRandomSplashImage());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetUIImageDisplayer(AppData.ScreenImageType.Splash));
-
-                    if (callbackResults.Success())
-                    {
-                        var imageDisplayer = GetUIImageDisplayer(AppData.ScreenImageType.Splash).GetData();
-                        var image = appDatabaseManager.GetRandomSplashImage().GetData();
-                        imageDisplayer.SetImageData(image, true);
-
-                        var randomPointIndex = GetRandomIndex();
-
-                        if (randomPointIndex >= 1)
-                        {
-                            //SetTransitionableUITarget(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                            //{
-                            //    callbackResults.SetResult(targetSetCallbackResults);
-
-                            //    if (callbackResults.Success())
-                            //        imageDisplayer.SetUIPose(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle());
-                            //    else
-                            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            //});
-                        }
-
-                        if (randomPointIndex <= 0)
-                        {
-                            //SetTransitionableUITarget(widgetContainer.visibleScreenPoint.GetWidgetPoseAngle(), targetSetCallbackResults =>
-                            //{
-                            //    callbackResults.SetResult(targetSetCallbackResults);
-
-                            //    if (callbackResults.Success())
-                            //        imageDisplayer.SetUIPose(widgetContainer.hiddenScreenPoint.GetWidgetPoseAngle());
-                            //    else
-                            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            //});
-                        }
-
-                        //InvokeTimedEvents(timeEventInvokedCallbackResults =>
-                        //{
-                        //    callbackResults.SetResult(timeEventInvokedCallbackResults);
-
-                        //    if (callbackResults.Success())
-                        //    {
-
-                        //    }
-                        //});
-                    }
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            callback?.Invoke(callbackResults);
-        }
-
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new NotImplementedException();
@@ -219,7 +152,7 @@ namespace Com.RedicalGames.Filar
             LogInfo(" _________________________++++++++++++ Initialization Completed Event Called.", this);
         }
 
-        void OnRandomizeDisplayedSplashImage()
+        async void OnRandomizeDisplayedSplashImage()
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Is Not Yet Initialized."));
 
@@ -227,7 +160,9 @@ namespace Com.RedicalGames.Filar
             {
                 var appDatabaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
 
-                callbackResults.SetResult(appDatabaseManager.GetRandomSplashImage());
+                var randomImageCallbackResults = appDatabaseManager.GetRandomSplashImage();
+
+                callbackResults.SetResult(randomImageCallbackResults);
 
                 if (callbackResults.Success())
                 {
@@ -236,8 +171,9 @@ namespace Com.RedicalGames.Filar
                     if (callbackResults.Success())
                     {
                         var imageDisplayer = GetUIImageDisplayer(AppData.ScreenImageType.Splash).GetData();
-                        var image = appDatabaseManager.GetRandomSplashImage().GetData();
-                        imageDisplayer.SetImageData(image, true);
+                        imageDisplayer.SetImageData(randomImageCallbackResults.GetData(), true);
+
+                        await Task.Yield();
                     }
                 }
                 else

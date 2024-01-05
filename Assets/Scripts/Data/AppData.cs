@@ -39809,6 +39809,16 @@ namespace Com.RedicalGames.Filar
                 return Sprite.Create(texture, newRect, Vector2.zero);
             }
 
+            public static async Task<Sprite> GetSpriteAsync(Texture2D texture)
+            {
+                Rect newRect = new Rect(Vector2.zero, new Vector2(texture.width, texture.height));
+                var createdSprite = Sprite.Create(texture, newRect, Vector2.zero);
+
+                await Task.Yield();
+
+                return createdSprite;
+            }
+
             public enum ImageEncoderType
             {
                 JPG,

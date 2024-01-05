@@ -203,6 +203,14 @@ namespace Com.RedicalGames.Filar
         bool onNewAssetCreated = false;
         string newAssetName;
 
+        #region Splash Image Configs
+
+        private List<Texture2D> splashImages = new List<Texture2D>();
+
+        private List<int> randomGeneratedIndexList = new List<int>();
+
+        #endregion
+
         Coroutine refreshAsyncRoutine;
 
         #region Database
@@ -336,35 +344,79 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public AppData.CallbackData<Texture2D> GetRandomSplashImage()
+        public void LoadSplashImagesDataOnInitialization(Action<AppData.Callback> callback = null)
         {
-            AppData.CallbackData<Texture2D> callbackResults = new AppData.CallbackData<Texture2D>(GetAppDirectoryData(AppData.StorageType.App_Cache_Storage));
+            AppData.Callback callbackResults = new AppData.Callback(GetAppDirectoryData(AppData.StorageType.App_Cache_Storage));
 
-            if(callbackResults.Success())
+            if (callbackResults.Success())
             {
                 var directoryData = GetAppDirectoryData(AppData.StorageType.App_Cache_Storage).GetData();
                 directoryData.SetPath(GetDataPath("Splash Images", directoryData, AppData.FileExtensionType.JSON).data);
 
-                LoadData<AppData.SerializableImage>(directoryData, dataLoadedCallbackResults =>
+                LoadData<AppData.SerializableImage>(directoryData, loadedImageCallbackResults =>
                 {
-                    callbackResults.SetResult(dataLoadedCallbackResults);
+                    callbackResults.SetResult(loadedImageCallbackResults);
 
                     if (callbackResults.Success())
                     {
-                        var loadedImageData = dataLoadedCallbackResults.data;
-                        var splashImages = loadedImageData.GetTexture2DImagesFromCompressedData().ToList();
-
-                        var randomImage = splashImages[AppData.Helpers.GetRandomValue(splashImages.Count)];
-
-                        callbackResults.result = $"{splashImages.Count} Splash Images Have Been Found Successfully";
-                        callbackResults.data = randomImage;
+                        var loadedImageData = loadedImageCallbackResults.GetData();
+                        splashImages = loadedImageData.GetTexture2DImagesFromCompressedData().ToList();
                     }
                 });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
+            callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackDataList<Texture2D> GetSplashImages()
+        {
+            var callbackResults = new AppData.CallbackDataList<Texture2D>(AppData.Helpers.GetAppComponentsValid(splashImages, "Splash Images", "Failed To Get Splash Images - There Are No Splash Images Found. Splash Images Are Not Yet Loaded."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"{splashImages.Count} : Splash Images Have Been Loaded Successfully.";
+                callbackResults.data = splashImages;
+            }
+
             return callbackResults;
+        }
+
+        public AppData.CallbackData<Texture2D> GetRandomSplashImage()
+        {
+            AppData.CallbackData<Texture2D> callbackResults = new AppData.CallbackData<Texture2D>(GetSplashImages());
+
+            if (callbackResults.Success())
+            {
+                var randomImage = GetSplashImages().GetData()[GetRandomIndexValue(GetSplashImages().GetData().Count)];
+
+                callbackResults.result = $"{splashImages.Count} Splash Images Have Been Found Successfully";
+                callbackResults.data = randomImage;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private int GetRandomIndexValue(int count)
+        {
+            if (randomGeneratedIndexList.Count >= count - 1)
+                randomGeneratedIndexList.Clear();
+
+            int randomIndex = AppData.Helpers.GetRandomValue(count);
+
+            while (randomGeneratedIndexList.Contains(randomIndex))
+                randomIndex = AppData.Helpers.GetRandomValue(count);
+
+            if (!randomGeneratedIndexList.Contains(randomIndex))
+            {
+                randomGeneratedIndexList.Add(randomIndex);
+                return randomIndex;
+            }
+
+            return randomIndex;
         }
 
         public async Task<AppData.CallbackData<AppData.Post>> InitializeStorage(AppData.Post post)
@@ -8308,6 +8360,36 @@ namespace Com.RedicalGames.Filar
             });
 
             callback.Invoke(callbackResults);
+        }
+
+        public async Task<AppData.CallbackData<T>> LoadDataAsync<T>(AppData.StorageDirectoryData directoryData) where T : AppData.SerializableData
+        {
+            AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
+
+            FileFound(directoryData.path, async checkFileExistenceCallback =>
+            {
+                if (AppData.Helpers.IsSuccessCode(checkFileExistenceCallback.resultCode))
+                {
+                    string JSONString = File.ReadAllText(directoryData.path);
+                    T data = JsonUtility.FromJson<T>(JSONString);
+
+                    await Task.Yield();
+
+                    callbackResults.result = checkFileExistenceCallback.result;
+                    callbackResults.data = data;
+                    callbackResults.resultCode = checkFileExistenceCallback.resultCode;
+                }
+                else
+                {
+                    callbackResults.result = checkFileExistenceCallback.result;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = checkFileExistenceCallback.resultCode;
+                }
+            });
+
+            await Task.Yield();
+
+            return callbackResults;
         }
 
         public void LoadData<T>(string fileName, AppData.StorageDirectoryData directoryData, Action<AppData.CallbackData<T>> callback) where T : AppData.SerializableData

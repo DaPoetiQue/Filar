@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 40116507}
   - component: {fileID: 40116508}
   m_Layer: 0
-  m_Name: Screen Capture Manager
+  m_Name: __Screen Capture Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1173,7 +1173,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -1351,7 +1350,7 @@ GameObject:
   - component: {fileID: 163116067}
   - component: {fileID: 163116068}
   m_Layer: 0
-  m_Name: AR Scene Manager
+  m_Name: __AR Scene Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1498,7 +1497,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   screenTitle: Import
   screenView:
     name: Import Screen View
@@ -1640,7 +1638,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -1915,7 +1912,7 @@ GameObject:
   - component: {fileID: 228442556}
   - component: {fileID: 228442557}
   m_Layer: 0
-  m_Name: Loading Manager ==>>
+  m_Name: __Loading Manager ==>>
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2241,7 +2238,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -2467,7 +2463,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -2776,7 +2771,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -3524,7 +3518,7 @@ GameObject:
   - component: {fileID: 614204277}
   - component: {fileID: 614204278}
   m_Layer: 0
-  m_Name: User Help Manager
+  m_Name: __User Help Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4031,7 +4025,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -6960,7 +6953,7 @@ GameObject:
   - component: {fileID: 636324491}
   - component: {fileID: 636324492}
   m_Layer: 0
-  m_Name: Selectable Manager
+  m_Name: __Selectable Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7372,7 +7365,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -7598,7 +7590,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -8565,7 +8556,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -8745,7 +8735,7 @@ GameObject:
   - component: {fileID: 899887960}
   - component: {fileID: 899887961}
   m_Layer: 0
-  m_Name: Screen Navigation Manager
+  m_Name: __Screen Navigation Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9372,7 +9362,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -9968,7 +9957,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -10177,7 +10165,7 @@ GameObject:
   - component: {fileID: 1030360175}
   - component: {fileID: 1030360176}
   m_Layer: 0
-  m_Name: Notification System Manager
+  m_Name: __Notification System Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10491,7 +10479,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -10878,7 +10865,7 @@ GameObject:
   - component: {fileID: 1167082180}
   - component: {fileID: 1167082181}
   m_Layer: 0
-  m_Name: Publishing Manager
+  m_Name: __Publishing Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11012,7 +10999,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -11238,7 +11224,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -12226,7 +12211,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -13210,7 +13194,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -13699,7 +13682,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -14071,7 +14053,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   screenTitle: Project
   screenView:
     name: Project Dashboard View
@@ -14324,7 +14305,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -14989,7 +14969,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -15307,7 +15286,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -15536,7 +15514,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -16040,7 +16017,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -16266,7 +16242,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -16492,7 +16467,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -16720,7 +16694,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -17219,7 +17192,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:
@@ -17430,7 +17402,7 @@ GameObject:
   - component: {fileID: 2062864805}
   - component: {fileID: 2062864806}
   m_Layer: 0
-  m_Name: App Database Manager
+  m_Name: __App Database Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18952,7 +18924,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts:

@@ -75,6 +75,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
+                                    databaseManager.LoadSplashImagesDataOnInitialization();
                                     databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
 
                                     var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
