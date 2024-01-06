@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 45980627087666251}
   - component: {fileID: 45980627087666249}
   m_Layer: 0
-  m_Name: Landing Page Screen_Blur
+  m_Name: Loading Page Screen_Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 220}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &45980627087666248
 CanvasRenderer:
@@ -246,7 +246,6 @@ MonoBehaviour:
   - {fileID: 7921510361603200655}
   - {fileID: 4827935478524396645}
   eventActions: []
-  subscribeToActionEvents: 0
   screenTitle: Loading Screen
   screenView:
     name: Loading Screen View
