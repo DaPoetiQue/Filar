@@ -105,11 +105,11 @@ namespace Com.RedicalGames.Filar
 
                                         if (paginationViewType == AppData.PaginationViewType.Pager)
                                         {
-                                            List<AppData.UIScreenWidget> currentPage = container.Pagination_GetCurrentPage();
+                                            List<AppData.SelectableWidget> currentPage = container.Pagination_GetCurrentPage();
 
                                             if (currentPage != null && currentPage.Count > 0)
                                             {
-                                                List<AppData.UIScreenWidget> selectedWidgets = new List<AppData.UIScreenWidget>();
+                                                List<AppData.SelectableWidget> selectedWidgets = new List<AppData.SelectableWidget>();
 
                                                 SelectableManager.Instance.GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
                                                 {
@@ -175,7 +175,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (contentCount == 1)
                                                                 {
-                                                                    AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[contentCount - 1];
+                                                                    AppData.SelectableWidget widget = getFolderStructureSelectionData.data[contentCount - 1];
 
                                                                     if (widget != null)
                                                                     {
@@ -191,7 +191,7 @@ namespace Com.RedicalGames.Filar
                                                                     if (valueAssignedCallbackResults.Success())
                                                                     {
                                                                         int focusedIndex = Mathf.RoundToInt(contentCount / 2);
-                                                                        AppData.UIScreenWidget widget = getFolderStructureSelectionData.data[focusedIndex];
+                                                                        AppData.SelectableWidget widget = getFolderStructureSelectionData.data[focusedIndex];
 
                                                                         if (widget != null)
                                                                         {
@@ -233,7 +233,7 @@ namespace Com.RedicalGames.Filar
             ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         }
 
-        void UpdateWidgetSelection(AppData.UIScreenWidget selectedWidget)
+        void UpdateWidgetSelection(AppData.SelectableWidget selectedWidget)
         {
             if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
             {
@@ -260,7 +260,7 @@ namespace Com.RedicalGames.Filar
                 Log(AppDatabaseManager.Instance.GetProjectStructureData().resultCode, AppDatabaseManager.Instance.GetProjectStructureData().result, this);
         }
 
-        void UpdateWidgetsSelection(List<AppData.UIScreenWidget> selectedWidgets)
+        void UpdateWidgetsSelection(List<AppData.SelectableWidget> selectedWidgets)
         {
             int focusedIndex = Mathf.RoundToInt(selectedWidgets.Count / 2);
             var selectedWidget = selectedWidgets[focusedIndex];

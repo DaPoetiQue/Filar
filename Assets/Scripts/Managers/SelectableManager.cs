@@ -510,7 +510,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
+        public void Select(AppData.SelectableWidget selection, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>> callback = null)
         {
             AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>> callbackResults = new AppData.CallbackData<AppData.FocusedSelectionInfo<AppData.SceneConfigDataPacket>>();
 
@@ -555,7 +555,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Select(AppData.UIScreenWidget selectable, AppData.SceneConfigDataPacket dataPackets, bool isInitialSelection = false)
+        public void Select(AppData.SelectableWidget selectable, AppData.SceneConfigDataPacket dataPackets, bool isInitialSelection = false)
         {
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -828,9 +828,9 @@ namespace Com.RedicalGames.Filar
             return dataCount;
         }
 
-        public void SetSelectionInfoState(List<AppData.UIScreenWidget> selectionList, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback = null)
+        public void SetSelectionInfoState(List<AppData.SelectableWidget> selectionList, AppData.FocusedSelectionType selectionType, Action<AppData.CallbackData<AppData.SelectableWidget>> callback = null)
         {
-            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
+            AppData.CallbackData<AppData.SelectableWidget> callbackResults = new AppData.CallbackData<AppData.SelectableWidget>();
 
             GetProjectStructureSelectionSystem(projectSelectionCallbackResults =>
             {
@@ -1322,7 +1322,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public (bool pinned, bool disableButton, int selectionCount, int pinnedCount) HasPinnedSelection(List<AppData.UIScreenWidget> selected)
+        public (bool pinned, bool disableButton, int selectionCount, int pinnedCount) HasPinnedSelection(List<AppData.SelectableWidget> selected)
         {
             bool hasPinned = false;
             bool disableButton = false;
@@ -1356,7 +1356,7 @@ namespace Com.RedicalGames.Filar
             return (hasPinned, disableButton, selectionCount, pinnedCount);
         }
 
-        public void AddSelectables(List<AppData.UIScreenWidget> selectables)
+        public void AddSelectables(List<AppData.SelectableWidget> selectables)
         {
             if (onSelectionRoutine != null)
             {
@@ -1368,7 +1368,7 @@ namespace Com.RedicalGames.Filar
                 onSelectionRoutine = StartCoroutine(OnSelection(selectables));
         }
 
-        public void OnDeselect(AppData.UIScreenWidget deselectedWidget)
+        public void OnDeselect(AppData.SelectableWidget deselectedWidget)
         {
             if (onDeselectRoutine != null)
             {
@@ -1392,7 +1392,7 @@ namespace Com.RedicalGames.Filar
                 onDeselectAllRoutine = StartCoroutine(OnDeselectAllAsync());
         }
 
-        IEnumerator OnSelection(List<AppData.UIScreenWidget> widgets)
+        IEnumerator OnSelection(List<AppData.SelectableWidget> widgets)
         {
             yield return new WaitForEndOfFrame();
             yield return new WaitUntil(() => AppDatabaseManager.Instance.GetRefreshData().screenContainer.ContainerRefreshed() == true);
@@ -1400,7 +1400,7 @@ namespace Com.RedicalGames.Filar
             projectStructureSelectionSystem.AddSelectables(widgets);
         }
 
-        IEnumerator OnDeselectAsync(AppData.UIScreenWidget deselectedWidget)
+        IEnumerator OnDeselectAsync(AppData.SelectableWidget deselectedWidget)
         {
             yield return new WaitForEndOfFrame();
             projectStructureSelectionSystem.Deselect(deselectedWidget);

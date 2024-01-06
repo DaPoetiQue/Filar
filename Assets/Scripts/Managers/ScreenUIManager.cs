@@ -1161,7 +1161,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            var widget = AppData.Helpers.UnityComponentValid(postWidget, "Post Widget Prefab Value").GetData();
+                                            var widgetPrefab = AppData.Helpers.UnityComponentValid(postWidget, "Post Widget Prefab Value").GetData();
 
                                             List<AppData.Post> postDatas = new List<AppData.Post>();
 
@@ -1169,36 +1169,35 @@ namespace Com.RedicalGames.Filar
 
                                             foreach (var post in posts)
                                             {
-                                                GameObject postWidgetInstance = Instantiate(widget.gameObject);
+                                                var widgetComponent = Instantiate(widgetPrefab.gameObject).GetComponent<AppData.SelectableWidget>();
 
-                                                if (postWidgetInstance != null)
+                                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(widgetComponent, "Widget Component", "Failed To Load Widget Component For Post Widget - Please Check Here."));
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    AppData.UIScreenWidget widgetComponent = postWidgetInstance.GetComponent<AppData.UIScreenWidget>();
-
-                                                    if (widgetComponent != null)
+                                                    widgetComponent.Initilize(async initializationCallbackResults => 
                                                     {
-                                                        widgetComponent.SetPost(post);
+                                                        callbackResults.SetResult(initializationCallbackResults);
 
-                                                        postWidgetInstance.name = post.GetIdentifier();
+                                                        if(callbackResults.Success())
+                                                        {
+                                                            widgetComponent.SetPost(post);
 
-                                                        var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
+                                                            widgetComponent.name = post.GetIdentifier();
 
-                                                        callbackResults.SetResult(addContentAsyncTaskResults);
+                                                            var addContentAsyncTaskResults = await screenContentContainer.AddContentAsync(content: widgetComponent, keepWorldPosition: false, updateContainer: true);
 
-                                                        postDatas.Add(post);
+                                                            callbackResults.SetResult(addContentAsyncTaskResults);
 
-                                                        callbackResults.result = $"Post Widget : { postWidgetInstance.name} Created.";
-                                                    }
-                                                    else
-                                                    {
-                                                        callbackResults.result = "Post Widget Component Is Null.";
-                                                        callbackResults.data = default;
-                                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                    }
+                                                            postDatas.Add(post);
+
+                                                            callbackResults.result = $"Post Widget : { widgetComponent.name} Created.";
+                                                        }
+                                                    });
                                                 }
                                                 else
                                                 {
-                                                    callbackResults.result = "Post Widget Prefab Data Is Null.";
+                                                    callbackResults.result = "Post Widget Component Is Null.";
                                                     callbackResults.data = default;
                                                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                                                 }
@@ -1313,7 +1312,7 @@ namespace Com.RedicalGames.Filar
 
                                                                         if (projectWidget != null)
                                                                         {
-                                                                            AppData.UIScreenWidget widgetComponent = projectWidget.GetComponent<AppData.UIScreenWidget>();
+                                                                            AppData.SelectableWidget widgetComponent = projectWidget.GetComponent<AppData.SelectableWidget>();
 
                                                                             if (widgetComponent != null)
                                                                             {
@@ -1412,11 +1411,11 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFolderWidgetsAsync(AppData.ScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.SelectableWidget>> CreateUIScreenFolderWidgetsAsync(AppData.ScreenType screenType, List<AppData.StorageDirectoryData> foldersDirectoryList, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.SelectableWidget> callbackResults = new AppData.CallbackDataList<AppData.SelectableWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -1436,7 +1435,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (AppData.Helpers.IsSuccessCode(foldersLoaded.resultCode))
                                         {
-                                            List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
+                                            List<AppData.SelectableWidget> loadedWidgetsList = new List<AppData.SelectableWidget>();
 
                                             List<AppData.Folder> pinnedFolders = new List<AppData.Folder>();
 
@@ -1474,7 +1473,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                 if (folderWidget != null)
                                                                                 {
-                                                                                    AppData.UIScreenWidget widgetComponent = folderWidget.GetComponent<AppData.UIScreenWidget>();
+                                                                                    AppData.SelectableWidget widgetComponent = folderWidget.GetComponent<AppData.SelectableWidget>();
 
                                                                                     if (widgetComponent != null)
                                                                                     {
@@ -1548,11 +1547,11 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.ScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.SelectableWidget>> CreateUIScreenFileWidgetsAsync(AppData.ScreenType screenType, AppData.Folder folder, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.SelectableWidget> callbackResults = new AppData.CallbackDataList<AppData.SelectableWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -1579,7 +1578,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (loadedAssetsResults.data.Count > 0)
                                         {
-                                            List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
+                                            List<AppData.SelectableWidget> loadedWidgetsList = new List<AppData.SelectableWidget>();
 
                                             databaseManager.GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                             {
@@ -1609,7 +1608,7 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (newWidget != null)
                                                                             {
-                                                                                AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
+                                                                                AppData.SelectableWidget widgetComponent = newWidget.GetComponent<AppData.SelectableWidget>();
 
                                                                                 if (widgetComponent != null)
                                                                                 {
@@ -1737,11 +1736,11 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AppData.CallbackDataList<AppData.UIScreenWidget>> CreateUIScreenFileWidgetsAsync(AppData.ScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataList<AppData.SelectableWidget>> CreateUIScreenFileWidgetsAsync(AppData.ScreenType screenType, List<AppData.StorageDirectoryData> filesDirectoryList, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
-                AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                AppData.CallbackDataList<AppData.SelectableWidget> callbackResults = new AppData.CallbackDataList<AppData.SelectableWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -1765,7 +1764,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (loadedAssetsResults.data.Count > 0)
                                         {
-                                            List<AppData.UIScreenWidget> loadedWidgetsList = new List<AppData.UIScreenWidget>();
+                                            List<AppData.SelectableWidget> loadedWidgetsList = new List<AppData.SelectableWidget>();
 
                                             databaseManager.GetWidgetsPrefabDataLibrary().GetAllUIScreenWidgetsPrefabDataForScreen(screenType, widgetsCallback =>
                                             {
@@ -1795,7 +1794,7 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (newWidget != null)
                                                                             {
-                                                                                AppData.UIScreenWidget widgetComponent = newWidget.GetComponent<AppData.UIScreenWidget>();
+                                                                                AppData.SelectableWidget widgetComponent = newWidget.GetComponent<AppData.SelectableWidget>();
 
                                                                                 if (widgetComponent != null)
                                                                                 {

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIAssetFileWidget : AppData.UIScreenWidget
+    public class UIAssetFileWidget : AppData.SelectableWidget
     {
         #region Components
 

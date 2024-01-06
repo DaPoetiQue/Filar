@@ -92,7 +92,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        List<AppData.UIScreenWidget> loadedWidgets = new List<AppData.UIScreenWidget>();
+        List<AppData.SelectableWidget> loadedWidgets = new List<AppData.SelectableWidget>();
 
         AppData.SceneMode currentSceneMode;
 
@@ -2751,7 +2751,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public void SetDefaultUIWidgetActionState(List<AppData.UIScreenWidget> widgets, AppData.DefaultUIWidgetActionState widgetActionState, Action<AppData.Callback> callback = null)
+        public void SetDefaultUIWidgetActionState(List<AppData.SelectableWidget> widgets, AppData.DefaultUIWidgetActionState widgetActionState, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -4039,7 +4039,7 @@ namespace Com.RedicalGames.Filar
 
                                                     #endregion
 
-                                                    loadedWidgets = new List<AppData.UIScreenWidget>();
+                                                    loadedWidgets = new List<AppData.SelectableWidget>();
 
                                                         int contentCount = 0;
 
@@ -4454,7 +4454,7 @@ namespace Com.RedicalGames.Filar
            return GetRefreshData().screenContainer.GetContentCount().data;
         }
 
-        public List<AppData.UIScreenWidget> GetLoadedSceneAssetsList()
+        public List<AppData.SelectableWidget> GetLoadedSceneAssetsList()
         {
             return loadedWidgets;
         }
@@ -5400,7 +5400,7 @@ namespace Com.RedicalGames.Filar
 
         #region On Delete Asset / Folder Widgets
 
-        public void OnDelete(List<AppData.UIScreenWidget> assets, Action<AppData.Callback> callback)
+        public void OnDelete(List<AppData.SelectableWidget> assets, Action<AppData.Callback> callback)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -6557,7 +6557,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void SortScreenWidgets(List<AppData.UIScreenWidget> widgets, Action<AppData.CallbackDataList<AppData.SceneAssetWidget>> callback = null)
+        public void SortScreenWidgets(List<AppData.SelectableWidget> widgets, Action<AppData.CallbackDataList<AppData.SceneAssetWidget>> callback = null)
         {
             try
             {
@@ -6618,9 +6618,9 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void GetSortedWidgetsFromList(List<AppData.UIScreenWidget> widgets, AppData.SelectableWidgetType assetType, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
+        public void GetSortedWidgetsFromList(List<AppData.SelectableWidget> widgets, AppData.SelectableWidgetType assetType, Action<AppData.CallbackData<List<AppData.SelectableWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
+            AppData.CallbackData<List<AppData.SelectableWidget>> callbackResults = new AppData.CallbackData<List<AppData.SelectableWidget>>();
 
             AppData.Helpers.ComponentValid(widgets, componentCallbackResults =>
             {
@@ -7413,7 +7413,7 @@ namespace Com.RedicalGames.Filar
 
                 var assetBundlesLibrary = GetAssetBundlesLibrary().GetData();
 
-                assetBundlesLibrary.AddContentToDynamicWidgetContainer(profileAsset.GetComponent<AppData.UIScreenWidget>(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.containerContentOrientation, dynamicContainerCallbackResults =>
+                assetBundlesLibrary.AddContentToDynamicWidgetContainer(profileAsset.GetComponent<AppData.SelectableWidget>(), dataPackets.GetScreenContainerData().GetContainerType(), dataPackets.containerContentOrientation, dynamicContainerCallbackResults =>
                 {
                     callbackResults.SetResult(dynamicContainerCallbackResults);
 
@@ -7828,9 +7828,9 @@ namespace Com.RedicalGames.Filar
 
         #region Dynamic Content
 
-        void CreateDynamicScreenContent(AppData.UIScreenWidget contentPrefab, AppData.ContentContainerType containerType, AppData.OrientationType containerOrientation, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback = null)
+        void CreateDynamicScreenContent(AppData.SelectableWidget contentPrefab, AppData.ContentContainerType containerType, AppData.OrientationType containerOrientation, Action<AppData.CallbackData<AppData.SelectableWidget>> callback = null)
         {
-            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>(AppData.Helpers.GetAppComponentValid(contentPrefab, "Content Prefab", "Content Prefab Is Missing / Null / Not Yet Assigned In Parameter Value - Invalid Operation - Please Check Here."));
+            AppData.CallbackData<AppData.SelectableWidget> callbackResults = new AppData.CallbackData<AppData.SelectableWidget>(AppData.Helpers.GetAppComponentValid(contentPrefab, "Content Prefab", "Content Prefab Is Missing / Null / Not Yet Assigned In Parameter Value - Invalid Operation - Please Check Here."));
 
             if (callbackResults.Success())
             {
@@ -7842,7 +7842,7 @@ namespace Com.RedicalGames.Filar
                 {
                     content.name = GetFormattedName(content.name, new List<string>() { "(Clone)" });
 
-                    AppData.UIScreenWidget contentComponent = content.GetComponent<AppData.UIScreenWidget>();
+                    AppData.SelectableWidget contentComponent = content.GetComponent<AppData.SelectableWidget>();
 
                     callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(contentComponent, "Content Component", "Content Component Missing / Null / Not Yet Assigned In Parameter Value - Invalid Operation - Please Check Here."));
 
@@ -7882,13 +7882,13 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        void CreateDynamicScreenContents<U>(AppData.UIScreenWidget contentPrefab, List<U> contents, AppData.ContentContainerType containerType, AppData.OrientationType containerOrientation, Action<AppData.CallbackDataList<AppData.UIScreenWidget>> callback = null)
+        void CreateDynamicScreenContents<U>(AppData.SelectableWidget contentPrefab, List<U> contents, AppData.ContentContainerType containerType, AppData.OrientationType containerOrientation, Action<AppData.CallbackDataList<AppData.SelectableWidget>> callback = null)
         {
-            AppData.CallbackDataList<AppData.UIScreenWidget> callbackResults = new AppData.CallbackDataList<AppData.UIScreenWidget>();
+            AppData.CallbackDataList<AppData.SelectableWidget> callbackResults = new AppData.CallbackDataList<AppData.SelectableWidget>();
 
             if (contentPrefab != null)
             {
-                List<AppData.UIScreenWidget> createdContentList = new List<AppData.UIScreenWidget>();
+                List<AppData.SelectableWidget> createdContentList = new List<AppData.SelectableWidget>();
 
                 for (int i = 0; i < contents.Count; i++)
                 {
@@ -7898,7 +7898,7 @@ namespace Com.RedicalGames.Filar
                     {
                         content.name = GetFormattedName(content.name, new List<string>() { "(Clone)" });
 
-                        AppData.UIScreenWidget contentComponent = content.GetComponent<AppData.UIScreenWidget>();
+                        AppData.SelectableWidget contentComponent = content.GetComponent<AppData.SelectableWidget>();
 
                         if (contentComponent != null)
                         {

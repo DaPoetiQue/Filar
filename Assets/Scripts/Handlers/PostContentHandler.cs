@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Com.RedicalGames.Filar
 {
-    public class PostContentHandler : AppData.SelectableDynamicContent
+    public class PostContentHandler : AppData.SelectableWidgetComponent
     {
         #region Components
 

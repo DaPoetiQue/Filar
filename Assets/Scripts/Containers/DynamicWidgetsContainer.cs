@@ -150,7 +150,7 @@ namespace Com.RedicalGames.Filar
             return snapDraggedWidgetToHoveredFolder;
         }
 
-        public void UpdateWidgetsList(List<AppData.UIScreenWidget> widgets)
+        public void UpdateWidgetsList(List<AppData.SelectableWidget> widgets)
         {
             if (widgets != null)
             {
@@ -720,11 +720,11 @@ namespace Com.RedicalGames.Filar
         {
             if (container.childCount > 0)
             {
-                List<AppData.UIScreenWidget> skyboxWidgetsList = new List<AppData.UIScreenWidget>();
+                List<AppData.SelectableWidget> skyboxWidgetsList = new List<AppData.SelectableWidget>();
 
                 for (int i = 0; i < container.childCount; i++)
                 {
-                    AppData.UIScreenWidget widgetHandler = container.GetChild(i).GetComponent<AppData.UIScreenWidget>();
+                    AppData.SelectableWidget widgetHandler = container.GetChild(i).GetComponent<AppData.SelectableWidget>();
 
                     if (widgetHandler != null)
                     {
@@ -886,9 +886,9 @@ namespace Com.RedicalGames.Filar
             return selectableContentContainer;
         }
 
-        public void GetSelectedWidgetList(AppData.FocusedSelectionData selectionData, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
+        public void GetSelectedWidgetList(AppData.FocusedSelectionData selectionData, Action<AppData.CallbackData<List<AppData.SelectableWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>(GetContentCount());
+            AppData.CallbackData<List<AppData.SelectableWidget>> callbackResults = new AppData.CallbackData<List<AppData.SelectableWidget>>(GetContentCount());
 
             if (callbackResults.Success())
             {
@@ -898,7 +898,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (contentCallback.Success())
                         {
-                            List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
+                            List<AppData.SelectableWidget> widgets = new List<AppData.SelectableWidget>();
 
                             foreach (var selection in selectionData.selections)
                                 widgets.Add(contentCallback.data.Find(widget => widget.name == selection.name));
@@ -1007,7 +1007,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void OnFocusToWidget(AppData.UIScreenWidget focusToWidget, bool transitionTo = false, bool selectWidget = false)
+        public void OnFocusToWidget(AppData.SelectableWidget focusToWidget, bool transitionTo = false, bool selectWidget = false)
         {
             if (orientation == AppData.OrientationType.Vertical)
             {
@@ -1091,17 +1091,17 @@ namespace Com.RedicalGames.Filar
             return containerType;
         }
 
-        public void GetContent(Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
+        public void GetContent(Action<AppData.CallbackData<List<AppData.SelectableWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>();
+            AppData.CallbackData<List<AppData.SelectableWidget>> callbackResults = new AppData.CallbackData<List<AppData.SelectableWidget>>();
 
             if (GetContentCount().data > 0)
             {
-                List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
+                List<AppData.SelectableWidget> widgetsList = new List<AppData.SelectableWidget>();
 
                 for (int i = 0; i < GetContentCount().data; i++)
                 {
-                    AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
+                    AppData.SelectableWidget widget = container.transform.GetChild(i).GetComponent<AppData.SelectableWidget>();
 
                     if (widget != null)
                     {
@@ -1137,7 +1137,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void SetWidgetListIndex(AppData.UIScreenWidget widget, int index, Action<AppData.Callback> callback = null)
+        public void SetWidgetListIndex(AppData.SelectableWidget widget, int index, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1157,7 +1157,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetSelectableWidgetType(List<AppData.UIScreenWidget> widgets, Action<AppData.CallbackData<AppData.SelectableWidgetType>> callback)
+        public void GetSelectableWidgetType(List<AppData.SelectableWidget> widgets, Action<AppData.CallbackData<AppData.SelectableWidgetType>> callback)
         {
             AppData.CallbackData<AppData.SelectableWidgetType> callbackResults = new AppData.CallbackData<AppData.SelectableWidgetType>();
 
@@ -1193,19 +1193,19 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void GetContent(AppData.UIScreenWidget widgetToExcludeFromList, Action<AppData.CallbackData<List<AppData.UIScreenWidget>>> callback)
+        public void GetContent(AppData.SelectableWidget widgetToExcludeFromList, Action<AppData.CallbackData<List<AppData.SelectableWidget>>> callback)
         {
-            AppData.CallbackData<List<AppData.UIScreenWidget>> callbackResults = new AppData.CallbackData<List<AppData.UIScreenWidget>>(GetContentCount());
+            AppData.CallbackData<List<AppData.SelectableWidget>> callbackResults = new AppData.CallbackData<List<AppData.SelectableWidget>>(GetContentCount());
 
             if (callbackResults.Success())
             {
                 if (GetContentCount().data > 0)
                 {
-                    List<AppData.UIScreenWidget> widgetsList = new List<AppData.UIScreenWidget>();
+                    List<AppData.SelectableWidget> widgetsList = new List<AppData.SelectableWidget>();
 
                     for (int i = 0; i < GetContentCount().data; i++)
                     {
-                        AppData.UIScreenWidget widget = container.transform.GetChild(i).GetComponent<AppData.UIScreenWidget>();
+                        AppData.SelectableWidget widget = container.transform.GetChild(i).GetComponent<AppData.SelectableWidget>();
 
                         if (widget != null && widget.GetActive() && widget != widgetToExcludeFromList)
                         {
@@ -1244,9 +1244,9 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetContent(string contentName, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback)
+        public void GetContent(string contentName, Action<AppData.CallbackData<AppData.SelectableWidget>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>();
+            AppData.CallbackData<AppData.SelectableWidget> callbackResults = new AppData.CallbackData<AppData.SelectableWidget>();
 
             GetContent(contentFound =>
             {
@@ -1328,7 +1328,7 @@ namespace Com.RedicalGames.Filar
 
             if(selections != null && selections.Count > 0)
             {
-                List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
+                List<AppData.SelectableWidget> widgets = new List<AppData.SelectableWidget>();
 
                 foreach (var selection in selections)
                 {
@@ -1378,7 +1378,7 @@ namespace Com.RedicalGames.Filar
 
             if (selections != null && selections.Count > 0)
             {
-                List<AppData.UIScreenWidget> widgets = new List<AppData.UIScreenWidget>();
+                List<AppData.SelectableWidget> widgets = new List<AppData.SelectableWidget>();
 
                 foreach (var selection in selections)
                 {
@@ -1604,7 +1604,7 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void HasSelectedAll(List<AppData.UIScreenWidget> widgetList, Action<AppData.Callback> callback)
+        public void HasSelectedAll(List<AppData.SelectableWidget> widgetList, Action<AppData.Callback> callback)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1629,9 +1629,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public AppData.UIScreenWidget GetWidgetNamed(string widgetName)
+        public AppData.SelectableWidget GetWidgetNamed(string widgetName)
         {
-            AppData.UIScreenWidget widgetFound = null;
+            AppData.SelectableWidget widgetFound = null;
 
             if (GetContentCount().Success())
             {
@@ -1671,7 +1671,7 @@ namespace Com.RedicalGames.Filar
             return widgetFound;
         }
 
-        public void GetItem<T>(string itemName, Action<AppData.CallbackData<AppData.PageItem<T>>> callback) where T : AppData.UIScreenWidget
+        public void GetItem<T>(string itemName, Action<AppData.CallbackData<AppData.PageItem<T>>> callback) where T : AppData.SelectableWidget
         {
             AppData.CallbackData<AppData.PageItem<T>> callbackResults = new AppData.CallbackData<AppData.PageItem<T>>(GetContentCount());
 
@@ -1728,9 +1728,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        public void GetWidgetNamed(string widgetName, Action<AppData.CallbackData<AppData.UIScreenWidget>> callback)
+        public void GetWidgetNamed(string widgetName, Action<AppData.CallbackData<AppData.SelectableWidget>> callback)
         {
-            AppData.CallbackData<AppData.UIScreenWidget> callbackResults = new AppData.CallbackData<AppData.UIScreenWidget>(GetContentCount());
+            AppData.CallbackData<AppData.SelectableWidget> callbackResults = new AppData.CallbackData<AppData.SelectableWidget>(GetContentCount());
 
             if (callbackResults.Success())
             {
@@ -1802,7 +1802,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void GetWidgetSiblingIndex(AppData.UIScreenWidget widget, Action<AppData.CallbackData<int>> callback)
+        public void GetWidgetSiblingIndex(AppData.SelectableWidget widget, Action<AppData.CallbackData<int>> callback)
         {
             AppData.CallbackData<int> callbackResults = new AppData.CallbackData<int>();
 
@@ -1813,7 +1813,7 @@ namespace Com.RedicalGames.Filar
 
                 for (int i = 0; i < container.childCount; i++)
                 {
-                    if (!widgetFound && container.GetChild(i).GetComponent<AppData.UIScreenWidget>() == widget)
+                    if (!widgetFound && container.GetChild(i).GetComponent<AppData.SelectableWidget>() == widget)
                     {
                         siblingIndex = i;
                         widgetFound = true;
@@ -1954,7 +1954,7 @@ namespace Com.RedicalGames.Filar
             return paginationComponent;
         }
 
-        public void Pagination_GoToItemPage(AppData.UIScreenWidget item)
+        public void Pagination_GoToItemPage(AppData.SelectableWidget item)
         {
             paginationComponent.GetItemPageIndex(item.name, onItemPageIndexResults =>
             {
@@ -1968,7 +1968,7 @@ namespace Com.RedicalGames.Filar
             });
         }
 
-        public void Pagination_GoToItemPageAsync(AppData.UIScreenWidget item, Action<AppData.Callback> callback = null)
+        public void Pagination_GoToItemPageAsync(AppData.SelectableWidget item, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -1990,7 +1990,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        IEnumerator GoToItemPageAsync(AppData.UIScreenWidget item, Action<AppData.Callback> callback = null)
+        IEnumerator GoToItemPageAsync(AppData.SelectableWidget item, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
@@ -2013,7 +2013,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public int Pagination_GetItemPageIndex(AppData.UIScreenWidget item)
+        public int Pagination_GetItemPageIndex(AppData.SelectableWidget item)
         {
             int pageIndex = 0;
 
@@ -2039,7 +2039,7 @@ namespace Com.RedicalGames.Filar
             return pageIndex;
         }
 
-        public bool Pagination_ItemExistInCurrentPage(AppData.UIScreenWidget item)
+        public bool Pagination_ItemExistInCurrentPage(AppData.SelectableWidget item)
         {
             return paginationComponent.ItemExistInCurrentPage(item);
         }
@@ -2107,12 +2107,12 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public List<AppData.UIScreenWidget> Pagination_GetCurrentPage()
+        public List<AppData.SelectableWidget> Pagination_GetCurrentPage()
         {
             return paginationComponent.GetCurrentPage();
         }
 
-        public List<AppData.UIScreenWidget> Pagination_GetPage(int pageIndex)
+        public List<AppData.SelectableWidget> Pagination_GetPage(int pageIndex)
         {
             return paginationComponent.GetPage(pageIndex);
         }
@@ -2137,7 +2137,7 @@ namespace Com.RedicalGames.Filar
 
             yield return new WaitForEndOfFrame();
 
-            GetItem<AppData.UIScreenWidget>(selectionName, selectionCallback =>
+            GetItem<AppData.SelectableWidget>(selectionName, selectionCallback =>
             {
                 if (AppData.Helpers.IsSuccessCode(selectionCallback.resultCode))
                 {
@@ -2266,7 +2266,7 @@ namespace Com.RedicalGames.Filar
         public void OnSetWidgetsVisibilityState(bool visible)
         {
             for (int i = 0; i < container.childCount; i++)
-                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                if (container.GetChild(i).GetComponent<AppData.SelectableWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
                     container.GetChild(i).gameObject.SetActive(visible);
         }
 
@@ -2407,9 +2407,9 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < GetContentCount().data; i++)
                         {
-                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                            if (container.GetChild(i).GetComponent<AppData.SelectableWidget>())
                             {
-                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                                if (container.GetChild(i).GetComponent<AppData.SelectableWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
                                     Destroy(container.GetChild(i).gameObject);
                                 else
                                     LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
@@ -2461,9 +2461,9 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < GetContentCount().data; i++)
                         {
-                            if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>())
+                            if (container.GetChild(i).GetComponent<AppData.SelectableWidget>())
                             {
-                                if (container.GetChild(i).GetComponent<AppData.UIScreenWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                                if (container.GetChild(i).GetComponent<AppData.SelectableWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
                                     Destroy(container.GetChild(i).gameObject);
                                 else
                                     LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);

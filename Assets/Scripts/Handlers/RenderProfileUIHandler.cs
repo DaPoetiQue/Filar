@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class RenderProfileUIHandler : AppData.UIScreenWidget
+    public class RenderProfileUIHandler : AppData.SelectableWidget
     {
         #region Components
 
@@ -31,7 +31,7 @@ namespace Com.RedicalGames.Filar
             else
                 Debug.LogWarning("--> RG_Unity - Init Failed : Title Displayer Is Null.");
 
-            Init();
+            //Init();
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)

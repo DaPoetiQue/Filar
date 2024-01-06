@@ -2,7 +2,7 @@ using System;
 
 namespace Com.RedicalGames.Filar
 {
-    public class FolderEmptyContentWidgetHandler : AppData.UIScreenWidget
+    public class FolderEmptyContentWidgetHandler : AppData.SelectableWidget
     {
         #region Components
 

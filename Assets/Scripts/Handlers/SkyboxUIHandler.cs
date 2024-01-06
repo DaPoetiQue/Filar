@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SkyboxUIHandler : AppData.UIScreenWidget
+    public class SkyboxUIHandler : AppData.SelectableWidget
     {
 
         #region Components

@@ -272,6 +272,12 @@ namespace Com.RedicalGames.Filar
             ShowPostsButton,
             HidePostsButton,
             SelectPostButton,
+            LikePostButton,
+            DislikePostButton,
+            ViewCommentsButton,
+            SharePostButton,
+            AddToCartButton,
+            DownloadButton,
             None
         }
 
@@ -489,6 +495,9 @@ namespace Com.RedicalGames.Filar
             NavigationRootTitleDisplayer,
             PageCountDisplayer,
             TypeDisplayer,
+            PostLikeCountDisplayer,
+            PostDislikeCountDisplayer,
+            PostCommentsCountDisplayer,
             None
         }
 
@@ -2148,7 +2157,7 @@ namespace Com.RedicalGames.Filar
             [Tooltip("Do Not Initialize - Selectable Widgets Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
-            private LoadedAssetCache<ScreenType, UIScreenWidget> loadedSelectableWidgets = new LoadedAssetCache<ScreenType, UIScreenWidget>();
+            private LoadedAssetCache<ScreenType, SelectableWidget> loadedSelectableWidgets = new LoadedAssetCache<ScreenType, SelectableWidget>();
 
             [Tooltip("Do Not Initialize - Models Are Loaded Dynamically")]
             [Space(10)]
@@ -2381,7 +2390,7 @@ namespace Com.RedicalGames.Filar
 
                     case AssetBundleResourceLocatorType.Selectable:
 
-                        var loadedBundleSelectableWidgets = loadedAssetBundles.Select(asset => asset.GetComponent<UIScreenWidget>()).Where(asset => asset != null).ToList();
+                        var loadedBundleSelectableWidgets = loadedAssetBundles.Select(asset => asset.GetComponent<SelectableWidget>()).Where(asset => asset != null).ToList();
 
                         callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleSelectableWidgets, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
 
@@ -2605,9 +2614,9 @@ namespace Com.RedicalGames.Filar
 
             #region Selectable Widgets
 
-            public CallbackDataList<UIScreenWidget> GetLoadedSelectableWidgets(ScreenType screenType)
+            public CallbackDataList<SelectableWidget> GetLoadedSelectableWidgets(ScreenType screenType)
             {
-                var callbackResults = new CallbackDataList<UIScreenWidget>(loadedSelectableWidgets.GetCachedAssets(screenType));
+                var callbackResults = new CallbackDataList<SelectableWidget>(loadedSelectableWidgets.GetCachedAssets(screenType));
 
                 if (callbackResults.Success())
                     callbackResults.data = loadedSelectableWidgets.GetCachedAssets(screenType).GetData();
@@ -2617,13 +2626,13 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackDataList<UIScreenWidget> GetLoadedSelectableWidgets(ScreenType screenType = ScreenType.Any, params ScreenReferencedWidgetDependencyAssetBundle<SelectableWidgetType>[] screenReferencedWidgets)
+            public CallbackDataList<SelectableWidget> GetLoadedSelectableWidgets(ScreenType screenType = ScreenType.Any, params ScreenReferencedWidgetDependencyAssetBundle<SelectableWidgetType>[] screenReferencedWidgets)
             {
-                var callbackResults = new CallbackDataList<UIScreenWidget>(loadedSelectableWidgets.GetCachedAssets(screenType));
+                var callbackResults = new CallbackDataList<SelectableWidget>(loadedSelectableWidgets.GetCachedAssets(screenType));
 
                 if (callbackResults.Success())
                 {
-                    var selectableWidgets = new List<UIScreenWidget>();
+                    var selectableWidgets = new List<SelectableWidget>();
 
                     var loadedAssets = loadedSelectableWidgets.GetCachedAssets(screenType).GetData();
 
@@ -2674,9 +2683,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackDataList<UIScreenWidget> GetSelectableWidgets(ScreenType screenType)
+            public CallbackDataList<SelectableWidget> GetSelectableWidgets(ScreenType screenType)
             {
-                var callbackResults = new CallbackDataList<UIScreenWidget>(loadedSelectableWidgets.Initialized());
+                var callbackResults = new CallbackDataList<SelectableWidget>(loadedSelectableWidgets.Initialized());
 
                 if (callbackResults.Success())
                 {
@@ -2951,7 +2960,7 @@ namespace Com.RedicalGames.Filar
 
                             for (int i = 0; i < loadedAssets.Length; i++)
                             {
-                                var loadedAsset = loadedAssets[i] as UIScreenWidget;
+                                var loadedAsset = loadedAssets[i] as SelectableWidget;
 
                                 callbackResults.SetResult(loadedAsset.GetScreenType());
 
@@ -3038,7 +3047,7 @@ namespace Com.RedicalGames.Filar
 
             #region Dynamic Containers Functions
 
-            public void AddContentToDynamicWidgetContainer(UIScreenWidget contentWidget, ContentContainerType containerType, OrientationType orientation, Action<Callback> callback = null)
+            public void AddContentToDynamicWidgetContainer(SelectableWidget contentWidget, ContentContainerType containerType, OrientationType orientation, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
 
@@ -4095,7 +4104,7 @@ namespace Com.RedicalGames.Filar
 
             #region Contents
 
-            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent
+            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableWidgetComponent
             {
                 try
                 {
@@ -4151,7 +4160,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : SelectableDynamicContent
+            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : SelectableWidgetComponent
             {
                 try
                 {
@@ -4357,7 +4366,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public async Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false) where T : SelectableDynamicContent
+            public async Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false) where T : SelectableWidgetComponent
             {
                 try
                 {
@@ -4484,7 +4493,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<UIScreenWidget> GetScreenContent(string contentName)
+            public CallbackData<SelectableWidget> GetScreenContent(string contentName)
             {
                 return null;
             }
@@ -5274,6 +5283,8 @@ namespace Com.RedicalGames.Filar
                                                                         networkDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
 
                                                                         screenUIManager.GetCurrentScreen().GetData().ShowWidget(networkDataPackets);
+
+                                                                        ActionEvents.OnNetworkFailedEvent();
                                                                     }
                                                                 }
                                                             }
@@ -10512,7 +10523,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             public string name;
-            public UIScreenWidget widget;
+            public SelectableWidget widget;
             public ProjectStructureData structureData;
 
             #endregion
@@ -11200,12 +11211,12 @@ namespace Com.RedicalGames.Filar
             public int listView_ItemsPerPage;
 
             [Space(5)]
-            public List<List<UIScreenWidget>> pages = new List<List<UIScreenWidget>>();
+            public List<List<SelectableWidget>> pages = new List<List<SelectableWidget>>();
 
             public int CurrentPageIndex { get; set; }
 
-            List<UIScreenWidget> itemList = new List<UIScreenWidget>();
-            List<UIScreenWidget> currentPage = new List<UIScreenWidget>();
+            List<SelectableWidget> itemList = new List<SelectableWidget>();
+            List<SelectableWidget> currentPage = new List<SelectableWidget>();
 
             Widget paginationWidget;
 
@@ -11218,7 +11229,7 @@ namespace Com.RedicalGames.Filar
                 paginationWidget = ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(WidgetType.PagerNavigationWidget).GetData();
             }
 
-            public void Paginate(List<UIScreenWidget> source, int itemsPerPage)
+            public void Paginate(List<SelectableWidget> source, int itemsPerPage)
             {
                 itemList = source;
                 pages = AppDataExtensions.GetSubList(itemList, itemsPerPage);
@@ -11355,7 +11366,7 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public bool ItemExistInCurrentPage(UIScreenWidget itemToCheck)
+            public bool ItemExistInCurrentPage(SelectableWidget itemToCheck)
             {
                 bool itemExist = false;
 
@@ -11402,17 +11413,17 @@ namespace Com.RedicalGames.Filar
                 return itemExist;
             }
 
-            public List<UIScreenWidget> GetPage(int pageIndex)
+            public List<SelectableWidget> GetPage(int pageIndex)
             {
                 return pages[pageIndex];
             }
 
-            public List<UIScreenWidget> GetCurrentPage()
+            public List<SelectableWidget> GetCurrentPage()
             {
                 return currentPage;
             }
 
-            public List<UIScreenWidget> GoToPageIndex(int pageIndex)
+            public List<SelectableWidget> GoToPageIndex(int pageIndex)
             {
                 CurrentPageIndex = pageIndex;
 
@@ -11483,7 +11494,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetSlotAvailableOnScroller(List<UIScreenWidget> itemList, Action<Callback> callback)
+            public void GetSlotAvailableOnScroller(List<SelectableWidget> itemList, Action<Callback> callback)
             {
                 Callback callbackResults = new Callback();
 
@@ -12594,7 +12605,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public RectTransform GetPlaceHolder(UIScreenWidget screenWidget)
+            public RectTransform GetPlaceHolder(SelectableWidget screenWidget)
             {
                 value.name = screenWidget.name;
                 value.anchoredPosition = screenWidget.GetWidgetRect().anchoredPosition;
@@ -12604,9 +12615,9 @@ namespace Com.RedicalGames.Filar
                 return value;
             }
 
-            public UIScreenWidget GetWidget()
+            public SelectableWidget GetWidget()
             {
-                return value.GetComponent<UIScreenWidget>();
+                return value.GetComponent<SelectableWidget>();
             }
 
             public RectTransform GetContainer()
@@ -12901,7 +12912,7 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Select(UIScreenWidget selectable, SceneConfigDataPacket dataPackets, bool isInitialSelection = false)
+            public void Select(SelectableWidget selectable, SceneConfigDataPacket dataPackets, bool isInitialSelection = false)
             {
                 if(isInitialSelection)
                 {
@@ -12946,7 +12957,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            public void Deselect(UIScreenWidget deselectedWidget, Action<Callback> callback = null)
+            public void Deselect(SelectableWidget deselectedWidget, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -12993,7 +13004,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            public void AddSelectables(List<UIScreenWidget> selectables)
+            public void AddSelectables(List<SelectableWidget> selectables)
             {
 
                 Debug.LogError($"=====> Added {selectables.Count} Items On Refresh");
@@ -13014,9 +13025,9 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> AddSelectables Failed : Selectables List Is Null.");
             }
 
-            public List<UIScreenWidget> GetCurrentSelections()
+            public List<SelectableWidget> GetCurrentSelections()
             {
-                List<UIScreenWidget> widgetsList = new List<UIScreenWidget>();
+                List<SelectableWidget> widgetsList = new List<SelectableWidget>();
 
                 OnGetSelectedWidgets(selectionCallback => 
                 {
@@ -13209,17 +13220,17 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void OnGetSelectedWidgets(Action<CallbackDataList<UIScreenWidget>> callback)
+            public void OnGetSelectedWidgets(Action<CallbackDataList<SelectableWidget>> callback)
             {
-                CallbackDataList<UIScreenWidget> callbackResults = new CallbackDataList<UIScreenWidget>();
+                CallbackDataList<SelectableWidget> callbackResults = new CallbackDataList<SelectableWidget>();
 
                 if (HasActiveSelections())
                 {
-                    List<UIScreenWidget> selectionList = new List<UIScreenWidget>();
+                    List<SelectableWidget> selectionList = new List<SelectableWidget>();
 
                     foreach (var widget in focusedSelectionData?.selections)
                     {
-                        UIScreenWidget screenWidget = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widget.name);
+                        SelectableWidget screenWidget = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widget.name);
 
                         if (screenWidget != null)
                         {
@@ -13914,9 +13925,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetSelectionInfoState(List<UIScreenWidget> selectionList, FocusedSelectionType selectionType, Action<CallbackData<UIScreenWidget>> callback = null)
+            public void SetSelectionInfoState(List<SelectableWidget> selectionList, FocusedSelectionType selectionType, Action<CallbackData<SelectableWidget>> callback = null)
             {
-                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
+                CallbackData<SelectableWidget> callbackResults = new CallbackData<SelectableWidget>();
 
                 if (selectionList != null && selectionList.Count > 0)
                 {
@@ -23348,7 +23359,7 @@ namespace Com.RedicalGames.Filar
         public class FocusedSelectionInfoData
         {
             public string name;
-            public UIScreenWidget selection;
+            public SelectableWidget selection;
 
             public InputUIState state;
             public bool showSelection;
@@ -23817,7 +23828,7 @@ namespace Com.RedicalGames.Filar
 
         [RequireComponent(typeof(LayoutElement))]
         [RequireComponent(typeof(Button))]
-        public abstract class UIScreenWidget : SelectableDynamicContent, IScrollHandler
+        public abstract class SelectableWidget : SelectableWidgetComponent, IScrollHandler
         {
             #region Components
 
@@ -23852,7 +23863,7 @@ namespace Com.RedicalGames.Filar
 
             #region Non Inspector Components
 
-            List<UIScreenWidget> containerFolderWidgetsReferenceList = new List<UIScreenWidget>();
+            List<SelectableWidget> containerFolderWidgetsReferenceList = new List<SelectableWidget>();
 
             protected FocusedSelectionInfoData focusedSelectionInfoData = new FocusedSelectionInfoData();
             protected DynamicWidgetsContainer container;
@@ -23891,8 +23902,8 @@ namespace Com.RedicalGames.Filar
 
             private RectTransform parent;
 
-            protected UIScreenWidget widgetComponent = null;
-            protected UIScreenWidget hoveredWidget = null;
+            protected SelectableWidget widgetComponent = null;
+            protected SelectableWidget hoveredWidget = null;
 
             bool isFingerDown = false;
             bool isSelected = false;
@@ -23905,6 +23916,12 @@ namespace Com.RedicalGames.Filar
             int contentIndex = 0;
 
             PointerEventData currentEventData;
+
+            #region Widgets 
+
+            protected Dictionary<string, SelectableWidget> registeredSelectableWidgets = new Dictionary<string, SelectableWidget>();
+
+            #endregion
 
             #endregion
 
@@ -23920,40 +23937,136 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            protected void Init(Action<Callback> callback = null)
+            public void Init(Action<CallbackData<WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>>> callback)
             {
-                try
-                {
-                    Callback callbackResults = new Callback();
+                var callbackResults = new CallbackData<WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>>(GetType());
 
-                    InitializeInputs(inputsInitialization => 
+                #region Base Initialization
+
+                if (callbackResults.Success())
+                {
+                    #region Widgets
+
+                    RegisterEventAction(eventActionRegisteredCallbacResults =>
                     {
-                        callbackResults.SetResult(inputsInitialization);
+                        callbackResults.SetResult(eventActionRegisteredCallbacResults);
 
                         if (callbackResults.Success())
                         {
-                            widgetComponent = GetComponent<UIScreenWidget>();
-                            widgetRect = GetComponent<RectTransform>();
-                            layout = GetComponent<LayoutElement>();
-                            buttonComponent = GetComponent<Button>();
-                            parent = GetComponentInChildren<RectTransform>();
-                            Deselected();
-                            contentIndex = transform.GetSiblingIndex();
+                            InitializeInputs(inputsInitializationCallbackResults =>
+                            {
+                                callbackResults.SetResult(inputsInitializationCallbackResults);
 
-                            selectionButtonScaleVect = selectableComponent.GetWorldSpaceSelectionDimension();
+                                if (callbackResults.Success())
+                                {
+                                    OnRegisterSelectableWidget(this, onRegisterWidgetCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(onRegisterWidgetCallbackResults);
 
-                            container = GetComponentInParent<DynamicWidgetsContainer>();
+                                        if (callbackResults.Success())
+                                        {
+                                            //var widgetStatePacket = new WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>(this, WidgetStateType.Initialized);
+
+                                            //SetWidgetStatePacket(widgetStatePacket, async widgetStatePacketSetCallbackResults =>
+                                            //{
+                                            //    callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+
+                                            //    if (callbackResults.Success())
+                                            //    {
+                                            //        callbackResults.SetResult(GetInitialVisibilityState());
+
+                                            //        if (callbackResults.Success())
+                                            //        {
+                                            //            switch (GetInitialVisibilityState().GetData())
+                                            //            {
+                                            //                case UIScreenWidgetVisibilityState.Visible:
+
+                                            //                    //ShowWidget(GetType().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
+                                            //                    //{
+                                            //                    //    callbackResults.SetResult(showWidgetCallbackResults);
+                                            //                    //});
+
+                                            //                    break;
+
+                                            //                case UIScreenWidgetVisibilityState.Hidden:
+
+                                            //                    //HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
+                                            //                    //{
+                                            //                    //    callbackResults.SetResult(hideWidgetCallbackResults);
+                                            //                    //});
+
+                                            //                    break;
+                                            //            }
+
+                                            //            if (callbackResults.Success())
+                                            //            {
+                                            //                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                            //                callbackResults.data = widgetStatePacket;
+                                            //            }
+                                            //            else
+                                            //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //        }
+                                            //        else
+                                            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //    }
+                                            //    else
+                                            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //});
+                                        }
+                                    });
+                                }
+                            });
                         }
-                    });
 
-                    callback.Invoke(callbackResults);
+                    }, eventActions.ToArray());
+
+                    #endregion
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError($"--> RG_Unity - Init Failed : UIScreenWidget Initialization Failed With Results : {e}");
-                    throw e;
-                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback.Invoke(callbackResults);
+
+                #endregion
             }
+
+            protected void OnRegisterSelectableWidget<T>(T widget, Action<Callback> callback = null) where T : SelectableWidget
+            {
+                if (widget != null)
+                {
+                    Callback callbackResults = new Callback(Helpers.GetAppComponentValid(widget, $"{(!string.IsNullOrEmpty(widget?.GetName()) ? widget?.GetName() : "Widget")}", $"Widget : {(!string.IsNullOrEmpty(widget?.GetName()) ? widget?.GetName() : "Widget Name Not Assigned")} Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        if (!GetRegisteredSelectableWidgets().ContainsKey(widget.GetName()) && !GetRegisteredSelectableWidgets().ContainsValue(widget))
+                        {
+                            GetRegisteredSelectableWidgets().Add(widget.GetName(), widget);
+
+                            if (GetRegisteredSelectableWidgets().ContainsKey(widget.GetName()) && GetRegisteredSelectableWidgets().ContainsValue(widget))
+                            {
+                                callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType()} Has Been Registered Successfully.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"On Register Widget Failed - Widget : {widget.GetName()} - Of Type : {widget.GetType()} Is Not Registred - Unexpected Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"On Register Widget Failed - Widget : {widget.GetName()} - Of Type : {widget.GetType()} Already Exists In Registred Widgets.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+
+                    callback?.Invoke(callbackResults);
+                }
+                else
+                    throw new ArgumentNullException("On Register Widget Failed - Widget Is Null / Missing");
+            }
+
+            protected Dictionary<string, SelectableWidget> GetRegisteredSelectableWidgets() => registeredSelectableWidgets;
 
             public CallbackData<ScreenType> GetScreenType()
             {
@@ -24113,7 +24226,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public UIScreenWidget GetWidgetComponent()
+            public SelectableWidget GetWidgetComponent()
             {
                 return widgetComponent;
             }
@@ -24455,7 +24568,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (GetWidgetContainer().GetContentCount().data > 0)
                 {
-                    containerFolderWidgetsReferenceList = new List<UIScreenWidget>();
+                    containerFolderWidgetsReferenceList = new List<SelectableWidget>();
 
                     if (containerFolderWidgetsReferenceList.Count == 0)
                     {
@@ -25354,7 +25467,7 @@ namespace Com.RedicalGames.Filar
 
                     if (targetStorageDataDoesntExist)
                     {
-                        UIScreenWidget widget = this as UIScreenWidget;
+                        SelectableWidget widget = this as SelectableWidget;
 
                         Debug.LogError($"==> Path : {targetDirectoryData.path} - Directory : {targetDirectoryData.projectDirectory} Doesn't Exist");
 
@@ -25746,7 +25859,7 @@ namespace Com.RedicalGames.Filar
 
         #region Scene Content
 
-        public abstract class SceneContent : SelectableDynamicContent
+        public abstract class SceneContent : SelectableWidgetComponent
         {
             #region Components
 
@@ -25761,7 +25874,7 @@ namespace Com.RedicalGames.Filar
 
         #region Content Bsse Abstract
 
-        public abstract class SelectableDynamicContent : UIScreenWidgetBaseInput<SelectableWidgetType, WidgetType>, IContent, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
+        public abstract class SelectableWidgetComponent : UIScreenWidgetBaseInput<SelectableWidgetType, WidgetType>, IContent, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
         {
             #region Components
 
@@ -28257,7 +28370,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public List<UIScreenWidget> screenWidgetPrefabList = new List<UIScreenWidget>();
+            public List<SelectableWidget> screenWidgetPrefabList = new List<SelectableWidget>();
 
             [Space(5)]
             public ScreenType screenType;
@@ -28276,12 +28389,12 @@ namespace Com.RedicalGames.Filar
                 return initializePrefabData;
             }
 
-            public List<UIScreenWidget> GetUIScreenWidgetsPrefabData()
+            public List<SelectableWidget> GetUIScreenWidgetsPrefabData()
             {
                 return screenWidgetPrefabList;
             }
 
-            public void AddUIScreenWidgetPrefabData(UIScreenWidget widgetPrefab, Action<Callback> callback = null)
+            public void AddUIScreenWidgetPrefabData(SelectableWidget widgetPrefab, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -28333,7 +28446,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void RemoveUIScreenWidgetPrefabData(UIScreenWidget widgetPrefab, Action<Callback> callback = null)
+            public void RemoveUIScreenWidgetPrefabData(SelectableWidget widgetPrefab, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
@@ -28385,9 +28498,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetUIScreenWidgetData(SelectableWidgetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget>> callback)
+            public void GetUIScreenWidgetData(SelectableWidgetType assetType, LayoutViewType viewType, Action<CallbackData<SelectableWidget>> callback)
             {
-                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
+                CallbackData<SelectableWidget> callbackResults = new CallbackData<SelectableWidget>();
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -28440,9 +28553,9 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public CallbackData<UIScreenWidget> GetUIScreenWidgetData(SelectableWidgetType assetType, LayoutViewType viewType)
+            public CallbackData<SelectableWidget> GetUIScreenWidgetData(SelectableWidgetType assetType, LayoutViewType viewType)
             {
-                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
+                CallbackData<SelectableWidget> callbackResults = new CallbackData<SelectableWidget>();
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -28495,9 +28608,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableWidgetType assetType, LayoutViewType viewType, Action<CallbackData<UIScreenWidget>> callback)
+            public void GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableWidgetType assetType, LayoutViewType viewType, Action<CallbackData<SelectableWidget>> callback)
             {
-                CallbackData<UIScreenWidget> callbackResults = new CallbackData<UIScreenWidget>();
+                CallbackData<SelectableWidget> callbackResults = new CallbackData<SelectableWidget>();
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -28562,9 +28675,9 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-            public UIScreenWidget GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableWidgetType assetType, LayoutViewType viewType)
+            public SelectableWidget GetUIScreenWidgetData(SelectableWidgetType widgetType, SelectableWidgetType assetType, LayoutViewType viewType)
             {
-                UIScreenWidget screenWidgetData = null;
+                SelectableWidget screenWidgetData = null;
 
                 if (screenWidgetPrefabList != null && screenWidgetPrefabList.Count > 0)
                 {
@@ -30558,103 +30671,62 @@ namespace Com.RedicalGames.Filar
                 //    Debug.LogWarning("--> SetUIImageDisplayerValue Failed : imageDisplayerList Is Null / Empty.");
             }
 
-            public void SetUIImageDisplayerValue(Sprite value, ScreenImageType imageType)
+            public void SetUIImageDisplayerValue(Sprite value, ScreenImageType displayerType)
             {
-                //if (GetActive())
-                //{
-                //    if (actionGroup != null && actionGroup.Count > 0)
-                //    {
-                //        var initialized = actionGroup.FindAll(widget => widget.Initialized().Success());
+              var callbackResults = new Callback(Initialized(InputType.Image));
 
-                //        if (initialized != null && initialized.Count > 0)
-                //        {
-                //            foreach (var item in initialized)
-                //            {
-                //                foreach (var widgetData in item.GetInputActionGroup().GetData())
-                //                {
-                //                    if (widgetData.inputType == InputType.Image)
-                //                    {
-                //                        widgetData.GetInputDataPacket<ImageDataPacket>(dataPacketsCallback =>
-                //                        {
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.Image).GetData().Find(input => input.GetImageComponent().GetData().GetType().GetData() == displayerType);
 
-                //                            LogInfo($" +++++==============>>>> Found Image Data - Code : {dataPacketsCallback.GetResultCode} - Results : {dataPacketsCallback.GetResult}", this);
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {displayerType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
 
-                //                            if (dataPacketsCallback.Success())
-                //                            {
-                //                                var widget = widgetData.GetImageComponent();
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetImageComponent());
 
-                //                                LogInfo($" +++++==============>>>> Found Image Displayer : {widget.name} - Of Type : {widget.imageType}", this);
-
-                //                                if (widget != null && widget.imageType == imageType)
-                //                                {
-                //                                    if (widget.value)
-                //                                        widget.SetImageData(value);
-                //                                    else
-                //                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
-                //                                }
-                //                                else
-                //                                    LogError("Action Group Button Component Not Found", this);
-                //                            }
-                //                            else
-                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                //                        });
-
-                //                        break;
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-                //else
-                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+                        if (callbackResults.Success())
+                        {
+                            var imageDisplayer = inputActionHandler.GetImageComponent().GetData();
+                            imageDisplayer.SetImageData(value);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
-            public void SetUIImageDisplayerValue(Texture2D value, ScreenImageType imageType)
+            public void SetUIImageDisplayerValue(Texture2D value, ScreenImageType displayerType)
             {
-                //if (GetActive())
-                //{
-                //    if (actionGroup != null && actionGroup.Count > 0)
-                //    {
-                //        var initialized = actionGroup.FindAll(widget => widget.Initialized().Success());
+                var callbackResults = new Callback(Initialized(InputType.Image));
 
-                //        if (initialized != null && initialized.Count > 0)
-                //        {
-                //            foreach (var item in initialized)
-                //            {
-                //                foreach (var widgetData in item.GetInputActionGroup().GetData())
-                //                {
-                //                    if (widgetData.inputType == InputType.Image)
-                //                    {
-                //                        widgetData.GetInputDataPacket<ImageDataPacket>(dataPacketsCallback =>
-                //                        {
-                //                            if (dataPacketsCallback.Success())
-                //                            {
-                //                                var widget = widgetData.GetImageComponent();
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.Image).GetData().Find(input => input.GetImageComponent().GetData().GetType().GetData() == displayerType);
 
-                //                                if (widget != null && widget.imageType == imageType)
-                //                                {
-                //                                    if (widget.value)
-                //                                        widget.SetImageData(value);
-                //                                    else
-                //                                        LogError($"Set Action Button Event Failed - Action Button : {widget.name} Of Type : {imageType} Found With Missing Value - For Screen Widget : {name}.", this);
-                //                                }
-                //                                else
-                //                                    LogError("Action Group Button Component Not Found", this);
-                //                            }
-                //                            else
-                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                //                        });
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {displayerType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
 
-                //                        break;
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-                //else
-                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetImageComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var imageDisplayer = inputActionHandler.GetImageComponent().GetData();
+                            imageDisplayer.SetImageData(value);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             #endregion
@@ -31911,11 +31983,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetPaginationViewType() == PaginationViewType.Pager)
                                 {
-                                    List<UIScreenWidget> currentPage = AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetCurrentPage();
+                                    List<SelectableWidget> currentPage = AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GetCurrentPage();
 
                                     if (currentPage != null && currentPage.Count > 0)
                                     {
-                                        List<UIScreenWidget> selectedWidgets = new List<UIScreenWidget>();
+                                        List<SelectableWidget> selectedWidgets = new List<SelectableWidget>();
 
                                         foreach (var selectedWidget in currentPage)
                                             if (selectedWidget.IsSelected())
@@ -31934,7 +32006,7 @@ namespace Com.RedicalGames.Filar
                                                             if (Helpers.IsSuccessCode(getFolderStructureSelectionData.resultCode))
                                                             {
                                                                 int lastSelectionIndex = getFolderStructureSelectionData.data.Count - 1;
-                                                                UIScreenWidget lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
+                                                                SelectableWidget lastSelectedWidget = getFolderStructureSelectionData.data[lastSelectionIndex];
 
                                                                 if (lastSelectedWidget != null)
                                                                     AppDatabaseManager.Instance.GetRefreshData().screenContainer.Pagination_GoToItemPage(lastSelectedWidget);
@@ -33633,7 +33705,7 @@ namespace Com.RedicalGames.Filar
             {
                 yield return new WaitForEndOfFrame();
 
-                UIScreenWidget widget = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widgetName);
+                SelectableWidget widget = AppDatabaseManager.Instance.GetRefreshData().screenContainer.GetWidgetNamed(widgetName);
 
                 if (widget != null)
                     AppDatabaseManager.Instance.GetRefreshData().screenContainer.OnFocusToWidget(widget, true);
@@ -38787,7 +38859,7 @@ namespace Com.RedicalGames.Filar
             [Header("Scene Data")]
 
             [Space(5)]
-            public UIScreenWidget screenWidgetPrefab;
+            public SelectableWidget screenWidgetPrefab;
 
             [Space(5)]
             public DynamicWidgetsContainer dynamicWidgetsContainer;
@@ -43697,7 +43769,7 @@ namespace Com.RedicalGames.Filar
         public interface IContainer
         {
             bool SelectableContent();
-            CallbackData<UIScreenWidget> GetScreenContent(string contentName);
+            CallbackData<SelectableWidget> GetScreenContent(string contentName);
         }
 
         public interface IContainerBase
@@ -43750,9 +43822,9 @@ namespace Com.RedicalGames.Filar
 
             bool IsContentActive(int contentID);
 
-            void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableDynamicContent;
+            void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableWidgetComponent;
             void AddContent<T, U, V>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum;
-            Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false) where T : SelectableDynamicContent;
+            Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false) where T : SelectableWidgetComponent;
 
             void SetContainerSize(Vector3 size, Action<Callback> callback = null);
             CallbackData<ScreenType> GetScreenType();
@@ -43997,12 +44069,13 @@ namespace Com.RedicalGames.Filar
             OnAppStart,
             OnUpdate,
             OnLateUpdate,
-            OnFixedUpdate
+            OnFixedUpdate,
+            OnNetworkFailedEvent
         }
 
         #region Event Actions
 
-        #region Event Actrion Base
+        #region Event Action Base
 
         [Serializable]
         public abstract class EventAction : DataDebugger
@@ -44860,6 +44933,8 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnInitializationInProgressEvent;
             public static event Void _OnInitializationCompletedEvent;
 
+            public static event Void _OnNetworkFailedEvent;
+
             #region Unity Events
 
             public static event Void _Enabled;
@@ -44928,6 +45003,8 @@ namespace Com.RedicalGames.Filar
 
             public static void OnInitializationInProgressEvent() => _OnInitializationInProgressEvent?.Invoke();
             public static void OnInitializationCompletedEvent() => _OnInitializationCompletedEvent?.Invoke();
+
+            public static void OnNetworkFailedEvent() => _OnNetworkFailedEvent?.Invoke();
 
             #region Unity Event Callbacks
 
@@ -45016,6 +45093,16 @@ namespace Com.RedicalGames.Filar
                                 _Update -= eventAction.TriggeredEventMethod;
 
                             break;
+
+                        case EventType.OnNetworkFailedEvent:
+
+                            if (subscribe)
+                                _OnNetworkFailedEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnNetworkFailedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
                     }
 
                     var results = (subscribe) ? "Subcribed" : "Un-Subscribed";

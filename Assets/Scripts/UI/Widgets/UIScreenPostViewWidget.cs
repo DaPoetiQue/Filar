@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class UIScreenPostViewWidget : AppData.UIScreenWidget
+    public class UIScreenPostViewWidget : AppData.SelectableWidget
     {
         #region Components
 
@@ -98,36 +98,74 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnSetUIWidgetData(AppData.Post post)
         {
-            //#region Post 
+            var callbackResults = new AppData.Callback();
 
-            //SetUITextDisplayerValue(post.GetTitle(), AppData.ScreenTextType.TitleDisplayer);
+            #region Thumbnail
 
-            //#endregion
+            callbackResults.SetResult(GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail));
 
-            //#region Post Caption
+            if(callbackResults.Success())
+                SetUIImageDisplayerValue(post.GetPostThumbnail(), AppData.ScreenImageType.Thumbnail);
 
-            //SetUITextDisplayerValue(post.GetCaption(), AppData.ScreenTextType.MessageDisplayer);
+            #endregion
 
-            //#endregion
+            #region Post Title
 
-            //#region Post Date Time
+            SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, post.GetTitle(), postTitleSetCallbackResults => 
+            {
+                callbackResults.SetResult(postTitleSetCallbackResults);       
+            });
 
-            //LogInfo($" =>>>>>> Date Time : {new DateTime(post.creationDateTime)}");
+            #endregion
 
-            //var postCreationDateTime = AppData.Helpers.GetElapsedTime(new AppData.DateTimeComponent(new DateTime(post.creationDateTime)));
-            //SetUITextDisplayerValue(postCreationDateTime, AppData.ScreenTextType.DateTimeDisplayer);
+            #region Post Caption
 
-            //#endregion
+            SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, post.GetCaption(), postCaptionSetCallbackResults => 
+            {
+                callbackResults.SetResult(postCaptionSetCallbackResults);
+            });
+
+            #endregion
+
+            #region Post Date Time
+
+            var postCreationDateTime = AppData.Helpers.GetElapsedTime(new AppData.DateTimeComponent(new DateTime(post.creationDateTime)));
+
+            SetUITextDisplayerValue(AppData.ScreenTextType.DateTimeDisplayer, postCreationDateTime, postDateTimeSetCallbackResults => 
+            {
+                callbackResults.SetResult(postDateTimeSetCallbackResults);
+            });
+
+            #endregion
+
+            #region Post Likes Count Displayer
+
+            SetUITextDisplayerValue(AppData.ScreenTextType.PostLikeCountDisplayer, "24", postLikesCountSetCallbackResults =>
+            {
+                callbackResults.SetResult(postLikesCountSetCallbackResults);
+            });
+
+            #endregion
+
+            #region Post Dislikes Count Displayer
+
+            SetUITextDisplayerValue(AppData.ScreenTextType.PostDislikeCountDisplayer, "2", postDislikesCountSetCallbackResults =>
+            {
+                callbackResults.SetResult(postDislikesCountSetCallbackResults);
+            });
+
+            #endregion
+
+            #region Post Comments Count Displayer
+
+            SetUITextDisplayerValue(AppData.ScreenTextType.PostCommentsCountDisplayer, "8", postCommentsCountSetCallbackResults =>
+            {
+                callbackResults.SetResult(postCommentsCountSetCallbackResults);
+            });
+
+            #endregion
 
             //#region Thumbnail
-
-            //GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail, thumbnailCallbackResults =>
-            //{
-            //    if (thumbnailCallbackResults.Success())
-            //        SetUIImageDisplayerValue(post.GetPostThumbnail(), AppData.ScreenImageType.Thumbnail);
-            //    else
-            //        Log(thumbnailCallbackResults.GetResultCode, thumbnailCallbackResults.GetResult, this);
-            //});
 
             ////AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults =>
             ////{

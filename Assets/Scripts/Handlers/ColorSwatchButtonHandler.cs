@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Com.RedicalGames.Filar
 {
-    public class ColorSwatchButtonHandler : AppData.UIScreenWidget
+    public class ColorSwatchButtonHandler : AppData.SelectableWidget
     {
         #region Components
 
