@@ -585,6 +585,14 @@ namespace Com.RedicalGames.Filar
             SplashScreen,     
         }
 
+        public enum ConfigDataType
+        {
+            None,
+            infoConfigData,
+            sceneConfigData,
+            screenConfigData
+        }
+
         public enum SceneModelType
         {
             None,
@@ -1211,7 +1219,8 @@ namespace Com.RedicalGames.Filar
             Screen,
             Widget,
             Selectable,
-            Model
+            Model,
+            Config
         }
 
         public enum OrderInLayerType
@@ -1615,8 +1624,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-      
-
             #endregion
         }
 
@@ -1937,6 +1944,82 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+
+        [Serializable]
+        public class ScriptableLoadedAssetsCacheObject<T, U> : DataDebugger where T : Enum where U : ScriptableObject
+        {
+            #region Components
+
+            public T cacheKey;
+            public List<U> cachedAssetList = new List<U>();
+
+            #endregion
+
+            #region Main
+
+            public ScriptableLoadedAssetsCacheObject()
+            {
+
+            }
+
+            public ScriptableLoadedAssetsCacheObject(string name, T cacheKey, List<U> cachedAssetList = null)
+            {
+                this.cacheKey = cacheKey;
+                this.cachedAssetList = cachedAssetList;
+                SetName(name);
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(cachedAssetList, "Cached Asset List",
+                    $"Assets Cache List Initialization Failed - Loaded Assets Cache For Cache Key : {cacheKey} Is Not Initialized - Invalid Operation.",
+                    $"Assets Cache List Initialization Success - Loaded Assets Cache For Cache Key : {cacheKey} Has Been Initialized Successfully With : {cachedAssetList.Count} Assets."));
+
+                return callbackResults;
+            }
+
+            public void SetKey(T key) => this.cacheKey = key;
+
+            public CallbackDataList<U> GetCache()
+            {
+                var callbackResults = new CallbackDataList<U>(GetKey());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(cachedAssetList, "Cached Asset List", $"Cache Assets Are Not Yet Initialized For Cache Object : {GetName()} - Of Type : {cacheKey} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = cachedAssetList;
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<T> GetKey()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if (!cacheKey.ToString().ToLower().Equals("none"))
+                {
+                    callbackResults.result = $"Cache Object : {GetName()}'s Cache Key Type Is Set To : {cacheKey}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Cacke Key Failed - Cache Object : {GetName()}'s Cache Key Type Is Set To Default : {cacheKey} - Invalid Operation, Possible Fix, Varify If Cache Is Initialized .";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
         [Serializable]
         public class LoadedAssetCache<T, U> : DataDebugger where T : Enum where U : AppMonoBaseClass
         {
@@ -2044,6 +2127,134 @@ namespace Com.RedicalGames.Filar
                     for (int i = 0; i < assetBundles.Count; i++)
                     {
                         if(assetBundles[i].cacheKey.ToString().Equals(key.ToString()))
+                        {
+                            callbackResults.SetResult(assetBundles[i].Initialized());
+
+                            if (callbackResults.Success())
+                                callbackResults.data = assetBundles[i].cachedAssetList;
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class ScriptableLoadedAssetCache<T, U> : DataDebugger where T : Enum where U : ScriptableObject
+        {
+            #region Components
+
+            [Space(10)]
+            public List<ScriptableLoadedAssetsCacheObject<T, U>> assetBundles = new List<ScriptableLoadedAssetsCacheObject<T, U>>();
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(assetBundles, "Loaded Asset Cache",
+                    $"Loaded Assets Cache Initialization Failed - Loaded Assets Cache Is Not Initialized - Invalid Operation.",
+                    $"Loaded Assets Cache List Initialization Success - Loaded Assets Cache Has Been Initialized Successfully With : {assetBundles.Count} Assets Cache(s)."));
+
+                return callbackResults;
+            }
+
+            public void CacheLoadedAssets(T key, U value, Action<CallbackData<T>> callback = null)
+            {
+                var callbackResults = new CallbackData<T>(Helpers.GetAppComponentValid(value, "Cache Value", $"Could Add Asset To Cache Data Of Key : {key}, Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var loadedAssetsCacheData = assetBundles.Find(cachedData => cachedData.cacheKey.ToString().Equals(key.ToString()));
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(loadedAssetsCacheData, "Loaded Assets Cache Data", $"Loaded Assets Cache Data Of Category Type : {key} Not Found - A New Loaded Assets Cache Data Instance Of Type Will Be Created."));
+
+                    if (callbackResults.Success())
+                    {
+                        if (!loadedAssetsCacheData.cachedAssetList.Contains(value))
+                        {
+                            loadedAssetsCacheData.cachedAssetList.Add(value);
+
+                            if (loadedAssetsCacheData.cachedAssetList.Contains(value))
+                            {
+                                callbackResults.result = $"Add Asset To cache List Success : Value Has Been Successfully Added To Cached Assets Data Of Type : {key}.";
+                                callbackResults.data = key;
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Add Asset To cache List Failed : Value Failed To Be Added To Cached Assets Data Of Type : {key} - Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Add Asset To cache List Unsuccessful : Value Couldn't Be Added To Cached Assets Data Of Type : {key} - Asset Already Exists - Invalid Operation.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                    else
+                    {
+                        var newLoadedAssetsCacheData = new ScriptableLoadedAssetsCacheObject<T, U>(key.ToString(), key);
+
+                        newLoadedAssetsCacheData.cachedAssetList = new List<U>() { value };
+
+                        if (newLoadedAssetsCacheData.cachedAssetList.Contains(value))
+                        {
+                            if (!assetBundles.Contains(newLoadedAssetsCacheData))
+                            {
+                                assetBundles.Add(newLoadedAssetsCacheData);
+
+                                if (assetBundles.Contains(newLoadedAssetsCacheData))
+                                {
+                                    callbackResults.result = $"Add Asset To cache List Success : Value Has Been Successfully Added To A Newely Created Cached Assets Data Of Type : {key}.";
+                                    callbackResults.data = key;
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Add Asset To cache List Failed - The Newely Created Cache Assets Data Of Type : {key} Failed To Be Added For Some Wiered Reasons - Invalid Operation - Please Check Here.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Add Asset To cache List Failed - The Newely Created Cache Assets Data Of Type : {key} Already Exists In Loaded Asssets Cache - Invalid Operation.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Add Asset To cache List Failed : Value Failed To Be Added To Cached Assets Data Of Type : {key} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackDataList<U> GetCachedAssets(T key)
+            {
+                var callbackResults = new CallbackDataList<U>(Helpers.GetAppComponentValid(assetBundles, "Loaded Assets Cache", $"Get Cached Assets Failed - Couldn't Find Loaded Asset Cache For Cache Key : {key} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    for (int i = 0; i < assetBundles.Count; i++)
+                    {
+                        if (assetBundles[i].cacheKey.ToString().Equals(key.ToString()))
                         {
                             callbackResults.SetResult(assetBundles[i].Initialized());
 
@@ -2178,6 +2389,11 @@ namespace Com.RedicalGames.Filar
             [Space(10)]
             [SerializeField]
             private LoadedAssetCache<ScreenType, SceneModelComponent> loadedModels = new LoadedAssetCache<ScreenType, SceneModelComponent>();
+
+            [Tooltip("Do Not Initialize - Config Data Is Loaded Dynamically")]
+            [Space(10)]
+            [SerializeField]
+            private ScriptableLoadedAssetCache<ConfigDataType, ConfigMessageDataPacket> loadedConfigData = new ScriptableLoadedAssetCache<ConfigDataType, ConfigMessageDataPacket>();
 
             #region Dynamic Container
 
@@ -2327,12 +2543,57 @@ namespace Com.RedicalGames.Filar
                                 #endregion
                             }
                         };
+
+                        InitializeConfigDataEvent();
                     }
                     else
                         Log(GetAssetBundleKeyStrings().GetResultCode, GetAssetBundleKeyStrings().GetResult, this);
                 }
                 else
                     throw new Exception($"Failed To Initialize Addressables - Invalid Operation - Please See Here - Addressables Status : {evt.Status}");
+            }
+
+            private void InitializeConfigDataEvent()
+            {
+                var callbackResults = new Callback(GetInitializedAssetBundleResourceLocators());
+
+                if (callbackResults.Success())
+                {
+                    Addressables.LoadAssetsAsync<ScriptableObject>(new List<string>() { "Config"}, null, Addressables.MergeMode.None).Completed += (loadedAssetsCallbackResults) =>
+                    {
+                        if (loadedAssetsCallbackResults.Status == AsyncOperationStatus.Succeeded)
+                        {
+                            var initializedAssetBundleResourceLocators = GetInitializedAssetBundleResourceLocators().GetData();
+
+                            #region Screen Widgets
+
+                            for (int i = 0; i < initializedAssetBundleResourceLocators.Count; i++)
+                            {
+                                if (initializedAssetBundleResourceLocators[i].GetKey().GetData() == AssetBundleResourceLocatorType.Config)
+                                {
+                                    OnProccessLoadedConfigData(initializedAssetBundleResourceLocators[i].GetKey().GetData(), loadedAssetsCallbackResults.Result.ToList(), assetsProccessedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(assetsProccessedCallbackResults);
+                                    });
+
+                                    if (callbackResults.UnSuccessful())
+                                        break;
+                                }
+                                else
+                                    continue;
+                            }
+
+                            #endregion
+                        }
+                        else
+                        {
+                            callbackResults.result = "";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    };
+                }
+                else
+                    Log(GetAssetBundleKeyStrings().GetResultCode, GetAssetBundleKeyStrings().GetResult, this);
             }
 
             private void OnProccessLoadedWidgets(AssetBundleResourceLocatorType locatorType, List<GameObject> loadedAssetBundles, Action<Callback> callback = null)
@@ -2467,6 +2728,45 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            private void OnProccessLoadedConfigData(AssetBundleResourceLocatorType locatorType, List<ScriptableObject> loadedConfigDataBundles, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(loadedConfigDataBundles, "Loaded Config Data Bundles", "There Are No Loaded Config Data Bundles Found."));
+
+                if(locatorType == AssetBundleResourceLocatorType.Config)
+                {
+                    if (callbackResults.Success())
+                    {
+                        AddLoadedConfigDataToCache(locatorType, loadedAssetsCallbackResults =>
+                        {
+                            callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(loadedConfigData.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                if (callbackResults.Success())
+                                    GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        }, loadedConfigDataBundles.ToArray());
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                {
+                    callbackResults.result = "";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+
             }
 
             public async Task<Callback> OnAwaitAssetsInitialization(AssetBundleResourceLocatorType locatorType)
@@ -2811,6 +3111,41 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Config
+
+            //public CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>> GetLoadedConfigData(ScreenType screenType, ConfigDataType configDataType)
+            //{
+            //    var callbackResults = new CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>>(loadedConfigData.GetCachedAssets(screenType));
+
+            //    if (callbackResults.Success())
+            //        callbackResults.data = loadedConfigData.GetCachedAssets(screenType).GetData();
+            //    else
+            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            //    return callbackResults;
+            //}
+
+            //public CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>> GetConfigs(ScreenType screenType)
+            //{
+            //    var callbackResults = new CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>>(loadedConfigData.Initialized());
+
+            //    if (callbackResults.Success())
+            //    {
+            //        callbackResults.SetResult(loadedConfigData.GetCachedAssets(screenType));
+
+            //        if (callbackResults.Success())
+            //            callbackResults.data = loadedConfigData.GetCachedAssets(screenType).GetData();
+            //        else
+            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //    }
+            //    else
+            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            //    return callbackResults;
+            //}
+
+            #endregion
+
             #endregion
 
             public Callback OnResourceLocatorsInitialized()
@@ -2892,7 +3227,6 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-
                     switch(locatorType)
                     {
                         case AssetBundleResourceLocatorType.Screen:
@@ -3058,6 +3392,65 @@ namespace Com.RedicalGames.Filar
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
+            }
+
+            private void AddLoadedConfigDataToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ConfigDataType>> callback = null, params ScriptableObject[] loadedAssets)
+            {
+                var callbackResults = new CallbackData<ConfigDataType>(Helpers.GetAppComponentsValid(loadedAssets, "Loaded Assets",
+                  "Add Loaded Config Data To Cache Failed - There Are No Loaded Assets To Cache."));
+
+                if (callbackResults.Success())
+                {
+                    if(locatorType == AssetBundleResourceLocatorType.Config)
+                    {
+                        for (int i = 0; i < loadedAssets.Length; i++)
+                        {
+                            LogInfo($"__________+++===+++_____kkk Asset : {loadedAssets[i].name}", this);
+
+                            var loadedAsset = loadedAssets[i] as ConfigMessageDataPacket;
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedAsset, "Loaded Asset", "Loaded Config Data Casting From Scriptable Object Failed."));
+
+                            if (callbackResults.Success())
+                            {
+                                loadedConfigData.CacheLoadedAssets(loadedAsset.GetConfigType().GetData(), loadedAsset, selectableWidgetCachedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(selectableWidgetCachedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        if (selectableWidgetCachedCallbackResults.GetData() == loadedAsset.GetConfigType().GetData())
+                                        {
+                                            callbackResults.result = $"Added Loaded Asset For Screen : {selectableWidgetCachedCallbackResults.GetData()}.";
+                                            callbackResults.data = selectableWidgetCachedCallbackResults.GetData();
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Failed To Add Loaded Asset For Screen : {loadedAsset.GetScreenType().GetData()} - Invalid Operation - Please Check Here.";
+                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                });
+
+                                if (callbackResults.UnSuccessful())
+                                    break;
+                            }
+                            else
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             #region Dynamic Containers Functions
@@ -39033,7 +39426,13 @@ namespace Com.RedicalGames.Filar
             [Header("Config Info")]
 
             [Space(5)]
-            public T configType;
+            public ConfigDataType config = ConfigDataType.None;
+
+            [Space(5)]
+            public T type;
+
+            [Space(5)]
+            public ScreenType screenType = ScreenType.None;
 
             #endregion
 
@@ -39043,23 +39442,66 @@ namespace Com.RedicalGames.Filar
 
             public void SetName(string name) => this.name = name;
 
-            public void SetType(T type) => this.configType = type;
+            public void SetType(T type) => this.type = type;
 
             public new CallbackData<T> GetType()
             {
                 var callbackResults = new CallbackData<T>();
 
-                if (!configType.ToString().ToLower().Equals("none"))
+                if (!type.ToString().ToLower().Equals("none"))
                 {
-                    callbackResults.result = $"Get Config Data Packet For : {GetName()} Successful - Config Type Is Set To Type : {configType}";
-                    callbackResults.data = configType;
+                    callbackResults.result = $"Get Config Data Packet For : {GetName()} Successful - Config Type Is Set To Type : {type}";
+                    callbackResults.data = type;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Get Config Data Packet For : {GetName()} Failed  - Config Type Is Set To Default : {configType}";
+                    callbackResults.result = $"Get Config Data Packet For : {GetName()} Failed  - Config Type Is Set To Default : {type}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ConfigDataType> GetConfigType()
+            {
+                var callbackResults = new CallbackData<ConfigDataType>();
+
+                if (config != ConfigDataType.None)
+                {
+                    callbackResults.result = $"Get Config Type For : {GetName()} Successful - Config Type Is Set To Type : {config}";
+                    callbackResults.data = config;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Config Data Type For : {GetName()} Failed  - Config Type Is Set To Default : {config}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenType> GetScreenType()
+            {
+                var callbackResults = new CallbackData<ScreenType>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    if (screenType != ScreenType.None)
+                    {
+                        callbackResults.result = $"Screen Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Successfully Set To : {screenType}.";
+                        callbackResults.data = screenType;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Set To Default : {screenType} - Invalid Operation - Please Assign Screent Type Value.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
                 }
 
                 return callbackResults;
@@ -43961,6 +44403,10 @@ namespace Com.RedicalGames.Filar
             void SetType(T type);
 
             CallbackData<T> GetType();
+
+            CallbackData<ConfigDataType> GetConfigType();
+
+            CallbackData<ScreenType> GetScreenType();
 
             #endregion
         }

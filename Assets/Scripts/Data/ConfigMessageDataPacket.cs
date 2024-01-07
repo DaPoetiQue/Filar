@@ -42,7 +42,7 @@ namespace Com.RedicalGames.Filar
         public void SetTitle(string title) => this.title = title;
         public void SetMessage(string message) => this.message = message;
 
-        public void SetMessageType(AppData.ConfigMessageType messageType) => this.configType = messageType;
+        public void SetMessageType(AppData.ConfigMessageType messageType) => this.type = messageType;
 
         #endregion
 

@@ -18776,6 +18776,10 @@ MonoBehaviour:
       bundleKey: 4
       initialize: 1
       loaded: 0
+    - name: Config Data Resource Locator
+      bundleKey: 5
+      initialize: 1
+      loaded: 0
     loadedScreens:
       name: 
       assetBundles: []
@@ -18786,6 +18790,9 @@ MonoBehaviour:
       name: 
       assetBundles: []
     loadedModels:
+      name: 
+      assetBundles: []
+    loadedConfigData:
       name: 
       assetBundles: []
     dynamicContainerLibrary:

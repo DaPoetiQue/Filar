@@ -56,6 +56,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 033b08d844033034090e045f694a6ca8, type: 2}
   - {fileID: 11400000, guid: ea12d2342958bfa4a9d6d698480d6734, type: 2}
   - {fileID: 11400000, guid: 97f9cd425a5edce4697a157188c2a5d4, type: 2}
+  - {fileID: 11400000, guid: 079b7e62d35764a4ab62d2dbf9af1e9b, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -101,6 +102,7 @@ MonoBehaviour:
     - Widget
     - Selectable
     - Model
+    - Config
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 39bb3e37dcb37364cab85ef96fafb4f2, type: 2}
