@@ -180,6 +180,21 @@ namespace Com.RedicalGames.Filar
             MainTextureSettings
         }
 
+        public enum ObjectStateOverrideType
+        {
+            None,
+            Default,
+            Override
+        }
+
+        public enum ConfigMessageType
+        {
+            None,
+            NetworkWarningMessage,
+            VarificationMessage,
+            UpdateMessage
+        }
+
         public enum InputActionButtonType
         {
             ConfirmationButton,
@@ -5273,21 +5288,46 @@ namespace Com.RedicalGames.Filar
                                                                         OnCompletition();
                                                                     else
                                                                     {
-                                                                        screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.LoadingWidget);
+                                                                        callbackResults.SetResults(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
-                                                                        SceneConfigDataPacket networkDataPackets = new SceneConfigDataPacket();
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                                                                        networkDataPackets.SetReferencedScreenType(screenUIManager.GetCurrentScreenType().GetData());
-                                                                        networkDataPackets.SetReferencedWidgetType(WidgetType.NetworkNotificationWidget);
-                                                                        networkDataPackets.SetScreenBlurState(true);
-                                                                        networkDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
+                                                                            appDatabaseManagerInstance.GetDataPacketsLibrary().GetConfigMessageDataPacket(ConfigMessageType.NetworkWarningMessage, networkMessageCallbackResults => 
+                                                                            {
+                                                                                callbackResults.SetResult(networkMessageCallbackResults);
 
-                                                                        screenUIManager.GetCurrentScreen().GetData().ShowWidget(networkDataPackets);
+                                                                                if(callbackResults.Success())
+                                                                                {
+                                                                                    var configMessage = networkMessageCallbackResults.GetData();
 
-                                                                        ActionEvents.OnNetworkFailedEvent();
+                                                                                    screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.LoadingWidget);
+
+                                                                                    SceneConfigDataPacket networkDataPackets = new SceneConfigDataPacket();
+
+                                                                                    networkDataPackets.SetReferencedScreenType(screenUIManager.GetCurrentScreenType().GetData());
+                                                                                    networkDataPackets.SetReferencedWidgetType(WidgetType.NetworkNotificationWidget);
+                                                                                    networkDataPackets.SetScreenBlurState(true);
+                                                                                    networkDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
+
+                                                                                    screenUIManager.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, configMessage);
+
+                                                                                    ActionEvents.OnNetworkFailedEvent();
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     }
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             break;
 
@@ -21628,11 +21668,14 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class DataPacketsLibrary
+        public class DataPacketsLibrary : DataDebugger
         {
             #region Components
 
             public List<DataPacket> dataPacketsCollection = new List<DataPacket>();
+
+            [Space(5)]
+            public List<ConfigMessageDataPacket> configMessageDataPacketsCollection = new List<ConfigMessageDataPacket>();
 
             #endregion
 
@@ -21729,6 +21772,91 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = "There Are No Data Packets Found - Data Packets Collection Is Null.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void GetConfigMessageDataPacket(ConfigMessageType messageType, Action<CallbackData<ConfigMessageDataPacket>> callback)
+            {
+                var callbackResults = new CallbackData<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var messageConfig = configMessageDataPacketsCollection.Find(x => x.GetType().GetData() == messageType && x.Initialized().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(messageConfig, "Message Config", $"Get Config Message Data Packet Failed - Couldn't Find Config Message Data Packet Of Type : {messageType} - Or Config Data Is Not Initialized.", $"Found Config Message Data Packet Of Type : {messageType} In cCnfig Message Data Packets Collection."));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = messageConfig;
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback.Invoke(callbackResults);
+            }
+
+            public CallbackData<ConfigMessageDataPacket> GetConfigMessageDataPacket(ConfigMessageType messageType)
+            {
+                var callbackResults = new CallbackData<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var messageConfig = configMessageDataPacketsCollection.Find(x => x.GetType().GetData() == messageType && x.Initialized().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(messageConfig, "Message Config", $"Get Config Message Data Packet Failed - Couldn't Find Config Message Data Packet Of Type : {messageType} - Or Config Data Is Not Initialized.", $"Found Config Message Data Packet Of Type : {messageType} In cCnfig Message Data Packets Collection."));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = messageConfig;
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<ConfigMessageDataPacket> GetConfigMessageDataPackets()
+            {
+                var callbackResults = new CallbackDataList<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
+
+                if (callbackResults.Success())
+                    callbackResults.data = configMessageDataPacketsCollection;
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public void AddConfigMessageDataPacket(ConfigMessageDataPacket configMessage, Action<CallbackData<ConfigMessageDataPacket>> callback = null)
+            {
+                var callbackResults = new CallbackData<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    if (!configMessageDataPacketsCollection.Contains(configMessage))
+                    {
+                        configMessageDataPacketsCollection.Add(configMessage);
+
+                        callbackResults.result = $"Config Message Data Packet : {configMessage.GetName()} Has Been Successfully Added To Data Packets Collection.";
+                        callbackResults.data = configMessage;
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Couldn't Add Config Message Data Packet : {configMessage.GetName()} Already Exists In Data Packets Collection.";
+                        callbackResults.data = configMessage;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "There Are No Config Message Data Packets Found - Config Message Data Packets Collection Is Null.";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
@@ -27539,25 +27667,33 @@ namespace Com.RedicalGames.Filar
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
-            public void ShowWidget(SceneConfigDataPacket dataPackets, Action<bool> callback)
+            public void ShowWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null) where T : Enum
             {
-                if (widgets.Count == 0)
-                    return;
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(widgets, "Widgets", "Widgets Are Not Yet Initialized."));
 
-                foreach (var widget in widgets)
+                if (callbackResults.Success())
                 {
-                    if (widget.GetType().GetData() == dataPackets.widgetType)
+                    var widget = widgets.Find(x => x.GetType().GetData() == dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Failed To Find Widget Of Type : {dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()} - In Widgets. Widget Not Found."));
+
+                    if (callbackResults.Success())
                     {
                         if (dataPackets.blurScreen)
                             Blur(dataPackets);
 
-                        widget.ShowScreenWidget(dataPackets);
-
-                        callback.Invoke(true);
-
-                        break;
+                        widget.ShowScreenWidget(dataPackets, scriptableConfigData, screenWidgetCallbackResults => 
+                        {
+                            callbackResults.SetResult(screenWidgetCallbackResults);
+                        });
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void HideScreenWidget(WidgetType widgetType, bool canTransition = true)
@@ -33460,6 +33596,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void ShowScreenWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
@@ -33493,6 +33631,50 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            public void ShowScreenWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null, bool ignoreScreenData = false) where T : Enum
+            {
+                var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTransitionType());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(dataPackets.GetReferencedWidgetType());
+
+                        if (callbackResults.Success())
+                        {
+                            if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
+                            {
+                                SubscribeToEvents(callback: subscriptionCallbackResults =>
+                                {
+                                    if (subscriptionCallbackResults.UnSuccessful())
+                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                                });
+
+                                OnScreenWidget(dataPackets);
+                                OnScreenWidget(scriptableConfigData);
+                                OnShowScreenWidget();
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed to Show Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Screen Widget Type Doesn't Match Requested Widget Type : {dataPackets.widgetType} - Invalid Operation - Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             protected void ShowSelectedLayout(WidgetLayoutViewType layoutViewType, bool hideAll = true)
@@ -33733,6 +33915,7 @@ namespace Com.RedicalGames.Filar
             protected abstract void ScrollerPosition(Vector2 position);
 
             protected abstract void OnScreenWidget(SceneConfigDataPacket configDataPacket);
+            protected abstract void OnScreenWidget<T>(ScriptableConfigDataPacket<T> scriptableConfigData) where T : Enum;
             protected abstract void OnShowScreenWidget(Action<Callback> callback = null);
             protected abstract void OnHideScreenWidget(Action<Callback> callback = null);
 
@@ -38843,11 +39026,46 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public enum ObjectStateOverrideType
+        public class ScriptableConfigDataPacket<T> : ScriptableObject, IScriptableConfigDataPacket<T> where T : Enum
         {
-            None,
-            Default,
-            Override
+            #region Components
+
+            [Header("Config Info")]
+
+            [Space(5)]
+            public T configType;
+
+            #endregion
+
+            #region Main
+
+            public string GetName() => name;
+
+            public void SetName(string name) => this.name = name;
+
+            public void SetType(T type) => this.configType = type;
+
+            public new CallbackData<T> GetType()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if (!configType.ToString().ToLower().Equals("none"))
+                {
+                    callbackResults.result = $"Get Config Data Packet For : {GetName()} Successful - Config Type Is Set To Type : {configType}";
+                    callbackResults.data = configType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Config Data Packet For : {GetName()} Failed  - Config Type Is Set To Default : {configType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
         }
 
         [Serializable]
@@ -38863,7 +39081,6 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public DynamicWidgetsContainer dynamicWidgetsContainer;
-
 
             [Space(5)]
             public SceneAsset sceneAsset;
@@ -39001,6 +39218,7 @@ namespace Com.RedicalGames.Filar
 
             [HideInInspector]
             public List<ReferencedActionButtonData> referencedActionButtonDataList;
+
 
             public new string ToString()
             {
@@ -43731,6 +43949,21 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Interfaces
+
+        public interface IScriptableConfigDataPacket<T> where T : Enum
+        {
+            #region Main
+
+            string GetName();
+
+            void SetName(string name);
+
+            void SetType(T type);
+
+            CallbackData<T> GetType();
+
+            #endregion
+        }
 
         public interface IDataPackets
         {

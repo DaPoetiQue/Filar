@@ -1922,6 +1922,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &5238322917585538987
 GameObject:
   m_ObjectHideFlags: 0
@@ -2338,7 +2340,6 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup:
   - name: Action Buttons
     inputActionGroupType: 1
@@ -2512,6 +2513,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
@@ -4705,6 +4707,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &5238322919242273267
 GameObject:
   m_ObjectHideFlags: 0
@@ -6165,7 +6169,7 @@ MonoBehaviour:
         resultsType: 4
     fieldName: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 0}
+    value: {fileID: 5238322919348571420}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -6486,6 +6490,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &5238322919425121838
 GameObject:
   m_ObjectHideFlags: 0

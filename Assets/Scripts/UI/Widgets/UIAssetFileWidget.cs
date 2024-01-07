@@ -94,9 +94,9 @@ namespace Com.RedicalGames.Filar
 
                             if (widgetParentScreen != null)
                             {
-                                widgetParentScreen.ShowWidget(actionButton.dataPackets, (results) =>
+                                widgetParentScreen.ShowWidget(actionButton.dataPackets, callbackResults =>
                                 {
-                                    if (results)
+                                    if (callbackResults.Success())
                                         AppData.ActionEvents.OnScreenChangeEvent(actionButton.dataPackets);
                                     else
                                         Debug.LogWarning("--> Widget Screen Not Showing For Some Reason!");

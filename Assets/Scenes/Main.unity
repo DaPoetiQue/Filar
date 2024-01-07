@@ -18712,6 +18712,7 @@ MonoBehaviour:
         isRootFolder: 0
         referencedActionButtonDataList: []
   dataPacketsLibrary:
+    name: 
     dataPacketsCollection:
     - name: Splash Screen Data
       screenConfigDataPacket:
@@ -18749,6 +18750,8 @@ MonoBehaviour:
         name: 
         type: 0
         blurScreen: 0
+    configMessageDataPacketsCollection:
+    - {fileID: 11400000, guid: f70a6fb2ae83c7f43a5a7927d439744f, type: 2}
   shaderLibrabry:
     shaders:
     - name: Default Shader

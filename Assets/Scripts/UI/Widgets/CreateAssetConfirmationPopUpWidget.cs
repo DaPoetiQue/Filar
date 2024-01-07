@@ -312,6 +312,11 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

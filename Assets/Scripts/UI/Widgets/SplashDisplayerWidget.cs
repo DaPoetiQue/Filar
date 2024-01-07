@@ -236,6 +236,11 @@ namespace Com.RedicalGames.Filar
 
         int GetRandomIndex(int maxIndex = 2) => UnityEngine.Random.Range(0, maxIndex);
 
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
