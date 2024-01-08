@@ -127,7 +127,7 @@ namespace Com.RedicalGames.Filar
                 Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 
         }
@@ -139,53 +139,53 @@ namespace Com.RedicalGames.Filar
                 titleDisplayer.text = asset.name;
         }
 
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
-        {
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        //protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        //{
+        //    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            //switch (transitionType)
-            //{
-            //    case AppData.TransitionType.Default:
+        //    //switch (transitionType)
+        //    //{
+        //    //    case AppData.TransitionType.Default:
 
-            //        if (GetLayoutView(defaultLayoutType).layout)
-            //        {
-            //            if (exportedAssetNameInputField.value != null)
-            //            {
-            //                exportedAssetNameInputField.value.text = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
-            //            }
-            //            else
-            //                Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
+        //    //        if (GetLayoutView(defaultLayoutType).layout)
+        //    //        {
+        //    //            if (exportedAssetNameInputField.value != null)
+        //    //            {
+        //    //                exportedAssetNameInputField.value.text = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
+        //    //            }
+        //    //            else
+        //    //                Debug.LogWarning("--> OnShowScreenWidget Failed : Exported Asset Name Input Field Value Is Missing / Null.");
 
-            //            if (AppDatabaseManager.Instance)
-            //            {
-            //                if (AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value != null)
-            //                {
-            //                    assetExportData.name = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
-            //                    assetExportData.value = AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value;
-            //                }
-            //                else
-            //                    Debug.LogWarning("--> RG_Unity - OnShowScreenWidget Failed : Scene Assets Manager Instance's Get Current Scene Asset Scene Object Value Is Missing / Null");
+        //    //            if (AppDatabaseManager.Instance)
+        //    //            {
+        //    //                if (AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value != null)
+        //    //                {
+        //    //                    assetExportData.name = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
+        //    //                    assetExportData.value = AppDatabaseManager.Instance.GetCurrentSceneAsset().sceneObject.value;
+        //    //                }
+        //    //                else
+        //    //                    Debug.LogWarning("--> RG_Unity - OnShowScreenWidget Failed : Scene Assets Manager Instance's Get Current Scene Asset Scene Object Value Is Missing / Null");
 
-            //                AppDatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
-            //            }
-            //            else
-            //                Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
-            //        }
-            //        else
-            //            Debug.LogWarning("--> Pop Up Value Required.");
+        //    //                AppDatabaseManager.Instance.SetCurrentAssetExportData(assetExportData);
+        //    //            }
+        //    //            else
+        //    //                Debug.LogWarning("--> RG_Unity - OnDropDownExtensionsOptions Failed : Scene Assets Manager Instance Not Yet Initialized.");
+        //    //        }
+        //    //        else
+        //    //            Debug.LogWarning("--> Pop Up Value Required.");
 
-            //        break;
+        //    //        break;
 
-            //    case AppData.TransitionType.Translate:
+        //    //    case AppData.TransitionType.Translate:
 
-            //        break;
-            //}
+        //    //        break;
+        //    //}
 
-            //if (AppDatabaseManager.Instance)
-            //    SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
-            //else
-            //    Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
-        }
+        //    //if (AppDatabaseManager.Instance)
+        //    //    SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
+        //    //else
+        //    //    Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
+        //}
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
@@ -227,7 +227,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }

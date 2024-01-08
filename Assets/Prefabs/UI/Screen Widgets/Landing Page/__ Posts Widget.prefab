@@ -61,7 +61,7 @@ MonoBehaviour:
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0
-  transitionType: 1
+  transitionType: 2
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList:

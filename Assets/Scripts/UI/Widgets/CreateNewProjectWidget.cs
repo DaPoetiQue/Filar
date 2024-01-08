@@ -234,7 +234,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
             CreateNewFolderStructureData(newProjectCallbackResults => 
             {
@@ -293,8 +293,6 @@ namespace Com.RedicalGames.Filar
                     Log(newProjectCallbackResults.GetResultCode, newProjectCallbackResults.GetResult, this);
             });
         }
-
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null) => ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
 
@@ -376,7 +374,7 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }

@@ -14104,7 +14104,7 @@ GameObject:
   - component: {fileID: 1467314825}
   - component: {fileID: 1467314826}
   m_Layer: 0
-  m_Name: _App Manager
+  m_Name: __App Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15693,7 +15693,7 @@ GameObject:
   - component: {fileID: 1813465767}
   - component: {fileID: 1813465768}
   m_Layer: 0
-  m_Name: _3ridge Events Manager
+  m_Name: __3ridge Events Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16872,7 +16872,7 @@ GameObject:
   - component: {fileID: 1961201798}
   - component: {fileID: 1961201799}
   m_Layer: 0
-  m_Name: '>>> Debugging Manager'
+  m_Name: __Debugging Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -50,12 +50,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
-        {
-
-        }
-
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 
         }
@@ -100,7 +95,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }

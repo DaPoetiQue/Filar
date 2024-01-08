@@ -93,24 +93,19 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(GetScreenType());
 
-            if(callbackResults.Success())
+            if (callbackResults.Success())
             {
-                switch(GetScreenType().GetData())
+                switch (GetScreenType().GetData())
                 {
                     case AppData.ScreenType.LoadingScreen:
 
                         callbackResults.SetResult(GetImageInputHandler(AppData.ScreenImageType.Splash));
 
-                        if(callbackResults.Success())
+                        if (callbackResults.Success())
                         {
                             callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
 
@@ -118,11 +113,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 var timeManager = AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
 
-                                timeManager.InvokeEvent("Randomize Displayed Image", invokeRandomizeDisplayedImageCallbackResults => 
+                                timeManager.InvokeEvent("Randomize Displayed Image", invokeRandomizeDisplayedImageCallbackResults =>
                                 {
                                     callbackResults.SetResult(invokeRandomizeDisplayedImageCallbackResults);
 
-                                    if(callbackResults.Success())
+                                    if (callbackResults.Success())
                                     {
                                         var splashImageHandler = GetImageInputHandler(AppData.ScreenImageType.Splash).GetData();
                                         splashImageHandler.InitializeImageTransitions();
@@ -139,12 +134,16 @@ namespace Com.RedicalGames.Filar
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         break;
                 }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-            }      
+            callback?.Invoke(callbackResults);
         }
 
         void OnInitializationCompletedEvent()
@@ -236,7 +235,7 @@ namespace Com.RedicalGames.Filar
 
         int GetRandomIndex(int maxIndex = 2) => UnityEngine.Random.Range(0, maxIndex);
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }

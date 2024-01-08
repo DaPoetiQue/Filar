@@ -54,12 +54,12 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             var networkWarningConfigMessage = scriptableConfigData as ConfigMessageDataPacket;
 
@@ -73,15 +73,15 @@ namespace Com.RedicalGames.Filar
                 titleDisplayer.text = asset.name;
         }
 
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
-        {
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        //protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        //{
+        //    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            if (AppDatabaseManager.Instance)
-                SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
-            else
-                Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
-        }
+        //    if (AppDatabaseManager.Instance)
+        //        SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
+        //    else
+        //        Debug.LogWarning("--> Scene Assets Manager Not Yet Initialized.");
+        //}
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {

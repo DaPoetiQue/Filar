@@ -69,7 +69,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
 
@@ -225,14 +225,6 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
-        {
-            //if (!string.IsNullOrEmpty(base.dataPackets.popUpMessage))
-            //    SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, base.dataPackets.popUpMessage);
-
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-        }
-
         void UpdateWidgetSelection(AppData.SelectableWidget selectedWidget)
         {
             if (AppDatabaseManager.Instance.GetProjectStructureData().Success())
@@ -343,7 +335,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }

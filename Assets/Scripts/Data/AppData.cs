@@ -20554,6 +20554,75 @@ namespace Com.RedicalGames.Filar
             Repeat
         }
 
+        public enum TransitionableUIMountType
+        {
+            None,
+            Default,
+            Visible,
+            Hidden
+        }
+
+        [Serializable]
+        public class TransitionableUIMount : DataDebugger
+        {
+            #region Components
+
+            [SerializeField]
+            private ScreenSpaceTargetHandler mount;
+
+            [Space(5)]
+            [SerializeField]
+            private TransitionableUIMountType mountType;
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetMountType());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetMount());
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenSpaceTargetHandler> GetMount()
+            {
+                var callbackResults = new CallbackData<ScreenSpaceTargetHandler>(Helpers.GetAppComponentValid(mount, "Value", $"Failed To Get Value For : {GetName()} - Value Is Not Assigned In The Unity Editor Inspector Panel."));
+
+                if (callbackResults.Success())
+                    callbackResults.data = mount;
+
+                return callbackResults;
+            }
+
+            public CallbackData<TransitionableUIMountType> GetMountType()
+            {
+                var callbackResults = new CallbackData<TransitionableUIMountType>();
+
+                if(mountType != TransitionableUIMountType.None)
+                {
+                    callbackResults.result = $"Mount Type For : {GetName()} Is Set To : {mountType}";
+                    callbackResults.data = mountType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Mount Type For : {GetName()} - Mount Type Is Set To Default : {mountType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
         [Serializable]
         public class TransitionableUIComponent : DataDebugger
         {
@@ -20589,6 +20658,48 @@ namespace Com.RedicalGames.Filar
                 this.transitionableUISourceReference = transitionable;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+
+                if (transitionState != UITransitionStateType.None)
+                {
+                    if (transitionState == UITransitionStateType.Repeat)
+                    {
+                        if (transitionType != UITransitionType.None)
+                        {
+                            switch (transitionType)
+                            {
+                                case UITransitionType.Translate:
+
+                                    sourceOrigin = transitionable.anchoredPosition;
+
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    sourceOrigin = transitionable.GetWidgetScale();
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    sourceOrigin = transitionable.localEulerAngles;
+
+                                    break;
+                            }
+                        }
+                        else
+                            throw new Exception("Transition Failed : Transition Type Is Set To Default : NONE.");
+                    }
+                }
+                else
+                    throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
+            }
+
+            public TransitionableUIComponent(RectTransform transitionable, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed)
+            {
+                this.transitionableUISourceReference = transitionable;
+                this.transitionType = transitionType;
+                this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
 
                 if (transitionState != UITransitionStateType.None)
                 {
@@ -21304,6 +21415,38 @@ namespace Com.RedicalGames.Filar
                         case UITransitionType.Rotate:
 
                             this.target = target.localEulerAngles;
+
+                            break;
+                    }
+
+                    if (transitionState == UITransitionStateType.Repeat)
+                        targetOrigin = this.target;
+                }
+                else
+                    throw new ArgumentException("Set Target Failed : Transition Type Is Set To Default : NONE.");
+            }
+
+            public void SetTarget(ScreenSpaceTargetHandler target)
+            {
+                if (transitionType != UITransitionType.None)
+                {
+                    switch (transitionType)
+                    {
+                        case UITransitionType.Translate:
+
+                            this.target = target.GetPosition();
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            this.target = target.GetScale();
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            this.target = target.GetRotation();
 
                             break;
                     }
@@ -28767,6 +28910,23 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public CallbackData<RectTransform> GetLayoutWidgetRect()
+            {
+                var callbackResults = new CallbackData<RectTransform>(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    var layoutWidgetRect = Initialized().GetData().GetComponent<RectTransform>();
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(layoutWidgetRect, "Layout Widget Rect", $"Couldn't Find Layout Widget Rect For Layout : {layoutName} Of Type : {GetType().GetData()}", $"Layout Widget Rect For Layout : {layoutName} Of Type : {GetType().GetData()} Has Been Successfully Found."));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = layoutWidgetRect;
+                }
+
+                return callbackResults;
+            }
+
             #endregion
         }
 
@@ -29378,9 +29538,22 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected int orderInLayer = 0;
 
+            #region Transitionable
+
             [Space(5)]
             [SerializeField]
             protected TransitionType transitionType = TransitionType.None;
+
+            [Space(10)]
+            [Header("Widget Transition Config")]
+
+            [Space(5)]
+            [SerializeField]
+            private List<TransitionableUIMount> transitionableUIMountList = new List<TransitionableUIMount>();
+
+            private TransitionableUIComponent transitionableUIComponent = new TransitionableUIComponent();
+
+            #endregion
 
             [Space(5)]
             [SerializeField]
@@ -29415,14 +29588,11 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-
             #region Timed Events
 
             private List<TimedEventComponent> timedEventComponentList = new List<TimedEventComponent>();
 
             #endregion
-
-           
 
             #region Actions
 
@@ -29448,6 +29618,23 @@ namespace Com.RedicalGames.Filar
             }
 
             #region Data Setters
+
+            #region Transitionable UI Data
+
+            protected void SetTransitionableUIComponent(TransitionableUIComponent transitionable, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(transitionable, "Transitionable", $"Transitionable For : {GetName()} - Of Type : {GetType().GetData()}'s Parameter Value Is Missing - Please Check Here."));
+
+                if (callbackResults.Success())
+                {
+                    transitionableUIComponent = transitionable;
+                    callbackResults.result = $"Transitionable UI Component For : {GetName()} - Of Type : {GetType().GetData()} Has Been Successfully Set.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
 
             protected void SetWidgetStatePacket(WidgetStatePacket<T, U> statePacket, Action<CallbackData<WidgetStatePacket<T, U>>> callback = null)
             {
@@ -29486,6 +29673,86 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Data Getters
+
+            #region Transitionable Data
+
+            protected CallbackData<TransitionableUIComponent> GetTransitionableUIComponent()
+            {
+                var callbackResults = new CallbackData<TransitionableUIComponent>(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Transitionable UI Component For : {GetName()} - Of Type : {GetType().GetData()} Has Not Been Initialized - Please Check Here."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Transitionable UI Component For : {GetName()} - Of Type : {GetType().GetData()} Has Been Successfully Initialized.";
+                    callbackResults.data = transitionableUIComponent;
+                }
+
+                return callbackResults;
+            }
+
+            protected CallbackDataList<TransitionableUIMount> GetTransitionableUIMounts()
+            {
+                var callbackResults = new CallbackDataList<TransitionableUIMount>(Helpers.GetAppComponentsValid(transitionableUIMountList, "Transitionable UI Mount List", $"There Are No Transitionable UI Mount List Initialized For : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"{transitionableUIMountList.Count} Transitionable UI Mounts Have Been Successfully Found.";
+                    callbackResults.data = transitionableUIMountList;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected CallbackData<TransitionableUIMount> GetTransitionableUIMount(TransitionableUIMountType mountType)
+            {
+                var callbackResults = new CallbackData<TransitionableUIMount>(GetTransitionableUIMounts());
+
+                if(callbackResults.Success())
+                {
+                    var transitionableUIMount = GetTransitionableUIMounts().GetData().Find(transitionable => transitionable.GetMountType().GetData() == mountType && transitionable.Initialized().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIMount, "Transitionable UI Mount", $"Failed To Find Transitionable UI Mount Of Type : {mountType} In Transitionable UI Mount. Please Check If Transitionable UI Mount Is Initialized In The Inspector Panel"));
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"Transitionable UI Mount : {transitionableUIMount.GetName()} Of Type : {mountType} Was Loaded And Initialized Successfully.";
+                        callbackResults.data = transitionableUIMount;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected CallbackData<ScreenSpaceTargetHandler> GetTransitionableUIMountTarget(TransitionableUIMountType mountType)
+            {
+                var callbackResults = new CallbackData<ScreenSpaceTargetHandler>(GetTransitionableUIMounts());
+
+                if (callbackResults.Success())
+                {
+                    var transitionableUIMount = GetTransitionableUIMounts().GetData().Find(transitionable => transitionable.GetMountType().GetData() == mountType && transitionable.Initialized().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIMount, "Transitionable UI Mount", $"Failed To Find Transitionable UI Mount Of Type : {mountType} In Transitionable UI Mount. Please Check If Transitionable UI Mount Is Initialized In The Inspector Panel"));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Transitionable UI Mount Target : {transitionableUIMount.GetName()} Of Type : {mountType} Was Loaded And Initialized Successfully.";
+                        callbackResults.data = transitionableUIMount.GetMount().GetData();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             public CallbackDataList<DynamicContainerBase> GetDynamicContainerList()
             {
@@ -31968,7 +32235,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType>(this, WidgetStateType.Initialized);
 
-                                                SetWidgetStatePacket(widgetStatePacket, async widgetStatePacketSetCallbackResults =>
+                                                SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(widgetStatePacketSetCallbackResults);
 
@@ -32001,8 +32268,51 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
-                                                                callbackResults.data = widgetStatePacket;
+                                                                callbackResults.SetResult(GetTransitionType());
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    if (GetTransitionType().GetData() == TransitionType.Translate)
+                                                                    {
+                                                                        callbackResults.SetResult(GetTransitionableUIMounts());
+
+                                                                        if(callbackResults.Success())
+                                                                        {
+                                                                            callbackResults.SetResult(GetLayoutView().GetData().GetLayoutWidgetRect());
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized."));
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized.").GetData();
+
+                                                                                    var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
+                                                                                    var transitionSpeed = appDatabaseManagerInstance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value;
+
+                                                                                    var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, transitionSpeed);
+
+                                                                                    SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(transitionableCallbackResults);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    }
+
+                                                                    callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                                                    callbackResults.data = widgetStatePacket;
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33916,6 +34226,26 @@ namespace Com.RedicalGames.Filar
 
             public void SetOnInputValueChanged(int value, InputFieldConfigDataPacket dataPackets) => OnInputFieldValueChanged(value, dataPackets);
 
+            protected CallbackData<WidgetLayoutViewType> GetDefaultLayoutType()
+            {
+                var callbackResults = new CallbackData<WidgetLayoutViewType>();
+
+                if(defaultLayoutType != WidgetLayoutViewType.None)
+                {
+                    callbackResults.result = $"Default Layout Type Has Been Successfully Set To : {defaultLayoutType}";
+                    callbackResults.data = defaultLayoutType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Default Layout Type Failed - Default Layout Type Is Set To Default : {defaultLayoutType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
             public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
 
             public void ShowScreenWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
@@ -33924,11 +34254,11 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionType());
+                    callbackResults.SetResult(dataPackets.GetReferencedWidgetType());
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(dataPackets.GetReferencedWidgetType());
+                        callbackResults.SetResult(GetDefaultLayoutType());
 
                         if (callbackResults.Success())
                         {
@@ -33941,7 +34271,11 @@ namespace Com.RedicalGames.Filar
                                 });
 
                                 OnScreenWidget(dataPackets);
-                                OnShowScreenWidget();
+
+                                ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults => 
+                                {
+                                    callbackResults.SetResult(showLayoutCallbackResults);
+                                });
                             }
                             else
                             {
@@ -33967,7 +34301,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionType());
+                    callbackResults.SetResult(GetDefaultLayoutType());
 
                     if (callbackResults.Success())
                     {
@@ -33979,7 +34313,10 @@ namespace Com.RedicalGames.Filar
                                     Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
                             });
 
-                            OnShowScreenWidget();
+                            ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
+                            {
+                                callbackResults.SetResult(showLayoutCallbackResults);
+                            });
                         }
                         else
                         {
@@ -33992,6 +34329,7 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
             }
 
             public void ShowScreenWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null, bool ignoreScreenData = false) where T : Enum
@@ -34000,11 +34338,11 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionType());
+                    callbackResults.SetResult(dataPackets.GetReferencedWidgetType());
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(dataPackets.GetReferencedWidgetType());
+                        callbackResults.SetResult(GetDefaultLayoutType());
 
                         if (callbackResults.Success())
                         {
@@ -34018,7 +34356,11 @@ namespace Com.RedicalGames.Filar
 
                                 OnScreenWidget(dataPackets);
                                 OnScreenWidget(scriptableConfigData);
-                                OnShowScreenWidget();
+
+                                ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
+                                {
+                                    callbackResults.SetResult(showLayoutCallbackResults);
+                                });
                             }
                             else
                             {
@@ -34038,142 +34380,74 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void ShowSelectedLayout(WidgetLayoutViewType layoutViewType, bool hideAll = true)
+            #region Layouts
+
+            protected void ShowSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
             {
-                if (hideAll)
-                {
-                    if (widgetLayouts.Count > 0)
-                    {
-                        foreach (var layout in widgetLayouts)
-                        {
-                            if (layout.viewType == layoutViewType)
-                                layout.ShowLayout();
-                            else
-                                layout.HideLayout();
-                        }
-                    }
-                    else
-                        LogWarning("Show Selected Layout Failed - Widget Layouts Missing / Not Assigned In The Inspector.", this, () => ShowSelectedLayout(layoutViewType, hideAll = true));
-                }
-                else
-                {
-                    WidgetLayoutView layoutView = widgetLayouts.Find(widget => widget.viewType == layoutViewType);
-
-                    if (layoutView.layout)
-                        layoutView.ShowLayout();
-                }
-            }
-
-            protected void HideSelectedLayout(WidgetLayoutViewType layoutViewType, bool hideAll = true)
-            {
-                if (hideAll)
-                {
-                    if (widgetLayouts.Count > 0)
-                    {
-                        foreach (var layout in widgetLayouts)
-                            layout.HideLayout();
-                    }
-                    else
-                        LogWarning("Show Selected Layout Failed - Widget Layouts Missing / Not Assigned In The Inspector.", this, () => HideSelectedLayout(layoutViewType, hideAll = true));
-                }
-                else
-                {
-                    WidgetLayoutView layoutView = widgetLayouts.Find(widget => widget.viewType == layoutViewType);
-
-                    if (layoutView.layout)
-                        layoutView.HideLayout();
-                }
-            }
-
-            protected void ShowWidget(TransitionType transitionType, SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
-            {
-                var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
+                var callbackResults = new Callback(GetTransitionType());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionType());
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
 
                     if (callbackResults.Success())
                     {
-                        if (transitionType == GetTransitionType().GetData())
-                        {
-                            OnScreenWidget(dataPackets);
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
 
-                            switch (transitionType)
-                            {
-                                case TransitionType.Default:
-
-                                    if (dataPackets.widgetScreenPosition != Vector2.zero)
-                                        if (widgetRect != null)
-                                            widgetRect.anchoredPosition = dataPackets.widgetScreenPosition;
-                                        else
-                                            LogWarning("Screen Rect Is Null.", this, () => ShowWidget(transitionType, dataPackets));
-
-                                    OnShowScreenWidget();
-                                    OnEnabled();
-
-                                    break;
-
-                                case TransitionType.Translate:
-
-                                    onWidgetTransition = true;
-                                    showWidget = true;
-
-                                    break;
-                            }
-
-                            SubscribeToEvents(callback: subscriptionCallbackResults =>
-                            {
-                                if (subscriptionCallbackResults.UnSuccessful())
-                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                            });
-                        }
-                    }
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void ShowWidget(Widget widget, Action<Callback> callback = null, bool ignoreScreenData = false)
-            {
-                var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetTransitionType());
-
-                    if (callbackResults.Success())
-                    {
                         switch (GetTransitionType().GetData())
                         {
                             case TransitionType.Default:
 
-                                //if (widget != null)
-                                //{
+                                layoutView.ShowLayout(layoutShouCallbackRessults => 
+                                {
+                                    callbackResults.SetResult(layoutShouCallbackRessults);
 
-                                //    widget.SetWidgetAnchoredPosition(widget.GetDataPackets().GetData().widgetScreenPosition);
-                                //}
-
-                                //OnShowScreenWidget(widget.GetDataPackets().GetData());
-
-                                OnShowScreenWidget();
-                                OnEnabled();
+                                    if(callbackResults.Success())
+                                        OnEnabled();
+                                });
 
                                 break;
 
                             case TransitionType.Translate:
 
-                                onWidgetTransition = true;
-                                showWidget = true;
+                                callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                if (callbackResults.Success())
+                                {
+                                    var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                    callbackResults.SetResult(GetTransitionableUIMount(TransitionableUIMountType.Visible));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        layoutView.ShowLayout(async layoutShouCallbackRessults =>
+                                        {
+                                            callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var visibleMountTarget = GetTransitionableUIMountTarget(TransitionableUIMountType.Visible).GetData();
+                                                transitionalComponent.SetTarget(visibleMountTarget);
+
+                                                var invokedTransition = await transitionalComponent.InvokeTransitionAsync();
+
+                                                callbackResults.SetResult(invokedTransition);
+
+                                                if(callbackResults.Success())
+                                                    OnEnabled();
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
                         }
-
-                        SubscribeToEvents(callback: subscriptionCallbackResults =>
-                        {
-                            if (subscriptionCallbackResults.UnSuccessful())
-                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                        });
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -34183,6 +34457,92 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
+
+            protected void HideSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
+
+                    if (callbackResults.Success())
+                    {
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        switch (GetTransitionType().GetData())
+                        {
+                            case TransitionType.Default:
+
+                                layoutView.HideLayout(layoutShouCallbackRessults =>
+                                {
+                                    callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                    if (callbackResults.Success())
+                                        OnDisabled();
+                                });
+
+                                break;
+
+                            case TransitionType.Translate:
+
+                                callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                if (callbackResults.Success())
+                                {
+                                    var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                    transitionalComponent.CancelTransition(transitionCancelledCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(transitionCancelledCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(GetTransitionableUIMount(TransitionableUIMountType.Hidden));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                layoutView.HideLayout(async layoutHideCallbackRessults =>
+                                                {
+                                                    callbackResults.SetResult(layoutHideCallbackRessults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var visibleMountTarget = GetTransitionableUIMountTarget(TransitionableUIMountType.Hidden).GetData();
+                                                        transitionalComponent.SetTarget(visibleMountTarget);
+
+                                                        var invokedTransition = await transitionalComponent.InvokeTransitionAsync();
+
+                                                        callbackResults.SetResult(invokedTransition);
+
+                                                        if (callbackResults.Success())
+                                                            OnDisabled();
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
 
             protected void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
@@ -34206,8 +34566,8 @@ namespace Com.RedicalGames.Filar
 
                                 //OnShowScreenWidget(widgetType.GetDataPackets().GetData());
 
-                                OnShowScreenWidget();
-                                OnEnabled();
+                                //OnShowScreenWidget();
+                                //OnEnabled();
 
                                 break;
 
@@ -34275,9 +34635,8 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void ScrollerPosition(Vector2 position);
 
-            protected abstract void OnScreenWidget(SceneConfigDataPacket configDataPacket);
-            protected abstract void OnScreenWidget<T>(ScriptableConfigDataPacket<T> scriptableConfigData) where T : Enum;
-            protected abstract void OnShowScreenWidget(Action<Callback> callback = null);
+            protected abstract void OnScreenWidget(SceneConfigDataPacket configDataPacket, Action<Callback> callback = null);
+            protected abstract void OnScreenWidget<T>(ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null) where T : Enum;
             protected abstract void OnHideScreenWidget(Action<Callback> callback = null);
 
             #endregion

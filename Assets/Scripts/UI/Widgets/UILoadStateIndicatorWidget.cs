@@ -77,31 +77,31 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 
         }
 
-        protected override async void OnShowScreenWidget(Action<AppData.Callback> callback = null)
-        {
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        //protected override async void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        //{
+        //    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            if (loadingQueue.Count > 0)
-            {
-                if (spinnerRoutine != null)
-                {
-                    StopAllCoroutines();
-                    spinnerRoutine = null;
-                }
+        //    if (loadingQueue.Count > 0)
+        //    {
+        //        if (spinnerRoutine != null)
+        //        {
+        //            StopAllCoroutines();
+        //            spinnerRoutine = null;
+        //        }
 
-                loadingCompleted = false;
+        //        loadingCompleted = false;
 
-                var onLoadingSpinnerTaskResuts = await OnLoadingSpinner();
+        //        var onLoadingSpinnerTaskResuts = await OnLoadingSpinner();
 
-                if (onLoadingSpinnerTaskResuts.UnSuccessful())
-                    Log(onLoadingSpinnerTaskResuts.GetResultCode, onLoadingSpinnerTaskResuts.GetResult, this);
-            }
-        }
+        //        if (onLoadingSpinnerTaskResuts.UnSuccessful())
+        //            Log(onLoadingSpinnerTaskResuts.GetResultCode, onLoadingSpinnerTaskResuts.GetResult, this);
+        //    }
+        //}
 
         private async Task<AppData.Callback> OnLoadingSpinner()
         {
@@ -202,7 +202,7 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }

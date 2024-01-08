@@ -185,36 +185,36 @@ namespace Com.RedicalGames.Filar
 
         #region Overrides
 
-        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket)
+        protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
           
         }
 
-        protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
-        {
-            ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        //protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
+        //{
+        //    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
 
-            switch (transitionType)
-            {
-                case AppData.TransitionType.Default:
+        //    switch (transitionType)
+        //    {
+        //        case AppData.TransitionType.Default:
 
-                    if (GetLayoutView(defaultLayoutType).Success())
-                        OnScreenTogglableStateEvent(AppData.TogglableWidgetType.ResetAssetModelRotationButton, false);
-                    else
-                        LogError("Pop Up Value Required.", this);
+        //            if (GetLayoutView(defaultLayoutType).Success())
+        //                OnScreenTogglableStateEvent(AppData.TogglableWidgetType.ResetAssetModelRotationButton, false);
+        //            else
+        //                LogError("Pop Up Value Required.", this);
 
-                    break;
+        //            break;
 
-                case AppData.TransitionType.Translate:
+        //        case AppData.TransitionType.Translate:
 
-                    break;
-            }
+        //            break;
+        //    }
 
-            if (AppDatabaseManager.Instance)
-                SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
-            else
-                LogWarning("Scene Assets Manager Not Yet Initialized.", this);
-        }
+        //    if (AppDatabaseManager.Instance)
+        //        SetWidgetAssetData(AppDatabaseManager.Instance.GetCurrentSceneAsset());
+        //    else
+        //        LogWarning("Scene Assets Manager Not Yet Initialized.", this);
+        //}
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
@@ -258,7 +258,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData)
+        protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
             throw new NotImplementedException();
         }
