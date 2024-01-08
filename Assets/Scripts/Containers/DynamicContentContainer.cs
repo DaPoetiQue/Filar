@@ -70,9 +70,61 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        protected override Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
+        protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
         {
-            return null;
+            AppData.Callback callbackResults = new AppData.Callback(GetContainer<Transform>());
+
+            if (callbackResults.Success())
+            {
+                var container = GetContainer<Transform>().data;
+
+                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                {
+                    if (GetContentCount().GetData() > 0)
+                    {
+                        for (int i = 0; i < GetContentCount().data; i++)
+                        {
+                            if (container.GetChild(i).GetComponent<AppData.SelectableWidget>())
+                            {
+                                if (container.GetChild(i).GetComponent<AppData.SelectableWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
+                                    Destroy(container.GetChild(i).gameObject);
+                                else
+                                    LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                            }
+                            else
+                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                        }
+
+                        while (container.childCount > 0)
+                            await Task.Yield();
+
+                        if (container.childCount == 0)
+                        {
+                            AppDatabaseManager.Instance.UnloadUnusedAssets();
+
+                            callbackResults.result = "All Widgets Cleared.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+
+            return callbackResults;
         }
 
         protected override void OnContainerUpdate()
