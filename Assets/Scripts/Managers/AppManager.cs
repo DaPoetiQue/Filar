@@ -173,19 +173,31 @@ namespace Com.RedicalGames.Filar
 
                                                                                                                 if (widget != null)
                                                                                                                 {
-                                                                                                                    widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
-                                                                                                                    widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
 
-                                                                                                                    await screenUIManager.RefreshAsync();
+                                                                                                                    if (callbackResults.Success())
+                                                                                                                    {
+                                                                                                                        var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized.").GetData();
 
-                                                                                                                    screen.ShowWidget(widget.GetData());
+                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
 
-                                                                                                                    widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
-                                                                                                                    widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+                                                                                                                        await screenUIManager.RefreshAsync();
 
-                                                                                                                    await Task.Delay(1000);
+                                                                                                                        screen.ShowWidget(widget.GetData());
 
-                                                                                                                    await databaseManager.LoadSelectedPostContent(databaseManager.GetCurrentSelectedPost());
+                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
+                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
+
+                                                                                                                        await Task.Delay(1000);
+
+                                                                                                                        postManagerInstance.SelectPost(postSelectedCallbacKResults => 
+                                                                                                                        {
+                                                                                                                            callbackResults.SetResult(postSelectedCallbacKResults);
+                                                                                                                        });
+                                                                                                                    }
+                                                                                                                    else
+                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                                                 }
                                                                                                                 else
                                                                                                                 {

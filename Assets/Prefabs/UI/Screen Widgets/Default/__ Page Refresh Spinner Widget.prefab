@@ -154,7 +154,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8850287966637666786
@@ -180,11 +180,11 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 1
   widgetLayouts:
@@ -347,6 +347,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}

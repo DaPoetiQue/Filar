@@ -1169,6 +1169,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -1493,6 +1494,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -1634,6 +1636,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -2234,6 +2237,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -2459,6 +2463,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -2767,6 +2772,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -4021,6 +4027,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -7361,6 +7368,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -7586,6 +7594,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -8552,6 +8561,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -9358,6 +9368,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -9953,6 +9964,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -10417,6 +10429,7 @@ Transform:
   - {fileID: 91990599}
   - {fileID: 1975130540}
   - {fileID: 428251001}
+  - {fileID: 1887304808}
   m_Father: {fileID: 1039201967}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10475,6 +10488,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -10995,6 +11009,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -11220,6 +11235,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -12207,6 +12223,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -13190,6 +13207,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -13678,6 +13696,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -14049,6 +14068,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -14301,6 +14321,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -14965,6 +14986,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -15282,6 +15304,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -15510,6 +15533,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -15958,6 +15982,55 @@ Transform:
   m_Father: {fileID: 1309887496}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1887304807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1887304808}
+  - component: {fileID: 1887304809}
+  m_Layer: 0
+  m_Name: __Post Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1887304808
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1887304807}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1089471241}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1887304809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1887304807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87074f9d0865d10418aa74d41e7ce6fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &1892024579
 GameObject:
   m_ObjectHideFlags: 0
@@ -16013,6 +16086,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -16238,6 +16312,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -16463,6 +16538,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -16690,6 +16766,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -17188,6 +17265,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
@@ -18942,6 +19020,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []

@@ -1040,6 +1040,21 @@ namespace Com.RedicalGames.Filar
             Hidden
         }
 
+        public enum UITransitionType
+        {
+            None,
+            Translate,
+            Scale,
+            Rotate
+        }
+
+        public enum UITransitionStateType
+        {
+            None,
+            Once,
+            Repeat
+        }
+
         public enum DefaultUIWidgetActionState
         {
             Default,
@@ -20539,29 +20554,6 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public enum UITransitionType
-        {
-            None,
-            Translate,
-            Scale,
-            Rotate
-        }
-
-        public enum UITransitionStateType
-        {
-            None,
-            Once,
-            Repeat
-        }
-
-        public enum TransitionableUIMountType
-        {
-            None,
-            Default,
-            Visible,
-            Hidden
-        }
-
         [Serializable]
         public class TransitionableUIMount : DataDebugger
         {
@@ -20572,7 +20564,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private TransitionableUIMountType mountType;
+            private UIScreenWidgetVisibilityState mountType;
 
             #endregion
 
@@ -20600,11 +20592,11 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<TransitionableUIMountType> GetMountType()
+            public CallbackData<UIScreenWidgetVisibilityState> GetMountType()
             {
-                var callbackResults = new CallbackData<TransitionableUIMountType>();
+                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>();
 
-                if(mountType != TransitionableUIMountType.None)
+                if(mountType != UIScreenWidgetVisibilityState.None)
                 {
                     callbackResults.result = $"Mount Type For : {GetName()} Is Set To : {mountType}";
                     callbackResults.data = mountType;
@@ -29532,7 +29524,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected ScreenUIPlacementType uIPlacementType;
+            protected ScreenUIPlacementType uIPlacementType = ScreenUIPlacementType.None;
 
             [Space(5)]
             [SerializeField]
@@ -29704,7 +29696,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<TransitionableUIMount> GetTransitionableUIMount(TransitionableUIMountType mountType)
+            protected CallbackData<TransitionableUIMount> GetTransitionableUIMount(UIScreenWidgetVisibilityState mountType)
             {
                 var callbackResults = new CallbackData<TransitionableUIMount>(GetTransitionableUIMounts());
 
@@ -29728,7 +29720,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<ScreenSpaceTargetHandler> GetTransitionableUIMountTarget(TransitionableUIMountType mountType)
+            protected CallbackData<ScreenSpaceTargetHandler> GetTransitionableUIMountTarget(UIScreenWidgetVisibilityState mountType)
             {
                 var callbackResults = new CallbackData<ScreenSpaceTargetHandler>(GetTransitionableUIMounts());
 
@@ -34416,7 +34408,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     var transitionalComponent = GetTransitionableUIComponent().GetData();
 
-                                    callbackResults.SetResult(GetTransitionableUIMount(TransitionableUIMountType.Visible));
+                                    callbackResults.SetResult(GetTransitionableUIMount(UIScreenWidgetVisibilityState.Visible));
 
                                     if (callbackResults.Success())
                                     {
@@ -34426,7 +34418,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                var visibleMountTarget = GetTransitionableUIMountTarget(TransitionableUIMountType.Visible).GetData();
+                                                var visibleMountTarget = GetTransitionableUIMountTarget(UIScreenWidgetVisibilityState.Visible).GetData();
                                                 transitionalComponent.SetTarget(visibleMountTarget);
 
                                                 var invokedTransition = await transitionalComponent.InvokeTransitionAsync();
@@ -34498,7 +34490,7 @@ namespace Com.RedicalGames.Filar
 
                                         if(callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(GetTransitionableUIMount(TransitionableUIMountType.Hidden));
+                                            callbackResults.SetResult(GetTransitionableUIMount(UIScreenWidgetVisibilityState.Hidden));
 
                                             if (callbackResults.Success())
                                             {
@@ -34508,7 +34500,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        var visibleMountTarget = GetTransitionableUIMountTarget(TransitionableUIMountType.Hidden).GetData();
+                                                        var visibleMountTarget = GetTransitionableUIMountTarget(UIScreenWidgetVisibilityState.Hidden).GetData();
                                                         transitionalComponent.SetTarget(visibleMountTarget);
 
                                                         var invokedTransition = await transitionalComponent.InvokeTransitionAsync();
@@ -45036,7 +45028,10 @@ namespace Com.RedicalGames.Filar
             OnUpdate,
             OnLateUpdate,
             OnFixedUpdate,
-            OnNetworkFailedEvent
+            OnNetworkFailedEvent,
+            OnPostsInitializationStartedEvent,
+            OnPostsInitializationInProgressEvent,
+            OnPostsInitializationCompletedEvent
         }
 
         #region Event Actions
@@ -45901,6 +45896,10 @@ namespace Com.RedicalGames.Filar
 
             public static event Void _OnNetworkFailedEvent;
 
+            public static event Void _OnPostsInitializationStartedEvent;
+            public static event Void _OnPostsInitializationInProgressEvent;
+            public static event Void _OnPostsInitializationCompletedEvent;
+
             #region Unity Events
 
             public static event Void _Enabled;
@@ -45971,6 +45970,10 @@ namespace Com.RedicalGames.Filar
             public static void OnInitializationCompletedEvent() => _OnInitializationCompletedEvent?.Invoke();
 
             public static void OnNetworkFailedEvent() => _OnNetworkFailedEvent?.Invoke();
+
+            public static void OnPostsInitializationStartedEvent() => _OnPostsInitializationStartedEvent?.Invoke();
+            public static void OnPostsInitializationInProgressEvent() => _OnPostsInitializationInProgressEvent?.Invoke();
+            public static void OnPostsInitializationCompletedEvent() => _OnPostsInitializationCompletedEvent?.Invoke();
 
             #region Unity Event Callbacks
 
@@ -46066,6 +46069,33 @@ namespace Com.RedicalGames.Filar
                                 _OnNetworkFailedEvent += eventAction.TriggeredEventMethod;
                             else
                                 _OnNetworkFailedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnPostsInitializationStartedEvent:
+
+                            if (subscribe)
+                                _OnPostsInitializationStartedEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnPostsInitializationStartedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnPostsInitializationInProgressEvent:
+
+                            if (subscribe)
+                                _OnPostsInitializationInProgressEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnPostsInitializationInProgressEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnPostsInitializationCompletedEvent:
+
+                            if (subscribe)
+                                _OnPostsInitializationCompletedEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnPostsInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 

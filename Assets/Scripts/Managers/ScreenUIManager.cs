@@ -1181,6 +1181,8 @@ namespace Com.RedicalGames.Filar
 
                                                         if(callbackResults.Success())
                                                         {
+                                                            AppData.ActionEvents.OnPostsInitializationInProgressEvent();
+
                                                             widgetComponent.SetPost(post);
 
                                                             widgetComponent.name = post.GetIdentifier();

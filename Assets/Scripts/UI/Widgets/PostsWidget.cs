@@ -98,6 +98,18 @@ namespace Com.RedicalGames.Filar
             }, "Screen UI Manager Instance Is Not Yet Initialized.");
         }
 
+        public void OnPostsInitializationCompletedEvent()
+        {
+            var callbackResults = new AppData.Callback();
+
+            LogInfo($" **********-*******-** Show Widget Type : {GetType().GetData()}", this);
+
+            //ShowWidget(GetType().GetData(), showWidgetCallbackResults => 
+            //{
+            
+            //});
+        }
+
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
             HideSelectedLayout(defaultLayoutType);
