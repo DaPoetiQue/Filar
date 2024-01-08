@@ -3,17 +3,23 @@ using UnityEngine;
 namespace Com.RedicalGames.Filar
 {
     [CreateAssetMenu(fileName = "New Config Data Packet", menuName = "Config Data Packets/ Message Config Data Packet")]
-    public class ConfigMessageDataPacket : AppData.ScriptableConfigDataPacket<AppData.ConfigMessageType>
+    public class ConfigMessageDataPacket : AppData.ScriptableConfigDataPacket<AppData.ConfigDataType>, AppData.IScriptableConfigDataPacket<AppData.ConfigMessageType>
     {
         #region Components
 
+        [Space(10)]
+        [Header("Config Packet")]
+
         [Space(5)]
-        [Header("Message Data")]
+        public AppData.ConfigMessageType configType;
+
+        [Header("Message Info")]
 
         [Space(5)]
         public string title;
 
         [Space(5)]
+        [TextArea]
         public string message;
 
         #endregion
@@ -42,7 +48,7 @@ namespace Com.RedicalGames.Filar
         public void SetTitle(string title) => this.title = title;
         public void SetMessage(string message) => this.message = message;
 
-        public void SetMessageType(AppData.ConfigMessageType messageType) => this.type = messageType;
+        public void SetConfigType(AppData.ConfigMessageType configType) => this.configType = configType;
 
         #endregion
 
@@ -83,6 +89,27 @@ namespace Com.RedicalGames.Filar
                 callbackResults.result = $"Failed To Get Message For : {GetName()} - Message Value Is Not Assigned.";
                 callbackResults.data = default;
                 callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
+        }
+
+
+        public AppData.CallbackData<AppData.ConfigMessageType> GetConfigType()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.ConfigMessageType>();
+
+            if (configType != AppData.ConfigMessageType.None)
+            {
+                callbackResults.result = $"Get Config Data Packet For : {GetName()} Successful - Config Type Is Set To Type : {configType}";
+                callbackResults.data = configType;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Get Config Data Packet For : {GetName()} Failed  - Config Type Is Set To Default : {configType}";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             return callbackResults;

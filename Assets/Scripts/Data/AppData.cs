@@ -2369,31 +2369,45 @@ namespace Com.RedicalGames.Filar
             [Space(15)]
             [Header("Runtime Initialized Asset Bundles")]
 
+            [Space(5)]
+            [Header("Screens")]
 
             [Tooltip("Do Not Initialize - Screens Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
             private LoadedAssetCache<ScreenType, Screen> loadedScreens = new LoadedAssetCache<ScreenType, Screen>();
 
+            [Space(5)]
+            [Header("Widgets")]
+
             [Tooltip("Do Not Initialize - Widgets Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
             private LoadedAssetCache<ScreenType, Widget> loadedWidgets = new LoadedAssetCache<ScreenType, Widget>();
+
+            [Space(5)]
+            [Header("Selectable Widgets")]
 
             [Tooltip("Do Not Initialize - Selectable Widgets Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
             private LoadedAssetCache<ScreenType, SelectableWidget> loadedSelectableWidgets = new LoadedAssetCache<ScreenType, SelectableWidget>();
 
+            [Space(5)]
+            [Header("3D Models")]
+
             [Tooltip("Do Not Initialize - Models Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
             private LoadedAssetCache<ScreenType, SceneModelComponent> loadedModels = new LoadedAssetCache<ScreenType, SceneModelComponent>();
 
+            [Space(5)]
+            [Header("Config Data")]
+
             [Tooltip("Do Not Initialize - Config Data Is Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
-            private ScriptableLoadedAssetCache<ConfigDataType, ConfigMessageDataPacket> loadedConfigData = new ScriptableLoadedAssetCache<ConfigDataType, ConfigMessageDataPacket>();
+            private ScriptableLoadedAssetCache<ConfigDataType, ScriptableConfigDataPacket<ConfigDataType>> loadedConfigData = new ScriptableLoadedAssetCache<ConfigDataType, ScriptableConfigDataPacket<ConfigDataType>>();
 
             #region Dynamic Container
 
@@ -2531,7 +2545,7 @@ namespace Com.RedicalGames.Filar
 
                                 for (int i = 0; i < initializedAssetBundleResourceLocators.Count; i++)
                                 {
-                                    OnProccessLoadedWidgets(initializedAssetBundleResourceLocators[i].GetKey().GetData(), loadedAssetsCallbackResults.Result.ToList(), assetsProccessedCallbackResults =>
+                                    OnProccessLoadedAssetBundles(initializedAssetBundleResourceLocators[i].GetKey().GetData(), loadedAssetsCallbackResults.Result.ToList(), assetsProccessedCallbackResults =>
                                     {
                                         callbackResults.SetResult(assetsProccessedCallbackResults);
                                     });
@@ -2559,44 +2573,43 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    Addressables.LoadAssetsAsync<ScriptableObject>(new List<string>() { "Config"}, null, Addressables.MergeMode.None).Completed += (loadedAssetsCallbackResults) =>
+                    var initializedAssetBundleResourceLocators = GetInitializedAssetBundleResourceLocators().GetData();
+
+                    #region Config Data
+
+                    for (int i = 0; i < initializedAssetBundleResourceLocators.Count; i++)
                     {
-                        if (loadedAssetsCallbackResults.Status == AsyncOperationStatus.Succeeded)
+                        if (initializedAssetBundleResourceLocators[i].GetKey().GetData() == AssetBundleResourceLocatorType.Config)
                         {
-                            var initializedAssetBundleResourceLocators = GetInitializedAssetBundleResourceLocators().GetData();
-
-                            #region Screen Widgets
-
-                            for (int i = 0; i < initializedAssetBundleResourceLocators.Count; i++)
+                            Addressables.LoadAssetsAsync<ScriptableObject>(new List<string>() { initializedAssetBundleResourceLocators[i].GetKey().GetData().ToString() }, null, Addressables.MergeMode.None).Completed += (loadedAssetsCallbackResults) =>
                             {
-                                if (initializedAssetBundleResourceLocators[i].GetKey().GetData() == AssetBundleResourceLocatorType.Config)
+                                if (loadedAssetsCallbackResults.Status == AsyncOperationStatus.Succeeded)
                                 {
                                     OnProccessLoadedConfigData(initializedAssetBundleResourceLocators[i].GetKey().GetData(), loadedAssetsCallbackResults.Result.ToList(), assetsProccessedCallbackResults =>
                                     {
                                         callbackResults.SetResult(assetsProccessedCallbackResults);
                                     });
-
-                                    if (callbackResults.UnSuccessful())
-                                        break;
                                 }
                                 else
-                                    continue;
-                            }
+                                {
+                                    callbackResults.result = "Failed To Load Config Data From Addressables. Please Check Here.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            };
 
-                            #endregion
+                            break;
                         }
                         else
-                        {
-                            callbackResults.result = "";
-                            callbackResults.resultCode = Helpers.ErrorCode;
-                        }
-                    };
+                            continue;
+                    }
+
+                    #endregion
                 }
                 else
                     Log(GetAssetBundleKeyStrings().GetResultCode, GetAssetBundleKeyStrings().GetResult, this);
             }
 
-            private void OnProccessLoadedWidgets(AssetBundleResourceLocatorType locatorType, List<GameObject> loadedAssetBundles, Action<Callback> callback = null)
+            private void OnProccessLoadedAssetBundles(AssetBundleResourceLocatorType locatorType, List<GameObject> loadedAssetBundles, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
 
@@ -3113,36 +3126,75 @@ namespace Com.RedicalGames.Filar
 
             #region Config
 
-            //public CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>> GetLoadedConfigData(ScreenType screenType, ConfigDataType configDataType)
-            //{
-            //    var callbackResults = new CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>>(loadedConfigData.GetCachedAssets(screenType));
+            #region Base Config Data
 
-            //    if (callbackResults.Success())
-            //        callbackResults.data = loadedConfigData.GetCachedAssets(screenType).GetData();
-            //    else
-            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            public CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>> GetLoadedConfigData(ConfigDataType configDataType)
+            {
+                var callbackResults = new CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>>(loadedConfigData.Initialized());
 
-            //    return callbackResults;
-            //}
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(loadedConfigData.GetCachedAssets(configDataType));
 
-            //public CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>> GetConfigs(ScreenType screenType)
-            //{
-            //    var callbackResults = new CallbackDataList<ScriptableConfigDataPacket<ConfigDataType>>(loadedConfigData.Initialized());
+                    if(callbackResults.Success())
+                        callbackResults.data = loadedConfigData.GetCachedAssets(configDataType).GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            //    if (callbackResults.Success())
-            //    {
-            //        callbackResults.SetResult(loadedConfigData.GetCachedAssets(screenType));
+                return callbackResults;
+            }
 
-            //        if (callbackResults.Success())
-            //            callbackResults.data = loadedConfigData.GetCachedAssets(screenType).GetData();
-            //        else
-            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            //    }
-            //    else
-            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            #endregion
 
-            //    return callbackResults;
-            //}
+            #region Config Message Data
+
+            public CallbackData<ConfigMessageDataPacket> GetLoadedConfigMessageDataPacket(ConfigMessageType messageType)
+            {
+                var callbackResults = new CallbackData<ConfigMessageDataPacket>(GetLoadedConfigData(ConfigDataType.infoConfigData));
+
+                if(callbackResults.Success())
+                {
+                    var configMessageDataPackets = GetLoadedConfigData(ConfigDataType.infoConfigData).GetData();
+
+                    foreach (var configMessageDataPacket in configMessageDataPackets)
+                    {
+                        var configMessageData = configMessageDataPacket as ConfigMessageDataPacket;
+
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(configMessageData, "Config Message Data Packet", "Failed To Cast Config Message Data Packet From Scriptable Config Data Packet."));
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(configMessageData.GetConfigType());
+
+                            if (callbackResults.Success())
+                            {
+                                if (configMessageData.GetConfigType().GetData() == messageType)
+                                {
+                                    callbackResults.result = $"Config Message Data Packet : {configMessageData.GetName()} - Of Type : {messageType} Has Been Loaded Successfully.";
+                                    callbackResults.data = configMessageData;
+
+                                    break;
+                                }
+                                else
+                                    continue;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
 
@@ -3394,39 +3446,37 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void AddLoadedConfigDataToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ConfigDataType>> callback = null, params ScriptableObject[] loadedAssets)
+            private void AddLoadedConfigDataToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ConfigDataType>> callback = null, params ScriptableObject[] loadedConfigDataArray)
             {
-                var callbackResults = new CallbackData<ConfigDataType>(Helpers.GetAppComponentsValid(loadedAssets, "Loaded Assets",
+                var callbackResults = new CallbackData<ConfigDataType>(Helpers.GetAppComponentsValid(loadedConfigDataArray, "Loaded Assets",
                   "Add Loaded Config Data To Cache Failed - There Are No Loaded Assets To Cache."));
 
                 if (callbackResults.Success())
                 {
                     if(locatorType == AssetBundleResourceLocatorType.Config)
                     {
-                        for (int i = 0; i < loadedAssets.Length; i++)
+                        for (int i = 0; i < loadedConfigDataArray.Length; i++)
                         {
-                            LogInfo($"__________+++===+++_____kkk Asset : {loadedAssets[i].name}", this);
+                            var loadedConfigData = loadedConfigDataArray[i] as ScriptableConfigDataPacket<ConfigDataType>;
 
-                            var loadedAsset = loadedAssets[i] as ConfigMessageDataPacket;
-
-                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedAsset, "Loaded Asset", "Loaded Config Data Casting From Scriptable Object Failed."));
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedConfigData, "Loaded Config Data", "Loaded Config Data Casting From Scriptable Object Failed."));
 
                             if (callbackResults.Success())
                             {
-                                loadedConfigData.CacheLoadedAssets(loadedAsset.GetConfigType().GetData(), loadedAsset, selectableWidgetCachedCallbackResults =>
+                                this.loadedConfigData.CacheLoadedAssets(loadedConfigData.GetType().GetData(), loadedConfigData, selectableWidgetCachedCallbackResults =>
                                 {
                                     callbackResults.SetResult(selectableWidgetCachedCallbackResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        if (selectableWidgetCachedCallbackResults.GetData() == loadedAsset.GetConfigType().GetData())
+                                        if (selectableWidgetCachedCallbackResults.GetData() == loadedConfigData.GetType().GetData())
                                         {
-                                            callbackResults.result = $"Added Loaded Asset For Screen : {selectableWidgetCachedCallbackResults.GetData()}.";
+                                            callbackResults.result = $"Added Loaded Config Data Of Type : {selectableWidgetCachedCallbackResults.GetData()}.";
                                             callbackResults.data = selectableWidgetCachedCallbackResults.GetData();
                                         }
                                         else
                                         {
-                                            callbackResults.result = $"Failed To Add Loaded Asset For Screen : {loadedAsset.GetScreenType().GetData()} - Invalid Operation - Please Check Here.";
+                                            callbackResults.result = $"Failed To Add Loaded Config Data Of Type : {loadedConfigData.GetType().GetData()} - Invalid Operation - Please Check Here.";
                                             callbackResults.resultCode = Helpers.ErrorCode;
                                         }
                                     }
@@ -3444,7 +3494,7 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.result = "";
+                        callbackResults.result = "Couldn't Add Loaded Config Data To Cache - Asset Bundle Resource Locator Type Is Not Set To Config.";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
@@ -5687,13 +5737,17 @@ namespace Com.RedicalGames.Filar
                                                                         {
                                                                             var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                                                                            appDatabaseManagerInstance.GetDataPacketsLibrary().GetConfigMessageDataPacket(ConfigMessageType.NetworkWarningMessage, networkMessageCallbackResults => 
-                                                                            {
-                                                                                callbackResults.SetResult(networkMessageCallbackResults);
+                                                                            callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
-                                                                                if(callbackResults.Success())
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(ConfigMessageType.NetworkWarningMessage));
+
+                                                                                if (callbackResults.Success())
                                                                                 {
-                                                                                    var configMessage = networkMessageCallbackResults.GetData();
+                                                                                    var networkWarningMessage = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(ConfigMessageType.NetworkWarningMessage).GetData();
 
                                                                                     screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.LoadingWidget);
 
@@ -5704,13 +5758,15 @@ namespace Com.RedicalGames.Filar
                                                                                     networkDataPackets.SetScreenBlurState(true);
                                                                                     networkDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
 
-                                                                                    screenUIManager.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, configMessage);
+                                                                                    screenUIManager.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, networkWarningMessage);
 
                                                                                     ActionEvents.OnNetworkFailedEvent();
                                                                                 }
                                                                                 else
                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            });
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                         }
                                                                         else
                                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -22067,9 +22123,6 @@ namespace Com.RedicalGames.Filar
 
             public List<DataPacket> dataPacketsCollection = new List<DataPacket>();
 
-            [Space(5)]
-            public List<ConfigMessageDataPacket> configMessageDataPacketsCollection = new List<ConfigMessageDataPacket>();
-
             #endregion
 
             #region Main
@@ -22165,91 +22218,6 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = "There Are No Data Packets Found - Data Packets Collection Is Null.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public void GetConfigMessageDataPacket(ConfigMessageType messageType, Action<CallbackData<ConfigMessageDataPacket>> callback)
-            {
-                var callbackResults = new CallbackData<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
-
-                if (callbackResults.Success())
-                {
-                    var messageConfig = configMessageDataPacketsCollection.Find(x => x.GetType().GetData() == messageType && x.Initialized().Success());
-
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(messageConfig, "Message Config", $"Get Config Message Data Packet Failed - Couldn't Find Config Message Data Packet Of Type : {messageType} - Or Config Data Is Not Initialized.", $"Found Config Message Data Packet Of Type : {messageType} In cCnfig Message Data Packets Collection."));
-
-                    if (callbackResults.Success())
-                        callbackResults.data = messageConfig;
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                callback.Invoke(callbackResults);
-            }
-
-            public CallbackData<ConfigMessageDataPacket> GetConfigMessageDataPacket(ConfigMessageType messageType)
-            {
-                var callbackResults = new CallbackData<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
-
-                if (callbackResults.Success())
-                {
-                    var messageConfig = configMessageDataPacketsCollection.Find(x => x.GetType().GetData() == messageType && x.Initialized().Success());
-
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(messageConfig, "Message Config", $"Get Config Message Data Packet Failed - Couldn't Find Config Message Data Packet Of Type : {messageType} - Or Config Data Is Not Initialized.", $"Found Config Message Data Packet Of Type : {messageType} In cCnfig Message Data Packets Collection."));
-
-                    if (callbackResults.Success())
-                        callbackResults.data = messageConfig;
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                return callbackResults;
-            }
-
-            public CallbackDataList<ConfigMessageDataPacket> GetConfigMessageDataPackets()
-            {
-                var callbackResults = new CallbackDataList<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
-
-                if (callbackResults.Success())
-                    callbackResults.data = configMessageDataPacketsCollection;
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                return callbackResults;
-            }
-
-            public void AddConfigMessageDataPacket(ConfigMessageDataPacket configMessage, Action<CallbackData<ConfigMessageDataPacket>> callback = null)
-            {
-                var callbackResults = new CallbackData<ConfigMessageDataPacket>(Helpers.GetAppComponentsValid(configMessageDataPacketsCollection, "Config Message Data Packets Collection", "Failed to Get Config Message Data Packets Collection, Config Message Data Packets Collection Have Not Been Initialized."));
-
-                if (callbackResults.Success())
-                {
-                    if (!configMessageDataPacketsCollection.Contains(configMessage))
-                    {
-                        configMessageDataPacketsCollection.Add(configMessage);
-
-                        callbackResults.result = $"Config Message Data Packet : {configMessage.GetName()} Has Been Successfully Added To Data Packets Collection.";
-                        callbackResults.data = configMessage;
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Couldn't Add Config Message Data Packet : {configMessage.GetName()} Already Exists In Data Packets Collection.";
-                        callbackResults.data = configMessage;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = "There Are No Config Message Data Packets Found - Config Message Data Packets Collection Is Null.";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
@@ -39419,20 +39387,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public class ScriptableConfigDataPacket<T> : ScriptableObject, IScriptableConfigDataPacket<T> where T : Enum
+        public class ScriptableConfigDataPacket<T> : ScriptableObject, IScriptableConfigDataPacketBase<T> where T : Enum
         {
             #region Components
 
             [Header("Config Info")]
 
             [Space(5)]
-            public ConfigDataType config = ConfigDataType.None;
-
-            [Space(5)]
             public T type;
-
-            [Space(5)]
-            public ScreenType screenType = ScreenType.None;
 
             #endregion
 
@@ -39459,49 +39421,6 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Get Config Data Packet For : {GetName()} Failed  - Config Type Is Set To Default : {type}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
-            }
-
-            public CallbackData<ConfigDataType> GetConfigType()
-            {
-                var callbackResults = new CallbackData<ConfigDataType>();
-
-                if (config != ConfigDataType.None)
-                {
-                    callbackResults.result = $"Get Config Type For : {GetName()} Successful - Config Type Is Set To Type : {config}";
-                    callbackResults.data = config;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Get Config Data Type For : {GetName()} Failed  - Config Type Is Set To Default : {config}";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
-            }
-
-            public CallbackData<ScreenType> GetScreenType()
-            {
-                var callbackResults = new CallbackData<ScreenType>(GetType());
-
-                if (callbackResults.Success())
-                {
-                    if (screenType != ScreenType.None)
-                    {
-                        callbackResults.result = $"Screen Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Successfully Set To : {screenType}.";
-                        callbackResults.data = screenType;
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Screen Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Set To Default : {screenType} - Invalid Operation - Please Assign Screent Type Value.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
                 }
 
                 return callbackResults;
@@ -44392,7 +44311,7 @@ namespace Com.RedicalGames.Filar
 
         #region Interfaces
 
-        public interface IScriptableConfigDataPacket<T> where T : Enum
+        public interface IScriptableConfigDataPacketBase<T> where T : Enum
         {
             #region Main
 
@@ -44404,9 +44323,18 @@ namespace Com.RedicalGames.Filar
 
             CallbackData<T> GetType();
 
-            CallbackData<ConfigDataType> GetConfigType();
+            #endregion
+        }
 
-            CallbackData<ScreenType> GetScreenType();
+        public interface IScriptableConfigDataPacket<T> where T : Enum
+        {
+            #region Main
+
+            Callback Initialized();
+
+            void SetConfigType(T configType);
+
+            CallbackData<T> GetConfigType();
 
             #endregion
         }

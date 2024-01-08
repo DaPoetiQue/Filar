@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ac0a9ae143cab24dbe081f2eb85b56c, type: 3}
   m_Name: Network Warning Message Object
   m_EditorClassIdentifier: 
-  config: 1
   type: 1
-  screenType: 1
+  configType: 1
   title: Connection Error!
   message: There Was An Error Connecting To The Internet. Please Make Sure You Have
     Internet Access And Try Again.
