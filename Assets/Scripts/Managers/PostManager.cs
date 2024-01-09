@@ -9,6 +9,7 @@ namespace Com.RedicalGames.Filar
 
         private AppData.Post post;
         private List<AppData.Post> posts;
+        private List<ScenePostContentHandler> postsContents = new List<ScenePostContentHandler>();
 
         public int PostCount { get; private set; }
 
@@ -50,7 +51,37 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void SelectPost(Action<AppData.Callback> callback = null)
+        public void AddPostsContents(Action<AppData.Callback> callback = null, params ScenePostContentHandler[] contents)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(contents, "Contents", "Failed To Add Posts Contents - Content Params Are Invalid / Null."));
+
+            if(callbackResults.Success())
+            {
+                foreach (var content in contents)
+                {
+                    if(!postsContents.Contains(content))
+                    {
+                        postsContents.Add(content);
+
+                        callbackResults.result = $"Post Content : {content.GetName()} Have Been Successfully Added To Post Contents";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Post Content : {content.GetName()} Already Exists In Post Contents";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+
+                        break;
+                    }
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void LoadDefaultPostContent(Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(GetPost());
 
@@ -62,7 +93,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized.").GetData();
 
-                    appDatabaseManagerInstance.LoadSelectedPostContent(post, postLoadedCallbackResults =>
+                    appDatabaseManagerInstance.LoadPostContent(post, postLoadedCallbackResults =>
                     {
                         callbackResults.SetResult(postLoadedCallbackResults);
                     });
@@ -76,34 +107,50 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void SelectPost(AppData.Post post, Action<AppData.Callback> callback = null)
+        public void SelectPost(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback();
+            var callbackResults = new AppData.Callback(GetPostContent(post));
 
-            SetPost(post, postSetCallbackResults => 
+            if (callbackResults.Success())
             {
-                callbackResults.SetResult(postSetCallbackResults);
-
-                if (callbackResults.Success())
+                SetPost(post, postSetCallbackResults =>
                 {
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized."));
+                    callbackResults.SetResult(postSetCallbackResults);
 
                     if (callbackResults.Success())
                     {
-                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized.").GetData();
-
-                        appDatabaseManagerInstance.LoadSelectedPostContent(post, postLoadedCallbackResults=> 
-                        {
-                            callbackResults.SetResult(postLoadedCallbackResults);
-                        });
+                        var postContent = GetPostContent(post).GetData();
+                        postContent.ShowContent();
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            });
+                });
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void SelectPost(AppData.Post post, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetPostContent(post));
+
+            if (callbackResults.Success())
+            {
+                SetPost(post, postSetCallbackResults =>
+                {
+                    callbackResults.SetResult(postSetCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        var postContent = GetPostContent(post).GetData();
+                        postContent.ShowContent();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                });
+            }
 
             callback?.Invoke(callbackResults);
         }
@@ -149,6 +196,45 @@ namespace Com.RedicalGames.Filar
             {
                 callbackResults.result = $"{posts.Count} Post(s) Have Been Loaded Successfully.";
                 callbackResults.data = posts;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<ScenePostContentHandler> GetPostContent(AppData.Post post)
+        {
+            var callbackResults = new AppData.CallbackData<ScenePostContentHandler>(AppData.Helpers.GetAppComponentsValid(postsContents, "Posts Contents", "Failed To Get Posts Contents - Posts Contents Are Not Loaded - Please Check Post Manager For A Possible Fix."));
+
+            if (callbackResults.Success())
+            {
+                var postContent = postsContents.Find(content => content.GetPost().GetData() == post);
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(postContent, "Post Content", $"Failed To Find Post Content For Post Titled : {post.GetTitle()} - Of ID : {post.GetIdentifier()}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{postsContents.Count} Post(s) Content(s) Have Been Loaded Successfully.";
+                    callbackResults.data = postContent;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackDataList<ScenePostContentHandler> GetPostsContents()
+        {
+            var callbackResults = new AppData.CallbackDataList<ScenePostContentHandler>(AppData.Helpers.GetAppComponentsValid(postsContents, "Posts Contents", "Failed To Get Posts Contents - Posts Contents Are Not Loaded - Please Check Post Manager For A Possible Fix."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"{postsContents.Count} Post(s) Content(s) Have Been Loaded Successfully.";
+                callbackResults.data = postsContents;
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

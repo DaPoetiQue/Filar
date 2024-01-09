@@ -3874,8 +3874,20 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        //refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-                                                                        //AppData.ActionEvents.OnPostsInitializationCompletedEvent();
+                                                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized.").GetData();
+
+                                                                            postManagerInstance.LoadDefaultPostContent(postSelectedCallbacKResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(postSelectedCallbacKResults);
+                                                                            });
+
+                                                                            //refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                                            //AppData.ActionEvents.OnPostsInitializationCompletedEvent();
+                                                                        }
                                                                     }
 
                                                                     while (!callbackResults.Success())
@@ -4318,6 +4330,131 @@ namespace Com.RedicalGames.Filar
 
         #region Post Content
 
+        public void LoadPostContent(AppData.Post post, Action<AppData.Callback> callback = null)
+        {
+            AppData.Callback callbackResults = new AppData.Callback(GetPostContentData(post));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized.").GetData();
+
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());
+
+                    if (callbackResults.Success())
+                    {
+                        assetBundlesLibrary.GetDynamicContainer<DynamicContentContainer>(screenUIManagerInstance.GetCurrentScreenType().GetData(), AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene, async containerCallbackResults =>
+                        {
+                            callbackResults.SetResult(containerCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                var container = containerCallbackResults.GetData();
+
+                                var clearContainerCallbackResultsTask = await container.ClearAsync();
+
+                                callbackResults.SetResult(clearContainerCallbackResultsTask);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
+
+                                        screenUIManager.GetCurrentScreen(currentScreenCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(currentScreenCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var currentScreen = currentScreenCallbackResults.GetData();
+
+                                                AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.GetStoredSessionData(post, async modelCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(modelCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        LogInfo($" +++++++++++ Loading Model", this);
+
+                                                        var model = modelCallbackResults.data;
+
+                                                        model.GetModel().SetActive(true);
+
+                                                        container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(contentAddedCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                currentScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        var modelData = GetPostContentData(post).GetData().model;
+                                                        var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
+
+                                                        AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
+                                                        var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
+
+                                                        var model = modelTaskResults.data.AddComponent<ScenePostContentHandler>();
+                                                        model.SetPost(post);
+                                                        model.SetContent(modelTaskResults.data);
+
+                                                        AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, model);
+
+                                                        container.AddContent(model, false, false, true, contentAddedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(contentAddedCallbackResults);
+
+                                                            if(callbackResults.Success())
+                                                            {
+                                                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
+
+                                                                if(callbackResults.Success())
+                                                                {
+                                                                    var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized.").GetData();
+
+                                                                    postManagerInstance.AddPostsContents(postContentAddedCallbackResults => 
+                                                                    {
+                                                                        callbackResults.SetResult(postContentAddedCallbackResults);
+                                                                    
+                                                                    }, model);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void LoadSelectedPostContent(AppData.Post post, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(GetPostContentData(post));
@@ -4362,7 +4499,7 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 var currentScreen = currentScreenCallbackResults.GetData();
 
-                                                AppData.SessionStorage<AppData.Post, PostContentHandler>.GetStoredSessionData(post, async modelCallbackResults =>
+                                                AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.GetStoredSessionData(post, async modelCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(modelCallbackResults);
 
@@ -4386,23 +4523,26 @@ namespace Com.RedicalGames.Filar
                                                     }
                                                     else
                                                     {
-                                                        var modelData = GetPostContentData(post).data.model;
+                                                        var modelData = GetPostContentData(post).GetData().model;
                                                         var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
 
                                                         AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
                                                         var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
 
-                                                        var model = modelTaskResults.data.AddComponent<PostContentHandler>();
-                                                        model.SetModel(modelTaskResults.data);
+                                                        var model = modelTaskResults.data.AddComponent<ScenePostContentHandler>();
+                                                        model.SetPost(post);
+                                                        model.SetContent(modelTaskResults.data);
 
-                                                        AppData.SessionStorage<AppData.Post, PostContentHandler>.Store(post, model);
+                                                        AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, model);
 
-                                                        container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                                        container.AddContent(model, false, false, true, contentAddedCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(contentAddedCallbackResults);
 
                                                             if (callbackResults.Success())
+                                                            {
                                                                 currentScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                            }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                         });

@@ -12,6 +12,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        public (Vector3 position, Vector3 scale, Quaternion rotation) GetPose() => (transform.position, transform.localScale, transform.rotation);
+        public (Vector3 position, Vector3 scale, Quaternion rotation) GetLocalPose() => (transform.localPosition, transform.localScale, transform.localRotation);
+
         #region Overrides
 
         protected override void OnInitialization()
@@ -33,7 +36,7 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < GetContentCount().data; i++)
                         {
-                            var contentHandler = container.GetChild(i).GetComponent<PostContentHandler>();
+                            var contentHandler = container.GetChild(i).GetComponent<ScenePostContentHandler>();
 
                             if (contentHandler != null)
                             {
@@ -84,12 +87,9 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < GetContentCount().data; i++)
                         {
-                            if (container.GetChild(i).GetComponent<AppData.SelectableWidget>())
+                            if (container.GetChild(i).GetComponent<ScenePostContentHandler>())
                             {
-                                if (container.GetChild(i).GetComponent<AppData.SelectableWidget>().GetSelectableWidgetType() != AppData.SelectableWidgetType.PlaceHolder)
-                                    Destroy(container.GetChild(i).gameObject);
-                                else
-                                    LogError($"Widget : {container.GetChild(i).name} Is A Place Holde Component.", this);
+                                Destroy(container.GetChild(i).gameObject);
                             }
                             else
                                 LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);

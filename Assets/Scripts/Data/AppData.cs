@@ -4095,7 +4095,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void AddContent<T>(T content, bool keepWorldPos, Action<Callback> callback = null) where T : PostContentHandler
+            public void AddContent<T>(T content, bool keepWorldPos, Action<Callback> callback = null) where T : ScenePostContentHandler
             {
                 Callback callbackResults = new Callback();
 
@@ -4742,6 +4742,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
+                                            content.gameObject.SetActive(isActive);
                                             content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
 
                                             if (updateContainer)
@@ -4800,6 +4801,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
+                                            content.GetSceneObject().SetActive(isActive);
                                             content.GetSceneObject().transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
                                         }
                                     }
@@ -6935,7 +6937,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public async Task<CallbackData<GameObject>> GetGameObject(string name, string value = null)
+            public async Task<CallbackData<GameObject>> GetGameObject(string name, string value = null, bool isActive = false)
             {
                 CallbackData<GameObject> callbackResults = new CallbackData<GameObject>();
 
@@ -7034,6 +7036,7 @@ namespace Com.RedicalGames.Filar
                                         var loadedGameObjectsList = new List<((string name, GameObject gameObject, string parentName) gameObject, (Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles) gameObjectTransform)>();
 
                                         GameObject loadedRootParentGameObject = new GameObject(rootGameObjectTransformData.transform.name);
+                                        loadedRootParentGameObject.SetActive(isActive);
 
                                         loadedRootParentGameObject.transform.position = rootGameObjectTransformData.transform.localPosition;
                                         loadedRootParentGameObject.transform.localScale = rootGameObjectTransformData.transform.localScale;
@@ -7089,6 +7092,7 @@ namespace Com.RedicalGames.Filar
                                                     if (meshAndMaterialData.mesh != null)
                                                     {
                                                         GameObject loadedGameObject = new GameObject(gameObjectTransformData.transform.name);
+                                                        loadedGameObject.SetActive(isActive);
 
                                                         var meshFilter = loadedGameObject.AddComponent<MeshFilter>();
                                                         var meshRenderer = loadedGameObject.AddComponent<MeshRenderer>();
@@ -7126,6 +7130,7 @@ namespace Com.RedicalGames.Filar
                                                     else
                                                     {
                                                         GameObject loadedGameObject = new GameObject(gameObjectTransformData.transform.name);
+                                                        loadedGameObject.SetActive(isActive);
 
                                                         if (gameObjectTransformData.transformInfo.childCount > 0)
                                                         {

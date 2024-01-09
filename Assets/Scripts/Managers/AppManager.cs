@@ -189,11 +189,18 @@ namespace Com.RedicalGames.Filar
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
 
-                                                                                                                        await Task.Delay(1000);
+                                                                                                                        await Task.Delay(5000);
 
                                                                                                                         postManagerInstance.SelectPost(postSelectedCallbacKResults => 
                                                                                                                         {
                                                                                                                             callbackResults.SetResult(postSelectedCallbacKResults);
+
+                                                                                                                            if(callbackResults.Success())
+                                                                                                                            {
+                                                                                                                                screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                                                                                            }
+                                                                                                                            else
+                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                                                         });
                                                                                                                     }
                                                                                                                     else
