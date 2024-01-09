@@ -223,6 +223,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 1
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
   - name: Network Warning Notification pop Up
@@ -230,16 +231,20 @@ MonoBehaviour:
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
+    constriants: []
   - name: Page Loading Spinner
     widgetType: 24
     uIPlacementType: 0
     containerType: 16
     initialVisibilityState: 1
+    constriants:
+    - {fileID: 11400000, guid: 355aa5a83796a0e4f8eaf2cde7beee0e, type: 2}
   - name: Message Displayer
     widgetType: 30
     uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 1
+    constriants: []
   dynamicContainerList:
   - {fileID: 788115758341435691}
   - {fileID: 3090725572040038037}

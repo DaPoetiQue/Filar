@@ -187,6 +187,29 @@ namespace Com.RedicalGames.Filar
             Override
         }
 
+        public enum ConstraintType
+        {
+            None,
+            Default,
+            Bottom,
+            BottomLeft,
+            BottomRight,
+            Top,
+            TopLeft,
+            TopRight,
+            MiddleCenter,
+            MiddleLeft,
+            MiddleRight
+        }
+
+        public enum ScreenSpacePoseType
+        {
+            None,
+            Position,
+            Scale,
+            Rotation
+        }
+
         public enum ConfigMessageType
         {
             None,
@@ -1764,25 +1787,114 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ScreenConstraintObject : DataDebugger
+        {
+            #region Components
+
+            [Space(5)]
+            public Vector3 value;
+
+            [Space(5)]
+            public ScreenSpacePoseType type;
+
+            [Space(5)]
+            public bool initialize;
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetType());
+
+                if (callbackResults.Success())
+                {
+                    if (initialize)
+                    {
+                        callbackResults.result = $"Screen Constraint Object Of Type : {GetType().GetData()} Has Been Initialized Successfully.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Screen Constraint Object Of Type : {GetType().GetData()} Is Not Set To Initialize. Initialization Is Disabled In The Unity Editor Inspector Panel.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+            public void SetValue(Vector3 value) => this.value = value;
+            public void SetValue(Vector2 value) => this.value = value;
+
+            public void SetType(ScreenSpacePoseType type) => this.type = type;
+
+            public void SetInitialize(bool initialize) => this.initialize = initialize;
+
+            #endregion
+
+            #region Data Getters
+
+            public Vector3 GetValue3D() => value;
+            public Vector2 GetValue2D() => value;
+
+            public new CallbackData<ScreenSpacePoseType> GetType()
+            {
+                var callbackResults = new CallbackData<ScreenSpacePoseType>();
+
+                if(type != ScreenSpacePoseType.None)
+                {
+                    callbackResults.result = $"{GetName()}'s Type Is Set To Default : {type}";
+                    callbackResults.data = type;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Type For : {GetName()} Failed - Type Is Set To Default : {type}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class ScreenReferencedWidgetDependencyAssetBundle<T> : DataDebugger, IScreenReferencedWidgetDependencyAssetBundle<T> where T : Enum
         {
             #region Components
 
-            [SerializeField]
             [Space(5)]
+            [SerializeField]
             private T widgetType;
 
-            [SerializeField]
             [Space(5)]
+            [SerializeField]
             private ScreenUIPlacementType uIPlacementType = ScreenUIPlacementType.None;
 
-            [SerializeField]
             [Space(5)]
+            [SerializeField]
             private ContentContainerType containerType = ContentContainerType.None;
 
-            [SerializeField]
             [Space(5)]
+            [SerializeField]
             private UIScreenWidgetVisibilityState initialVisibilityState = UIScreenWidgetVisibilityState.None;
+
+            [Space(10)]
+            [Header("Widget Constraints")]
+
+            [Space(5)]
+            [SerializeField]
+            private List<ConfigWidgetConstraintPositionDataPacket> constriants = new List<ConfigWidgetConstraintPositionDataPacket>();
 
             #endregion
 
@@ -1874,6 +1986,33 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Screen Placement Type Is Set To Default : {uIPlacementType}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<ConfigWidgetConstraintPositionDataPacket> GetWidgetConstraints()
+            {
+                var callbackResults = new CallbackDataList<ConfigWidgetConstraintPositionDataPacket>(GetType());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(constriants, "Constriants", $"Get Widget Constraints Failed - There Are No Widget Constraints Assigned For Screen Referenced Widget Dependency Asset Bundle : {GetName()} Of Type : {GetType().GetData()}."));
+
+                    if (callbackResults.Success())
+                    {
+                        var initializedConstraints = constriants.FindAll(constraint => constraint.Initialized().Success());
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedConstraints, "Initialized Constriants", "Find All Initialized Constraints Failed - There Are No Initialized Constriants Found"));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"{initializedConstraints.Count} Initialized Constraints Were Successfully Found.";
+                            callbackResults.data = initializedConstraints;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
 
                 return callbackResults;
@@ -27538,6 +27677,19 @@ namespace Com.RedicalGames.Filar
                                                 widgetComponent.SetScreenUIPlacementType(referencedWidgetDependencyAssets[i].GetScreenUIPlacementType().GetData());
                                                 widgetComponent.SetUIScreenWidgetVisibilityState(referencedWidgetDependencyAssets[i].GetInitialVisibilityState().GetData());
 
+                                                callbackResults.SetResult(referencedWidgetDependencyAssets[i].GetWidgetConstraints());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    widgetComponent.ApplyConstraints(constraintsAppliedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(constraintsAppliedCallbackResults);
+
+                                                    }, Helpers.GetArray(referencedWidgetDependencyAssets[i].GetWidgetConstraints().GetData()));
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                                                 callbackResults.SetResult(Helpers.GetAppComponentValid(widgetComponent, "Widget Component", $"Initialize Widgets Failed - Widget Component Not Found From Instantiated Object For Widget : {loadedWidgets[i].GetName()} - Of Type : {loadedWidgets[i].GetType().GetData()} - Invalid Operation, Please Check Here."));
 
                                                 if (callbackResults.Success())
@@ -29608,6 +29760,33 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
+
+            #region Constraints
+
+            public void ApplyConstraints(Action<Callback> callback = null, params ConfigWidgetConstraintPositionDataPacket[] constraints)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(constraints, "Constraints", "Apply Constraints Failed - Params Constraints Has Null Value References."));
+
+                if(callbackResults.Success())
+                {
+                    foreach (var constraint in constraints)
+                    {
+                        callbackResults.SetResult(constraint.GetConstraints());
+
+                        if (callbackResults.Success())
+                        {
+                            LogInfo($" +++Log_Cat : Setup Constraint Config : {constraint.GetName()} - Of Type : {constraint.GetType().GetData()} With : {constraint.GetConstraints().GetData().Count} Initialized Constraints ", this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+
+            }
+
+            #endregion
 
             #region Data Setters
 
@@ -44683,7 +44862,7 @@ namespace Com.RedicalGames.Filar
 
             Callback Initialized();
 
-            void SetConfigType(T configType);
+            void SetConfigType(T configType, Action<Callback> callback = null);
 
             CallbackData<T> GetConfigType();
 

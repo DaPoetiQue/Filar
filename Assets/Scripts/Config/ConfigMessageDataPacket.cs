@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -48,7 +49,23 @@ namespace Com.RedicalGames.Filar
         public void SetTitle(string title) => this.title = title;
         public void SetMessage(string message) => this.message = message;
 
-        public void SetConfigType(AppData.ConfigMessageType configType) => this.configType = configType;
+        public void SetConfigType(AppData.ConfigMessageType configType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            if(configType != AppData.ConfigMessageType.None)
+            {
+                callbackResults.result = $"Config Type For : {GetName()} - Has Been Successfully Assigned To Type : {configType}";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Failed To Set Config Type For : {GetName()} - Config Type Parameter Value Is Set To Default : {configType}";
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
 
         #endregion
 
