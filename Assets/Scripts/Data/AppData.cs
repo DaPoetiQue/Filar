@@ -29787,37 +29787,64 @@ namespace Com.RedicalGames.Filar
                                 {
                                     case ConstraintType.Bottom:
 
+                                        widgetRect.anchorMin = new Vector2(0.5f, 0.0f);
+                                        widgetRect.anchorMax = new Vector2(0.5f, 0.0f);
+
                                         break;
 
                                     case ConstraintType.BottomLeft:
+
+                                        widgetRect.anchorMin = new Vector2(0.0f, 0.0f);
+                                        widgetRect.anchorMax = new Vector2(0.0f, 0.0f);
 
                                         break;
 
                                     case ConstraintType.BottomRight:
 
+                                        widgetRect.anchorMin = new Vector2(1.0f, 0.0f);
+                                        widgetRect.anchorMax = new Vector2(1.0f, 0.0f);
+
                                         break;
 
                                     case ConstraintType.Top:
+
+                                        widgetRect.anchorMin = new Vector2(0.5f, 1);
+                                        widgetRect.anchorMax = new Vector2(0.5f, 1);
 
                                         break;
 
                                     case ConstraintType.TopLeft:
 
+                                        widgetRect.anchorMin = new Vector2(0.0f, 0.1f);
+                                        widgetRect.anchorMax = new Vector2(0.0f, 0.1f);
+
                                         break;
 
                                     case ConstraintType.TopRight:
+
+                                        widgetRect.anchorMin = new Vector2(1.0f, 0.1f);
+                                        widgetRect.anchorMax = new Vector2(1.0f, 0.1f);
 
                                         break;
 
                                     case ConstraintType.MiddleCenter:
 
+                                        widgetRect.anchorMin = new Vector2(0.5f, 0.5f);
+                                        widgetRect.anchorMax = new Vector2(0.5f, 0.5f);
+
                                         break;
 
                                     case ConstraintType.MiddleLeft:
 
+                                        widgetRect.anchorMin = new Vector2(0.0f, 0.5f);
+                                        widgetRect.anchorMax = new Vector2(0.0f, 0.5f);
+
                                         break;
 
                                     case ConstraintType.MiddleRight:
+
+                                        widgetRect.anchorMin = new Vector2(1.0f, 0.5f);
+                                        widgetRect.anchorMax = new Vector2(1.0f, 0.5f);
 
                                         break;
                                 }
