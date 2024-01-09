@@ -29769,16 +29769,97 @@ namespace Com.RedicalGames.Filar
 
                 if(callbackResults.Success())
                 {
-                    foreach (var constraint in constraints)
-                    {
-                        callbackResults.SetResult(constraint.GetConstraints());
+                    callbackResults.SetResult(GetRectTransform());
 
-                        if (callbackResults.Success())
+                    if (callbackResults.Success())
+                    {
+                        var widgetRect = GetRectTransform().GetData();
+
+                        foreach (var constraint in constraints)
                         {
-                            LogInfo($" +++Log_Cat : Setup Constraint Config : {constraint.GetName()} - Of Type : {constraint.GetType().GetData()} With : {constraint.GetConstraints().GetData().Count} Initialized Constraints ", this);
+                            LogInfo($" +++Log_Cat : Setup Constraint Config : {constraint.GetName()} - Of Type : {constraint.GetConfigType().GetData()} With : {constraint.GetConstraints().GetData().Count} Initialized Constraints ", this);
+
+                            #region Widget Anchors
+
+                            if (constraint.GetConfigType().GetData() != ConstraintType.Default)
+                            {
+                                switch (constraint.GetConfigType().GetData())
+                                {
+                                    case ConstraintType.Bottom:
+
+                                        break;
+
+                                    case ConstraintType.BottomLeft:
+
+                                        break;
+
+                                    case ConstraintType.BottomRight:
+
+                                        break;
+
+                                    case ConstraintType.Top:
+
+                                        break;
+
+                                    case ConstraintType.TopLeft:
+
+                                        break;
+
+                                    case ConstraintType.TopRight:
+
+                                        break;
+
+                                    case ConstraintType.MiddleCenter:
+
+                                        break;
+
+                                    case ConstraintType.MiddleLeft:
+
+                                        break;
+
+                                    case ConstraintType.MiddleRight:
+
+                                        break;
+                                }
+                            }
+
+                            #endregion
+
+                            callbackResults.SetResult(constraint.GetConstraints());
+
+                            if (callbackResults.Success())
+                            {
+                                foreach (var constraintObject in constraint.GetConstraints().GetData())
+                                {
+                                    #region Widget Pose
+
+                                    switch (constraintObject.GetType().GetData())
+                                    {
+                                        case ScreenSpacePoseType.Position:
+
+                                            widgetRect.anchoredPosition = constraintObject.GetValue2D();
+
+                                        break;
+
+                                        case ScreenSpacePoseType.Scale:
+
+                                            widgetRect.sizeDelta = constraintObject.GetValue2D();
+
+                                            break;
+
+                                        case ScreenSpacePoseType.Rotation:
+
+                                            widgetRect.eulerAngles = constraintObject.GetValue3D();
+
+                                            break;
+                                    }
+
+                                    #endregion
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                 }
 
@@ -30081,6 +30162,26 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<RectTransform> GetRectTransform()
+            {
+                var callbackResults = new CallbackData<RectTransform>();
+
+                if(GetComponent<RectTransform>())
+                {
+                    callbackResults.result = $"Found Rect Transform For : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.data = GetComponent<RectTransform>();
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Rect Transform For : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
                 return callbackResults;

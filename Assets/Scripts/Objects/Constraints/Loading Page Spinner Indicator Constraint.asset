@@ -16,6 +16,6 @@ MonoBehaviour:
   configType: 8
   constraints:
   - name: Position
-    value: {x: 0, y: 0, z: 0}
+    value: {x: 0, y: -100, z: 0}
     type: 1
     initialize: 1
