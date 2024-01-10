@@ -195,7 +195,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                                                             if(callbackResults.Success())
                                                                                                                             {
-                                                                                                                                await Task.Delay(5000);
+                                                                                                                                await Task.Delay(2500);
 
                                                                                                                                 postManagerInstance.SelectPost(postSelectedCallbacKResults =>
                                                                                                                                 {

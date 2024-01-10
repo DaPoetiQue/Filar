@@ -101,7 +101,22 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
-            throw new NotImplementedException();
+           
+        }
+
+        protected override void OnScreenWidgetShownEvent()
+        {
+           
+        }
+
+        protected override void OnScreenWidgetHiddenEvent()
+        {
+
+        }
+
+        protected override void OnScreenWidgetTransitionInProgressEvent()
+        {
+        
         }
 
         #endregion

@@ -20852,6 +20852,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+
         [Serializable]
         public class TransitionableUIComponent : DataDebugger
         {
@@ -20871,6 +20872,8 @@ namespace Com.RedicalGames.Filar
             private bool subscribedToEvents;
 
             private const float transitionDistanceInMagnitude = 0.01f;
+
+            private Dictionary<TransitionableEventType, List<Action>> registeredEvents = new Dictionary<TransitionableEventType, List<Action>>();
 
             #endregion
 
@@ -21474,6 +21477,136 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Events
+
+            #region Event Functions
+
+            public void RegisterEventListener(Action eventMethod, TransitionableEventType eventType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(eventMethod, "Event Method", "Register Event Listener Failed - Event Method Parameter Value Invalid / Null."));
+
+                if (callbackResults.Success())
+                {
+                    if(!registeredEvents.ContainsKey(eventType))
+                    {
+                        registeredEvents.Add(eventType, new List<Action> { eventMethod });
+
+                        callbackResults.result = $"Event Method : {eventMethod.Method.Name} Have Been Successfully Registered With Key : {eventType}";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        if (registeredEvents.TryGetValue(eventType, out List<Action> events))
+                        {
+                            if(!events.Contains(eventMethod))
+                            {
+                                events.Add(eventMethod);
+
+                                callbackResults.result = $"Event Method : {eventMethod.Method.Name} Have Been Successfully Added To Events With Key : {eventType}";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed To Add Event Method : {eventMethod.Method.Name} To Events With Key : {eventType} - Event Mnthod Already Exists.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Registered Event Because Key : {eventType} Exists But For Some Reason It Could Not Be Found.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RegisterEventListeners(TransitionableEventType eventType, Action<Callback> callback = null, params Action[] eventMethods)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(eventMethods, "Event Methods", "Register Event Listeners Failed - Event Methods Params Value Invalid / Null."));
+
+                if (callbackResults.Success())
+                {
+                    if (!registeredEvents.ContainsKey(eventType))
+                    {
+                        registeredEvents.Add(eventType, Helpers.GetList(eventMethods));
+
+                        callbackResults.result = $"{eventMethods.Length} Event Method(s) Have Been Successfully Registered With Key : {eventType}";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        if(registeredEvents.TryGetValue(eventType, out List<Action> events))
+                        {
+                            for (int i = 0; i < eventMethods.Length; i++)
+                            {
+                                if (!events.Contains(eventMethods[i]))
+                                {
+                                    events.Add(eventMethods[i]);
+
+                                    callbackResults.result = $"Event Method : {eventMethods[i].Method.Name} Have Been Successfully Registered With Key : {eventType}";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    LogWarning($"Failed To Register Event : {eventMethods[i].Method.Name} At Index : {i} - Event Already Exists In Event Key : {eventType}", this);
+
+                                    continue;
+                                }  
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Registered Events Because Key : {eventType} Exists But For Some Reason It Could Not Be Found.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveRegisterEventListeners(Action<Callback> callback = null, params Action[] eventMethods)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(eventMethods, "Event Methods", "Register Event Listeners Failed - Event Methods Params Value Invalid / Null."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetRegisteredEventListeners());
+
+                    if(callbackResults.Success())
+                    {
+
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackDataDict<TransitionableEventType, List<Action>> GetRegisteredEventListeners()
+            {
+                var callbackResults = new CallbackDataDict<TransitionableEventType, List<Action>>(Helpers.GetAppComponentsValid(registeredEvents, "Registered Events", "Get Register Event Listeners Failed - There Are No Registered Events Found."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{registeredEvents.Count} Registered Events Found.";
+                    callbackResults.data = registeredEvents;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             private async void ActionEvents__Update()
             {
@@ -23022,6 +23155,12 @@ namespace Com.RedicalGames.Filar
                 resultCode = callbackResults.resultCode;
             }
 
+            public void SetResults<T, U>(CallbackDataDict<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
             public void SetResults<T>(CallbackDataArray<T> callbackResults)
             {
                 result = callbackResults.result;
@@ -23199,6 +23338,12 @@ namespace Com.RedicalGames.Filar
             }
 
             public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackDataDict<T, U> callbackResults)
             {
                 result = callbackResults.result;
                 resultCode = callbackResults.resultCode;
@@ -23385,6 +23530,12 @@ namespace Com.RedicalGames.Filar
                 resultCode = callbackResults.resultCode;
             }
 
+            public void SetDataResults<U>(CallbackDataDict<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
             public void SetDataResults(CallbackDataArray<T> callbackResults)
             {
                 result = callbackResults.result;
@@ -23547,6 +23698,13 @@ namespace Com.RedicalGames.Filar
             }
 
             public void SetDataResults(CallbackDataList<T> callbackResults)
+            {
+                result = callbackResults.result;
+                //SetData(callbackResults.data);
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackDataDict<T, U> callbackResults)
             {
                 result = callbackResults.result;
                 //SetData(callbackResults.data);
@@ -23717,6 +23875,12 @@ namespace Com.RedicalGames.Filar
             {
                 result = callbackResults.result;
                 SetData(Helpers.GetArray(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackDataDict<T, U> callbackResults)
+            {
+                result = callbackResults.result;
                 resultCode = callbackResults.resultCode;
             }
 
@@ -23897,6 +24061,12 @@ namespace Com.RedicalGames.Filar
                 resultCode = callbackResults.resultCode;
             }
 
+            public void SetDataResults<U>(CallbackDataDict<T, U> callbackResults)
+            {
+                result = callbackResults.result;
+                resultCode = callbackResults.resultCode;
+            }
+
             public void SetDataResults(CallbackDataArray<T> callbackResults)
             {
                 result = callbackResults.result;
@@ -24047,6 +24217,12 @@ namespace Com.RedicalGames.Filar
             {
                 result = callbackResults.result;
                 SetData(Helpers.GetArray(callbackResults.data));
+                resultCode = callbackResults.resultCode;
+            }
+
+            public void SetDataResults<U>(CallbackDataDict<T, U> callbackResults)
+            {
+                result = callbackResults.result;
                 resultCode = callbackResults.resultCode;
             }
 
@@ -30006,10 +30182,25 @@ namespace Com.RedicalGames.Filar
                 {
                     transitionableUIComponent = transitionable;
                     callbackResults.result = $"Transitionable UI Component For : {GetName()} - Of Type : {GetType().GetData()} Has Been Successfully Set.";
+
+                    #region Transitionable UI Events
+
+                    transitionableUIComponent.RegisterEventListener(OnScreenWidgetHiddenEvent, TransitionableEventType.OnTransitionableComponentAtOriginEvent);
+                    transitionableUIComponent.RegisterEventListener(OnScreenWidgetShownEvent, TransitionableEventType.OnTransitionableComponentAtTargetEvent);
+                    transitionableUIComponent.RegisterEventListener(OnScreenWidgetTransitionInProgressEvent, TransitionableEventType.OnTransitionableComponentInProgressEvent);
+
+                    #endregion
+
                 }
 
                 callback?.Invoke(callbackResults);
             }
+
+            #endregion
+
+            #region Transition Events
+
+            private void OnScreenWidgetHiddenEvented() => OnScreenWidgetShownEvent();
 
             #endregion
 
@@ -30666,6 +30857,10 @@ namespace Com.RedicalGames.Filar
             #region Abstract Overrides
 
             protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback);
+
+            protected abstract void OnScreenWidgetShownEvent();
+            protected abstract void OnScreenWidgetHiddenEvent();
+            protected abstract void OnScreenWidgetTransitionInProgressEvent();
 
             #endregion
         }
@@ -33699,12 +33894,12 @@ namespace Com.RedicalGames.Filar
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
                             ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
                         else
-                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
                             ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.CreateNewProjectWidget, dataPackets);
                         else
-                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
+                            LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         await ScreenUIManager.Instance.RefreshAsync();
 
@@ -34799,8 +34994,14 @@ namespace Com.RedicalGames.Filar
                                 {
                                     callbackResults.SetResult(layoutShouCallbackRessults);
 
-                                    if(callbackResults.Success())
+                                    if (callbackResults.Success())
+                                    {
+                                        OnScreenWidgetShownEvent();
+
                                         OnEnabled();
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
                                 break;
@@ -34876,7 +35077,13 @@ namespace Com.RedicalGames.Filar
                                     callbackResults.SetResult(layoutShouCallbackRessults);
 
                                     if (callbackResults.Success())
+                                    {
+                                        OnScreenWidgetHiddenEvent();
+
                                         OnDisabled();
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
                                 break;
@@ -44003,7 +44210,50 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public static CallbackDataDict<T, U> GetAppComponentsValid<T, U>(Dictionary<T, U> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class where U : class
+            public static CallbackDataDict<T, U> GetAppComponentsValid<T, U>(Dictionary<T, U> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null, bool isStruct = true) where T : struct where U : class
+            {
+                CallbackDataDict<T, U> callbackResults = new CallbackDataDict<T, U>();
+
+                if (components != null)
+                {
+                    if (components.Count > 0)
+                    {
+                        for (int i = 0; i < components.Count; i++)
+                        {
+                            if (components.ElementAtOrDefault(i).Value != null)
+                            {
+                                callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                                callbackResults.data = components;
+                                callbackResults.resultCode = SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Components Validation Failed - Component For : {componentsIdentifier} Is Null At Index : {i}- Invalid Operation.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = ErrorCode;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataDict<T, U> GetAppComponentsValid<T, U>(Dictionary<T, U> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null, string classVarientName = null) where T : class where U : class
             {
                 CallbackDataDict<T, U> callbackResults = new CallbackDataDict<T, U>();
 
@@ -45436,7 +45686,21 @@ namespace Com.RedicalGames.Filar
             OnNetworkFailedEvent,
             OnPostsInitializationStartedEvent,
             OnPostsInitializationInProgressEvent,
-            OnPostsInitializationCompletedEvent
+            OnPostsInitializationCompletedEvent,
+            OnScreenShownEvent,
+            OnScreenHiddenEvent,
+            OnScreenTransitionInProgressEvent,
+            OnWidgetShownEvent,
+            OnWidgetHiddenEvent,
+            OnWidgetTransitionInProgressEvent
+        }
+
+        public enum TransitionableEventType
+        {
+            None,
+            OnTransitionableComponentAtOriginEvent,
+            OnTransitionableComponentInProgressEvent,
+            OnTransitionableComponentAtTargetEvent
         }
 
         #region Event Actions
@@ -46348,6 +46612,14 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<FocusedSelectionData> _OnWidgetsSelectionDataEvent;
             public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
+            public static event ParamVoid<ScreenConfigDataPacket> _OnScreenShownEvent;
+            public static event ParamVoid<ScreenConfigDataPacket> _OnScreenHiddenEvent;
+            public static event ParamVoid<ScreenConfigDataPacket> _OnScreenTransitionInProgressEvent;
+
+            public static event ParamVoid<WidgetConfigDataPacket> _OnWidgetShownEvent;
+            public static event ParamVoid<WidgetConfigDataPacket> _OnWidgetHiddenEvent;
+            public static event ParamVoid<WidgetConfigDataPacket> _OnWidgetTransitionInProgressEvent;
+
             public static event TransformNoParam _OnGetContentPreviewContainer;
 
             #endregion
@@ -46423,6 +46695,14 @@ namespace Com.RedicalGames.Filar
             public static void OnAllWidgetsSelectionEvent(bool currentPage = false) => _OnAllWidgetsSelectionEvent?.Invoke(currentPage);
             public static void OnWidgetSelectionEvent(FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo) => _OnWidgetSelectionDataEvent?.Invoke(selectionInfo);
             public static void OnWidgetsSelectionEvent(FocusedSelectionData selectionData) => _OnWidgetsSelectionDataEvent?.Invoke(selectionData);
+
+            public static void OnScreenShownEvent(ScreenConfigDataPacket screenConfig) => _OnScreenShownEvent?.Invoke(screenConfig);
+            public static void OnScreenHiddenEvent(ScreenConfigDataPacket screenConfig) => _OnScreenHiddenEvent?.Invoke(screenConfig);
+            public static void OnScreenTransitionInProgressEvent(ScreenConfigDataPacket screenConfig) => _OnScreenTransitionInProgressEvent?.Invoke(screenConfig);
+
+            public static void OnWidgetShownEvent(WidgetConfigDataPacket widgetConfig) => _OnWidgetShownEvent?.Invoke(widgetConfig);
+            public static void OnWidgetHiddenEvent(WidgetConfigDataPacket widgetConfig) => _OnWidgetHiddenEvent?.Invoke(widgetConfig);
+            public static void OnWidgetTransitionInProgressEvent(WidgetConfigDataPacket widgetConfig) => _OnWidgetTransitionInProgressEvent?.Invoke(widgetConfig);
 
             public static Transform OnGetContentPreviewContainer()
             {
@@ -46501,6 +46781,61 @@ namespace Com.RedicalGames.Filar
                                 _OnPostsInitializationCompletedEvent += eventAction.TriggeredEventMethod;
                             else
                                 _OnPostsInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnScreenShownEvent:
+
+
+                            if (subscribe)
+                                _OnScreenShownEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnScreenShownEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnScreenHiddenEvent:
+
+                            if (subscribe)
+                                _OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnScreenTransitionInProgressEvent:
+
+                            if (subscribe)
+                                _OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnWidgetShownEvent:
+
+                            if (subscribe)
+                                _OnWidgetShownEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnWidgetHiddenEvent:
+
+                            if (subscribe)
+                                _OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnWidgetTransitionInProgressEvent:
+
+                            if (subscribe)
+                                _OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 

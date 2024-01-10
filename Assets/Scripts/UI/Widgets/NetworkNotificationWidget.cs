@@ -178,6 +178,21 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+        protected override void OnScreenWidgetShownEvent()
+        {
+
+        }
+
+        protected override void OnScreenWidgetHiddenEvent()
+        {
+           
+        }
+
+        protected override void OnScreenWidgetTransitionInProgressEvent()
+        {
+            
+        }
+
         #endregion
     }
 }
