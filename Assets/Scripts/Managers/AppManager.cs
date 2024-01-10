@@ -189,18 +189,26 @@ namespace Com.RedicalGames.Filar
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
 
-                                                                                                                        await Task.Delay(5000);
-
-                                                                                                                        postManagerInstance.SelectPost(postSelectedCallbacKResults => 
+                                                                                                                        screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults => 
                                                                                                                         {
-                                                                                                                            callbackResults.SetResult(postSelectedCallbacKResults);
+                                                                                                                            callbackResults.SetResult(widgetShownCallbackResults);
 
                                                                                                                             if(callbackResults.Success())
                                                                                                                             {
-                                                                                                                                screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                                                                                                await Task.Delay(5000);
+
+                                                                                                                                postManagerInstance.SelectPost(postSelectedCallbacKResults =>
+                                                                                                                                {
+                                                                                                                                    callbackResults.SetResult(postSelectedCallbacKResults);
+
+                                                                                                                                    if (callbackResults.Success())
+                                                                                                                                    {
+                                                                                                                                        screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                                                                                                    }
+                                                                                                                                    else
+                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                                });
                                                                                                                             }
-                                                                                                                            else
-                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                                                         });
                                                                                                                     }
                                                                                                                     else
@@ -511,6 +519,35 @@ namespace Com.RedicalGames.Filar
             }
 
             callback.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Download Entry Data
+
+        public async Task<AppData.CallbackData<AppData.AppInfo>> DownloadPostEntryDataAsync()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                var downloadInitialPostContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.DownloadInitialPostContentAsync();
+
+                callbackResults.SetResult(downloadInitialPostContentAsyncCallbackResultsTask);
+
+                if(callbackResults.Success())
+                {
+                    LogInfo("", this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

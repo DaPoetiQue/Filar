@@ -11,6 +11,8 @@ namespace Com.RedicalGames.Filar
         private List<AppData.Post> posts;
         private List<ScenePostContentHandler> postsContents = new List<ScenePostContentHandler>();
 
+        public bool HasPost { get; private set; }
+
         public int PostCount { get; private set; }
 
         #endregion
@@ -26,7 +28,47 @@ namespace Com.RedicalGames.Filar
             if (callbackResults.Success())
             {
                 this.post = post;
+                HasPost = true;
                 callbackResults.result = $"A Post Have Been Assigned Successfully.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void RemovePost(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetPost());
+
+            if (callbackResults.Success())
+            {
+                this.post = null;
+                HasPost = false;
+
+                callbackResults.result = $"A Post Have Been Removed Successfully.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void RemovePost(AppData.Post post, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetPosts());
+
+            if(callbackResults.Success())
+            {
+                if (this.post == post)
+                {
+                    this.post = null;
+                    HasPost = false;
+                }
+
+                GetPosts().GetData().Remove(post);
+
+                callbackResults.result = $"A Post Have Been Removed Successfully.";
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -81,31 +123,31 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void LoadDefaultPostContent(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback(GetPost());
+        //public void LoadDefaultPostContent(Action<AppData.Callback> callback = null)
+        //{
+        //    var callbackResults = new AppData.Callback(GetPost());
 
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized."));
+        //    if (callbackResults.Success())
+        //    {
+        //        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized."));
 
-                if (callbackResults.Success())
-                {
-                    var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized.").GetData();
+        //        if (callbackResults.Success())
+        //        {
+        //            var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized.").GetData();
 
-                    appDatabaseManagerInstance.LoadPostContent(post, postLoadedCallbackResults =>
-                    {
-                        callbackResults.SetResult(postLoadedCallbackResults);
-                    });
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        //            appDatabaseManagerInstance.LoadPostContent(post, postLoadedCallbackResults =>
+        //            {
+        //                callbackResults.SetResult(postLoadedCallbackResults);
+        //            });
+        //        }
+        //        else
+        //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        //    }
+        //    else
+        //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            callback?.Invoke(callbackResults);
-        }
+        //    callback?.Invoke(callbackResults);
+        //}
 
         public void SelectPost(Action<AppData.Callback> callback = null)
         {

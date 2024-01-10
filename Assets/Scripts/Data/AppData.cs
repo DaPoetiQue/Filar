@@ -1214,7 +1214,8 @@ namespace Com.RedicalGames.Filar
             ServerEntryPoint,
             DeviceCompitability,
             ProfileSynchronization,
-            SigningApp
+            SigningApp,
+            ContentDownload
         }
 
         public enum TextureMapType
@@ -3839,6 +3840,36 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public CallbackData<T> GetDynamicContainer<T>(ScreenType screenType, ContentContainerType containerType, ContainerViewSpaceType viewSpaceType) where T : DynamicContainerBase
+            {
+                var callbackResults = new CallbackData<T>();
+
+                GetAllDynamicContainers(hasContentCallbackResults =>
+                {
+                    callbackResults.SetResult(hasContentCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        T container = hasContentCallbackResults.data.Find(container => container.GetScreenType().GetData() == screenType && container?.GetContainerType()?.GetData() == containerType && container?.GetViewSpace()?.GetData() == viewSpaceType) as T;
+
+                        if (container != null)
+                        {
+                            callbackResults.result = "Success";
+                            callbackResults.data = container;
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed : Container Of Type : {containerType} Not Found In Dynamic Widgets Containers List For Screen: {ScreenUIManager.Instance.GetCurrentScreenType()}.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                });
+
+                return callbackResults;
+            }
+
             public void GetDynamicContainers<T>(ScreenType screenType, Action<CallbackDataList<T>> callback) where T : DynamicContainerBase
             {
                 var callbackResults = new CallbackDataList<T>();
@@ -5831,11 +5862,11 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    Callback callbackResults = new Callback(Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
+                    Callback callbackResults = new Callback(Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.GetName(), "Screen UI Manager Instance Is Not Yet Initialized."));
 
                     if (callbackResults.Success())
                     {
-                        var screenUIManager = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized.").data;
+                        var screenUIManager = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.GetName(), "Screen UI Manager Instance Is Not Yet Initialized.").GetData();
 
                         if (callbackResults.Success())
                         {
@@ -5853,11 +5884,11 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if(callbackResults.Success())
                                         {
-                                            callbackResults.SetResults(Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized."));
+                                            callbackResults.SetResults(Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.GetName(), "App Manager Instance Is Not Yet Initialized."));
 
                                             if (callbackResults.Success())
                                             {
-                                                var appManager = Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name).data;
+                                                var appManager = Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.GetName()).GetData();
 
                                                 if (GetContent().GetMessageList().Success())
                                                 {
@@ -5869,17 +5900,17 @@ namespace Com.RedicalGames.Filar
 
                                                         case LoadingSequenceID.CheckingNetworkConnection:
 
-                                                            callbackResults.SetResults(Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
+                                                            callbackResults.SetResults(Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.GetName(), "Network Manager Instance Is Not Yet Initialized."));
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                var networkManager = Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
+                                                                var networkManager = Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).GetData();
 
                                                                 callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck));
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
 
                                                                     callbackResults = await networkManager.CheckConnectionStatus();
 
@@ -5887,11 +5918,11 @@ namespace Com.RedicalGames.Filar
                                                                         OnCompletition();
                                                                     else
                                                                     {
-                                                                        callbackResults.SetResults(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
+                                                                        callbackResults.SetResults(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
 
                                                                             callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
@@ -5942,17 +5973,17 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 #region Connecting To Server
 
-                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
+                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.GetName(), "Network Manager Instance Is Not Yet Initialized."));
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    var networkManager = Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
+                                                                    var networkManager = Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).GetData();
 
                                                                     callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection));
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).data.message);
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).GetData().GetMessage());
                                                                         callbackResults = await networkManager.ServerConnected();
                                                                     }
                                                                 }
@@ -5965,7 +5996,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).GetData().GetMessage());
                                                                     callbackResults = await appManager.SynchronizingAppInfo();
                                                                 }
 
@@ -5977,8 +6008,20 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerEntryPoint).GetData().GetMessage());
                                                                     callbackResults = await appManager.CheckEntryPointAsync();
+                                                                }
+
+                                                                #endregion
+
+                                                                #region Loading Post Content
+
+                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload));
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
+                                                                    callbackResults = await appManager.DownloadPostEntryDataAsync();
                                                                 }
 
                                                                 #endregion
@@ -6001,7 +6044,7 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).data.message);
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage());
                                                                     callbackResults = await appManager.GetCompatibilityStatusAsync();
                                                                 }
 
@@ -6019,11 +6062,11 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, "Profile Manager Instance Is Not Yet Initialized."));
+                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.GetName(), "Profile Manager Instance Is Not Yet Initialized."));
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    var profileManager = Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name).data;
+                                                                    var profileManager = Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name).GetData();
 
                                                                     #region Profile Sync
 
@@ -6031,7 +6074,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).data.message);
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).GetData().GetMessage());
                                                                         callbackResults = await profileManager.SynchronizingProfile();
                                                                     }
 
@@ -6043,7 +6086,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).data.message);
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).GetData().GetMessage());
                                                                         callbackResults = await profileManager.AppSignInAsync();
                                                                     }
 
@@ -6467,7 +6510,7 @@ namespace Com.RedicalGames.Filar
 
         #region Session Storage
 
-        public static class SessionStorage<K, V>
+        public static class SessionStorage<K, V> where K : SessionComponent where V : class
         {
             #region Components
 
@@ -6486,20 +6529,51 @@ namespace Com.RedicalGames.Filar
                     sessionDataDictionary.Add(key, value);
 
                     if (sessionDataDictionary.ContainsKey(key))
-                        callbackResults.result = $"Data With Key : {key.GetType().ToString()} Has Been Stored Successfully For This Session";
+                    {
+                        callbackResults.result = $"Data With Key : {key.GetName()} Has Been Stored Successfully For This Session";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
                     else
                     {
-                        callbackResults.result = $"Failed To Store Session Data With Key : {key.GetType().ToString()} - Unexpected Error - Please Check Here";
+                        callbackResults.result = $"Failed To Store Session Data With Key : {key.GetName()} - Unexpected Error - Please Check Here";
                         callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
                 else
                 {
-                    callbackResults.result = $"Data With Key : {key.GetType().ToString()} Is Already Stored In This Session";
+                    callbackResults.result = $"Data With Key : {key.GetName()} Is Already Stored In This Session";
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 callback?.Invoke(callbackResults);
+            }
+
+            public static Callback Store(K key, V value)
+            {
+                Callback callbackResults = new Callback();
+
+                if (!sessionDataDictionary.ContainsKey(key))
+                {
+                    sessionDataDictionary.Add(key, value);
+
+                    if (sessionDataDictionary.ContainsKey(key))
+                    {
+                        callbackResults.result = $"Data With Key : {key.GetName()} Has Been Stored Successfully For This Session";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Store Session Data With Key : {key.GetName()} - Unexpected Error - Please Check Here";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Data With Key : {key.GetName()} Is Already Stored In This Session";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
             }
 
             public static void GetStoredSessionData(K key, Action<CallbackData<V>> callback)
@@ -6508,18 +6582,38 @@ namespace Com.RedicalGames.Filar
 
                 if (sessionDataDictionary.TryGetValue(key, out V value))
                 {
-                    callbackResults.result = $"Sorage Session Value Of Key : {key} Has Been Loaded Successfully.";
+                    callbackResults.result = $"Sorage Session Value Of Key : {key.GetName()} Has Been Loaded Successfully.";
                     callbackResults.data = value;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Failed To Get Sorage Session Value Of Key : {key} - Possible Issue => There Is No Data Stored With Key : {key}";
+                    callbackResults.result = $"Failed To Get Sorage Session Value Of Key : {key.GetName()} - Possible Issue => There Is No Data Stored With Key : {key.GetName()}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
                 callback.Invoke(callbackResults);
+            }
+
+            public static CallbackData<V> GetStoredSessionData(K key)
+            {
+                CallbackData<V> callbackResults = new CallbackData<V>();
+
+                if (sessionDataDictionary.TryGetValue(key, out V value))
+                {
+                    callbackResults.result = $"Sorage Session Value Of Key : {key.GetName()} Has Been Loaded Successfully.";
+                    callbackResults.data = value;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Sorage Session Value Of Key : {key.GetName()} - Possible Issue => There Is No Data Stored With Key : {key.GetName()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
             }
 
             public static void ClearStorage() => sessionDataDictionary?.Clear();
@@ -6593,7 +6687,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class PostDataIdentifier : AppWidget
+        public class PostDataIdentifier : SessionComponent
         {
             #region Components
 
@@ -6614,11 +6708,10 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class AppWidget
+        public class SessionComponent : DataDebugger
         {
             #region Components
 
-            public string name;
 
             #endregion
         }

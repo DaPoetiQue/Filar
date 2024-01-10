@@ -1979,6 +1979,9 @@ MonoBehaviour:
         - name: Server Entry
           message: Initializing Server Entry Point And Fetching Profiles...
           sequenceState: 4
+        - name: App Posts
+          message: Downloading Initial App Post Content Data
+          sequenceState: 8
         footer: 
       sequenceID: 2
     - name: Device Compitability Sequence
