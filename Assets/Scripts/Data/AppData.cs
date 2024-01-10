@@ -20875,6 +20875,10 @@ namespace Com.RedicalGames.Filar
 
             private Dictionary<TransitionableEventType, List<Action>> registeredEvents = new Dictionary<TransitionableEventType, List<Action>>();
 
+            private Action onTransitionableComponentAtOriginEventAction,
+                           onTransitionableComponentInProgressEventAction,
+                           onTransitionableComponentAtTargetEventAction;
+
             #endregion
 
             #region Main
@@ -21516,6 +21520,24 @@ namespace Com.RedicalGames.Filar
                             callbackResults.resultCode = Helpers.ErrorCode;
                         }
                     }
+
+                    if (callbackResults.Success())
+                    {
+                        if (registeredEvents.TryGetValue(eventType, out List<Action> events))
+                        {
+                            OnRegisterEventListeners(events, eventType, eventsRegisteredCallbackResults =>
+                            {
+                                callbackResults.SetResult(eventsRegisteredCallbackResults);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Registered Event Because Key : {eventType} Exists But For Some Reason It Could Not Be Found.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -21561,6 +21583,60 @@ namespace Com.RedicalGames.Filar
                         {
                             callbackResults.result = $"Failed To Registered Events Because Key : {eventType} Exists But For Some Reason It Could Not Be Found.";
                             callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        if (registeredEvents.TryGetValue(eventType, out List<Action> events))
+                        {
+                            OnRegisterEventListeners(events, eventType, eventsRegisteredCallbackResults =>
+                            {
+                                callbackResults.SetResult(eventsRegisteredCallbackResults);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Registered Event Because Key : {eventType} Exists But For Some Reason It Could Not Be Found.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void OnRegisterEventListeners(List<Action> eventMethods, TransitionableEventType eventType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetRegisteredEventListeners());
+
+                if (callbackResults.Success())
+                {
+                    for (int i = 0; i < eventMethods.Count; i++)
+                    {
+                        switch (eventType)
+                        {
+                            case TransitionableEventType.OnTransitionableComponentAtOriginEvent:
+
+                                onTransitionableComponentAtOriginEventAction += eventMethods[i];
+
+                                break;
+
+                            case TransitionableEventType.OnTransitionableComponentInProgressEvent:
+
+                                onTransitionableComponentInProgressEventAction += eventMethods[i];
+
+                                break;
+
+                            case TransitionableEventType.OnTransitionableComponentAtTargetEvent:
+
+                                onTransitionableComponentAtTargetEventAction += eventMethods[i];
+
+                                break;
                         }
                     }
                 }
