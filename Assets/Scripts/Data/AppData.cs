@@ -21525,7 +21525,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (registeredEvents.TryGetValue(eventType, out List<Action> events))
                         {
-                            OnRegisterEventListeners(events, eventType, eventsRegisteredCallbackResults =>
+                            OnEventListenersRegister(events, eventType,true, eventsRegisteredCallbackResults =>
                             {
                                 callbackResults.SetResult(eventsRegisteredCallbackResults);
                             });
@@ -21590,7 +21590,7 @@ namespace Com.RedicalGames.Filar
                     {
                         if (registeredEvents.TryGetValue(eventType, out List<Action> events))
                         {
-                            OnRegisterEventListeners(events, eventType, eventsRegisteredCallbackResults =>
+                            OnEventListenersRegister(events, eventType, true, eventsRegisteredCallbackResults =>
                             {
                                 callbackResults.SetResult(eventsRegisteredCallbackResults);
                             });
@@ -21610,7 +21610,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void OnRegisterEventListeners(List<Action> eventMethods, TransitionableEventType eventType, Action<Callback> callback = null)
+            private void OnEventListenersRegister(List<Action> eventMethods, TransitionableEventType eventType, bool register, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetRegisteredEventListeners());
 
@@ -21622,19 +21622,28 @@ namespace Com.RedicalGames.Filar
                         {
                             case TransitionableEventType.OnTransitionableComponentAtOriginEvent:
 
-                                onTransitionableComponentAtOriginEventAction += eventMethods[i];
+                                if(register)
+                                    onTransitionableComponentAtOriginEventAction += eventMethods[i];
+                                else
+                                    onTransitionableComponentAtOriginEventAction -= eventMethods[i];
 
                                 break;
 
                             case TransitionableEventType.OnTransitionableComponentInProgressEvent:
 
-                                onTransitionableComponentInProgressEventAction += eventMethods[i];
+                                if (register)
+                                    onTransitionableComponentInProgressEventAction += eventMethods[i];
+                                else
+                                    onTransitionableComponentInProgressEventAction -= eventMethods[i];
 
                                 break;
 
                             case TransitionableEventType.OnTransitionableComponentAtTargetEvent:
 
-                                onTransitionableComponentAtTargetEventAction += eventMethods[i];
+                                if (register)
+                                    onTransitionableComponentAtTargetEventAction += eventMethods[i];
+                                else
+                                    onTransitionableComponentAtTargetEventAction -= eventMethods[i];
 
                                 break;
                         }
@@ -21656,10 +21665,112 @@ namespace Com.RedicalGames.Filar
 
                     if(callbackResults.Success())
                     {
+                        var registeredEventListeners = GetRegisteredEventListeners().GetData();
 
+                        var key = registeredEventListeners.FirstOrDefault(key => key.Value == Helpers.GetList(eventMethods)).Key;
+
+                        if(registeredEventListeners.TryGetValue(key, out List<Action> events))
+                        {
+                            if(events.Count == eventMethods.Length)
+                            {
+                                RemoveRegisterEventListeners(key, methodsRemovedCallbackResults => 
+                                {
+                                    callbackResults.SetResult(methodsRemovedCallbackResults);
+                                });
+                            }
+                            else
+                            {
+                                if(eventMethods.Length < events.Count)
+                                {
+                                    for (int i = 0; i < eventMethods.Length; i++)
+                                    {
+                                        switch(key)
+                                        {
+                                            case TransitionableEventType.OnTransitionableComponentAtOriginEvent:
+
+                                                onTransitionableComponentAtOriginEventAction -= eventMethods[i];
+
+                                                break;
+
+                                            case TransitionableEventType.OnTransitionableComponentInProgressEvent:
+
+                                                onTransitionableComponentInProgressEventAction -= eventMethods[i];
+
+                                                break;
+
+                                            case TransitionableEventType.OnTransitionableComponentAtTargetEvent:
+
+                                                onTransitionableComponentAtTargetEventAction -= eventMethods[i];
+
+                                                break;
+                                        }
+                                    }
+
+                                    callbackResults.result = $"{eventMethods.Length} Event Methods Have Been Successfully Removed From Registered Events.";
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Remove Register Event Listeners Failed - Requested To Remove Events That Do Not Exist. The Number Of Events To Be Removed Is Greater Than The Amount Of Registered Events For Key : {key}";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Remove : {eventMethods.Length} Registered Events Of Key : {key} From Registered Events. Please Check Here For A Possible fix.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveRegisterEventListeners(TransitionableEventType eventType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetRegisteredEventListeners());
+
+                if (callbackResults.Success())
+                {
+                    var registeredEventsData = GetRegisteredEventListeners().GetData();
+
+                    if(registeredEventsData.ContainsKey(eventType))
+                    {
+                        if(registeredEvents.TryGetValue(eventType, out List<Action> eventMethods))
+                        {
+                            OnEventListenersRegister(eventMethods, eventType, false, eventsUnregisteredCallbackResults => 
+                            {
+                                callbackResults.SetResult(eventsUnregisteredCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    if (registeredEvents.Remove(eventType, out List<Action> unregisteredActions))
+                                        callbackResults.result = $"{unregisteredActions.Count} Event Methods With Key : {eventType} - Have Been Successfully Unregistered.";
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Remove Events For Key : {eventType} - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.WarningCode;
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed To Find Registered Events For Key : {eventType} - Key : {eventType} Doesn't Contain Any Registered Events.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Failed To Remove Events For Key : {eventType} - Key : {eventType} Doesn't Exist In The Registered Events.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
