@@ -111,6 +111,8 @@ namespace Com.RedicalGames.Filar
         public static void SetWidgetRotationLocal(this RectTransform reference, Quaternion rotation) => reference.localRotation = rotation;
         public static void SetWidgetRotation(this RectTransform reference, Quaternion rotation) => reference.rotation = rotation;
 
+        public static string GetName(this RectTransform reference) => reference.name; 
+
         public static bool AssignedAndValid(this RectTransform reference) => reference != null;
 
         public static float ToFloat(this string source) => AppData.Helpers.StringToFloat(source);
@@ -134,6 +136,7 @@ namespace Com.RedicalGames.Filar
         public static void Hide(this GameObject gameObject) => gameObject.SetActive(false);
         public static void SetName(this GameObject gameObject, string name) => gameObject.name = name;
         public static string GetName(this GameObject gameObject) => gameObject.name;
+        public static RectTransform GetWidgetRect(this GameObject gameObject) => gameObject.GetComponent<RectTransform>();
 
         #region Container Placements
 

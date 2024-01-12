@@ -588,22 +588,22 @@ namespace Com.RedicalGames.Filar
                 {
                     var translatables = new List<AppData.TransitionableUIComponent>();
 
-                    foreach (var translatableData in activetransitionableUIDataList)
-                    {
-                        callbackResults.SetResult(translatableData.Initialized());
+                    //foreach (var translatableData in activetransitionableUIDataList)
+                    //{
+                    //    callbackResults.SetResult(translatableData.Initialized());
 
-                        if (callbackResults.Success())
-                        {
-                            var translatable = new AppData.TransitionableUIComponent(GetImageComponent().GetData().GetWidgetRect(), translatableData.GetTarget().GetData().GetTargetRect(), translatableData.GetUITransition().GetData(), translatableData.GetUITransitionState().GetData(), translatableData.GetTransitionalSpeed());
+                    //    if (callbackResults.Success())
+                    //    {
+                    //        var translatable = new AppData.TransitionableUIComponent(GetImageComponent().GetData().GetWidgetRect(), translatableData.GetTarget().GetData().GetTargetRect(), translatableData.GetUITransition().GetData(), translatableData.GetUITransitionState().GetData(), translatableData.GetTransitionalSpeed());
 
-                            if (!translatables.Contains(translatable))
-                                translatables.Add(translatable);
-                            else
-                                break;
-                        }
-                        else
-                            break;
-                    }
+                    //        if (!translatables.Contains(translatable))
+                    //            translatables.Add(translatable);
+                    //        else
+                    //            break;
+                    //    }
+                    //    else
+                    //        break;
+                    //}
 
                     callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(translatables, "Translatables", $"Failed To Create Translatables For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
 
@@ -686,7 +686,7 @@ namespace Com.RedicalGames.Filar
                     LogInfo($" ===>>><<<=== Initialize Image Transitions --Index : {randomPointIndex}", this);
 
                     var origin = GetImageComponent().GetData().GetWidgetRect().GetWidgetPoseAngle();
-                    var target = transitionable.GetTarget().GetData().GetTargetRect().GetWidgetPoseAngle();
+                    var target = transitionable.GetTarget().GetData().GetWidgetRect().GetWidgetPoseAngle();
 
 
                     if (randomPointIndex >= 1)
@@ -737,81 +737,6 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void SetTransitionableUITarget(AppData.UITransitionType transitionType, Vector3 target, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent(transitionType));
-
-            if (callbackResults.Success())
-            {
-                var transitionableUITaskResultsCallback = GetTransitionableUIComponent(transitionType);
-
-                var transitionableUI = transitionableUITaskResultsCallback.GetData();
-                transitionableUI.SetTarget(target);
-
-                callbackResults.result = $"Target Set For Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType}";
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public void SetTransitionableUITarget(AppData.UITransitionType transitionType, RectTransform target, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent(transitionType));
-
-            if (callbackResults.Success())
-            {
-                var transitionableUITaskResultsCallback = GetTransitionableUIComponent(transitionType);
-
-                var transitionableUI = transitionableUITaskResultsCallback.GetData();
-                transitionableUI.SetTarget(target);
-
-                callbackResults.result = $"Target Set For Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType}";
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public void SetTransitionableUITarget((Vector2 position, Vector2 scale, Vector3 rotationAngle) target, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent());
-
-            if (callbackResults.Success())
-            {
-                var transitionableUIList = GetTransitionableUIComponent().GetData();
-
-                for (int i = 0; i < transitionableUIList.Count; i++)
-                {
-                    callbackResults.SetResult(transitionableUIList[i].GetTransitionType());
-
-                    if (callbackResults.Success())
-                    {
-                        switch (transitionableUIList[i].GetTransitionType().data)
-                        {
-                            case AppData.UITransitionType.Translate:
-
-                                transitionableUIList[i].SetTarget(target.position);
-
-                                break;
-
-                            case AppData.UITransitionType.Scale:
-
-                                transitionableUIList[i].SetTarget(target.scale);
-
-                                break;
-
-                            case AppData.UITransitionType.Rotate:
-
-                                transitionableUIList[i].SetTarget(target.rotationAngle);
-
-                                break;
-                        }
-                    }
-                }
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
         public void SetTransitionableUITarget(AppData.UITransitionType transitionType, (Vector2 position, Vector2 scale, Vector3 rotationAngle) target, Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent(transitionType));
@@ -826,19 +751,19 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.UITransitionType.Translate:
 
-                        transitionableUI.SetTarget(target.position);
+                        //transitionableUI.SetTarget(target.position);
 
                         break;
 
                     case AppData.UITransitionType.Scale:
 
-                        transitionableUI.SetTarget(target.scale);
+                        //transitionableUI.SetTarget(target.scale);
 
                         break;
 
                     case AppData.UITransitionType.Rotate:
 
-                        transitionableUI.SetTarget(target.rotationAngle);
+                       // transitionableUI.SetTarget(target.rotationAngle);
 
                         break;
                 }

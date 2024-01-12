@@ -11,7 +11,7 @@ namespace Com.RedicalGames.Filar
         public Vector2 GetScale() => transform.GetComponent<RectTransform>().sizeDelta;
         public Vector3 GetRotation() => transform.localEulerAngles;
 
-        public RectTransform GetTargetRect() => transform.GetComponent<RectTransform>();
+        public RectTransform GetWidgetRect() => transform.GetComponent<RectTransform>();
 
         #endregion
     }

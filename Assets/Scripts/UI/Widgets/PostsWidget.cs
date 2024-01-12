@@ -127,7 +127,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
-            ShowSelectedLayout(defaultLayoutType);
+           
         }
 
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();

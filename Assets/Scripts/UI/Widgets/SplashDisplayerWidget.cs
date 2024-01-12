@@ -119,13 +119,13 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        var splashImageHandler = GetImageInputHandler(AppData.ScreenImageType.Splash).GetData();
-                                        splashImageHandler.InitializeImageTransitions();
+                                        //var splashImageHandler = GetImageInputHandler(AppData.ScreenImageType.Splash).GetData();
+                                        //splashImageHandler.InitializeImageTransitions();
 
-                                        splashImageHandler.InvokeTransitionableUI(transitionsInvokedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(transitionsInvokedCallbackResults);
-                                        });
+                                        //splashImageHandler.InvokeTransitionableUI(transitionsInvokedCallbackResults =>
+                                        //{
+                                        //    callbackResults.SetResult(transitionsInvokedCallbackResults);
+                                        //});
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

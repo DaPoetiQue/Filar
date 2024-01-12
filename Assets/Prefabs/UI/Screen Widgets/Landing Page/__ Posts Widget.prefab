@@ -69,6 +69,11 @@ MonoBehaviour:
   - name: Hidden Mount
     mount: {fileID: 2297841463217649443}
     mountType: 2
+  transitionableUIComponent:
+    name: 
+    source: {fileID: 0}
+    target: {fileID: 0}
+    transitionSpeed: 0
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList:
