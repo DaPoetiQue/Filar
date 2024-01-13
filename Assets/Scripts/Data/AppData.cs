@@ -22078,13 +22078,15 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.UnSuccessful())
                     {
+                        onTransitionCompletedEventAction?.Invoke();
+
                         callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Transition Completed.";
                         callbackResults.resultCode = Helpers.SuccessCode;
-
-                        onTransitionCompletedEventAction?.Invoke();
                     }
                     else
                     {
+                        onTransitionInProgressEventAction?.Invoke();
+
                         callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Is Still In Progress.";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
