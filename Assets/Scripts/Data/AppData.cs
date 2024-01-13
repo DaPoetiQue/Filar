@@ -21519,10 +21519,6 @@ namespace Com.RedicalGames.Filar
                                         var translateTargetPosition = Vector2.Lerp(source.GetWidgetPosition(), target.GetWidgetPosition(), transitionSpeed);
                                         source.SetWidgetPosition(translateTargetPosition);
 
-                                        var distance = (target.GetWidgetPosition() - source.GetWidgetPosition()).magnitude;
-
-                                        LogInfo($"______Log_Cat::: Transition Distance : {distance}", this);
-
                                         break;
 
                                     case UITransitionType.Scale:
@@ -22006,28 +22002,30 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private Callback InTransition(Vector2 source, Vector2 target, Vector2 origin, float distanceInMagnitude)
+            private Callback InTransition(Vector2 source, Vector2 target)
             {
                 Callback callbackResults = new Callback(GetCanTransition());
 
                 if (callbackResults.Success())
                 {
-                    if ((source - target).magnitude > distanceInMagnitude && (source - origin).magnitude > distanceInMagnitude)
-                    {
-                        callbackResults.result = $"Transitionable UI : {GetName()} Is Not In Transition";
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
-                    else
+                    var distance = (source - target).sqrMagnitude;
+
+                    if (distance > 0.0f)
                     {
                         callbackResults.result = $"Transitionable UI : {GetName()} Is In Transition.";
                         callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Transitionable UI : {GetName()} Is Not In Transition";
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
 
                 return callbackResults;
             }
 
-            private Callback InTransition(Quaternion source, Quaternion target, Quaternion origin, float distanceInMagnitude)
+            private Callback InTransition(Quaternion source, Quaternion target)
             {
                 Callback callbackResults = new Callback(GetCanTransition());
 
@@ -22049,44 +22047,41 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    //var source = GetSource().GetData();
-                    //var target = GetTarget().GetData();
-
-                    //switch (transitionType)
-                    //{
-                    //    case UITransitionType.Default:
-
-                    //        callbackResults.SetResult(InTransition(source.GetWidgetPosition(), target.GetWidgetPosition(), GetSourceOrigin().position, GetTransitionDistanceInMagnitude()));
-                    //        callbackResults.SetResult(InTransition(source.GetWidgetScale(), target.GetWidgetScale(), GetSourceOrigin().scale, GetTransitionDistanceInMagnitude()));
-                    //        callbackResults.SetResult(InTransition(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle(), GetSourceOrigin().rotationAngle, GetTransitionDistanceInMagnitude()));
-
-                    //        break;
-
-                    //    case UITransitionType.Translate:
-
-                    //        callbackResults.SetResult(InTransition(source.GetWidgetPosition(), target.GetWidgetPosition(), GetSourceOrigin().position, GetTransitionDistanceInMagnitude()));
-
-                    //        break;
-
-                    //    case UITransitionType.Scale:
-
-                    //        callbackResults.SetResult(InTransition(source.GetWidgetScale(), target.GetWidgetScale(), GetSourceOrigin().scale, GetTransitionDistanceInMagnitude()));
-
-                    //        break;
-
-                    //    case UITransitionType.Rotate:
-
-                    //        callbackResults.SetResult(InTransition(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle(), GetSourceOrigin().rotationAngle, GetTransitionDistanceInMagnitude()));
-
-                    //        break;
-                    //}
-
-                    if (GetCanTransition().UnSuccessful() && IsSubscribedToEvents().UnSuccessful())
+                    switch (transitionType)
                     {
-                        onTransitionCompletedEventAction?.Invoke();
+                        case UITransitionType.Default:
 
+                            callbackResults.SetResult(InTransition(source.GetWidgetPosition(), target.GetWidgetPosition()));
+                            callbackResults.SetResult(InTransition(source.GetWidgetScale(), target.GetWidgetScale()));
+                            callbackResults.SetResult(InTransition(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle()));
+
+                            break;
+
+                        case UITransitionType.Translate:
+
+                            callbackResults.SetResult(InTransition(source.GetWidgetPosition(), target.GetWidgetPosition()));
+
+                            break;
+
+                        case UITransitionType.Scale:
+
+                            callbackResults.SetResult(InTransition(source.GetWidgetScale(), target.GetWidgetScale()));
+
+                            break;
+
+                        case UITransitionType.Rotate:
+
+                            callbackResults.SetResult(InTransition(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle()));
+
+                            break;
+                    }
+
+                    if (callbackResults.UnSuccessful())
+                    {
                         callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Transition Completed.";
                         callbackResults.resultCode = Helpers.SuccessCode;
+
+                        onTransitionCompletedEventAction?.Invoke();
                     }
                     else
                     {
