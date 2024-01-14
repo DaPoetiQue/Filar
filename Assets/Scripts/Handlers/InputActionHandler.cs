@@ -632,9 +632,7 @@ namespace Com.RedicalGames.Filar
             {
                 for (int i = 0; i < transitionableUIParams.Length; i++)
                 {
-                    var initializationTaskResults = await transitionableUIParams[i].Initialized();
-
-                    callbackResults.SetResult(initializationTaskResults);
+                    callbackResults.SetResult(transitionableUIParams[i].Initialized());
 
                     if (callbackResults.Success())
                     {
@@ -769,112 +767,6 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callbackResults.result = $"Target Set For Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType}";
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public async void InvokeTransitionableUI(Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent());
-
-            if (callbackResults.Success())
-            {
-                var transitionableUIList = GetTransitionableUIComponent().GetData();
-
-                for (int i = 0; i < transitionableUIList.Count; i++)
-                {
-                    var transitionableUITasResultsCallback = await transitionableUIList[i].InvokeTransitionAsync();
-                    callbackResults.SetResult(transitionableUITasResultsCallback);
-
-                    if (callbackResults.UnSuccessful())
-                        break;
-                }
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public async void InvokeTransitionableUI(AppData.UITransitionType transitionType, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent(transitionType));
-
-            if (callbackResults.Success())
-            {
-                var transitionableUI = GetTransitionableUIComponent(transitionType).GetData();
-                var transitionableUITasResultsCallback = await transitionableUI.InvokeTransitionAsync();
-
-                callbackResults.SetResult(transitionableUITasResultsCallback);
-
-                if (callbackResults.Success())
-                    callbackResults.result = $"Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType} Has Been Invoked.";
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public async void CancelAllInvokedTransitionableUI(Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent());
-
-            if (callbackResults.Success())
-            {
-                var transitionableUIListTaskResultsCallback = GetTransitionableUIComponent();
-
-                var transitionableUIList = transitionableUIListTaskResultsCallback.GetData();
-
-                await Task.Yield();
-
-                for (int i = 0; i < transitionableUIList.Count; i++)
-                {
-                    var transitionableUITasResultsCallback = await transitionableUIList[i].CancelTransitionAsync();
-                    callbackResults.SetResult(transitionableUITasResultsCallback);
-
-                    while (callbackResults.UnSuccessful())
-                        await Task.Yield();
-                }
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public async void CancelInvokedTransitionableUI(AppData.UITransitionType transitionType = AppData.UITransitionType.None, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            if (transitionType != AppData.UITransitionType.None)
-            {
-                var transitionableUITaskResultsCallback = GetTransitionableUIComponent(transitionType);
-
-                callbackResults.SetResult(transitionableUITaskResultsCallback);
-
-                if (callbackResults.Success())
-                {
-                    var transitionableUI = transitionableUITaskResultsCallback.GetData();
-                    var cancelTransitionTaskResultsCallback = await transitionableUI.CancelTransitionAsync();
-
-                    callbackResults.SetResult(cancelTransitionTaskResultsCallback);
-                }
-            }
-            else
-            {
-                var transitionableUIListTaskResultsCallback = GetTransitionableUIComponent();
-
-                callbackResults.SetResult(transitionableUIListTaskResultsCallback);
-
-                if (callbackResults.Success())
-                {
-                    var transitionableUIList = transitionableUIListTaskResultsCallback.GetData();
-
-                    for (int i = 0; i < transitionableUIList.Count; i++)
-                    {
-                        var transitionableUITasResultsCallback = await transitionableUIList[i].CancelTransitionAsync();
-                        callbackResults.SetResult(transitionableUITasResultsCallback);
-
-                        if (callbackResults.UnSuccessful())
-                            break;
-                    }
-                }
             }
 
             callback?.Invoke(callbackResults);

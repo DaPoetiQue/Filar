@@ -158,9 +158,9 @@ namespace Com.RedicalGames.Filar
                                     isInitialView = !isInitialView;
 
                                     if (isInitialView)
-                                        GetTransitionableUIComponent().SetTarget(widgetContainer.visibleScreenPoint);
+                                        GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.visibleScreenPoint);
                                     else
-                                        GetTransitionableUIComponent().SetTarget(widgetContainer.hiddenScreenPoint);
+                                        GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.hiddenScreenPoint);
 
                                     SwitchPage();
 
@@ -177,14 +177,14 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        async void SwitchPage()
+        void SwitchPage()
         {
 
             LogInfo(" <+++++++++++++> Go To Login Screen", this);
 
             SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
 
-            await GetTransitionableUIComponent().InvokeTransitionAsync();
+            //await GetTransitionableUIComponent().InvokeTransition();
 
             string buttonTitle = (isInitialView) ? "Sign In" : "Sign Up";
 
