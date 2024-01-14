@@ -1084,7 +1084,8 @@ namespace Com.RedicalGames.Filar
         {
             None,
             Once,
-            Repeat
+            Repeat,
+            Loop
         }
 
         public enum DefaultUIWidgetActionState
@@ -20810,6 +20811,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            private float eventTriggerDistance;
+
+            [Space(5)]
+            [SerializeField]
             private UIScreenWidgetVisibilityState mountType;
 
             #endregion
@@ -20858,40 +20863,46 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public CallbackData<float> GetEventTriggerDistance()
+            {
+                var callbackResults = new CallbackData<float>(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Trigger Distance Is Set To : {eventTriggerDistance}";
+                    callbackResults.data = eventTriggerDistance;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             #endregion
         }
-
 
         [Serializable]
         public class TransitionableUIComponent : DataDebugger
         {
             #region Components
 
-            [SerializeField]
             private RectTransform source;
 
-            [SerializeField]
             private RectTransform target;
             private List<RectTransform> targets = new List<RectTransform>(); 
 
             private UITransitionType transitionType;
             private UITransitionStateType transitionState;
 
-            public float transitionSpeed;
+            private float transitionSpeed;
+            private float transitionEventTriggerDistance;
 
             private bool canTransitionUI = false;
-
             private bool randomize;
 
-            private bool subscribedToEvents;
-
-            private const float transitionDistanceInMagnitude = 0.01f;
-
-            private float timeOut = 5.0f;
-
-            private Vector2 originPosition;
-            private Vector2 originScale;
-            private Vector3 originRotationAngle;
+            private Vector2 originPosition = Vector2.zero;
+            private Vector2 originScale = Vector2.zero;
+            private Vector3 originRotationAngle = Vector3.zero;
 
             private Dictionary<TransitionableEventType, List<Action>> registeredEvents = new Dictionary<TransitionableEventType, List<Action>>();
 
@@ -20916,6 +20927,8 @@ namespace Com.RedicalGames.Filar
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
                 this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(RectTransform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false)
@@ -20925,6 +20938,8 @@ namespace Com.RedicalGames.Filar
                 this.transitionState = transitionState;
                 this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(RectTransform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, params RectTransform[] targets)
@@ -20932,9 +20947,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source;
                 target = targets.FirstOrDefault();
                 this.targets = Helpers.GetList(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(RectTransform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params RectTransform[] targets)
@@ -20942,10 +20959,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source;
                 target = targets.FirstOrDefault();
                 this.targets = Helpers.GetList(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             #endregion
@@ -20958,6 +20977,8 @@ namespace Com.RedicalGames.Filar
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
                 this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(ScreenSpaceTargetHandler source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false)
@@ -20967,6 +20988,8 @@ namespace Com.RedicalGames.Filar
                 this.transitionState = transitionState;
                 this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(ScreenSpaceTargetHandler source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, params ScreenSpaceTargetHandler[] targets)
@@ -20974,9 +20997,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromComponent(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(ScreenSpaceTargetHandler source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params ScreenSpaceTargetHandler[] targets)
@@ -20984,14 +21009,15 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromComponent(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             #endregion
-
 
             #region Game Objects
 
@@ -21001,6 +21027,8 @@ namespace Com.RedicalGames.Filar
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
                 this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(GameObject source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false)
@@ -21010,6 +21038,8 @@ namespace Com.RedicalGames.Filar
                 this.transitionState = transitionState;
                 this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(GameObject source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, params GameObject[] targets)
@@ -21017,9 +21047,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromGameObjects(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(GameObject source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params GameObject[] targets)
@@ -21027,10 +21059,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromGameObjects(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             #endregion
@@ -21044,9 +21078,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source;
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromComponent(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(RectTransform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params ScreenSpaceTargetHandler[] targets)
@@ -21054,10 +21090,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source;
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromComponent(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
                 this.randomize = randomize;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(RectTransform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, params GameObject[] targets)
@@ -21065,19 +21103,23 @@ namespace Com.RedicalGames.Filar
                 this.source = source;
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromGameObjects(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(RectTransform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params GameObject[] targets)
             {
                 this.source = source;
                 this.targets = Helpers.GetRectransformListFromGameObjects(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             #endregion
@@ -21089,9 +21131,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault();
                 this.targets = Helpers.GetList(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(ScreenSpaceTargetHandler source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params RectTransform[] targets)
@@ -21099,10 +21143,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault();
                 this.targets = Helpers.GetList(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(ScreenSpaceTargetHandler source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, params GameObject[] targets)
@@ -21110,9 +21156,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromGameObjects(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(ScreenSpaceTargetHandler source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params GameObject[] targets)
@@ -21120,10 +21168,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromGameObjects(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             #endregion
@@ -21135,9 +21185,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault();
                 this.targets = Helpers.GetList(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(GameObject source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params RectTransform[] targets)
@@ -21145,10 +21197,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault();
                 this.targets = Helpers.GetList(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(GameObject source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, params ScreenSpaceTargetHandler[] targets)
@@ -21156,9 +21210,11 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromComponent(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+
+                SetSourceOriginData(this.source);
             }
 
             public TransitionableUIComponent(GameObject source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false, params ScreenSpaceTargetHandler[] targets)
@@ -21166,10 +21222,12 @@ namespace Com.RedicalGames.Filar
                 this.source = source.GetWidgetRect();
                 target = targets.FirstOrDefault().GetWidgetRect();
                 this.targets = Helpers.GetRectransformListFromComponent(targets);
-                this.transitionSpeed = transitionSpeed;
                 this.transitionType = transitionType;
                 this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
                 this.randomize = randomize;
+
+                SetSourceOriginData(this.source);
             }
 
             #endregion
@@ -21478,141 +21536,84 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            private async void ActionEvents__Update()
+            private async void OnTransition()
             {
-                var callbackResults = new Callback(GetCanTransition());
+                var callbackResults = new Callback(await Initialized());
 
-                if (callbackResults.Success())
+                if(callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionSpeed());
+                    callbackResults.SetResult(GetCanTransition());
 
                     if (callbackResults.Success())
                     {
-                        var initializationTaskCallback = await Initialized();
+                        var source = GetSource().GetData();
+                        var target = GetTarget().GetData();
+                        var transitionSpeed = GetTransitionSpeed().GetData();
 
-                        callbackResults.SetResult(initializationTaskCallback);
+                        switch (GetTransitionType().GetData())
+                        {
+                            case UITransitionType.Default:
+
+                                var defaultTargetPosition = Vector2.Lerp(source.GetWidgetPosition(), target.GetWidgetPosition(), transitionSpeed);
+                                source.SetWidgetPosition(defaultTargetPosition);
+
+                                source.sizeDelta = Vector2.Lerp(source.sizeDelta, target.sizeDelta, transitionSpeed);
+                                source.rotation = Quaternion.Slerp(source.rotation, target.rotation, transitionSpeed);
+
+                                break;
+
+                            case UITransitionType.Translate:
+
+                                var translateTargetPosition = Vector2.Lerp(source.GetWidgetPosition(), target.GetWidgetPosition(), transitionSpeed);
+                                source.SetWidgetPosition(translateTargetPosition);
+
+                                break;
+
+                            case UITransitionType.Scale:
+
+                                source.sizeDelta = Vector2.Lerp(source.sizeDelta, target.sizeDelta, transitionSpeed);
+
+                                break;
+
+                            case UITransitionType.Rotate:
+
+                                source.rotation = Quaternion.Slerp(source.rotation, target.rotation, transitionSpeed);
+
+                                break;
+                        }
+
+                        callbackResults.SetResult(HasCompletedTransition(GetTransitionType().GetData()));
 
                         if (callbackResults.Success())
                         {
-                            var inProgressTaskCallback = await InProgress();
-
-                            var source = GetSource().GetData();
-                            var target = GetTarget().GetData();
-                            var transitionSpeed = GetTransitionSpeed().GetData();
-
-                            if (inProgressTaskCallback.Success())
+                            switch (GetTransitionStateType().GetData())
                             {
-                                switch (transitionType)
-                                {
-                                    case UITransitionType.Default:
+                                case UITransitionStateType.Once:
 
-                                        var defaultTargetPosition = Vector2.Lerp(source.GetWidgetPosition(), target.GetWidgetPosition(), transitionSpeed);
-                                        source.SetWidgetPosition(defaultTargetPosition);
+                                    CancelTransition(transitionCanceledCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(transitionCanceledCallbackResults);
 
-                                        source.sizeDelta = Vector2.Lerp(source.sizeDelta, target.sizeDelta, transitionSpeed);
-                                        source.rotation = Quaternion.Slerp(source.rotation, target.rotation, transitionSpeed);
-
-                                        break;
-
-                                    case UITransitionType.Translate:
-
-                                        var translateTargetPosition = Vector2.Lerp(source.GetWidgetPosition(), target.GetWidgetPosition(), transitionSpeed);
-                                        source.SetWidgetPosition(translateTargetPosition);
-
-                                        break;
-
-                                    case UITransitionType.Scale:
-
-                                        source.sizeDelta = Vector2.Lerp(source.sizeDelta, target.sizeDelta, transitionSpeed);
-
-                                        break;
-
-                                    case UITransitionType.Rotate:
-
-                                        source.rotation = Quaternion.Slerp(source.rotation, target.rotation, transitionSpeed);
-
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                switch (transitionType)
-                                {
-                                    case UITransitionType.Translate:
-
-                                        if (transitionState != UITransitionStateType.None)
-                                        {
-                                            switch (transitionState)
-                                            {
-                                                case UITransitionStateType.Once:
-
-                                                    source.SetWidgetPosition(target.GetWidgetPosition());
-                                                    SetCanTransition(false);
-                                                    UnSubscribedFromEvents();
-
-                                                    break;
-
-                                                case UITransitionStateType.Repeat:
-
-                                                    //SetTarget(GetSourceOrigin());
-                                                    //SetSourceOrigin(GetTransitionableUISource().GetWidgetPosition());
-
-                                                    break;
-                                            }
-                                        }
+                                        if (callbackResults.Success())
+                                            onTransitionCompletedEventAction.Invoke();
                                         else
-                                            throw new Exception("Transition Failed : Transition State Is Set To Default : NONE.");
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
 
-                                        break;
+                                    break;
 
-                                    case UITransitionType.Scale:
+                                case UITransitionStateType.Repeat:
 
-                                        switch (transitionState)
-                                        {
-                                            case UITransitionStateType.Once:
+                                    break;
 
-                                                source.SetWidgetScale(target.GetWidgetScale());
-                                                SetCanTransition(false);
-                                                UnSubscribedFromEvents();
 
-                                                break;
+                                case UITransitionStateType.Loop:
 
-                                            case UITransitionStateType.Repeat:
-
-                                                //SetTarget(GetSourceOrigin());
-                                                //SetSourceOrigin(GetTransitionableUISource().GetWidgetScale());
-
-                                                break;
-                                        }
-
-                                        break;
-
-                                    case UITransitionType.Rotate:
-
-                                        switch (transitionState)
-                                        {
-                                            case UITransitionStateType.Once:
-
-                                                source.SetWidgetRotation(target.GetWidgetRotation());
-                                                SetCanTransition(false);
-                                                UnSubscribedFromEvents();
-
-                                                break;
-
-                                            case UITransitionStateType.Repeat:
-
-                                                //SetTarget(GetSourceOrigin());
-                                                //SetSourceOrigin(GetTransitionableUISource().GetWidgetRotationAngle());
-
-                                                break;
-                                        }
-
-                                        break;
-                                }
+                                    break;
                             }
                         }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            onTransitionInProgressEventAction.Invoke();
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -21642,9 +21643,30 @@ namespace Com.RedicalGames.Filar
 
             #region Set Source
 
-            public void SetSource(RectTransform source) => this.source = source;
-            public void SetSource(ScreenSpaceTargetHandler source) => this.source = source.GetWidgetRect();
-            public void SetSource(GameObject source) => this.source = source.GetWidgetRect();
+            public void SetSource(RectTransform source)
+            {
+                this.source = source;
+                SetSourceOriginData(this.source);
+            }
+
+            public void SetSource(ScreenSpaceTargetHandler source)
+            {
+                this.source = source.GetWidgetRect();
+                SetSourceOriginData(this.source);
+            }
+
+            public void SetSource(GameObject source)
+            {
+                this.source = source.GetWidgetRect();
+                SetSourceOriginData(this.source);
+            }
+
+            private void SetSourceOriginData(RectTransform source)
+            {
+                originPosition = source.GetWidgetPosition();
+                originScale = source.GetWidgetScale();
+                originRotationAngle = source.GetWidgetRotationAngle();
+            }
 
             #endregion
 
@@ -21712,6 +21734,8 @@ namespace Com.RedicalGames.Filar
 
             public void SetTransitionSpeed(float transitionSpeed) => this.transitionSpeed = transitionSpeed;
 
+            public void SetTransitionEventTriggerDistance(float transitionEventTriggerDistance) => this.transitionEventTriggerDistance = transitionEventTriggerDistance;
+
             public void SetTransitionType(UITransitionType transitionType) => this.transitionType = transitionType;
             public void SetTransitionStateType(UITransitionStateType transitionState) => this.transitionState = transitionState;
 
@@ -21719,21 +21743,38 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            void SetCanTransition(bool canTransitionUI) => this.canTransitionUI = canTransitionUI;
+            private void SetCanTransition(bool canTransitionUI) => this.canTransitionUI = canTransitionUI;
 
-            void SubscribedToEvents() => subscribedToEvents = true;
-
-            void UnSubscribedFromEvents() => subscribedToEvents = false;
-
-            void SubscribeToEvents()
+            void SubscribeToEvents(Action<Callback> callback = null)
             {
-                ActionEvents._Update += ActionEvents__Update;
-                SubscribedToEvents();
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance", "Subscribe To Events Failed - App Time Events Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var appTimeEventsManagerInstance = Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance").GetData();
+
+                    appTimeEventsManagerInstance.OnEventSubscription(OnTransition, EventType.OnUpdate, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
-            void UnSubscribeFromEvents()
+
+            void UnSubscribeFromEvents(Action<Callback> callback = null)
             {
-                ActionEvents._Update -= ActionEvents__Update;
-                UnSubscribeFromEvents();
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance", "Subscribe To Events Failed - App Time Events Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var appTimeEventsManagerInstance = Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance").GetData();
+
+                    appTimeEventsManagerInstance.OnEventSubscription(OnTransition, EventType.OnUpdate, false, unSubscribedFromEventCallbackResults => { callbackResults.SetResult(unSubscribedFromEventCallbackResults); });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -21762,35 +21803,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void SetSourceOrigin((Vector2 position, Vector2 scale, Vector3 rotationAngle) source)
-            {
-                originPosition = source.position;
-                originScale = source.scale;
-                originRotationAngle = source.rotationAngle;
-            }
-
-            public void SetSourceOrigin(RectTransform source)
-            {
-                originPosition = source.anchoredPosition;
-                originScale = source.sizeDelta;
-                originRotationAngle = source.eulerAngles;
-            }
-
-            public void SetSourceOrigin(ScreenSpaceTargetHandler source)
-            {
-                originPosition = source.GetWidgetRect().anchoredPosition;
-                originScale = source.GetWidgetRect().sizeDelta;
-                originRotationAngle = source.GetWidgetRect().eulerAngles;
-            }
-
-            public void SetSourceOrigin(GameObject source)
-            {
-                originPosition = source.GetWidgetRect().anchoredPosition;
-                originScale = source.GetWidgetRect().sizeDelta;
-                originRotationAngle = source.GetWidgetRect().eulerAngles;
-            }
-
-            public (Vector2 position, Vector2 scale, Vector3 rotationAngle) GetSourceOrigin() => (originPosition, originScale, originRotationAngle);
+            private (Vector2 position, Vector2 scale, Vector3 rotationAngle) GetSourceOriginData() => (originPosition, originScale, originRotationAngle);
 
             public CallbackData<RectTransform> GetTarget()
             {
@@ -21881,7 +21894,20 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public float GetTransitionDistanceInMagnitude() => transitionDistanceInMagnitude;
+            public CallbackData<float> GetTransitionEventTriggerDistance()
+            {
+                var callbackResults = new CallbackData<float>(GetTransitionSpeed());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Transition Speed Success - Transition Event Trigger Distance Is Set To : {transitionEventTriggerDistance}";
+                    callbackResults.data = transitionEventTriggerDistance;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
 
             private Callback GetCanTransition()
             {
@@ -21895,24 +21921,6 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = $"Can Not Transition UI : {GetName()}";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                return callbackResults;
-            }
-
-            private Callback IsSubscribedToEvents()
-            {
-                var callbackResults = new Callback();
-
-                if(subscribedToEvents)
-                {
-                    callbackResults.result = $"Transitionable UI : {GetName()} Has Been Subscribed To The Updates Events.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Transitionable UI : {GetName()} Is Not Subscribed To Events.";
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
 
@@ -22002,201 +22010,20 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private Callback InTransition(Vector2 source, Vector2 target)
+            private Callback GetTransitionEventTriggerDistanceReached(float distance)
             {
-                Callback callbackResults = new Callback(GetCanTransition());
+                var callbackResults = new Callback(GetTransitionEventTriggerDistance());
 
-                if (callbackResults.Success())
+                if(callbackResults.Success())
                 {
-                    var distance = (source - target).sqrMagnitude;
-
-                    if (distance > 0.0f)
+                    if(distance <= GetTransitionEventTriggerDistance().GetData())
                     {
-                        callbackResults.result = $"Transitionable UI : {GetName()} Is In Transition.";
+                        callbackResults.result = "Transition Event Trigger Distance Reached.";
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
                     {
-                        callbackResults.result = $"Transitionable UI : {GetName()} Is Not In Transition";
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
-                }
-
-                return callbackResults;
-            }
-
-            private Callback InTransition(Quaternion source, Quaternion target)
-            {
-                Callback callbackResults = new Callback(GetCanTransition());
-
-                if (callbackResults.Success())
-                {
-                 
-                }
-
-                return callbackResults;
-            }
-
-            public async Task<Callback> Completed()
-            {
-                Callback callbackResults = new Callback();
-
-                var initializationTaskResults = await Initialized();
-
-                callbackResults.SetResult(initializationTaskResults);
-
-                if (callbackResults.Success())
-                {
-                    switch (transitionType)
-                    {
-                        case UITransitionType.Default:
-
-                            callbackResults.SetResult(InTransition(source.GetWidgetPosition(), target.GetWidgetPosition()));
-                            callbackResults.SetResult(InTransition(source.GetWidgetScale(), target.GetWidgetScale()));
-                            callbackResults.SetResult(InTransition(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle()));
-
-                            break;
-
-                        case UITransitionType.Translate:
-
-                            callbackResults.SetResult(InTransition(source.GetWidgetPosition(), target.GetWidgetPosition()));
-
-                            break;
-
-                        case UITransitionType.Scale:
-
-                            callbackResults.SetResult(InTransition(source.GetWidgetScale(), target.GetWidgetScale()));
-
-                            break;
-
-                        case UITransitionType.Rotate:
-
-                            callbackResults.SetResult(InTransition(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle()));
-
-                            break;
-                    }
-
-                    if (callbackResults.UnSuccessful())
-                    {
-                        onTransitionCompletedEventAction?.Invoke();
-
-                        callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Transition Completed.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        onTransitionInProgressEventAction?.Invoke();
-
-                        callbackResults.result = $"Transitionable UI : {GetName()} Of Type : {transitionType} - State : {transitionState} - Is Still In Progress.";
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
-                }
-
-                return callbackResults;
-            }
-
-            public async Task<Callback> InProgress()
-            {
-                Callback callbackResults = new Callback();
-
-                var initializationTaskResults = await Initialized();
-
-                callbackResults.SetResult(initializationTaskResults);
-
-                if (callbackResults.Success())
-                {
-                    var completedTaskResults = await Completed();
-
-                    callbackResults.SetResult(completedTaskResults);
-
-                    if (callbackResults.UnSuccessful())
-                    {
-                        callbackResults.result = $"Transitionable UI : {GetName()} Transition In Progress - Results : {callbackResults.GetResult}.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Transitionable UI : {GetName()} Transition Has Completed - Results : {callbackResults.GetResult}.";
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
-                }
-
-                return callbackResults;
-            }
-
-            #endregion
-
-            #region Actions
-
-            public async Task<Callback> InvokeTransitionAsync()
-            {
-                Callback callbackResults = new Callback();
-
-                var initializationTaskResults = await Initialized();
-
-                callbackResults.SetResult(initializationTaskResults);
-
-                if (callbackResults.Success())
-                {
-                    var progressCheckTaskResults = await InProgress();
-
-                    var source = GetSource().GetData();
-
-                    callbackResults.SetResult(progressCheckTaskResults);
-
-                    SetSourceOrigin(GetSource().GetData());
-
-                    //LogInfo($" ______________________++++++++++ Transitionable UI : {GetTransitionType().GetData()} - Invoed Here - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Pos : {GetTransitionableUISource().GetWidgetPosition()} - Target : {GetTarget()} .", this);
-
-                    if (callbackResults.UnSuccessful())
-                    {
-                        if (transitionState == UITransitionStateType.Repeat)
-                        {
-                            switch (transitionType)
-                            {
-                                case UITransitionType.Default:
-
-                                    if (GetSourceOrigin() != source.GetWidgetPoseAngle())
-                                        SetSourceOrigin(source);
-
-                                    break;
-
-                                case UITransitionType.Translate:
-
-                                    if (GetSourceOrigin().position != source.GetWidgetPosition())
-                                        SetSourceOrigin(source);
-
-                                    break;
-
-                                case UITransitionType.Scale:
-
-                                    if (GetSourceOrigin().scale != source.GetWidgetScale())
-                                        SetSourceOrigin(source);
-
-                                    break;
-
-                                case UITransitionType.Rotate:
-
-                                    if (GetSourceOrigin().rotationAngle != source.GetWidgetRotationAngle())
-                                        SetSourceOrigin(source);
-
-                                    break;
-                            }
-                        }
-
-                        SubscribeToEvents();
-                        SetCanTransition(true);
-
-                        await Task.Yield();
-
-                        var progressStartedTaskResults = await InProgress();
-                        callbackResults.SetResult(progressStartedTaskResults);
-
-                        LogInfo($" ______________________++++++++++++++ Start Progress - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.", this);
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Transitionable UI : {GetName()} Is Already In Progress - Result Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
+                        callbackResults.result = $"Transition Event Trigger Distance Is Not Reached - Distance : {distance}";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -22206,95 +22033,192 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void RestartTransition(Action<Callback> callback = null)
+            private Callback HasCompletedTransition(UITransitionType transitionType)
             {
                 Callback callbackResults = new Callback();
 
-                Initialized(async initializationCallbackResults =>
+                var source = GetSource().GetData();
+                var target = GetTarget().GetData();
+
+                switch (transitionType)
                 {
-                    callbackResults.SetResult(initializationCallbackResults);
+                    case UITransitionType.Default:
 
-                    if (callbackResults.Success())
-                    {
-                        var progressStartedTaskResults = await InProgress();
-                        callbackResults.SetResult(progressStartedTaskResults);
+                        var defaultTranslateDistance = GetTransitionDistance(source.GetWidgetPosition(), target.GetWidgetPosition());
+                        var defaultScaleDistance = GetTransitionDistance(source.GetWidgetScale(), target.GetWidgetScale());
+                        var defaultRotateDistance = GetTransitionDistance(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle());
 
-                        var source = GetSource().GetData();
-                        var origin = GetSourceOrigin();
-
-                        if (callbackResults.Success())
+                        if (GetTransitionEventTriggerDistanceReached(defaultTranslateDistance).Success() && GetTransitionEventTriggerDistanceReached(defaultScaleDistance).Success() && GetTransitionEventTriggerDistanceReached(defaultRotateDistance).Success())
                         {
-                            switch (transitionType)
-                            {
-                                case UITransitionType.Default:
+                            source.SetWidgetPose(target.GetWidgetPoseAngle());
 
-                                    if (source.GetWidgetPoseAngle() != origin)
-                                        source.SetWidgetPose(origin);
-
-                                    await Task.Yield();
-
-                                    if (source.GetWidgetPoseAngle() == origin)
-                                    {
-                                        callbackResults.result = $"Transition : {name} Has Been Restarted Successfully.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
-
-
-                                    break;
-
-                                case UITransitionType.Translate:
-
-                                    if (source.GetWidgetPosition() != origin.position)
-                                        source.SetWidgetPosition(origin.position);
-
-                                    await Task.Yield();
-
-                                    if (source.GetWidgetPosition() == origin.position)
-                                    {
-                                        callbackResults.result = $"Translate State Transition : {name} Has Been Restarted Successfully.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
-
-                                    break;
-
-                                case UITransitionType.Scale:
-
-                                    if (source.GetWidgetScale() != origin.scale)
-                                        source.SetWidgetScale(origin.scale);
-
-                                    await Task.Yield();
-
-                                    if (source.GetWidgetScale() == origin.scale)
-                                    {
-                                        callbackResults.result = $"Scale State Transition : {name} Has Been Restarted Successfully.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
-
-                                    break;
-
-                                case UITransitionType.Rotate:
-
-                                    if (source.GetWidgetRotationAngle() != origin.rotationAngle)
-                                        source.SetWidgetRotation(origin.rotationAngle);
-
-                                    await Task.Yield();
-
-                                    if (source.GetWidgetRotationAngle() == origin.rotationAngle)
-                                    {
-                                        callbackResults.result = $"Rotation State Transition : {name} Has Been Restarted Successfully.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
-
-                                    break;
-                            }
+                            callbackResults.result = $"Transitionable UI : {GetName()} Has Successfully Completed.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
                         else
                         {
-                            callbackResults.result = $"Failed To Transition : {name} - There Are Possibly Components Missing.";
-                            callbackResults.resultCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Transitionable UI : {GetName()} Is Still In Transition - Transition - Tranlate Distance : {defaultTranslateDistance}";
+                            callbackResults.resultCode = Helpers.WarningCode;
+
+                            return callbackResults;
                         }
+
+
+                        break;
+
+                    case UITransitionType.Translate:
+
+                        var translateDistance = GetTransitionDistance(source.GetWidgetPosition(), target.GetWidgetPosition());
+
+                        if (GetTransitionEventTriggerDistanceReached(translateDistance).Success())
+                        {
+                            source.SetWidgetPosition(target.GetWidgetPosition());
+
+                            callbackResults.result = $"Transitionable UI Translate : {GetName()} Has Successfully Completed.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Transitionable UI Translate : {GetName()} Is Still In Transition- Transition Distance : {translateDistance}";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+
+                        LogInfo($"______Log_Cat::::: In Transition Distance : {translateDistance}", this);
+
+                        break;
+
+                    case UITransitionType.Scale:
+
+                        var scaleDistance = GetTransitionDistance(source.GetWidgetScale(), target.GetWidgetScale());
+
+                        if (GetTransitionEventTriggerDistanceReached(scaleDistance).Success())
+                        {
+                            source.SetWidgetScale(target.GetWidgetScale());
+
+                            callbackResults.result = $"Transitionable UI Scale : {GetName()} Has Successfully Completed.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Transitionable UI Scale : {GetName()} Is Still In Transition - Transition Distance : {scaleDistance}";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+
+                        break;
+
+                    case UITransitionType.Rotate:
+
+                        var rotateDistance = GetTransitionDistance(source.GetWidgetRotationAngle(), target.GetWidgetRotationAngle());
+
+                        if (GetTransitionEventTriggerDistanceReached(rotateDistance).Success())
+                        {
+                            source.SetWidgetRotation(target.GetWidgetRotationAngle());
+
+                            callbackResults.result = $"Transitionable UI Rotate : {GetName()} Has Successfully Completed.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Transitionable UI Rotate : {GetName()} Is Still In Transition - Transition Distance : {rotateDistance}";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+
+                        break;
+                }
+
+                return callbackResults;
+            }
+
+            private float GetTransitionDistance(Vector2 source, Vector2 target) => (source - target).magnitude;
+
+            #endregion
+
+            #region Actions
+
+            public async Task<Callback> InvokeTransitionAsync()
+            {
+                var callbackResults = new Callback();
+
+                var initializationTaskResults = await Initialized();
+
+                callbackResults.SetResult(initializationTaskResults);
+
+                if (callbackResults.Success())
+                {
+                    SubscribeToEvents(subscribedToEventCallbackResults =>
+                    {
+                        callbackResults.SetResult(subscribedToEventCallbackResults);
+
+                        if (callbackResults.Success())
+                            SetCanTransition(true);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public async void RestartTransition(Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback();
+
+                var initializationTaskResults = await Initialized();
+
+                callbackResults.SetResult(initializationTaskResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetCanTransition());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTransitionType());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetSource());
+
+                            if (callbackResults.Success())
+                            {
+                                var source = GetSource().GetData();
+
+                                switch (GetTransitionType().GetData())
+                                {
+                                    case UITransitionType.Default:
+
+                                        source.SetWidgetPose(GetSourceOriginData());
+
+                                        break;
+
+                                    case UITransitionType.Translate:
+
+                                        source.SetWidgetPosition(GetSourceOriginData().position);
+
+                                        break;
+
+                                    case UITransitionType.Scale:
+
+                                        source.SetWidgetScale(GetSourceOriginData().scale);
+
+                                        break;
+
+                                    case UITransitionType.Rotate:
+
+                                        source.SetWidgetRotation(GetSourceOriginData().rotationAngle);
+
+                                        break;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
-                });
+                }
 
                 callback?.Invoke(callbackResults);
             }
@@ -22309,82 +22233,68 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    SetCanTransition(false);
-
                     callbackResults.SetResult(GetCanTransition());
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        await Task.Yield();
-                        UnSubscribedFromEvents();
+                        UnSubscribeFromEvents(unSubscribedFromEventCallbackResults =>
+                        {
+                            callbackResults.SetResult(unSubscribedFromEventCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                SetCanTransition(false);
+
+                                callbackResults.result = "Transitionable UI Canceled Successfully.";
+                            }
+                            else
+                                callbackResults.result = $"Transitionable UI Failed To Cancel With Code : {callbackResults.GetResultCode} And Results : {callbackResults.GetResult}.";
+
+                        });
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
 
-            public void CancelTransition(Action<Callback> callback = null)
+            public async void CancelTransition(Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback();
 
-                SetCanTransition(false);
-                UnSubscribeFromEvents();
+                var initializationTaskResults = await Initialized();
 
-                callbackResults.resultCode = Helpers.SuccessCode;
+                callbackResults.SetResult(initializationTaskResults);
 
-                Initialized(async initializationCallbackResults =>
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(initializationCallbackResults);
+                    callbackResults.SetResult(GetCanTransition());
 
                     if (callbackResults.Success())
                     {
-                        var inProgressTaskResults = await InProgress();
-
-                        var source = GetSource().GetData();
-                        var origin = GetSourceOrigin();
-
-                        callbackResults.SetResult(inProgressTaskResults);
-
-                        if (callbackResults.Success())
+                        UnSubscribeFromEvents(unSubscribedFromEventCallbackResults =>
                         {
-                            if (source.GetWidgetPoseAngle() != origin)
-                                SetSourceOrigin(origin);
+                            callbackResults.SetResult(unSubscribedFromEventCallbackResults);
 
-                            await Task.Yield();
-
-                            if (source.GetWidgetPoseAngle() == origin)
+                            if (callbackResults.Success())
                             {
-                                callbackResults.result = $"Translate State Transition : {name} Has Been Cancelled Successfully.";
-                                callbackResults.resultCode = Helpers.SuccessCode;
-                            }
+                                SetCanTransition(false);
 
-                            SetCanTransition(false);
-                            UnSubscribeFromEvents();
-
-                            var inProgressVarificationTaskResults = await InProgress();
-
-                            callbackResults.SetResult(inProgressVarificationTaskResults);
-
-                            await Task.Yield();
-
-                            if (callbackResults.UnSuccessful())
-                            {
-                                callbackResults.result = $"Transition : {GetName()} - Has Been Cancelled Successfully.";
-                                callbackResults.resultCode = Helpers.SuccessCode;
+                                callbackResults.result = "Transitionable UI Canceled Successfully.";
                             }
                             else
-                            {
-                                callbackResults.result = $"Failed To Cancel Transition : {GetName()} - Please Check Here.";
-                                callbackResults.resultCode = Helpers.ErrorCode;
-                            }
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Failed To Transition : {GetName()} - There Are Possibly Components Missing.";
-                            callbackResults.resultCode = Helpers.ErrorCode;
-                        }
+                                callbackResults.result = $"Transitionable UI Failed To Cancel With Code : {callbackResults.GetResultCode} And Results : {callbackResults.GetResult}.";
+
+                        });
                     }
-                });
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -22495,14 +22405,14 @@ namespace Com.RedicalGames.Filar
             {
                 SetElpasedTime(GetIntervalLength());
 
-                ActionEvents._Update += ActionEvents__Update;
+                ActionEvents._OnUpdate += ActionEvents__Update;
                 isRunning = true;
             }
 
             public void Stop()
             {
                 isRunning = false;
-                ActionEvents._Update -= ActionEvents__Update;
+                ActionEvents._OnUpdate -= ActionEvents__Update;
             }
 
             void TriggerEvent() => GetTriggerEventAction().Invoke();
@@ -29902,7 +29812,6 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private List<TransitionableUIMount> transitionableUIMountList = new List<TransitionableUIMount>();
 
-            [SerializeField]
             private TransitionableUIComponent transitionableUIComponent = new TransitionableUIComponent();
 
             #endregion
@@ -30159,8 +30068,9 @@ namespace Com.RedicalGames.Filar
                     transitionableUIComponent.RegisterEventListener(ScreenWidgetTransitionCompletedCallback, TransitionableEventType.OnTransitionCompletedEvent);
 
                     #endregion
-
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -30191,6 +30101,8 @@ namespace Com.RedicalGames.Filar
                             break;
                     }
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             #endregion
@@ -35011,8 +34923,6 @@ namespace Com.RedicalGames.Filar
 
                                     case TransitionType.Translate:
 
-                                        LogInfo($"_______Log_Cat:: On Show Widget : {GetName()} - Of Type : {GetType().GetData()} Is Set To Translate.", this);
-
                                         callbackResults.SetResult(GetTransitionableUIComponent());
 
                                         if (callbackResults.Success())
@@ -35029,8 +34939,10 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        var visibleMountTarget = GetTransitionableUIMountTarget(UIScreenWidgetVisibilityState.Visible).GetData();
-                                                        transitionalComponent.SetTarget(visibleMountTarget);
+                                                        var visibleMount = GetTransitionableUIMount(UIScreenWidgetVisibilityState.Visible).GetData();
+
+                                                        transitionalComponent.SetTarget(visibleMount.GetMount().GetData());
+                                                        transitionalComponent.SetTransitionEventTriggerDistance(visibleMount.GetEventTriggerDistance().GetData());
 
                                                         callbackResults.SetResult(await transitionalComponent.Initialized());
 
@@ -35132,8 +35044,10 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        var visibleMountTarget = GetTransitionableUIMountTarget(UIScreenWidgetVisibilityState.Hidden).GetData();
-                                                        transitionalComponent.SetTarget(visibleMountTarget);
+                                                        var visibleMount = GetTransitionableUIMount(UIScreenWidgetVisibilityState.Hidden).GetData();
+
+                                                        transitionalComponent.SetTarget(visibleMount.GetMount().GetData());
+                                                        transitionalComponent.SetTransitionEventTriggerDistance(visibleMount.GetEventTriggerDistance().GetData());
 
                                                         var invokedTransition = await transitionalComponent.InvokeTransitionAsync();
 
@@ -39700,7 +39614,7 @@ namespace Com.RedicalGames.Filar
                                 callbackResults = initializationSetupCallbackResults;
 
                                 if(callbackResults.Success())
-                                    ActionEvents._Update += ActionEvents__Update;
+                                    ActionEvents._OnUpdate += ActionEvents__Update;
 
                             });
                         }
@@ -46718,11 +46632,11 @@ namespace Com.RedicalGames.Filar
 
             public static event Void _Enabled;
             public static event Void _Disabled;
-            public static event Void _Awake;
-            public static event Void _Start;
-            public static event Void _Update;
-            public static event Void _LateUpdate;
-            public static event Void _FixedUpdate;
+            public static event Void _OnAwake;
+            public static event Void _OnStart;
+            public static event Void _OnUpdate;
+            public static event Void _OnLateUpdate;
+            public static event Void _OnFixedUpdate;
 
             #endregion
 
@@ -46801,11 +46715,11 @@ namespace Com.RedicalGames.Filar
 
             public static void Enabled() => _Enabled?.Invoke();
             public static void Disabled() => _Disabled?.Invoke();
-            public static void Awake() => _Awake?.Invoke();
-            public static void Start() => _Start?.Invoke();
-            public static void Update() => _Update?.Invoke();
-            public static void LateUpdate() => _LateUpdate?.Invoke();
-            public static void FixedUpdate() => _FixedUpdate?.Invoke();
+            public static void Awake() => _OnAwake?.Invoke();
+            public static void Start() => _OnStart?.Invoke();
+            public static void Update() => _OnUpdate?.Invoke();
+            public static void LateUpdate() => _OnLateUpdate?.Invoke();
+            public static void FixedUpdate() => _OnFixedUpdate?.Invoke();
 
             #endregion
 
@@ -46887,9 +46801,9 @@ namespace Com.RedicalGames.Filar
                         case EventType.OnUpdate:
 
                             if (subscribe)
-                                _Update += eventAction.TriggeredEventMethod;
+                                _OnUpdate += eventAction.TriggeredEventMethod;
                             else
-                                _Update -= eventAction.TriggeredEventMethod;
+                                _OnUpdate -= eventAction.TriggeredEventMethod;
 
                             break;
 

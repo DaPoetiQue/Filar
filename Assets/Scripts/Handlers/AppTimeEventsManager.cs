@@ -26,6 +26,77 @@ namespace Com.RedicalGames.Filar
 
         void FixedUpdate() => AppData.ActionEvents.FixedUpdate();
 
+        #region Subscriptions
+
+        public void OnEventSubscription(Action eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if(callbackResults.Success())
+                {
+                    switch(eventType)
+                    {
+                        case AppData.EventType.OnAppAwake:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnAwake += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnAwake -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnAppStart:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnStart += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnStart -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnUpdate:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnUpdate += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnUpdate -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnLateUpdate:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnLateUpdate += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnLateUpdate -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnFixedUpdate:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnFixedUpdate += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnFixedUpdate -= eventMethod.Invoke;
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
         #endregion
 
         #region Timed Events

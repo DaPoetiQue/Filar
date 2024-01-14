@@ -63,17 +63,14 @@ MonoBehaviour:
   orderInLayer: 0
   transitionType: 2
   transitionableUIMountList:
-  - name: Visible Mount
+  - name: Widget Open Target Mount
     mount: {fileID: 846060006035808383}
+    eventTriggerDistance: 2
     mountType: 1
-  - name: Hidden Mount
+  - name: Widget Closed Target Mount
     mount: {fileID: 2297841463217649443}
+    eventTriggerDistance: 0
     mountType: 2
-  transitionableUIComponent:
-    name: 
-    source: {fileID: 0}
-    target: {fileID: 0}
-    transitionSpeed: 0
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList:
