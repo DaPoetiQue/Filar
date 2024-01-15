@@ -122,6 +122,41 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
+        protected override void OnActionButtonEvent(AppData.SelectableWidgetType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnScrollerValueChanged(Vector2 value)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnInputFieldValueChanged(int value, AppData.InputFieldConfigDataPacket dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

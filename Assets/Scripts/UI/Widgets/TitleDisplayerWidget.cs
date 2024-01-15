@@ -134,6 +134,11 @@ namespace Com.RedicalGames.Filar
            
         }
 
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

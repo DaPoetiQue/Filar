@@ -102,7 +102,7 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
         }
@@ -133,6 +133,11 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
             throw new NotImplementedException();
         }

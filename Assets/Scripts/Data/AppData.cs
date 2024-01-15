@@ -25225,7 +25225,6 @@ namespace Com.RedicalGames.Filar
             public void SetFileData() => OnSetAssetData(assetData);
 
             public void SetFileData(SceneAsset assetData) => OnSetAssetData(assetData);
-            protected abstract void OnActionButtonInputs(UIButton<ButtonConfigDataPacket> actionButton);
             protected abstract void OnSetUIWidgetData(Folder folder);
             protected abstract void OnSetUIWidgetData(ProjectStructureData structureData);
             protected abstract void OnSetUIWidgetData(Post post);
@@ -32854,6 +32853,18 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Action Inputs Overrides
+
+            protected abstract void OnActionButtonEvent(T screenWidgetType, InputActionButtonType actionType, SceneConfigDataPacket dataPackets);
+            protected abstract void OnActionButtonInputs(UIButton<ButtonConfigDataPacket> actionButton);
+            protected abstract void OnActionDropdownValueChanged(int value, DropdownConfigDataPacket dataPackets);
+            protected abstract void OnScrollerValueChanged(Vector2 value);
+            protected abstract void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket dataPackets);
+            protected abstract void OnInputFieldValueChanged(int value, InputFieldConfigDataPacket dataPackets);
+            protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets);
+
+            #endregion
+
             #endregion
         }
 
@@ -35486,13 +35497,6 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Overrides
-
-            protected abstract void OnActionButtonEvent(WidgetType popUpType, InputActionButtonType actionType, SceneConfigDataPacket dataPackets);
-            protected abstract void OnActionDropdownValueChanged(int value, DropdownConfigDataPacket dataPackets);
-            protected abstract void OnScrollerValueChanged(Vector2 value);
-            protected abstract void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket dataPackets);
-            protected abstract void OnInputFieldValueChanged(int value, InputFieldConfigDataPacket dataPackets);
-            protected abstract void OnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets);
 
             protected abstract void ScrollerPosition(Vector2 position);
 
