@@ -1832,11 +1832,13 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 2
   type: 36
   uIPlacementContainerType: 14
   uIPlacementType: 1
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []

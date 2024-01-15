@@ -3,28 +3,29 @@ using System.Collections.Generic;
 
 namespace Com.RedicalGames.Filar
 {
-    public class AppTimeEventsManager : AppData.SingletonBaseComponent<AppTimeEventsManager>
+    public class AppEventsManager : AppData.SingletonBaseComponent<AppEventsManager>
     {
         #region Components
-
 
         Dictionary<string, AppData.TimedEventComponent> timedEventComponents = new Dictionary<string, AppData.TimedEventComponent>();
 
         #endregion
 
-        #region Main
-
         #region Unity Callbacks
 
         private void Awake() => AppData.ActionEvents.Awake();
-
-        void Start() => AppData.ActionEvents.Start();
 
         void Update() => AppData.ActionEvents.Update();
 
         void LateUpdate() => AppData.ActionEvents.LateUpdate();
 
         void FixedUpdate() => AppData.ActionEvents.FixedUpdate();
+
+        #endregion
+
+        #region Main
+
+        protected override void Init() => AppData.ActionEvents.Start();
 
         #region Subscriptions
 
@@ -36,9 +37,9 @@ namespace Com.RedicalGames.Filar
             {
                 callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    switch(eventType)
+                    switch (eventType)
                     {
                         case AppData.EventType.OnAppAwake:
 
@@ -95,7 +96,108 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        #endregion
+        public void OnEventSubscription<T>(Action<T> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null) where T : AppMonoBaseClass
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnScreenShownEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnScreenShownEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnScreenShownEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnScreenHiddenEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnScreenHiddenEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnScreenHiddenEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnScreenTransitionInProgressEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnWidgetShownEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnWidgetShownEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnWidgetShownEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnWidgetHiddenEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnWidgetHiddenEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnWidgetHiddenEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnWidgetTransitionInProgressEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnSelectableWidgetShownEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnSelectableWidgetHiddenEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnSelectableWidgetTransitionInProgressEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventMethod.Invoke;
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
 
         #endregion
 

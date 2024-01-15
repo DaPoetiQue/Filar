@@ -50,6 +50,11 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Init()
+        {
+            
+        }
+
         public async Task<AppData.CallbackDataList<Screen>> OnScreenInitAsync()
         {
             var callbackResults = new AppData.CallbackDataList<Screen>(

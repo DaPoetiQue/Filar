@@ -33,11 +33,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized.").GetData();
 
-                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
 
                                 if (callbackResults.Success())
                                 {
-                                    var timeManager = AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
+                                    var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
                                     timeManager.RegisterTimedEvent("Randomize Displayed Image", OnRandomizeDisplayedSplashImage, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageChangeEventInterval).value);
                                 }
                                 else
@@ -107,11 +107,11 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
 
                             if (callbackResults.Success())
                             {
-                                var timeManager = AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
+                                var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
 
                                 timeManager.InvokeEvent("Randomize Displayed Image", invokeRandomizeDisplayedImageCallbackResults =>
                                 {
@@ -191,11 +191,11 @@ namespace Com.RedicalGames.Filar
 
         public void OnLoadCompletedEvent()
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var timeManager = AppData.Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, AppTimeEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
+                var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized.").GetData();
 
                 timeManager.CancelEvent("Randomize Displayed Image", invokeRandomizeDisplayedImageCallbackResults =>
                 {

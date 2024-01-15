@@ -112,8 +112,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-
-        void Init()
+        protected override void Init()
         {
             projectStructureSelectionSystem.OnSelection = ShowWidgetOnSelection;
             projectStructureSelectionSystem.OnDeselection = HideWidgetOnDeselection;

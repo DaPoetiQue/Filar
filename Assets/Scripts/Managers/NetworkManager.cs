@@ -17,6 +17,10 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Main
+        protected override void Init()
+        {
+           
+        }
 
         #region Server Connection
 

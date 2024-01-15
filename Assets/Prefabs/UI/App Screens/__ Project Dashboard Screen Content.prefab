@@ -180,17 +180,19 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
+  transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   selectableComponent:
     selectionInfo:
       selectionThreshHold: 0
@@ -9270,17 +9272,19 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
+  transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   selectableComponent:
     selectionInfo:
       selectionThreshHold: 0
@@ -26977,17 +26981,19 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
+  transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
+  screenType: 0
   selectableComponent:
     selectionInfo:
       selectionThreshHold: 0
@@ -28592,16 +28598,17 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 1
   type: 3
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 4
   transitionType: 2
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   screenTitle: Project
   screenView:
     name: Project Dashboard View
@@ -97587,16 +97594,17 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 0
+  transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 0
   widgetLayouts: []
@@ -97756,6 +97764,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}

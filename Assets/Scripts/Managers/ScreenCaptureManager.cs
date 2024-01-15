@@ -43,13 +43,11 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Start() => Init();
-
         #endregion
 
         #region Main
 
-        void Init()
+        protected override void Init()
         {
             croppedTexture = new Texture2D(captureResolution.width, captureResolution.height);
 

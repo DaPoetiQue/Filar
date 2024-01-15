@@ -30,6 +30,11 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Init()
+        {
+
+        }
+
         public void Publish(Action<AppData.Callback> callback = null)
         {
             //AppData.Callback callbackResults = new AppData.Callback();

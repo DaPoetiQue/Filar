@@ -1164,6 +1164,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -1489,6 +1490,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -1631,6 +1633,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -2235,6 +2238,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -2461,6 +2465,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -2770,6 +2775,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -3025,7 +3031,7 @@ GameObject:
   - component: {fileID: 428251001}
   - component: {fileID: 428251002}
   m_Layer: 0
-  m_Name: __App Time Events Manager
+  m_Name: __App Events Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4025,6 +4031,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -7366,6 +7373,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -7592,6 +7600,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -8559,6 +8568,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -9366,6 +9376,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -9962,6 +9973,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -10414,6 +10426,7 @@ Transform:
   m_Children:
   - {fileID: 1467314825}
   - {fileID: 2062864805}
+  - {fileID: 428251001}
   - {fileID: 1813465767}
   - {fileID: 525955589}
   - {fileID: 151321082}
@@ -10431,7 +10444,6 @@ Transform:
   - {fileID: 860849113}
   - {fileID: 91990599}
   - {fileID: 1975130540}
-  - {fileID: 428251001}
   - {fileID: 1887304808}
   m_Father: {fileID: 1039201967}
   m_RootOrder: -1
@@ -10486,6 +10498,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -11007,6 +11020,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -11233,6 +11247,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -12221,6 +12236,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -13205,6 +13221,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -13694,6 +13711,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -14066,6 +14084,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -14319,6 +14338,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -14984,6 +15004,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -15302,6 +15323,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -15531,6 +15553,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -16084,6 +16107,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -16310,6 +16334,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -16536,6 +16561,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -16764,6 +16790,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -17263,6 +17290,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
@@ -19018,6 +19046,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 0
   type: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0

@@ -19,6 +19,21 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Init()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
+
+            if(callbackResults.Success())
+            {
+                var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetOpenEvent, AppData.EventType.OnWidgetShownEvent, true);
+                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetClosedEvent, AppData.EventType.OnWidgetHiddenEvent, true);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
         #region Data Setters
 
         public void SetPost(AppData.Post post, Action<AppData.Callback> callback = null)
@@ -283,6 +298,66 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
+
+        #endregion
+
+        #region Events
+
+        #region Widget Events
+
+        private void OnWidgetOpenEvent(AppData.Widget widget)
+        {
+            var callbackResults = new AppData.Callback();
+
+            #region Post Widget
+
+            callbackResults.SetResult(widget.GetType());
+
+            if (callbackResults.Success())
+            {
+                if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+                {
+                    LogSuccess($" _________________Log_Cat::: Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Is Successfully Shown", this);
+                }
+                else
+                {
+                    callbackResults.result = $"Shown Widget Is Not Post - Widget Name : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Is Shown";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            #endregion
+        }
+
+        private void OnWidgetClosedEvent(AppData.Widget widget)
+        {
+            var callbackResults = new AppData.Callback();
+
+            #region Post Widget
+
+            callbackResults.SetResult(widget.GetType());
+
+            if (callbackResults.Success())
+            {
+                if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+                {
+                    LogSuccess($" _________________Log_Cat::: Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Is Successfully Closed", this);
+                }
+                else
+                {
+                    callbackResults.result = $"Shown Widget Is Not Post - Widget Name : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Is Closed";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            #endregion
+        }
+
+        #endregion
 
         #endregion
 

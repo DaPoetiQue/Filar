@@ -43,19 +43,13 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Init();
-
-        #endregion
-
         #region Main
 
-        private void Init(Action<AppData.Callback> callback = null)
+        protected override void Init()
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
-            if(callbackResults.Success())
+            if (callbackResults.Success())
             {
                 var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
@@ -189,11 +183,11 @@ namespace Com.RedicalGames.Filar
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
 
-                                                                                                                        screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults => 
+                                                                                                                        screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
                                                                                                                         {
                                                                                                                             callbackResults.SetResult(widgetShownCallbackResults);
 
-                                                                                                                            if(callbackResults.Success())
+                                                                                                                            if (callbackResults.Success())
                                                                                                                             {
                                                                                                                                 await Task.Delay(2500);
 

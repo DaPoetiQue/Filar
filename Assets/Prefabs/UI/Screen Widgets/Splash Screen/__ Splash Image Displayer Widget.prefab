@@ -1912,16 +1912,17 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 2
   type: 36
   uIPlacementContainerType: 14
   uIPlacementType: 1
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup:
   - name: 
     inputActionGroupType: 8
@@ -2093,4 +2094,3 @@ MonoBehaviour:
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
-  testImage: {fileID: 0}

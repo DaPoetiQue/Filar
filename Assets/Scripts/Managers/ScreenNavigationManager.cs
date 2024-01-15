@@ -34,6 +34,11 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Init()
+        {
+          
+        }
+
         public void NavigateToFolder(AppData.Folder folder, AppData.UIWidgetInfo folderWidgetInfo, AppData.FolderStructureType structureType)
         {
             // Store Previous Folder

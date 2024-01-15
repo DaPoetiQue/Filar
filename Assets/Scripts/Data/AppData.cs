@@ -647,6 +647,14 @@ namespace Com.RedicalGames.Filar
             None
         }
 
+        public enum UIScreenWidgetType
+        {
+            None,
+            Screen,
+            Widget,
+            SelectableWidget
+        }
+
         public enum ScreenWidgetState
         {
             None,
@@ -21476,7 +21484,15 @@ namespace Com.RedicalGames.Filar
                             onTransitionInProgressEventAction.Invoke();
                     }
                     else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    {
+                        UnSubscribeFromEvents(unSubscribeFromEventsCallbackResults => 
+                        {
+                            callbackResults.SetResult(unSubscribeFromEventsCallbackResults);
+                        });
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -21567,11 +21583,11 @@ namespace Com.RedicalGames.Filar
 
             void SubscribeToEvents(Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance", "Subscribe To Events Failed - App Time Events Manager Instance Is Not Yet Initialized."));
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Time Events Manager Instance", "Subscribe To Events Failed - App Time Events Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var appTimeEventsManagerInstance = Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance").GetData();
+                    var appTimeEventsManagerInstance = Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Time Events Manager Instance").GetData();
 
                     appTimeEventsManagerInstance.OnEventSubscription(OnTransition, EventType.OnUpdate, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
                 }
@@ -21583,11 +21599,11 @@ namespace Com.RedicalGames.Filar
 
             void UnSubscribeFromEvents(Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance", "Subscribe To Events Failed - App Time Events Manager Instance Is Not Yet Initialized."));
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Time Events Manager Instance", "Subscribe To Events Failed - App Time Events Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
-                    var appTimeEventsManagerInstance = Helpers.GetAppComponentValid(AppTimeEventsManager.Instance, "App Time Events Manager Instance").GetData();
+                    var appTimeEventsManagerInstance = Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Time Events Manager Instance").GetData();
 
                     appTimeEventsManagerInstance.OnEventSubscription(OnTransition, EventType.OnUpdate, false, unSubscribedFromEventCallbackResults => { callbackResults.SetResult(unSubscribedFromEventCallbackResults); });
                 }
@@ -30043,6 +30059,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            protected UIScreenWidgetType screenWidgetType = UIScreenWidgetType.None;
+
+            [Space(5)]
+            [SerializeField]
             protected T type;
 
             [Space(5)]
@@ -30119,6 +30139,12 @@ namespace Com.RedicalGames.Filar
 
             private Action OnEnabledEventAction,
                            OnDisabledEventAction;
+
+            #endregion
+
+            #region Config
+
+            private ConfigDataPacket<T> configDataDataPacket;
 
             #endregion
 
@@ -30307,8 +30333,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Data Setters
-
             #region Transitionable UI Data
 
             protected void SetTransitionableUIComponent(TransitionableUIComponent transitionable, Action<Callback> callback = null)
@@ -30335,29 +30359,100 @@ namespace Com.RedicalGames.Filar
 
             private void ScreenWidgetTransitionInProgressCallback()
             {
-                LogInfo($"_____Log_Cat: Screen Widget : {GetName()} - Of Type : {GetType().GetData().ToString()} Is Still In Transition.", this);
+                var callbackResults = new Callback(GetScreenWidgetType());
+
+                if(callbackResults.Success())
+                {
+                    switch (GetScreenWidgetType().GetData())
+                    {
+                        case UIScreenWidgetType.Screen:
+
+                            GenericActionEvents<Screen>.OnScreenTransitionInProgressEvent(this as Screen);
+
+                            break;
+
+                        case UIScreenWidgetType.Widget:
+
+                            GenericActionEvents<Widget>.OnWidgetTransitionInProgressEvent(this as Widget);
+
+                            break;
+
+                        case UIScreenWidgetType.SelectableWidget:
+
+                            GenericActionEvents<SelectableWidget>.OnSelectableWidgetTransitionInProgressEvent(this as SelectableWidget);
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             private void ScreenWidgetTransitionCompletedCallback()
             {
                 var callbackResults = new Callback(GetScreenWidgetState());
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    switch(GetScreenWidgetState().GetData())
+                    callbackResults.SetResult(GetScreenWidgetType());
+
+                    if (callbackResults.Success())
                     {
-                        case ScreenWidgetState.Shown:
+                        switch (GetScreenWidgetState().GetData())
+                        {
+                            case ScreenWidgetState.Shown:
 
-                            LogInfo($"_____Log_Cat: Screen Widget : {GetName()} - Of Type : {GetType().GetData().ToString()} Is Shown After Transition Completed.", this);
+                                switch(GetScreenWidgetType().GetData())
+                                {
+                                    case UIScreenWidgetType.Screen:
 
-                            break;
+                                        GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
 
-                        case ScreenWidgetState.Hidden:
+                                        break;
 
-                            LogInfo($"_____Log_Cat: Screen Widget : {GetName()} - Of Type : {GetType().GetData().ToString()} Is Hidden After Transition Completed.", this);
+                                    case UIScreenWidgetType.Widget:
 
-                            break;
+                                        GenericActionEvents<Widget>.OnWidgetShownEvent(this as Widget);
+
+                                        break;
+
+                                    case UIScreenWidgetType.SelectableWidget:
+
+                                        GenericActionEvents<SelectableWidget>.OnSelectableWidgetShownEvent(this as SelectableWidget);
+
+                                        break;
+                                }
+
+                                break;
+
+                            case ScreenWidgetState.Hidden:
+
+                                switch (GetScreenWidgetType().GetData())
+                                {
+                                    case UIScreenWidgetType.Screen:
+
+                                        GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+
+                                        break;
+
+                                    case UIScreenWidgetType.Widget:
+
+                                        GenericActionEvents<Widget>.OnWidgetHiddenEvent(this as Widget);
+
+                                        break;
+
+                                    case UIScreenWidgetType.SelectableWidget:
+
+                                        GenericActionEvents<SelectableWidget>.OnSelectableWidgetHiddenEvent(this as SelectableWidget);
+
+                                        break;
+                                }
+
+                                break;
+                        }
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30370,6 +30465,8 @@ namespace Com.RedicalGames.Filar
             private void OnScreenWidgetHiddenEvented() => OnScreenWidgetShownEvent();
 
             #endregion
+
+            #region Data Setters
 
             protected void SetWidgetStatePacket(WidgetStatePacket<T, U> statePacket, Action<CallbackData<WidgetStatePacket<T, U>>> callback = null)
             {
@@ -30403,7 +30500,11 @@ namespace Com.RedicalGames.Filar
 
             public void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
+            public void SetScreenWidgetType(UIScreenWidgetType screenWidgetType) => this.screenWidgetType = screenWidgetType;
+
             public void SetOrderInLayer(int orderInLayer) => transform.SetSiblingIndex(orderInLayer);
+
+            public void SetConfigDataPacket(ConfigDataPacket<T> config) => configDataDataPacket = config;
 
             #endregion
 
@@ -31013,6 +31114,41 @@ namespace Com.RedicalGames.Filar
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
+
+                return callbackResults;
+            }
+
+            public CallbackData<UIScreenWidgetType> GetScreenWidgetType()
+            {
+                var callbackResults = new CallbackData<UIScreenWidgetType>();
+
+                if (screenWidgetType != UIScreenWidgetType.None)
+                {
+                    callbackResults.result = $"Screen Widget Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Set To : {screenWidgetType}";
+                    callbackResults.data = screenWidgetType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Screen Widget Type Failed For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Screen Widget Type Is Set To Default : {screenWidgetType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ConfigDataPacket<T>> GetConfigDataPacket()
+            {
+                var callbackResults = new CallbackData<ConfigDataPacket<T>>(Helpers.GetAppComponentValid(configDataDataPacket, "Config Data Data Packet", $"There Is No Config Data Data Packet Found For : {GetName()} - Of Type : {GetType().GetData()} - Please Make Sure Config Data packet Is Set Before Interacting With The Widget Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Config Data For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Has Been Successfully Found.";
+                    callbackResults.data = configDataDataPacket;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -32807,7 +32943,9 @@ namespace Com.RedicalGames.Filar
             void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType);
             void SetContentContainerType(ContentContainerType containerType);
             void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState);
+            void SetScreenWidgetType(UIScreenWidgetType screenWidgetType);
 
+            void SetConfigDataPacket(ConfigDataPacket<T> config);
 
             /// <summary>
             /// Sets The Name For The Screen Widget Component.
@@ -32867,10 +33005,22 @@ namespace Com.RedicalGames.Filar
             CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityStateType();
 
             /// <summary
+            /// Gets Screen Widgets Type
+            /// </summary>
+            /// <returns>Returns A UI Screen Widgets Visibilty State Type As A Callback WIth Enum Data/returns>
+            CallbackData<UIScreenWidgetType> GetScreenWidgetType();
+
+            /// <summary
             /// Gets A UI Screen Widgets Visibilty State
             /// </summary>
             /// <returns>Returns A UI Screen Widgets Visibilty State Type As A Callback WIth A Boolean Data/returns>
             CallbackData<bool> GetInitialVisibility();
+
+            /// <summary>
+            /// Get Screen Widget Config Data Packet
+            /// </summary>
+            /// <returns></returns>
+            CallbackData<ConfigDataPacket<T>> GetConfigDataPacket();
 
             #endregion
         }
@@ -35203,7 +35353,7 @@ namespace Com.RedicalGames.Filar
 
                                                         if(callbackResults.Success())
                                                         {
-                                                            transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Boomerang, invokedTransitionCallbackResults => 
+                                                            transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults => 
                                                             {
                                                                 callbackResults.SetResult(invokedTransitionCallbackResults);
 
@@ -45946,7 +46096,7 @@ namespace Com.RedicalGames.Filar
 
         #region Singleton Template
 
-        public class SingletonBaseComponent<T> : AppMonoBaseClass where T : AppMonoBaseClass
+        public abstract class SingletonBaseComponent<T> : AppMonoBaseClass where T : AppMonoBaseClass
         {
             #region Componets Static Instance 
 
@@ -45969,6 +46119,7 @@ namespace Com.RedicalGames.Filar
             #region Unity Callbacks
 
             private void Awake() => SetupInstance();
+            private void Start() => Init();
 
             #endregion
 
@@ -45985,6 +46136,8 @@ namespace Com.RedicalGames.Filar
                 else
                     _instance = this as T;
             }
+
+            protected abstract void Init();
 
             #endregion
         }
@@ -46012,7 +46165,10 @@ namespace Com.RedicalGames.Filar
             OnScreenTransitionInProgressEvent,
             OnWidgetShownEvent,
             OnWidgetHiddenEvent,
-            OnWidgetTransitionInProgressEvent
+            OnWidgetTransitionInProgressEvent,
+            OnSelectableWidgetShownEvent,
+            OnSelectableWidgetHiddenEvent,
+            OnSelectableWidgetTransitionInProgressEvent
         }
 
         public enum TransitionableEventType
@@ -46840,6 +46996,48 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        public static class GenericActionEvents<T> where T : AppMonoBaseClass
+        {
+            #region Delegates
+
+            // Void Delegates
+            public delegate void ParamVoid<U>(U tValue);
+
+            #endregion
+
+            #region Events
+
+            public static event ParamVoid<T> _OnScreenShownEvent;
+            public static event ParamVoid<T> _OnScreenHiddenEvent;
+            public static event ParamVoid<T> _OnScreenTransitionInProgressEvent;
+
+            public static event ParamVoid<T> _OnWidgetShownEvent;
+            public static event ParamVoid<T> _OnWidgetHiddenEvent;
+            public static event ParamVoid<T> _OnWidgetTransitionInProgressEvent;
+
+            public static event ParamVoid<T> _OnSelectableWidgetShownEvent;
+            public static event ParamVoid<T> _OnSelectableWidgetHiddenEvent;
+            public static event ParamVoid<T> _OnSelectableWidgetTransitionInProgressEvent;
+
+            #endregion
+
+            #region Callbacks
+
+            public static void OnScreenShownEvent(T screen) => _OnScreenShownEvent?.Invoke(screen);
+            public static void OnScreenHiddenEvent(T screen) => _OnScreenHiddenEvent?.Invoke(screen);
+            public static void OnScreenTransitionInProgressEvent(T screen) => _OnScreenTransitionInProgressEvent?.Invoke(screen);
+
+            public static void OnWidgetShownEvent(T widget) => _OnWidgetShownEvent?.Invoke(widget);
+            public static void OnWidgetHiddenEvent(T widget) => _OnWidgetHiddenEvent?.Invoke(widget);
+            public static void OnWidgetTransitionInProgressEvent(T widget) => _OnWidgetTransitionInProgressEvent?.Invoke(widget);
+
+            public static void OnSelectableWidgetShownEvent(T selectable) => _OnSelectableWidgetShownEvent?.Invoke(selectable);
+            public static void OnSelectableWidgetHiddenEvent(T selectable) => _OnSelectableWidgetHiddenEvent?.Invoke(selectable);
+            public static void OnSelectableWidgetTransitionInProgressEvent(T selectable) => _OnSelectableWidgetTransitionInProgressEvent?.Invoke(selectable);
+
+            #endregion
+        }
+
         public static class ActionEvents
         {
             #region Delegates
@@ -46931,14 +47129,6 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<FocusedSelectionData> _OnWidgetsSelectionDataEvent;
             public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
-            public static event ParamVoid<ScreenConfigDataPacket> _OnScreenShownEvent;
-            public static event ParamVoid<ScreenConfigDataPacket> _OnScreenHiddenEvent;
-            public static event ParamVoid<ScreenConfigDataPacket> _OnScreenTransitionInProgressEvent;
-
-            public static event ParamVoid<WidgetConfigDataPacket> _OnWidgetShownEvent;
-            public static event ParamVoid<WidgetConfigDataPacket> _OnWidgetHiddenEvent;
-            public static event ParamVoid<WidgetConfigDataPacket> _OnWidgetTransitionInProgressEvent;
-
             public static event TransformNoParam _OnGetContentPreviewContainer;
 
             #endregion
@@ -47014,14 +47204,6 @@ namespace Com.RedicalGames.Filar
             public static void OnAllWidgetsSelectionEvent(bool currentPage = false) => _OnAllWidgetsSelectionEvent?.Invoke(currentPage);
             public static void OnWidgetSelectionEvent(FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo) => _OnWidgetSelectionDataEvent?.Invoke(selectionInfo);
             public static void OnWidgetsSelectionEvent(FocusedSelectionData selectionData) => _OnWidgetsSelectionDataEvent?.Invoke(selectionData);
-
-            public static void OnScreenShownEvent(ScreenConfigDataPacket screenConfig) => _OnScreenShownEvent?.Invoke(screenConfig);
-            public static void OnScreenHiddenEvent(ScreenConfigDataPacket screenConfig) => _OnScreenHiddenEvent?.Invoke(screenConfig);
-            public static void OnScreenTransitionInProgressEvent(ScreenConfigDataPacket screenConfig) => _OnScreenTransitionInProgressEvent?.Invoke(screenConfig);
-
-            public static void OnWidgetShownEvent(WidgetConfigDataPacket widgetConfig) => _OnWidgetShownEvent?.Invoke(widgetConfig);
-            public static void OnWidgetHiddenEvent(WidgetConfigDataPacket widgetConfig) => _OnWidgetHiddenEvent?.Invoke(widgetConfig);
-            public static void OnWidgetTransitionInProgressEvent(WidgetConfigDataPacket widgetConfig) => _OnWidgetTransitionInProgressEvent?.Invoke(widgetConfig);
 
             public static Transform OnGetContentPreviewContainer()
             {
@@ -47107,54 +47289,81 @@ namespace Com.RedicalGames.Filar
 
 
                             if (subscribe)
-                                _OnScreenShownEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Screen>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnScreenShownEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Screen>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnScreenHiddenEvent:
 
                             if (subscribe)
-                                _OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Screen>._OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Screen>._OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnScreenTransitionInProgressEvent:
 
                             if (subscribe)
-                                _OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnWidgetShownEvent:
 
                             if (subscribe)
-                                _OnWidgetShownEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Widget>._OnWidgetShownEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Widget>._OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnWidgetHiddenEvent:
 
                             if (subscribe)
-                                _OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Widget>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Widget>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnWidgetTransitionInProgressEvent:
 
                             if (subscribe)
-                                _OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Widget>._OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<Widget>._OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnSelectableWidgetShownEvent:
+
+                            if (subscribe)
+                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetShownEvent += eventAction.TriggeredEventMethod;
+                            else
+                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetShownEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnSelectableWidgetHiddenEvent:
+
+                            if (subscribe)
+                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                            else
+                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnSelectableWidgetTransitionInProgressEvent:
+
+                            if (subscribe)
+                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                            else
+                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 

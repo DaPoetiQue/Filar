@@ -277,11 +277,13 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 1
   type: 7
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 2
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
   - name: Page Refresh Status Loader
@@ -289,11 +291,13 @@ MonoBehaviour:
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
+    constriants: []
   - name: Title Displayer
     widgetType: 37
     uIPlacementType: 0
     containerType: 15
     initialVisibilityState: 1
+    constriants: []
   dynamicContainerList:
   - {fileID: 4483213448022437336}
   - {fileID: 976341724}

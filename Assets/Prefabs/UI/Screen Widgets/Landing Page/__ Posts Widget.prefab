@@ -57,6 +57,7 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 2
   type: 35
   uIPlacementContainerType: 14
   uIPlacementType: 0

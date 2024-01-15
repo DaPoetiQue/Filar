@@ -276,6 +276,11 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        protected override void Init()
+        {
+
+        }
+
         public async Task<AppData.Callback> InitializeDatabase()
         {
             AppData.Callback callbackResults = new AppData.Callback();

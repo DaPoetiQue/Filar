@@ -55,15 +55,13 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Start() => Init();
-
         //void Update() => RotateSkybox();
 
         #endregion
 
         #region Main
 
-        void Init()
+        protected override void Init()
         {
             assetsManager = AppDatabaseManager.Instance;
 

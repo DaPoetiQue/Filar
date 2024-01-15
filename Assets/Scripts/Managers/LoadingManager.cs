@@ -20,21 +20,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        public void Init(Action<AppData.Callback> callback = null)
+        protected override void Init()
         {
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            callbackResults.result = GetLoadingSequence().IsInitialized().result;
-            callbackResults.resultCode = GetLoadingSequence().IsInitialized().resultCode;
-
-            if (callbackResults.Success())
-            {
-                callbackResults.result = "Loading Manager Has Been Initialized Successfully";
-            }
-            else
-                callbackResults.result = "Loading Manager's Initialization Failed";
-
-            callback?.Invoke(callbackResults);
+            
         }
 
         public async Task LoadScreen(AppData.ScreenLoadInfoInstance screenLoadInfoInstance, Action<AppData.Callback> callback = null)

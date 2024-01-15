@@ -19,8 +19,6 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Awake() => Init();
-
         void OnEnable() => OnRegisterActionEvents(true);
         void OnDisable() => OnRegisterActionEvents(false);
 
@@ -30,7 +28,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        void Init()
+        protected override void Init()
         {
             if (sceneTrackingData.session != null)
             {

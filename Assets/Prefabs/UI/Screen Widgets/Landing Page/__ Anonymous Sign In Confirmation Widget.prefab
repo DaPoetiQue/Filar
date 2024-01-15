@@ -1827,16 +1827,17 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 2
   type: 33
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup: []
   screenType: 7
   widgetLayouts:
@@ -1999,6 +2000,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}

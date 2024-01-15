@@ -32,17 +32,15 @@ namespace Com.RedicalGames.Filar
 
         #region Unity Callbacks
 
-        void Start() => Init();
-
         void Update() => OnShowWidgetTransition();
 
         #endregion
 
         #region Main
 
-        void Init()
+        protected override void Init()
         {
-            screenBlur.Init(this, initializationCallback => 
+            screenBlur.Init(this, initializationCallback =>
             {
                 if (!AppData.Helpers.IsSuccessCode(initializationCallback.resultCode))
                     LogError(initializationCallback.result, this, () => Init());

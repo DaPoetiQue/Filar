@@ -19,6 +19,11 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Init()
+        {
+
+        }
+
         public void GetTutorialView(AppData.WidgetType widgetType, Action<AppData.CallbackData<AppData.TutorialInfoView>> callback)
         {
             AppData.CallbackData<AppData.TutorialInfoView> callbackResults = new AppData.CallbackData<AppData.TutorialInfoView>();

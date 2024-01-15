@@ -271,11 +271,13 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 1
   type: 9
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
   - name: Title Displayer Widget
@@ -283,13 +285,13 @@ MonoBehaviour:
     uIPlacementType: 0
     containerType: 15
     initialVisibilityState: 1
+    constriants: []
   dynamicContainerList:
   - {fileID: 1207815466596216749}
   - {fileID: 4343902750515389455}
   - {fileID: 8631335616529975415}
   - {fileID: 7426857258340280479}
   eventActions: []
-  subscribeToActionEvents: 0
   screenTitle: Splash Screen
   screenView:
     name: Splash Screen View

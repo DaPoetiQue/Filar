@@ -57,8 +57,6 @@ namespace Com.RedicalGames.Filar
 
         void OnDisable() => ActionEventsSubscription(false);
 
-        void Start() => Init();
-
         #endregion
 
         #region Initializations
@@ -75,7 +73,7 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        void Init()
+        protected override void Init()
         {
             if (AppManager.Instance)
                 filePickerPluginInstance = AppManager.Instance.GetInitializedPluginInstance(filePickerPluginBundleID);

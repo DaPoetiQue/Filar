@@ -30,6 +30,11 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Init()
+        {
+
+        }
+
         void CreateProfile(AppData.Profile profile, Action<AppData.CallbackData<AppData.Profile>> callback = null)
         {
             AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();

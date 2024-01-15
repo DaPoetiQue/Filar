@@ -1647,6 +1647,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
+  textTransitionableUIData: []
+  imageTransitionableUIData: []
 --- !u!1 &11981458640266837
 GameObject:
   m_ObjectHideFlags: 0
@@ -1703,16 +1705,17 @@ MonoBehaviour:
     logCatInfo:
       debugClassLogCat: 
   titleDisplayer: {fileID: 0}
+  screenWidgetType: 2
   type: 30
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActions: []
-  subscribeToActionEvents: 0
   actionGroup:
   - name: App License Info Displayer
     inputActionGroupType: 7
@@ -1880,6 +1883,7 @@ MonoBehaviour:
     screenPosition: 0
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
+  dynamicUIHandler: {fileID: 0}
   dontShowAgain: 0
   isWidgetVisible: 0
   parentWidget: {fileID: 0}
