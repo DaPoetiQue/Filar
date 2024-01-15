@@ -71,6 +71,11 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+        protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 

@@ -146,6 +146,11 @@ namespace Com.RedicalGames.Filar
             //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
+        protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
             if (AppDatabaseManager.Instance)

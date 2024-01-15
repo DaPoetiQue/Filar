@@ -836,6 +836,7 @@ namespace Com.RedicalGames.Filar
             ScreenWidgetTranslateTransitionalSpeed,
             ScreenWidgetScaleTransitionalSpeed,
             SplashImageChangeEventInterval,
+            SplashImageTransitionSpeed,
             None
         }
 
@@ -1364,117 +1365,6 @@ namespace Com.RedicalGames.Filar
             }
 
             public float GetTransitionalSpeed() => transitionalSpeed;
-
-            #endregion
-        }
-
-        [Serializable]
-        public class UIImageTransitionData : UITransitionData
-        {
-            #region Component
-
-            [Space(5)]
-            [SerializeField]
-            private ScreenSpaceTargetHandler target;
-
-            #endregion
-
-            #region Main
-
-            public bool Active => active;
-
-            public CallbackData<UITransitionType> GetUITransition()
-            {
-                var callbackResults = new CallbackData<UITransitionType>();
-
-                if (transition != UITransitionType.None)
-                {
-                    callbackResults.result = $"Get UI Transition Type Success - UI Transition Type Is Set To : {transition}";
-                    callbackResults.data = transition;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Get UI Transition Type Is Unsuccessful - UI Transition Type Is Set To : {transition} - Please Set To A Valid Value";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                return callbackResults;
-            }
-
-            public CallbackData<UITransitionStateType> GetUITransitionState()
-            {
-                var callbackResults = new CallbackData<UITransitionStateType>();
-
-                if (state != UITransitionStateType.None)
-                {
-                    callbackResults.result = $"Get UI Transition State Type Success - UI Transition State Type Is Set To : {state}";
-                    callbackResults.data = state;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Get UI Transition State Type Is Unsuccessful - UI Transition State Type Is Set To : {state} - Please Set To A Valid Value";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                return callbackResults;
-            }
-
-            public CallbackData<ScreenSpaceTargetHandler> GetTarget()
-            {
-                var callbackResults = new CallbackData<ScreenSpaceTargetHandler>();
-
-                if (target != null)
-                {
-                    callbackResults.result = $"Get Target Success For Transitionable UI Data : {GetName()}";
-                    callbackResults.data = target.GetComponent<ScreenSpaceTargetHandler>();
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Get Target For Transitionable UI Data For : {GetName()} - Traget Has Not Been Assigned In The Unity Editor Inspector Panel";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
-            }
-
-            public float GetTransitionalSpeed() => transitionalSpeed;
-
-            public Callback Initialized()
-            {
-                var callbackResults = new Callback(GetTarget());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetUITransition());
-
-                    if (callbackResults.Success())
-                    {
-                        callbackResults.SetResult(GetUITransitionState());
-
-                        if (callbackResults.Success())
-                        {
-                            if (active)
-                            {
-                                callbackResults.result = $"Transitionable UI Data : {GetName()} Has Been Initialized Successfull.";
-                                callbackResults.resultCode = Helpers.SuccessCode;
-                            }
-                            else
-                            {
-                                callbackResults.result = $"Transitionable UI Data : {GetName()} Has Been Initialized But Is Not Active.";
-                                callbackResults.resultCode = Helpers.WarningCode;
-                            }
-                        }
-                    }
-                }
-
-                return callbackResults;
-            }
 
             #endregion
         }
@@ -20809,8 +20699,42 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
+        #region UI Mounts
+
+        public enum UIMountType
+        {
+            None,
+            Point_A,
+            Point_B,
+            Point_C,
+            Point_D,
+            Point_E,
+            Point_F,
+            Point_G,
+            Point_H,
+            Point_I,
+            Point_J,
+            Point_K,
+            Point_L,
+            Point_M,
+            Point_N,
+            Point_O,
+            Point_P,
+            Point_Q,
+            Point_R,
+            Point_S,
+            Point_T,
+            Point_U,
+            Point_V,
+            Point_W,
+            Point_X,
+            Point_Y,
+            Point_Z,
+        }
+
+
         [Serializable]
-        public class TransitionableUIMount : DataDebugger
+        public class TransitionableUIMountComponent<T> : DataDebugger where T : Enum
         {
             #region Components
 
@@ -20823,7 +20747,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private UIScreenWidgetVisibilityState mountType;
+            private T mountType;
 
             #endregion
 
@@ -20831,12 +20755,12 @@ namespace Com.RedicalGames.Filar
 
             public Callback Initialized()
             {
-                var callbackResults = new Callback(GetMountType());
+                var callbackResults = new Callback(GetType());
 
-                if(callbackResults.Success())
-                {
+                if (callbackResults.Success())
                     callbackResults.SetResult(GetMount());
-                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -20851,19 +20775,19 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<UIScreenWidgetVisibilityState> GetMountType()
+            public new CallbackData<T> GetType()
             {
-                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>();
+                var callbackResults = new CallbackData<T>();
 
-                if(mountType != UIScreenWidgetVisibilityState.None)
+                if(mountType.ToString() != "None")
                 {
-                    callbackResults.result = $"Mount Type For : {GetName()} Is Set To : {mountType}";
+                    callbackResults.result = $"Mount Type For : {GetName()} Is Set To : {mountType.ToString()}";
                     callbackResults.data = mountType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Failed To Get Mount Type For : {GetName()} - Mount Type Is Set To Default : {mountType}";
+                    callbackResults.result = $"Failed To Get Mount Type For : {GetName()} - Mount Type Is Set To Default : {mountType.ToString()}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -20888,6 +20812,8 @@ namespace Com.RedicalGames.Filar
 
             #endregion
         }
+
+        #endregion
 
         [Serializable]
         public class TransitionableUIComponent : DataDebugger
@@ -21445,7 +21371,7 @@ namespace Com.RedicalGames.Filar
                                         callbackResults.SetResult(transitionCanceledCallbackResults);
 
                                         if (callbackResults.Success())
-                                            onTransitionCompletedEventAction.Invoke();
+                                            onTransitionCompletedEventAction?.Invoke();
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     });
@@ -21463,7 +21389,7 @@ namespace Com.RedicalGames.Filar
                                             callbackResults.SetResult(transitionCanceledCallbackResults);
 
                                             if (callbackResults.Success())
-                                                onTransitionCompletedEventAction.Invoke();
+                                                onTransitionCompletedEventAction?.Invoke();
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
@@ -21481,7 +21407,7 @@ namespace Com.RedicalGames.Filar
                             }
                         }
                         else
-                            onTransitionInProgressEventAction.Invoke();
+                            onTransitionInProgressEventAction?.Invoke();
                     }
                     else
                     {
@@ -21563,6 +21489,7 @@ namespace Com.RedicalGames.Filar
             public void SetTransitionDestination(RectTransform target) => OnSetTransitionDestination(target);
             public void SetTransitionDestination(ScreenSpaceTargetHandler target) => OnSetTransitionDestination(target.GetWidgetRect());
             public void SetTransitionDestination(GameObject target) => OnSetTransitionDestination(target.GetWidgetRect());
+            public void SetTransitionDestination<T>(TransitionableUIMountComponent<T> target) where T : Enum => SetTransitionDestination(target.GetMount().GetData());
 
             #endregion
 
@@ -22198,7 +22125,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void InvokeTransition(TransitionableUIMount target, Action<Callback> callback = null)
+            public void InvokeTransition<T>(TransitionableUIMountComponent<T> target, Action<Callback> callback = null) where T : Enum
             {
                 var callbackResults = new Callback(Initialized());
 
@@ -22247,7 +22174,7 @@ namespace Com.RedicalGames.Filar
             }
 
 
-            public void InvokeTransition(TransitionableUIMount target, UITransitionType transitionType, Action<Callback> callback = null)
+            public void InvokeTransition<T>(TransitionableUIMountComponent<T> target, UITransitionType transitionType, Action<Callback> callback = null) where T : Enum
             {
                 var callbackResults = new Callback(Initialized());
 
@@ -22303,7 +22230,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void InvokeTransition(TransitionableUIMount target, UITransitionType transitionType, UITransitionStateType state, Action<Callback> callback = null)
+            public void InvokeTransition(TransitionableUIMountComponent<UIScreenWidgetVisibilityState> target, UITransitionType transitionType, UITransitionStateType state, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized());
 
@@ -22367,7 +22294,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void InvokeTransition(TransitionableUIMount target, UITransitionStateType state, Action<Callback> callback = null)
+            public void InvokeTransition(TransitionableUIMountComponent<UIScreenWidgetVisibilityState> target, UITransitionStateType state, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized());
 
@@ -30088,7 +30015,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private List<TransitionableUIMount> transitionableUIMountList = new List<TransitionableUIMount>();
+            private List<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>> transitionableUIMountList = new List<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>>();
 
             private TransitionableUIComponent transitionableUIComponent = new TransitionableUIComponent();
 
@@ -30525,9 +30452,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackDataList<TransitionableUIMount> GetTransitionableUIMounts()
+            protected CallbackDataList<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>> GetTransitionableUIMounts()
             {
-                var callbackResults = new CallbackDataList<TransitionableUIMount>(Helpers.GetAppComponentsValid(transitionableUIMountList, "Transitionable UI Mount List", $"There Are No Transitionable UI Mount List Initialized For : {GetName()} - Of Type : {GetType().GetData()}"));
+                var callbackResults = new CallbackDataList<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>>(Helpers.GetAppComponentsValid(transitionableUIMountList, "Transitionable UI Mount List", $"There Are No Transitionable UI Mount List Initialized For : {GetName()} - Of Type : {GetType().GetData()}"));
 
                 if(callbackResults.Success())
                 {
@@ -30540,13 +30467,13 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<TransitionableUIMount> GetTransitionableUIMount(UIScreenWidgetVisibilityState mountType)
+            protected CallbackData<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>> GetTransitionableUIMount(UIScreenWidgetVisibilityState mountType)
             {
-                var callbackResults = new CallbackData<TransitionableUIMount>(GetTransitionableUIMounts());
+                var callbackResults = new CallbackData<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>>(GetTransitionableUIMounts());
 
                 if(callbackResults.Success())
                 {
-                    var transitionableUIMount = GetTransitionableUIMounts().GetData().Find(transitionable => transitionable.GetMountType().GetData() == mountType && transitionable.Initialized().Success());
+                    var transitionableUIMount = GetTransitionableUIMounts().GetData().Find(transitionable => transitionable.GetType().GetData() == mountType && transitionable.Initialized().Success());
 
                     callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIMount, "Transitionable UI Mount", $"Failed To Find Transitionable UI Mount Of Type : {mountType} In Transitionable UI Mount. Please Check If Transitionable UI Mount Is Initialized In The Inspector Panel"));
 
@@ -30570,7 +30497,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var transitionableUIMount = GetTransitionableUIMounts().GetData().Find(transitionable => transitionable.GetMountType().GetData() == mountType && transitionable.Initialized().Success());
+                    var transitionableUIMount = GetTransitionableUIMounts().GetData().Find(transitionable => transitionable.GetType().GetData() == mountType && transitionable.Initialized().Success());
 
                     callbackResults.SetResult(Helpers.GetAppComponentValid(transitionableUIMount, "Transitionable UI Mount", $"Failed To Find Transitionable UI Mount Of Type : {mountType} In Transitionable UI Mount. Please Check If Transitionable UI Mount Is Initialized In The Inspector Panel"));
 
@@ -32909,7 +32836,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(inputActionHandler.GetImageTransitionData());
+                        callbackResults.SetResult(inputActionHandler.GetTransitionableUIMounts());
 
                         if (callbackResults.Success())
                             callbackResults.data = inputActionHandler;
@@ -35222,6 +35149,8 @@ namespace Com.RedicalGames.Filar
                                     Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
                             });
 
+                            OnScreenWidget();
+
                             ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
                             {
                                 callbackResults.SetResult(showLayoutCallbackResults);
@@ -35510,6 +35439,8 @@ namespace Com.RedicalGames.Filar
                                 Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
                         });
 
+                        //OnScreenWidget();
+
                         //ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
                         //{
                         //    callbackResults.SetResult(showLayoutCallbackResults);
@@ -35565,6 +35496,7 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void ScrollerPosition(Vector2 position);
 
+            protected abstract void OnScreenWidget(Action<Callback> callback = null);
             protected abstract void OnScreenWidget(SceneConfigDataPacket configDataPacket, Action<Callback> callback = null);
             protected abstract void OnScreenWidget<T>(ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null) where T : Enum;
             protected abstract void OnHideScreenWidget(Action<Callback> callback = null);
@@ -46149,7 +46081,7 @@ namespace Com.RedicalGames.Filar
         public enum EventType
         {
             None,
-            OnInitializationInProgressEvent,
+            OnInitializationStartedEvent,
             OnInitializationCompletedEvent,
             OnAppAwake,
             OnAppStart,
@@ -47077,7 +47009,7 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnWidgetDeselectionEvent;
             public static event Void _OnWidgetSelectionRemoved;
 
-            public static event Void _OnInitializationInProgressEvent;
+            public static event Void _OnInitializationStartedEvent;
             public static event Void _OnInitializationCompletedEvent;
 
             public static event Void _OnNetworkFailedEvent;
@@ -47152,7 +47084,7 @@ namespace Com.RedicalGames.Filar
             public static void OnWidgetDeselectionEvent() => _OnWidgetDeselectionEvent?.Invoke();
             public static void OnWidgetSelectionRemoved() => _OnWidgetSelectionRemoved?.Invoke();
 
-            public static void OnInitializationInProgressEvent() => _OnInitializationInProgressEvent?.Invoke();
+            public static void OnInitializationStartedEvent() => _OnInitializationStartedEvent?.Invoke();
             public static void OnInitializationCompletedEvent() => _OnInitializationCompletedEvent?.Invoke();
 
             public static void OnNetworkFailedEvent() => _OnNetworkFailedEvent?.Invoke();
@@ -47222,12 +47154,12 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (eventAction.GetEventType())
                     {
-                        case EventType.OnInitializationInProgressEvent:
+                        case EventType.OnInitializationStartedEvent:
 
                             if (subscribe)
-                                _OnInitializationInProgressEvent += eventAction.TriggeredEventMethod;
+                                _OnInitializationStartedEvent += eventAction.TriggeredEventMethod;
                             else
-                                _OnInitializationInProgressEvent -= eventAction.TriggeredEventMethod;
+                                _OnInitializationStartedEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 

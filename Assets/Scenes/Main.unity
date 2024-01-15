@@ -17758,6 +17758,10 @@ MonoBehaviour:
     value: 5
     runtimeType: 0
     valueType: 46
+  - name: Splash Transitional Speed
+    value: 0.05
+    runtimeType: 0
+    valueType: 47
   colorSwatchData:
     swatches:
     - name: Default

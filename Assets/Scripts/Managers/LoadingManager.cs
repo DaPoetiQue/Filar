@@ -113,99 +113,103 @@ namespace Com.RedicalGames.Filar
 
                                 callbackResults.SetResults(loadingScreenDataPacketsCallbackResults);
 
-                                #endregion
-
-                                #region Setup Loading Screen Splash Displayer
-
-                                screenUIManager.GetScreen(loadingScreenDataPacketsCallbackResults.GetData().GetType().GetData(), loadingScreenCallbackResults =>
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(loadingScreenCallbackResults);
+                                    #endregion
 
-                                    if (callbackResults.Success())
+                                    #region Setup Loading Screen Splash Displayer
+
+                                    screenUIManager.GetScreen(loadingScreenDataPacketsCallbackResults.GetData().GetType().GetData(), loadingScreenCallbackResults =>
                                     {
-                                        var loadingScreen = loadingScreenCallbackResults.GetData();
-
-                                        callbackResults.SetResult(loadingScreen.GetWidget(AppData.WidgetType.ImageDisplayerWidget));
+                                        callbackResults.SetResult(loadingScreenCallbackResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var imageDisplayerWidget = loadingScreen.GetWidget(AppData.WidgetType.ImageDisplayerWidget).GetData();
+                                            var loadingScreen = loadingScreenCallbackResults.GetData();
 
-                                            var splashImage = databaseManager.GetRandomSplashImage().GetData();
+                                            callbackResults.SetResult(loadingScreen.GetWidget(AppData.WidgetType.ImageDisplayerWidget));
 
-                                            imageDisplayerWidget.SetUIImageDisplayer(AppData.ScreenImageType.Splash, splashImage, true);
+                                            if (callbackResults.Success())
+                                            {
+                                                var imageDisplayerWidget = loadingScreen.GetWidget(AppData.WidgetType.ImageDisplayerWidget).GetData();
 
+                                                var splashImage = databaseManager.GetRandomSplashImage().GetData();
+
+                                                imageDisplayerWidget.SetUIImageDisplayer(AppData.ScreenImageType.Splash, splashImage, true);
+
+                                                AppData.ActionEvents.OnInitializationStartedEvent();
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
+                                    });
 
-                                #endregion
+                                    #endregion
 
-                                if (callbackResults.Success())
-                                {
-                                    if(screenLoadInfoInstance.HasSequenceInstances())
+                                    if (callbackResults.Success())
                                     {
-                                        #region Staging Sequences
-
-                                        GetLoadingSequence().StageSequence(async sequencesStagedCallbackResults =>
+                                        if (screenLoadInfoInstance.HasSequenceInstances())
                                         {
-                                            callbackResults.SetResult(sequencesStagedCallbackResults);
+                                            #region Staging Sequences
 
-                                            if (callbackResults.Success())
+                                            GetLoadingSequence().StageSequence(async sequencesStagedCallbackResults =>
                                             {
-                                                await GetLoadingSequence().Process(loadingSequenceCallbackResults =>
+                                                callbackResults.SetResult(sequencesStagedCallbackResults);
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(loadingSequenceCallbackResults);
+                                                    await GetLoadingSequence().Process(loadingSequenceCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(loadingSequenceCallbackResults);
 
-                                                    if (!callbackResults.Success())
-                                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                                });
-                                            }
+                                                        if (!callbackResults.Success())
+                                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                                    });
+                                                }
 
-                                        }, screenLoadInfoInstance.GetSequenceInstanceArray());
+                                            }, screenLoadInfoInstance.GetSequenceInstanceArray());
 
-                                        #endregion
+                                            #endregion
 
-                                        #region Processing Loading Sequence
-
-                                        if (callbackResults.Success())
-                                        {
-                                            await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
-
-                                            while (GetLoadingSequence().IsRunning())
-                                                await Task.Yield();
-
-                                            var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
-
-                                            AppData.ActionEvents.OnInitializationCompletedEvent();
-
-                                            referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-
-                                            await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
-
-                                            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
-                                            await Task.Delay(loadingScreenExitDelay);
-
-                                            callbackResults.SetResult(screenLoadInfoInstance.GetReferencedScreen());
+                                            #region Processing Loading Sequence
 
                                             if (callbackResults.Success())
                                             {
-                                                referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
-                                                await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+                                                await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+
+                                                while (GetLoadingSequence().IsRunning())
+                                                    await Task.Yield();
+
+                                                var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
+
+                                                AppData.ActionEvents.OnInitializationCompletedEvent();
+
+                                                referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+
+                                                int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
+                                                await Task.Delay(loadingScreenExitDelay);
+
+                                                callbackResults.SetResult(screenLoadInfoInstance.GetReferencedScreen());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
+                                                    await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+                                                }
                                             }
+                                            else
+                                                Log(callbackResults.resultCode, callbackResults.result, this);
+
+                                            #endregion
+
                                         }
                                         else
-                                            Log(callbackResults.resultCode, callbackResults.result, this);
-
-                                        #endregion
-
+                                            LogWarning("Initial Load Screen Sequence Data Missing / Not Found.", this);
                                     }
-                                    else
-                                        LogWarning("Initial Load Screen Sequence Data Missing / Not Found.", this);
                                 }
                             }
                             else

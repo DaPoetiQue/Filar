@@ -144,6 +144,11 @@ namespace Com.RedicalGames.Filar
             AppData.ActionEvents.OnUpdateSceneAssetDefaultRotation(propertiesQuaternion);
         }
 
+        protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 

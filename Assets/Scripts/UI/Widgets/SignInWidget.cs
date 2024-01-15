@@ -7,8 +7,6 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        AppData.TransitionableUIComponent transitionableUIComponent;
-
         bool isInitialView = true;
 
         #endregion
@@ -116,6 +114,11 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+        protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
 
@@ -157,10 +160,10 @@ namespace Com.RedicalGames.Filar
 
                                     isInitialView = !isInitialView;
 
-                                    if (isInitialView)
-                                        GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.visibleScreenPoint);
-                                    else
-                                        GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.hiddenScreenPoint);
+                                    //if (isInitialView)
+                                    //    GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.visibleScreenPoint);
+                                    //else
+                                    //    GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.hiddenScreenPoint);
 
                                     SwitchPage();
 
@@ -193,8 +196,6 @@ namespace Com.RedicalGames.Filar
 
             LogInfo(" <+++++++++++++> Went To Login Screen", this);
         }
-
-        AppData.TransitionableUIComponent GetTransitionableUIComponent() => transitionableUIComponent;
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {

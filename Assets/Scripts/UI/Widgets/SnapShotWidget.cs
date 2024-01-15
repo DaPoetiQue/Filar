@@ -122,9 +122,13 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
+        protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnScreenWidgetShownEvent()

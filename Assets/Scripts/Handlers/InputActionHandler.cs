@@ -45,9 +45,7 @@ namespace Com.RedicalGames.Filar
 
         #region Transitions
 
-        public List<AppData.UITextTransitionData> textTransitionableUIData = new List<AppData.UITextTransitionData>();
-        public List<AppData.UIImageTransitionData> imageTransitionableUIData = new List<AppData.UIImageTransitionData>();
-        private List<AppData.TransitionableUIComponent> transitionableUIComponentList = new List<AppData.TransitionableUIComponent>();
+        public List<AppData.TransitionableUIMountComponent<AppData.UIMountType>> transitionableUIMounts = new List<AppData.TransitionableUIMountComponent<AppData.UIMountType>>();
 
         public bool CanTransition { get; private set; }
 
@@ -149,14 +147,6 @@ namespace Com.RedicalGames.Filar
                         callbackResults.data = inputCallbackResults.data as T;
                         callbackResults.result = inputCallbackResults.result;
                         callbackResults.resultCode = inputCallbackResults.resultCode;
-                    });
-
-                    CreateTransitionableUIComponents(createdImageTransitionableDataCallbackResults => 
-                    {
-                        if (createdImageTransitionableDataCallbackResults.Success())
-                            CanTransition = true;
-                        else
-                            Log(createdImageTransitionableDataCallbackResults.GetResultCode, createdImageTransitionableDataCallbackResults.GetResult, this);
                     });
 
                     break;
@@ -572,280 +562,16 @@ namespace Com.RedicalGames.Filar
         #endregion
 
 
-        #region Transitionable UI Image Functions
+        #region Transitionable UI Mounts
 
-        private async void CreateTransitionableUIComponents(Action<AppData.Callback> callback = null)
+        public AppData.CallbackDataList<AppData.TransitionableUIMountComponent<AppData.UIMountType>> GetTransitionableUIMounts()
         {
-            AppData.Callback callbackResults = new AppData.Callback(GetImageTransitionData());
+            var callbackResults = new AppData.CallbackDataList<AppData.TransitionableUIMountComponent<AppData.UIMountType>>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(transitionableUIMounts, "Transitionable UI Mounts", $"Get Transitionable UI Mounts Failed - There Are No Transitionable UI Mounts Initialized For : {GetName()}"));
 
             if (callbackResults.Success())
-            {
-                var activetransitionableUIDataList = GetImageTransitionData().GetData().FindAll(transitionableData => transitionableData.Active);
-
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(activetransitionableUIDataList, "Active Transitionable UI Data List", $"There Are No Active Transitionable UI Data Found For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
-
-                if (callbackResults.Success())
-                {
-                    var translatables = new List<AppData.TransitionableUIComponent>();
-
-                    //foreach (var translatableData in activetransitionableUIDataList)
-                    //{
-                    //    callbackResults.SetResult(translatableData.Initialized());
-
-                    //    if (callbackResults.Success())
-                    //    {
-                    //        var translatable = new AppData.TransitionableUIComponent(GetImageComponent().GetData().GetWidgetRect(), translatableData.GetTarget().GetData().GetTargetRect(), translatableData.GetUITransition().GetData(), translatableData.GetUITransitionState().GetData(), translatableData.GetTransitionalSpeed());
-
-                    //        if (!translatables.Contains(translatable))
-                    //            translatables.Add(translatable);
-                    //        else
-                    //            break;
-                    //    }
-                    //    else
-                    //        break;
-                    //}
-
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(translatables, "Translatables", $"Failed To Create Translatables For Widget : {GetName()} - Of Type : {GetType().GetData()}"));
-
-                    if (callbackResults.Success())
-                    {
-                        var registerTransitionableTaskCallbackResults = await OnRegisterTransitionableUIComponents(translatables.ToArray());
-                        callbackResults.SetResult(registerTransitionableTaskCallbackResults);
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            callback?.Invoke(callbackResults);
-        }
-
-        private async Task<AppData.Callback> OnRegisterTransitionableUIComponents(params AppData.TransitionableUIComponent[] transitionableUIParams)
-        {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(AppData.Helpers.GetList(transitionableUIParams), "Transitionable UI", "Transitionable UI Componets Params Is Null / Not Assigned In Parameter / Not Initialized."));
-
-            if (callbackResults.Success())
-            {
-                for (int i = 0; i < transitionableUIParams.Length; i++)
-                {
-                    callbackResults.SetResult(transitionableUIParams[i].Initialized());
-
-                    if (callbackResults.Success())
-                    {
-                        await Task.Yield();
-
-                        if (!transitionableUIComponentList.Contains(transitionableUIParams[i]))
-                        {
-                            //OnEnabledEventAction += transitionableUIParams[i].OnEnabled;
-                            //OnDisabledEventAction += transitionableUIParams[i].OnDisabled;
-
-                            transitionableUIComponentList.Add(transitionableUIParams[i]);
-
-                            if (transitionableUIComponentList.Contains(transitionableUIParams[i]))
-                            {
-                                callbackResults.result = $"Transitionable UI Component : {transitionableUIParams[i].GetName()} Has Been Registered Successfully In Transitionable UI Component List.";
-                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                            }
-                            else
-                            {
-                                callbackResults.result = $"Failed To Register Transitionable UI Component - Transitionable UI Component : {transitionableUIParams[i].GetName()} Could Be Added To Transitionable UI Component List - Please Check Here.";
-                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                            }
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Failed To Register Transitionable UI Component - Transitionable UI Component : {transitionableUIParams[i].GetName()} Already Exists In Transitionable UI Component List.";
-                            callbackResults.resultCode = AppData.Helpers.WarningCode;
-                        }
-                    }
-                }
-            }
-
-            return callbackResults;
-        }
-
-        public void InitializeImageTransitions(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback(GetImageTransitionData());
-
-            if (callbackResults.Success())
-            {
-
-                LogInfo($" ===>>><<<=== Initialize Image Transitions --Start - Name : {GetName()} - Count : {GetImageTransitionData().GetData().Count}", this);
-
-                foreach (var transitionable in GetImageTransitionData().GetData())
-                {
-                    var randomPointIndex = GetRandomIndex();
-
-                    LogInfo($" ===>>><<<=== Initialize Image Transitions --Index : {randomPointIndex}", this);
-
-                    var origin = GetImageComponent().GetData().GetWidgetRect().GetWidgetPoseAngle();
-                    var target = transitionable.GetTarget().GetData().GetWidgetRect().GetWidgetPoseAngle();
-
-
-                    if (randomPointIndex >= 1)
-                    {
-                        SetTransitionableUITarget(transitionable.GetUITransition().GetData(), origin, targetSetCallbackResults =>
-                        {
-                            callbackResults.SetResult(targetSetCallbackResults);
-
-                            if (callbackResults.Success())
-                            {
-                                GetImageComponent().GetData().GetWidgetRect().SetWidgetPose(target);
-
-                                LogInfo(" ===>>><<<=== Working Reached", this);
-
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-
-                        LogInfo(" ===>>><<<=== Working Ended", this);
-
-                        break;
-                    }
-
-                    if (randomPointIndex <= 0)
-                    {
-                        SetTransitionableUITarget(transitionable.GetUITransition().GetData(), target, targetSetCallbackResults =>
-                        {
-                            callbackResults.SetResult(targetSetCallbackResults);
-
-                            if (callbackResults.Success())
-                            {
-                                GetImageComponent().GetData().GetWidgetRect().SetWidgetPose(origin);
-
-                                LogInfo(" ===>>><<<=== Broken Reached", this);
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-
-                        LogInfo(" ===>>><<<=== Broken Ended", this);
-
-                        break;
-                    }
-                }
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        public void SetTransitionableUITarget(AppData.UITransitionType transitionType, (Vector2 position, Vector2 scale, Vector3 rotationAngle) target, Action<AppData.Callback> callback = null)
-        {
-            AppData.Callback callbackResults = new AppData.Callback(GetTransitionableUIComponent(transitionType));
-
-            if (callbackResults.Success())
-            {
-                var transitionableUITaskResultsCallback = GetTransitionableUIComponent(transitionType);
-
-                var transitionableUI = transitionableUITaskResultsCallback.GetData();
-
-                switch (transitionableUI.GetTransitionType().GetData())
-                {
-                    case AppData.UITransitionType.Translate:
-
-                        //transitionableUI.SetTarget(target.position);
-
-                        break;
-
-                    case AppData.UITransitionType.Scale:
-
-                        //transitionableUI.SetTarget(target.scale);
-
-                        break;
-
-                    case AppData.UITransitionType.Rotate:
-
-                       // transitionableUI.SetTarget(target.rotationAngle);
-
-                        break;
-                }
-
-                callbackResults.result = $"Target Set For Transitionable UI : {transitionableUI.name} Of Transition Type : {transitionType}";
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        private AppData.CallbackData<AppData.TransitionableUIComponent> GetTransitionableUIComponent(AppData.UITransitionType transitionType)
-        {
-            AppData.CallbackData<AppData.TransitionableUIComponent> callbackResults = new AppData.CallbackData<AppData.TransitionableUIComponent>(GetType());
-
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(GetTransitionableUIComponent());
-
-                if (callbackResults.Success())
-                {
-                    var transitionableUIComponent = GetTransitionableUIComponent().GetData().Find(component => component.GetTransitionType().Success() && component.GetTransitionType().data == transitionType);
-
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Get Transitionable UI Component Failed - Couldn't Find Transitionable UI Component Of Type : {transitionType} For Screen Widget : {GetName()} Of Type : {GetType().GetData()}."));
-
-                    if (callbackResults.Success())
-                    {
-                        callbackResults.result = $"Transitionable UI Component : {transitionableUIComponent.GetName()} Of Type : {transitionType} Have Been Found In Transitionable UI Component List For Screen Widget : {GetName()} Of Type : {GetType().GetData()}.";
-                        callbackResults.data = transitionableUIComponent;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Transitionable UI Component Failed : {transitionableUIComponent.GetName()} Of Type : {transitionType} Have Been Not Found In Transitionable UI Component List For Screen Widget : {GetName()} Of Type : {GetType().GetData()}.";
-                        callbackResults.data = default;
-                    }
-                }
-            }
-
-            return callbackResults;
-        }
-
-        public AppData.CallbackDataList<AppData.TransitionableUIComponent> GetTransitionableUIComponent()
-        {
-            AppData.CallbackDataList<AppData.TransitionableUIComponent> callbackResults = new AppData.CallbackDataList<AppData.TransitionableUIComponent>(GetType());
-
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(transitionableUIComponentList, "Transitionable UI Component List", "Transitionable UI Componets Params Is Null / Not Assigned In Parameter / Not Initialized."));
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.result = $"Transitionable UI Components List With : {transitionableUIComponentList.Count} Transitionables Has Been Loaded Successfully For Screen Widget Of Type : {GetType().GetData()}.";
-                    callbackResults.data = transitionableUIComponentList;
-                }
-            }
-
-            return callbackResults;
-        }
-
-        int GetRandomIndex(int maxIndex = 2) => UnityEngine.Random.Range(0, maxIndex);
-
-        #endregion
-
-        #region Get Transition Data
-
-        public AppData.CallbackDataList<AppData.UITextTransitionData> GetTextTransitionData()
-        {
-            var callbackResults = new AppData.CallbackDataList<AppData.UITextTransitionData>();
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(textTransitionableUIData, "Text Transitionable UI Data", $"Gat Text Transitionable UI Data Failed - There Are No Text Transitionable UI Data Initialized For : {GetName()}"));
-
-            if (callbackResults.Success())
-                callbackResults.data = textTransitionableUIData;
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            return callbackResults;
-        }
-
-        public AppData.CallbackDataList<AppData.UIImageTransitionData> GetImageTransitionData()
-        {
-            var callbackResults = new AppData.CallbackDataList<AppData.UIImageTransitionData>();
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(imageTransitionableUIData, "Image Transitionable UI Data", $"Gat Image Transitionable UI Data Failed - There Are No Image Transitionable UI Data Initialized For : {GetName()}"));
-
-            if (callbackResults.Success())
-                callbackResults.data = imageTransitionableUIData;
+                callbackResults.data = transitionableUIMounts;
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 

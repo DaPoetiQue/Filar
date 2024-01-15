@@ -278,6 +278,11 @@ namespace Com.RedicalGames.Filar
             throw new NotImplementedException();
         }
 
+        protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
+        {
+           
+        }
+
         #endregion
 
         #endregion
