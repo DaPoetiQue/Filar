@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Com.RedicalGames.Filar
 {
@@ -317,7 +318,43 @@ namespace Com.RedicalGames.Filar
             {
                 if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
                 {
-                    LogSuccess($" _________________Log_Cat::: Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Is Successfully Shown", this);
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                        screenUIManagerInstance.GetCurrentScreen(async currentScreenCallbackResults => 
+                        {
+                            callbackResults.SetResult(currentScreenCallbackResults);
+
+                            var screen = currentScreenCallbackResults.GetData();
+
+                            screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
+                            {
+                                callbackResults.SetResult(widgetShownCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    await Task.Delay(2000);
+
+                                    SelectPost(postSelectedCallbacKResults =>
+                                    {
+                                        callbackResults.SetResult(postSelectedCallbacKResults);
+
+                                        if (callbackResults.Success())
+                                            screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                 {

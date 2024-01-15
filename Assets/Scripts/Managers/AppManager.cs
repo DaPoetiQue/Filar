@@ -79,7 +79,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, async splashScreenLoadInfoCallbackResults =>
+                                        databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
                                         {
                                             callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
 
@@ -97,22 +97,20 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         if (splashScreenLoadInfo != null)
                                                         {
-                                                            AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, async loadingManagerCallbackResults =>
+                                                            AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", async loadingManagerCallbackResults =>
                                                             {
                                                                 callbackResults.SetResults(loadingManagerCallbackResults);
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    var loadingManager = loadingManagerCallbackResults.data;
-                                                                    var currentScreenView = loadingScreenCallbackResults.data;
+                                                                    var loadingManager = loadingManagerCallbackResults.GetData();
+                                                                    var currentScreenView = loadingScreenCallbackResults.GetData();
 
                                                                     splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
 
                                                                     var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidgetOfType(AppData.WidgetType.ImageDisplayerWidget);
 
                                                                     callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
-
-                                                                    LogInfo($" __________________________________________++++++++++++++ Geting Widget From Screen : {currentScreenView.name} - Of Type : {currentScreenView.GetScreenType()} With : {currentScreenView.GetWidgets().GetData().Count} Widget(s) - Code : {callbackResults.GetResultCode} - Resuts : {callbackResults.GetResult}", this);
 
                                                                     if (callbackResults.Success())
                                                                     {
@@ -134,13 +132,13 @@ namespace Com.RedicalGames.Filar
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().data;
+                                                                                        var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().GetData();
 
                                                                                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
 
                                                                                         if (callbackResults.Success())
                                                                                         {
-                                                                                            var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).data;
+                                                                                            var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).GetData();
 
                                                                                             if (networkManager.Connected)
                                                                                                 initialLoadInfo.RemoveSequenceInstanceData(AppData.LoadingSequenceID.CheckingNetworkConnection);
@@ -159,7 +157,7 @@ namespace Com.RedicalGames.Filar
 
                                                                                                         if (callbackResults.Success())
                                                                                                         {
-                                                                                                            var screen = currentScreenCallbackResults.data;
+                                                                                                            var screen = currentScreenCallbackResults.GetData();
 
                                                                                                             if (screen.GetType().GetData() == AppData.ScreenType.LandingPageScreen)
                                                                                                             {
@@ -182,28 +180,6 @@ namespace Com.RedicalGames.Filar
 
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                                                                                                         widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
-
-                                                                                                                        screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
-                                                                                                                        {
-                                                                                                                            callbackResults.SetResult(widgetShownCallbackResults);
-
-                                                                                                                            if (callbackResults.Success())
-                                                                                                                            {
-                                                                                                                                await Task.Delay(2500);
-
-                                                                                                                                postManagerInstance.SelectPost(postSelectedCallbacKResults =>
-                                                                                                                                {
-                                                                                                                                    callbackResults.SetResult(postSelectedCallbacKResults);
-
-                                                                                                                                    if (callbackResults.Success())
-                                                                                                                                    {
-                                                                                                                                        screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-                                                                                                                                    }
-                                                                                                                                    else
-                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                });
-                                                                                                                            }
-                                                                                                                        });
                                                                                                                     }
                                                                                                                     else
                                                                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
