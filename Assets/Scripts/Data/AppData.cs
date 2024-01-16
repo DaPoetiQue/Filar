@@ -17395,30 +17395,61 @@ namespace Com.RedicalGames.Filar
 
             #region Selections
 
-            bool HasSelectableComponent()
+            private CallbackData<SelectableInputComponentHandler> GetSelectableComponent()
             {
-                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+                var callbackResults = new CallbackData<SelectableInputComponentHandler>();
+
+                var selectable = value.gameObject.GetComponent<SelectableInputComponentHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(selectable, "Selectable", "Get Selectable Component Failed - Selectable Is Not Found In The Value."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Selectable Component Success For : {GetName()} Of Type : {inputType}.";
+                    callbackResults.data = selectable;
+                }
+                else
+                {
+                    selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(selectable, "Selectable", "Get Selectable Component Failed - Selectable Is Not Found In The Value."));
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Selectable Component Success For : {GetName()} Of Type : {inputType} - Selectable Component Has Been Added.";
+                        callbackResults.data = selectable;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Selectable Component For : {GetName()} - Of Type : {inputType} Failed - Couldn't Add Selectable Component - Invalid Operation - Please See Here.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                return callbackResults;
             }
 
             public override void SelectableInit(Action<Callback> callback = null)
             {
-                if (!HasSelectableComponent())
-                {
-                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
+                var callbackResults = new Callback(GetSelectableComponent());
 
-                    if (selectable)
+                if (callbackResults.Success())
+                {
+                    var selectable = GetSelectableComponent().GetData();
+
+                    selectable.Init(this, initializedCallbackResults =>
                     {
-                        selectable.Init(this, initializedCallbackResults =>
-                        {
-                            if (initializedCallbackResults.Success())
-                                Deselect();
-                            else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
-                        });
-                    }
-                    else
-                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                        callbackResults.SetResult(initializedCallbackResults);
+
+                        if (callbackResults.Success())
+                            Deselect();
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
                 }
+
+                callback?.Invoke(callbackResults);
             }
 
             public override void SetSelectionState(SelectionVisualizationType visualizationType, SelectionState selectionState)
@@ -31195,7 +31226,22 @@ namespace Com.RedicalGames.Filar
                                                                                             {
                                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                                if(callbackResults.UnSuccessful())
+                                                                                                if(callbackResults.Success())
+                                                                                                {
+                                                                                                    callbackResults.SetResult(actionButton.GetValue());
+
+                                                                                                    if (callbackResults.Success())
+                                                                                                    {
+                                                                                                        actionButton.GetValue().GetData().onClick.AddListener(() =>
+                                                                                                        {
+                                                                                                            OnActionButtonInputs(actionButton);
+                                                                                                            OnActionButtonEvent(GetType().GetData(), actionButton.dataPackets.GetAction().GetData(), actionButton.dataPackets);
+                                                                                                        });
+                                                                                                    }
+                                                                                                    else
+                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                }
+                                                                                                else
                                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                             });
                                                                                         }
@@ -31213,10 +31259,27 @@ namespace Com.RedicalGames.Filar
                                                                             {
                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                if (callbackResults.UnSuccessful())
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    callbackResults.SetResult(actionButton.GetValue());
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        actionButton.GetValue().GetData().onClick.AddListener(() =>
+                                                                                        {
+                                                                                            OnActionButtonInputs(actionButton);
+                                                                                            OnActionButtonEvent(GetType().GetData(), actionButton.dataPackets.GetAction().GetData(), actionButton.dataPackets);
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                }
+                                                                                else
                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                             });
                                                                         }
+
+                                                                        LogInfo($"_______________Log_Cat:::::: Button {actionButton.GetName()} - Of Type:{actionButton.inputType} For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} Init Code : {callbackResults.GetResultCode} - Result : {callbackResults.GetResult}", this);
                                                                     }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

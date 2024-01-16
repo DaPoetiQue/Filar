@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -113,59 +114,59 @@ namespace Com.RedicalGames.Filar
             throw new System.NotImplementedException();
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            if (actionType != AppData.InputActionButtonType.RetryButton)
-                return;
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
-            AppData.Callback callbackResults = new AppData.Callback();
-
-            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, hasScreenUIManagerCallbackResults => 
+            if (callbackResults.Success())
             {
-                callbackResults.SetResult(hasScreenUIManagerCallbackResults);
+                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                if (callbackResults.Success())
+                switch (actionType)
                 {
-                    var screenUIManager = hasScreenUIManagerCallbackResults.data;
+                    case AppData.InputActionButtonType.RetryButton:
 
-                    switch (screenUIManager.GetCurrentScreenType().GetData())
-                    {
-                        case AppData.ScreenType.LoadingScreen:
+                        screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
+                        {
+                            callbackResults.SetResult(currentScreenCallbackResults);
 
-                            screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(this);
+                            var screen = currentScreenCallbackResults.GetData();
+                            screen.HideScreenWidget(this);
 
-                            AppData.SceneConfigDataPacket loadingStateWidgetDataPackets = new AppData.SceneConfigDataPacket();
+                            await Task.Delay(1000);
 
-                            dataPackets.SetReferencedScreenType(screenUIManager.GetCurrentScreenType().GetData());
-                            dataPackets.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
-                            dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
-
-                            AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, LoadingManager.Instance.name, async hasLoadingManagerCallbackResults =>
+                            screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
                             {
-                                callbackResults.SetResult(hasLoadingManagerCallbackResults);
+                                callbackResults.SetResult(widgetShownCallbackResults);
 
                                 if (callbackResults.Success())
                                 {
-                                    var loadingManager = hasLoadingManagerCallbackResults.data;
+                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
 
-                                    if (loadingManager.OnInitialLoad)
+                                    if(callbackResults.Success())
                                     {
-                                        screenUIManager.GetCurrentScreen().GetData().ShowWidget(loadingStateWidgetDataPackets);
-                                        await loadingManager.GetLoadingSequence().ProcessQueueSequenceAsync();
+                                        var loadingManager = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+
+                                        if (loadingManager.OnInitialLoad)
+                                        {
+                                            await loadingManager.GetLoadingSequence().ProcessQueueSequenceAsync();
+                                        }
+                                        else
+                                            LogWarning("Please Do Network Retry Here.", this);
                                     }
                                     else
-                                        LogWarning("Please Do Network Retry Here.", this);
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        });
 
-                            }, "Loading Manager Instance Is Not Yet Initialized.");
-
-                            break;
-                    }
+                        break;
                 }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            }, "Screen UI Manager Instance Is Not Yet Initialized.");
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
         
         async void Retry()
@@ -200,7 +201,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+           
         }
 
         #endregion
