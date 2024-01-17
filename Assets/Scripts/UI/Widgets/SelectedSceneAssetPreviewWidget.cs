@@ -218,8 +218,6 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
-            HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-
             //await ScreenUIManager.Instance.RefreshAsync();
         }
 

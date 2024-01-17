@@ -1073,7 +1073,7 @@ namespace Com.RedicalGames.Filar
             Default
         }
 
-        public enum UIScreenWidgetVisibilityState
+        public enum UIVisibilityState
         {
             None,
             Visible,
@@ -1796,7 +1796,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private UIScreenWidgetVisibilityState initialVisibilityState = UIScreenWidgetVisibilityState.None;
+            private UIVisibilityState initialVisibilityState = UIVisibilityState.None;
 
             [Space(10)]
             [Header("Widget Constraints")]
@@ -1813,7 +1813,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetType(T widgetType) => this.widgetType = widgetType;
 
-            public void SetInitialVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
+            public void SetInitialVisibilityState(UIVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
             public void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType) => this.uIPlacementType = uIPlacementType;
 
@@ -1843,10 +1843,10 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityState()
+            public CallbackData<UIVisibilityState> GetInitialVisibilityState()
             {
-                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>();
-                if (initialVisibilityState != UIScreenWidgetVisibilityState.None)
+                var callbackResults = new CallbackData<UIVisibilityState>();
+                if (initialVisibilityState != UIVisibilityState.None)
                 {
                     callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Initial Visibility State Type Is Set To : {initialVisibilityState}";
                     callbackResults.data = initialVisibilityState;
@@ -12480,7 +12480,7 @@ namespace Com.RedicalGames.Filar
             float visibleStateValue = 1.0f;
             float hiddenStateValue = 0.0f;
 
-            UIScreenWidgetVisibilityState scrollBarVisibilityState;
+            UIVisibilityState scrollBarVisibilityState;
 
             #endregion
 
@@ -12569,7 +12569,7 @@ namespace Com.RedicalGames.Filar
                         if (fadeDistance <= visibleStateValue)
                         {
                             scrollBarUIFaderComponent.SetFaderAlphaValue(visibleStateValue);
-                            SetVisibilityState(UIScreenWidgetVisibilityState.Visible);
+                            SetVisibilityState(UIVisibilityState.Visible);
                             isFading = false;
                         }
                     }
@@ -12594,7 +12594,7 @@ namespace Com.RedicalGames.Filar
                         if (fadeDistance <= hiddenStateValue)
                         {
                             scrollBarUIFaderComponent.SetFaderAlphaValue(hiddenStateValue);
-                            SetVisibilityState(UIScreenWidgetVisibilityState.Hidden);
+                            SetVisibilityState(UIVisibilityState.Hidden);
                             isFading = false;
                         }
                     }
@@ -12603,18 +12603,18 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning("--> OnScrollbarFadeIn Failed : UIScrollbar scrollbarFaderCanvasgroupComponent Is Missing / Null.");
             }
 
-            public void SetVisibilityState(UIScreenWidgetVisibilityState visibilityState)
+            public void SetVisibilityState(UIVisibilityState visibilityState)
             {
                 switch (visibilityState)
                 {
-                    case UIScreenWidgetVisibilityState.Visible:
+                    case UIVisibilityState.Visible:
 
                         scrollBarUIFaderComponent.SetFaderAlphaValue(visibleStateValue);
                         GetScrollbar().interactable = true;
 
                         break;
 
-                    case UIScreenWidgetVisibilityState.Hidden:
+                    case UIVisibilityState.Hidden:
 
                         scrollBarUIFaderComponent.SetFaderAlphaValue(hiddenStateValue);
                         GetScrollbar().interactable = false;
@@ -12625,7 +12625,7 @@ namespace Com.RedicalGames.Filar
                 this.scrollBarVisibilityState = visibilityState;
             }
 
-            public UIScreenWidgetVisibilityState GetScrollBarVisibilityState()
+            public UIVisibilityState GetScrollBarVisibilityState()
             {
                 return scrollBarVisibilityState;
             }
@@ -22261,7 +22261,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void InvokeTransition(TransitionableUIMountComponent<UIScreenWidgetVisibilityState> target, UITransitionType transitionType, UITransitionStateType state, Action<Callback> callback = null)
+            public void InvokeTransition(TransitionableUIMountComponent<UIVisibilityState> target, UITransitionType transitionType, UITransitionStateType state, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized());
 
@@ -22325,7 +22325,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void InvokeTransition(TransitionableUIMountComponent<UIScreenWidgetVisibilityState> target, UITransitionStateType state, Action<Callback> callback = null)
+            public void InvokeTransition(TransitionableUIMountComponent<UIVisibilityState> target, UITransitionStateType state, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized());
 
@@ -27377,7 +27377,7 @@ namespace Com.RedicalGames.Filar
             private ScreenFaderComponent fader = new ScreenFaderComponent();
 
             ScreenType screenType;
-            UIScreenWidgetVisibilityState initialVisibility;
+            UIVisibilityState initialVisibility;
 
             #endregion
 
@@ -27446,7 +27446,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void OnInitializeScreenDataSetup(ScreenType screenType, UIScreenWidgetVisibilityState initialVisibility, Action<CallbackData<ScreenType>> callback = null)
+            public void OnInitializeScreenDataSetup(ScreenType screenType, UIVisibilityState initialVisibility, Action<CallbackData<ScreenType>> callback = null)
             {
                 CallbackData<ScreenType> callbackResults = new CallbackData<ScreenType>();
 
@@ -27459,11 +27459,11 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private Callback IsScreenViewVisible(UIScreenWidgetVisibilityState visibilityState)
+            private Callback IsScreenViewVisible(UIVisibilityState visibilityState)
             {
                 var callbackResults = new Callback();
 
-                var isVisible = visibilityState == UIScreenWidgetVisibilityState.Visible? true : false;
+                var isVisible = visibilityState == UIVisibilityState.Visible? true : false;
 
                 if (isVisible)
                 {
@@ -27479,7 +27479,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public UIScreenWidgetVisibilityState GetViewerInitialVisibilityState()
+            public UIVisibilityState GetViewerInitialVisibilityState()
             {
                 return initialVisibility;
             }
@@ -28165,7 +28165,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public UIScreenWidgetVisibilityState GetUIScreenInitialVisibility()
+            public UIVisibilityState GetUIScreenInitialVisibility()
             {
                 return initialVisibilityState;
             }
@@ -28692,45 +28692,60 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void HideScreenWidget(WidgetType widgetType, bool canTransition = true)
+            public void HideScreenWidget(WidgetType widgetType, bool canTransition = true, Action<Callback> callback = null)
             {
-                LogInfo($"===========> Now Hide Widget Of Type : {widgetType}.................", this);
+                var callbackResults = new Callback(GetWidgets());
 
-                if (widgets.Count == 0)
-                    return;
-
-                var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
-
-                if (widget != null)
+                if (callbackResults.Success())
                 {
-                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Hide Screen Widget Failed - Screen Widget Of Type : {widgetType} Is Not Found In The Widgets List For : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                    if (callbackResults.Success())
                     {
-                        if (selectionSystemCallbackResults.Success())
+                        SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                         {
-                            selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
+                            callbackResults.SetResult(selectionSystemCallbackResults);
+
+                            if (callbackResults.Success())
                             {
-                                if(selectionsClearedCallbackResults.Success())
+                                selectionSystemCallbackResults.GetData().OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
                                 {
-                                    widget.HideWidget(hideCallback =>
+                                    callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        if (hideCallback.Success())
+                                        Focus(focusedCallbackResults =>
                                         {
-                                            Focus();
-                                        }
-                                        else
-                                            Log(hideCallback.resultCode, hideCallback.result, this);
-                                    });
-                                }
-                                else
-                                    Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
-                            });
-                        }
-                        else
-                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
-                    });
+                                            callbackResults.SetResult(focusedCallbackResults);
+
+                                            if(callbackResults.Success())
+                                            {
+                                                widget.HideWidget(hideCallback =>
+                                                {
+                                                    callbackResults.SetResult(hideCallback);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(selectionSystemCallbackResults.GetResultCode, selectionSystemCallbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public async Task<Callback> HideScreenWidgetAsync(WidgetType widgetType, bool canTransition = true)
@@ -28760,60 +28775,125 @@ namespace Com.RedicalGames.Filar
 
             public async Task<Callback> HideScreenWidgetAsync(Widget widget, bool canTransition = true)
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback(GetWidgets());
 
-                if (widgets.Count != 0)
+                if (callbackResults.Success())
                 {
-                    var widgetToHide = widgets.Find(toHide => toHide.GetType().GetData() == widget.GetType().GetData());
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Hide Screen Widget Async Failed - Widget Parameter Value Invalid / Null For : {GetName()} - Of Type : {GetType().GetData()}."));
 
-                    if (widgetToHide != null)
+                    if (callbackResults.Success())
                     {
-                        await widgetToHide.HideAsync();
+                        var loadedWidget = widgets.Find(widget => widget.GetType().GetData() == widget.GetType().GetData());
 
-                        Focus();
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(loadedWidget, "Widget", $"Hide Screen Widget Failed - Screen Widget Not Found In The Widgets List For : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                        if (callbackResults.Success())
+                        {
+                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                            {
+                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    selectionSystemCallbackResults.GetData().OnClearInputSelection(loadedWidget.GetType().GetData(), selectionsClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            Focus(focusedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(focusedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    loadedWidget.HideWidget(hideCallback =>
+                                                    {
+                                                        callbackResults.SetResult(hideCallback);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(selectionSystemCallbackResults.GetResultCode, selectionSystemCallbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
-                        LogError($"Couldn't Hide Widget Of Type : {widget.GetType().GetData()} - Widget Missing / Not Found.", this);
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    callbackResults.SetResults("Screen Widgets List Is Null", LogInfoChannel.Error);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
 
-            public void HideScreenWidget(Widget widget, bool canTransition = true)
+            public void HideScreenWidget(Widget widget, Action<Callback> callback = null)
             {
-                if (widgets.Count == 0)
-                    return;
+                var callbackResults = new Callback(GetWidgets());
 
-                if (widget != null)
+                if (callbackResults.Success())
                 {
-                    SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Hide Screen Widget Async Failed - Widget Parameter Value Invalid / Null For : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                    if (callbackResults.Success())
                     {
-                        if (selectionSystemCallbackResults.Success())
+                        var loadedWidget = widgets.Find(widgetInstance => widgetInstance.GetType().GetData() == widget.GetType().GetData());
+
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(loadedWidget, "Widget", $"Hide Screen Widget Failed - Screen Widget Not Found In The Widgets List For : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                        if (callbackResults.Success())
                         {
-                            selectionSystemCallbackResults.data.OnClearInputSelection(widget.GetType().GetData(), selectionsClearedCallbackResults =>
+                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                             {
-                                if (selectionsClearedCallbackResults.Success())
+                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                if (callbackResults.Success())
                                 {
-                                    widget.HideWidget(hideCallback =>
+                                    selectionSystemCallbackResults.GetData().OnClearInputSelection(loadedWidget.GetType().GetData(), selectionsClearedCallbackResults =>
                                     {
-                                        if (hideCallback.Success())
-                                            Focus();
+                                        callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            loadedWidget.HideWidget(hideCallback =>
+                                            {
+                                                callbackResults.SetResult(hideCallback);
+
+                                                if (callbackResults.Success())
+                                                {
+
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
                                         else
-                                            Log(hideCallback.resultCode, hideCallback.result, this);
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     });
                                 }
                                 else
-                                    Log(selectionsClearedCallbackResults.resultCode, selectionsClearedCallbackResults.result, this);
+                                    Log(selectionSystemCallbackResults.GetResultCode, selectionSystemCallbackResults.GetResult, this);
                             });
                         }
                         else
-                            Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
-                    });
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    LogError($"Couldn't Hide Widget Of Type : {widget} - Widget Missing / Not Found.", this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public CallbackData<Widget> GetWidget(WidgetType widgetType)
@@ -28913,29 +28993,37 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            widget.HideWidget();
-
-                                            if (widgetType == WidgetType.ConfirmationPopUpWidget)
+                                            Focus(focusedCallbackResults => 
                                             {
-                                                if (SelectableManager.Instance)
+                                                callbackResults.SetResult(focusedCallbackResults);
+
+                                                if(callbackResults.Success())
                                                 {
-                                                    if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
-                                                        ActionEvents.OnTransitionSceneEventCamera(dataPackets);
-                                                    else
-                                                        LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                                    widget.HideWidget();
+
+                                                    if (widgetType == WidgetType.ConfirmationPopUpWidget)
+                                                    {
+                                                        if (SelectableManager.Instance)
+                                                        {
+                                                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
+                                                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
+                                                            else
+                                                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                                        }
+                                                        else
+                                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                                    }
+
+                                                    if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
+                                                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                                                            ActionEvents.OnResetCameraToDefaultPoseEvent();
                                                 }
                                                 else
-                                                    LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
-                                            }
-
-                                            if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
-                                                if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
-                                                    ActionEvents.OnResetCameraToDefaultPoseEvent();
-
-                                            Focus();
+                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                            });
                                         }
                                         else
-                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
                                     });
                                 }
                                 else
@@ -28947,19 +29035,6 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback?.Invoke(callbackResults);
-            }
-
-            public void HideScreenWidgets()
-            {
-                if (widgets.Count == 0)
-                    return;
-
-                foreach (var widget in widgets)
-                {
-                    widget.HideWidget();
-                }
-
-                Focus();
             }
 
             public Widget GeWidget(WidgetType type)
@@ -28983,48 +29058,118 @@ namespace Com.RedicalGames.Filar
                 return widget;
             }
 
-            public void HidePopUp(WidgetType popUpType)
+            public void Focus(Action<Callback> callback = null)
             {
-                screenBlur.Hide();
-            }
+                var callbackResults = new Callback(GetScreenBlur());
 
-            public void Focus()
-            {
-                screenBlur.Hide();
-
-                ActionEvents.OnScreenViewStateChangedEvent(ScreenViewState.Focused);
-            }
-
-            public void Blur(SceneConfigDataPacket dataPackets)
-            {
-                if (dataPackets.blurScreen)
+                if (callbackResults.Success())
                 {
-                    screenBlur.Show(dataPackets.GetReferencedUIScreenPlacementType().GetData().GetValue().GetData());
+                    callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
 
-                    if (dataPackets.screenViewState == ScreenViewState.None)
-                        dataPackets.screenViewState = ScreenViewState.Blurred;
+                    if (callbackResults.Success())
+                    {
+                        GetScreenBlur().GetData().Hide(callback: hiddenCallbackResults =>
+                        {
+                            callbackResults.SetResult(hiddenCallbackResults);
 
-                    ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
+                            if(callbackResults.Success())
+                                ActionEvents.OnScreenViewStateChangedEvent(ScreenViewState.Focused);
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                    {
+                        GetScreenBlur().GetData().Hide(callback: hiddenCallbackResults => 
+                        {
+                            callbackResults.SetResult(hiddenCallbackResults);
+                        });
+                    }
                 }
                 else
-                    screenBlur.Hide();
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+
             }
 
-            public void Blur(ScreenUIPlacementType placementType)
+            public void Blur(SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
             {
-                screenBlur.Show(placementType);
+                var callbackResults = new Callback(GetScreenBlur());
 
-                //if (dataPackets.blurScreen)
-                //{
-                  
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
 
-                //    if (dataPackets.screenViewState == ScreenViewState.None)
-                //        dataPackets.screenViewState = ScreenViewState.Blurred;
+                    if (callbackResults.UnSuccessful() && dataPackets.blurScreen)
+                    {
+                        GetScreenBlur().GetData().Show(dataPackets.GetReferencedUIScreenPlacementType().GetData().GetValue().GetData());
 
-                //    ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
-                //}
-                //else
-                //    screenBlur.Hide();
+                        if (dataPackets.screenViewState == ScreenViewState.None)
+                            dataPackets.screenViewState = ScreenViewState.Blurred;
+
+                        ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void Blur(ScreenUIPlacementType placementType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetScreenBlur());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
+
+                    if(callbackResults.UnSuccessful())
+                        GetScreenBlur().GetData().Show(placementType);
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                    //if (dataPackets.blurScreen)
+                    //{
+
+
+                    //    if (dataPackets.screenViewState == ScreenViewState.None)
+                    //        dataPackets.screenViewState = ScreenViewState.Blurred;
+
+                    //    ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
+                    //}
+                    //else
+                    //    screenBlur.Hide();
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<ScreenBlurObject> GetScreenBlur()
+            {
+                var callbackResults = new CallbackData<ScreenBlurObject>(Helpers.GetAppComponentValid(screenBlur, "Screen Blur", $"Get Screen Blur Component Failed - Screen Blur Is Not Found For : {GetName()} - Of Type : {GetType().GetData()}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(screenBlur.Initialized());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Screen Blur Successful For : {GetName()} = Of Type : {GetType().GetData()}";
+                        callbackResults.data = screenBlur;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             public GameObject GetScreenObject()
@@ -30045,7 +30190,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private List<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>> transitionableUIMountList = new List<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>>();
+            private List<TransitionableUIMountComponent<UIVisibilityState>> transitionableUIMountList = new List<TransitionableUIMountComponent<UIVisibilityState>>();
 
             private TransitionableUIComponent transitionableUIComponent = new TransitionableUIComponent();
 
@@ -30055,7 +30200,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected UIScreenWidgetVisibilityState initialVisibilityState = UIScreenWidgetVisibilityState.None;
+            protected UIVisibilityState initialVisibilityState = UIVisibilityState.None;
 
             [Space(15)]
             [Header("Referenced Dependencies")]
@@ -30320,6 +30465,8 @@ namespace Com.RedicalGames.Filar
 
                 if(callbackResults.Success())
                 {
+                    OnScreenWidgetTransitionInProgressEvent();
+
                     switch (GetScreenWidgetType().GetData())
                     {
                         case UIScreenWidgetType.Screen:
@@ -30359,7 +30506,9 @@ namespace Com.RedicalGames.Filar
                         {
                             case ScreenWidgetState.Shown:
 
-                                switch(GetScreenWidgetType().GetData())
+                                OnScreenWidgetShownEvent();
+
+                                switch (GetScreenWidgetType().GetData())
                                 {
                                     case UIScreenWidgetType.Screen:
 
@@ -30383,6 +30532,8 @@ namespace Com.RedicalGames.Filar
                                 break;
 
                             case ScreenWidgetState.Hidden:
+
+                                OnScreenWidgetHiddenEvent();
 
                                 switch (GetScreenWidgetType().GetData())
                                 {
@@ -30455,7 +30606,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType) => this.uIPlacementType = uIPlacementType;
 
-            public void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
+            public void SetUIScreenWidgetVisibilityState(UIVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
             public void SetScreenWidgetType(UIScreenWidgetType screenWidgetType) => this.screenWidgetType = screenWidgetType;
 
@@ -30482,9 +30633,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackDataList<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>> GetTransitionableUIMounts()
+            protected CallbackDataList<TransitionableUIMountComponent<UIVisibilityState>> GetTransitionableUIMounts()
             {
-                var callbackResults = new CallbackDataList<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>>(Helpers.GetAppComponentsValid(transitionableUIMountList, "Transitionable UI Mount List", $"There Are No Transitionable UI Mount List Initialized For : {GetName()} - Of Type : {GetType().GetData()}"));
+                var callbackResults = new CallbackDataList<TransitionableUIMountComponent<UIVisibilityState>>(Helpers.GetAppComponentsValid(transitionableUIMountList, "Transitionable UI Mount List", $"There Are No Transitionable UI Mount List Initialized For : {GetName()} - Of Type : {GetType().GetData()}"));
 
                 if(callbackResults.Success())
                 {
@@ -30497,9 +30648,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>> GetTransitionableUIMount(UIScreenWidgetVisibilityState mountType)
+            protected CallbackData<TransitionableUIMountComponent<UIVisibilityState>> GetTransitionableUIMount(UIVisibilityState mountType)
             {
-                var callbackResults = new CallbackData<TransitionableUIMountComponent<UIScreenWidgetVisibilityState>>(GetTransitionableUIMounts());
+                var callbackResults = new CallbackData<TransitionableUIMountComponent<UIVisibilityState>>(GetTransitionableUIMounts());
 
                 if(callbackResults.Success())
                 {
@@ -30521,7 +30672,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<ScreenSpaceTargetHandler> GetTransitionableUIMountTarget(UIScreenWidgetVisibilityState mountType)
+            protected CallbackData<ScreenSpaceTargetHandler> GetTransitionableUIMountTarget(UIVisibilityState mountType)
             {
                 var callbackResults = new CallbackData<ScreenSpaceTargetHandler>(GetTransitionableUIMounts());
 
@@ -30644,13 +30795,13 @@ namespace Com.RedicalGames.Filar
 
             public int GetOrderInLayer() => orderInLayer;
 
-            public CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityStateType()
+            public CallbackData<UIVisibilityState> GetInitialVisibilityStateType()
             {
-                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>(GetType());
+                var callbackResults = new CallbackData<UIVisibilityState>(GetType());
 
                 if (callbackResults.Success())
                 {
-                    if (initialVisibilityState != UIScreenWidgetVisibilityState.None)
+                    if (initialVisibilityState != UIVisibilityState.None)
                     {
                         callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()}'s Initial Visibilty State Type Is Set To : {initialVisibilityState}";
                         callbackResults.data = initialVisibilityState;
@@ -30673,7 +30824,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if(GetInitialVisibilityStateType().GetData() == UIScreenWidgetVisibilityState.Visible)
+                    if(GetInitialVisibilityStateType().GetData() == UIVisibilityState.Visible)
                     {
                         callbackResults.result = $"Initiali Visiblity State For Screen Widget : {GetName()} - Of type : {GetType().GetData()} Is Set To : {GetInitialVisibilityStateType().GetData()} - Widget Should Be Shown";
                         callbackResults.data = true;
@@ -31055,11 +31206,11 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityState()
+            protected CallbackData<UIVisibilityState> GetInitialVisibilityState()
             {
-                var callbackResults = new CallbackData<UIScreenWidgetVisibilityState>();
+                var callbackResults = new CallbackData<UIVisibilityState>();
 
-                if (initialVisibilityState != UIScreenWidgetVisibilityState.None)
+                if (initialVisibilityState != UIVisibilityState.None)
                 {
                     callbackResults.result = $"Initial Visiblity State For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Set To : {initialVisibilityState}";
                     callbackResults.data = initialVisibilityState;
@@ -32943,7 +33094,7 @@ namespace Com.RedicalGames.Filar
 
             void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType);
             void SetContentContainerType(ContentContainerType containerType);
-            void SetUIScreenWidgetVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState);
+            void SetUIScreenWidgetVisibilityState(UIVisibilityState initialVisibilityState);
             void SetScreenWidgetType(UIScreenWidgetType screenWidgetType);
 
             void SetConfigDataPacket(ConfigDataPacket<T> config);
@@ -33003,7 +33154,7 @@ namespace Com.RedicalGames.Filar
             /// Gets A UI Screen Widgets Visibilty State
             /// </summary>
             /// <returns>Returns A UI Screen Widgets Visibilty State Type As A Callback WIth Enum Data/returns>
-            CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityStateType();
+            CallbackData<UIVisibilityState> GetInitialVisibilityStateType();
 
             /// <summary
             /// Gets Screen Widgets Type
@@ -33157,7 +33308,7 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             switch (GetInitialVisibilityState().GetData())
                                                             {
-                                                                case UIScreenWidgetVisibilityState.Visible:
+                                                                case UIVisibilityState.Visible:
 
                                                                     ShowWidget(GetType().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
                                                                     {
@@ -33166,7 +33317,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     break;
 
-                                                                case UIScreenWidgetVisibilityState.Hidden:
+                                                                case UIVisibilityState.Hidden:
 
                                                                     HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
                                                                     {
@@ -35340,7 +35491,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var transitionalComponent = GetTransitionableUIComponent().GetData();
 
-                                            callbackResults.SetResult(GetTransitionableUIMount(UIScreenWidgetVisibilityState.Visible));
+                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
 
                                             if (callbackResults.Success())
                                             {
@@ -35350,7 +35501,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        var visibleMount = GetTransitionableUIMount(UIScreenWidgetVisibilityState.Visible).GetData();
+                                                        var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
 
                                                         callbackResults.SetResult(transitionalComponent.Initialized());
 
@@ -35407,11 +35558,11 @@ namespace Com.RedicalGames.Filar
                     {
                         var layoutView = GetLayoutView(layoutViewType).GetData();
 
-                        SetScreenWidgetState(ScreenWidgetState.Hidden, widgetHiddenCallbacResults => 
+                        SetScreenWidgetState(ScreenWidgetState.Hidden, widgetHiddenCallbacResults =>
                         {
                             callbackResults.SetResult(widgetHiddenCallbacResults);
 
-                            if(callbackResults.Success())
+                            if (callbackResults.Success())
                             {
                                 switch (GetTransitionType().GetData())
                                 {
@@ -35440,38 +35591,28 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var transitionalComponent = GetTransitionableUIComponent().GetData();
 
-                                            callbackResults.SetResult(GetTransitionableUIMount(UIScreenWidgetVisibilityState.Hidden));
+                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
 
                                             if (callbackResults.Success())
                                             {
-                                                layoutView.HideLayout(async layoutHideCallbackRessults =>
+                                                var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
+
+                                                callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(layoutHideCallbackRessults);
-
-                                                    if (callbackResults.Success())
+                                                    transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
                                                     {
-                                                        var hiddenMount = GetTransitionableUIMount(UIScreenWidgetVisibilityState.Hidden).GetData();
-
-                                                        callbackResults.SetResult(transitionalComponent.Initialized());
+                                                        callbackResults.SetResult(invokedTransitionCallbackResults);
 
                                                         if (callbackResults.Success())
-                                                        {
-                                                            transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
-                                                            {
-                                                                callbackResults.SetResult(invokedTransitionCallbackResults);
-
-                                                                if (callbackResults.Success())
-                                                                    OnDisabled();
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
-                                                        }
+                                                            OnDisabled();
                                                         else
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35576,81 +35717,43 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionType());
+                    callbackResults.SetResult(GetDefaultLayoutType());
 
                     if (callbackResults.Success())
                     {
-                        //switch (GetTransitionType().GetData())
-                        //{
-                        //    case TransitionType.Default:
-
-                        //        OnHideScreenWidget();
-                        //        OnDisabled();
-
-                        //        callbackResults.result = "Widget Hidden.";
-                        //        callbackResults.resultCode = Helpers.SuccessCode;
-
-                        //        break;
-
-                        //    case TransitionType.Translate:
-
-                        //        if (widgetRect)
-                        //        {
-                        //            onWidgetTransition = true;
-                        //            showWidget = false;
-
-                        //            if (onWidgetTransition == false)
-                        //            {
-                        //                callbackResults.result = "Widget Hidden.";
-                        //                callbackResults.resultCode = Helpers.SuccessCode;
-                        //            }
-                        //            else
-                        //            {
-                        //                callbackResults.result = "Widget Not Hidden.";
-                        //                callbackResults.resultCode = Helpers.WarningCode;
-                        //            }
-                        //        }
-
-                        //        break;
-                        //}
-
                         HideSelectedLayout(GetDefaultLayoutType().GetData(), hideLayoutCallbackResults =>
                         {
                             callbackResults.SetResult(hideLayoutCallbackResults);
-                        });
 
-                        if (callbackResults.Success())
-                        {
-                            callbackResults.SetResult(SubscribedToEvents());
-
-                            if (callbackResults.Success())
+                            if(callbackResults.Success())
                             {
-                                UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                                callbackResults.SetResult(SubscribedToEvents());
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(subscriptionCallbackResults);
+                                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(subscriptionCallbackResults);
 
-                                    if (callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-                            }
-                            else
-                            {
-                                if (onInitialization)
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
                                 {
                                     callbackResults.result = $"Action Events Are Not Subcribed Yet On Initialization For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
                                     callbackResults.resultCode = Helpers.SuccessCode;
                                 }
-                                else
-                                {
-                                    callbackResults.result = $"Action Events For Screen : {GetName()}- Of Type : {GetType().GetData()} - Failed On Initialization With Results : {callbackResults.GetResult}";
-                                    callbackResults.resultCode = Helpers.ErrorCode;
-                                }
                             }
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -39567,12 +39670,9 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         [Serializable]
-        public class ScreenBlurObject
+        public class ScreenBlurObject : DataDebugger
         {
             #region Components
-
-            [Space(5)]
-            public string name;
 
             [Space(5)]
             public GameObject value;
@@ -39585,15 +39685,17 @@ namespace Com.RedicalGames.Filar
 
             CanvasGroup canvasGroup;
 
+            private UIVisibilityState visibilityState = UIVisibilityState.Hidden;
+
             #endregion
 
             #region Main
 
             public void Init<T>(T fromClass, Action<Callback> callback = null) where T : AppMonoBaseClass
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(Initialized());
 
-                if (HasBlurObject())
+                if (callbackResults.Success())
                 {
                     if (initialVisibilityState)
                         Show(ScreenUIPlacementType.Default);
@@ -39602,56 +39704,99 @@ namespace Com.RedicalGames.Filar
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
-                {
-                    callbackResults.result = $"Initialize Screen Blur : {name} From Class : {fromClass.name} Value Missing / Not Assigned In The Editor Inspector.";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
+
+            private void SetUIVisibilityState(UIVisibilityState visibilityState) => this.visibilityState = visibilityState;
+
+
+            private CallbackData<UIVisibilityState> GetUIVisibilityState()
+            {
+                var callbackResults = new CallbackData<UIVisibilityState>();
+
+                if(visibilityState != UIVisibilityState.None)
+                {
+                    callbackResults.result = $"Get UI Visibility State Success - Visibilty State Is Set To : {visibilityState}.";
+                    callbackResults.data = visibilityState;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Get UI Visibility State Failed - Visibilty State Is Set To Default : None - Invalid Operation.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback IsScreenBlured()
+            {
+                Callback callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetUIVisibilityState());
+
+                    if(callbackResults.Success())
+                    {
+                        if(GetUIVisibilityState().GetData() == UIVisibilityState.Hidden)
+                        {
+                            callbackResults.result = "Screen Is Not Blured.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
 
             public void Show(ScreenUIPlacementType layerType, bool fade = false, Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(Initialized());
 
-                if (HasBlurObject())
+                if (callbackResults.Success())
                 {
                     AddToSelectedContainer(layerType, addedToContainerCallback => 
                     {
-                        bool isVisible = addedToContainerCallback.resultCode == Helpers.SuccessCode;
+                        callbackResults.SetResult(addedToContainerCallback);
+
+                        bool isVisible = callbackResults.Success();
 
                         OnSetBlurObjectVisibilityState(isVisible);
-                        callbackResults = addedToContainerCallback;
+                        SetUIVisibilityState(UIVisibilityState.Visible);
                     });
                 }
                 else
-                {
-                    callbackResults.result = $"Show Blur Object Of Layer Type : {layerType} Failed : Screen Blur Object Value Is Missing / Null.";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetBlurValue(float value)
+            public void Hide(bool resetDisplayLayer = true, bool fade = false, Action<Callback> callback = null)
             {
-                if (HasBlurObject())
-                    OnSetBlurObjectAlphaValue(value);
-                else
-                    Debug.LogWarning("Show Blur Object Failed : Screen Blur Object Canvas Group Is Missing / Null.");
-            }
+                var callbackResults = new Callback(Initialized());
 
-            public void Hide(bool resetDisplayLayer = true, bool fade = false)
-            {
-                if (HasBlurObject())
+                if (callbackResults.Success())
                 {
                     OnSetBlurObjectVisibilityState(false);
 
                     if (resetDisplayLayer)
                         AddToSelectedContainer(ScreenUIPlacementType.Default);
+
+                    SetUIVisibilityState(UIVisibilityState.Hidden);
                 }
                 else
-                    Debug.LogWarning("--> RG_Unity - Show Blur Object Failed : Screen Blur Object Value Is Missing / Null.");
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             void AddToSelectedContainer(ScreenUIPlacementType layerType, Action<Callback> callback = null)
@@ -39689,26 +39834,40 @@ namespace Com.RedicalGames.Filar
                 return canvasGroup.alpha;
             }
 
-            public bool HasBlurObject()
+            public Callback Initialized()
             {
-                if (value != null)
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(value, "Value", "Screen Blur Value Is Not Assigned - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    if (canvasGroup == null)
-                        if(value?.GetComponent<CanvasGroup>() == null)
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(canvasGroup, "Canvas Group", "Canvas Group Component Is Not Assigned - Invalid Operation."));
+
+                    if (callbackResults.UnSuccessful())
+                    {
+                        var canvas = value?.GetComponent<CanvasGroup>();
+
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(canvas, "Canvas", "Canvas Component Is Not Assigned - Invalid Operation."));
+
+                        if (callbackResults.UnSuccessful())
+                        {
                             canvasGroup = value?.AddComponent<CanvasGroup>();
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(canvasGroup, "Canvas Group", "Canvas Group Component Is Not Assigned - Invalid Operation."));
+                        }
                         else
+                        {
                             canvasGroup = value?.GetComponent<CanvasGroup>();
+
+                            callbackResults.result = $"Canvas Group Component Successfully Found For : {GetName()}";
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                return value && canvasGroup;
-            }
-
-            public bool GetActive()
-            {
-                if (!HasBlurObject())
-                    return false;
-
-                return value.activeSelf && value.activeInHierarchy;
+                return callbackResults;
             }
 
             public void OnSetBlurObjectVisibilityState(bool isVisible) => value.SetActive(isVisible);
@@ -39991,7 +40150,7 @@ namespace Com.RedicalGames.Filar
             public ScreenFadeModeType mode;
 
             ScreenType screenType;
-            UIScreenWidgetVisibilityState initialVisibilityState;
+            UIVisibilityState initialVisibilityState;
 
             UIScreenViewerComponent screenViewerComponent;
 
@@ -40095,7 +40254,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void OnInitializeScreenDataSetup(ScreenType screenType, UIScreenWidgetVisibilityState initialVisibilityState, Action<CallbackData<ScreenType>> callback = null)
+            public void OnInitializeScreenDataSetup(ScreenType screenType, UIVisibilityState initialVisibilityState, Action<CallbackData<ScreenType>> callback = null)
             {
                 CallbackData<ScreenType> callbackResults = new CallbackData<ScreenType>();
 
@@ -40109,7 +40268,7 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.data = GetUIScreenType();
 
-                    var fadeValue = (this.initialVisibilityState == UIScreenWidgetVisibilityState.Visible) ? hidden : visible;
+                    var fadeValue = (this.initialVisibilityState == UIVisibilityState.Visible) ? hidden : visible;
                     SetFaderVisibilityValue(fadeValue);
                 }
 
@@ -45997,7 +46156,7 @@ namespace Com.RedicalGames.Filar
             void SetName(string name);
 
             void SetType(T widgetType);
-            void SetInitialVisibilityState(UIScreenWidgetVisibilityState initialVisibilityState);
+            void SetInitialVisibilityState(UIVisibilityState initialVisibilityState);
             void SetContentContainerType(ContentContainerType containerType);
             void SetScreenUIPlacementType(ScreenUIPlacementType uIPlacementType);
 
@@ -46009,7 +46168,7 @@ namespace Com.RedicalGames.Filar
 
             CallbackData<ScreenUIPlacementType> GetScreenUIPlacementType();
 
-            CallbackData<UIScreenWidgetVisibilityState> GetInitialVisibilityState();
+            CallbackData<UIVisibilityState> GetInitialVisibilityState();
 
             #endregion
         }
@@ -46022,11 +46181,11 @@ namespace Com.RedicalGames.Filar
 
             Task<CallbackData<Screen>> HideViewSync();
 
-            UIScreenWidgetVisibilityState GetUIScreenInitialVisibility();
+            UIVisibilityState GetUIScreenInitialVisibility();
 
-            void Focus();
+            void Focus(Action<Callback> callback = null);
 
-            void Blur(SceneConfigDataPacket dataPackets);
+            void Blur(SceneConfigDataPacket dataPacket, Action<Callback> callback = null);
 
             string GetScreenTitle();
 

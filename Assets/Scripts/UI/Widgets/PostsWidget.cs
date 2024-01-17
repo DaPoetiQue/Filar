@@ -54,19 +54,23 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
-            {
-                if (screenUIManagerCallbackResults.Success())
-                {
-                    var screenUIManager = screenUIManagerCallbackResults.data;
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
-                    screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
+            if (screenWidgetType == AppData.WidgetType.PostsWidget)
+            {
+                if (callbackResults.Success())
+                {
+                    var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                    screenUIManager.GetCurrentScreen(currentScreenCallbackResults =>
                     {
+                        callbackResults.SetResult(currentScreenCallbackResults);
+
                         if (currentScreenCallbackResults.Success())
                         {
-                            var screen = currentScreenCallbackResults.data;
+                            var screen = currentScreenCallbackResults.GetData();
 
                             switch (actionType)
                             {
@@ -84,7 +88,7 @@ namespace Com.RedicalGames.Filar
                                     screen.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
                                     screen.GetWidget(this).SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
 
-                                    await screen.HideScreenWidgetAsync(this);
+                                    screen.HideScreenWidget(this);
 
                                     break;
                             }
@@ -94,8 +98,7 @@ namespace Com.RedicalGames.Filar
 
                     });
                 }
-
-            }, "Screen UI Manager Instance Is Not Yet Initialized.");
+            }
         }
 
         public void OnPostsInitializationCompletedEvent()
@@ -112,7 +115,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
-            HideSelectedLayout(defaultLayoutType);
+          
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
@@ -164,7 +167,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-      
+            LogInfo($" ________+Log_cat: Show Widget Open Button Now.", this);
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
@@ -174,7 +177,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+           
         }
 
         #endregion

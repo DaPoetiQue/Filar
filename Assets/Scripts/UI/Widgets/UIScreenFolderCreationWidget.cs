@@ -149,7 +149,7 @@ namespace Com.RedicalGames.Filar
             //else
             //    Debug.LogWarning("--> GoToProfile Failed : ScreenUIManager.Instance Is Not Yet Initialized");
 
-            HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+           
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)

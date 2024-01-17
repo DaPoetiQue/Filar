@@ -40,11 +40,11 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
-            screenBlur.Init(this, initializationCallback =>
-            {
-                if (!AppData.Helpers.IsSuccessCode(initializationCallback.resultCode))
-                    LogError(initializationCallback.result, this, () => Init());
-            });
+            //screenBlur.Init(this, initializationCallback =>
+            //{
+            //    if (!AppData.Helpers.IsSuccessCode(initializationCallback.resultCode))
+            //        LogError(initializationCallback.result, this, () => Init());
+            //});
         }
 
         public void ShowNotification(AppData.Notification notification)

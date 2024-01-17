@@ -91,7 +91,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
-            HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+          
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
@@ -131,31 +131,40 @@ namespace Com.RedicalGames.Filar
                             callbackResults.SetResult(currentScreenCallbackResults);
 
                             var screen = currentScreenCallbackResults.GetData();
-                            screen.HideScreenWidget(this);
 
-                            await Task.Delay(1000);
-
-                            screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
+                            screen.HideScreenWidget(GetType().GetData(), callback: async widgetHiddenCallbackResults => 
                             {
-                                callbackResults.SetResult(widgetShownCallbackResults);
+                                callbackResults.SetResult(widgetHiddenCallbackResults);
 
-                                if (callbackResults.Success())
+                                if(callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
+                                    await Task.Delay(1000);
 
-                                    if(callbackResults.Success())
+                                    screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
                                     {
-                                        var loadingManager = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+                                        callbackResults.SetResult(widgetShownCallbackResults);
 
-                                        if (loadingManager.OnInitialLoad)
+                                        if (callbackResults.Success())
                                         {
-                                            await loadingManager.GetLoadingSequence().ProcessQueueSequenceAsync();
+                                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var loadingManager = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+
+                                                if (loadingManager.OnInitialLoad)
+                                                {
+                                                    await loadingManager.GetLoadingSequence().ProcessQueueSequenceAsync();
+                                                }
+                                                else
+                                                    LogWarning("Please Do Network Retry Here.", this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
-                                            LogWarning("Please Do Network Retry Here.", this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

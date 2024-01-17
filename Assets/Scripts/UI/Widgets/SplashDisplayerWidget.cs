@@ -340,7 +340,10 @@ namespace Com.RedicalGames.Filar
             return randomIndex;
         }
 
-        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null) => HideSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
+        protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
+        {
+
+        }
 
         protected override void OnScrollerValueChanged(Vector2 value)
         {

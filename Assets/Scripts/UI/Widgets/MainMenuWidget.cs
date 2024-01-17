@@ -83,23 +83,23 @@ namespace Com.RedicalGames.Filar
                                         {
                                             if (currentScreenCallbackResults.Success())
                                             {
-                                                var currentScreen = currentScreenCallbackResults.data;
+                                                //var currentScreen = currentScreenCallbackResults.data;
 
-                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                                //currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
 
-                                                currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                                //currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
 
-                                                await currentScreen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                                                //await currentScreen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
 
 
-                                                AppData.SceneConfigDataPacket dataPackets = new AppData.SceneConfigDataPacket();
+                                                //AppData.SceneConfigDataPacket dataPackets = new AppData.SceneConfigDataPacket();
 
-                                                dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
-                                                dataPackets.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                                dataPackets.SetScreenBlurState(true);
-                                                dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Background);
+                                                //dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
+                                                //dataPackets.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                                //dataPackets.SetScreenBlurState(true);
+                                                //dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Background);
 
-                                                currentScreen.ShowWidget(dataPackets);
+                                                //currentScreen.ShowWidget(dataPackets);
                                             }
                                         });
                                     }
@@ -116,7 +116,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
         {
-            HideSelectedLayout(defaultLayoutType);
+           
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
