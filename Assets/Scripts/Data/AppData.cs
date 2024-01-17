@@ -20774,6 +20774,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            private float transitionSpeed;
+
+            [Space(5)]
+            [SerializeField]
             private float eventTriggerDistance;
 
             [Space(5)]
@@ -20834,6 +20838,21 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"Event Trigger Distance Is Set To : {eventTriggerDistance}";
                     callbackResults.data = eventTriggerDistance;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<float> GetTransitionSpeed()
+            {
+                var callbackResults = new CallbackData<float>(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Transition Speed Is Set To : {transitionSpeed}";
+                    callbackResults.data = transitionSpeed;
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -32233,19 +32252,37 @@ namespace Com.RedicalGames.Filar
                 //    LogWarning("--> Screen Action Button List Is Null / Empty.", this, () => SetActionButtonTitle(actionType, title));
             }
 
-            public void SetActionButtonState(InputActionButtonType actionType, InputUIState state)
+            public void SetActionButtonState(InputActionButtonType actionType, InputUIState state, Action<Callback> callback = null)
             {
-                //if (buttons.Count > 0)
-                //{
-                //    UIButton<ButtonDataPackets> button = buttons.Find(button => button.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.Button));
 
-                //    if (button != null)
-                //        button.SetUIInputState(state);
-                //    else
-                //        LogWarning($"Button Of Type : {actionType} Not Found In Widgt Type : {widgetType} With Action Button List With : {buttons.Count} Buttons", this, () => SetActionButtonState(actionType, state));
-                //}
-                //else
-                //    LogWarning("Screen Action Button List Is Null / Empty.", this, () => SetActionButtonState(actionType, state));
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.Button).GetData().Find(input => input.GetButtonComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetButtonComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var button = inputActionHandler.GetButtonComponent().GetData();
+                            button.SetUIInputState(state);
+
+                            LogInfo($" ______Log_Cat:::: On Hide : {GetName()} - Set Button : {button.GetName()} Of Type : {actionType} (Verified As : {button.GetDataPackets().GetData().GetAction().GetData()}) - To State : {state}", this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void OnSetActionButtonEvent(InputActionButtonType actionType, ActionEvents.ButtonAction<ButtonConfigDataPacket> buttonAction = null, Action<Callback> callback = null)

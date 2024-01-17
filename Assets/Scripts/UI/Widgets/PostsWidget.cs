@@ -162,12 +162,16 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetShownEvent()
         {
-           
+            //SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+            //SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
         }
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-            LogInfo($" ________+Log_cat: Show Widget Open Button Now.", this);
+            LogInfo($" ______Log_Cat:::: On Hide : {GetName()}", this);
+
+            //SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+            SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
