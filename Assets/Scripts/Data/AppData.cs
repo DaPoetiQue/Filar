@@ -75,6 +75,14 @@ namespace Com.RedicalGames.Filar
             Down
         }
 
+        public enum SignInState
+        {
+            None,
+            Guest,
+            SignIn,
+            SignOut
+        }
+
         public enum AssetCategoryType : int
         {
             None = 0,
@@ -316,6 +324,11 @@ namespace Com.RedicalGames.Filar
             SharePostButton,
             AddToCartButton,
             DownloadButton,
+            PasswordResetButton,
+            GoogleLinkButton,
+            FacebookLinkButton,
+            XLinkButton,
+            GithubLinkButton,
             None
         }
 
@@ -21383,27 +21396,27 @@ namespace Com.RedicalGames.Filar
                         {
                             case UITransitionType.Default:
 
-                                source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed));
-                                source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed));
-                                source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed));
+                                source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
+                                source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
+                                source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
 
                                 break;
 
                             case UITransitionType.Translate:
                                 
-                                source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed));
+                                source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
 
                                 break;
 
                             case UITransitionType.Scale:
 
-                                source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed));
+                                source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
 
                                 break;
 
                             case UITransitionType.Rotate:
 
-                                source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed));
+                                source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
 
                                 break;
                         }
@@ -21624,10 +21637,10 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new CallbackData<float>();
 
-                if(transitionSpeed > 0)
+                if(transitionSpeed > 0.0f)
                 {
                     callbackResults.result = $"Get Transition Speed Success - Transition Speed Is Set To : {transitionSpeed}";
-                    callbackResults.data = transitionSpeed * Time.smoothDeltaTime;
+                    callbackResults.data = transitionSpeed;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
@@ -21764,7 +21777,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private Callback HasCompletedTransition(UITransitionType transitionType)
+            public Callback HasCompletedTransition(UITransitionType transitionType)
             {
                 Callback callbackResults = new Callback();
 
@@ -22190,6 +22203,7 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             SetTransitionDestination(target.GetMount().GetData());
+                            //SetTransitionSpeed(target.GetTransitionSpeed().GetData());
 
                             SubscribeToEvents(subscribedToEventCallbackResults =>
                             {
@@ -22223,7 +22237,6 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-
             public void InvokeTransition<T>(TransitionableUIMountComponent<T> target, UITransitionType transitionType, Action<Callback> callback = null) where T : Enum
             {
                 var callbackResults = new Callback(Initialized());
@@ -22244,6 +22257,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SetTransitionType(transitionType);
                                 SetTransitionDestination(target.GetMount().GetData());
+                                //SetTransitionSpeed(target.GetTransitionSpeed().GetData());
 
                                 SubscribeToEvents(subscribedToEventCallbackResults =>
                                 {
@@ -22305,6 +22319,7 @@ namespace Com.RedicalGames.Filar
                                     SetTransitionType(transitionType);
                                     SetTransitionStateType(state);
                                     SetTransitionDestination(target.GetMount().GetData());
+                                    //SetTransitionSpeed(target.GetTransitionSpeed().GetData());
 
                                     SubscribeToEvents(subscribedToEventCallbackResults =>
                                     {
@@ -22364,6 +22379,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 SetTransitionStateType(state);
                                 SetTransitionDestination(target.GetMount().GetData());
+                                //SetTransitionSpeed(target.GetTransitionSpeed().GetData());
 
                                 SubscribeToEvents(subscribedToEventCallbackResults =>
                                 {
@@ -27568,16 +27584,15 @@ namespace Com.RedicalGames.Filar
                     if (callbackResults.Success())
                     {
                         callbackResults.SetResult(GetActiveViewFader());
-                        callbackResults.resultCode = GetActiveViewFader().resultCode;
 
                         if (callbackResults.Success())
                         {
-                            var faderComponent = GetActiveViewFader().data;
+                            var faderComponent = GetActiveViewFader().GetData();
                             
-                            if(faderComponent.GetOpacity().data <= 0)
+                            if(faderComponent.GetOpacity().GetData() <= 0)
                                 faderComponent.SetFaderVisibilityValue(1.0f);
 
-                            callbackResults = faderComponent.CanFadeOutViewCallbackResults();
+                            callbackResults.SetResult(faderComponent.CanFadeOutViewCallbackResults());
 
                             if (callbackResults.Success())
                             {
@@ -28373,20 +28388,42 @@ namespace Com.RedicalGames.Filar
 
             public async Task<CallbackData<Screen>> ShowViewAsync()
             {
-                var showViewTaskResultsCallback = await GetScreenView().ShowScreenViewAsync();
+                var callbackResults = new CallbackData<Screen>(GetTransitionType());
 
-                if (showViewTaskResultsCallback.Success())
+                if (callbackResults.Success())
                 {
-                    SubscribeToEvents(callback: subscriptionCallbackResults => 
+                    if (GetTransitionType().GetData() == TransitionType.Default)
                     {
-                        if(subscriptionCallbackResults.UnSuccessful())
-                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                    });
+                        var showScreenCallbackResults = await GetScreenView().ShowScreenViewAsync();
+                        callbackResults.SetResult(showScreenCallbackResults);
+
+                        if (callbackResults.Success())
+                            GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                    {
+                        // To Do - Screen Transitioning Code Goes Here - Like Seriously.
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        SubscribeToEvents(callback: subscriptionCallbackResults =>
+                        {
+                            callbackResults.SetResult(subscriptionCallbackResults);
+
+                            if (callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    Log(showViewTaskResultsCallback.GetResultCode, showViewTaskResultsCallback.GetResult, this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                return showViewTaskResultsCallback;
+                return callbackResults;
             }
 
             #endregion
@@ -28395,20 +28432,40 @@ namespace Com.RedicalGames.Filar
 
             public async Task<CallbackData<Screen>> HideViewSync()
             {
-                var hideViewTaskResultsCallback = await GetScreenView().HideScreenViewAsync();
+                var callbackResults = new CallbackData<Screen>(GetTransitionType());
 
-                if (hideViewTaskResultsCallback.Success())
+                if (callbackResults.Success())
                 {
-                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                    if (GetTransitionType().GetData() == TransitionType.Default)
                     {
-                        if (subscriptionCallbackResults.UnSuccessful())
-                            Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                    });
+                        var hideScreenCallbackResults = await GetScreenView().HideScreenViewAsync();
+                        callbackResults.SetResult(hideScreenCallbackResults);
+
+                        if (callbackResults.Success())
+                            GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                    {
+                        // To Do - Screen Transitioning Code Goes Here - Like Seriously.
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                        {
+                            if (subscriptionCallbackResults.UnSuccessful())
+                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    Log(hideViewTaskResultsCallback.GetResultCode, hideViewTaskResultsCallback.GetResult, this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                return hideViewTaskResultsCallback;
+                return callbackResults;
             }
 
             #endregion
@@ -28559,45 +28616,19 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public async Task<Callback> ShowWidgetAsync(WidgetType widgetType, bool blurScreen = false, string title = null)
+            public async Task<Callback> ShowWidgetAsync(WidgetType widgetType)
             {
-                Callback callbackResults = new Callback();
-
-                Helpers.GetAppComponentsValid(widgets, "Screen Widgets", screenWidgetsCallbackResults => 
-                {
-                    callbackResults.SetResult(screenWidgetsCallbackResults);
-
-                }, "Screen Widgets Are Not Yet initialized.");
+                Callback callbackResults = new Callback(GetWidget(widgetType));
 
                 if (callbackResults.Success())
                 {
-                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
+                    var widget = GetWidget(widgetType).GetData();
 
-                    await Task.Yield();
-
-                    if (widget)
-                    {
-                        SceneConfigDataPacket dataPackets = new SceneConfigDataPacket
-                        {
-                            widgetTitle = title,
-                            widgetType = widgetType,
-                            blurScreen = blurScreen
-                        };
-
-                        if (blurScreen)
-                            Blur(dataPackets);
-
-                        widget.ResetScrollPosition(scrollerResetCallback =>
-                        {
-                            if (scrollerResetCallback.Success())
-                                widget.ShowScreenWidget(dataPackets);
-                            else
-                                Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
-                        });
-                    }
-                    else
-                        LogError($"Widget Of Type : {widgetType} - Missing / Not Found.", this);
+                    var showWidgetCallbackResultsTask = await widget.ShowScreenWidgetAsync(widgetType);
+                    callbackResults.SetResult(showWidgetCallbackResultsTask);
                 }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
 
                 return callbackResults;
             }
@@ -28767,90 +28798,19 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public async Task<Callback> HideScreenWidgetAsync(WidgetType widgetType, bool canTransition = true)
+            public async Task<Callback> HideScreenWidgetAsync(WidgetType widgetType)
             {
-                LogInfo($"===========> Now Hide Widget Of Type : {widgetType}.................", this);
-
-                Callback callbackResults = new Callback();
-
-                if (widgets.Count != 0)
-                {
-                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
-
-                    if (widget != null)
-                    {
-                        await widget.HideAsync();
-
-                        Focus();
-                    }
-                    else
-                        LogError($"Couldn't Hide Widget Of Type : {widgetType} - Widget Missing / Not Found.", this);
-                }
-                else
-                    callbackResults.SetResults("Screen Widgets List Is Null", LogInfoChannel.Error);
-
-                return callbackResults;
-            }
-
-            public async Task<Callback> HideScreenWidgetAsync(Widget widget, bool canTransition = true)
-            {
-                var callbackResults = new Callback(GetWidgets());
+                Callback callbackResults = new Callback(GetWidget(widgetType));
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Hide Screen Widget Async Failed - Widget Parameter Value Invalid / Null For : {GetName()} - Of Type : {GetType().GetData()}."));
+                    var widget = GetWidget(widgetType).GetData();
 
-                    if (callbackResults.Success())
-                    {
-                        var loadedWidget = widgets.Find(widget => widget.GetType().GetData() == widget.GetType().GetData());
-
-                        callbackResults.SetResult(Helpers.GetAppComponentValid(loadedWidget, "Widget", $"Hide Screen Widget Failed - Screen Widget Not Found In The Widgets List For : {GetName()} - Of Type : {GetType().GetData()}"));
-
-                        if (callbackResults.Success())
-                        {
-                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
-                            {
-                                callbackResults.SetResult(selectionSystemCallbackResults);
-
-                                if (callbackResults.Success())
-                                {
-                                    selectionSystemCallbackResults.GetData().OnClearInputSelection(loadedWidget.GetType().GetData(), selectionsClearedCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(selectionsClearedCallbackResults);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            Focus(focusedCallbackResults =>
-                                            {
-                                                callbackResults.SetResult(focusedCallbackResults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    loadedWidget.HideWidget(hideCallback =>
-                                                    {
-                                                        callbackResults.SetResult(hideCallback);
-                                                    });
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(selectionSystemCallbackResults.GetResultCode, selectionSystemCallbackResults.GetResult, this);
-                            });
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync(widgetType);
+                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
                 }
                 else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    Log(callbackResults.resultCode, callbackResults.result, this);
 
                 return callbackResults;
             }
@@ -28883,13 +28843,16 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            loadedWidget.HideWidget(hideCallback =>
+                                            Focus(focusedCallbackResults =>
                                             {
-                                                callbackResults.SetResult(hideCallback);
+                                                callbackResults.SetResult(focusedCallbackResults);
 
                                                 if (callbackResults.Success())
                                                 {
-
+                                                    widget.HideWidget(hideCallback =>
+                                                    {
+                                                        callbackResults.SetResult(hideCallback);
+                                                    });
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30209,6 +30172,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            private float transitionSpeed;
+
+            [Space(5)]
+            [SerializeField]
             private List<TransitionableUIMountComponent<UIVisibilityState>> transitionableUIMountList = new List<TransitionableUIMountComponent<UIVisibilityState>>();
 
             private TransitionableUIComponent transitionableUIComponent = new TransitionableUIComponent();
@@ -30300,6 +30267,21 @@ namespace Com.RedicalGames.Filar
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
+            }
+
+            protected Callback SetScreenWidgetState(ScreenWidgetState state)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(state, "Screen Widget State"));
+
+                if (callbackResults.Success())
+                {
+                    this.state = state;
+                    callbackResults.result = $"Screen Widget State Has Been Successfully Assigned To : {state}";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             protected CallbackData<ScreenWidgetState> GetScreenWidgetState()
@@ -30478,11 +30460,15 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            #endregion
+
+            #region Transition Events
+
             private void ScreenWidgetTransitionInProgressCallback()
             {
                 var callbackResults = new Callback(GetScreenWidgetType());
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
                     OnScreenWidgetTransitionInProgressEvent();
 
@@ -30584,12 +30570,6 @@ namespace Com.RedicalGames.Filar
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
-
-            #endregion
-
-            #region Transition Events
-
-            private void OnScreenWidgetHiddenEvented() => OnScreenWidgetShownEvent();
 
             #endregion
 
@@ -30708,6 +30688,38 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected CallbackData<float> GetTransitionSpeed()
+            {
+                var callbackResults = new CallbackData<float>(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    if (GetTransitionType().GetData() == TransitionType.Translate)
+                    {
+                        if (transitionSpeed > 0.0f)
+                        {
+                            callbackResults.result = $"Transition Speed Is Set To : {transitionSpeed}";
+                            callbackResults.data = transitionSpeed;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Get Transition Speed Failed - Transition Speed For : {GetName()} - Of Type : {GetType().GetData()} Is Set To Default : 0";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Transition Speed Failed - Transition Type For : {GetName()} - Of Type : {GetType().GetData()} Is Set To : {GetTransitionType().GetData()} - Please Set Transition Type To Translate.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode; 
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -31406,6 +31418,7 @@ namespace Com.RedicalGames.Filar
                                                                                                         {
                                                                                                             OnActionButtonInputs(actionButton);
                                                                                                             OnActionButtonEvent(GetType().GetData(), actionButton.dataPackets.GetAction().GetData(), actionButton.dataPackets);
+                                                                                                            ActionEvents.OnActionButtonPressedEvent(actionButton.dataPackets);
                                                                                                         });
                                                                                                     }
                                                                                                     else
@@ -31439,6 +31452,7 @@ namespace Com.RedicalGames.Filar
                                                                                         {
                                                                                             OnActionButtonInputs(actionButton);
                                                                                             OnActionButtonEvent(GetType().GetData(), actionButton.dataPackets.GetAction().GetData(), actionButton.dataPackets);
+                                                                                            ActionEvents.OnActionButtonPressedEvent(actionButton.dataPackets);
                                                                                         });
                                                                                     }
                                                                                     else
@@ -33384,17 +33398,23 @@ namespace Com.RedicalGames.Filar
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized.").GetData();
+                                                                                    callbackResults.SetResult(GetTransitionSpeed());
 
-                                                                                    var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
-                                                                                    var transitionSpeed = appDatabaseManagerInstance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value;
-
-                                                                                    var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, transitionSpeed);
-
-                                                                                    SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                    if (callbackResults.Success())
                                                                                     {
-                                                                                        callbackResults.SetResult(transitionableCallbackResults);
-                                                                                    });
+                                                                                        var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized.").GetData();
+
+                                                                                        var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
+
+                                                                                        var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, GetTransitionSpeed().GetData());
+
+                                                                                        SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                        {
+                                                                                            callbackResults.SetResult(transitionableCallbackResults);
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                 }
                                                                                 else
                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35346,6 +35366,8 @@ namespace Com.RedicalGames.Filar
 
             public void SetOnCheckboxValueChanged(CheckboxInputActionType actionType, bool value, CheckboxConfigDataPacket dataPackets) => OnCheckboxValueChanged(actionType, value, dataPackets);
 
+            #region Widget Show Functions
+
             public void ShowScreenWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
                 var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
@@ -35480,6 +35502,161 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            protected void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
+            {
+                var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTransitionType());
+
+                    if (callbackResults.Success())
+                    {
+                        SubscribeToEvents(callback: subscriptionCallbackResults =>
+                        {
+                            if (subscriptionCallbackResults.UnSuccessful())
+                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                        });
+
+                        //OnScreenWidget();
+
+                        //ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
+                        //{
+                        //    callbackResults.SetResult(showLayoutCallbackResults);
+                        //});
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public async Task<Callback> ShowScreenWidgetAsync(WidgetType widgetType)
+            {
+                var callbackResults = new Callback(WidgetReady());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetDefaultLayoutType());
+
+                    if (callbackResults.Success())
+                    {
+                        if (widgetType == GetType().GetData())
+                        {
+                            SubscribeToEvents(callback: subscriptionCallbackResults =>
+                            {
+                                if (subscriptionCallbackResults.UnSuccessful())
+                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                            });
+
+                            OnScreenWidget();
+
+                            var showSelectedLayoutAsyncCallbackResultsTask = await ShowSelectedLayoutAsync(GetDefaultLayoutType().GetData());
+                            callbackResults.SetResult(showSelectedLayoutAsyncCallbackResultsTask);
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed to Show Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Screen Widget Type Doesn't Match Requested Widget Type : {widgetType} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+
+            }
+
+            #endregion
+
+            #region Widget Hide Functions
+
+            public void HideWidget(Action<Callback> callback = null, bool onInitialization = false)
+            {
+                var callbackResults = new Callback(WidgetReady(ignoreScreenData: onInitialization));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetDefaultLayoutType());
+
+                    if (callbackResults.Success())
+                    {
+                        HideSelectedLayout(GetDefaultLayoutType().GetData(), hideLayoutCallbackResults =>
+                        {
+                            callbackResults.SetResult(hideLayoutCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(SubscribedToEvents());
+
+                                if (callbackResults.Success())
+                                {
+                                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(subscriptionCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Action Events Are Not Subcribed Yet On Initialization For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
+                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public async Task<Callback> HideScreenWidgetAsync(WidgetType widgetType)
+            {
+                var callbackResults = new Callback(WidgetReady());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetDefaultLayoutType());
+
+                    if (callbackResults.Success())
+                    {
+                        if (widgetType == GetType().GetData())
+                        {
+                            var hideSelectedLayoutAsyncCallbackResultsTask = await HideSelectedLayoutAsync(GetDefaultLayoutType().GetData());
+                            callbackResults.SetResult(hideSelectedLayoutAsyncCallbackResultsTask);
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Failed to Hide Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Screen Widget Type Doesn't Match Requested Widget Type : {widgetType} - Invalid Operation - Please Check Here.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+
+            }
+
+            #endregion
+
             #region Layouts
 
             protected void ShowSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
@@ -35511,8 +35688,8 @@ namespace Com.RedicalGames.Filar
                                             if (callbackResults.Success())
                                             {
                                                 OnScreenWidgetShownEvent();
-
                                                 OnEnabled();
+                                                GenericActionEvents<Widget>.OnWidgetShownEvent(this);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35583,6 +35760,107 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            protected async Task<Callback> ShowSelectedLayoutAsync(WidgetLayoutViewType layoutViewType)
+            {
+                var callbackResults = new Callback(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
+
+                    if (callbackResults.Success())
+                    {
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        callbackResults.SetResult(SetScreenWidgetState(ScreenWidgetState.Shown));
+
+                        if (callbackResults.Success())
+                        {
+                            switch (GetTransitionType().GetData())
+                            {
+                                case TransitionType.Default:
+
+                                    layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                    {
+                                        callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            OnScreenWidgetShownEvent();
+                                            OnEnabled();
+                                            GenericActionEvents<Widget>.OnWidgetShownEvent(this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+
+                                case TransitionType.Translate:
+
+                                    callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
+
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                OnEnabled();
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
+                                                await Task.Yield();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             protected void HideSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetTransitionType());
@@ -35605,14 +35883,16 @@ namespace Com.RedicalGames.Filar
                                 {
                                     case TransitionType.Default:
 
-                                        layoutView.HideLayout(layoutShouCallbackRessults =>
+                                        layoutView.HideLayout(layoutHideCallbackRessults =>
                                         {
-                                            callbackResults.SetResult(layoutShouCallbackRessults);
+                                            callbackResults.SetResult(layoutHideCallbackRessults);
 
                                             if (callbackResults.Success())
                                             {
                                                 OnScreenWidgetHiddenEvent();
                                                 OnDisabled();
+
+                                                GenericActionEvents<Widget>.OnWidgetHiddenEvent(this);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35673,30 +35953,98 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            #endregion
-
-            protected void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
+            protected async Task<Callback> HideSelectedLayoutAsync(WidgetLayoutViewType layoutViewType)
             {
-                var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
+                var callbackResults = new Callback(GetTransitionType());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetTransitionType());
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
 
                     if (callbackResults.Success())
                     {
-                        SubscribeToEvents(callback: subscriptionCallbackResults =>
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        callbackResults.SetResult(SetScreenWidgetState(ScreenWidgetState.Hidden));
+
+                        if (callbackResults.Success())
                         {
-                            if (subscriptionCallbackResults.UnSuccessful())
-                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                        });
+                            switch (GetTransitionType().GetData())
+                            {
+                                case TransitionType.Default:
 
-                        //OnScreenWidget();
+                                    layoutView.HideLayout(layoutHideCallbackRessults =>
+                                    {
+                                        callbackResults.SetResult(layoutHideCallbackRessults);
 
-                        //ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
-                        //{
-                        //    callbackResults.SetResult(showLayoutCallbackResults);
-                        //});
+                                        if (callbackResults.Success())
+                                        {
+                                            OnScreenWidgetHiddenEvent();
+                                            OnDisabled();
+
+                                            GenericActionEvents<Widget>.OnWidgetHiddenEvent(this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+
+                                case TransitionType.Translate:
+
+                                    callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
+
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                OnDisabled();
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
+                                                await Task.Yield();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35704,8 +36052,10 @@ namespace Com.RedicalGames.Filar
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                callback?.Invoke(callbackResults);
+                return callbackResults;
             }
+
+            #endregion
 
             #region Async Functions
 
@@ -35747,117 +36097,6 @@ namespace Com.RedicalGames.Filar
             protected abstract void OnHideScreenWidget(Action<Callback> callback = null);
 
             #endregion
-
-            public void HideWidget(Action<Callback> callback = null, bool onInitialization = false)
-            {
-                var callbackResults = new Callback(WidgetReady(ignoreScreenData: onInitialization));
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetDefaultLayoutType());
-
-                    if (callbackResults.Success())
-                    {
-                        HideSelectedLayout(GetDefaultLayoutType().GetData(), hideLayoutCallbackResults =>
-                        {
-                            callbackResults.SetResult(hideLayoutCallbackResults);
-
-                            if(callbackResults.Success())
-                            {
-                                callbackResults.SetResult(SubscribedToEvents());
-
-                                if (callbackResults.Success())
-                                {
-                                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(subscriptionCallbackResults);
-
-                                        if (callbackResults.UnSuccessful())
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                {
-                                    callbackResults.result = $"Action Events Are Not Subcribed Yet On Initialization For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
-                                }
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                callback?.Invoke(callbackResults);
-            }
-
-            public async Task<Callback> HideAsync(bool ignoreScreenData = false)
-            {
-                Callback callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetTransitionType());
-
-                    if (callbackResults.Success())
-                    {
-                        switch (GetTransitionType().GetData())
-                        {
-                            case TransitionType.Default:
-
-                                OnHideScreenWidget();
-                                OnDisabled();
-
-                                callbackResults.result = "Widget Hidden.";
-                                callbackResults.resultCode = Helpers.SuccessCode;
-
-                                break;
-
-                            case TransitionType.Translate:
-
-                                onWidgetTransition = true;
-                                showWidget = false;
-
-                                if (onWidgetTransition == false)
-                                {
-                                    callbackResults.result = "Widget Hidden.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
-                                }
-                                else
-                                {
-                                    callbackResults.result = "Widget Not Hidden.";
-                                    callbackResults.resultCode = Helpers.WarningCode;
-                                }
-
-                                while (onWidgetTransition)
-                                    await Task.Yield();
-
-                                widgetRect.anchoredPosition = widgetContainer.hiddenScreenPoint.anchoredPosition;
-
-                                break;
-                        }
-
-                        if (callbackResults.Success())
-                        {
-                            UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
-                            {
-                                callbackResults.SetResult(subscriptionCallbackResults);
-
-                                if (callbackResults.UnSuccessful())
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            });
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    }
-                }
-
-                return callbackResults;
-            }
 
             void OnWidgetTransition()
             {
@@ -46363,7 +46602,8 @@ namespace Com.RedicalGames.Filar
             OnWidgetTransitionInProgressEvent,
             OnSelectableWidgetShownEvent,
             OnSelectableWidgetHiddenEvent,
-            OnSelectableWidgetTransitionInProgressEvent
+            OnSelectableWidgetTransitionInProgressEvent,
+            OnActionButtonPressedEvent,
         }
 
         public enum TransitionableEventType
@@ -47324,6 +47564,8 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<FocusedSelectionData> _OnWidgetsSelectionDataEvent;
             public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
+            public static event ParamVoid<ButtonConfigDataPacket> _OnActionButtonPressedEvent;
+
             public static event TransformNoParam _OnGetContentPreviewContainer;
 
             #endregion
@@ -47399,6 +47641,8 @@ namespace Com.RedicalGames.Filar
             public static void OnAllWidgetsSelectionEvent(bool currentPage = false) => _OnAllWidgetsSelectionEvent?.Invoke(currentPage);
             public static void OnWidgetSelectionEvent(FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo) => _OnWidgetSelectionDataEvent?.Invoke(selectionInfo);
             public static void OnWidgetsSelectionEvent(FocusedSelectionData selectionData) => _OnWidgetsSelectionDataEvent?.Invoke(selectionData);
+
+            public static void OnActionButtonPressedEvent(ButtonConfigDataPacket buttonConfig) => _OnActionButtonPressedEvent?.Invoke(buttonConfig);
 
             public static Transform OnGetContentPreviewContainer()
             {
@@ -47487,6 +47731,15 @@ namespace Com.RedicalGames.Filar
                                 GenericActionEvents<Screen>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
                             else
                                 GenericActionEvents<Screen>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnActionButtonPressedEvent:
+
+                            if (subscribe)
+                                _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
+                            else
+                                _OnActionButtonPressedEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 

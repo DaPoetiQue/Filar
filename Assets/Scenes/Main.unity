@@ -1170,6 +1170,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -1496,6 +1497,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -1639,6 +1641,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -2244,6 +2247,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -2471,6 +2475,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -2781,6 +2786,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -3407,7 +3413,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 3500
+  far clip plane: 6000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -4037,6 +4043,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -7379,6 +7386,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -7606,6 +7614,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -8162,8 +8171,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 786316668}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: -30, z: 50}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -800, z: 50}
+  m_LocalScale: {x: 25, y: 25, z: 25}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 175318105}
@@ -8574,6 +8583,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -9382,6 +9392,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -9979,6 +9990,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -10504,6 +10516,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -11026,6 +11039,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -11253,6 +11267,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -12242,6 +12257,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -13227,6 +13243,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -13717,6 +13734,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -14090,6 +14108,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -14344,6 +14363,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -14730,7 +14750,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542325801}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.35, z: 125}
+  m_LocalPosition: {x: 0, y: 2.35, z: 4000}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15010,6 +15030,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -15329,6 +15350,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -15559,6 +15581,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -16113,6 +16136,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -16340,6 +16364,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -16567,6 +16592,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
@@ -16796,6 +16822,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -17296,6 +17323,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
@@ -19056,6 +19084,7 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []

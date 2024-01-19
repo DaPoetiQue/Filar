@@ -63,13 +63,16 @@ MonoBehaviour:
   uIPlacementType: 0
   orderInLayer: 0
   transitionType: 2
+  transitionSpeed: 4
   transitionableUIMountList:
   - name: Widget Open Target Mount
     mount: {fileID: 846060006035808383}
+    transitionSpeed: 2
     eventTriggerDistance: 2
     mountType: 1
   - name: Widget Closed Target Mount
     mount: {fileID: 2297841463217649443}
+    transitionSpeed: 2
     eventTriggerDistance: 2
     mountType: 2
   initialVisibilityState: 1
@@ -1273,19 +1276,19 @@ MonoBehaviour:
       states:
       - name: Normal
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
         state: 0
       - name: Enabled
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
         state: 1
       - name: Disabled
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.4528302, g: 0.035884622, b: 0.035884622, a: 1}
         state: 2
       - name: Selected
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
         state: 3
       inputState: 0
     selectable: 1
@@ -2907,19 +2910,19 @@ MonoBehaviour:
       states:
       - name: Normal
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
         state: 0
       - name: Enabled
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
         state: 1
       - name: Disabled
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0, g: 0, b: 0, a: 1}
         state: 2
       - name: Selected
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
         state: 3
       inputState: 0
     selectable: 1

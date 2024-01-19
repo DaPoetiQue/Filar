@@ -278,8 +278,77 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
 
+            if (callbackResults.Success())
+            {
+                var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShownEvent, true);
+                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHiddenEvent, true);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
+
+        #region Screen Events
+
+        private async void OnScreenShownEvent(Screen screen)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                await screenUIManager.RefreshAsync();
+
+                switch (screen.GetType().GetData())
+                {
+                    case AppData.ScreenType.LandingPageScreen:
+
+                        var showWidgetAsyncCallbackResults = await screen.ShowWidgetAsync(AppData.WidgetType.PostsWidget);
+                        callbackResults.SetResult(showWidgetAsyncCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
+
+                            if (callbackResults.Success())
+                            {
+                                var postManager = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance").GetData();
+
+                                postManager.RefreshPosts(2000, postRefreshedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(postRefreshedCallbackResults);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnScreenHiddenEvent(Screen screen)
+        {
+            switch (screen.GetType().GetData())
+            {
+                case AppData.ScreenType.LandingPageScreen:
+
+                    LogInfo(" _________Log_Cat:::::::::: On Screen Hidden", this);
+
+                    break;
+            }
+        }
+
+        #endregion
 
         public async Task<AppData.Callback> InitializeDatabase()
         {

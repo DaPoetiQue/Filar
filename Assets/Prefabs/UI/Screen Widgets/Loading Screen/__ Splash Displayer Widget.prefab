@@ -1886,22 +1886,27 @@ MonoBehaviour:
   transitionableUIMounts:
   - name: Transitionable Mount Point_A
     mount: {fileID: 5076367614078071572}
+    transitionSpeed: 0.05
     eventTriggerDistance: 1
     mountType: 1
   - name: Transitionable Mount Point_B
     mount: {fileID: 8995848151324278909}
+    transitionSpeed: 0.05
     eventTriggerDistance: 1
     mountType: 2
   - name: Transitionable Mount Point_C
     mount: {fileID: 8531172401905646905}
+    transitionSpeed: 0.05
     eventTriggerDistance: 1
     mountType: 3
   - name: Transitionable Mount Point_D
     mount: {fileID: 2461676790618313308}
+    transitionSpeed: 0.05
     eventTriggerDistance: 1
     mountType: 4
   - name: Transitionable Mount Point_E
     mount: {fileID: 931211683796750782}
+    transitionSpeed: 0.05
     eventTriggerDistance: 1
     mountType: 5
 --- !u!114 &5563881068430270284

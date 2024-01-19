@@ -55,63 +55,43 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
+        protected override void OnActionButtonEvent(AppData.WidgetType screenType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenUIManagerCallbackResults =>
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Initialized Yet."));
+
+            if (callbackResults.Success())
             {
-                if (screenUIManagerCallbackResults.Success())
+                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
                 {
-                    var screenUIManager = screenUIManagerCallbackResults.data;
+                    var profileManager = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
                     switch (actionType)
                     {
                         case AppData.InputActionButtonType.OpenProfileButton:
 
-                            AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, profileManagerCallbackResults =>
+                            callbackResults.SetResult(profileManager.SignedIn());
+
+                            if (callbackResults.Success())
                             {
-                                if (profileManagerCallbackResults.Success())
-                                {
-                                    var profileManager = profileManagerCallbackResults.data;
+                                LogInfo(" <==========================> Open Profile", this);
+                            }
+                            else
+                            {
 
-                                    if (profileManager.SignedIn)
-                                    {
-                                        LogInfo(" <==========================> Open Profile", this);
-                                    }
-                                    else
-                                    {
-                                        screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
-                                        {
-                                            if (currentScreenCallbackResults.Success())
-                                            {
-                                                //var currentScreen = currentScreenCallbackResults.data;
-
-                                                //currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
-
-                                                //currentScreen.GetWidget(AppData.WidgetType.PostsWidget).GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
-
-                                                //await currentScreen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
-
-
-                                                //AppData.SceneConfigDataPacket dataPackets = new AppData.SceneConfigDataPacket();
-
-                                                //dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
-                                                //dataPackets.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                                //dataPackets.SetScreenBlurState(true);
-                                                //dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Background);
-
-                                                //currentScreen.ShowWidget(dataPackets);
-                                            }
-                                        });
-                                    }
-                                }
-
-                            }, "Profile Manager Instance Is Not Yet Initialized.");
+                            }
 
                             break;
                     }
                 }
-
-            }, "Screen UI Manager Instance Is Not Yet Initialized.");
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)
@@ -178,7 +158,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+          
         }
 
         #endregion

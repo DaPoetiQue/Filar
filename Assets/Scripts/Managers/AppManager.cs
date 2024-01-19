@@ -148,56 +148,6 @@ namespace Com.RedicalGames.Filar
                                                                                             await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
                                                                                             {
                                                                                                 callbackResults.SetResult(initialLoadInfoCallbackResults);
-
-                                                                                                if (callbackResults.Success())
-                                                                                                {
-                                                                                                    screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
-                                                                                                    {
-                                                                                                        callbackResults.SetResult(currentScreenCallbackResults);
-
-                                                                                                        if (callbackResults.Success())
-                                                                                                        {
-                                                                                                            var screen = currentScreenCallbackResults.GetData();
-
-                                                                                                            if (screen.GetType().GetData() == AppData.ScreenType.LandingPageScreen)
-                                                                                                            {
-                                                                                                                var widget = screen.GetWidget(AppData.WidgetType.PostsWidget);
-
-                                                                                                                if (widget != null)
-                                                                                                                {
-                                                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
-
-                                                                                                                    if (callbackResults.Success())
-                                                                                                                    {
-                                                                                                                        var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized.").GetData();
-
-                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
-                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
-
-                                                                                                                        await screenUIManager.RefreshAsync();
-
-                                                                                                                        screen.ShowWidget(widget.GetData());
-
-                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
-                                                                                                                        widget.GetData().SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
-                                                                                                                    }
-                                                                                                                    else
-                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                }
-                                                                                                                else
-                                                                                                                {
-                                                                                                                    callbackResults.result = $"Widget Type : {AppData.WidgetType.PostsWidget} For Screen : {screen.GetType().GetData()} Not Found.";
-                                                                                                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                                                                                }
-                                                                                                            }
-                                                                                                            else
-                                                                                                            {
-                                                                                                                callbackResults.result = $"Screen : {screen.GetType().GetData()} Does Not Match Expected Screen Type : {AppData.ScreenType.LandingPageScreen}";
-                                                                                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                                                                                            }
-                                                                                                        }
-                                                                                                    });
-                                                                                                }
                                                                                             });
                                                                                         }
                                                                                     }

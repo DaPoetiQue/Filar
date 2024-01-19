@@ -152,7 +152,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputActionButtonType.Cancel:
 
-                                    await screen.HideScreenWidgetAsync(this);
+                                    screen.HideScreenWidget(this);
 
                                     break;
 
@@ -229,7 +229,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+           
         }
 
         #endregion

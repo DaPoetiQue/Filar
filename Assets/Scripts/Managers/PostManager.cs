@@ -22,17 +22,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
-
-            if(callbackResults.Success())
-            {
-                var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
-
-                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetOpenEvent, AppData.EventType.OnWidgetShownEvent, true);
-                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetClosedEvent, AppData.EventType.OnWidgetHiddenEvent, true);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            
         }
 
         #region Data Setters
@@ -304,94 +294,51 @@ namespace Com.RedicalGames.Filar
 
         #region Events
 
-        #region Widget Events
+        #region Post Functions
 
-        private void OnWidgetOpenEvent(AppData.Widget widget)
+        public void RefreshPosts(int refrenshDuration = 2000, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
 
-            #region Post Widget
-
-            callbackResults.SetResult(widget.GetType());
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                screenUIManagerInstance.GetCurrentScreen(currentScreenCallbackResults =>
                 {
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+                    callbackResults.SetResult(currentScreenCallbackResults);
 
-                    if (callbackResults.Success())
+                    var screen = currentScreenCallbackResults.GetData();
+
+                    screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
                     {
-                        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+                        callbackResults.SetResult(widgetShownCallbackResults);
 
-                        screenUIManagerInstance.GetCurrentScreen(async currentScreenCallbackResults => 
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(currentScreenCallbackResults);
+                            await Task.Delay(refrenshDuration);
 
-                            var screen = currentScreenCallbackResults.GetData();
-
-                            screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
+                            SelectPost(postSelectedCallbacKResults =>
                             {
-                                callbackResults.SetResult(widgetShownCallbackResults);
+                                callbackResults.SetResult(postSelectedCallbacKResults);
 
-                                if(callbackResults.Success())
-                                {
-                                    await Task.Delay(2000);
-
-                                    SelectPost(postSelectedCallbacKResults =>
-                                    {
-                                        callbackResults.SetResult(postSelectedCallbacKResults);
-
-                                        if (callbackResults.Success())
-                                            screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
+                                if (callbackResults.Success())
+                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
-                        });
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                {
-                    callbackResults.result = $"Shown Widget Is Not Post - Widget Name : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Is Shown";
-                    callbackResults.resultCode = AppData.Helpers.WarningCode;
-                }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            #endregion
-        }
-
-        private void OnWidgetClosedEvent(AppData.Widget widget)
-        {
-            var callbackResults = new AppData.Callback();
-
-            #region Post Widget
-
-            callbackResults.SetResult(widget.GetType());
-
-            if (callbackResults.Success())
-            {
-                if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
-                {
-                    LogSuccess($" _________________Log_Cat::: Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Is Successfully Closed", this);
-                }
-                else
-                {
-                    callbackResults.result = $"Shown Widget Is Not Post - Widget Name : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Is Closed";
-                    callbackResults.resultCode = AppData.Helpers.WarningCode;
-                }
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            #endregion
+            callback?.Invoke(callbackResults);
         }
 
         #endregion

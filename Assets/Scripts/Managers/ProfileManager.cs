@@ -16,13 +16,14 @@ namespace Com.RedicalGames.Filar
         [Space(5)]
         public DependencyStatus authDependencyStatus = DependencyStatus.UnavailableOther;
 
-        public bool SignedIn { get; private set; }
         public bool AuthenticationInitialized { get; private set; }
 
         #region Firebase
 
         FirebaseAuth authentication;
         public bool TermsAndConditionsAccepted { get; private set; }
+
+        private AppData.SignInState signInState = AppData.SignInState.None;
 
         #endregion
 
@@ -71,6 +72,28 @@ namespace Com.RedicalGames.Filar
             }, "Scene Assets Manager Instance In Not Yet Initialized.");
 
             callback.Invoke(callbackResults);
+        }
+
+        private void SetSignInState(AppData.SignInState signInState) => this.signInState = signInState;
+
+        public AppData.CallbackData<AppData.SignInState> GetSignInState()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SignInState>();
+
+            if(signInState != AppData.SignInState.None)
+            {
+                callbackResults.result = $"Get Sign In State Success - Sign In State Is Set To : {signInState}";
+                callbackResults.data = signInState;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = $"Get Sign In State Failed - Sign In State Is Set To Default : {signInState}";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
         }
 
         public async Task<AppData.Callback> SynchronizingProfile()
@@ -147,6 +170,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (signedInTaskCompletion.Result.User.IsValid())
                             {
+                                SetSignInState(AppData.SignInState.Guest);
+
                                 callbackResults.result = "App Signed In Successgully.";
                                 callbackResults.data = default;
                                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -271,6 +296,64 @@ namespace Com.RedicalGames.Filar
                 LogInfo($"User : {authentication.CurrentUser.DisplayName} Has Signed Out.");
                 authentication.SignOut();
             }
+        }
+
+        public  AppData.Callback SignedIn()
+        {
+            var callbackResults = new AppData.Callback(GetSignInState());
+
+            if (callbackResults.Success())
+            {
+                if (GetSignInState().GetData() == AppData.SignInState.SignIn)
+                {
+
+                }
+                else
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                        screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
+                        {
+                            callbackResults.SetResult(currentScreenCallbackResults);
+
+                            if (currentScreenCallbackResults.Success())
+                            {
+                                var screen = currentScreenCallbackResults.GetData();
+
+                                var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+
+                                callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
+
+                                if(callbackResults.Success())
+                                {
+                                    var loginScreenConfig = new AppData.SceneConfigDataPacket();
+
+                                    loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                    loginScreenConfig.blurScreen = true;
+
+                                    screen.ShowWidget(loginScreenConfig);
+
+                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                }
+                                else
+                                    Log(currentScreenCallbackResults.GetResultCode, currentScreenCallbackResults.GetResult, this);
+                            }
+                            else
+                                Log(currentScreenCallbackResults.GetResultCode, currentScreenCallbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         public void AcceptTermsAndConditions() => TermsAndConditionsAccepted = true;
