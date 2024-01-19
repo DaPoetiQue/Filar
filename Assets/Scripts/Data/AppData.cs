@@ -9386,6 +9386,7 @@ namespace Com.RedicalGames.Filar
             public void SetCreationExpireyDateTime(DateTime dateTime) => creationExpireyDateTime = dateTime.Ticks;
 
             public void SetPostThumbnail(Texture2D postThumbnail) => this.postThumbnail = postThumbnail;
+            public void SetPostThumbnail(Sprite postThumbnail) => this.postThumbnail = Helpers.GetTexture2D(postThumbnail);
 
             public string GetTitle() => title;
             public string GetCaption() => caption;
@@ -42696,6 +42697,8 @@ namespace Com.RedicalGames.Filar
                 Rect newRect = new Rect(Vector2.zero, new Vector2(texture.width, texture.height));
                 return Sprite.Create(texture, newRect, Vector2.zero);
             }
+
+            public static Texture2D GetTexture2D(Sprite sprite) => sprite?.texture;
 
             public static async Task<Sprite> GetSpriteAsync(Texture2D texture)
             {
