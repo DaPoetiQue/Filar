@@ -28024,18 +28024,11 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-
                                                                 AddDynamicContainer(containerAddedCallbackResults =>
                                                                 {
                                                                     callbackResults.SetResult(containerAddedCallbackResults);
 
                                                                 }, Helpers.GetArray(widgetComponent.GetDynamicContainerList().GetData()));
-
-                                                                //assetBundlesLibrary.AddLoadedDynamicContainersToLibrary(containerAddedCallbackResults =>
-                                                                //{
-                                                                //    callbackResults.SetResult(containerAddedCallbackResults);
-
-                                                                //}, Helpers.GetArray(widgetComponent.GetDynamicContainerList().GetData()));
                                                             }
                                                             else
                                                             {
