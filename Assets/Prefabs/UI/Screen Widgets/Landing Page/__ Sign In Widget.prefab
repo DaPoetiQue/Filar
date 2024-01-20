@@ -14387,6 +14387,7 @@ MonoBehaviour:
   uIPlacementContainerType: 14
   uIPlacementType: 2
   orderInLayer: 0
+  instantiationOrderID: 2
   transitionType: 1
   transitionSpeed: 0
   transitionableUIMountList: []

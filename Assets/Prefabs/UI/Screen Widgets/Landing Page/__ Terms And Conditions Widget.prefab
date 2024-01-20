@@ -9237,7 +9237,9 @@ MonoBehaviour:
   uIPlacementContainerType: 14
   uIPlacementType: 2
   orderInLayer: 1
+  instantiationOrderID: 4
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []

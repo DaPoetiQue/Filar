@@ -3906,7 +3906,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (IsServerAppInfoDatabaseInitialized)
                                     {
-                                        assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(refreshedScreen.GetScreenType().GetData(), AppData.ContentContainerType.PostWidgetContainer, AppData.ContainerViewSpaceType.Screen, async containerCallbackResults =>
+                                        assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(refreshedScreen.GetScreenType().GetData(), AppData.ContentContainerType.PostContainer, AppData.ContainerViewSpaceType.Screen, async containerCallbackResults =>
                                         {
                                             callbackResults.SetResult(containerCallbackResults);
 

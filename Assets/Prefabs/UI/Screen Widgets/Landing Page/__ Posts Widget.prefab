@@ -59,9 +59,10 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 2
   type: 35
-  uIPlacementContainerType: 14
-  uIPlacementType: 0
+  uIPlacementContainerType: 18
+  uIPlacementType: 1
   orderInLayer: 0
+  instantiationOrderID: 1
   transitionType: 2
   transitionSpeed: 4
   transitionableUIMountList:
@@ -1145,7 +1146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6256656634593061699
 RectTransform:
   m_ObjectHideFlags: 0
