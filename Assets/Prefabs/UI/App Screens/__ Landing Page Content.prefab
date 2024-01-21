@@ -316,7 +316,7 @@ MonoBehaviour:
           - m_Target: {fileID: 2543504747470595320}
             m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
               Assembly-CSharp
-            m_MethodName: OnWidgetShownEvent
+            m_MethodName: OnWidgetFocused
             m_Mode: 2
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
@@ -335,7 +335,7 @@ MonoBehaviour:
           - m_Target: {fileID: 2543504747470595320}
             m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
               Assembly-CSharp
-            m_MethodName: OnWidgetHiddenEvent
+            m_MethodName: OnWidgetUnfocused
             m_Mode: 2
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
@@ -346,7 +346,6 @@ MonoBehaviour:
               m_StringArgument: 
               m_BoolArgument: 0
             m_CallState: 2
-  eventActions: []
   screenTitle: Filar
   screenView:
     name: 

@@ -21838,8 +21838,6 @@ namespace Com.RedicalGames.Filar
                             callbackResults.resultCode = Helpers.WarningCode;
                         }
 
-                        LogInfo($"______Log_Cat::::: In Transition Distance : {translateDistance}", this);
-
                         break;
 
                     case UITransitionType.Scale:
@@ -28512,16 +28510,16 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Widget Events
+            #region Widget Focus Events
 
-            public void OnWidgetShownEvent(Widget widget)
+            public void OnWidgetFocused(Widget widget)
             {
-                LogInfo($" ______****Log_Cat::: Focusing To Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()}", this);
+                LogInfo($" ________*****Log_Cat: On Widget Focused : {widget.GetName()}");
             }
 
-            public void OnWidgetHiddenEvent(Widget widget)
+            public void OnWidgetUnfocused(Widget widget)
             {
-                LogInfo($" ______****Log_Cat::: Removing Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()} From Focus.", this);
+                LogInfo($" ________*****Log_Cat: On Widget Un-Focused : {widget.GetName()}");
             }
 
             #endregion
@@ -28683,6 +28681,8 @@ namespace Com.RedicalGames.Filar
             {
                 return widgetsContainer;
             }
+
+            #region Show Screen Widget Functions
 
             public void ShowWidget(WidgetType widgetType, bool blurScreen = false, string title = null, Action<Callback> callback = null)
             {
@@ -28862,6 +28862,10 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            #endregion
+
+            #region Hide Screen Widget Functions
+
             public void HideScreenWidget(WidgetType widgetType, bool canTransition = true, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetWidgets());
@@ -28996,6 +29000,80 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public void HideScreenWidget(WidgetType widgetType, SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback(GetWidgets());
+
+                if (callbackResults.Success())
+                {
+                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
+
+                    Helpers.GetAppComponentValid(widget, "Widget", componentValidCallbackResults =>
+                    {
+                        callbackResults.SetResult(componentValidCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                            {
+                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            Focus(focusedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(focusedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    widget.HideWidget();
+
+                                                    if (widgetType == WidgetType.ConfirmationPopUpWidget)
+                                                    {
+                                                        if (SelectableManager.Instance)
+                                                        {
+                                                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
+                                                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
+                                                            else
+                                                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                                        }
+                                                        else
+                                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
+                                                    }
+
+                                                    if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
+                                                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                                                            ActionEvents.OnResetCameraToDefaultPoseEvent();
+                                                }
+                                                else
+                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            });
+                        }
+
+                    }, $"Widget Of Type : {widgetType} not Found For Screen : {GetName()} Of Type : {GetScreenType()}.", $"Widget : {widget.GetName()} Of Type : {widget.GetType()} Has been Successfully Found For Screen : {GetName()} Of Type : {GetScreenType()}.");
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Widget Getter Functions
+
             public CallbackData<Widget> GetWidget(WidgetType widgetType)
             {
                 var callbackResults = new CallbackData<Widget>(GetWidgetOfType(widgetType));
@@ -29065,76 +29143,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void HideScreenWidget(WidgetType widgetType, SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback(GetWidgets());
-
-                if (callbackResults.Success())
-                 {
-                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
-
-                    Helpers.GetAppComponentValid(widget, "Widget", componentValidCallbackResults => 
-                    {
-                        callbackResults.SetResult(componentValidCallbackResults);
-                    
-                        if(callbackResults.Success())
-                        {
-                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
-                            {
-                                callbackResults.SetResult(selectionSystemCallbackResults);
-
-                                if (callbackResults.Success())
-                                {
-                                    selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(selectionsClearedCallbackResults);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            Focus(focusedCallbackResults => 
-                                            {
-                                                callbackResults.SetResult(focusedCallbackResults);
-
-                                                if(callbackResults.Success())
-                                                {
-                                                    widget.HideWidget();
-
-                                                    if (widgetType == WidgetType.ConfirmationPopUpWidget)
-                                                    {
-                                                        if (SelectableManager.Instance)
-                                                        {
-                                                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
-                                                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
-                                                            else
-                                                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
-                                                        }
-                                                        else
-                                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
-                                                    }
-
-                                                    if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
-                                                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
-                                                            ActionEvents.OnResetCameraToDefaultPoseEvent();
-                                                }
-                                                else
-                                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.resultCode, callbackResults.result, this);
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.resultCode, callbackResults.result, this);
-                            });
-                        }
-                    
-                    }, $"Widget Of Type : {widgetType} not Found For Screen : {GetName()} Of Type : {GetScreenType()}.", $"Widget : {widget.GetName()} Of Type : {widget.GetType()} Has been Successfully Found For Screen : {GetName()} Of Type : {GetScreenType()}.");
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
             public Widget GeWidget(WidgetType type)
             {
                 Widget widget = null;
@@ -29155,6 +29163,10 @@ namespace Com.RedicalGames.Filar
 
                 return widget;
             }
+
+            #endregion
+
+            #region Screen Focus Functions
 
             public void Focus(Action<Callback> callback = null)
             {
@@ -29190,6 +29202,10 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
 
             }
+
+            #endregion
+
+            #region Screen Blur Functions
 
             public void Blur(SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
             {
@@ -29247,6 +29263,8 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
+
+            #endregion
 
             public CallbackData<ScreenBlurObject> GetScreenBlur()
             {
@@ -31243,7 +31261,7 @@ namespace Com.RedicalGames.Filar
 
                     if (parameterEventActionsSubscriptionsCallbackResults.Success())
                     {
-                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredParameterEventActions().GetData();
 
                         for (int i = 0; i < subscibedParameterEventActions.Count; i++)
                         {
@@ -31309,7 +31327,7 @@ namespace Com.RedicalGames.Filar
 
                     if (parameterEventActionsSubscriptionsCallbackResults.Success())
                     {
-                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredParameterEventActions().GetData();
 
                         for (int i = 0; i < subscibedParameterEventActions.Count; i++)
                         {
@@ -47030,54 +47048,11 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            public void TriggeredEventMethod<T>(T value)
-            {
-                OnTriggeredEventMethod((object)value, callbackResults => 
-                {
-                    if (callbackResults.UnSuccessful())
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                });
-            }
-
-
-            public void TriggeredEventMethod<T, U>(T valueA, U valueB)
-            {
-                OnTriggeredEventMethod((object)valueA, (object)valueB, callbackResults => 
-                {
-                    if (callbackResults.UnSuccessful())
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-
-
-            public void TriggeredEventMethod<T, U, V>(T valueA, U valueB, V valueC)
-            {
-                OnTriggeredEventMethod((object)valueA, (object)valueB, (object)valueC, callbackResults => 
-                {
-                    if (callbackResults.UnSuccessful())
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-
-            public void TriggeredEventMethod<T, U, V, W>(T valueA, U valueB, V valueC, W valueD)
-            {
-                OnTriggeredEventMethod((object)valueA, (object)valueB, (object)valueC, (object)valueD, callbackResults =>
-                {
-                    if (callbackResults.UnSuccessful())
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-            }
-
             #endregion
 
             #region Event Abstract Methods
 
             protected abstract void OnTriggeredEventMethod(Action<Callback> callback = null);
-            protected abstract void OnTriggeredEventMethod(object value, Action<Callback> callback = null);
-            protected abstract void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null);
-            protected abstract void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null);
-            protected abstract void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null);
 
             #endregion
 
@@ -47149,7 +47124,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-
             #region Data Getters
 
             public CallbackData<UnityEvent> GetEventMethod()
@@ -47201,33 +47175,13 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
             #endregion
 
             #endregion
         }
 
         [Serializable]
-        public class EventAction<T> : EventActionBase
+        public class EventAction<T> : EventActionBase where T : class
         {
             #region Components
 
@@ -47273,6 +47227,26 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public void TriggeredEventMethod(T value)
+            {
+                Callback callbackResults = new Callback(GetEventMethod());
+
+                if (callbackResults.Success())
+                {
+                    var eventMethodData = GetEventMethod().GetData();
+                    eventMethodData.Invoke(value);
+
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
+            {
+                throw new NotImplementedException();
+            }
+
             #region Data Setters
 
             public void SetEventMethod(UnityEvent<T> eventMethod)
@@ -47286,7 +47260,6 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
-
 
             #region Data Getters
 
@@ -47317,46 +47290,6 @@ namespace Com.RedicalGames.Filar
                 }
 
                 return callbackResults;
-            }
-
-            #endregion
-
-
-            #region Event Abstract Methods
-
-            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback(GetEventMethod());
-
-                if (callbackResults.Success())
-                {
-                    var eventMethodData = GetEventMethod().GetData();
-                    eventMethodData.Invoke((T)value);
-
-                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
             }
 
             #endregion
@@ -47459,21 +47392,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-
-
             #region Event Abstract Methods
 
-            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
+            public void TriggeredEventMethod(object valueA, object valueB)
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -47484,18 +47405,13 @@ namespace Com.RedicalGames.Filar
 
                     callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
                 }
-
-                callback?.Invoke(callbackResults);
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
+                throw new NotImplementedException();
             }
 
             #endregion
@@ -47601,22 +47517,7 @@ namespace Com.RedicalGames.Filar
 
             #region Event Abstract Methods
 
-            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
+            public void TriggeredEventMethod(object valueA, object valueB, object valueC)
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -47627,13 +47528,13 @@ namespace Com.RedicalGames.Filar
 
                     callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
                 }
-
-                callback?.Invoke(callbackResults);
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
             {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
+                throw new NotImplementedException();
             }
 
             #endregion
@@ -47739,27 +47640,7 @@ namespace Com.RedicalGames.Filar
 
             #region Event Abstract Methods
 
-            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object value, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, Action<Callback> callback = null)
-            {
-                throw new NotImplementedException($"On Trigger Event Action Failed - Event Method Type For Event Action Data : {GetName()} - Not Applicable For Event Type : {GetEventType()}");
-            }
-
-            protected override void OnTriggeredEventMethod(object valueA, object valueB, object valueC, object valueD, Action<Callback> callback = null)
+            public void TriggeredEventMethod(object valueA, object valueB, object valueC, object valueD)
             {
                 Callback callbackResults = new Callback(GetEventMethod());
 
@@ -47770,8 +47651,13 @@ namespace Com.RedicalGames.Filar
 
                     callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
 
-                callback?.Invoke(callbackResults);
+            protected override void OnTriggeredEventMethod(Action<Callback> callback = null)
+            {
+                throw new NotImplementedException();
             }
 
             #endregion
@@ -47784,18 +47670,21 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            [Space(5)]
+            [Header("Default Event Actions")]
+            [Tooltip("These Are General Events With No Parameters")]
+            [Space(10)]
             [SerializeField]
             private List<EventAction> eventActions = new List<EventAction>();
 
             [Space(5)]
+            [Header("Parameter Event Actions")]
+            [Tooltip("These Are Events With A Parameter Value")]
+
+            [Space(10)]
             [SerializeField]
             private List<EventAction<T>> parameterEventActions = new List<EventAction<T>>();
 
-            [SerializeField]
             private List<EventAction> registeredEventActions = new List<EventAction>();
-
-            [SerializeField]
             private List<EventAction<T>> registeredParameterEventActions = new List<EventAction<T>>();
 
             #endregion
@@ -47995,7 +47884,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public static class GenericActionEvents<T> where T : AppMonoBaseClass
+        public static class GenericActionEvents<T> where T : class
         {
             #region Delegates
 
@@ -48308,91 +48197,91 @@ namespace Com.RedicalGames.Filar
                     {
                         case EventType.OnActionButtonPressedEvent:
 
-                            if (subscribe)
-                                _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnActionButtonPressedEvent -= eventAction.TriggeredEventMethod;
+                            //if (subscribe)
+                            //    _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
+                            //else
+                            //    _OnActionButtonPressedEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnScreenShownEvent:
 
                             if (subscribe)
-                                GenericActionEvents<Screen>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<Screen>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnScreenHiddenEvent:
 
                             if (subscribe)
-                                GenericActionEvents<Screen>._OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<Screen>._OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnScreenTransitionInProgressEvent:
 
                             if (subscribe)
-                                GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnWidgetShownEvent:
 
                             if (subscribe)
-                                GenericActionEvents<Widget>._OnWidgetShownEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnWidgetShownEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<Widget>._OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnWidgetHiddenEvent:
 
                             if (subscribe)
-                                GenericActionEvents<Widget>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<Widget>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnWidgetTransitionInProgressEvent:
 
                             if (subscribe)
-                                GenericActionEvents<Widget>._OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<Widget>._OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnSelectableWidgetShownEvent:
 
                             if (subscribe)
-                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetShownEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetShownEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnSelectableWidgetShownEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnSelectableWidgetHiddenEvent:
 
                             if (subscribe)
-                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnSelectableWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
                         case EventType.OnSelectableWidgetTransitionInProgressEvent:
 
                             if (subscribe)
-                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
                             else
-                                GenericActionEvents<SelectableWidget>._OnSelectableWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 
