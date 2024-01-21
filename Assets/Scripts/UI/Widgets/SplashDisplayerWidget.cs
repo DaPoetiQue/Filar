@@ -241,6 +241,13 @@ namespace Com.RedicalGames.Filar
             LogInfo(" ____________________________++++++++++++++++ OnChange Splash Image Event Called.", this);
         }
 
+        #region Events
+
+        public void OnNetworkErrorEvent()
+        {
+            OnLoadCompletedEvent();
+        }
+
         public void OnLoadInProgressEvent()
         {
             var callbackResults = new AppData.Callback(GetScreenType());
@@ -298,6 +305,8 @@ namespace Com.RedicalGames.Filar
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
+
+        #endregion
 
         private AppData.CallbackData<AppData.TransitionableUIComponent> GetTransitionableSplashImageComponent()
         {

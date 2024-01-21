@@ -2917,7 +2917,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    loadedScreens.GetCachedAssets(ScreenType.Default).GetData().Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().CompareTo(widgetB.GetInstantiationOrderID()));
+                    loadedScreens.GetCachedAssets(ScreenType.Default).GetData().Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
                     callbackResults.data = loadedScreens.GetCachedAssets(ScreenType.Default).GetData();
                 }
                 else
@@ -2938,7 +2938,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var widgets = loadedWidgets.GetCachedAssets(screenType).GetData();
 
-                    widgets.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().CompareTo(widgetB.GetInstantiationOrderID()));
+                    widgets.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
                     callbackResults.data = widgets;
                 }
                 else
@@ -2990,7 +2990,7 @@ namespace Com.RedicalGames.Filar
                         if(callbackResults.Success())
                         {
                             callbackResults.result = $"{widgets.Count} Widgets Have Been Loaded Successfully For Screen Type : {screenType}";
-                            widgets.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().CompareTo(widgetB.GetInstantiationOrderID()));
+                            widgets.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
                             callbackResults.data = widgets;
                         }
                         else
@@ -3015,7 +3015,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        loadedWidgets.GetCachedAssets(screenType).GetData().Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().CompareTo(widgetB.GetInstantiationOrderID()));
+                        loadedWidgets.GetCachedAssets(screenType).GetData().Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
                         callbackResults.data = loadedWidgets.GetCachedAssets(screenType).GetData();
                     }
                     else
@@ -8662,7 +8662,6 @@ namespace Com.RedicalGames.Filar
 
                         for (int i = 0; i < imageDataSplitResults.Length; i++)
                         {
-                            Debug.Log($" ++++++++++++++++++ Image Data Results : {imageDataSplitResults[i]}");
                             var imageInfoSplitArray = imageDataSplitResults[i].Split(imageInfoSplit);
 
                             if (imageInfoSplitArray.Length == 4)
@@ -25106,80 +25105,87 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    #region Widgets
+                    #region Initializations
 
-                    RegisterEventAction(eventActionRegisteredCallbacResults =>
+                    callbackResults.SetResult(GetEventActionsConfig());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(eventActionRegisteredCallbacResults);
-
-                        if (callbackResults.Success())
+                        RegisterEventAction(GetEventActionsConfig().GetData(), eventActionRegisteredCallbacResults =>
                         {
-                            InitializeInputs(inputsInitializationCallbackResults =>
+                            callbackResults.SetResult(eventActionRegisteredCallbacResults);
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(inputsInitializationCallbackResults);
-
-                                if (callbackResults.Success())
+                                InitializeInputs(inputsInitializationCallbackResults =>
                                 {
-                                    OnRegisterSelectableWidget(this, onRegisterWidgetCallbackResults =>
+                                    callbackResults.SetResult(inputsInitializationCallbackResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(onRegisterWidgetCallbackResults);
-
-                                        if (callbackResults.Success())
+                                        OnRegisterSelectableWidget(this, onRegisterWidgetCallbackResults =>
                                         {
-                                            //var widgetStatePacket = new WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>(this, WidgetStateType.Initialized);
+                                            callbackResults.SetResult(onRegisterWidgetCallbackResults);
 
-                                            //SetWidgetStatePacket(widgetStatePacket, async widgetStatePacketSetCallbackResults =>
-                                            //{
-                                            //    callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+                                            if (callbackResults.Success())
+                                            {
+                                                //var widgetStatePacket = new WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>(this, WidgetStateType.Initialized);
 
-                                            //    if (callbackResults.Success())
-                                            //    {
-                                            //        callbackResults.SetResult(GetInitialVisibilityState());
+                                                //SetWidgetStatePacket(widgetStatePacket, async widgetStatePacketSetCallbackResults =>
+                                                //{
+                                                //    callbackResults.SetResult(widgetStatePacketSetCallbackResults);
 
-                                            //        if (callbackResults.Success())
-                                            //        {
-                                            //            switch (GetInitialVisibilityState().GetData())
-                                            //            {
-                                            //                case UIScreenWidgetVisibilityState.Visible:
+                                                //    if (callbackResults.Success())
+                                                //    {
+                                                //        callbackResults.SetResult(GetInitialVisibilityState());
 
-                                            //                    //ShowWidget(GetType().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
-                                            //                    //{
-                                            //                    //    callbackResults.SetResult(showWidgetCallbackResults);
-                                            //                    //});
+                                                //        if (callbackResults.Success())
+                                                //        {
+                                                //            switch (GetInitialVisibilityState().GetData())
+                                                //            {
+                                                //                case UIScreenWidgetVisibilityState.Visible:
 
-                                            //                    break;
+                                                //                    //ShowWidget(GetType().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
+                                                //                    //{
+                                                //                    //    callbackResults.SetResult(showWidgetCallbackResults);
+                                                //                    //});
 
-                                            //                case UIScreenWidgetVisibilityState.Hidden:
+                                                //                    break;
 
-                                            //                    //HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
-                                            //                    //{
-                                            //                    //    callbackResults.SetResult(hideWidgetCallbackResults);
-                                            //                    //});
+                                                //                case UIScreenWidgetVisibilityState.Hidden:
 
-                                            //                    break;
-                                            //            }
+                                                //                    //HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
+                                                //                    //{
+                                                //                    //    callbackResults.SetResult(hideWidgetCallbackResults);
+                                                //                    //});
 
-                                            //            if (callbackResults.Success())
-                                            //            {
-                                            //                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
-                                            //                callbackResults.data = widgetStatePacket;
-                                            //            }
-                                            //            else
-                                            //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            //        }
-                                            //        else
-                                            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            //    }
-                                            //    else
-                                            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            //});
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                                                //                    break;
+                                                //            }
 
-                    }, eventActions.ToArray());
+                                                //            if (callbackResults.Success())
+                                                //            {
+                                                //                callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                                //                callbackResults.data = widgetStatePacket;
+                                                //            }
+                                                //            else
+                                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //        }
+                                                //        else
+                                                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //    }
+                                                //    else
+                                                //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //});
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                     #endregion
                 }
@@ -27772,14 +27778,12 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Screen View Name Is Not Assigned.";
-
             #endregion
         }
 
         public abstract class ScreenUIData : UIScreenWidget<ScreenType, WidgetType>, IUIScreenData
         {
-            [Header("Screen Info")]
+            [Header("Screen Info - Deprecated : Remove")]
 
             [SerializeField]
             string screenTitle;
@@ -27792,9 +27796,8 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             ScreenBlurObject screenBlur = new ScreenBlurObject();
 
-            [Space(5)]
-            [SerializeField]
-            AssetInfoDisplayer infoDisplayer = new AssetInfoDisplayer();
+            [Space(15)]
+            [Header("Widgets Container - Deprecated : Remove")]
 
             [Space(5)]
             [SerializeField]
@@ -27852,55 +27855,62 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            RegisterEventAction(eventActionRegisteredCallbacResults => 
+                            callbackResults.SetResult(GetEventActionsConfig());
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(eventActionRegisteredCallbacResults);
-
-                                if (callbackResults.Success())
+                                RegisterEventAction(GetEventActionsConfig().GetData(), eventActionRegisteredCallbacResults =>
                                 {
-                                    OnRegisterScreen(this, onRegisterScreenCallbackResults => 
+                                    callbackResults.SetResult(eventActionRegisteredCallbacResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(eventActionRegisteredCallbacResults);
-
-                                        if(callbackResults.Success())
+                                        OnRegisterScreen(this, onRegisterScreenCallbackResults =>
                                         {
-                                            var widgetStatePacket = new WidgetStatePacket<ScreenType, WidgetType>(this, WidgetStateType.Initialized);
+                                            callbackResults.SetResult(eventActionRegisteredCallbacResults);
 
-                                            SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
+                                            if (callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+                                                var widgetStatePacket = new WidgetStatePacket<ScreenType, WidgetType>(this, WidgetStateType.Initialized);
 
-                                                if (callbackResults.Success())
+                                                SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                 {
-                                                    InitializeWidgets(screenWidgetsInitializationCallbackResults =>
-                                                    {
-                                                        callbackResults.SetResult(screenWidgetsInitializationCallbackResults);
+                                                    callbackResults.SetResult(widgetStatePacketSetCallbackResults);
 
-                                                        if (callbackResults.Success())
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        InitializeWidgets(screenWidgetsInitializationCallbackResults =>
                                                         {
-                                                            callbackResults.SetResult(GetInitialVisibilityState());
+                                                            callbackResults.SetResult(screenWidgetsInitializationCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                LogInfo($" ______________________________________+_______________ Set Screen Initialization State : {GetInitialVisibilityState().GetData()}", this);
-                                                            }
-                                                        }
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    });
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                callbackResults.SetResult(GetInitialVisibilityState());
 
-                            }, eventActions.ToArray());
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    LogInfo($" ______________________________________+_______________ Set Screen Initialization State : {GetInitialVisibilityState().GetData()}", this);
+                                                                }
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28475,11 +28485,21 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                        callbackResults.SetResult(GetEventActionsConfig().GetData().IsSubscribedToEvents());
+
+                        if (callbackResults.Success())
                         {
-                            if (subscriptionCallbackResults.UnSuccessful())
-                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                        });
+                            UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                            {
+                                if (subscriptionCallbackResults.UnSuccessful())
+                                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()} Is Not Subscribed To Events";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30304,14 +30324,12 @@ namespace Com.RedicalGames.Filar
 
             #region Event Actions
 
-            [Space(15)]
-            [Header("Action Events")]
+            [Space(5)]
+            [Header("Event Actions Config")]
 
             [Space(10)]
             [SerializeField]
-            protected List<EventActionData> eventActions = new List<EventActionData>();
-
-            private List<EventAction> eventActionList = new List<EventAction>();
+            protected EventActionComponent<UIScreenWidget<T, U>> eventActionsConfig = new EventActionComponent<UIScreenWidget<T, U>>();
 
             protected WidgetStatePacket<T, U> widgetStatePacket;
 
@@ -30762,6 +30780,25 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
+            #region Event Actions
+
+            protected CallbackData<EventActionComponent<UIScreenWidget<T, U>>> GetEventActionsConfig()
+            {
+                var callbackResults = new CallbackData<EventActionComponent<UIScreenWidget<T, U>>>(Helpers.GetAppComponentValid(eventActionsConfig, "Event Actions Config", "Get Event Actions Config Failed - Event Actions Config Is Not Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Event Actions Config : {eventActionsConfig.GetName()} Has Been Initialized Successfully.";
+                    callbackResults.data = eventActionsConfig;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
             #region Transitionable Data
 
             protected CallbackData<TransitionableUIComponent> GetTransitionableUIComponent()
@@ -30969,9 +31006,35 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public int GetOrderInLayer() => orderInLayer;
+            public CallbackData<int> GetOrderInLayer()
+            {
+                var callbackResults = new CallbackData<int>(GetType());
 
-            public int GetInstantiationOrderID() => instantiationOrderID;
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Order In Layer Success : Order In Layer Is Set To : {orderInLayer}";
+                    callbackResults.data = orderInLayer;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<int> GetInstantiationOrderID()
+            {
+                var callbackResults = new CallbackData<int>(GetType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Instantiation Order ID Success : Instantiation Order ID Is Set To : {instantiationOrderID}";
+                    callbackResults.data = instantiationOrderID;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
 
             public CallbackData<UIVisibilityState> GetInitialVisibilityStateType()
             {
@@ -31061,171 +31124,218 @@ namespace Com.RedicalGames.Filar
 
             #region Events
 
-            protected void RegisterEventAction(Action<Callback> callback = null, params EventActionData[] eventParams)
+            protected void RegisterEventAction(EventActionComponent<UIScreenWidget<T, U>> eventActionComponent, Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(Helpers.GetAppComponentValid(eventActionComponent, "Event Action Component", "Register Event Actions Failed - Event Action Component Parameter Value Is invalid / Null."));
 
-                Helpers.GetAppComponentsValid(Helpers.GetList(eventParams), "Subscribed Events List", async componentsValidCallbackResults =>
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(componentsValidCallbackResults);
+                    #region Event Actions
 
-                    if (callbackResults.Success())
+                    var eventActionsCallbackResults = new Callback(eventActionComponent.GetEventActions());
+
+                    if (eventActionsCallbackResults.Success())
                     {
-                        for (int i = 0; i < eventParams.Length; i++)
+                        var eventActions = eventActionComponent.GetEventActions().GetData();
+
+                        for (int i = 0; i < eventActions.Count; i++)
                         {
-                            var eventAction = eventParams[i];
+                            var eventAction = eventActions[i];
                             eventAction.SetInitialized();
 
-                            callbackResults.SetResult(eventAction.Initialized());
+                            eventActionsCallbackResults.SetResult(eventAction.Initialized());
 
-                            if (callbackResults.Success())
+                            if (eventActionsCallbackResults.Success())
                             {
-                                await Task.Yield();
+                                eventActionsCallbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
 
-                                if (!eventActionList.Contains(eventAction))
+                                if (eventActionsCallbackResults.Success())
                                 {
-                                    eventActionList.Add(eventAction);
-
-                                    if (eventActionList.Contains(eventAction))
+                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
                                     {
-                                        callbackResults.result = $"Event Action : {eventAction.GetName()} Has Been Subscribed Successfully In Subscribed Events List.";
-                                        callbackResults.resultCode = Helpers.SuccessCode;
-                                    }
-                                    else
-                                    {
-                                        callbackResults.result = $"Failed To Subscribe Event Action - Event Action : {eventAction.GetName()} Couldn't Be Added To Subscribed Events List - Please Check Here.";
-                                        callbackResults.resultCode = Helpers.ErrorCode;
-                                    }
-                                }
-                                else
-                                {
-                                    callbackResults.result = $"Failed To Subscribe Event Action - Event Action: {eventAction.GetName()} Already Exists In Subscribed Events List.";
-                                    callbackResults.resultCode = Helpers.WarningCode;
+                                        eventActionsCallbackResults.SetResult(eventAddedCallbackResults);
+                                    });
                                 }
                             }
                         }
                     }
+
+                    #endregion
+
+                    #region Parameter Event Actions
+
+                    var parameterEventActionsCallbackResults = new Callback(eventActionComponent.GetParameterEventActions());
+
+                    if (parameterEventActionsCallbackResults.Success())
+                    {
+                        var parameterEventActions = eventActionComponent.GetParameterEventActions().GetData();
+
+                        for (int i = 0; i < parameterEventActions.Count; i++)
+                        {
+                            var eventAction = parameterEventActions[i];
+                            eventAction.SetInitialized();
+
+                            parameterEventActionsCallbackResults.SetResult(eventAction.Initialized());
+
+                            if (parameterEventActionsCallbackResults.Success())
+                            {
+                                parameterEventActionsCallbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
+
+                                if (callbackResults.Success())
+                                {
+                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
+                                    {
+                                        parameterEventActionsCallbackResults.SetResult(eventAddedCallbackResults);
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    if (eventActionsCallbackResults.Success())
+                        callbackResults.SetResult(eventActionsCallbackResults);
+                    else if (parameterEventActionsCallbackResults.Success())
+                        callbackResults.SetResult(parameterEventActionsCallbackResults);
+                    else
+                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events";
+
+                    #endregion
+
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void SubscribeToEvents(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetEventActionsConfig());
+
+                if (callbackResults.Success())
+                {
+                    #region Event Actions
+
+                    var eventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredEventActions());
+
+                    if (eventActionsSubscriptionsCallbackResults.Success())
+                    {
+                        var subscibedEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+
+                        for (int i = 0; i < subscibedEventActions.Count; i++)
+                        {
+                            ActionEvents.OnEventActionSubscription(subscibedEventActions[i], callback: subscriptionCallbackResults =>
+                            {
+                                eventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
+
+                                if (eventActionsSubscriptionsCallbackResults.UnSuccessful())
+                                    Log(eventActionsSubscriptionsCallbackResults.GetResultCode, eventActionsSubscriptionsCallbackResults.GetResult, this);
+                            });
+
+                            if (eventActionsSubscriptionsCallbackResults.UnSuccessful())
+                                break;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Parameter Event Actions
+
+                    var parameterEventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredParameterEventActions());
+
+                    if (parameterEventActionsSubscriptionsCallbackResults.Success())
+                    {
+                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+
+                        for (int i = 0; i < subscibedParameterEventActions.Count; i++)
+                        {
+                            ActionEvents.OnEventActionSubscription(subscibedParameterEventActions[i], callback: subscriptionCallbackResults =>
+                            {
+                                parameterEventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
+
+                                if (parameterEventActionsSubscriptionsCallbackResults.UnSuccessful())
+                                    Log(parameterEventActionsSubscriptionsCallbackResults.GetResultCode, parameterEventActionsSubscriptionsCallbackResults.GetResult, this);
+                            });
+
+                            if (parameterEventActionsSubscriptionsCallbackResults.UnSuccessful())
+                                break;
+                        }
+                    }
+
+                    #endregion
+
+                    if (eventActionsSubscriptionsCallbackResults.Success())
+                        callbackResults.SetResult(eventActionsSubscriptionsCallbackResults);
+                    else if (parameterEventActionsSubscriptionsCallbackResults.Success())
+                        callbackResults.SetResult(parameterEventActionsSubscriptionsCallbackResults);
                     else
                     {
-                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events.";
+                        callbackResults.result = $"Subscribe To Events - Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Doesn't Initialize Event Actions - Code Returning Success.";
                         callbackResults.resultCode = Helpers.SuccessCode;
                     }
-
-                }, "Event Action Params Is Null / Not Assigned In Parameter / Not Initialized.");
+                }
 
                 callback?.Invoke(callbackResults);
             }
 
-            protected void SubscribeToEvents(EventAction eventAction = null, Action<Callback> callback = null)
+            protected void UnSubscribeFromEvents(Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback(GetRegisteredEventActions());
+                var callbackResults = new Callback(GetEventActionsConfig());
 
                 if (callbackResults.Success())
                 {
-                    var subsciptionList = GetRegisteredEventActions().GetData();
+                    #region Event Actions
 
-                    if (eventAction != null && subsciptionList.Contains(eventAction))
+                    var eventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredEventActions());
+
+                    if (eventActionsSubscriptionsCallbackResults.Success())
                     {
-                        ActionEvents.OnEventActionSubscription(eventAction, callback: subscriptionCallbackResults =>
+                        var subscibedEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+
+                        for (int i = 0; i < subscibedEventActions.Count; i++)
                         {
-                            callbackResults.SetResult(subscriptionCallbackResults);
-                        });
-                    }
-                    else
-                    {
-                        for (int i = 0; i < subsciptionList.Count; i++)
-                        {
-                            ActionEvents.OnEventActionSubscription(subsciptionList[i], callback: subscriptionCallbackResults =>
+                            ActionEvents.OnEventActionSubscription(subscibedEventActions[i], false, subscriptionCallbackResults =>
                             {
-                                callbackResults.SetResult(subscriptionCallbackResults);
+                                eventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
                             });
                         }
                     }
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected void UnSubscribeFromEvents(EventAction eventAction = null, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback(GetRegisteredEventActions());
-
-                if (callbackResults.Success())
-                {
-                    var subsciptionList = GetRegisteredEventActions().GetData();
-
-                    if (eventAction != null && subsciptionList.Contains(eventAction))
-                    {
-                        ActionEvents.OnEventActionSubscription(eventAction, false, subscriptionCallbackResults =>
-                        {
-                            callbackResults.SetResult(subscriptionCallbackResults);
-                        });
-                    }
                     else
+                        Log(eventActionsSubscriptionsCallbackResults.GetResultCode, eventActionsSubscriptionsCallbackResults.GetResult, this);
+
+                    #endregion
+
+                    #region Parameter Event Actions
+
+                    var parameterEventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredParameterEventActions());
+
+                    if (parameterEventActionsSubscriptionsCallbackResults.Success())
                     {
-                        for (int i = 0; i < subsciptionList.Count; i++)
+                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+
+                        for (int i = 0; i < subscibedParameterEventActions.Count; i++)
                         {
-                            ActionEvents.OnEventActionSubscription(subsciptionList[i], false, subscriptionCallbackResults =>
+                            ActionEvents.OnEventActionSubscription(subscibedParameterEventActions[i], false, subscriptionCallbackResults =>
                             {
-                                callbackResults.SetResult(subscriptionCallbackResults);
+                                parameterEventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
                             });
                         }
                     }
+                    else
+                        Log(parameterEventActionsSubscriptionsCallbackResults.GetResultCode, parameterEventActionsSubscriptionsCallbackResults.GetResult, this);
+
+                    #endregion
+
+                    if (eventActionsSubscriptionsCallbackResults.Success())
+                        callbackResults.SetResult(eventActionsSubscriptionsCallbackResults);
+                    else if (parameterEventActionsSubscriptionsCallbackResults.Success())
+                        callbackResults.SetResult(parameterEventActionsSubscriptionsCallbackResults);
+                    else
+                    {
+                        callbackResults.result = $"Un Subscribe From Events Failed - Couldn't Unsubscribe From Events For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
                 }
 
                 callback?.Invoke(callbackResults);
-            }
-
-            protected Callback SubscribedToEvents(params EventAction[] eventActions)
-            {
-                var callbackResults = new Callback(GetRegisteredEventActions());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(Helpers.GetAppComponentsValid(eventActions, "Event Actions", "Event Action Not Assigned In Parameter."));
-
-                    if(callbackResults.Success())
-                    {
-                        foreach (var eventAction in eventActionList)
-                        {
-                            if(!eventActionList.Contains(eventAction))
-                            {
-                                callbackResults.result = $"Action Event : {eventAction.GetName()} For Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Registered In Event Action List.";
-                                callbackResults.resultCode = Helpers.ErrorCode;
-
-                                break;
-                            }
-                        }
-                    }
-                    else
-                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Has Been Registered Successfully To Action Events.";
-                }
-                else
-                {
-                    callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Yet Subscribed To Action Events.";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                return callbackResults;
-            }
-
-            private CallbackDataList<EventAction> GetRegisteredEventActions()
-            {
-                CallbackDataList<EventAction> callbackResults = new CallbackDataList<EventAction>();
-
-                Helpers.GetAppComponentsValid(eventActionList, "Subscribed Events List", eventsListCallbackResults =>
-                {
-                    callbackResults.SetResult(eventsListCallbackResults);
-
-                    if (callbackResults.Success())
-                    {
-                        callbackResults.result = $"{eventActionList.Count} : Subscribed Event Action(s) Found.";
-                        callbackResults.data = eventActionList;
-                    }
-
-                }, "Subscribed Events List Is Not Yet Initialized.");
-
-                return callbackResults;
             }
 
             #endregion
@@ -33474,91 +33584,98 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        RegisterEventAction(eventActionRegisteredCallbacResults =>
+                        callbackResults.SetResult(GetEventActionsConfig());
+
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(eventActionRegisteredCallbacResults);
-
-                            if (callbackResults.Success())
+                            RegisterEventAction(GetEventActionsConfig().GetData(), eventActionRegisteredCallbacResults =>
                             {
-                                InitializeInputs(inputsInitializationCallbackResults =>
+                                callbackResults.SetResult(eventActionRegisteredCallbacResults);
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(inputsInitializationCallbackResults);
-
-                                    if (callbackResults.Success())
+                                    InitializeInputs(inputsInitializationCallbackResults =>
                                     {
-                                        OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
+                                        callbackResults.SetResult(inputsInitializationCallbackResults);
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(onRegisterWidgetCallbackResults);
-
-                                            if (callbackResults.Success())
+                                            OnRegisterWidget(this, onRegisterWidgetCallbackResults =>
                                             {
-                                                var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType>(this, WidgetStateType.Initialized);
+                                                callbackResults.SetResult(onRegisterWidgetCallbackResults);
 
-                                                SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
+                                                if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(widgetStatePacketSetCallbackResults);
+                                                    var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType>(this, WidgetStateType.Initialized);
 
-                                                    if (callbackResults.Success())
+                                                    SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                     {
-                                                        callbackResults.SetResult(GetInitialVisibilityState());
+                                                        callbackResults.SetResult(widgetStatePacketSetCallbackResults);
 
                                                         if (callbackResults.Success())
                                                         {
-                                                            switch (GetInitialVisibilityState().GetData())
-                                                            {
-                                                                case UIVisibilityState.Visible:
-
-                                                                    ShowWidget(GetType().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(showWidgetCallbackResults);
-                                                                    });
-
-                                                                    break;
-
-                                                                case UIVisibilityState.Hidden:
-
-                                                                    HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(hideWidgetCallbackResults);
-                                                                    });
-
-                                                                    break;
-                                                            }
+                                                            callbackResults.SetResult(GetInitialVisibilityState());
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResult(GetTransitionType());
+                                                                switch (GetInitialVisibilityState().GetData())
+                                                                {
+                                                                    case UIVisibilityState.Visible:
+
+                                                                        ShowWidget(GetType().GetData(), ignoreScreenData: true, callback: showWidgetCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(showWidgetCallbackResults);
+                                                                        });
+
+                                                                        break;
+
+                                                                    case UIVisibilityState.Hidden:
+
+                                                                        HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(hideWidgetCallbackResults);
+                                                                        });
+
+                                                                        break;
+                                                                }
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    if (GetTransitionType().GetData() == TransitionType.Translate)
-                                                                    {
-                                                                        callbackResults.SetResult(GetTransitionableUIMounts());
+                                                                    callbackResults.SetResult(GetTransitionType());
 
-                                                                        if(callbackResults.Success())
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        if (GetTransitionType().GetData() == TransitionType.Translate)
                                                                         {
-                                                                            callbackResults.SetResult(GetLayoutView().GetData().GetLayoutWidgetRect());
+                                                                            callbackResults.SetResult(GetTransitionableUIMounts());
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized."));
+                                                                                callbackResults.SetResult(GetLayoutView().GetData().GetLayoutWidgetRect());
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    callbackResults.SetResult(GetTransitionSpeed());
+                                                                                    callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized."));
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized.").GetData();
+                                                                                        callbackResults.SetResult(GetTransitionSpeed());
 
-                                                                                        var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
-
-                                                                                        var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, GetTransitionSpeed().GetData());
-
-                                                                                        SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                        if (callbackResults.Success())
                                                                                         {
-                                                                                            callbackResults.SetResult(transitionableCallbackResults);
-                                                                                        });
+                                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized.").GetData();
+
+                                                                                            var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
+
+                                                                                            var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, GetTransitionSpeed().GetData());
+
+                                                                                            SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(transitionableCallbackResults);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                     }
                                                                                     else
                                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33569,12 +33686,12 @@ namespace Com.RedicalGames.Filar
                                                                             else
                                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                         }
-                                                                        else
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                    }
 
-                                                                    callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
-                                                                    callbackResults.data = widgetStatePacket;
+                                                                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                                                        callbackResults.data = widgetStatePacket;
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -33584,17 +33701,17 @@ namespace Com.RedicalGames.Filar
                                                         }
                                                         else
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
 
-                        }, eventActions.ToArray());
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35827,23 +35944,30 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(SubscribedToEvents());
+                                callbackResults.SetResult(GetEventActionsConfig());
 
                                 if (callbackResults.Success())
                                 {
-                                    UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(subscriptionCallbackResults);
+                                    callbackResults.SetResult(GetEventActionsConfig().GetData().IsSubscribedToEvents());
 
-                                        if (callbackResults.UnSuccessful())
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                    if (callbackResults.Success())
+                                    {
+                                        UnSubscribeFromEvents(callback: subscriptionCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(subscriptionCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()} Is Not Subscribed To Events";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
                                 }
                                 else
-                                {
-                                    callbackResults.result = $"Action Events Are Not Subcribed Yet On Initialization For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
-                                }
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -46846,7 +46970,7 @@ namespace Com.RedicalGames.Filar
         #region Event Action Base
 
         [Serializable]
-        public abstract class EventAction : DataDebugger
+        public abstract class EventActionBase : DataDebugger
         {
             #region Components
 
@@ -46962,10 +47086,10 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Event Action Data
+        #region Event Actions
 
         [Serializable]
-        public class EventActionData : EventAction
+        public class EventAction : EventActionBase
         {
             #region Components
 
@@ -46977,12 +47101,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public EventActionData()
+            public EventAction()
             {
 
             }
 
-            public EventActionData(string name, EventType eventType, UnityEvent eventMethod)
+            public EventAction(string name, EventType eventType, UnityEvent eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -47103,7 +47227,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class EventActionData<T> : EventAction where T : class
+        public class EventAction<T> : EventActionBase
         {
             #region Components
 
@@ -47115,12 +47239,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public EventActionData()
+            public EventAction()
             {
 
             }
 
-            public EventActionData(string name, EventType eventType, UnityEvent<T> eventMethod)
+            public EventAction(string name, EventType eventType, UnityEvent<T> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -47241,7 +47365,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class EventActionData<T, U> : EventAction
+        public class EventAction<T, U> : EventActionBase
         {
             #region Components
 
@@ -47253,12 +47377,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public EventActionData()
+            public EventAction()
             {
 
             }
 
-            public EventActionData(string name, EventType eventType, UnityEvent<T, U> eventMethod)
+            public EventAction(string name, EventType eventType, UnityEvent<T, U> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -47380,7 +47504,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class EventActionData<T, U, V> : EventAction
+        public class EventAction<T, U, V> : EventActionBase
         {
             #region Components
 
@@ -47392,12 +47516,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public EventActionData()
+            public EventAction()
             {
 
             }
 
-            public EventActionData(string name, EventType eventType, UnityEvent<T, U, V> eventMethod)
+            public EventAction(string name, EventType eventType, UnityEvent<T, U, V> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -47518,7 +47642,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class EventActionData<T, U, V, W> : EventAction
+        public class EventAction<T, U, V, W> : EventActionBase
         {
             #region Components
 
@@ -47530,12 +47654,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public EventActionData()
+            public EventAction()
             {
 
             }
 
-            public EventActionData(string name, EventType eventType, UnityEvent<T, U, V, W> eventMethod)
+            public EventAction(string name, EventType eventType, UnityEvent<T, U, V, W> eventMethod)
             {
                 SetName(name);
                 SetEventType(eventType);
@@ -47651,6 +47775,218 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class EventActionComponent<T> : DataDebugger where T : class
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            private List<EventAction> eventActions = new List<EventAction>();
+
+            [Space(5)]
+            [SerializeField]
+            private List<EventAction<T>> parameterEventActions = new List<EventAction<T>>();
+
+            [SerializeField]
+            private List<EventAction> registeredEventActions = new List<EventAction>();
+
+            [SerializeField]
+            private List<EventAction<T>> registeredParameterEventActions = new List<EventAction<T>>();
+
+            #endregion
+
+            #region Main
+
+            public Callback EventNotRegistered(EventAction eventAction)
+            {
+                var callbackResults = new Callback(GetRegisteredEventActions());
+
+                if (callbackResults.Success())
+                {
+                    if (!GetRegisteredEventActions().GetData().Contains(eventAction))
+                    {
+                        callbackResults.result = $"Event Action : {eventAction.GetName()} Is Not Registered.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Event Action : {eventAction.GetName()} Is Already Registered In Registered Event Actions With : {GetRegisteredEventActions().GetData().Count} At Index : {GetRegisteredEventActions().GetData().IndexOf(eventAction)}.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Event Action : {eventAction.GetName()} Is Not Registered - There Are No Event Actions Initialized Yet For Event Action Component : {GetName()}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback EventNotRegistered(EventAction<T> eventAction)
+            {
+                var callbackResults = new Callback(GetRegisteredParameterEventActions());
+
+                if (callbackResults.Success())
+                {
+                    if (!GetRegisteredParameterEventActions().GetData().Contains(eventAction))
+                    {
+                        callbackResults.result = $"Parameter Event Action : {eventAction.GetName()} Is Not Registered.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Parameter Event Action : {eventAction.GetName()} Is Already Registered In Registered Event Actions With : {GetRegisteredParameterEventActions().GetData().Count} At Index : {GetRegisteredParameterEventActions().GetData().IndexOf(eventAction)}.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Parameter Event Action : {eventAction.GetName()} Is Not Registered - There Are No Parameter Event Actions Initialized Yet For Event Action Component : {GetName()}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+
+                return callbackResults;
+            }
+
+            public void AddEventActionToRegister(EventAction eventActiontoRegister, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(eventActiontoRegister, "Event Action To Register", "Set Event Action To Register Failed - The Event Action To Register Parameter Value Is Invalid / Null."));
+
+                if (callbackResults.Success())
+                {
+                    registeredEventActions.Add(eventActiontoRegister);
+
+                    if(registeredEventActions.Contains(eventActiontoRegister))
+                        callbackResults.result = $"Add Event Action To Register Success - Event Action : {eventActiontoRegister.GetName()} Have Been Successfully Added To Register.";
+                    else
+                    {
+                        callbackResults.result = $"Add Event Action To Register Failed - Event Action : {eventActiontoRegister.GetName()} Have Failed To Add To Register - Invalid Operation - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void AddEventActionToRegister(EventAction<T> eventActiontoRegister, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(eventActiontoRegister, "Event Action To Register", "Set Event Action To Register Failed - The Event Action To Register Parameter Value Is Invalid / Null."));
+
+                if (callbackResults.Success())
+                {
+                    registeredParameterEventActions.Add(eventActiontoRegister);
+
+                    if (registeredParameterEventActions.Contains(eventActiontoRegister))
+                        callbackResults.result = $"Add Event Action To Register Success - Parameter Event Action : {eventActiontoRegister.GetName()} Have Been Successfully Added To Register.";
+                    else
+                    {
+                        callbackResults.result = $"Add Event Action To Register Failed - Event Action : {eventActiontoRegister.GetName()} Have Failed To Add To Register - Invalid Operation - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackDataList<EventAction> GetEventActions()
+            {
+                var callbackResults = new CallbackDataList<EventAction>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(eventActions, "Event Actions", "Get Event Actions Failed - There Are No Event Actions Initialized"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{eventActions.Count} Event Action(s) Have Been Initialized Successfully.";
+                    callbackResults.data = eventActions;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<EventAction<T>> GetParameterEventActions()
+            {
+                var callbackResults = new CallbackDataList<EventAction<T>>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(parameterEventActions, "Parameter Event Actions", "Get Parameter Event Actions Failed - There Are No Event Actions Initialized"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{parameterEventActions.Count} Parameter Event Action(s) Have Been Initialized Successfully.";
+                    callbackResults.data = parameterEventActions;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<EventAction> GetRegisteredEventActions()
+            {
+                var callbackResults = new CallbackDataList<EventAction>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(registeredEventActions, "Registered Event Actions", "Get Registered Event Actions Failed - There Are No registered Event Actions Initialized"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{registeredEventActions.Count} Registered Event Action(s) Have Been Initialized Successfully.";
+                    callbackResults.data = registeredEventActions;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<EventAction<T>> GetRegisteredParameterEventActions()
+            {
+                var callbackResults = new CallbackDataList<EventAction<T>>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(registeredParameterEventActions, "Registered Event Actions", "Get Registered Event Actions Failed - There Are No registered Event Actions Initialized"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{registeredParameterEventActions.Count} Registered Event Action(s) Have Been Initialized Successfully.";
+                    callbackResults.data = registeredParameterEventActions;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public Callback IsSubscribedToEvents()
+            {
+                var callbackResults = new Callback(GetRegisteredEventActions());
+
+                if(callbackResults.Success())
+                    callbackResults.result = $"Is Subscribed To Events Success - Event Action : {GetName()} Is Subscribed To Events.";
+                else
+                {
+                    callbackResults.SetResult(GetRegisteredParameterEventActions());
+
+                    if (callbackResults.Success())
+                        callbackResults.result = $"Is Subscribed To Events Success - Parameter Event Action : {GetName()} Is Subscribed To Events.";
+                    else
+                    {
+                        callbackResults.result = $"Is Subscribed To Events Unsuccessfull - Event Action : {GetName()} Is Not Subscribed To Events.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
 
             #endregion
         }
@@ -47951,23 +48287,40 @@ namespace Com.RedicalGames.Filar
                                 _OnPostsInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
 
                             break;
+                    }
 
-                        case EventType.OnScreenShownEvent:
+                    var results = (subscribe) ? "Subcribed" : "Un-Subscribed";
 
+                    callbackResults.result = $"Event Action : {eventAction.GetName()} - Has Been Successfully : {results}.";
+                    callbackResults.data = eventAction;
+                }
 
-                            if (subscribe)
-                                GenericActionEvents<Screen>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<Screen>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
+                callback?.Invoke(callbackResults);
+            }
 
-                            break;
+            public static void OnEventActionSubscription<T>(EventAction<T> eventAction, bool subscribe = true, Action<CallbackData<EventAction<T>>> callback = null) where T : AppMonoBaseClass
+            {
+                CallbackData<EventAction<T>> callbackResults = new CallbackData<EventAction<T>>(eventAction.Initialized());
 
+                if (callbackResults.Success())
+                {
+                    switch (eventAction.GetEventType())
+                    {
                         case EventType.OnActionButtonPressedEvent:
 
                             if (subscribe)
                                 _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
                             else
                                 _OnActionButtonPressedEvent -= eventAction.TriggeredEventMethod;
+
+                            break;
+
+                        case EventType.OnScreenShownEvent:
+
+                            if (subscribe)
+                                GenericActionEvents<Screen>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
+                            else
+                                GenericActionEvents<Screen>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
 
                             break;
 

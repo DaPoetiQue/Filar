@@ -304,45 +304,49 @@ MonoBehaviour:
   - {fileID: 4483213448022437336}
   - {fileID: 976341724}
   - {fileID: 976341723}
-  eventActions:
-  - name: On Widget Focus Event
-    eventType: 15
-    eventMethod:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2543504747470595320}
-          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
-            Assembly-CSharp
-          m_MethodName: OnWidgetShownEvent
-          m_Mode: 2
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: Com.RedicalGames.Filar.AppData+Widget,
+  eventActionsConfig:
+    name: Screen Events
+    eventActions: []
+    parameterEventActions:
+    - name: On Widget Shown Event
+      eventType: 15
+      eventMethod:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 2543504747470595320}
+            m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
               Assembly-CSharp
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - name: On Widget Un-Focus Event
-    eventType: 16
-    eventMethod:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2543504747470595320}
-          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
-            Assembly-CSharp
-          m_MethodName: OnWidgetHiddenEvent
-          m_Mode: 2
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: Com.RedicalGames.Filar.AppData+Widget,
+            m_MethodName: OnWidgetShownEvent
+            m_Mode: 2
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: Com.RedicalGames.Filar.AppData+Widget,
+                Assembly-CSharp
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    - name: On Widget Hidden Event
+      eventType: 16
+      eventMethod:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 2543504747470595320}
+            m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
               Assembly-CSharp
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+            m_MethodName: OnWidgetHiddenEvent
+            m_Mode: 2
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: Com.RedicalGames.Filar.AppData+Widget,
+                Assembly-CSharp
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+  eventActions: []
   screenTitle: Filar
   screenView:
     name: 
@@ -366,12 +370,6 @@ MonoBehaviour:
       value: {fileID: 3621854200912086436}
       containerLayerType: 2
     initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList: []
-    widgetsContainer: {fileID: 0}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 0
   widgetsContainer: {fileID: 0}
   screenPosition: {x: 3100, y: 0}
   loadingItemList: []

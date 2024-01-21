@@ -80,7 +80,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     case AppData.OrderInLayerType.Ascending:
 
-                                        screens.Sort((screenA, screenB) => screenA.GetOrderInLayer().CompareTo(screenB.GetOrderInLayer()));
+                                        screens.Sort((screenA, screenB) => screenA.GetOrderInLayer().GetData().CompareTo(screenB.GetOrderInLayer().GetData()));
                                         sort = true;
 
                                         break;
@@ -88,7 +88,7 @@ namespace Com.RedicalGames.Filar
                                     case AppData.OrderInLayerType.Descending:
 
 
-                                        screens.Sort((screenA, screenB) => screenB.GetOrderInLayer().CompareTo(screenA.GetOrderInLayer()));
+                                        screens.Sort((screenA, screenB) => screenB.GetOrderInLayer().GetData().CompareTo(screenA.GetOrderInLayer().GetData()));
                                         sort = true;
 
                                         break;
@@ -118,7 +118,7 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                widgets.Sort((widgetA, widgetB) => (GetOrderInLayerType().GetData() == AppData.OrderInLayerType.Ascending) ? widgetA.GetOrderInLayer().CompareTo(widgetB.GetOrderInLayer()) : widgetB.GetOrderInLayer().CompareTo(widgetA.GetOrderInLayer()));
+                                widgets.Sort((widgetA, widgetB) => (GetOrderInLayerType().GetData() == AppData.OrderInLayerType.Ascending) ? widgetA.GetOrderInLayer().GetData().CompareTo(widgetB.GetOrderInLayer().GetData()) : widgetB.GetOrderInLayer().GetData().CompareTo(widgetA.GetOrderInLayer().GetData()));
 
                                 for (int i = 0; i < widgets.Count; i++)
                                     widgets[i].SetOrderInLayer(i);

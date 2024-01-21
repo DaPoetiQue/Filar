@@ -1998,11 +1998,71 @@ MonoBehaviour:
   uIPlacementContainerType: 14
   uIPlacementType: 1
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
+  eventActionsConfig:
+    name: Action Events
+    eventActions:
+    - name: On Loading In Progress Event
+      eventType: 1
+      eventMethod:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 7374042135323048747}
+            m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
+              Assembly-CSharp
+            m_MethodName: OnLoadInProgressEvent
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    - name: On Loading Completed Event
+      eventType: 2
+      eventMethod:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 7374042135323048747}
+            m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
+              Assembly-CSharp
+            m_MethodName: OnLoadCompletedEvent
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    - name: On Network Failed Event
+      eventType: 8
+      eventMethod:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 7374042135323048747}
+            m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
+              Assembly-CSharp
+            m_MethodName: OnNetworkErrorEvent
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    parameterEventActions: []
   eventActions:
   - name: On Loading In Progress Event
     eventType: 1
