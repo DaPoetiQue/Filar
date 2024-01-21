@@ -55,7 +55,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        protected override void OnActionButtonEvent(AppData.WidgetType screenType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
+        protected override async void OnActionButtonEvent(AppData.WidgetType screenType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Initialized Yet."));
 
@@ -63,29 +63,37 @@ namespace Com.RedicalGames.Filar
             {
                 var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+                callbackResults.SetResult(screenUIManager.GetCurrentScreen());
 
                 if (callbackResults.Success())
                 {
-                    var profileManager = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+                    var screen = screenUIManager.GetCurrentScreen().GetData();
 
-                    switch (actionType)
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
                     {
-                        case AppData.InputActionButtonType.OpenProfileButton:
+                        var profileManager = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                            callbackResults.SetResult(profileManager.SignedIn());
+                        switch (actionType)
+                        {
+                            case AppData.InputActionButtonType.OpenProfileButton:
 
-                            if (callbackResults.Success())
-                            {
-                                LogInfo(" <==========================> Open Profile", this);
-                            }
-                            else
-                            {
+                                callbackResults.SetResult(profileManager.SignedIn());
 
-                            }
+                                if (callbackResults.Success())
+                                {
+                                    LogInfo($" <==========================> Open Profile : {screen.GetName()} - Type : {screen.GetType().GetData()}", this);
 
-                            break;
+                                    var showWidgetAsyncCallbackResultsTask = await screen.ShowWidgetAsync(AppData.WidgetType.HomeMenuWidget);
+                                    callbackResults.SetResult(showWidgetAsyncCallbackResultsTask);
+                                }
+
+                                break;
+                        }
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

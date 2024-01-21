@@ -27823,9 +27823,10 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected bool initializeScreenWidgets = true;
 
-            [Space(5)]
             [SerializeField]
-            protected List<Widget> widgets;
+            protected Widget focusedWidget;
+
+            protected List<Widget> widgets = new List<Widget>();
 
             LoadingItemData currentLoadingItem = new LoadingItemData();
 
@@ -28147,65 +28148,72 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if (!widgets.Contains(widget))
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", "Add Widget Failed : Widget Parameter Value Is Invalid / Null."));
+
+                    if (callbackResults.Success())
                     {
-                        widgets.Add(widget);
-
-                        if (widgets.Contains(widget))
+                        if (!widgets.Contains(widget))
                         {
-                            callbackResults.SetResult(GetDynamicContainer(widget.GetContentContainerType().GetData(), widget.GetScreenUIPlacementType().GetData()));
+                            widgets.Add(widget);
 
-                            if (callbackResults.Success())
+                            if (widgets.Contains(widget))
                             {
-                                var container = GetDynamicContainer(widget.GetContentContainerType().GetData(), widget.GetScreenUIPlacementType().GetData()).GetData();
-
-                                callbackResults.SetResult(widget.GetInitialVisibility());
+                                callbackResults.SetResult(GetDynamicContainer(widget.GetContentContainerType().GetData(), widget.GetScreenUIPlacementType().GetData()));
 
                                 if (callbackResults.Success())
                                 {
-                                    container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
+                                    var container = GetDynamicContainer(widget.GetContentContainerType().GetData(), widget.GetScreenUIPlacementType().GetData()).GetData();
+
+                                    callbackResults.SetResult(widget.GetInitialVisibility());
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(widgetnAddedCallbackResults);
-
-                                        if (callbackResults.Success())
+                                        container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
                                         {
-                                            widget.SetParentWidget(this, parentSetCallbackResults =>
+                                            callbackResults.SetResult(widgetnAddedCallbackResults);
+
+                                            if (callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(parentSetCallbackResults);
-
-                                                if (callbackResults.Success())
+                                                widget.SetParentWidget(this, parentSetCallbackResults =>
                                                 {
-                                                    callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Has Been Added To Screen Widgets List.";
-                                                    callbackResults.data = widgets;
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                                    callbackResults.SetResult(parentSetCallbackResults);
 
-                                    callbackResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Has Been Added To Screen Widgets List.";
+                                                        callbackResults.data = widgets;
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+
+                                        callbackResults.result = $"Screen Widget : {widget.GetName()} - Has Been Added Successfully To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            {
+                                callbackResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
                         }
                         else
                         {
-                            callbackResults.result = $"Failed To Add Screen Widget : {widget.GetName()} - To Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
-                            callbackResults.resultCode = Helpers.ErrorCode;
+                            callbackResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                            callbackResults.resultCode = Helpers.WarningCode;
                         }
                     }
                     else
-                    {
-                        callbackResults.result = $"Screen Widget : {widget.GetName()} Already Exists In Screen Widgets List For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28481,6 +28489,86 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
+
+            #endregion
+
+            #region Widget Events
+
+            public void OnWidgetShownEvent(Widget widget)
+            {
+                LogInfo($" ______****Log_Cat::: Focusing To Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()}", this);
+            }
+
+            public void OnWidgetHiddenEvent(Widget widget)
+            {
+                LogInfo($" ______****Log_Cat::: Removing Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()} From Focus.", this);
+            }
+
+            #endregion
+
+            #region Focused Widgets
+
+            protected void SetFocusedWidget(Widget widget, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(widget, "Widget", "Set Focused Widget Failed - Widget Parameter Value Is Invalid / Null."));
+
+                if (callbackResults.Success())
+                {
+                    focusedWidget = widget;
+
+                    callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} - Is Currently Set As Focused Widget For Screen : {GetName()} - Of Type : {GetType().GetData()}";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void RemoveFocusedWidget(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(focusedWidget, "Focused Widget", "Is Focused Widget Failed - There Are No Fucused Widget Assigned."));
+
+                if(callbackResults.Success())
+                {
+                    string widgetName = focusedWidget.GetName();
+                    string widgetType = focusedWidget.GetType().GetData().ToString();
+
+                    focusedWidget = null;
+
+                    if(focusedWidget == null)
+                        callbackResults.result = $"Remove Focused Widget Success - Widget : {widgetName} - Of Type : {widgetType} Has Been Successfully Removed.";
+                    else
+                    {
+                        callbackResults.result = $"Remove Focused Widget Failed - Widget : {widgetName} - Of Type : {widgetType} Has Failed To Be Removed - Invalid Operation - Please Check Here.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public Callback IsFocusedWidget(WidgetType widgetType)
+            {
+                var callbackResults = new CallbackData<Widget>(Helpers.GetAppComponentValid(focusedWidget, "Focused Widget", "Is Focused Widget Failed - There Are No Fucused Widget Assigned."));
+
+                if (callbackResults.Success())
+                {
+                    if(focusedWidget.GetType().GetData() == widgetType)
+                        callbackResults.result = $"Is Focused Widget Success - Widget : {focusedWidget.GetName()} Of Type : {widgetType} Is Set As Currently Focused Widget.";
+                    else
+                    {
+                        callbackResults.result = $"Is Focused Widget Unsuccessful - Widget Of Type : {widgetType} Is Not Set As Currently Focused Widget.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
 
             #endregion
 
@@ -28936,12 +29024,10 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             public Widget GetWidget(Widget widget)
             {
                 return widgets.Find(data => data.GetType().GetData() == widget.GetType().GetData());
             }
-
 
             public CallbackDataList<Widget> GetWidgets()
             {

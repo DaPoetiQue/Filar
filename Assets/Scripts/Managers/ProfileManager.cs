@@ -23,6 +23,7 @@ namespace Com.RedicalGames.Filar
         FirebaseAuth authentication;
         public bool TermsAndConditionsAccepted { get; private set; }
 
+        [SerializeField]
         private AppData.SignInState signInState = AppData.SignInState.None;
 
         #endregion

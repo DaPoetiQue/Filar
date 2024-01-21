@@ -282,6 +282,7 @@ MonoBehaviour:
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 2
+  instantiationOrderID: 0
   transitionType: 1
   transitionSpeed: 0
   transitionableUIMountList: []
@@ -303,7 +304,45 @@ MonoBehaviour:
   - {fileID: 4483213448022437336}
   - {fileID: 976341724}
   - {fileID: 976341723}
-  eventActions: []
+  eventActions:
+  - name: On Widget Focus Event
+    eventType: 15
+    eventMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2543504747470595320}
+          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
+            Assembly-CSharp
+          m_MethodName: OnWidgetShownEvent
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: Com.RedicalGames.Filar.AppData+Widget,
+              Assembly-CSharp
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - name: On Widget Un-Focus Event
+    eventType: 16
+    eventMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2543504747470595320}
+          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.AppData+ScreenUIData,
+            Assembly-CSharp
+          m_MethodName: OnWidgetHiddenEvent
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: Com.RedicalGames.Filar.AppData+Widget,
+              Assembly-CSharp
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   screenTitle: Filar
   screenView:
     name: 
@@ -339,7 +378,7 @@ MonoBehaviour:
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 1
-  widgets: []
+  focusedWidget: {fileID: 0}
 --- !u!1 &3621854199801398914
 GameObject:
   m_ObjectHideFlags: 0
