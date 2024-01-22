@@ -1303,6 +1303,15 @@ namespace Com.RedicalGames.Filar
             Descending
         }
 
+        public enum EventActionInitializedGroupType
+        {
+            None,
+            Default,
+            All,
+            EventActions,
+            ParameterEventActions
+        }
+
         #endregion
 
         #region User Interface
@@ -31148,77 +31157,145 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    #region Event Actions
-
-                    var eventActionsCallbackResults = new Callback(eventActionComponent.GetEventActions());
-
-                    if (eventActionsCallbackResults.Success())
+                    eventActionComponent.Initialize(eventActionComponentInitializationCallbackResults => 
                     {
-                        var eventActions = eventActionComponent.GetEventActions().GetData();
+                        callbackResults.SetResult(eventActionComponentInitializationCallbackResults);
 
-                        for (int i = 0; i < eventActions.Count; i++)
+                        if(callbackResults.Success())
                         {
-                            var eventAction = eventActions[i];
-                            eventAction.SetInitialized();
+                            callbackResults.SetResult(eventActionComponent.GetInitializedGroupType());
 
-                            eventActionsCallbackResults.SetResult(eventAction.Initialized());
-
-                            if (eventActionsCallbackResults.Success())
+                            if (callbackResults.Success())
                             {
-                                eventActionsCallbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
-
-                                if (eventActionsCallbackResults.Success())
+                                switch (eventActionComponent.GetInitializedGroupType().GetData())
                                 {
-                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
-                                    {
-                                        eventActionsCallbackResults.SetResult(eventAddedCallbackResults);
-                                    });
+                                    case EventActionInitializedGroupType.All:
+
+                                        #region Event Actions
+
+                                        var eventActions = eventActionComponent.GetEventActions().GetData();
+
+                                        for (int i = 0; i < eventActions.Count; i++)
+                                        {
+                                            var eventAction = eventActions[i];
+                                            eventAction.SetInitialized();
+
+                                            callbackResults.SetResult(eventAction.Initialized());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(eventAddedCallbackResults);
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        #endregion
+
+                                        #region Parameter Event Actions
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var parameterEventActions = eventActionComponent.GetParameterEventActions().GetData();
+
+                                            for (int i = 0; i < parameterEventActions.Count; i++)
+                                            {
+                                                var eventAction = parameterEventActions[i];
+                                                eventAction.SetInitialized();
+
+                                                callbackResults.SetResult(eventAction.Initialized());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(eventAddedCallbackResults);
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        #endregion
+
+                                        break;
+
+                                    case EventActionInitializedGroupType.EventActions:
+
+                                        var _eventActions = eventActionComponent.GetEventActions().GetData();
+
+                                        for (int i = 0; i < _eventActions.Count; i++)
+                                        {
+                                            var eventAction = _eventActions[i];
+                                            eventAction.SetInitialized();
+
+                                            callbackResults.SetResult(eventAction.Initialized());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(eventAddedCallbackResults);
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        break;
+
+                                    case EventActionInitializedGroupType.ParameterEventActions:
+
+                                        var _parameterEventActions = eventActionComponent.GetParameterEventActions().GetData();
+
+                                        for (int i = 0; i < _parameterEventActions.Count; i++)
+                                        {
+                                            var eventAction = _parameterEventActions[i];
+                                            eventAction.SetInitialized();
+
+                                            callbackResults.SetResult(eventAction.Initialized());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(eventAddedCallbackResults);
+                                                    });
+                                                }
+                                            }
+                                        }
+
+                                        break;
                                 }
                             }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
-                    }
-
-                    #endregion
-
-                    #region Parameter Event Actions
-
-                    var parameterEventActionsCallbackResults = new Callback(eventActionComponent.GetParameterEventActions());
-
-                    if (parameterEventActionsCallbackResults.Success())
-                    {
-                        var parameterEventActions = eventActionComponent.GetParameterEventActions().GetData();
-
-                        for (int i = 0; i < parameterEventActions.Count; i++)
+                        else
                         {
-                            var eventAction = parameterEventActions[i];
-                            eventAction.SetInitialized();
-
-                            parameterEventActionsCallbackResults.SetResult(eventAction.Initialized());
-
-                            if (parameterEventActionsCallbackResults.Success())
-                            {
-                                parameterEventActionsCallbackResults.SetResult(eventActionComponent.EventNotRegistered(eventAction));
-
-                                if (callbackResults.Success())
-                                {
-                                    eventActionComponent.AddEventActionToRegister(eventAction, eventAddedCallbackResults =>
-                                    {
-                                        parameterEventActionsCallbackResults.SetResult(eventAddedCallbackResults);
-                                    });
-                                }
-                            }
+                            callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events";
+                            callbackResults.resultCode = Helpers.SuccessCode;
                         }
-                    }
-
-                    if (eventActionsCallbackResults.Success())
-                        callbackResults.SetResult(eventActionsCallbackResults);
-                    else if (parameterEventActionsCallbackResults.Success())
-                        callbackResults.SetResult(parameterEventActionsCallbackResults);
-                    else
-                        callbackResults.result = $"Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Not Subscribed To Events";
-
-                    #endregion
-
+                    });
                 }
 
                 callback?.Invoke(callbackResults);
@@ -31230,66 +31307,22 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    #region Event Actions
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
 
-                    var eventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredEventActions());
-
-                    if (eventActionsSubscriptionsCallbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        var subscibedEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+                        var appEventsManagerInstance = Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                        for (int i = 0; i < subscibedEventActions.Count; i++)
+                        appEventsManagerInstance.OnEventSubscription(GetEventActionsConfig().GetData(), callback: subscribedToEventsCallbackResults =>
                         {
-                            ActionEvents.OnEventActionSubscription(subscibedEventActions[i], callback: subscriptionCallbackResults =>
-                            {
-                                eventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
-
-                                if (eventActionsSubscriptionsCallbackResults.UnSuccessful())
-                                    Log(eventActionsSubscriptionsCallbackResults.GetResultCode, eventActionsSubscriptionsCallbackResults.GetResult, this);
-                            });
-
-                            if (eventActionsSubscriptionsCallbackResults.UnSuccessful())
-                                break;
-                        }
+                            callbackResults.SetResult(subscribedToEventsCallbackResults);
+                        });
                     }
-
-                    #endregion
-
-                    #region Parameter Event Actions
-
-                    var parameterEventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredParameterEventActions());
-
-                    if (parameterEventActionsSubscriptionsCallbackResults.Success())
-                    {
-                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredParameterEventActions().GetData();
-
-                        for (int i = 0; i < subscibedParameterEventActions.Count; i++)
-                        {
-                            ActionEvents.OnEventActionSubscription(subscibedParameterEventActions[i], callback: subscriptionCallbackResults =>
-                            {
-                                parameterEventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
-
-                                if (parameterEventActionsSubscriptionsCallbackResults.UnSuccessful())
-                                    Log(parameterEventActionsSubscriptionsCallbackResults.GetResultCode, parameterEventActionsSubscriptionsCallbackResults.GetResult, this);
-                            });
-
-                            if (parameterEventActionsSubscriptionsCallbackResults.UnSuccessful())
-                                break;
-                        }
-                    }
-
-                    #endregion
-
-                    if (eventActionsSubscriptionsCallbackResults.Success())
-                        callbackResults.SetResult(eventActionsSubscriptionsCallbackResults);
-                    else if (parameterEventActionsSubscriptionsCallbackResults.Success())
-                        callbackResults.SetResult(parameterEventActionsSubscriptionsCallbackResults);
                     else
-                    {
-                        callbackResults.result = $"Subscribe To Events - Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Doesn't Initialize Event Actions - Code Returning Success.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -31352,6 +31385,8 @@ namespace Com.RedicalGames.Filar
                         callbackResults.resultCode = Helpers.ErrorCode;
                     }
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -42449,7 +42484,7 @@ namespace Com.RedicalGames.Filar
         #region Debugger
 
         [Serializable]
-        public class DataDebugger: IDebugger
+        public class DataDebugger:IDebugger
         {
             #region Components
 
@@ -47030,9 +47065,20 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public string GetName() => (!string.IsNullOrEmpty(name)) ? name : "Event Action Name Is Not Assigned.";
+            public CallbackData<EventType> GetEventType()
+            {
+                var callbackResults = new CallbackData<EventType>(AppData.Helpers.GetAppEnumValueValid(eventType, "Event Type", $"Get Event Type Failed For : {GetName()} - Event Type Is Set To Default : {eventType}."));
 
-            public EventType GetEventType() => eventType;
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Event Type Success For : {GetName()} - Event Type Is Set To : {eventType}.";
+                    callbackResults.data = eventType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
 
             #endregion
 
@@ -47128,29 +47174,22 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<UnityEvent> GetEventMethod()
             {
-                CallbackData<UnityEvent> callbackResults = new CallbackData<UnityEvent>();
-               
-                if(eventMethod != null)
+                CallbackData<UnityEvent> callbackResults = new CallbackData<UnityEvent>(Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Get Event Method Failed - There Is No Event Method Found For : {GetName()} - Of Type : {GetEventType().GetData()}"));
+
+                if (callbackResults.Success())
                 {
-                    if (GetEventType() != EventType.None)
+                    callbackResults.SetResult(GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType().GetData()} Has Been Successfully Found.";
                         callbackResults.data = eventMethod;
-                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
-                    {
-                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -47265,29 +47304,22 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<UnityEvent<T>> GetEventMethod()
             {
-                CallbackData<UnityEvent<T>> callbackResults = new CallbackData<UnityEvent<T>>();
+                CallbackData<UnityEvent<T>> callbackResults = new CallbackData<UnityEvent<T>>(Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Get Event Method Failed - There Is No Event Method Found For : {GetName()} - Of Type : {GetEventType().GetData()}"));
 
-                if (eventMethod != null)
+                if (callbackResults.Success())
                 {
-                    if (GetEventType() != EventType.None)
+                    callbackResults.SetResult(GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType().GetData()} Has Been Successfully Found.";
                         callbackResults.data = eventMethod;
-                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
-                    {
-                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -47363,29 +47395,22 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<UnityEvent<T, U>> GetEventMethod()
             {
-                CallbackData<UnityEvent<T, U>> callbackResults = new CallbackData<UnityEvent<T, U>>();
+                CallbackData<UnityEvent<T, U>> callbackResults = new CallbackData<UnityEvent<T, U>>(Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Get Event Method Failed - There Is No Event Method Found For : {GetName()} - Of Type : {GetEventType().GetData()}"));
 
-                if (eventMethod != null)
+                if (callbackResults.Success())
                 {
-                    if (GetEventType() != EventType.None)
+                    callbackResults.SetResult(GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType().GetData()} Has Been Successfully Found.";
                         callbackResults.data = eventMethod;
-                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
-                    {
-                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -47403,7 +47428,7 @@ namespace Com.RedicalGames.Filar
                     var eventMethodData = GetEventMethod().GetData();
                     eventMethodData.Invoke((T)valueA, (U)valueB);
 
-                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType().GetData()} Has Been Triggered Successfully.";
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -47454,7 +47479,7 @@ namespace Com.RedicalGames.Filar
 
                 if (this != null && callbackResults.Success())
                 {
-                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType().GetData()} - Has Been Initialized Successfully.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
@@ -47485,29 +47510,22 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<UnityEvent<T, U, V>> GetEventMethod()
             {
-                CallbackData<UnityEvent<T, U, V>> callbackResults = new CallbackData<UnityEvent<T, U, V>>();
+                CallbackData<UnityEvent<T, U, V>> callbackResults = new CallbackData<UnityEvent<T, U, V>>(Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Get Event Method Failed - There Is No Event Method Found For : {GetName()} - Of Type : {GetEventType().GetData()}"));
 
-                if (eventMethod != null)
+                if (callbackResults.Success())
                 {
-                    if (GetEventType() != EventType.None)
+                    callbackResults.SetResult(GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType().GetData()} Has Been Successfully Found.";
                         callbackResults.data = eventMethod;
-                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
-                    {
-                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -47526,7 +47544,7 @@ namespace Com.RedicalGames.Filar
                     var eventMethodData = GetEventMethod().GetData();
                     eventMethodData.Invoke((T)valueA, (U)valueB, (V)valueC);
 
-                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
+                    callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType().GetData()} Has Been Triggered Successfully.";
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -47577,7 +47595,7 @@ namespace Com.RedicalGames.Filar
 
                 if (this != null && callbackResults.Success())
                 {
-                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType()} - Has Been Initialized Successfully.";
+                    callbackResults.result = $"Event Action : {GetName()} - Of Type : {GetEventType().GetData()} - Has Been Initialized Successfully.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
@@ -47608,29 +47626,22 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<UnityEvent<T, U, V, W>> GetEventMethod()
             {
-                CallbackData<UnityEvent<T, U, V, W>> callbackResults = new CallbackData<UnityEvent<T, U, V, W>>();
+                CallbackData<UnityEvent<T, U, V, W>> callbackResults = new CallbackData<UnityEvent<T, U, V, W>>(Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Get Event Method Failed - There Is No Event Method Found For : {GetName()} - Of Type : {GetEventType().GetData()}"));
 
-                if (eventMethod != null)
+                if (callbackResults.Success())
                 {
-                    if (GetEventType() != EventType.None)
+                    callbackResults.SetResult(GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType()} Has Been Successfully Found.";
+                        callbackResults.result = $"Event Menthod For Event Action: {GetName()} - Of Type : {GetEventType().GetData()} Has Been Successfully Found.";
                         callbackResults.data = eventMethod;
-                        callbackResults.resultCode = Helpers.SuccessCode;
                     }
                     else
-                    {
-                        callbackResults.result = $"Event Action : {GetName()}'s Event Type Is Set To Default : NONE - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Event Action : {GetName()}'s Event Method Missing / Null / Not Yet Initialized.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult,this);
 
                 return callbackResults;
             }
@@ -47687,6 +47698,8 @@ namespace Com.RedicalGames.Filar
             private List<EventAction> registeredEventActions = new List<EventAction>();
             private List<EventAction<T>> registeredParameterEventActions = new List<EventAction<T>>();
 
+            private EventActionInitializedGroupType initializedGroupType = EventActionInitializedGroupType.None;
+
             #endregion
 
             #region Main
@@ -47713,6 +47726,72 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Event Action : {eventAction.GetName()} Is Not Registered - There Are No Event Actions Initialized Yet For Event Action Component : {GetName()}.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
+
+                return callbackResults;
+            }
+
+            public void Initialize(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                if (GetEventActions().Success() && GetParameterEventActions().Success())
+                {
+                    SetInitializedGroupType(EventActionInitializedGroupType.All);
+
+                    callbackResults.result = $"Both Event And Parameter Event Actions Have Been Successfull Initialized For : {GetName()}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else if (GetEventActions().Success() && GetParameterEventActions().UnSuccessful())
+                {
+                    SetInitializedGroupType(EventActionInitializedGroupType.EventActions);
+
+                    callbackResults.result = $"Event Actions Have Been Successfull Initialized For : {GetName()}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else if(GetEventActions().UnSuccessful() && GetParameterEventActions().Success())
+                {
+                    SetInitializedGroupType(EventActionInitializedGroupType.ParameterEventActions);
+
+                    callbackResults.result = $"Parameter Event Actions Have Been Successfull Initialized For : {GetName()}.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    SetInitializedGroupType(EventActionInitializedGroupType.Default);
+
+                    callbackResults.result = $"There Are No Event Or Parameter Event Actions Initialized For : {GetName()}.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void SetInitializedGroupType(EventActionInitializedGroupType initializedGroupType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(initializedGroupType, "Initialized Group Type", $"Set Initialized Group Type Failed - Initialized Group Type Parameter Value Is Set To Default : {initializedGroupType}."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Set Initialized Group Type Success - Initialized Group Type Has Been Successfully Set To : {initializedGroupType}";
+                    this.initializedGroupType = initializedGroupType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<EventActionInitializedGroupType> GetInitializedGroupType()
+            {
+                var callbackResults = new CallbackData<EventActionInitializedGroupType>(Helpers.GetAppEnumValueValid(initializedGroupType, "Initialized Group Type", $"Get Initialized Group Type Failed - Initialized Group Type Is Set To Default : {initializedGroupType}."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Initialized Group Type Success - Initialized Group Type Has Been Successfully Set To : {initializedGroupType}";
+                    callbackResults.data = initializedGroupType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -48112,76 +48191,81 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    switch (eventAction.GetEventType())
+                    callbackResults.SetResult(eventAction.GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        case EventType.OnInitializationStartedEvent:
+                        switch (eventAction.GetEventType().GetData())
+                        {
+                            case EventType.OnInitializationStartedEvent:
 
-                            if (subscribe)
-                                _OnInitializationStartedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnInitializationStartedEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnInitializationStartedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnInitializationStartedEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnInitializationCompletedEvent:
+                            case EventType.OnInitializationCompletedEvent:
 
-                            if (subscribe)
-                                _OnInitializationCompletedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnInitializationCompletedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnUpdate:
+                            case EventType.OnUpdate:
 
-                            if (subscribe)
-                                _OnUpdate += eventAction.TriggeredEventMethod;
-                            else
-                                _OnUpdate -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnUpdate += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnUpdate -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnNetworkFailedEvent:
+                            case EventType.OnNetworkFailedEvent:
 
-                            if (subscribe)
-                                _OnNetworkFailedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnNetworkFailedEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnNetworkFailedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnNetworkFailedEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnPostsInitializationStartedEvent:
+                            case EventType.OnPostsInitializationStartedEvent:
 
-                            if (subscribe)
-                                _OnPostsInitializationStartedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnPostsInitializationStartedEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnPostsInitializationStartedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnPostsInitializationStartedEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnPostsInitializationInProgressEvent:
+                            case EventType.OnPostsInitializationInProgressEvent:
 
-                            if (subscribe)
-                                _OnPostsInitializationInProgressEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnPostsInitializationInProgressEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnPostsInitializationInProgressEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnPostsInitializationInProgressEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnPostsInitializationCompletedEvent:
+                            case EventType.OnPostsInitializationCompletedEvent:
 
-                            if (subscribe)
-                                _OnPostsInitializationCompletedEvent += eventAction.TriggeredEventMethod;
-                            else
-                                _OnPostsInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    _OnPostsInitializationCompletedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnPostsInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
+                        }
+
+                        var results = (subscribe) ? "Subcribed" : "Un-Subscribed";
+
+                        callbackResults.result = $"Event Action : {eventAction.GetName()} - Has Been Successfully : {results}.";
+                        callbackResults.data = eventAction;
                     }
-
-                    var results = (subscribe) ? "Subcribed" : "Un-Subscribed";
-
-                    callbackResults.result = $"Event Action : {eventAction.GetName()} - Has Been Successfully : {results}.";
-                    callbackResults.data = eventAction;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -48193,104 +48277,109 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    switch (eventAction.GetEventType())
+                    callbackResults.SetResult(eventAction.GetEventType());
+
+                    if (callbackResults.Success())
                     {
-                        case EventType.OnActionButtonPressedEvent:
+                        switch (eventAction.GetEventType().GetData())
+                        {
+                            case EventType.OnActionButtonPressedEvent:
 
-                            //if (subscribe)
-                            //    _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
-                            //else
-                            //    _OnActionButtonPressedEvent -= eventAction.TriggeredEventMethod;
+                                //if (subscribe)
+                                //    _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
+                                //else
+                                //    _OnActionButtonPressedEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnScreenShownEvent:
+                            case EventType.OnScreenShownEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnScreenShownEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnScreenHiddenEvent:
+                            case EventType.OnScreenHiddenEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnScreenHiddenEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnScreenTransitionInProgressEvent:
+                            case EventType.OnScreenTransitionInProgressEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnScreenTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnWidgetShownEvent:
+                            case EventType.OnWidgetShownEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnWidgetShownEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnWidgetShownEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnWidgetHiddenEvent:
+                            case EventType.OnWidgetHiddenEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnWidgetTransitionInProgressEvent:
+                            case EventType.OnWidgetTransitionInProgressEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnSelectableWidgetShownEvent:
+                            case EventType.OnSelectableWidgetShownEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnSelectableWidgetShownEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnSelectableWidgetShownEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnSelectableWidgetHiddenEvent:
+                            case EventType.OnSelectableWidgetHiddenEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnSelectableWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnSelectableWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
-                        case EventType.OnSelectableWidgetTransitionInProgressEvent:
+                            case EventType.OnSelectableWidgetTransitionInProgressEvent:
 
-                            if (subscribe)
-                                GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
-                            else
-                                GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
+                                if (subscribe)
+                                    GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventAction.TriggeredEventMethod;
 
-                            break;
+                                break;
 
+                        }
+
+                        var results = (subscribe) ? "Subcribed" : "Un-Subscribed";
+
+                        callbackResults.result = $"Event Action : {eventAction.GetName()} - Has Been Successfully : {results}.";
+                        callbackResults.data = eventAction;
                     }
-
-                    var results = (subscribe) ? "Subcribed" : "Un-Subscribed";
-
-                    callbackResults.result = $"Event Action : {eventAction.GetName()} - Has Been Successfully : {results}.";
-                    callbackResults.data = eventAction;
                 }
 
                 callback?.Invoke(callbackResults);
