@@ -129,32 +129,6 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        //public void LoadDefaultPostContent(Action<AppData.Callback> callback = null)
-        //{
-        //    var callbackResults = new AppData.Callback(GetPost());
-
-        //    if (callbackResults.Success())
-        //    {
-        //        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized."));
-
-        //        if (callbackResults.Success())
-        //        {
-        //            var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance Is Not Yet Initialized.").GetData();
-
-        //            appDatabaseManagerInstance.LoadPostContent(post, postLoadedCallbackResults =>
-        //            {
-        //                callbackResults.SetResult(postLoadedCallbackResults);
-        //            });
-        //        }
-        //        else
-        //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-        //    }
-        //    else
-        //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-        //    callback?.Invoke(callbackResults);
-        //}
-
         public void SelectPost(Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(GetPostContent(post));
@@ -179,7 +153,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void SelectPost(AppData.Post post, Action<AppData.Callback> callback = null)
+        public async void SelectPost(AppData.Post post, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(GetPostContent(post));
 
@@ -198,6 +172,22 @@ namespace Com.RedicalGames.Filar
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 });
+            }
+            else
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
+
+                if(callbackResults.Success())
+                {
+                    var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                    var loadContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.GetPostContentAsync(post);
+                    callbackResults.SetResult(loadContentAsyncCallbackResultsTask);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                LogInfo(" ___Log_Cat: Get Post Content From Manager", this);
             }
 
             callback?.Invoke(callbackResults);

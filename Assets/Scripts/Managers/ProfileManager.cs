@@ -299,64 +299,6 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public  AppData.Callback SignedIn()
-        {
-            var callbackResults = new AppData.Callback(GetSignInState());
-
-            if (callbackResults.Success())
-            {
-                if (GetSignInState().GetData() == AppData.SignInState.SignIn)
-                {
-
-                }
-                else
-                {
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
-
-                    if (callbackResults.Success())
-                    {
-                        var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
-
-                        screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
-                        {
-                            callbackResults.SetResult(currentScreenCallbackResults);
-
-                            if (currentScreenCallbackResults.Success())
-                            {
-                                var screen = currentScreenCallbackResults.GetData();
-
-                                var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
-
-                                callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
-
-                                if(callbackResults.Success())
-                                {
-                                    var loginScreenConfig = new AppData.SceneConfigDataPacket();
-
-                                    loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                    loginScreenConfig.blurScreen = true;
-
-                                    screen.ShowWidget(loginScreenConfig);
-
-                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
-                                }
-                                else
-                                    Log(currentScreenCallbackResults.GetResultCode, currentScreenCallbackResults.GetResult, this);
-                            }
-                            else
-                                Log(currentScreenCallbackResults.GetResultCode, currentScreenCallbackResults.GetResult, this);
-                        });
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            return callbackResults;
-        }
-
         public void AcceptTermsAndConditions() => TermsAndConditionsAccepted = true;
 
         #endregion

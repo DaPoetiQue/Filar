@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -12,9 +13,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType>>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType, AppData.Widget>>> callback)
         {
-            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType>>();
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType, AppData.Widget>>();
 
             Init(initializationCallbackResults =>
             {
@@ -24,9 +25,9 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType>> OnGetState()
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType, AppData.Widget>> OnGetState()
         {
-            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.WidgetType, AppData.Widget>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
 
             if (callbackResults.Success())
             {
@@ -79,15 +80,97 @@ namespace Com.RedicalGames.Filar
                         {
                             case AppData.InputActionButtonType.OpenProfileButton:
 
-                                callbackResults.SetResult(profileManager.SignedIn());
+                                callbackResults.SetResult(profileManager.GetSignInState());
 
                                 if (callbackResults.Success())
                                 {
-                                    LogInfo($" <==========================> Open Profile : {screen.GetName()} - Type : {screen.GetType().GetData()}", this);
+                                    if (profileManager.GetSignInState().GetData() == AppData.SignInState.SignIn)
+                                    {
+                                        OpenMainMenu(AppData.MenuType.Profile, screen, menuOpenCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(menuOpenCallbackResults);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        callbackResults.SetResult(screen.IsFocusedWidget(this));
 
-                                    var showWidgetAsyncCallbackResultsTask = await screen.ShowWidgetAsync(AppData.WidgetType.HomeMenuWidget);
-                                    callbackResults.SetResult(showWidgetAsyncCallbackResultsTask);
+                                        if (callbackResults.Success())
+                                        {
+                                            // Select Profile Tab
+                                            LogInfo(" _______Log_Cat: Selecting Profile Tab.", this);
+                                        }
+                                        else
+                                        {
+                                            callbackResults.SetResult(screen.GetWidgetOfType(AppData.WidgetType.SignInWidget));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var widget = screen.GetWidgetOfType(AppData.WidgetType.SignInWidget).GetData();
+
+                                                callbackResults.SetResult(screen.IsFocusedWidget(AppData.WidgetType.PostsWidget));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                                                    callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        await Task.Delay(500);
+
+                                                        var loginScreenConfig = new AppData.SceneConfigDataPacket();
+
+                                                        loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                                        loginScreenConfig.blurScreen = true;
+
+                                                        screen.ShowWidget(loginScreenConfig);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                {
+                                                    var loginScreenConfig = new AppData.SceneConfigDataPacket();
+
+                                                    loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                                    loginScreenConfig.blurScreen = true;
+
+                                                    screen.ShowWidget(loginScreenConfig);
+                                                }
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                    }
                                 }
+
+                                break;
+
+                            case AppData.InputActionButtonType.OpenInboxButton:
+
+                                OpenMainMenu(AppData.MenuType.Inbox, screen, menuOpenCallbackResults =>
+                                {
+                                    callbackResults.SetResult(menuOpenCallbackResults);
+                                });
+
+                                break;
+
+                            case AppData.InputActionButtonType.HelpButton:
+
+                                OpenMainMenu(AppData.MenuType.Help, screen, menuOpenCallbackResults =>
+                                {
+                                    callbackResults.SetResult(menuOpenCallbackResults);
+                                });
+
+                                break;
+
+                            case AppData.InputActionButtonType.OpenScreenSettingsButton:
+
+                                OpenMainMenu(AppData.MenuType.Settings, screen, menuOpenCallbackResults => 
+                                {
+                                    callbackResults.SetResult(menuOpenCallbackResults);
+                                });
 
                                 break;
                         }
@@ -100,6 +183,92 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private async void OpenMainMenu(AppData.MenuType menuType, Screen screen, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(screen.GetWidgetOfType(AppData.WidgetType.PostsWidget));
+
+            if (callbackResults.Success())
+            {
+                var widget = screen.GetWidgetOfType(AppData.WidgetType.PostsWidget).GetData();
+
+                callbackResults.SetResult(screen.IsFocusedWidget(AppData.WidgetType.PostsWidget));
+
+                if (callbackResults.Success())
+                {
+                    var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                    callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
+
+                    if (callbackResults.Success())
+                    {
+                        await Task.Delay(500);
+
+                        widget.SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Close", titleSetCallbackResults =>
+                        {
+                            callbackResults.SetResult(titleSetCallbackResults);
+
+                            if (callbackResults.Success())
+                                screen.ShowWidget(this);
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                {
+                    callbackResults.SetResult(screen.IsFocusedWidget(this));
+
+                    if (callbackResults.Success())
+                    {
+                        screen.RemoveFocusedWidget(this, async focusedWidgetRemovedCallbackResults =>
+                        {
+                            callbackResults.SetResult(focusedWidgetRemovedCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                //var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.HomeMenuWidget);
+                                //callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
+
+                                //if (callbackResults.Success())
+                                //{
+                                //    widget.SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Posts", titleSetCallbackResults =>
+                                //    {
+                                //        callbackResults.SetResult(titleSetCallbackResults);
+
+                                //        if (callbackResults.Success())
+                                //            screen.ShowWidget(this);
+                                //        else
+                                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //    });
+                                //}
+                                //else
+                                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                    {
+                        widget.SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Close", titleSetCallbackResults =>
+                        {
+                            callbackResults.SetResult(titleSetCallbackResults);
+
+                            if (callbackResults.Success())
+                                screen.ShowWidget(this);
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)

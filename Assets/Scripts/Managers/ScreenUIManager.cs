@@ -176,7 +176,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    screenContainer.AddContent<Screen, AppData.ScreenType, AppData.WidgetType>(uiScreenWidgetComponent: screen, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
+                                    screenContainer.AddContent<Screen, AppData.ScreenType, AppData.WidgetType, AppData.Widget>(uiScreenWidgetComponent: screen, keepWorldPosition: false, isActive: true, overrideContainerActiveState: true, updateContainer: true, screenAddedCallbackResults =>
                                     {
                                         callbackResults.SetResult(screenAddedCallbackResults);
 

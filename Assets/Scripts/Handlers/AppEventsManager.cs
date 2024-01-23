@@ -225,18 +225,30 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        AppData.ActionEvents.OnEventActionSubscription(subscibedEventActions[i], subscribe, subscriptionCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(subscriptionCallbackResults);
-                                        });
+                                        callbackResults.SetResult(subscibedEventActions[i].GetEventMethod());
 
-                                        if (callbackResults.UnSuccessful())
+                                        if (callbackResults.Success())
+                                        {
+                                            AppData.ActionEvents.OnEventActionSubscription(subscibedEventActions[i], subscribe, subscriptionCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(subscriptionCallbackResults);
+                                            });
+
+                                            if (callbackResults.UnSuccessful())
+                                            {
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             break;
+                                        }
                                     }
                                     else
                                     {
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                                         break;
                                     }
                                 }
@@ -258,94 +270,30 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            switch (subscibedParameterEventActions[i].GetEventType().GetData())
+                                            callbackResults.SetResult(subscibedParameterEventActions[i].GetEventMethod());
+
+                                            if (callbackResults.Success())
                                             {
-                                                case AppData.EventType.OnScreenShownEvent:
+                                                AppData.ActionEvents.OnEventActionSubscription(subscibedParameterEventActions[i], subscribe, subscriptionCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(subscriptionCallbackResults);
+                                                });
 
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnScreenShownEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnScreenShownEvent -= eventMethod.Invoke;
-
+                                                if (callbackResults.UnSuccessful())
+                                                {
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     break;
-
-                                                case AppData.EventType.OnScreenHiddenEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnScreenHiddenEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnScreenHiddenEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnScreenTransitionInProgressEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnWidgetShownEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnWidgetShownEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnWidgetShownEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnWidgetHiddenEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnWidgetHiddenEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnWidgetHiddenEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnWidgetTransitionInProgressEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnSelectableWidgetShownEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnSelectableWidgetHiddenEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent -= eventMethod.Invoke;
-
-                                                    break;
-
-                                                case AppData.EventType.OnSelectableWidgetTransitionInProgressEvent:
-
-                                                    //if (subscribe)
-                                                    //    AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventMethod.Invoke;
-                                                    //else
-                                                    //    AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventMethod.Invoke;
-
-                                                    break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                break;
                                             }
                                         }
                                         else
                                         {
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                                             break;
                                         }
                                     }
@@ -370,18 +318,30 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        AppData.ActionEvents.OnEventActionSubscription(subscibedEventActions[i], subscribe, subscriptionCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(subscriptionCallbackResults);
-                                        });
+                                        callbackResults.SetResult(subscibedEventActions[i].GetEventMethod());
 
-                                        if (callbackResults.UnSuccessful())
+                                        if (callbackResults.Success())
+                                        {
+                                            AppData.ActionEvents.OnEventActionSubscription(subscibedEventActions[i], subscribe, subscriptionCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(subscriptionCallbackResults);
+                                            });
+
+                                            if (callbackResults.UnSuccessful())
+                                            {
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             break;
+                                        }
                                     }
                                     else
                                     {
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                                         break;
                                     }
                                 }
@@ -405,94 +365,30 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        switch (subscibedParameterEventActions[i].GetEventType().GetData())
+                                        callbackResults.SetResult(subscibedParameterEventActions[i].GetEventMethod());
+
+                                        if (callbackResults.Success())
                                         {
-                                            case AppData.EventType.OnScreenShownEvent:
+                                            AppData.ActionEvents.OnEventActionSubscription(subscibedParameterEventActions[i], subscribe, subscriptionCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(subscriptionCallbackResults);
+                                            });
 
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnScreenShownEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnScreenShownEvent -= eventMethod.Invoke;
-
+                                            if (callbackResults.UnSuccessful())
+                                            {
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 break;
-
-                                            case AppData.EventType.OnScreenHiddenEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnScreenHiddenEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnScreenHiddenEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnScreenTransitionInProgressEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnWidgetShownEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnWidgetShownEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnWidgetShownEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnWidgetHiddenEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnWidgetHiddenEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnWidgetHiddenEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnWidgetTransitionInProgressEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnSelectableWidgetShownEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnSelectableWidgetHiddenEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent -= eventMethod.Invoke;
-
-                                                break;
-
-                                            case AppData.EventType.OnSelectableWidgetTransitionInProgressEvent:
-
-                                                //if (subscribe)
-                                                //    AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventMethod.Invoke;
-                                                //else
-                                                //    AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventMethod.Invoke;
-
-                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            break;
                                         }
                                     }
                                     else
                                     {
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                                         break;
                                     }
                                 }

@@ -11,9 +11,9 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType>>> callback)
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>>> callback)
         {
-            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType>>();
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>>();
 
             // Initialize Assets.
             Init(initializationCallbackResults =>
@@ -25,36 +25,14 @@ namespace Com.RedicalGames.Filar
         }
 
 
-        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType>> OnGetState()
+        protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>> OnGetState()
         {
             return null;
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            //switch (actionButton.dataPackets.action)
-            //{
-            //    case AppData.InputActionButtonType.SelectPostButton:
-
-            //        AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, async appDatabaseManagerCallbackResults =>
-            //        {
-            //            if (appDatabaseManagerCallbackResults.Success())
-            //            {
-            //                var appDatabaseManager = appDatabaseManagerCallbackResults.data;
-
-            //                LogInfo(" +++++++++ Pressed Select", this);
-
-            //                await appDatabaseManager.LoadSelectedPostContent(post);
-
-            //                CancelActionButtonInvoke(AppData.InputActionButtonType.ConfirmationButton);
-            //            }
-            //            else
-            //                Log(appDatabaseManagerCallbackResults.GetResultCode, appDatabaseManagerCallbackResults.GetResult, this);
-
-            //        }, "App Database Manager Is Not Yet Initialized.");
-
-            //        break;
-            //}
+           
         }
 
         void OnGoToProfile_ActionEvent(AppData.ButtonConfigDataPacket dataPackets)
@@ -232,7 +210,26 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.SelectableWidgetType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-           
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(PostManager.Instance,"Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance").GetData();
+
+                switch (actionType)
+                {
+                    case AppData.InputActionButtonType.SelectPostButton:
+
+                        postManagerInstance.SelectPost(post, postSelectedCallbackResults => 
+                        {
+                            callbackResults.SetResult(postSelectedCallbackResults);
+                        });
+
+                        break;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)

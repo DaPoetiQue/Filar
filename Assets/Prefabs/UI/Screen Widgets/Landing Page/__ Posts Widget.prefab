@@ -80,7 +80,10 @@ MonoBehaviour:
   referencedWidgetDependencyAssets: []
   dynamicContainerList:
   - {fileID: 6256656634447667956}
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup:
   - name: Post Menu Buttons
     inputActionGroupType: 1
@@ -265,7 +268,7 @@ GameObject:
   - component: {fileID: 6256656633253913670}
   - component: {fileID: 6256656633253913671}
   m_Layer: 0
-  m_Name: Button Text
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -319,7 +322,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hide Posts
+  m_text: Posts
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -508,7 +511,7 @@ GameObject:
   - component: {fileID: 6256656633791618320}
   - component: {fileID: 6256656633791618321}
   m_Layer: 0
-  m_Name: Button Text
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -562,7 +565,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hide Posts
+  m_text: Close
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1146,7 +1149,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6256656634593061699
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1317,7 +1320,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 6256656633253913671}
     fieldUIImageList: []
     value: {fileID: 6256656634593061708}
     dataPackets:
@@ -1503,7 +1506,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1691,7 +1694,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1880,7 +1883,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -2067,7 +2070,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -2253,7 +2256,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -2437,7 +2440,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -2620,7 +2623,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -2951,7 +2954,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 6256656633791618321}
     fieldUIImageList: []
     value: {fileID: 6256656634725861543}
     dataPackets:
@@ -3137,7 +3140,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -3325,7 +3328,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -3514,7 +3517,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -3701,7 +3704,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -3887,7 +3890,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -4071,7 +4074,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -4254,7 +4257,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:

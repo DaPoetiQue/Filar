@@ -28,46 +28,69 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                var container = GetContainer<Transform>().data;
+                var container = GetContainer<Transform>().GetData();
 
-                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Initialized Yet."));
+
+                if (callbackResults.Success())
                 {
-                    if (GetContentCount().data > 0)
-                    {
-                        for (int i = 0; i < GetContentCount().data; i++)
-                        {
-                            var contentHandler = container.GetChild(i).GetComponent<ScenePostContentHandler>();
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                            if (contentHandler != null)
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                    if (callbackResults.Success())
+                    {
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                        callbackResults.SetResult(HasContent());
+
+                        if (callbackResults.Success())
+                        {
+                            if (showSpinner)
+                                screen.ShowWidget(AppData.WidgetType.LoadingWidget, true);
+
+                            for (int i = 0; i < GetContentCount().GetData(); i++)
                             {
-                                if (recycleContainer != null)
+                                var contentHandler = container.GetChild(i).GetComponent<ScenePostContentHandler>();
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(contentHandler, "Content Handler", "Clear Container Failed - Content Handler Not Found."));
+
+                                if (callbackResults.Success())
                                 {
-                                    recycleContainer.AddContent(contentHandler, false, contentAddedCallbackResults => 
+                                    callbackResults.SetResult(GetRecycleContainer());
+
+                                    if (callbackResults.Success())
                                     {
-                                        callback.Invoke(contentAddedCallbackResults);
-                                    });
+                                        var recycleContainerObject = GetRecycleContainer().GetData();
+
+                                        recycleContainerObject.AddContent(contentHandler, false, contentAddedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(contentAddedCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
-                                {
-                                    callbackResults.result = $"Recycle Container Is Not Yet Initialized.";
-                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                                }
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+
+                            if (callbackResults.Success())
+                            {
+                                if (showSpinner)
+                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
                             }
                             else
-                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
-                    {
-                        callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             callback?.Invoke(callbackResults);
@@ -79,49 +102,80 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                var container = GetContainer<Transform>().data;
+                var container = GetContainer<Transform>().GetData();
 
-                if (ScreenUIManager.Instance.HasCurrentScreen().Success())
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Initialized Yet."));
+
+                if (callbackResults.Success())
                 {
-                    if (GetContentCount().GetData() > 0)
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                    if (callbackResults.Success())
                     {
-                        for (int i = 0; i < GetContentCount().data; i++)
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                        callbackResults.SetResult(HasContent());
+
+                        if (callbackResults.Success())
                         {
-                            if (container.GetChild(i).GetComponent<ScenePostContentHandler>())
+                            if (showSpinner)
+                                screen.ShowWidget(AppData.WidgetType.LoadingWidget, true);
+
+                            for (int i = 0; i < GetContentCount().GetData(); i++)
                             {
-                                Destroy(container.GetChild(i).gameObject);
+                                var contentHandler = container.GetChild(i).GetComponent<ScenePostContentHandler>();
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(contentHandler, "Content Handler", "Clear Container Failed - Content Handler Not Found."));
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetRecycleContainer());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var recycleContainerObject = GetRecycleContainer().GetData();
+
+                                        recycleContainerObject.AddContent(contentHandler, false, contentAddedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(contentAddedCallbackResults);
+                                        });
+
+                                        if (callbackResults.Success())
+                                            await Task.Delay(100);
+                                        else
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            break;
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+
+                            if (callbackResults.Success())
+                            {
+                                if (showSpinner)
+                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
                             }
                             else
-                                LogError($"Widget : {container.GetChild(i).name} Doesn't Contain AppData.UIScreenWidget Component", this);
-                        }
-
-                        while (container.childCount > 0)
-                            await Task.Yield();
-
-                        if (container.childCount == 0)
-                        {
-                            AppDatabaseManager.Instance.UnloadUnusedAssets();
-
-                            callbackResults.result = "All Widgets Cleared.";
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                         {
-                            callbackResults.result = $"{container.childCount} : Widgets Failed To Clear.";
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            callbackResults.result = $"There Are No Contents To Clear For : {GetName()} - Of Type : {GetContainerType().GetData()}";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }
                     }
                     else
-                    {
-                        callbackResults.result = $"No Widgets To Clear From Container : {gameObject.name}";
-                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Curent Screen Is Not Yet Initialized.";
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             return callbackResults;

@@ -51,6 +51,15 @@ namespace Com.RedicalGames.Filar
             HDRI
         }
 
+        public enum MenuType
+        {
+            None,
+            Profile,
+            Inbox,
+            Help,
+            Settings
+        }
+
         public enum FileExtensionType
         {
             OBJ,
@@ -4445,13 +4454,33 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<int> GetContentCount()
             {
-                CallbackData<int> callbackResults = new CallbackData<int>(GetContainer<Transform>());
+                var callbackResults = new CallbackData<int>(GetContainer<Transform>());
 
                 if (callbackResults.Success())
                 {
                     callbackResults.result = $"There Are : {GetContainer<Transform>().data.childCount} Contents Inside Container : {GetName()} - Of Type {GetContainerType().GetData()}";
-                    callbackResults.data = GetContainer<Transform>().data.childCount;
+                    callbackResults.data = GetContainer<Transform>().GetData().childCount;
                 }
+
+                return callbackResults;
+            }
+
+            public Callback HasContent()
+            {
+                var callbackResults = new Callback(GetContentCount());
+
+                if (callbackResults.Success())
+                {
+                    if (GetContentCount().GetData() > 0)
+                        callbackResults.result = $"There Are {GetContentCount().GetData()} Content(s) Found For Container : {GetName()} - Of Type : {GetContainerType().GetData()}";
+                    else
+                    {
+                        callbackResults.result = $"There Are No Contents For Container : {GetName()} - Of Type : {GetContainerType().GetData()}";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -4803,7 +4832,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public void AddContent<T, U, V>(T content, bool keepWorldPosition = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
+            public void AddContent<T, U, V, W>(T content, bool keepWorldPosition = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : UIScreenWidget<U, V, W> where U : Enum where V : Enum where W :AppMonoBaseClass
             {
                 try
                 {
@@ -4869,7 +4898,7 @@ namespace Com.RedicalGames.Filar
             /// <param name="isActive">Sets If The State Of The Object Added Should Be Active Or Inactive</param>
             /// <param name="overrideContainerActiveState">Overrides Checing If The Container Is Active Or Not Before Adding Content - Content Can't Be Added To InACtive Containers.</param>
             /// <param name="callback">Callback Results Of This Execution</param>
-            public void AddContent<T, U, V>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum
+            public void AddContent<T, U, V, W>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V, W> where U : Enum where V : Enum where W : AppMonoBaseClass
             {
                 try
                 {
@@ -5085,6 +5114,20 @@ namespace Com.RedicalGames.Filar
             {
                 return null;
             }
+
+            public CallbackData<ContentRecycleContainer> GetRecycleContainer()
+            {
+                var callbackResults = new CallbackData<ContentRecycleContainer>(Helpers.GetAppComponentValid(recycleContainer, "Recycle Container", "Get Recycle Container Failed - Recycle Container Is Not Found / Null."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = "Get Recycle Container Success - Recycle Container Has Been Successfully Found.";
+                    callbackResults.data = recycleContainer;
+                }
+
+                return callbackResults;
+            }
+
 
             #endregion
 
@@ -17060,7 +17103,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public TMP_Text fieldName;
+            public TMP_Text title;
 
             [Space(5)]
             public List<UIImageDisplayer> fieldUIImageList;
@@ -17154,17 +17197,37 @@ namespace Com.RedicalGames.Filar
             /// Sets The Title Of The UI Input.
             /// </summary>
             /// <param name="title">The Title To Display On The UI Input.</param>
-            public void SetTitle(string title)
+            public void SetTitle(string title, Action<Callback> callback = null)
             {
-                if (title != null)
+                var callbackResults = new Callback(GetTitle());
+
+                if (callbackResults.Success())
+                    GetTitle().GetData().text = title;
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            /// <summary>
+            /// Returns A Title Component For The Button.
+            /// </summary>
+            /// <returns></returns>
+            public CallbackData<TMP_Text> GetTitle()
+            {
+                var callbackResults = new CallbackData<TMP_Text>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(title, "Title", "Get Title Failed - Title Value Is Not Assigned - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    if(fieldName)
-                        fieldName.text = title;
-                    else
-                        Debug.LogWarning("--> Set Title Failed - Field Name Is Missing / Null.");
+                    callbackResults.result = $"Get Title Success - Title Is Assigned.";
+                    callbackResults.data = title;
                 }
                 else
-                    Debug.LogWarning("--> Set Title Failed - Title Is Missing / Null.");
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             /// <summary>
@@ -25104,9 +25167,9 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Init(Action<CallbackData<WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>>> callback)
+            public void Init(Action<CallbackData<WidgetStatePacket<SelectableWidgetType, SelectableWidgetType, SelectableWidget>>> callback)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<SelectableWidgetType, SelectableWidgetType>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<SelectableWidgetType, SelectableWidgetType, SelectableWidget>>(GetType());
 
                 #region Base Initialization
 
@@ -27047,7 +27110,7 @@ namespace Com.RedicalGames.Filar
 
         #region Content Bsse Abstract
 
-        public abstract class SelectableWidgetComponent : UIScreenWidgetBaseInput<SelectableWidgetType, WidgetType>, IContent, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
+        public abstract class SelectableWidgetComponent : UIScreenWidgetBaseInput<SelectableWidgetType, WidgetType, Widget>, IContent, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
         {
             #region Components
 
@@ -27788,7 +27851,7 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public abstract class ScreenUIData : UIScreenWidget<ScreenType, WidgetType>, IUIScreenData
+        public abstract class ScreenUIData : UIScreenWidget<ScreenType, WidgetType, Widget>, IUIScreenData
         {
             [Header("Screen Info - Deprecated : Remove")]
 
@@ -27834,7 +27897,7 @@ namespace Com.RedicalGames.Filar
             protected bool initializeScreenWidgets = true;
 
             [SerializeField]
-            protected Widget focusedWidget;
+            protected List<Widget> focusedWidgets = new List<Widget>();
 
             protected List<Widget> widgets = new List<Widget>();
 
@@ -27848,9 +27911,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<ScreenType, WidgetType>>> callback = null)
+            public void Init(Action<CallbackData<WidgetStatePacket<ScreenType, WidgetType, Widget>>> callback = null)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<ScreenType, WidgetType>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<ScreenType, WidgetType, Widget>>(GetType());
 
                 #region Base Initialization
 
@@ -27878,7 +27941,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                var widgetStatePacket = new WidgetStatePacket<ScreenType, WidgetType>(this, WidgetStateType.Initialized);
+                                                var widgetStatePacket = new WidgetStatePacket<ScreenType, WidgetType, Widget>(this, WidgetStateType.Initialized);
 
                                                 SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                 {
@@ -28185,7 +28248,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        container.AddContent<Widget, WidgetType, WidgetType>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
+                                        container.AddContent<Widget, WidgetType, WidgetType, Widget>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
                                         {
                                             callbackResults.SetResult(widgetnAddedCallbackResults);
 
@@ -28521,14 +28584,35 @@ namespace Com.RedicalGames.Filar
 
             #region Widget Focus Events
 
-            public void OnWidgetFocused(Widget widget)
+            protected void OnWidgetFocused(Widget widget)
             {
-                LogInfo($" ________*****Log_Cat: On Widget Focused : {widget.GetName()}");
+                var callbackResults = new Callback();
+
+                SetFocusedWidget(widget, widgetFocusedCallbackResults => 
+                {
+                    callbackResults.SetResult(widgetFocusedCallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
 
-            public void OnWidgetUnfocused(Widget widget)
+            protected void OnWidgetUnfocused(Widget widget)
             {
-                LogInfo($" ________*****Log_Cat: On Widget Un-Focused : {widget.GetName()}");
+                var callbackResults = new Callback(IsFocusedWidget(widget));
+
+                if (callbackResults.Success())
+                {
+                    RemoveFocusedWidget(widget, widgetUnFocusedCallbackResults =>
+                    {
+                        callbackResults.SetResult(widgetUnFocusedCallbackResults);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             #endregion
@@ -28541,9 +28625,16 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    focusedWidget = widget;
-
-                    callbackResults.result = $"Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} - Is Currently Set As Focused Widget For Screen : {GetName()} - Of Type : {GetType().GetData()}";
+                    if(!focusedWidgets.Contains(widget))
+                    {
+                        focusedWidgets.Add(widget);
+                        callbackResults.result = $"Set Focused Widget Success - Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} - Is Currently Set As Focused Widget For Screen : {GetName()} - Of Type : {GetType().GetData()}";
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Set Focused Widget Failed - Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} - Already Exists In Focused Widgets For Screen : {GetName()} - Of Type : {GetType().GetData()}";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28551,25 +28642,78 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void RemoveFocusedWidget(Action<Callback> callback = null)
+            protected CallbackDataList<Widget> GetFocusedWidgets()
             {
-                var callbackResults = new Callback(Helpers.GetAppComponentValid(focusedWidget, "Focused Widget", "Is Focused Widget Failed - There Are No Fucused Widget Assigned."));
+                var callbackResults = new CallbackDataList<Widget>();
 
-                if(callbackResults.Success())
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(focusedWidgets, "Focused Widgets", $"Get Focused Widgets Failed - There Are No Fucused Widgets Assigned For Screen : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                if (callbackResults.Success())
                 {
-                    string widgetName = focusedWidget.GetName();
-                    string widgetType = focusedWidget.GetType().GetData().ToString();
+                    callbackResults.result = $"Get Focused Widgets Success - {focusedWidgets.Count} Focused Widget(s) Has Been Successfully Found For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
+                    callbackResults.data = focusedWidgets;
+                }
 
-                    focusedWidget = null;
+                return callbackResults;
+            }
 
-                    if(focusedWidget == null)
+            public void RemoveFocusedWidget(WidgetType widgetType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetFocusedWidgets());
+
+                if (callbackResults.Success())
+                {
+                    var focusedWidget = GetFocusedWidgets().GetData().Find(widget => widget.GetType().GetData() == widgetType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(focusedWidget, "Focused Widget",
+                       $"Is Focused Widget Failed - Widget Of Type : {widgetType} Is Not Focused For Screen : {GetName()} - Of Type : {GetType().GetData()}.",
+                       $"Is Focused Widget Success - Widget Of Type : {widgetType} Is Focused For Screen : {GetName()} - Of Type : {GetType().GetData()}."));
+
+                    if(callbackResults.Success())
+                    {
+                        string widgetName = focusedWidget.GetName();
+                        GetFocusedWidgets().GetData().Remove(focusedWidget);
+
                         callbackResults.result = $"Remove Focused Widget Success - Widget : {widgetName} - Of Type : {widgetType} Has Been Successfully Removed.";
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RemoveFocusedWidget(Widget focusedWidget, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetFocusedWidgets());
+
+                if (callbackResults.Success())
+                {
+                    if (GetFocusedWidgets().GetData().Contains(focusedWidget))
+                    {
+                        GetFocusedWidgets().GetData().Remove(focusedWidget);
+                        callbackResults.result = $"Remove Focused Widget Success - Widget : {focusedWidget.GetName()} - Of Type : {focusedWidget.GetType().GetData()} Has Been Successfully Removed.";
+                    }
                     else
                     {
-                        callbackResults.result = $"Remove Focused Widget Failed - Widget : {widgetName} - Of Type : {widgetType} Has Failed To Be Removed - Invalid Operation - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.result = $"Remove Focused Widget Failed - Widget : {focusedWidget.GetName()} - Of Type : {focusedWidget.GetType().GetData()} Was Not Focused For Screen : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation.";
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void RemoveFocusedWidgets(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetFocusedWidgets());
+
+                if (callbackResults.Success())
+                    GetFocusedWidgets().GetData().Clear();
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
@@ -28578,15 +28722,33 @@ namespace Com.RedicalGames.Filar
 
             public Callback IsFocusedWidget(WidgetType widgetType)
             {
-                var callbackResults = new CallbackData<Widget>(Helpers.GetAppComponentValid(focusedWidget, "Focused Widget", "Is Focused Widget Failed - There Are No Fucused Widget Assigned."));
+                var callbackResults = new CallbackData<Widget>(GetFocusedWidgets());
 
                 if (callbackResults.Success())
                 {
-                    if(focusedWidget.GetType().GetData() == widgetType)
-                        callbackResults.result = $"Is Focused Widget Success - Widget : {focusedWidget.GetName()} Of Type : {widgetType} Is Set As Currently Focused Widget.";
+                    var focusedWidget = GetFocusedWidgets().GetData().Find(widget => widget.GetType().GetData() == widgetType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(focusedWidget, "Focused Widget", 
+                        $"Is Focused Widget Failed - Widget Of Type : {widgetType} Is Not Focused For Screen : {GetName()} - Of Type : {GetType().GetData()}.",
+                        $"Is Focused Widget Success - Widget Of Type : {widgetType} Is Focused For Screen : {GetName()} - Of Type : {GetType().GetData()}."));
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public Callback IsFocusedWidget(Widget widget)
+            {
+                var callbackResults = new CallbackData<Widget>(GetFocusedWidgets());
+
+                if (callbackResults.Success())
+                {
+                    if (GetFocusedWidgets().GetData().Contains(widget))
+                        callbackResults.result = $"Is Focused Widget Success - Widget : {widget.GetName()} Of Type : {widget.GetType().GetData()} Is Focused For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
                     else
                     {
-                        callbackResults.result = $"Is Focused Widget Unsuccessful - Widget Of Type : {widgetType} Is Not Set As Currently Focused Widget.";
+                        callbackResults.result = $"Is Focused Widget Failed - Widget : {widget.GetName()} - Of Type : {widget.GetType().GetData()} Is Not Focused For Screen : {GetName()} - Of Type : {GetType().GetData()}.";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -28595,7 +28757,6 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
-
 
             #endregion
 
@@ -30137,14 +30298,14 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public class WidgetStatePacket<T, U> where T : Enum where U : Enum
+        public class WidgetStatePacket<T, U, V> where T : Enum where U : Enum where V : AppMonoBaseClass
         {
             #region Components
 
             public string name;
             public T type;
             public WidgetStateType state;
-            public UIScreenWidget<T, U> value;
+            public UIScreenWidget<T, U, V> value;
 
             #endregion
 
@@ -30155,7 +30316,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public WidgetStatePacket(UIScreenWidget<T, U> value, WidgetStateType stateType)
+            public WidgetStatePacket(UIScreenWidget<T, U, V> value, WidgetStateType stateType)
             {
                 SetName(value.GetName());
                 SetType(value.GetType().GetData());
@@ -30172,7 +30333,7 @@ namespace Com.RedicalGames.Filar
             public void SetName(string name) => this.name = name;
             public void SetType(T type) => this.type = type;
             public void SetStateType(WidgetStateType state) => this.state = state;
-            public void SetValue(UIScreenWidget<T, U> value) => this.value = value;
+            public void SetValue(UIScreenWidget<T, U, V> value) => this.value = value;
 
             #endregion
 
@@ -30220,9 +30381,9 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<UIScreenWidget<T, U>> GetValue()
+            public CallbackData<UIScreenWidget<T, U, V>> GetValue()
             {
-                var callbackResults = new CallbackData<UIScreenWidget<T, U>>();
+                var callbackResults = new CallbackData<UIScreenWidget<T, U, V>>();
 
                 if(value != null)
                 {
@@ -30273,7 +30434,7 @@ namespace Com.RedicalGames.Filar
 
         [DisallowMultipleComponent]
         [Serializable]
-        public abstract class UIScreenWidget<T, U> : AppMonoBaseClass, IScreenWidget<T, U> where T : Enum where U : Enum
+        public abstract class UIScreenWidget<T, U, V> : AppMonoBaseClass, IScreenWidget<T, U, V> where T : Enum where U : Enum where V : AppMonoBaseClass
         {
             #region Components
 
@@ -30356,9 +30517,9 @@ namespace Com.RedicalGames.Filar
 
             [Space(10)]
             [SerializeField]
-            protected EventActionComponent<UIScreenWidget<T, U>> eventActionsConfig = new EventActionComponent<UIScreenWidget<T, U>>();
+            protected EventActionComponent<V> eventActionsConfig = new EventActionComponent<V>();
 
-            protected WidgetStatePacket<T, U> widgetStatePacket;
+            protected WidgetStatePacket<T, U, V> widgetStatePacket;
 
             #endregion
 
@@ -30385,9 +30546,9 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public void Initilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback)
+            public void Initilize(Action<CallbackData<WidgetStatePacket<T, U, V>>> callback)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<T, U>>();
+                var callbackResults = new CallbackData<WidgetStatePacket<T, U, V>>();
 
                 OnInitilize(initializationCallbackResults => 
                 {
@@ -30720,9 +30881,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            protected void SetWidgetStatePacket(WidgetStatePacket<T, U> statePacket, Action<CallbackData<WidgetStatePacket<T, U>>> callback = null)
+            protected void SetWidgetStatePacket(WidgetStatePacket<T, U, V> statePacket, Action<CallbackData<WidgetStatePacket<T, U, V>>> callback = null)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<T, U>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<T, U, V>>(GetType());
 
                 if (callbackResults.Success())
                 {
@@ -30809,9 +30970,9 @@ namespace Com.RedicalGames.Filar
 
             #region Event Actions
 
-            protected CallbackData<EventActionComponent<UIScreenWidget<T, U>>> GetEventActionsConfig()
+            protected CallbackData<EventActionComponent<V>> GetEventActionsConfig()
             {
-                var callbackResults = new CallbackData<EventActionComponent<UIScreenWidget<T, U>>>(Helpers.GetAppComponentValid(eventActionsConfig, "Event Actions Config", "Get Event Actions Config Failed - Event Actions Config Is Not Initialized."));
+                var callbackResults = new CallbackData<EventActionComponent<V>>(Helpers.GetAppComponentValid(eventActionsConfig, "Event Actions Config", "Get Event Actions Config Failed - Event Actions Config Is Not Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -31151,7 +31312,7 @@ namespace Com.RedicalGames.Filar
 
             #region Events
 
-            protected void RegisterEventAction(EventActionComponent<UIScreenWidget<T, U>> eventActionComponent, Action<Callback> callback = null)
+            protected void RegisterEventAction(EventActionComponent<V> eventActionComponent, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback(Helpers.GetAppComponentValid(eventActionComponent, "Event Action Component", "Register Event Actions Failed - Event Action Component Parameter Value Is invalid / Null."));
 
@@ -31333,57 +31494,19 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    #region Event Actions
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
 
-                    var eventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredEventActions());
-
-                    if (eventActionsSubscriptionsCallbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        var subscibedEventActions = GetEventActionsConfig().GetData().GetRegisteredEventActions().GetData();
+                        var appEventsManagerInstance = Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                        for (int i = 0; i < subscibedEventActions.Count; i++)
+                        appEventsManagerInstance.OnEventSubscription(GetEventActionsConfig().GetData(), false, subscribedToEventsCallbackResults =>
                         {
-                            ActionEvents.OnEventActionSubscription(subscibedEventActions[i], false, subscriptionCallbackResults =>
-                            {
-                                eventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
-                            });
-                        }
+                            callbackResults.SetResult(subscribedToEventsCallbackResults);
+                        });
                     }
                     else
-                        Log(eventActionsSubscriptionsCallbackResults.GetResultCode, eventActionsSubscriptionsCallbackResults.GetResult, this);
-
-                    #endregion
-
-                    #region Parameter Event Actions
-
-                    var parameterEventActionsSubscriptionsCallbackResults = new Callback(GetEventActionsConfig().GetData().GetRegisteredParameterEventActions());
-
-                    if (parameterEventActionsSubscriptionsCallbackResults.Success())
-                    {
-                        var subscibedParameterEventActions = GetEventActionsConfig().GetData().GetRegisteredParameterEventActions().GetData();
-
-                        for (int i = 0; i < subscibedParameterEventActions.Count; i++)
-                        {
-                            ActionEvents.OnEventActionSubscription(subscibedParameterEventActions[i], false, subscriptionCallbackResults =>
-                            {
-                                parameterEventActionsSubscriptionsCallbackResults.SetResult(subscriptionCallbackResults);
-                            });
-                        }
-                    }
-                    else
-                        Log(parameterEventActionsSubscriptionsCallbackResults.GetResultCode, parameterEventActionsSubscriptionsCallbackResults.GetResult, this);
-
-                    #endregion
-
-                    if (eventActionsSubscriptionsCallbackResults.Success())
-                        callbackResults.SetResult(eventActionsSubscriptionsCallbackResults);
-                    else if (parameterEventActionsSubscriptionsCallbackResults.Success())
-                        callbackResults.SetResult(parameterEventActionsSubscriptionsCallbackResults);
-                    else
-                    {
-                        callbackResults.result = $"Un Subscribe From Events Failed - Couldn't Unsubscribe From Events For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -31402,9 +31525,9 @@ namespace Com.RedicalGames.Filar
 
             #region Widget States Data
 
-            public WidgetStatePacket<T, U> GetStatePacket() => widgetStatePacket;
+            public WidgetStatePacket<T, U, V> GetStatePacket() => widgetStatePacket;
 
-            public CallbackData<WidgetStatePacket<T, U>> GetState() => OnGetState();
+            public CallbackData<WidgetStatePacket<T, U, V>> GetState() => OnGetState();
 
             #endregion
 
@@ -31602,13 +31725,13 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected abstract CallbackData<WidgetStatePacket<T, U>> OnGetState();
+            protected abstract CallbackData<WidgetStatePacket<T, U, V>> OnGetState();
 
             #endregion
 
             #region Abstract Overrides
 
-            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback);
+            protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T, U, V>>> callback);
 
             protected abstract void OnScreenWidgetShownEvent();
             protected abstract void OnScreenWidgetHiddenEvent();
@@ -31619,7 +31742,7 @@ namespace Com.RedicalGames.Filar
 
         [DisallowMultipleComponent]
         [Serializable]
-        public abstract class UIScreenWidgetBaseInput<T, U> : UIScreenWidget<T, U> where T : Enum where U : Enum
+        public abstract class UIScreenWidgetBaseInput<T, U, V> : UIScreenWidget<T, U, V> where T : Enum where U : Enum where V : AppMonoBaseClass
         {
             #region Components
 
@@ -32561,19 +32684,35 @@ namespace Com.RedicalGames.Filar
                 //    LogWarning("Screen Action Button List Is Null / Empty.", this, () => SetActionButtonState(state));
             }
 
-            public void SetActionButtonTitle(InputActionButtonType actionType, string title)
+            public void SetActionButtonTitle(InputActionButtonType actionType, string title, Action<Callback> callback = null)
             {
-                //if (buttons.Count > 0)
-                //{
-                //    UIButton<ButtonDataPackets> button = buttons.Find(button => button.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.Button));
 
-                //    if (button != null)
-                //        button.SetTitle(title);
-                //    else
-                //        LogWarning($"To Set Title {title} For Button Of Type : {actionType} - Button Missing / Not Found.", this, () => SetActionButtonTitle(actionType, title));
-                //}
-                //else
-                //    LogWarning("--> Screen Action Button List Is Null / Empty.", this, () => SetActionButtonTitle(actionType, title));
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.Button).GetData().Find(input => input.GetButtonComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetButtonComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var button = inputActionHandler.GetButtonComponent().GetData();
+                            button.SetTitle(title);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void SetActionButtonState(InputActionButtonType actionType, InputUIState state, Action<Callback> callback = null)
@@ -33443,11 +33582,11 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public interface IScreenWidget<T, U> where T : Enum where U : Enum
+        public interface IScreenWidget<T, U, V> where T : Enum where U : Enum where V : AppMonoBaseClass
         {
             #region Methods
 
-            void Initilize(Action<CallbackData<WidgetStatePacket<T, U>>> callback);
+            void Initilize(Action<CallbackData<WidgetStatePacket<T, U, V>>> callback);
 
             #endregion
 
@@ -33539,7 +33678,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public abstract class Widget : UIScreenWidgetBaseInput<WidgetType, WidgetType>, IUIWidget
+        public abstract class Widget : UIScreenWidgetBaseInput<WidgetType, WidgetType, Widget>, IUIWidget
         {
             [Space(15)]
             [Header("Widget Configurations")]
@@ -33619,9 +33758,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, WidgetType>>> callback)
+            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, WidgetType, Widget>>> callback)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType, WidgetType>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType, WidgetType, Widget>>(GetType());
 
                 #region Base Initialization
 
@@ -33659,7 +33798,7 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType>(this, WidgetStateType.Initialized);
+                                                    var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType, Widget>(this, WidgetStateType.Initialized);
 
                                                     SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                     {
@@ -46745,7 +46884,7 @@ namespace Com.RedicalGames.Filar
             bool IsContentActive(int contentID);
 
             void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableWidgetComponent;
-            void AddContent<T, U, V>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V> where U : Enum where V : Enum;
+            void AddContent<T, U, V, W>(T uiScreenWidgetComponent, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = true, Action<Callback> callback = null) where T : UIScreenWidget<U, V, W> where U : Enum where V : Enum where W : AppMonoBaseClass;
             Task<Callback> AddContentAsync<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool overrideContainerActiveState = false, bool updateContainer = false) where T : SelectableWidgetComponent;
 
             void SetContainerSize(Vector3 size, Action<Callback> callback = null);
@@ -46875,7 +47014,7 @@ namespace Com.RedicalGames.Filar
 
         public interface IUIComponent<V>
         {
-            void SetTitle(string title);
+            void SetTitle(string title, Action<Callback> callback = null);
 
             void SetUIColor(Color color);
 
@@ -47220,7 +47359,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class EventAction<T> : EventActionBase where T : class
+        public class EventAction<T> : EventActionBase
         {
             #region Components
 
@@ -47273,7 +47412,7 @@ namespace Com.RedicalGames.Filar
                 if (callbackResults.Success())
                 {
                     var eventMethodData = GetEventMethod().GetData();
-                    eventMethodData.Invoke(value);
+                    eventMethodData?.Invoke(value);
 
                     callbackResults.result = $"Event Method For Action Data : {GetName()} - Of Type : {GetEventType()} Has Been Triggered Successfully.";
                 }
@@ -47677,7 +47816,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class EventActionComponent<T> : DataDebugger where T : class
+        public class EventActionComponent<T> : DataDebugger where T : AppMonoBaseClass
         {
             #region Components
 
@@ -48283,6 +48422,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (eventAction.GetEventType().GetData())
                         {
+                         
                             case EventType.OnActionButtonPressedEvent:
 
                                 //if (subscribe)
@@ -48321,19 +48461,21 @@ namespace Com.RedicalGames.Filar
 
                             case EventType.OnWidgetShownEvent:
 
-                                if (subscribe)
-                                    GenericActionEvents<T>._OnWidgetShownEvent += eventAction.TriggeredEventMethod;
-                                else
-                                    GenericActionEvents<T>._OnWidgetShownEvent -= eventAction.TriggeredEventMethod;
+                                //var unityAction = new UnityAction<T>(eventAction.TriggeredEventMethod);
+
+                                //if (subscribe)
+                                //    GenericActionEvents<T>._OnWidgetShownEvent += unityAction.Invoke;
+                                //else
+                                //    GenericActionEvents<T>._OnWidgetShownEvent -= unityAction.Invoke;
 
                                 break;
 
                             case EventType.OnWidgetHiddenEvent:
 
-                                if (subscribe)
-                                    GenericActionEvents<T>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
-                                else
-                                    GenericActionEvents<T>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
+                                //if (subscribe)
+                                //    GenericActionEvents<T>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
+                                //else
+                                //    GenericActionEvents<T>._OnWidgetHiddenEvent -= eventAction.TriggeredEventMethod;
 
                                 break;
 
