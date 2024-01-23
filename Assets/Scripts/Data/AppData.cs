@@ -4425,7 +4425,7 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public async Task<Callback> ClearAsync(bool showSpinner = false) => await OnClearAsync(showSpinner);
+            public async Task<Callback> ClearAsync(bool showSpinner = false, float refreshDuration = 0.0f) => await OnClearAsync(showSpinner, refreshDuration);
 
             #endregion
 
@@ -4713,7 +4713,7 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void OnInitialization();
             protected abstract void OnClear(bool showSpinner = false, Action<Callback> callback = null);
-            protected abstract Task<Callback> OnClearAsync(bool showSpinner = false);
+            protected abstract Task<Callback> OnClearAsync(bool showSpinner = false, float refreshDuration = 0.0f);
 
             #endregion
 
@@ -4731,7 +4731,7 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            Helpers.GetAppComponentValid(content, content.GetName(), hasScreenWidgetCallbackResults =>
+                            Helpers.GetAppComponentValid(content, content.GetName(), async hasScreenWidgetCallbackResults =>
                             {
                                 callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
@@ -4745,11 +4745,41 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            content.gameObject.SetActive(isActive);
-                                            content.gameObject.transform.SetParent(GetContainer<Transform>().data, keepWorldPosition);
+                                            callbackResults.SetResult(content.GetTransform());
 
-                                            if (updateContainer)
-                                                OnUpdatedContainerSize();
+                                            if (callbackResults.Success())
+                                            {
+                                                content.GetTransform().GetData().SetParent(GetContainer<Transform>().GetData(), keepWorldPosition);
+
+                                                if (isActive)
+                                                    content.Show();
+                                                else
+                                                    content.Hide();
+
+                                                if (updateContainer)
+                                                    OnUpdatedContainerSize();
+
+                                                callbackResults.SetResult(Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var screenUIManager = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
+
+                                                    callbackResults.SetResult(screenUIManager.GetCurrentScreen());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var screen = screenUIManager.GetCurrentScreen().GetData();
+                                                        screen.HideScreenWidget(WidgetType.LoadingWidget);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                     }
                                 }
@@ -27120,14 +27150,22 @@ namespace Com.RedicalGames.Filar
 
             #region Visibility
 
-            public void Deselect()
+            public void Show()
             {
-               
+                if (this.transform.childCount > 0)
+                    for (int i = 0; i < this.transform.childCount; i++)
+                        this.transform.GetChild(i).gameObject.Show();
+
+                this.gameObject.Show();
             }
 
             public void Hide()
             {
-                
+                if (this.transform.childCount > 0)
+                    for (int i = 0; i < this.transform.childCount; i++)
+                        this.transform.GetChild(i).gameObject.Hide();
+
+                this.gameObject.Hide();
             }
 
             #endregion
@@ -27161,9 +27199,9 @@ namespace Com.RedicalGames.Filar
                
             }
 
-            public void Show()
+            public void Deselect()
             {
-               
+
             }
 
             #endregion
@@ -31301,6 +31339,26 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = $"Failed To Get Rect Transform For : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<Transform> GetTransform()
+            {
+                var callbackResults = new CallbackData<Transform>();
+
+                if (GetComponent<Transform>())
+                {
+                    callbackResults.result = $"Found Transform For : {GetName()} - Of Type : {GetType().GetData()}";
+                    callbackResults.data = GetComponent<Transform>();
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Get Transform For : {GetName()} - Of Type : {GetType().GetData()}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
@@ -46841,7 +46899,7 @@ namespace Com.RedicalGames.Filar
 
             string GetName();
 
-            Task<Callback> ClearAsync(bool showSpinner = false);
+            Task<Callback> ClearAsync(bool showSpinner = false, float refreshDuration = 0.0f);
 
             #region Data Setters
 

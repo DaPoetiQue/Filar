@@ -84,7 +84,10 @@ namespace Com.RedicalGames.Filar
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        {
+                            callbackResults.result = $"There Are No Contents To Clear For : {GetName()} - Of Type : {GetContainerType().GetData()}";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -96,7 +99,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
+        protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false, float refreshDuration = 0.0f)
         {
             AppData.Callback callbackResults = new AppData.Callback(GetContainer<Transform>());
 
@@ -120,9 +123,6 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            if (showSpinner)
-                                screen.ShowWidget(AppData.WidgetType.LoadingWidget, true);
-
                             for (int i = 0; i < GetContentCount().GetData(); i++)
                             {
                                 var contentHandler = container.GetChild(i).GetComponent<ScenePostContentHandler>();
@@ -143,7 +143,14 @@ namespace Com.RedicalGames.Filar
                                         });
 
                                         if (callbackResults.Success())
-                                            await Task.Delay(100);
+                                        {
+                                            screen.ShowWidget(AppData.WidgetType.LoadingWidget,  widgetShownCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(widgetShownCallbackResults);
+                                            });
+
+                                            await Task.Delay(AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(refreshDuration));
+                                        }
                                         else
                                         {
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -157,13 +164,6 @@ namespace Com.RedicalGames.Filar
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
 
-                            if (callbackResults.Success())
-                            {
-                                if (showSpinner)
-                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                         {

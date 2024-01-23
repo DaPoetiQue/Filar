@@ -21,7 +21,7 @@ namespace Com.RedicalGames.Filar
             LogInfo($" _______________+++++++ Not Yet Implemented Function - On Clear Container Called - For Dynamic Container : {GetName()} - Of Type : {GetContainerType().GetData()}", this);
         }
 
-        protected override Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
+        protected override Task<AppData.Callback> OnClearAsync(bool showSpinner = false, float refreshDuration = 0.0f)
         {
             LogInfo($" _______________+++++++ Not Yet Implemented Function - On Clear Container Async Called - For Dynamic Container : {GetName()} - Of Type : {GetContainerType().GetData()}", this);
             return null;

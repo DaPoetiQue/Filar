@@ -2447,7 +2447,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false)
+        protected override async Task<AppData.Callback> OnClearAsync(bool showSpinner = false, float refreshDuration = 0.0f)
         {
             AppData.Callback callbackResults = new AppData.Callback(GetContainer<Transform>());
 

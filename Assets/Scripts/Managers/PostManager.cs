@@ -159,18 +159,57 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                SetPost(post, postSetCallbackResults =>
+                SetPost(post, async postSetCallbackResults =>
                 {
                     callbackResults.SetResult(postSetCallbackResults);
 
                     if (callbackResults.Success())
                     {
-                        var postContent = GetPostContent(post).GetData();
-                        postContent.ShowContent();
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
+
+                        if (callbackResults.Success())
+                        {
+                            var databaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                            callbackResults.SetResult(databaseManagerInstance.GetAssetBundlesLibrary());
+
+                            if (callbackResults.Success())
+                            {
+                                var assetBundles = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+
+                                if (callbackResults.Success())
+                                {
+                                    var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+
+                                    var clearContainerCallbackResultsTask = await container.ClearAsync(true, 1.0f);
+
+                                    callbackResults.SetResult(clearContainerCallbackResultsTask);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var postContent = GetPostContent(post).GetData();
+
+                                        container.AddContent(postContent, false, true, true, contentAddedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(contentAddedCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                 });
             }
             else
@@ -183,11 +222,27 @@ namespace Com.RedicalGames.Filar
 
                     var loadContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.GetPostContentAsync(post);
                     callbackResults.SetResult(loadContentAsyncCallbackResultsTask);
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetPostContent(post));
+
+                        if (callbackResults.Success())
+                        {
+                            SetPost(post, postSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(postSetCallbackResults);
+
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                LogInfo(" ___Log_Cat: Get Post Content From Manager", this);
             }
 
             callback?.Invoke(callbackResults);
