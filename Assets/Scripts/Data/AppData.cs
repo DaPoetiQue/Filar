@@ -16691,8 +16691,6 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public string name;
-
             [Space(5)]
             public Image value;
 
@@ -16706,12 +16704,12 @@ namespace Com.RedicalGames.Filar
 
                 if(value != null)
                 {
-                    callbackResults.result = $"Selection Frame : {GetName()} Has Been Initialized Successfully.";
+                    callbackResults.result = $"Selection Frame Has Been Initialized Successfully.";
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Failed To Initialize Selection Frame : {GetName()}";
+                    callbackResults.result = $"Failed To Initialize Selection Frame.";
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
@@ -16720,12 +16718,26 @@ namespace Com.RedicalGames.Filar
 
             public void SetColor(Color color, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback();
+                var callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                    value.color = color;
 
                 callback?.Invoke(callbackResults);
             }
 
-            public string GetName() => !string.IsNullOrEmpty(name) ? name : "Selection Frame Name Is Not Assigned";
+            public void SetImage(Sprite image, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                    value.sprite = image;
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void Show() => value.gameObject.Show();
+            public void Hide() => value.gameObject.Hide();
 
             #endregion
         }
@@ -16878,13 +16890,17 @@ namespace Com.RedicalGames.Filar
 
             protected void InvokeSelection(UISelectable selectable) => _OnSelectableActionEvent?.Invoke(selectable);
 
-            public void Select()
+            public void Select(Action<Callback> callback = null)
             {
-                if (selectable)
+                var callbackResults = new Callback(Selectable());
+
+                if (callbackResults.Success())
                 {
-                    if (visualizationType != SelectionVisualizationType.None)
+                    callbackResults.SetResult(GetSelectionVisualizationType());
+
+                    if (callbackResults.Success())
                     {
-                        switch (visualizationType)
+                        switch (GetSelectionVisualizationType().GetData())
                         {
                             case SelectionVisualizationType.ColorTint:
 
@@ -16892,28 +16908,32 @@ namespace Com.RedicalGames.Filar
 
                             case SelectionVisualizationType.SelectionFrame:
 
-                                if (selectionFrame != null)
+                                callbackResults.SetResult(GetSelectionFrame());
+
+                                if (callbackResults.Success())
                                 {
-                                    //if (validationStatesInfo.validate)
-                                    //{
-                                    //    validationStatesInfo.GetValidationState(validationCallbackResults =>
-                                    //    {
-                                    //        if (validationCallbackResults.Success())
-                                    //        {
-                                    //            selectionFrame.color = validationCallbackResults.data.color;
+                                    if (validationStatesInfo.validate)
+                                    {
+                                        validationStatesInfo.GetValidationState(validationCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(validationCallbackResults);
 
-                                    //            if (validationCallbackResults.data.value != null)
-                                    //                selectionFrame.sprite = validationCallbackResults.data.value;
-                                    //        }
-                                    //        else
-                                    //            Debug.LogError(validationCallbackResults.result);
-                                    //    });
-                                    //}
+                                            if (callbackResults.Success())
+                                            {
+                                                GetSelectionFrame().GetData().SetColor(validationCallbackResults.GetData().color);
 
-                                    //selectionFrame.gameObject.SetActive(true);
+                                                if (validationCallbackResults.GetData().value != null)
+                                                    GetSelectionFrame().GetData().SetImage(validationCallbackResults.GetData().value);
+                                            }
+                                            else
+                                                Debug.LogError(validationCallbackResults.result);
+                                        });
+                                    }
+
+                                    GetSelectionFrame().GetData().Show();
                                 }
                                 else
-                                    Debug.LogError($"Selection Frame For : {name} Of Type : {inputType} Missing / Not Found.");
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
                         }
@@ -16932,15 +16952,20 @@ namespace Com.RedicalGames.Filar
                         Debug.LogWarning($"Selectable : {name} - Of Input Type : {inputType}'s Visualization Type Is Set To None.");
                 }
 
+                callback?.Invoke(callbackResults);
             }
 
-            public void Deselect()
+            public void Deselect(Action<Callback> callback = null)
             {
-                if (selectable)
+                var callbackResults = new Callback(Selectable());
+
+                if (callbackResults.Success())
                 {
-                    if (visualizationType != SelectionVisualizationType.None)
+                    callbackResults.SetResult(GetSelectionVisualizationType());
+
+                    if (callbackResults.Success())
                     {
-                        switch (visualizationType)
+                        switch (GetSelectionVisualizationType().GetData())
                         {
                             case SelectionVisualizationType.ColorTint:
 
@@ -16948,26 +16973,32 @@ namespace Com.RedicalGames.Filar
 
                             case SelectionVisualizationType.SelectionFrame:
 
-                                if (selectionFrame != null)
+                                callbackResults.SetResult(GetSelectionFrame());
+
+                                if (callbackResults.Success())
                                 {
-                                    //if (validationStatesInfo.validate)
-                                    //{
-                                    //    validationStatesInfo.GetValidationState(ValidationResultsType.Default, validationCallbackResults =>
-                                    //    {
-                                    //        if (validationCallbackResults.Success())
-                                    //        {
-                                    //            selectionFrame.color = validationCallbackResults.data.color;
+                                    if (validationStatesInfo.validate)
+                                    {
+                                        validationStatesInfo.GetValidationState(validationCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(validationCallbackResults);
 
-                                    //            if (validationCallbackResults.data.value != null)
-                                    //                selectionFrame.sprite = validationCallbackResults.data.value;
-                                    //        }
-                                    //        else
-                                    //            Log(validationCallbackResults.resultCode, validationCallbackResults.result, this);
-                                    //    });
-                                    //}
+                                            if (callbackResults.Success())
+                                            {
+                                                GetSelectionFrame().GetData().SetColor(validationCallbackResults.GetData().color);
 
-                                    //selectionFrame.gameObject.SetActive(false);
+                                                if (validationCallbackResults.GetData().value != null)
+                                                    GetSelectionFrame().GetData().SetImage(validationCallbackResults.GetData().value);
+                                            }
+                                            else
+                                                Debug.LogError(validationCallbackResults.result);
+                                        });
+                                    }
+
+                                    GetSelectionFrame().GetData().Hide();
                                 }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
                         }
@@ -16983,6 +17014,8 @@ namespace Com.RedicalGames.Filar
                             Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
                     });
                 }
+
+                callback?.Invoke(callbackResults);
             }
 
             public InputSelectionStateInfoGroup GetSelectionStateInfo()
@@ -17030,9 +17063,24 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public SelectionVisualizationType GetSelectionVisualizationType()
+            public CallbackData<SelectionVisualizationType> GetSelectionVisualizationType()
             {
-                return visualizationType;
+                var callbackResults = new CallbackData<SelectionVisualizationType>();
+
+                if(visualizationType != SelectionVisualizationType.None)
+                {
+                    callbackResults.result = $"Get Selection Visualization Type Success For : {GetName()} - Visualization Type Has Been Successfully Set To : {visualizationType}";
+                    callbackResults.data = visualizationType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Selection Visualization Type Failed For : {GetName()} - Visualization Type Is Set To Default : {visualizationType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
             }
 
             public void GetSelectionState(Action<CallbackData<SelectionState>> callback)
@@ -42681,7 +42729,7 @@ namespace Com.RedicalGames.Filar
         #region Debugger
 
         [Serializable]
-        public class DataDebugger:IDebugger
+        public class DataDebugger : IDebugger
         {
             #region Components
 
@@ -46983,8 +47031,8 @@ namespace Com.RedicalGames.Filar
 
             void Initialize(Action<Callback> callback = null);
 
-            void Select();
-            void Deselect();
+            void Select(Action<Callback> callback = null);
+            void Deselect(Action<Callback> callback = null);
 
             void Expand();
             void Collapse();
