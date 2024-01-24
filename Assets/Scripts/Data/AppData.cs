@@ -667,6 +667,7 @@ namespace Com.RedicalGames.Filar
             LoadingStatusWidgetContainer,
             PostContainer,
             PostWidgetContainer,
+            TabViewContainer,
             None
         }
 
@@ -675,7 +676,8 @@ namespace Com.RedicalGames.Filar
             None,
             Screen,
             Widget,
-            SelectableWidget
+            SelectableWidget,
+            TabView
         }
 
         public enum ScreenWidgetState
@@ -30541,6 +30543,14 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            protected List<WidgetLayoutView> widgetLayouts = new List<WidgetLayoutView>();
+
+            [Space(5)]
+            [SerializeField]
+            protected WidgetLayoutViewType defaultLayoutType;
+
+            [Space(5)]
+            [SerializeField]
             protected ContentContainerType uIPlacementContainerType = ContentContainerType.None;
 
             [Space(5)]
@@ -30687,6 +30697,50 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Layout View
+
+            protected CallbackData<WidgetLayoutView> GetLayoutView()
+            {
+                var callbackResults = new CallbackData<WidgetLayoutView>();
+
+                var layout = widgetLayouts.Find(layout => layout.viewType == defaultLayoutType);
+
+                callbackResults.SetResult(layout.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
+                    callbackResults.data = layout;
+                }
+
+                return callbackResults;
+            }
+
+            protected CallbackData<WidgetLayoutView> GetLayoutView(WidgetLayoutViewType viewType)
+            {
+                var callbackResults = new CallbackData<WidgetLayoutView>();
+
+                var layout = widgetLayouts.Find(layout => layout.viewType == viewType);
+
+                callbackResults.SetResult(layout.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
+                    callbackResults.data = layout;
+                }
+                else
+                {
+                    callbackResults.result = $"Failed To Find Layout View Of Type : {viewType} For Widget : {GetName()} Of Type : {GetType().GetData()} - With Results : {callbackResults.GetResult}.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.ErrorCode;
+                }
 
                 return callbackResults;
             }
@@ -33795,11 +33849,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected List<WidgetLayoutView> widgetLayouts = new List<WidgetLayoutView>();
-
-            [Space(5)]
-            [SerializeField]
-            protected WidgetLayoutViewType defaultLayoutType;
+            protected TabViewComponent<WidgetType> tabViewComponent = new TabViewComponent<WidgetType>();
 
             [Space(5)]
             [SerializeField]
@@ -35838,6 +35888,24 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Tabbed View
+
+            protected CallbackData<TabViewComponent<WidgetType>> GetTabViewComponent()
+            {
+                var callbackResults = new CallbackData<TabViewComponent<WidgetType>>();
+
+                return callbackResults;
+            }
+
+            protected void SelectTabView(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
             IEnumerator ShowWidgetAsync(SceneConfigDataPacket dataPackets)
             {
                 yield return new WaitForEndOfFrame();
@@ -35858,46 +35926,6 @@ namespace Com.RedicalGames.Filar
                     //    LogWarning("Slider Value Pop Up Handler Component Required.", this, () => UndoChanges());
                     //}
                 }
-            }
-
-            protected CallbackData<WidgetLayoutView> GetLayoutView()
-            {
-                var callbackResults = new CallbackData<WidgetLayoutView>();
-
-                var layout = widgetLayouts.Find(layout => layout.viewType == defaultLayoutType);
-
-                callbackResults.SetResult(layout.Initialized());
-
-                if(callbackResults.Success())
-                {
-                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
-                    callbackResults.data = layout;
-                }
-
-                return callbackResults;
-            }
-
-            protected CallbackData<WidgetLayoutView> GetLayoutView(WidgetLayoutViewType viewType)
-            {
-                var callbackResults = new CallbackData<WidgetLayoutView>();
-
-                var layout = widgetLayouts.Find(layout => layout.viewType == viewType);
-
-                callbackResults.SetResult(layout.Initialized());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
-                    callbackResults.data = layout;
-                }
-                else
-                {
-                    callbackResults.result = $"Failed To Find Layout View Of Type : {viewType} For Widget : {GetName()} Of Type : {GetType().GetData()} - With Results : {callbackResults.GetResult}.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
             }
 
             public void OnScrollerValueChangedEvent(Vector2 value) => OnScrollerValueChanged(value);
@@ -37057,6 +37085,325 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #endregion
+
+            #endregion
+        }
+
+        public enum TabViewType
+        {
+            None,
+            ProfileView,
+            InboxView,
+            SettingsView,
+            UserHelpView,
+            SignInView,
+            SignUpView
+        }
+
+        [Serializable]
+        public class  TabViewComponent<T> : DataDebugger where T: Enum
+        {
+            #region Components
+
+            [SerializeField]
+            private RectTransform tabLayout;
+
+            [Space(5)]
+            [SerializeField]
+            private TransitionType transitionType;
+
+            [Space(5)]
+            [SerializeField]
+            private TabViewType activeTabViewType = TabViewType.None;
+
+            private List<TabView<T>> tabViewList = new List<TabView<T>>();
+
+            #endregion
+
+            #region Main
+
+            public void Initialize(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabLayout());
+
+                if (callbackResults.Success())
+                {
+
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SelectTab(TabViewType viewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(IsInitialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(IsNotActiveView(viewType));
+
+                    if(callbackResults.Success())
+                    {
+                        var tabViews = GetTabViewList().GetData();
+
+                        switch(GetTransitionType().GetData())
+                        {
+                            case TransitionType.Default:
+
+                                for (int i = 0; i < tabViews.Count; i++)
+                                {
+                                    if (tabViews[i].GetType().GetData() == viewType)
+                                    {
+                                        tabViews[i].ShowTab(tabShownCallbackResults => 
+                                        {
+                                            callbackResults.SetResult(tabShownCallbackResults);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        tabViews[i].HideTab(tabHiddenCallbackResults => 
+                                        {
+                                            callbackResults.SetResult(tabHiddenCallbackResults);
+                                        });
+                                    }
+                                }
+
+                                break;
+
+                            case TransitionType.Translate:
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetActiveTabViewType(TabViewType activeTabViewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabLayout());
+
+                if (callbackResults.Success())
+                {
+
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private Callback IsNotActiveView(TabViewType viewType)
+            {
+                var callbackResults = new Callback(GetActiveViewType());
+
+                if (callbackResults.Success())
+                {
+                    if(viewType != GetActiveViewType().GetData())
+                    {
+                        callbackResults.result = $"Tab View of Type : {viewType} Is Not The Current Active View.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Tab View of Type : {viewType} Is The Current Active View.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<TabViewType> GetActiveViewType()
+            {
+                var callbackResults = new CallbackData<TabViewType>();
+
+                if (activeTabViewType != TabViewType.None)
+                {
+                    callbackResults.result = $"Get Initial Selected  View Type Success - Initial Selected Tab View Type For : {GetName()} Is Set To : {activeTabViewType}";
+                    callbackResults.data = activeTabViewType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Initial Selected Tab View Type Failed - Initial Selected Tab View Type For : {GetName()} Is Set To Default : {activeTabViewType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<TransitionType> GetTransitionType()
+            {
+                var callbackResults = new CallbackData<TransitionType>();
+
+                if (transitionType != TransitionType.None)
+                {
+                    callbackResults.result = $"Get Transition Type Success - Transition Type For : {GetName()} Is Set To : {transitionType}";
+                    callbackResults.data = transitionType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Transition Type Failed - Transition Type For : {GetName()} Is Set To Default : {transitionType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<TabView<T>> GetTabViewList()
+            {
+                var callbackResults = new CallbackDataList<TabView<T>>(Helpers.GetAppComponentsValid(tabViewList, "Tab View List", $"Get Tab View List Failed - Tab View List For : {GetName()} Is Not Yet Initialized - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"{tabViewList.Count} Tab View(s) Have Been Successfully Found For : {GetName()}";
+                    callbackResults.data = tabViewList;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackData<RectTransform> GetTabLayout()
+            {
+                var callbackResults = new CallbackData<RectTransform>(Helpers.GetAppComponentValid(tabLayout, "Tab Layout", $"Get Tab Layout Failed - Tab Layout For : {GetName()} Is Not Assigned - Invalid Operation"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Tab Layout Success - Tab Layout For : {GetName()} Has Been Successfully Found.";
+                    callbackResults.data = tabLayout;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private Callback IsInitialized()
+            {
+                var callbackResults = new Callback(GetTabLayout());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabViewList());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTransitionType());
+
+                        if (callbackResults.Success())
+                            callbackResults.SetResult(GetActiveViewType());
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public abstract class TabView<T> : UIScreenWidgetBaseInput<TabViewType, TabViewType, Widget>, ITabWidgetView<T> where T : Enum
+        {
+            #region Components
+            [Space(15)]
+            [Header("Tab View Configurations")]
+
+            [Space(5)]
+            [SerializeField]
+            protected ScreenType screenType = ScreenType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private T parentType;
+
+            #endregion
+
+            #region Main
+
+            public void Initialize(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetInitialVisibility());
+
+                if (callbackResults.Success())
+                {
+
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<ScreenType> GetScreenType()
+            {
+                var callbackResults = new CallbackData<ScreenType>();
+
+                if (screenType != ScreenType.None)
+                {
+                    callbackResults.result = $"Get Screen Type Success - Screen Type For : {GetName()} Is Set To : {screenType}";
+                    callbackResults.data = screenType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get Screen Type Failed - Screen Type For : {GetName()} Is Set To Default : {screenType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<T> GetParentType()
+            {
+                var callbackResults = new CallbackData<T>();
+
+                if(parentType.ToString() != "None")
+                {
+                    callbackResults.result = $"Get Parent Type Success - View Type For : {GetName()} Is Set To : {parentType}";
+                    callbackResults.data = parentType;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Get View Type Failed - View Type For : {GetName()} Is Set To Default : {parentType}";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public void ShowTab(Action<Callback> callback = null)
+            {
+                this.gameObject.Show();
+            }
+
+            public void HideTab(Action<Callback> callback = null)
+            {
+                this.gameObject.Hide();
+            }
 
             #endregion
         }
@@ -47163,6 +47510,21 @@ namespace Com.RedicalGames.Filar
         {
             void ShowWidget();
             void HideWidget();
+        }
+
+        public interface ITabWidgetView<T> where T : Enum
+        {
+            #region Interfaces
+
+            void Initialize(Action<Callback> callback = null);
+
+            CallbackData<T> GetParentType();
+            CallbackData<ScreenType> GetScreenType();
+
+            void ShowTab(Action<Callback> callback = null);
+            void HideTab(Action<Callback> callback = null);
+
+            #endregion
         }
 
         #region Commands
