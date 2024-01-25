@@ -4274,7 +4274,31 @@ MonoBehaviour:
     eventTriggerDistance: 2
     mountType: 2
   initialVisibilityState: 1
-  referencedWidgetDependencyAssets: []
+  referencedWidgetDependencyAssets:
+  - name: Profile Tab
+    referenceType: 1
+    uIPlacementType: 0
+    containerType: 19
+    initialVisibilityState: 1
+    constriants: []
+  - name: Inbox Tab
+    referenceType: 2
+    uIPlacementType: 0
+    containerType: 19
+    initialVisibilityState: 1
+    constriants: []
+  - name: Cart Tab
+    referenceType: 4
+    uIPlacementType: 0
+    containerType: 19
+    initialVisibilityState: 1
+    constriants: []
+  - name: Settings Tab
+    referenceType: 3
+    uIPlacementType: 0
+    containerType: 19
+    initialVisibilityState: 1
+    constriants: []
   dynamicContainerList:
   - {fileID: 7313415851276561638}
   - {fileID: 1522889585984016661}

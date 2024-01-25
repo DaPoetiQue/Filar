@@ -220,28 +220,32 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 1
   type: 8
+  widgetLayouts: []
+  defaultLayoutType: 0
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 1
+  instantiationOrderID: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
   - name: Network Warning Notification pop Up
-    widgetType: 12
+    referenceType: 12
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
     constriants: []
   - name: Page Loading Spinner
-    widgetType: 24
+    referenceType: 24
     uIPlacementType: 0
     containerType: 16
     initialVisibilityState: 1
     constriants:
     - {fileID: 11400000, guid: 355aa5a83796a0e4f8eaf2cde7beee0e, type: 2}
   - name: Message Displayer
-    widgetType: 30
+    referenceType: 30
     uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 1
@@ -251,7 +255,10 @@ MonoBehaviour:
   - {fileID: 3090725572040038037}
   - {fileID: 7921510361603200655}
   - {fileID: 4827935478524396645}
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   screenTitle: Loading Screen
   screenView:
     name: Loading Screen View
@@ -275,19 +282,13 @@ MonoBehaviour:
       value: {fileID: 45980628181332839}
       containerLayerType: 2
     initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList: []
-    widgetsContainer: {fileID: 0}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 0
   widgetsContainer: {fileID: 0}
   screenPosition: {x: 3100, y: 0}
   loadingItemList: []
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 1
-  widgets: []
+  focusedWidgets: []
 --- !u!1 &45980627707284284
 GameObject:
   m_ObjectHideFlags: 0

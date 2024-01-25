@@ -35,6 +35,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Tab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bdd6fde071c1c6e48b06a7c744e03a37
+    m_Address: Cart_Tab View
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tab
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

@@ -1819,7 +1819,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private T widgetType;
+            private T referenceType;
 
             [Space(5)]
             [SerializeField]
@@ -1846,7 +1846,7 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetType(T widgetType) => this.widgetType = widgetType;
+            public void SetType(T widgetType) => this.referenceType = widgetType;
 
             public void SetInitialVisibilityState(UIVisibilityState initialVisibilityState) => this.initialVisibilityState = initialVisibilityState;
 
@@ -1862,15 +1862,15 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new CallbackData<T>();
 
-                if (widgetType.ToString().ToLower() != "none")
+                if (referenceType.ToString().ToLower() != "none")
                 {
-                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()} - Is Set To Type : {widgetType}";
-                    callbackResults.data = widgetType;
+                    callbackResults.result = $"Screen Referenced Widget Dependency Asset Bundle : {GetName()} - Is Set To Type : {referenceType}";
+                    callbackResults.data = referenceType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Widget Type - Type Is Set To Default : {widgetType}";
+                    callbackResults.result = $"Failed To Get Screen Referenced Widget Dependency Asset Bundle : {GetName()}'s Widget Type - Type Is Set To Default : {referenceType}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
@@ -2913,8 +2913,6 @@ namespace Com.RedicalGames.Filar
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         }, loadedConfigDataBundles.ToArray());
-
-                        LogInfo($" ______Log_Cats: Cache Config - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28387,7 +28385,7 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        container.AddContent<Widget, WidgetType, WidgetType, Widget>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
+                                        container.AddContent<Widget, WidgetType, TabViewType, Widget>(uiScreenWidgetComponent: widget, keepWorldPosition: false, isActive: widget.GetInitialVisibility().GetData(), overrideContainerActiveState: true, updateContainer: true, widgetnAddedCallbackResults =>
                                         {
                                             callbackResults.SetResult(widgetnAddedCallbackResults);
 
@@ -33889,7 +33887,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public abstract class Widget : UIScreenWidgetBaseInput<WidgetType, WidgetType, Widget>, IUIWidget
+        public abstract class Widget : UIScreenWidgetBaseInput<WidgetType, TabViewType, Widget>, IUIWidget
         {
             [Space(15)]
             [Header("Widget Configurations")]
@@ -33965,9 +33963,9 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, WidgetType, Widget>>> callback)
+            public void Init(Action<CallbackData<WidgetStatePacket<WidgetType, TabViewType, Widget>>> callback)
             {
-                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType, WidgetType, Widget>>(GetType());
+                var callbackResults = new CallbackData<WidgetStatePacket<WidgetType, TabViewType, Widget>>(GetType());
 
                 #region Base Initialization
 
@@ -34005,7 +34003,7 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    var widgetStatePacket = new WidgetStatePacket<WidgetType, WidgetType, Widget>(this, WidgetStateType.Initialized);
+                                                    var widgetStatePacket = new WidgetStatePacket<WidgetType, TabViewType, Widget>(this, WidgetStateType.Initialized);
 
                                                     SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
                                                     {
@@ -37146,7 +37144,7 @@ namespace Com.RedicalGames.Filar
             ProfileView,
             InboxView,
             SettingsView,
-            UserHelpView,
+            CartView,
             SignInView,
             SignUpView
         }

@@ -273,15 +273,19 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 1
   type: 9
+  widgetLayouts: []
+  defaultLayoutType: 0
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
   - name: Title Displayer Widget
-    widgetType: 37
+    referenceType: 37
     uIPlacementType: 0
     containerType: 15
     initialVisibilityState: 1
@@ -291,7 +295,10 @@ MonoBehaviour:
   - {fileID: 4343902750515389455}
   - {fileID: 8631335616529975415}
   - {fileID: 7426857258340280479}
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   screenTitle: Splash Screen
   screenView:
     name: Splash Screen View
@@ -315,19 +322,13 @@ MonoBehaviour:
       value: {fileID: 0}
       containerLayerType: 2
     initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList: []
-    widgetsContainer: {fileID: 0}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 0
   widgetsContainer: {fileID: 0}
   screenPosition: {x: 3100, y: 0}
   loadingItemList: []
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 1
-  widgets: []
+  focusedWidgets: []
 --- !u!1 &3265665340351610166
 GameObject:
   m_ObjectHideFlags: 0
