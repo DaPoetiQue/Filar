@@ -1303,7 +1303,8 @@ namespace Com.RedicalGames.Filar
             Widget,
             Selectable,
             Model,
-            Config
+            Config,
+            Tab
         }
 
         public enum OrderInLayerType
@@ -2483,6 +2484,14 @@ namespace Com.RedicalGames.Filar
             private LoadedAssetCache<ScreenType, Widget> loadedWidgets = new LoadedAssetCache<ScreenType, Widget>();
 
             [Space(5)]
+            [Header("Tabs")]
+
+            [Tooltip("Do Not Initialize - Tabs Are Loaded Dynamically")]
+            [Space(10)]
+            [SerializeField]
+            private LoadedAssetCache<ScreenType, TabView<WidgetType>> loadedTabs = new LoadedAssetCache<ScreenType, TabView<WidgetType>>();
+
+            [Space(5)]
             [Header("Selectable Widgets")]
 
             [Tooltip("Do Not Initialize - Selectable Widgets Are Loaded Dynamically")]
@@ -2638,7 +2647,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 var initializedAssetBundleResourceLocators = GetInitializedAssetBundleResourceLocators().GetData();
 
-                                #region Screen Widgets
+                                #region Processing Bundles
 
                                 for (int i = 0; i < initializedAssetBundleResourceLocators.Count; i++)
                                 {
@@ -2710,131 +2719,170 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new Callback();
 
-                switch (locatorType)
+                if (locatorType != AssetBundleResourceLocatorType.Config)
                 {
-                    case AssetBundleResourceLocatorType.Screen:
+                    switch (locatorType)
+                    {
+                        case AssetBundleResourceLocatorType.Screen:
 
-                        var loadedBundleScreen = loadedAssetBundles.Select(asset => asset.GetComponent<Screen>()).Where(asset => asset != null).ToList();
+                            var loadedBundleScreen = loadedAssetBundles.Select(asset => asset.GetComponent<Screen>()).Where(asset => asset != null).ToList();
 
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleScreen, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
+                            callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleScreen, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
 
-                        if (callbackResults.Success())
-                        {
-                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(loadedAssetsCallbackResults);
-
-                                if (callbackResults.Success())
+                                AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
                                 {
-                                    callbackResults.SetResult(loadedScreens.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+                                    callbackResults.SetResult(loadedAssetsCallbackResults);
 
                                     if (callbackResults.Success())
-                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult,this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    {
+                                        callbackResults.SetResult(loadedScreens.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
 
-                            }, loadedBundleScreen.ToArray());
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                        break;
-
-                    case AssetBundleResourceLocatorType.Widget:
-
-                        var loadedBundleWidgets = loadedAssetBundles.Select(asset => asset.GetComponent<Widget>()).Where(asset => asset != null).ToList();
-
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleWidgets, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
-
-                        if (callbackResults.Success())
-                        {
-                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
-                            {
-                                callbackResults.SetResult(loadedAssetsCallbackResults);
-
-                                if (callbackResults.Success())
-                                {
-                                    callbackResults.SetResult(loadedWidgets.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
-
-                                    if(callbackResults.Success())
-                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                        if (callbackResults.Success())
+                                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                            }, loadedBundleWidgets.ToArray());
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }, loadedBundleScreen.ToArray());
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                        break;
+                            break;
 
-                    case AssetBundleResourceLocatorType.Selectable:
+                        case AssetBundleResourceLocatorType.Widget:
 
-                        var loadedBundleSelectableWidgets = loadedAssetBundles.Select(asset => asset.GetComponent<SelectableWidget>()).Where(asset => asset != null).ToList();
+                            var loadedBundleWidgets = loadedAssetBundles.Select(asset => asset.GetComponent<Widget>()).Where(asset => asset != null).ToList();
 
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleSelectableWidgets, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
+                            callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleWidgets, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
 
-                        if (callbackResults.Success())
-                        {
-                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(loadedAssetsCallbackResults);
-
-                                if (callbackResults.Success())
+                                AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
                                 {
-                                    callbackResults.SetResult(loadedSelectableWidgets.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+                                    callbackResults.SetResult(loadedAssetsCallbackResults);
 
                                     if (callbackResults.Success())
-                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                    {
+                                        callbackResults.SetResult(loadedWidgets.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                        if (callbackResults.Success())
+                                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                            }, loadedBundleSelectableWidgets.ToArray());
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }, loadedBundleWidgets.ToArray());
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                        break;
+                            break;
 
-                    case AssetBundleResourceLocatorType.Model:
+                        case AssetBundleResourceLocatorType.Selectable:
 
-                        var loadedBundleModels = loadedAssetBundles.Select(asset => asset.GetComponent<SceneModelComponent>()).Where(asset => asset != null).ToList();
+                            var loadedBundleSelectableWidgets = loadedAssetBundles.Select(asset => asset.GetComponent<SelectableWidget>()).Where(asset => asset != null).ToList();
 
-                        callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleModels, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
+                            callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleSelectableWidgets, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
 
-                        if (callbackResults.Success())
-                        {
-                            AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(loadedAssetsCallbackResults);
-
-                                if (callbackResults.Success())
+                                AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
                                 {
-                                    callbackResults.SetResult(loadedModels.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+                                    callbackResults.SetResult(loadedAssetsCallbackResults);
 
                                     if (callbackResults.Success())
-                                        GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                    {
+                                        callbackResults.SetResult(loadedSelectableWidgets.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                        if (callbackResults.Success())
+                                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                            }, loadedBundleModels.ToArray());
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }, loadedBundleSelectableWidgets.ToArray());
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                        break;
+                            break;
+
+                        case AssetBundleResourceLocatorType.Model:
+
+                            var loadedBundleModels = loadedAssetBundles.Select(asset => asset.GetComponent<SceneModelComponent>()).Where(asset => asset != null).ToList();
+
+                            callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleModels, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
+
+                            if (callbackResults.Success())
+                            {
+                                AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
+                                {
+                                    callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(loadedModels.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                        if (callbackResults.Success())
+                                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                }, loadedBundleModels.ToArray());
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
+
+                        case AssetBundleResourceLocatorType.Tab:
+
+                            var loadedBundleTabs = loadedAssetBundles.Select(asset => asset.GetComponent<TabView<WidgetType>>()).Where(asset => asset != null).ToList();
+
+                            callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedBundleTabs, $"{locatorType}", $"There Are No Components Loaded For Locator Type : {locatorType}"));
+
+                            if (callbackResults.Success())
+                            {
+                                AddLoadedAssetsToCache(locatorType, loadedAssetsCallbackResults =>
+                                {
+                                    callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(loadedTabs.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                        if (callbackResults.Success())
+                                            GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                }, loadedBundleTabs.ToArray());
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = $"Warning! - Asset Bundle Resource Locator Of Type : {locatorType} Can Not Be Proccessed As An Asset - Continue Execution.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2865,14 +2913,16 @@ namespace Com.RedicalGames.Filar
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         }, loadedConfigDataBundles.ToArray());
+
+                        LogInfo($" ______Log_Cats: Cache Config - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                 {
-                    callbackResults.result = "";
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    callbackResults.result = $"Warning! - Asset Bundle Resource Locator Of Type : {locatorType} Can Not Be Proccessed As Config - Continue Execution.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -2882,6 +2932,8 @@ namespace Com.RedicalGames.Filar
             public async Task<Callback> OnAwaitAssetsInitialization(AssetBundleResourceLocatorType locatorType)
             {
                 var callbackResults = new Callback(GetInitializedAssetBundleResourceLocator(locatorType));
+
+                LogInfo($" ___Logged_Cats: Init Key : {locatorType}", this);
 
                 if (callbackResults.Success())
                 {
@@ -3337,50 +3389,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            /// <summary>
-            /// Reference For Getting Screen Containers - Delete After
-            /// </summary>
-            /// <param name="screen"></param>
-            /// <param name="callback"></param>
-            private void AddLoadedAppScreenToList(Screen screen, Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback();
-
-                if(!loadedAppScreens.Contains(screen))
-                {
-                    loadedAppScreens.Add(screen);
-
-                    if(loadedAppScreens.Contains(screen))
-                    {
-                        callbackResults.SetResult(screen.GetDynamicContainerList());
-
-                        if (callbackResults.Success())
-                        {
-                            var dynamicContainersToArray = Helpers.GetArray(screen.GetDynamicContainerList().GetData());
-
-                       
-                        }
-                        else
-                        {
-                            callbackResults.result = $"App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Has Been Added Successfully To Loaded App Screens Without Dynamic Containers Initialization.";
-                            callbackResults.resultCode = Helpers.SuccessCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Asset Bundles Library - Add Loaded App Screen To List Failed - Loaded App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Couldn't Be Added To Loaded App Screens - Invalid Operation - Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
-                }
-                else
-                {
-                    callbackResults.result = $"Asset Bundles Library - Add Loaded App Screen To List Failed - Loaded App Screens Already Contains App Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()}.";
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
-
-                callback?.Invoke(callbackResults);
-            }
-
             private void AddLoadedAssetsToCache<T>(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ScreenType>> callback = null, params T[] loadedAssets)
             {
                 var callbackResults = new CallbackData<ScreenType>(Helpers.GetAppComponentsValid(loadedAssets, "Loaded Assets", 
@@ -3445,6 +3453,47 @@ namespace Com.RedicalGames.Filar
                                             {
                                                 callbackResults.result = $"Added Loaded Asset For Screen : {widgetCachedCallbackResults.GetData()}.";
                                                 callbackResults.data = widgetCachedCallbackResults.GetData();
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Failed To Add Loaded Asset For Screen : {loadedAsset.GetScreenType().GetData()} - Invalid Operation - Please Check Here.";
+                                                callbackResults.resultCode = Helpers.ErrorCode;
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    });
+
+                                    if (callbackResults.UnSuccessful())
+                                        break;
+                                }
+                                else
+                                    break;
+                            }
+
+                            break;
+
+                        case AssetBundleResourceLocatorType.Tab:
+
+                            for (int i = 0; i < loadedAssets.Length; i++)
+                            {
+                                var loadedAsset = loadedAssets[i] as TabView<WidgetType>;
+
+                                callbackResults.SetResult(loadedAsset.GetScreenType());
+
+                                if (callbackResults.Success())
+                                {
+                                    loadedTabs.CacheLoadedAssets(loadedAsset.GetScreenType().GetData(), loadedAsset, tabCachedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(tabCachedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            if (tabCachedCallbackResults.GetData() == loadedAsset.GetScreenType().GetData())
+                                            {
+                                                callbackResults.result = $"Added Loaded Asset For Screen : {tabCachedCallbackResults.GetData()}.";
+                                                callbackResults.data = tabCachedCallbackResults.GetData();
                                             }
                                             else
                                             {
@@ -3610,6 +3659,8 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #region Dynamic Containers Functions
