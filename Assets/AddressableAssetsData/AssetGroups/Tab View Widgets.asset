@@ -41,6 +41,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Tab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a84b4701b44a6f428cf64f6f60f4b63
+    m_Address: Sign In_Tab View
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e7c178511ece7a4ea7615fb155f79e4
+    m_Address: Sign Up_Tab View
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tab
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

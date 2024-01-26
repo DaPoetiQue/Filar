@@ -211,8 +211,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -30, y: 1.2500305}
-  m_SizeDelta: {x: -80, y: -17.50004}
+  m_AnchoredPosition: {x: -25, y: 1.2500305}
+  m_SizeDelta: {x: -70, y: -17.50004}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1522889585984016661
 MonoBehaviour:
@@ -4274,31 +4274,7 @@ MonoBehaviour:
     eventTriggerDistance: 2
     mountType: 2
   initialVisibilityState: 1
-  referencedWidgetDependencyAssets:
-  - name: Profile Tab
-    referenceType: 1
-    uIPlacementType: 0
-    containerType: 19
-    initialVisibilityState: 1
-    constriants: []
-  - name: Inbox Tab
-    referenceType: 2
-    uIPlacementType: 0
-    containerType: 19
-    initialVisibilityState: 1
-    constriants: []
-  - name: Cart Tab
-    referenceType: 4
-    uIPlacementType: 0
-    containerType: 19
-    initialVisibilityState: 1
-    constriants: []
-  - name: Settings Tab
-    referenceType: 3
-    uIPlacementType: 0
-    containerType: 19
-    initialVisibilityState: 1
-    constriants: []
+  referencedWidgetDependencyAssets: []
   dynamicContainerList:
   - {fileID: 7313415851276561638}
   - {fileID: 1522889585984016661}
@@ -4477,9 +4453,10 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 1
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
+  parentScreen: {fileID: 0}
 --- !u!1 &3127868966497868697
 GameObject:
   m_ObjectHideFlags: 0

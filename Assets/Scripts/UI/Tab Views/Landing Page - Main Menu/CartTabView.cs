@@ -3,13 +3,25 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class InboxTabView : AppData.TabView<AppData.WidgetType>
+    public class CartTabView : AppData.TabView<AppData.WidgetType>
     {
         #region Components
 
         #endregion
 
         #region Main
+
+        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>> callback)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>();
+
+            Init(initializationCallbackResults =>
+            {
+                callbackResults.SetResultsData(initializationCallbackResults);
+            });
+
+            callback.Invoke(callbackResults);
+        }
 
         protected override void OnActionButtonEvent(AppData.TabViewType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
@@ -47,11 +59,6 @@ namespace Com.RedicalGames.Filar
         }
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>> OnGetState()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>> callback)
         {
             throw new NotImplementedException();
         }

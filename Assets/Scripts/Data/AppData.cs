@@ -2218,7 +2218,9 @@ namespace Com.RedicalGames.Filar
 
             public CallbackDataList<U> GetCachedAssets(T key)
             {
-                var callbackResults = new CallbackDataList<U>(Helpers.GetAppComponentValid(assetBundles, "Loaded Assets Cache", $"Get Cached Assets Failed - Couldn't Find Loaded Asset Cache For Cache Key : {key} - Invalid Operation."));
+                var callbackResults = new CallbackDataList<U>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(assetBundles, "Loaded Assets Cache", $"Get Cached Assets Failed - Couldn't Find Loaded Asset Cache For Cache Key : {key} - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
@@ -2226,6 +2228,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if(assetBundles[i].cacheKey.ToString().Equals(key.ToString()))
                         {
+                            LogInfo($"_____Logged_Cat:: Get Cached Asset Initialization - Key : {key} Success", this);
+
                             callbackResults.SetResult(assetBundles[i].Initialized());
 
                             if (callbackResults.Success())
@@ -2235,10 +2239,14 @@ namespace Com.RedicalGames.Filar
 
                             break;
                         }
+                        else
+                            callbackResults.result = $"Get Cached Assets Warning - Asset Bundles : {assetBundles[i].GetName()} - With Cache Key : {assetBundles[i].cacheKey} Is Not Equal To The Required Key : {key}";
                     }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                LogInfo($"_____Logged_Cat:: Get Cached Asset Log - Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
 
                 return callbackResults;
             }
@@ -3075,18 +3083,88 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackDataList<Widget> GetWidgets(ScreenType screenType)
-            {
-                var callbackResults = new CallbackDataList<Widget>(loadedWidgets.Initialized());
+            #endregion
 
-                if(callbackResults.Success())
+            #region Tabs
+
+            public CallbackDataList<TabView<WidgetType>> GetLoadedTabs(ScreenType screenType, WidgetType parentType)
+            {
+                var callbackResults = new CallbackDataList<TabView<WidgetType>>();
+
+                callbackResults.SetResult(loadedTabs.GetCachedAssets(screenType));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(loadedWidgets.GetCachedAssets(screenType));
+                    var tabs = loadedTabs.GetCachedAssets(screenType).GetData();
+
+                    tabs.Sort((tabA, tabB) => tabA.GetInstantiationOrderID().GetData().CompareTo(tabB.GetInstantiationOrderID().GetData()));
+
+                    var loadedTabsForWidget = tabs.FindAll(tab => tab.GetParentType().GetData() == parentType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(loadedTabsForWidget, "Loaded Tabs For Widget", $"Failed To Get loaded Tabs For Widget : {parentType} - For Screen Type : {screenType}"));
 
                     if (callbackResults.Success())
                     {
-                        loadedWidgets.GetCachedAssets(screenType).GetData().Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
-                        callbackResults.data = loadedWidgets.GetCachedAssets(screenType).GetData();
+                        callbackResults.result = $"{loadedTabsForWidget.Count} Loaded Tabs Were Found For  For Widget : {parentType} - Of Screen Type : {screenType}";
+                        callbackResults.data = loadedTabsForWidget;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<TabView<WidgetType>> GetLoadedTabs(ScreenType screenType = ScreenType.Any, params ScreenReferencedWidgetDependencyAssetBundle<TabViewType>[] widgetReferencedTabs)
+            {
+                var callbackResults = new CallbackDataList<TabView<WidgetType>>(loadedTabs.GetCachedAssets(screenType));
+
+                if (callbackResults.Success())
+                {
+                    var tabs = new List<TabView<WidgetType>>();
+
+                    var loadedAssets = loadedTabs.GetCachedAssets(screenType).GetData();
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(widgetReferencedTabs, "Widget Referenced Tabs",
+                        "Get Loaded Tabs Failed - There Are No Screen Referenced Tabs Assigned As param Value - Invalid Operation, Please Check Here."));
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < widgetReferencedTabs.Length; i++)
+                        {
+                            var screenReferenced = loadedAssets.Find(screenReferenced => screenReferenced.GetType().GetData() == widgetReferencedTabs[i].GetType().GetData());
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(screenReferenced, "Screen Referenced", $"Get Loaded Tabs For Screen Type : {screenType} Failed - Couldn't Find Tab Of Type : {widgetReferencedTabs[i].GetType().GetData()} - Invalid Operation. Please Check If Tabs Were Initialized/Loaded Properly."));
+
+                            if (callbackResults.Success())
+                            {
+                                if (!tabs.Contains(screenReferenced))
+                                    tabs.Add(screenReferenced);
+                                else
+                                {
+                                    callbackResults.result = $"";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = Helpers.WarningCode;
+                                }
+                            }
+
+                            if (callbackResults.UnSuccessful())
+                            {
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                break;
+                            }
+                        }
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"{tabs.Count} Tabs Have Been Loaded Successfully For Screen Type : {screenType}";
+                            tabs.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
+                            callbackResults.data = tabs;
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -4913,6 +4991,91 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
+            public void AddContent<T>(TabView<T> content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : Enum
+            {
+                try
+                {
+                    Callback callbackResults = new Callback(GetContainer<RectTransform>());
+
+                    if (callbackResults.Success())
+                    {
+                        if (!overrideActiveState)
+                            callbackResults.SetResult(GetActive());
+
+                        if (callbackResults.Success())
+                        {
+                            Helpers.GetAppComponentValid(content, content.GetName(), haWidgetTabCallbackResults =>
+                            {
+                                callbackResults.SetResult(haWidgetTabCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetContainer<RectTransform>());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetViewSpace());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            if (isActive)
+                                                content.GetSceneObject().Show();
+                                            else
+                                                content.GetSceneObject().Hide();
+
+                                            content.GetSceneObject().AddToPlacementContainer(GetContainer<RectTransform>().GetData(), keepWorldPosition);
+
+                                            if (updateContainer)
+                                            {
+                                                UpdateContentOrderInLayer(updateOrderInLayerCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(updateOrderInLayerCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        OnUpdatedContainerSize(updateContainerSizeCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(updateContainerSizeCallbackResults);
+
+                                                            if (callbackResults.UnSuccessful())
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            }, "Check Screen Widget Component Validity On Add Dynamic Widget Failed : Screen Widget Component Param Is Missing / Null / Not Assigned From Calling Function.");
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                    callback?.Invoke(callbackResults);
+                }
+                catch (NullReferenceException exception)
+                {
+                    LogError($"Adding Dynamic Content To Container : {name} Failed With A Null Reference Exception : {exception.Message} - Please Fix This Before Procceeding As It's Breaking The App's Excecution Flow.", this);
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    throw exception;
+                }
+            }
+
             public void AddContent<T, U, V, W>(T content, bool keepWorldPosition = false, bool overrideActiveState = false, Action<Callback> callback = null) where T : UIScreenWidget<U, V, W> where U : Enum where V : Enum where W :AppMonoBaseClass
             {
                 try
@@ -4983,7 +5146,7 @@ namespace Com.RedicalGames.Filar
             {
                 try
                 {
-                    Callback callbackResults = new Callback(GetContainer<Transform>());
+                    Callback callbackResults = new Callback(GetContainer<RectTransform>());
 
                     if (callbackResults.Success())
                     {                 
@@ -4998,7 +5161,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(GetContainer<Transform>());
+                                    callbackResults.SetResult(GetContainer<RectTransform>());
 
                                     if (callbackResults.Success())
                                     {
@@ -28271,15 +28434,15 @@ namespace Com.RedicalGames.Filar
 
                                 if(callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(Helpers.GetAppComponentsValid(referencedWidgetDependencyAssets, "Referenced Widget Dependency Assets", $"There Are No Referenced Widget Dependency Assets To Be Initialized For Screen : {GetName()} - Of Type : {GetType().GetData()} - Resuming Execution Un-interrupted."));
+                                    callbackResults.SetResult(GetReferencedWidgetDependencyAssets());
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedWidgets(screenReferencedWidgets: Helpers.GetArray(referencedWidgetDependencyAssets)));
+                                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedWidgets(screenReferencedWidgets: Helpers.GetArray(GetReferencedWidgetDependencyAssets().GetData())));
 
                                         if (callbackResults.Success())
                                         {
-                                            var loadedWidgets = assetBundlesLibrary.GetLoadedWidgets(screenReferencedWidgets: Helpers.GetArray(referencedWidgetDependencyAssets)).GetData();
+                                            var loadedWidgets = assetBundlesLibrary.GetLoadedWidgets(screenReferencedWidgets: Helpers.GetArray(GetReferencedWidgetDependencyAssets().GetData())).GetData();
 
                                             for (int i = 0; i < loadedWidgets.Count; i++)
                                             {
@@ -28287,11 +28450,11 @@ namespace Com.RedicalGames.Filar
                                                 widgetComponent.gameObject.SetName(loadedWidgets[i].GetName());
 
                                                 widgetComponent.SetScreenType(GetType().GetData());
-                                                widgetComponent.SetContentContainerType(referencedWidgetDependencyAssets[i].GetContentContainerType().GetData());
-                                                widgetComponent.SetScreenUIPlacementType(referencedWidgetDependencyAssets[i].GetScreenUIPlacementType().GetData());
-                                                widgetComponent.SetUIScreenWidgetVisibilityState(referencedWidgetDependencyAssets[i].GetInitialVisibilityState().GetData());
+                                                widgetComponent.SetContentContainerType(GetReferencedWidgetDependencyAssets().GetData()[i].GetContentContainerType().GetData());
+                                                widgetComponent.SetScreenUIPlacementType(GetReferencedWidgetDependencyAssets().GetData()[i].GetScreenUIPlacementType().GetData());
+                                                widgetComponent.SetUIScreenWidgetVisibilityState(GetReferencedWidgetDependencyAssets().GetData()[i].GetInitialVisibilityState().GetData());
 
-                                                callbackResults.SetResult(referencedWidgetDependencyAssets[i].GetWidgetConstraints());
+                                                callbackResults.SetResult(GetReferencedWidgetDependencyAssets().GetData()[i].GetWidgetConstraints());
 
                                                 if (callbackResults.Success())
                                                 {
@@ -28299,7 +28462,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         callbackResults.SetResult(constraintsAppliedCallbackResults);
 
-                                                    }, Helpers.GetArray(referencedWidgetDependencyAssets[i].GetWidgetConstraints().GetData()));
+                                                    }, Helpers.GetArray(GetReferencedWidgetDependencyAssets().GetData()[i].GetWidgetConstraints().GetData()));
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -28391,7 +28554,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                widget.SetParentWidget(this, parentSetCallbackResults =>
+                                                widget.SetParentScreen(this, parentSetCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(parentSetCallbackResults);
 
@@ -31461,7 +31624,9 @@ namespace Com.RedicalGames.Filar
 
             public CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>> GetReferencedWidgetDependencyAssets()
             {
-                var callbackResults = new CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>>(Helpers.GetAppComponentsValid(referencedWidgetDependencyAssets, "Referenced Widget Dependency Assets", $"There Are Nore Referenced Widget Dependency Assets Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}."));
+                var callbackResults = new CallbackDataList<ScreenReferencedWidgetDependencyAssetBundle<U>>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(referencedWidgetDependencyAssets, "Referenced Widget Dependency Assets", $"There Are Nore Referenced Widget Dependency Assets Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()}."));
 
                 if(callbackResults.Success())
                 {
@@ -33943,6 +34108,10 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             protected ScreenDynamicUIHandler dynamicUIHandler;
 
+            [Space(5)]
+            [SerializeField]
+            protected bool initializeTabs = false;
+
             //[HideInInspector]
             public bool dontShowAgain;
 
@@ -33955,7 +34124,9 @@ namespace Com.RedicalGames.Filar
             Coroutine showWidgetAsyncRoutine;
 
             [SerializeField]
-            private ScreenUIData parentWidget;
+            private ScreenUIData parentScreen;
+
+            private List<TabView<WidgetType>> tabs = new List<TabView<WidgetType>>();
 
             #region Widgets 
 
@@ -34003,6 +34174,8 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
+                                                    #region State Packet
+
                                                     var widgetStatePacket = new WidgetStatePacket<WidgetType, TabViewType, Widget>(this, WidgetStateType.Initialized);
 
                                                     SetWidgetStatePacket(widgetStatePacket, widgetStatePacketSetCallbackResults =>
@@ -34099,6 +34272,27 @@ namespace Com.RedicalGames.Filar
                                                         else
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     });
+
+                                                    #endregion
+
+                                                    #region Tabs
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        InitializeTabs(tabsInitializationCallbackResults =>
+                                                        {
+                                                            if (callbackResults.Success())
+                                                            {
+
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult);
+
+                                                    #endregion
                                                 }
                                             });
                                         }
@@ -34123,13 +34317,344 @@ namespace Com.RedicalGames.Filar
                 #endregion
             }
 
-            public void SetParentWidget(ScreenUIData parentHandler, Action<CallbackData<ScreenUIData>> callback = null)
+            #region Widget Dependencies
+
+            private void InitializeTabs(Action<CallbackDataList<TabView<TabViewType>>> callback)
+            {
+                var callbackResults = new CallbackDataList<TabView<TabViewType>>();
+
+                if (initializeTabs)
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Databas Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                        if (callbackResults.Success())
+                        {
+                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedTabs(GetScreenType().GetData(), GetType().GetData()));
+
+                            if (callbackResults.Success())
+                            {
+                                var loadedTabs = assetBundlesLibrary.GetLoadedTabs(GetScreenType().GetData(), GetType().GetData()).GetData();
+
+                                #region Load Tabs To Widget
+
+                                for (int i = 0; i < loadedTabs.Count; i++)
+                                {
+                                    var tabComponent = Instantiate(loadedTabs[i].GetSceneObject()).GetComponent<TabView<WidgetType>>();
+                                    tabComponent.GetSceneObject().SetName(loadedTabs[i].GetName());
+
+                                    callbackResults.SetResult(Helpers.GetAppComponentValid(tabComponent, "Tab Component", $"Initialize Tabs Failed - Tab Component Not Found From Instantiated Object For Tab : {loadedTabs[i].GetName()} - Of Type : {loadedTabs[i].GetType().GetData()} For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation, Please Check Here."));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        tabComponent.Initilize(initializationCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(initializationCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                AddTab(tabComponent, widgetTabAddedCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(widgetTabAddedCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        callbackResults.SetResult(tabComponent.GetDynamicContainerList());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            AddDynamicContainer(containerAddedCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(containerAddedCallbackResults);
+
+                                                                if (callbackResults.UnSuccessful())
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                            }, Helpers.GetArray(tabComponent.GetDynamicContainerList().GetData()));
+                                                        }
+                                                        else
+                                                        {
+                                                            callbackResults.result = $"There Are No Dynamic Containers Assigned For Widget : {tabComponent.GetName()} - Of Type : {tabComponent.GetType()}";
+                                                            callbackResults.resultCode = Helpers.SuccessCode;
+                                                        }
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                        });
+                                    }
+
+                                    if (callbackResults.UnSuccessful())
+                                    {
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        break;
+                                    }
+                                }
+
+                                #endregion
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} Doesn't Have Any Tabs - Successfully Continuing Execution.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+
+                            if (callbackResults.Success())
+                            {
+                                // Enable And Test / Fix
+                                #region Widget Dependencies
+
+                                //callbackResults.SetResult(GetReferencedWidgetDependencyAssets());
+
+                                //if (callbackResults.Success())
+                                //{
+                                //    callbackResults.SetResult(assetBundlesLibrary.GetLoadedTabs(widgetReferencedTabs: Helpers.GetArray(GetReferencedWidgetDependencyAssets().GetData())));
+
+                                //    if (callbackResults.Success())
+                                //    {
+                                //        var loadedTabs = assetBundlesLibrary.GetLoadedTabs(widgetReferencedTabs: Helpers.GetArray(GetReferencedWidgetDependencyAssets().GetData())).GetData();
+
+                                //        for (int i = 0; i < loadedTabs.Count; i++)
+                                //        {
+                                //            var tabComponent = Instantiate(loadedTabs[i].gameObject).GetComponent<TabView<WidgetType>>();
+                                //            tabComponent.gameObject.SetName(loadedTabs[i].GetName());
+
+                                //            tabComponent.SetScreenType(GetScreenType().GetData());
+                                //            tabComponent.SetContentContainerType(GetReferencedWidgetDependencyAssets().GetData()[i].GetContentContainerType().GetData());
+                                //            tabComponent.SetScreenUIPlacementType(GetReferencedWidgetDependencyAssets().GetData()[i].GetScreenUIPlacementType().GetData());
+                                //            tabComponent.SetUIScreenWidgetVisibilityState(GetReferencedWidgetDependencyAssets().GetData()[i].GetInitialVisibilityState().GetData());
+
+                                //            callbackResults.SetResult(GetReferencedWidgetDependencyAssets().GetData()[i].GetWidgetConstraints());
+
+                                //            if (callbackResults.Success())
+                                //            {
+                                //                tabComponent.ApplyConstraints(constraintsAppliedCallbackResults =>
+                                //                {
+                                //                    callbackResults.SetResult(constraintsAppliedCallbackResults);
+
+                                //                }, Helpers.GetArray(GetReferencedWidgetDependencyAssets().GetData()[i].GetWidgetConstraints().GetData()));
+                                //            }
+                                //            else
+                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                //            callbackResults.SetResult(Helpers.GetAppComponentValid(tabComponent, "Widget Component", $"Initialize Widgets Failed - Widget Component Not Found From Instantiated Object For Widget : {loadedTabs[i].GetName()} - Of Type : {loadedTabs[i].GetType().GetData()} - Invalid Operation, Please Check Here."));
+
+                                //            if (callbackResults.Success())
+                                //            {
+                                //                tabComponent.Initilize(initializationCallbackResults =>
+                                //                {
+                                //                    callbackResults.SetResult(initializationCallbackResults);
+
+                                //                    if (callbackResults.Success())
+                                //                    {
+                                //                        AddTab(tabComponent, screenWidgetAddedCallbackResults =>
+                                //                        {
+                                //                            callbackResults.SetResult(screenWidgetAddedCallbackResults);
+
+                                //                            if (callbackResults.UnSuccessful())
+                                //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //                        });
+                                //                    }
+                                //                });
+                                //            }
+
+                                //            if (callbackResults.UnSuccessful())
+                                //            {
+                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //                break;
+                                //            }
+                                //        }
+                                //    }
+                                //    else
+                                //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                //}
+                                //else
+                                //    callbackResults.resultCode = Helpers.SuccessCode;
+
+                                #endregion
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                {
+                    callbackResults.result = $"Tabs Are Not Initialized For Widget : {GetName()} - Of Type : {GetType().GetData()} - Continuing Execution.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+
+                callback.Invoke(callbackResults);
+            }
+
+            private void AddTab(TabView<WidgetType> tab, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(tab, "Tab", "Add Tab Failed : Tab Parameter Value Is Invalid / Null."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTabs());
+
+                        if (callbackResults.Success())
+                        {
+                            if (!GetTabs().GetData().Contains(tab))
+                            {
+                                GetTabs().GetData().Add(tab);
+
+                                if (GetTabs().GetData().Contains(tab))
+                                {
+                                    callbackResults.SetResult(GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var container = GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()).GetData();
+
+                                        callbackResults.SetResult(tab.GetInitialVisibility());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            container.AddContent(tab, false, tab.GetInitialVisibility().GetData(), true, true, tabAddedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(tabAddedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    tab.SetParentWidget(this, parentSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(parentSetCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            // Add To Tab Component
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Failed To Add Widget Tab : {tab.GetName()} - To Widget Tabs List For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Widget Tab : {tab.GetName()} Already Exists In Widget Tabs List For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                        {
+                            tabs = new List<TabView<WidgetType>> { tab };
+
+                            if (GetTabs().GetData().Contains(tab))
+                            {
+                                callbackResults.SetResult(GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()));
+
+                                if (callbackResults.Success())
+                                {
+                                    var container = GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()).GetData();
+
+                                    callbackResults.SetResult(tab.GetInitialVisibility());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        container.AddContent(tab, false, tab.GetInitialVisibility().GetData(), true, true, tabAddedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(tabAddedCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                tab.SetParentWidget(this, parentSetCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(parentSetCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        // Add To Tab Component
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Failed To Add Widget Tab : {tab.GetName()} - To Widget Tabs List For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected CallbackDataList<TabView<WidgetType>> GetTabs()
+            {
+                var callbackResults = new CallbackDataList<TabView<WidgetType>>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(tabs, "Tabs", $"Get Tabs Failed - There Are No Tabs Found For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Tabs Success - {tabs.Count} Tab(s) Have Been Loaded Successfully For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
+                    callbackResults.data = tabs;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            public void SetParentScreen(ScreenUIData parentHandler, Action<CallbackData<ScreenUIData>> callback = null)
             {
                 var callbackResults = new CallbackData<ScreenUIData>(Helpers.GetAppComponentValid(parentHandler, "Parent Handle", $"Parent Handle Parameter Value Is Null - For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation - Please Check Here."));
 
                 if (callbackResults.Success())
                 {
-                    parentWidget = parentHandler;
+                    parentScreen = parentHandler;
 
                     callbackResults.result = $"Parent Handle : {parentHandler.GetName()} - Of Type : {parentHandler.GetType().GetData()} - Has Been Assigned Successfully To Widget : {GetName()} - Of Type : {GetType().GetData()}.";
                     callbackResults.data = parentHandler;
@@ -34144,11 +34669,11 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<ScreenUIData> GetParentWidget()
             {
-                var callbackResults = new CallbackData<ScreenUIData>(Helpers.GetAppComponentValid(parentWidget, "Parent Widget", "Parent Widget Is Not Yet Initialized."));
+                var callbackResults = new CallbackData<ScreenUIData>(Helpers.GetAppComponentValid(parentScreen, "Parent Widget", "Parent Widget Is Not Yet Initialized."));
 
                 if(callbackResults.Success())
                 {
-                    var parentWidgetData = Helpers.GetAppComponentValid(parentWidget, "Parent Widget").GetData();
+                    var parentWidgetData = Helpers.GetAppComponentValid(parentScreen, "Parent Widget").GetData();
 
                     callbackResults.result = $"Parent Widget : {parentWidgetData.name} Found For Screen Widget : {name} Of Type : {type}";
                     callbackResults.data = parentWidgetData;
@@ -37386,18 +37911,44 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private T parentType;
 
+            private Widget parentWidget;
+
             #endregion
 
             #region Main
 
-            public void Initialize(Action<Callback> callback = null)
+            public void Init(Action<CallbackData<WidgetStatePacket<TabViewType, TabViewType, Widget>>> callback)
             {
-                var callbackResults = new Callback(GetInitialVisibility());
+                var callbackResults = new CallbackData<WidgetStatePacket<TabViewType, TabViewType, Widget>>(GetInitialVisibility());
 
                 if (callbackResults.Success())
                 {
-
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetParentWidget(Widget parentWidget, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(parentWidget, "Parent Widget", $"Set Parent Widget Failed - Parent Widget Parameter Value Is Invalid / Null."));
+
+                if (callbackResults.Success())
+                    this.parentWidget = parentWidget;
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetScreenType(ScreenType screenType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(screenType, "Screen Type", $"Set Screen Type Failed - Screen Type Parameter Value Is Set To Default : {screenType}"));
+
+                if (callbackResults.Success())
+                    this.screenType = screenType;
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
@@ -37420,6 +37971,21 @@ namespace Com.RedicalGames.Filar
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
+
+                return callbackResults;
+            }
+
+            public CallbackData<Widget> GetParentWidget()
+            {
+                var callbackResults = new CallbackData<Widget>();
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Parent Widget Success - Parent Widget : {parentWidget.GetName()} - Of Type : {parentWidget.GetType().GetData()} - For : {GetName()} Has Been Successfully Found";
+                    callbackResults.data = parentWidget;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -47565,7 +48131,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Interfaces
 
-            void Initialize(Action<Callback> callback = null);
+            void Init(Action<CallbackData<WidgetStatePacket<TabViewType, TabViewType, Widget>>> callback);
 
             CallbackData<T> GetParentType();
             CallbackData<ScreenType> GetScreenType();
