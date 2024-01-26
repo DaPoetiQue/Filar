@@ -828,7 +828,7 @@ GameObject:
   - component: {fileID: 2455903828130393562}
   - component: {fileID: 9018578261495589886}
   m_Layer: 0
-  m_Name: Sign Up Button
+  m_Name: __Sign Up Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3066,7 +3066,7 @@ GameObject:
   - component: {fileID: 2455903828549824953}
   - component: {fileID: 9119007729281924405}
   m_Layer: 0
-  m_Name: Read Terms And Conditions Button
+  m_Name: __Read Terms And Conditions Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6990,7 +6990,7 @@ GameObject:
   - component: {fileID: 2455903828774112361}
   - component: {fileID: 4140719281353957116}
   m_Layer: 0
-  m_Name: Terms And Conditions Toggle Option
+  m_Name: __Terms And Conditions Toggle Option
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18045,7 +18045,7 @@ GameObject:
   - component: {fileID: 2455903829599644057}
   - component: {fileID: 5001494023696215388}
   m_Layer: 0
-  m_Name: __Twitter Link Button
+  m_Name: __X Link Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22124,7 +22124,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2455903829779374052}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -22215,7 +22215,30 @@ MonoBehaviour:
     name: 
     eventActions: []
     parameterEventActions: []
-  actionGroup: []
+  actionGroup:
+  - name: Input Fields
+    inputActionGroupType: 3
+    inputActionGroup:
+    - {fileID: 5144275268972949583}
+    - {fileID: 8960801613327841723}
+    - {fileID: 6628210929302801384}
+    - {fileID: 2790990373247760782}
+    initialize: 1
+  - name: Buttons
+    inputActionGroupType: 1
+    inputActionGroup:
+    - {fileID: 9018578261495589886}
+    - {fileID: 9119007729281924405}
+    - {fileID: 2300183509024004645}
+    - {fileID: 304250651269652852}
+    - {fileID: 5001494023696215388}
+    - {fileID: 8498891307691593696}
+    initialize: 1
+  - name: Checkboxes
+    inputActionGroupType: 2
+    inputActionGroup:
+    - {fileID: 4140719281353957116}
+    initialize: 1
   screenType: 7
   parentType: 31
 --- !u!1 &2455903829825805091
