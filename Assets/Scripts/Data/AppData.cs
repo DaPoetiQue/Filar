@@ -34126,8 +34126,6 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private ScreenUIData parentScreen;
 
-            private List<TabView<WidgetType>> tabs = new List<TabView<WidgetType>>();
-
             #region Widgets 
 
             protected Dictionary<string, Widget> registeredWidgets = new Dictionary<string, Widget>();
@@ -34341,63 +34339,70 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                var loadedTabs = assetBundlesLibrary.GetLoadedTabs(GetScreenType().GetData(), GetType().GetData()).GetData();
+                                callbackResults.SetResult(GetTabViewComponent());
 
-                                #region Load Tabs To Widget
-
-                                for (int i = 0; i < loadedTabs.Count; i++)
+                                if (callbackResults.Success())
                                 {
-                                    var tabComponent = Instantiate(loadedTabs[i].GetSceneObject()).GetComponent<TabView<WidgetType>>();
-                                    tabComponent.GetSceneObject().SetName(loadedTabs[i].GetName());
+                                    var loadedTabs = assetBundlesLibrary.GetLoadedTabs(GetScreenType().GetData(), GetType().GetData()).GetData();
 
-                                    callbackResults.SetResult(Helpers.GetAppComponentValid(tabComponent, "Tab Component", $"Initialize Tabs Failed - Tab Component Not Found From Instantiated Object For Tab : {loadedTabs[i].GetName()} - Of Type : {loadedTabs[i].GetType().GetData()} For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation, Please Check Here."));
+                                    #region Load Tabs To Widget
 
-                                    if (callbackResults.Success())
+                                    for (int i = 0; i < loadedTabs.Count; i++)
                                     {
-                                        tabComponent.Initilize(initializationCallbackResults =>
+                                        var tabComponent = Instantiate(loadedTabs[i].GetSceneObject()).GetComponent<TabView<WidgetType>>();
+                                        tabComponent.GetSceneObject().SetName(loadedTabs[i].GetName());
+
+                                        callbackResults.SetResult(Helpers.GetAppComponentValid(tabComponent, "Tab Component", $"Initialize Tabs Failed - Tab Component Not Found From Instantiated Object For Tab : {loadedTabs[i].GetName()} - Of Type : {loadedTabs[i].GetType().GetData()} For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation, Please Check Here."));
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(initializationCallbackResults);
-
-                                            if (callbackResults.Success())
+                                            tabComponent.Initilize(initializationCallbackResults =>
                                             {
-                                                AddTab(tabComponent, widgetTabAddedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(widgetTabAddedCallbackResults);
+                                                callbackResults.SetResult(initializationCallbackResults);
 
-                                                    if (callbackResults.Success())
+                                                if (callbackResults.Success())
+                                                {
+                                                    AddTab(tabComponent, widgetTabAddedCallbackResults =>
                                                     {
-                                                        callbackResults.SetResult(tabComponent.GetDynamicContainerList());
+                                                        callbackResults.SetResult(widgetTabAddedCallbackResults);
 
                                                         if (callbackResults.Success())
                                                         {
-                                                            AddDynamicContainer(containerAddedCallbackResults =>
+                                                            callbackResults.SetResult(tabComponent.GetDynamicContainerList());
+
+                                                            if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResult(containerAddedCallbackResults);
+                                                                AddDynamicContainer(containerAddedCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(containerAddedCallbackResults);
 
-                                                                if (callbackResults.UnSuccessful())
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    if (callbackResults.UnSuccessful())
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                            }, Helpers.GetArray(tabComponent.GetDynamicContainerList().GetData()));
+                                                                }, Helpers.GetArray(tabComponent.GetDynamicContainerList().GetData()));
+                                                            }
+                                                            else
+                                                            {
+                                                                callbackResults.result = $"There Are No Dynamic Containers Assigned For Widget : {tabComponent.GetName()} - Of Type : {tabComponent.GetType()}";
+                                                                callbackResults.resultCode = Helpers.SuccessCode;
+                                                            }
                                                         }
                                                         else
-                                                        {
-                                                            callbackResults.result = $"There Are No Dynamic Containers Assigned For Widget : {tabComponent.GetName()} - Of Type : {tabComponent.GetType()}";
-                                                            callbackResults.resultCode = Helpers.SuccessCode;
-                                                        }
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                        });
-                                    }
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                            });
+                                        }
 
-                                    if (callbackResults.UnSuccessful())
-                                    {
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        break;
+                                        if (callbackResults.UnSuccessful())
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            break;
+                                        }
                                     }
                                 }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 #endregion
                             }
@@ -34499,6 +34504,10 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
+            #endregion
+
+            #region Tab View Component
+
             private void AddTab(TabView<WidgetType> tab, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetType());
@@ -34509,71 +34518,11 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetTabs());
-
-                        if (callbackResults.Success())
+                        GetTabViewComponent().GetData().RegisterTab(tab, tabRegisteredCallbackResults => 
                         {
-                            if (!GetTabs().GetData().Contains(tab))
-                            {
-                                GetTabs().GetData().Add(tab);
+                            callbackResults.SetResult(tabRegisteredCallbackResults);
 
-                                if (GetTabs().GetData().Contains(tab))
-                                {
-                                    callbackResults.SetResult(GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()));
-
-                                    if (callbackResults.Success())
-                                    {
-                                        var container = GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()).GetData();
-
-                                        callbackResults.SetResult(tab.GetInitialVisibility());
-
-                                        if (callbackResults.Success())
-                                        {
-                                            container.AddContent(tab, false, tab.GetInitialVisibility().GetData(), true, true, tabAddedCallbackResults =>
-                                            {
-                                                callbackResults.SetResult(tabAddedCallbackResults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    tab.SetParentWidget(this, parentSetCallbackResults =>
-                                                    {
-                                                        callbackResults.SetResult(parentSetCallbackResults);
-
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            // Add To Tab Component
-                                                        }
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    });
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                {
-                                    callbackResults.result = $"Failed To Add Widget Tab : {tab.GetName()} - To Widget Tabs List For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
-                                    callbackResults.resultCode = Helpers.ErrorCode;
-                                }
-                            }
-                            else
-                            {
-                                callbackResults.result = $"Widget Tab : {tab.GetName()} Already Exists In Widget Tabs List For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
-                                callbackResults.resultCode = Helpers.WarningCode;
-                            }
-                        }
-                        else
-                        {
-                            tabs = new List<TabView<WidgetType>> { tab };
-
-                            if (GetTabs().GetData().Contains(tab))
+                            if(callbackResults.Success())
                             {
                                 callbackResults.SetResult(GetDynamicContainer(tab.GetContentContainerType().GetData(), tab.GetScreenUIPlacementType().GetData()));
 
@@ -34614,11 +34563,8 @@ namespace Com.RedicalGames.Filar
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
-                            {
-                                callbackResults.result = $"Failed To Add Widget Tab : {tab.GetName()} - To Widget Tabs List For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation -Please Check Here.";
-                                callbackResults.resultCode = Helpers.ErrorCode;
-                            }
-                        }
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -34629,21 +34575,43 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected CallbackDataList<TabView<WidgetType>> GetTabs()
+            protected CallbackData<TabViewComponent<WidgetType>> GetTabViewComponent()
             {
-                var callbackResults = new CallbackDataList<TabView<WidgetType>>();
-
-                callbackResults.SetResult(Helpers.GetAppComponentsValid(tabs, "Tabs", $"Get Tabs Failed - There Are No Tabs Found For Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
+                var callbackResults = new CallbackData<TabViewComponent<WidgetType>>(Helpers.GetAppComponentValid(tabViewComponent, "Tab View Component", $"Get Tab View Component Failed - Tab View Component For Widget : {GetName()} - Of Type : {GetType().GetData()} Is Not Initialized. Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Get Tabs Success - {tabs.Count} Tab(s) Have Been Loaded Successfully For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
-                    callbackResults.data = tabs;
+                    callbackResults.result = $"Get Tab View Component Success - Tab View Component : {tabViewComponent.GetName()} - For Widget : {GetName()} - Of Type : {GetType().GetData()} Has Been Initialized Successfully.";
+                    callbackResults.data = tabViewComponent;
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
+            }
+
+            protected void SelectTabView(TabViewType viewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabViewComponent());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabViewComponent().GetData().IsInitialized());
+
+                    if (callbackResults.Success())
+                    {
+                        GetTabViewComponent().GetData().SelectTab(viewType, tabSelectedCallbackResults =>
+                        {
+                            callbackResults.SetResult(tabSelectedCallbackResults);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -36462,24 +36430,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Tabbed View
-
-            protected CallbackData<TabViewComponent<WidgetType>> GetTabViewComponent()
-            {
-                var callbackResults = new CallbackData<TabViewComponent<WidgetType>>();
-
-                return callbackResults;
-            }
-
-            protected void SelectTabView(Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback();
-
-                callback?.Invoke(callbackResults);
-            }
-
-            #endregion
-
             IEnumerator ShowWidgetAsync(SceneConfigDataPacket dataPackets)
             {
                 yield return new WaitForEndOfFrame();
@@ -37684,7 +37634,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private TransitionType transitionType;
+            private TransitionType transitionType = TransitionType.None;
 
             [Space(5)]
             [SerializeField]
@@ -37754,6 +37704,85 @@ namespace Com.RedicalGames.Filar
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RegisterTab(TabView<T> tab, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabViewList());
+
+                if (callbackResults.Success())
+                {
+                    if(!tabViewList.Contains(tab))
+                    {
+                        tabViewList.Add(tab);
+
+                        if(tabViewList.Contains(tab))
+                            callbackResults.result = $"Register Tab Success - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Have Been Successfully Registered To The Tab View List For Tab View Component : {GetName()}";
+                        else
+                        {
+                            callbackResults.result = $"Register Tab Failed - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Couldn't Be Registered To Tab View List For Tab View Component : {GetName()} - Inva;id Operation - Please Check Tab View Component In Data.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Register Tab Failed - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Already Exist In Tab View List For Tab View Component : {GetName()}";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                {
+                    tabViewList = new List<TabView<T>> { tab };
+
+                    if (tabViewList.Contains(tab))
+                    {
+                        callbackResults.result = $"Register Tab Success - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Have Been Successfully Registered To The Tab View List For Tab View Component : {GetName()}";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Register Tab Failed - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Couldn't Be Registered To Tab View List For Tab View Component : {GetName()} - Inva;id Operation - Please Check Tab View Component In Data.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void UnRegisterTab(TabView<T> tab, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabViewList());
+
+                if (callbackResults.Success())
+                {
+                    if(GetTabViewList().GetData().Contains(tab))
+                    {
+                        GetTabViewList().GetData().Remove(tab);
+
+                        callbackResults.result = $"Un Register Tab Success - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Have Been Successfully Un-Registered From Tab View List For Tab View Component : {GetName()}.";
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Un Register Tab Failed - Tab : {tab.GetName()} - Of Type : {tab.GetType().GetData()} - Couldn't Be Un-Registered From Tab View List For Tab View Component : {GetName()} Because it Was Not Previously Registed - Invalid operation.";
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void UnRegisterTabs(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabViewList());
+
+                if (callbackResults.Success())
+                    GetTabViewList().GetData().Clear();
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
@@ -37839,7 +37868,9 @@ namespace Com.RedicalGames.Filar
 
             public CallbackDataList<TabView<T>> GetTabViewList()
             {
-                var callbackResults = new CallbackDataList<TabView<T>>(Helpers.GetAppComponentsValid(tabViewList, "Tab View List", $"Get Tab View List Failed - Tab View List For : {GetName()} Is Not Yet Initialized - Invalid Operation."));
+                var callbackResults = new CallbackDataList<TabView<T>>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(tabViewList, "Tab View List", $"Get Tab View List Failed - Tab View List For : {GetName()} Is Not Yet Initialized - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
@@ -37854,7 +37885,9 @@ namespace Com.RedicalGames.Filar
 
             private CallbackData<RectTransform> GetTabLayout()
             {
-                var callbackResults = new CallbackData<RectTransform>(Helpers.GetAppComponentValid(tabLayout, "Tab Layout", $"Get Tab Layout Failed - Tab Layout For : {GetName()} Is Not Assigned - Invalid Operation"));
+                var callbackResults = new CallbackData<RectTransform>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(tabLayout, "Tab Layout", $"Get Tab Layout Failed - Tab Layout For : {GetName()} Is Not Assigned - Invalid Operation"));
 
                 if(callbackResults.Success())
                 {
@@ -37867,7 +37900,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private Callback IsInitialized()
+            public Callback IsInitialized()
             {
                 var callbackResults = new Callback(GetTabLayout());
 

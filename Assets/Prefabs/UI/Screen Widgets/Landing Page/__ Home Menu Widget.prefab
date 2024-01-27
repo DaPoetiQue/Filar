@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 1860498056780435330}
   - component: {fileID: 1522889585984016661}
   m_Layer: 0
-  m_Name: '::: Tab View Layout Container'
+  m_Name: ':::: Tab View Layout Container'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4294,10 +4294,10 @@ MonoBehaviour:
   screenType: 7
   tabViewComponent:
     name: Menu Tabs
-    tabLayout: {fileID: 0}
+    tabLayout: {fileID: 1860498056780435330}
     transitionType: 1
     activeTabViewType: 1
-  selectableAssetType: 4
+  selectableAssetType: 5
   blurScreen: 0
   scroller:
     value: {fileID: 0}

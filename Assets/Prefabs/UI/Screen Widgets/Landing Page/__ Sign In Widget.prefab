@@ -2113,11 +2113,11 @@ MonoBehaviour:
     initialize: 1
   screenType: 7
   tabViewComponent:
-    name: 
-    tabLayout: {fileID: 0}
-    transitionType: 0
-    activeTabViewType: 0
-  selectableAssetType: 0
+    name: SignIn/Up Tabs
+    tabLayout: {fileID: 5756737564637616937}
+    transitionType: 2
+    activeTabViewType: 6
+  selectableAssetType: 5
   blurScreen: 0
   scroller:
     value: {fileID: 0}
