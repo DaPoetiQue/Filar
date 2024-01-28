@@ -79,31 +79,56 @@ namespace Com.RedicalGames.Filar
                         {
                             case AppData.InputActionButtonType.OpenProfileButton:
 
-                                callbackResults.SetResult(profileManager.GetSignInState());
+                                callbackResults.SetResult(screen.IsFocusedWidget(this));
 
                                 if (callbackResults.Success())
                                 {
-                                    if (profileManager.GetSignInState().GetData() == AppData.SignInState.SignIn)
+                                    SelectTabView(AppData.TabViewType.ProfileView, tabSelectedCallbackResults =>
                                     {
-                                        OpenMainMenu(AppData.MenuType.Profile, screen, menuOpenCallbackResults =>
+                                        callbackResults.SetResult(tabSelectedCallbackResults);
+                                    });
+                                }
+                                else
+                                {
+                                    callbackResults.SetResult(screen.GetWidgetOfType(AppData.WidgetType.SignInWidget));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var widget = screen.GetWidgetOfType(AppData.WidgetType.SignInWidget).GetData();
+
+                                        callbackResults.SetResult(screen.IsFocusedWidget(AppData.WidgetType.PostsWidget));
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(menuOpenCallbackResults);
+                                            var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                                            callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
 
                                             if (callbackResults.Success())
                                             {
-                                                SelectTabView(AppData.TabViewType.ProfileView, tabSelectedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(tabSelectedCallbackResults);
-                                                });
+                                                await Task.Delay(500);
+
+                                                var loginScreenConfig = new AppData.SceneConfigDataPacket();
+
+                                                loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                                loginScreenConfig.blurScreen = true;
+
+                                                screen.ShowWidget(loginScreenConfig);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
+                                        }
+                                        else
+                                        {
+                                            var loginScreenConfig = new AppData.SceneConfigDataPacket();
+
+                                            loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                                            loginScreenConfig.blurScreen = true;
+
+                                            screen.ShowWidget(loginScreenConfig);
+                                        }
                                     }
                                     else
-                                    {
-                                      
-                                    }
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
 
                                 break;

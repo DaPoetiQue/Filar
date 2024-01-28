@@ -34630,7 +34630,6 @@ namespace Com.RedicalGames.Filar
 
             Coroutine showWidgetAsyncRoutine;
 
-            [SerializeField]
             private ScreenUIData parentScreen;
 
             #region Widgets 
@@ -34898,8 +34897,12 @@ namespace Com.RedicalGames.Filar
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     });
                                                 }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             });
                                         }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                         if (callbackResults.UnSuccessful())
                                         {
@@ -34907,6 +34910,23 @@ namespace Com.RedicalGames.Filar
                                             break;
                                         }
                                     }
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetTabViewComponent());
+
+                                        if(callbackResults.Success())
+                                        {
+                                            GetTabViewComponent().GetData().Initialize(this, tabViewComponentInitialized => 
+                                            {
+                                                callbackResults.SetResult(tabViewComponentInitialized);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -37746,25 +37766,355 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private TabViewType activeTabViewType = TabViewType.None;
 
+            [Space(5)]
+            [Header("Transition Config")]
+
+            [Space(10)]
+            [SerializeField]
+            private InputActionHandler tabNavigationButton = null;
+
             private List<TabView<T>> tabViewList = new List<TabView<T>>();
+
+            private TransitionableUIComponent transitionableUIComponent = new TransitionableUIComponent();
+
+            private Dictionary<TabViewType, object> tabViewTransitionInfoGroup = new Dictionary<TabViewType, object>();
+
+            [SerializeField]
+            private bool isInitialized = false;
 
             #endregion
 
             #region Main
 
-            public void Initialize(Action<Callback> callback = null)
+            public void Initialize(Widget baseWidget, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetTabLayout());
 
                 if (callbackResults.Success())
                 {
+                    callbackResults.SetResult(GetTransitionType());
 
+                    if(callbackResults.Success())
+                    {
+                        if (GetTransitionType().GetData() == TransitionType.Translate)
+                        {
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
+
+                            if (callbackResults.Success())
+                            {
+                                CreateTabViewTransitionInfoGroup(groupCreatedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(groupCreatedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetTabNavigationButton());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            #region Input Initialization
+
+                                            var action = GetTabNavigationButton().GetData();
+
+                                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", "Selectable Manager Instance Is Not Yet Initialized."));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                                                action.Init<ButtonConfigDataPacket>(initializationCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(initializationCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        callbackResults.SetResult(action.GetButtonComponent());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var actionButton = action.GetButtonComponent().GetData();
+
+                                                            callbackResults.SetResult(actionButton.Initialized());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                callbackResults.SetResult(actionButton.Selectable());
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(structureCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            var selectionSystem = structureCallbackResults.GetData();
+
+                                                                            selectionSystem.OnRegisterInputToSelectableEventListener(baseWidget.GetType().GetData(), actionButton, selectableCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(selectableCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    actionButton.Initialize(initializationCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            callbackResults.SetResult(actionButton.GetValue());
+
+                                                                                            if (callbackResults.Success())
+                                                                                            {
+                                                                                                actionButton.GetValue().GetData().onClick.AddListener(() =>
+                                                                                                {
+                                                                                                    OnTabNavigationButtonPressedEvent(actionButton.GetDataPackets().GetData(), tabSelectedCallbackResults =>
+                                                                                                    {
+                                                                                                        callbackResults.SetResult(tabSelectedCallbackResults);
+                                                                                                    });
+                                                                                                });
+                                                                                            }
+                                                                                            else
+                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
+                                                                }
+                                                                else
+                                                                {
+                                                                    actionButton.Initialize(initializationCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(initializationCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            callbackResults.SetResult(actionButton.GetValue());
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                actionButton.GetValue().GetData().onClick.AddListener(() =>
+                                                                                {
+                                                                                    OnTabNavigationButtonPressedEvent(actionButton.GetDataPackets().GetData(), tabSelectedCallbackResults => 
+                                                                                    {
+                                                                                        callbackResults.SetResult(tabSelectedCallbackResults);
+                                                                                    });
+                                                                                });
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
+                                                                }
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                            #endregion
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+                                                transitionableUIComponent = new TransitionableUIComponent(tabLayout, UITransitionType.Translate, UITransitionStateType.Once, appDatabaseManagerInstance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+
+                                                isInitialized = true;
+
+                                                callbackResults.result = $"Tab View Component : {GetName()} Has Been Initialized Successfully.";
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                        {
+                            isInitialized = true;
+                            callbackResults.result = $"Tab View Component : {GetName()} Has Been Initialized Successfully.";
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
+
+            private CallbackData<InputActionHandler> GetTabNavigationButton()
+            {
+                var callbackResults = new CallbackData<InputActionHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(tabNavigationButton, "Tab Navigation Button", $"Get Tab Navigation Button Failed - Tab Navigation Button For Tab View Component : {GetName()} Is Not Assigned In The Inspector Panel - Invalid Operation"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Tab Navigation Button Success - Tab Navigation Button For Tab View Component : {GetName()} Has Been Successfully Found.";
+                    callbackResults.data = tabNavigationButton;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private void OnTabNavigationButtonPressedEvent(ButtonConfigDataPacket actionButton, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(actionButton.GetAction());
+
+                if (callbackResults.Success())
+                {
+                    if (actionButton.GetAction().GetData() == InputActionButtonType.SignInViewChangeButton)
+                    {
+
+                        LogInfo($" __+Log_Cat:::: Switch Tab Executed", this);
+
+
+                        ActionEvents.OnActionButtonPressedEvent(actionButton);
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+
+            #region Transitionable UI Data
+
+            private void CreateTabViewTransitionInfoGroup(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabViewList());
+
+                if(callbackResults.Success())
+                {
+                    var tabs = GetTabViewList().GetData();
+
+                    for (int i = 0; i < tabs.Count; i++)
+                    {
+                        var key = tabs[i].GetType().GetData();
+
+                        if (!tabViewTransitionInfoGroup.ContainsKey(key))
+                        {
+                            callbackResults.SetResult(tabs[i].GetTabViewMountReference());
+
+                            if (callbackResults.Success())
+                            {
+                                var tabViewMountReference = tabs[i].GetTabViewMountReference().GetData();
+                                var info = tabViewMountReference.GetWidgetRect().GetWidgetPoseAngle();
+
+                                tabViewTransitionInfoGroup.Add(key, info);
+                            }
+                            else
+                            {
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Create Tab View Transition Info Group For Tab View Component : {GetName()} - Failed - Tab View Key Of Type : {key} Has Lready Been Created - Invalid Operation.";
+                            callbackResults.resultCode = Helpers.ErrorCode;
+
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+
+            private CallbackData<object> GetTabViewTransitionInfo(TabViewType viewType)
+            {
+                var callbackResults = new CallbackData<object>(GetTabViewTransitionInfoGroup());
+
+                if (callbackResults.Success())
+                {
+                    if(GetTabViewTransitionInfoGroup().GetData().TryGetValue(viewType, out object results))
+                    {
+                        callbackResults.result = $"Get Tab View Transition Info Of Type : {viewType} - Success. Tab View Of Type : {viewType} - Has Been Successfully Found In Tab View Transition Info Group For Tab View Component : {GetName()}.";
+                        callbackResults.data = results;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Tab View Transition Info Of Type : {viewType} - Failed. Tab View Of Type : {viewType} Is not Found In Tab View Transition Info Group For Tab View Component : {GetName()} - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackDataDict<TabViewType, object> GetTabViewTransitionInfoGroup()
+            {
+                var callbackResults = new CallbackDataDict<TabViewType, object>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(tabViewTransitionInfoGroup, "TabView Transition Info Group", $"Get TabView Transition Info Group For Tab View Component : {GetName()} - Failed - TabView Transition Info Group Is Not Initialized - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get TabView Transition Info Group For Tab View Component : {GetName()} - Success - TabView Transition Info Group Has Been Initialized Successfully.";
+                    callbackResults.data = tabViewTransitionInfoGroup;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+
+            protected CallbackData<TransitionableUIComponent> GetTransitionableUIComponent()
+            {
+                var callbackResults = new CallbackData<TransitionableUIComponent>(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Transitionable UI Component For Tab View Component : {GetName()} - Has Not Been Initialized - Please Check Here - Invalid Operatione."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Transitionable UI Component For : {GetName()} - Has Been Successfully Initialized.";
+                    callbackResults.data = transitionableUIComponent;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             public void SelectTab(TabViewType viewType, Action<Callback> callback = null)
             {
@@ -38058,7 +38408,15 @@ namespace Com.RedicalGames.Filar
                         callbackResults.SetResult(GetTransitionType());
 
                         if (callbackResults.Success())
-                            callbackResults.SetResult(GetActiveViewType());
+                        {
+                            if(isInitialized)
+                                callbackResults.SetResult(GetActiveViewType());
+                            else
+                            {
+                                callbackResults.result = $"Tab View Component : {GetName()} Has Failed To Initialize During Initialization - Please Check The Base Initialization Method For A possible Fix - Invalid Operation.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
@@ -38088,6 +38446,10 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             [SerializeField]
             private T parentType;
+
+            [Space(5)]
+            [SerializeField]
+            private ScreenSpaceTargetHandler tabViewMountReference;
 
             private Widget parentWidget;
 
@@ -38184,6 +38546,23 @@ namespace Com.RedicalGames.Filar
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenSpaceTargetHandler> GetTabViewMountReference()
+            {
+                var callbackResults = new CallbackData<ScreenSpaceTargetHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(tabViewMountReference, "Tab View Mount Reference", $"Get Tab View Mount Reference For Tab View Component : {GetName()} Failed - Tab View Mount Reference Is Not Assigned In The Unity Editor Inspector Panel - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Tab View Mount Reference For Tab View Component : {GetName()} Success - Tab View Mount Reference : {tabViewMountReference.GetName()} Has Been Assigned.";
+                    callbackResults.data = tabViewMountReference;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }

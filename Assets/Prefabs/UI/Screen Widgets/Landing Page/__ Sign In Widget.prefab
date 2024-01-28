@@ -34,10 +34,10 @@ RectTransform:
   m_Father: {fileID: 5756737565618324422}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 179.99998, y: 0}
-  m_SizeDelta: {x: 20.000015, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 175, y: 0}
+  m_SizeDelta: {x: 635, y: 475}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5756737564637616935
 CanvasRenderer:
@@ -2108,7 +2108,6 @@ MonoBehaviour:
   - name: Main Buttons
     inputActionGroupType: 1
     inputActionGroup:
-    - {fileID: 4688975287520871500}
     - {fileID: 6607857603870639377}
     initialize: 1
   screenType: 7
@@ -2117,6 +2116,8 @@ MonoBehaviour:
     tabLayout: {fileID: 5756737564637616937}
     transitionType: 2
     activeTabViewType: 6
+    tabNavigationButton: {fileID: 4688975287520871500}
+    isInitialized: 0
   selectableAssetType: 5
   blurScreen: 0
   scroller:
@@ -2276,7 +2277,6 @@ MonoBehaviour:
   initializeTabs: 1
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentScreen: {fileID: 0}
 --- !u!1 &5756737564968990328
 GameObject:
   m_ObjectHideFlags: 0
@@ -2442,7 +2442,7 @@ GameObject:
   - component: {fileID: 5756737565862690987}
   - component: {fileID: 4688975287520871500}
   m_Layer: 0
-  m_Name: __Switch View Button
+  m_Name: __Tab Navigation Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
