@@ -182,7 +182,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -204,7 +203,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -368,7 +367,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -390,7 +388,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -556,7 +554,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -578,7 +575,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -745,7 +742,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -767,7 +763,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -932,7 +928,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -954,7 +949,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1118,7 +1113,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1140,7 +1134,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1302,7 +1296,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1324,7 +1317,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 11981458005094225}
     dataPackets:
@@ -1485,7 +1478,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1507,7 +1499,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1647,8 +1639,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     initialVisibilityState: 0
-  textTransitionableUIData: []
-  imageTransitionableUIData: []
+  transitionableUIMounts: []
 --- !u!1 &11981458640266837
 GameObject:
   m_ObjectHideFlags: 0
@@ -1707,15 +1698,25 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 2
   type: 30
+  widgetLayouts:
+  - layoutName: Default VIew
+    layout: {fileID: 11981458640266837}
+    viewType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 1
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 1
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup:
   - name: App License Info Displayer
     inputActionGroupType: 7
@@ -1723,11 +1724,11 @@ MonoBehaviour:
     - {fileID: 1743718610057634577}
     initialize: 1
   screenType: 9
-  widgetLayouts:
-  - layoutName: Default VIew
-    layout: {fileID: 11981458640266837}
-    viewType: 1
-  defaultLayoutType: 1
+  tabViewComponent:
+    name: 
+    tabLayout: {fileID: 0}
+    transitionType: 0
+    activeTabViewType: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -1884,6 +1885,7 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
+  parentScreen: {fileID: 0}

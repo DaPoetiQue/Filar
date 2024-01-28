@@ -62,7 +62,7 @@ MonoBehaviour:
   - layoutName: Default Tab View
     layout: {fileID: 3933459645248041140}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 19
   uIPlacementType: 0
   orderInLayer: 0
@@ -70,7 +70,7 @@ MonoBehaviour:
   transitionType: 1
   transitionSpeed: 5
   transitionableUIMountList: []
-  initialVisibilityState: 1
+  initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActionsConfig:

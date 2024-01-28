@@ -18111,15 +18111,22 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 1
   type: 6
+  widgetLayouts: []
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 3
+  instantiationOrderID: 0
   transitionType: 2
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   screenTitle: Project Creation Screen
   screenView:
     name: Project Creation View
@@ -18143,12 +18150,6 @@ MonoBehaviour:
       value: {fileID: 6372227949283771110}
       containerLayerType: 1
     initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList: []
-    widgetsContainer: {fileID: 0}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 0
   widgetsContainer: {fileID: 0}
   screenPosition: {x: 3100, y: 0}
   loadingItemList:
@@ -18159,7 +18160,7 @@ MonoBehaviour:
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 0
-  widgets: []
+  focusedWidgets: []
 --- !u!1 &6372227949195448212
 GameObject:
   m_ObjectHideFlags: 0

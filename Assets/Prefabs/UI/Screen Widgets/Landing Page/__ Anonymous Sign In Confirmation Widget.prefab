@@ -1829,6 +1829,11 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 2
   type: 33
+  widgetLayouts:
+  - layoutName: Default View
+    layout: {fileID: 4631857768184415261}
+    viewType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0
@@ -1839,14 +1844,17 @@ MonoBehaviour:
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup: []
   screenType: 7
-  widgetLayouts:
-  - layoutName: Default View
-    layout: {fileID: 4631857768184415261}
-    viewType: 1
-  defaultLayoutType: 1
+  tabViewComponent:
+    name: 
+    tabLayout: {fileID: 0}
+    transitionType: 0
+    activeTabViewType: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -2003,6 +2011,7 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
+  parentScreen: {fileID: 0}

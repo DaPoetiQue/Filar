@@ -300,7 +300,7 @@ MonoBehaviour:
   - layoutName: Default View
     layout: {fileID: 272651814968363209}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 19
   uIPlacementType: 0
   orderInLayer: 2
@@ -308,7 +308,7 @@ MonoBehaviour:
   transitionType: 1
   transitionSpeed: 0
   transitionableUIMountList: []
-  initialVisibilityState: 1
+  initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActionsConfig:

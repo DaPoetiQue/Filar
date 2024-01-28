@@ -88,59 +88,21 @@ namespace Com.RedicalGames.Filar
                                         OpenMainMenu(AppData.MenuType.Profile, screen, menuOpenCallbackResults =>
                                         {
                                             callbackResults.SetResult(menuOpenCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                SelectTabView(AppData.TabViewType.ProfileView, tabSelectedCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(tabSelectedCallbackResults);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
                                     }
                                     else
                                     {
-                                        callbackResults.SetResult(screen.IsFocusedWidget(this));
-
-                                        if (callbackResults.Success())
-                                        {
-                                            // Select Profile Tab
-                                            LogInfo(" _______Log_Cat: Selecting Profile Tab.", this);
-                                        }
-                                        else
-                                        {
-                                            callbackResults.SetResult(screen.GetWidgetOfType(AppData.WidgetType.SignInWidget));
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var widget = screen.GetWidgetOfType(AppData.WidgetType.SignInWidget).GetData();
-
-                                                callbackResults.SetResult(screen.IsFocusedWidget(AppData.WidgetType.PostsWidget));
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
-                                                    callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        await Task.Delay(500);
-
-                                                        var loginScreenConfig = new AppData.SceneConfigDataPacket();
-
-                                                        loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                                        loginScreenConfig.blurScreen = true;
-
-                                                        screen.ShowWidget(loginScreenConfig);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                }
-                                                else
-                                                {
-                                                    var loginScreenConfig = new AppData.SceneConfigDataPacket();
-
-                                                    loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                                    loginScreenConfig.blurScreen = true;
-
-                                                    screen.ShowWidget(loginScreenConfig);
-                                                }
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
+                                      
                                     }
                                 }
 
@@ -151,15 +113,36 @@ namespace Com.RedicalGames.Filar
                                 OpenMainMenu(AppData.MenuType.Inbox, screen, menuOpenCallbackResults =>
                                 {
                                     callbackResults.SetResult(menuOpenCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        SelectTabView(AppData.TabViewType.InboxView, tabSelectedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(tabSelectedCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
                                 break;
 
-                            case AppData.InputActionButtonType.HelpButton:
+                            case AppData.InputActionButtonType.OpenCartButton:
 
-                                OpenMainMenu(AppData.MenuType.Help, screen, menuOpenCallbackResults =>
+                                OpenMainMenu(AppData.MenuType.Cart, screen, menuOpenCallbackResults =>
                                 {
                                     callbackResults.SetResult(menuOpenCallbackResults);
+
+
+                                    if (callbackResults.Success())
+                                    {
+                                        SelectTabView(AppData.TabViewType.CartView, tabSelectedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(tabSelectedCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
                                 break;
@@ -169,6 +152,16 @@ namespace Com.RedicalGames.Filar
                                 OpenMainMenu(AppData.MenuType.Settings, screen, menuOpenCallbackResults => 
                                 {
                                     callbackResults.SetResult(menuOpenCallbackResults);
+
+                                    if(callbackResults.Success())
+                                    {
+                                        SelectTabView(AppData.TabViewType.SettingsView, tabSelectedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(tabSelectedCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
                                 break;

@@ -65,17 +65,17 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetShownEvent()
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-            throw new NotImplementedException();
+        
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
         {
-            throw new NotImplementedException();
+
         }
 
         #endregion

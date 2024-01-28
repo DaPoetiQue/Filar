@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5756737564637616936}
   - component: {fileID: 580841142751872628}
   m_Layer: 0
-  m_Name: ':::: Sign In Tabs Default Screen Container'
+  m_Name: ':: Sign In Tabs Default Screen Container'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2088,7 +2088,7 @@ MonoBehaviour:
   - layoutName: Default View
     layout: {fileID: 5756737564961562909}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 14
   uIPlacementType: 2
   orderInLayer: 0

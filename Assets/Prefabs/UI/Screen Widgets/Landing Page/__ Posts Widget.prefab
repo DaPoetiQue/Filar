@@ -59,6 +59,11 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 2
   type: 35
+  widgetLayouts:
+  - layoutName: Default Layout
+    layout: {fileID: 6256656635047167111}
+    viewType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 18
   uIPlacementType: 1
   orderInLayer: 0
@@ -92,11 +97,11 @@ MonoBehaviour:
     - {fileID: 2986457173874453147}
     initialize: 1
   screenType: 7
-  widgetLayouts:
-  - layoutName: Default Layout
-    layout: {fileID: 6256656635047167111}
-    viewType: 1
-  defaultLayoutType: 1
+  tabViewComponent:
+    name: 
+    tabLayout: {fileID: 0}
+    transitionType: 0
+    activeTabViewType: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -253,9 +258,10 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
+  parentScreen: {fileID: 0}
 --- !u!1 &6256656633253913669
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,7 +1304,6 @@ MonoBehaviour:
     selectable: 1
     visualizationType: 1
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 1
     validationStatesInfo:
@@ -1484,7 +1489,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1672,7 +1676,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1861,7 +1864,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2048,7 +2050,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2234,7 +2235,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2418,7 +2418,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2601,7 +2600,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2932,7 +2930,6 @@ MonoBehaviour:
     selectable: 1
     visualizationType: 1
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 1
     validationStatesInfo:
@@ -3118,7 +3115,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -3306,7 +3302,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -3495,7 +3490,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -3682,7 +3676,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -3868,7 +3861,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -4052,7 +4044,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -4235,7 +4226,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:

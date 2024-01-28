@@ -182,15 +182,22 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 0
   type: 0
+  widgetLayouts: []
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 0
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup: []
   screenType: 0
   selectableComponent:
@@ -2401,7 +2408,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2423,7 +2429,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779518777020295}
     dataPackets:
@@ -2586,7 +2592,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2608,7 +2613,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519109231656}
     dataPackets:
@@ -2771,7 +2776,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2793,7 +2797,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520693098388}
     dataPackets:
@@ -2958,7 +2962,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -2980,7 +2983,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519374692393}
     dataPackets:
@@ -3359,7 +3362,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -3381,7 +3383,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779518846137398}
     dataPackets:
@@ -3556,7 +3558,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -3578,7 +3579,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779518774717504}
     dataPackets:
@@ -9274,15 +9275,22 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 0
   type: 0
+  widgetLayouts: []
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 0
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup: []
   screenType: 0
   selectableComponent:
@@ -18632,7 +18640,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -18654,7 +18661,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520507232078}
     dataPackets:
@@ -18817,7 +18824,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -18839,7 +18845,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520190245289}
     dataPackets:
@@ -19010,7 +19016,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -19032,7 +19037,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519214767075}
     dataPackets:
@@ -19193,7 +19198,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -19215,7 +19219,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519089144562}
     dataPackets:
@@ -26983,15 +26987,22 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 0
   type: 0
+  widgetLayouts: []
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 0
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup: []
   screenType: 0
   selectableComponent:
@@ -28600,15 +28611,22 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 1
   type: 3
+  widgetLayouts: []
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 4
+  instantiationOrderID: 0
   transitionType: 2
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   screenTitle: Project
   screenView:
     name: Project Dashboard View
@@ -28632,12 +28650,6 @@ MonoBehaviour:
       value: {fileID: 6931779518702844083}
       containerLayerType: 2
     initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList: []
-    widgetsContainer: {fileID: 0}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 0
   widgetsContainer: {fileID: 6931779519219238407}
   screenPosition: {x: 1530, y: 0}
   loadingItemList:
@@ -28648,7 +28660,7 @@ MonoBehaviour:
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
   initializeScreenWidgets: 0
-  widgets: []
+  focusedWidgets: []
 --- !u!1 &6931779519318655670
 GameObject:
   m_ObjectHideFlags: 0
@@ -36393,7 +36405,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -36415,7 +36426,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520697407074}
     dataPackets:
@@ -36578,7 +36589,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -36600,7 +36610,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519349856786}
     dataPackets:
@@ -36775,7 +36785,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -36797,7 +36806,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519042023014}
     dataPackets:
@@ -44877,7 +44886,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -44899,7 +44907,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519174556227}
     dataPackets:
@@ -45062,7 +45070,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -45084,7 +45091,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519207361429}
     dataPackets:
@@ -45247,7 +45254,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -45269,7 +45275,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519425262332}
     dataPackets:
@@ -45444,7 +45450,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -45466,7 +45471,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519929433990}
     dataPackets:
@@ -56733,7 +56738,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -56755,7 +56759,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519492094074}
     dataPackets:
@@ -61303,7 +61307,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -61325,7 +61328,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519962587686}
     dataPackets:
@@ -61488,7 +61491,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -61510,7 +61512,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520625067854}
     dataPackets:
@@ -61673,7 +61675,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -61695,7 +61696,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519301899186}
     dataPackets:
@@ -79521,7 +79522,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -79543,7 +79543,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519165787140}
     dataPackets:
@@ -79706,7 +79706,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -79728,7 +79727,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519383659106}
     dataPackets:
@@ -79891,7 +79890,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -79913,7 +79911,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520741807708}
     dataPackets:
@@ -80076,7 +80074,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -80098,7 +80095,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519986733389}
     dataPackets:
@@ -80261,7 +80258,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -80283,7 +80279,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519561302647}
     dataPackets:
@@ -80446,7 +80442,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -80468,7 +80463,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519314820107}
     dataPackets:
@@ -80631,7 +80626,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -80653,7 +80647,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520415270622}
     dataPackets:
@@ -80818,7 +80812,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -80840,7 +80833,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519278012388}
     dataPackets:
@@ -81009,7 +81002,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -81031,7 +81023,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 6931779519348255539}
+    title: {fileID: 0}
     fieldUIImageList:
     - name: 
       value: {fileID: 0}
@@ -81200,7 +81192,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -81222,7 +81213,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 6931779519425922694}
+    title: {fileID: 0}
     fieldUIImageList:
     - name: 
       value: {fileID: 0}
@@ -81391,7 +81382,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -81413,7 +81403,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 6931779520059316016}
+    title: {fileID: 0}
     fieldUIImageList:
     - name: 
       value: {fileID: 0}
@@ -81582,7 +81572,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -81604,7 +81593,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 6931779519843646962}
+    title: {fileID: 0}
     fieldUIImageList:
     - name: 
       value: {fileID: 0}
@@ -81775,7 +81764,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -81797,7 +81785,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519914926119}
     dataPackets:
@@ -81958,7 +81946,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -81980,7 +81967,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779520078255349}
     dataPackets:
@@ -82141,7 +82128,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -82163,7 +82149,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519590639548}
     dataPackets:
@@ -82326,7 +82312,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -82348,7 +82333,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519665064619}
     dataPackets:
@@ -91687,7 +91672,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -91709,7 +91693,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519954295058}
     dataPackets:
@@ -91872,7 +91856,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -91894,7 +91877,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519296865872}
     dataPackets:
@@ -92057,7 +92040,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -92079,7 +92061,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519832344030}
     dataPackets:
@@ -92242,7 +92224,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -92264,7 +92245,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779518956912632}
     dataPackets:
@@ -92429,7 +92410,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -92451,7 +92431,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 6931779519960458213}
     dataPackets:
@@ -97596,19 +97576,29 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 0
   type: 0
+  widgetLayouts: []
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 16
   uIPlacementType: 0
   orderInLayer: 0
+  instantiationOrderID: 0
   transitionType: 0
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 0
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   actionGroup: []
   screenType: 0
-  widgetLayouts: []
-  defaultLayoutType: 0
+  tabViewComponent:
+    name: 
+    tabLayout: {fileID: 0}
+    transitionType: 0
+    activeTabViewType: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -97765,9 +97755,10 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
+  parentScreen: {fileID: 0}
 --- !u!114 &8370610295605425099
 MonoBehaviour:
   m_ObjectHideFlags: 0

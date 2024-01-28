@@ -2451,15 +2451,22 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 1
   type: 4
+  widgetLayouts: []
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 5
+  instantiationOrderID: 0
   transitionType: 2
+  transitionSpeed: 0
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
-  eventActions: []
+  eventActionsConfig:
+    name: 
+    eventActions: []
+    parameterEventActions: []
   screenTitle: Import
   screenView:
     name: Import Screen View
@@ -2477,21 +2484,6 @@ MonoBehaviour:
       value: {fileID: 4340530849060189064}
       containerLayerType: 0
     initialVisibilityState: 0
-  infoDisplayer:
-    infoWidgetFieldList:
-    - name: Asset Name Field
-      title: {fileID: 4340530847431107313}
-      type: 1
-    - name: Vertices Counter Field
-      title: {fileID: 4340530847563370938}
-      type: 3
-    - name: Triangles Counter Field
-      title: {fileID: 4340530848959117527}
-      type: 2
-    widgetsContainer: {fileID: 4340530849172750772}
-    contentContainer:
-      value: {fileID: 0}
-    showStats: 1
   widgetsContainer: {fileID: 4340530848883739479}
   screenPosition: {x: 0, y: 0}
   loadingItemList:
@@ -2505,7 +2497,7 @@ MonoBehaviour:
     widgetType: 1
   includesLoadingAssets: 0
   initializeScreenWidgets: 0
-  widgets: []
+  focusedWidgets: []
 --- !u!1 &4340530847736914902
 GameObject:
   m_ObjectHideFlags: 0

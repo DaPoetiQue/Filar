@@ -51,12 +51,24 @@ namespace Com.RedicalGames.Filar
             HDRI
         }
 
+        public enum TabViewType
+        {
+            None,
+            ProfileView,
+            InboxView,
+            SettingsView,
+            CartView,
+            SignInView,
+            SignUpView,
+            Default
+        }
+
         public enum MenuType
         {
             None,
             Profile,
             Inbox,
-            Help,
+            Cart,
             Settings
         }
 
@@ -338,6 +350,7 @@ namespace Com.RedicalGames.Filar
             FacebookLinkButton,
             XLinkButton,
             GithubLinkButton,
+            OpenCartButton,
             None
         }
 
@@ -5019,9 +5032,19 @@ namespace Com.RedicalGames.Filar
                                         if (callbackResults.Success())
                                         {
                                             if (isActive)
-                                                content.GetSceneObject().Show();
+                                            {
+                                                content.ShowTab(tabShowCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(tabShowCallbackResults);
+                                                });
+                                            }
                                             else
-                                                content.GetSceneObject().Hide();
+                                            {
+                                                content.HideTab(tabHiddenCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(tabHiddenCallbackResults);
+                                                });
+                                            }
 
                                             content.GetSceneObject().AddToPlacementContainer(GetContainer<RectTransform>().GetData(), keepWorldPosition);
 
@@ -30759,7 +30782,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected WidgetLayoutViewType defaultLayoutType;
+            protected WidgetLayoutViewType defaultLayoutViewType;
 
             [Space(5)]
             [SerializeField]
@@ -30898,7 +30921,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<ScreenWidgetState> GetScreenWidgetState()
+            public CallbackData<ScreenWidgetState> GetScreenWidgetState()
             {
                 var callbackResults = new CallbackData<ScreenWidgetState>(Helpers.GetAppEnumValueValid(state, "Screen Widget State"));
 
@@ -30919,17 +30942,22 @@ namespace Com.RedicalGames.Filar
 
             protected CallbackData<WidgetLayoutView> GetLayoutView()
             {
-                var callbackResults = new CallbackData<WidgetLayoutView>();
-
-                var layout = widgetLayouts.Find(layout => layout.viewType == defaultLayoutType);
-
-                callbackResults.SetResult(layout.Initialized());
+                var callbackResults = new CallbackData<WidgetLayoutView>(GetDefaultLayoutViewType());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
-                    callbackResults.data = layout;
+                    var layout = widgetLayouts.Find(layout => layout.viewType == GetDefaultLayoutViewType().GetData());
+
+                    callbackResults.SetResult(layout.Initialized());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Layout View : {layout.GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully For Widget : {GetName()} Of Type : {GetType().GetData()}.";
+                        callbackResults.data = layout;
+                    }
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -30953,6 +30981,485 @@ namespace Com.RedicalGames.Filar
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
+
+                return callbackResults;
+            }
+
+            public void SetDefaultLayoutViewType(WidgetLayoutViewType defaultLayoutViewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(defaultLayoutViewType,
+                    "Default View Type",
+                    $"Set Default Layout View Type Failed - Layout View Type Parameter Value Is Set To Default : {defaultLayoutViewType} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    this.defaultLayoutViewType = defaultLayoutViewType;
+
+                    callbackResults.result = $"Set Default Layout View Type Success - Default Layout View Type Hass Been Successfully Assigned To : {defaultLayoutViewType}.";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public  CallbackData<WidgetLayoutViewType> GetDefaultLayoutViewType()
+            {
+                var callbackResults = new CallbackData<WidgetLayoutViewType>(Helpers.GetAppEnumValueValid(defaultLayoutViewType, 
+                    "Default View Type",
+                    $"Get Default Layout View Type Failed - Default Layout View Type Is Set to Default : {defaultLayoutViewType} - Invalid Operation - Please Assign Default Layout View Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - In The Unity Editor Inspector Panel."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Default Layout View Type Success - Default Layout View Type For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Is Currently Set To : {defaultLayoutViewType}-";
+                    callbackResults.data = defaultLayoutViewType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Layouts
+
+            protected void ShowSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
+
+                    if (callbackResults.Success())
+                    {
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        SetScreenWidgetState(ScreenWidgetState.Shown, widgetShownCallbacResults =>
+                        {
+                            callbackResults.SetResult(widgetShownCallbacResults);
+
+                            if (callbackResults.Success())
+                            {
+                                switch (GetTransitionType().GetData())
+                                {
+                                    case TransitionType.Default:
+
+                                        layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                        {
+                                            callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                OnScreenWidgetShownEvent();
+                                                OnEnabled();
+
+                                                if (GetType().GetData().GetType() == typeof(ScreenType))
+                                                    GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
+
+                                                if (GetType().GetData().GetType() == typeof(WidgetType))
+                                                    GenericActionEvents<Widget>.OnWidgetShownEvent(this as Widget);
+
+                                                if (GetType().GetData().GetType() == typeof(TabViewType))
+                                                    GenericActionEvents<TabView<WidgetType>>.OnTabViewShownEvent(this as TabView<WidgetType>);
+
+                                                if (GetType().GetData().GetType() == typeof(SelectableWidgetType))
+                                                    GenericActionEvents<SelectableWidget>.OnSelectableWidgetShownEvent(this as SelectableWidget);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+
+                                        break;
+
+                                    case TransitionType.Translate:
+
+                                        callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                                {
+                                                    callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
+
+                                                        callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                    OnEnabled();
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected async Task<Callback> ShowSelectedLayoutAsync(WidgetLayoutViewType layoutViewType)
+            {
+                var callbackResults = new Callback(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
+
+                    if (callbackResults.Success())
+                    {
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        callbackResults.SetResult(SetScreenWidgetState(ScreenWidgetState.Shown));
+
+                        if (callbackResults.Success())
+                        {
+                            switch (GetTransitionType().GetData())
+                            {
+                                case TransitionType.Default:
+
+                                    layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                    {
+                                        callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            OnScreenWidgetShownEvent();
+                                            OnEnabled();
+
+                                            callbackResults.SetResult(GetType());
+
+                                            if (GetType().GetData().GetType() == typeof(ScreenType))
+                                                GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
+
+                                            if (GetType().GetData().GetType() == typeof(WidgetType))
+                                                GenericActionEvents<Widget>.OnWidgetShownEvent(this as Widget);
+
+                                            if (GetType().GetData().GetType() == typeof(TabViewType))
+                                                GenericActionEvents<TabView<WidgetType>>.OnTabViewShownEvent(this as TabView<WidgetType>);
+
+                                            if (GetType().GetData().GetType() == typeof(SelectableWidgetType))
+                                                GenericActionEvents<SelectableWidget>.OnSelectableWidgetShownEvent(this as SelectableWidget);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+
+                                case TransitionType.Translate:
+
+                                    callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
+
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                OnEnabled();
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
+                                                await Task.Yield();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected void HideSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
+
+                    if (callbackResults.Success())
+                    {
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        SetScreenWidgetState(ScreenWidgetState.Hidden, widgetHiddenCallbacResults =>
+                        {
+                            callbackResults.SetResult(widgetHiddenCallbacResults);
+
+                            if (callbackResults.Success())
+                            {
+                                switch (GetTransitionType().GetData())
+                                {
+                                    case TransitionType.Default:
+
+                                        layoutView.HideLayout(layoutHideCallbackRessults =>
+                                        {
+                                            callbackResults.SetResult(layoutHideCallbackRessults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                OnScreenWidgetHiddenEvent();
+                                                OnDisabled();
+
+                                                if (GetType().GetData().GetType() == typeof(ScreenType))
+                                                    GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+
+                                                if (GetType().GetData().GetType() == typeof(WidgetType))
+                                                    GenericActionEvents<Widget>.OnWidgetHiddenEvent(this as Widget);
+
+                                                if (GetType().GetData().GetType() == typeof(TabViewType))
+                                                    GenericActionEvents<TabView<WidgetType>>.OnTabViewHiddenEvent(this as TabView<WidgetType>);
+
+                                                if (GetType().GetData().GetType() == typeof(SelectableWidgetType))
+                                                    GenericActionEvents<SelectableWidget>.OnSelectableWidgetHiddenEvent(this as SelectableWidget);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+
+                                        break;
+
+                                    case TransitionType.Translate:
+
+                                        callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
+
+                                                callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                            OnDisabled();
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected async Task<Callback> HideSelectedLayoutAsync(WidgetLayoutViewType layoutViewType)
+            {
+                var callbackResults = new Callback(GetTransitionType());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLayoutView(layoutViewType));
+
+                    if (callbackResults.Success())
+                    {
+                        var layoutView = GetLayoutView(layoutViewType).GetData();
+
+                        callbackResults.SetResult(SetScreenWidgetState(ScreenWidgetState.Hidden));
+
+                        if (callbackResults.Success())
+                        {
+                            switch (GetTransitionType().GetData())
+                            {
+                                case TransitionType.Default:
+
+                                    layoutView.HideLayout(layoutHideCallbackRessults =>
+                                    {
+                                        callbackResults.SetResult(layoutHideCallbackRessults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            OnScreenWidgetHiddenEvent();
+                                            OnDisabled();
+
+                                            if (GetType().GetData().GetType() == typeof(ScreenType))
+                                                GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+
+                                            if (GetType().GetData().GetType() == typeof(WidgetType))
+                                                GenericActionEvents<Widget>.OnWidgetHiddenEvent(this as Widget);
+
+                                            if (GetType().GetData().GetType() == typeof(TabViewType))
+                                                GenericActionEvents<TabView<WidgetType>>.OnTabViewHiddenEvent(this as TabView<WidgetType>);
+
+                                            if (GetType().GetData().GetType() == typeof(SelectableWidgetType))
+                                                GenericActionEvents<SelectableWidget>.OnSelectableWidgetHiddenEvent(this as SelectableWidget);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+
+                                case TransitionType.Translate:
+
+                                    callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
+
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                OnDisabled();
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
+                                                await Task.Yield();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -34603,6 +35110,16 @@ namespace Com.RedicalGames.Filar
                         GetTabViewComponent().GetData().SelectTab(viewType, tabSelectedCallbackResults =>
                         {
                             callbackResults.SetResult(tabSelectedCallbackResults);
+
+                            if(callbackResults.Success())
+                            {
+                                GetTabViewComponent().GetData().SetActiveTabViewType(viewType, viewTypeSetCallbackResults => 
+                                {
+                                    callbackResults.SetResult(viewTypeSetCallbackResults);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         });
                     }
                     else
@@ -36462,15 +36979,15 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new CallbackData<WidgetLayoutViewType>();
 
-                if(defaultLayoutType != WidgetLayoutViewType.None)
+                if(defaultLayoutViewType != WidgetLayoutViewType.None)
                 {
-                    callbackResults.result = $"Default Layout Type Has Been Successfully Set To : {defaultLayoutType}";
-                    callbackResults.data = defaultLayoutType;
+                    callbackResults.result = $"Default Layout Type Has Been Successfully Set To : {defaultLayoutViewType}";
+                    callbackResults.data = defaultLayoutViewType;
                     callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
                 {
-                    callbackResults.result = $"Get Default Layout Type Failed - Default Layout Type Is Set To Default : {defaultLayoutType}";
+                    callbackResults.result = $"Get Default Layout Type Failed - Default Layout Type Is Set To Default : {defaultLayoutViewType}";
                     callbackResults.data = default;
                     callbackResults.resultCode = Helpers.WarningCode;
                 }
@@ -36857,406 +37374,6 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            #region Layouts
-
-            protected void ShowSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback(GetTransitionType());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetLayoutView(layoutViewType));
-
-                    if (callbackResults.Success())
-                    {
-                        var layoutView = GetLayoutView(layoutViewType).GetData();
-
-                        SetScreenWidgetState(ScreenWidgetState.Shown, widgetShownCallbacResults =>
-                        {
-                            callbackResults.SetResult(widgetShownCallbacResults);
-
-                            if (callbackResults.Success())
-                            {
-                                switch (GetTransitionType().GetData())
-                                {
-                                    case TransitionType.Default:
-
-                                        layoutView.ShowLayout(layoutShouCallbackRessults =>
-                                        {
-                                            callbackResults.SetResult(layoutShouCallbackRessults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                OnScreenWidgetShownEvent();
-                                                OnEnabled();
-                                                GenericActionEvents<Widget>.OnWidgetShownEvent(this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-
-                                        break;
-
-                                    case TransitionType.Translate:
-
-                                        callbackResults.SetResult(GetTransitionableUIComponent());
-
-                                        if (callbackResults.Success())
-                                        {
-                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
-
-                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
-
-                                            if (callbackResults.Success())
-                                            {
-                                                layoutView.ShowLayout(layoutShouCallbackRessults =>
-                                                {
-                                                    callbackResults.SetResult(layoutShouCallbackRessults);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
-
-                                                        callbackResults.SetResult(transitionalComponent.Initialized());
-
-                                                        if(callbackResults.Success())
-                                                        {
-                                                            transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults => 
-                                                            {
-                                                                callbackResults.SetResult(invokedTransitionCallbackResults);
-
-                                                                if (callbackResults.Success())
-                                                                    OnEnabled();
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
-                                                        }
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                        break;
-                                }
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected async Task<Callback> ShowSelectedLayoutAsync(WidgetLayoutViewType layoutViewType)
-            {
-                var callbackResults = new Callback(GetTransitionType());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetLayoutView(layoutViewType));
-
-                    if (callbackResults.Success())
-                    {
-                        var layoutView = GetLayoutView(layoutViewType).GetData();
-
-                        callbackResults.SetResult(SetScreenWidgetState(ScreenWidgetState.Shown));
-
-                        if (callbackResults.Success())
-                        {
-                            switch (GetTransitionType().GetData())
-                            {
-                                case TransitionType.Default:
-
-                                    layoutView.ShowLayout(layoutShouCallbackRessults =>
-                                    {
-                                        callbackResults.SetResult(layoutShouCallbackRessults);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            OnScreenWidgetShownEvent();
-                                            OnEnabled();
-                                            GenericActionEvents<Widget>.OnWidgetShownEvent(this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-
-                                case TransitionType.Translate:
-
-                                    callbackResults.SetResult(GetTransitionableUIComponent());
-
-                                    if (callbackResults.Success())
-                                    {
-                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
-
-                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
-
-                                        if (callbackResults.Success())
-                                        {
-                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
-                                            {
-                                                callbackResults.SetResult(layoutShouCallbackRessults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
-
-                                                    callbackResults.SetResult(transitionalComponent.Initialized());
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
-
-                                                            if (callbackResults.Success())
-                                                                OnEnabled();
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        });
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-
-                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
-                                                await Task.Yield();
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                    break;
-                            }
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                return callbackResults;
-            }
-
-            protected void HideSelectedLayout(WidgetLayoutViewType layoutViewType, Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback(GetTransitionType());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetLayoutView(layoutViewType));
-
-                    if (callbackResults.Success())
-                    {
-                        var layoutView = GetLayoutView(layoutViewType).GetData();
-
-                        SetScreenWidgetState(ScreenWidgetState.Hidden, widgetHiddenCallbacResults =>
-                        {
-                            callbackResults.SetResult(widgetHiddenCallbacResults);
-
-                            if (callbackResults.Success())
-                            {
-                                switch (GetTransitionType().GetData())
-                                {
-                                    case TransitionType.Default:
-
-                                        layoutView.HideLayout(layoutHideCallbackRessults =>
-                                        {
-                                            callbackResults.SetResult(layoutHideCallbackRessults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                OnScreenWidgetHiddenEvent();
-                                                OnDisabled();
-
-                                                GenericActionEvents<Widget>.OnWidgetHiddenEvent(this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-
-                                        break;
-
-                                    case TransitionType.Translate:
-
-                                        callbackResults.SetResult(GetTransitionableUIComponent());
-
-                                        if (callbackResults.Success())
-                                        {
-                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
-
-                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
-
-                                            if (callbackResults.Success())
-                                            {
-                                                var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
-
-                                                callbackResults.SetResult(transitionalComponent.Initialized());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
-                                                    {
-                                                        callbackResults.SetResult(invokedTransitionCallbackResults);
-
-                                                        if (callbackResults.Success())
-                                                            OnDisabled();
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    });
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                        break;
-                                }
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                callback?.Invoke(callbackResults);
-            }
-
-            protected async Task<Callback> HideSelectedLayoutAsync(WidgetLayoutViewType layoutViewType)
-            {
-                var callbackResults = new Callback(GetTransitionType());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetLayoutView(layoutViewType));
-
-                    if (callbackResults.Success())
-                    {
-                        var layoutView = GetLayoutView(layoutViewType).GetData();
-
-                        callbackResults.SetResult(SetScreenWidgetState(ScreenWidgetState.Hidden));
-
-                        if (callbackResults.Success())
-                        {
-                            switch (GetTransitionType().GetData())
-                            {
-                                case TransitionType.Default:
-
-                                    layoutView.HideLayout(layoutHideCallbackRessults =>
-                                    {
-                                        callbackResults.SetResult(layoutHideCallbackRessults);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            OnScreenWidgetHiddenEvent();
-                                            OnDisabled();
-
-                                            GenericActionEvents<Widget>.OnWidgetHiddenEvent(this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-
-                                case TransitionType.Translate:
-
-                                    callbackResults.SetResult(GetTransitionableUIComponent());
-
-                                    if (callbackResults.Success())
-                                    {
-                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
-
-                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
-
-                                        if (callbackResults.Success())
-                                        {
-                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
-                                            {
-                                                callbackResults.SetResult(layoutShouCallbackRessults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
-
-                                                    callbackResults.SetResult(transitionalComponent.Initialized());
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
-
-                                                            if (callbackResults.Success())
-                                                                OnDisabled();
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        });
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-
-                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
-                                                await Task.Yield();
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                    break;
-                            }
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                return callbackResults;
-            }
-
-            #endregion
-
             #region Async Functions
 
             IEnumerator GoToItemPageAsync(string widgetName)
@@ -37613,17 +37730,6 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public enum TabViewType
-        {
-            None,
-            ProfileView,
-            InboxView,
-            SettingsView,
-            CartView,
-            SignInView,
-            SignUpView
-        }
-
         [Serializable]
         public class  TabViewComponent<T> : DataDebugger where T: Enum
         {
@@ -37809,22 +37915,37 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if(viewType != GetActiveViewType().GetData())
+                    callbackResults.SetResult(GetTabView(viewType));
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Tab View of Type : {viewType} Is Not The Current Active View.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        callbackResults.SetResult(GetTabView(viewType).GetData().GetScreenWidgetState());
+
+                        if (callbackResults.Success())
+                        {
+                            if (viewType != GetActiveViewType().GetData() || GetTabView(viewType).GetData().GetScreenWidgetState().GetData() != ScreenWidgetState.Shown)
+                            {
+                                callbackResults.result = $"Tab View of Type : {viewType} Is Not The Current Active View.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Tab View of Type : {viewType} Is The Current Active View.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
-                    {
-                        callbackResults.result = $"Tab View of Type : {viewType} Is The Current Active View.";
-                        callbackResults.resultCode = Helpers.WarningCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
+
 
             public CallbackData<TabViewType> GetActiveViewType()
             {
@@ -37876,6 +37997,30 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"{tabViewList.Count} Tab View(s) Have Been Successfully Found For : {GetName()}";
                     callbackResults.data = tabViewList;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<TabView<T>> GetTabView(TabViewType viewType)
+            {
+                var callbackResults = new CallbackData<TabView<T>>(GetTabViewList());
+
+                if (callbackResults.Success())
+                {
+                    var tabView = GetTabViewList().GetData().Find(foundTab => foundTab.GetType().GetData() == viewType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(tabView, "Tab View", $"Get Tab View Failed - Couldn't Find Tab View Of Type : {viewType} - For : {GetName()}."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Tab View : {tabView.GetName()} Of Type : {viewType} Have Been Successfully Found For : {GetName()}";
+                        callbackResults.data = tabView;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -38045,12 +38190,36 @@ namespace Com.RedicalGames.Filar
 
             public void ShowTab(Action<Callback> callback = null)
             {
-                this.gameObject.Show();
+                var callbackResults = new Callback(GetDefaultLayoutViewType());
+
+                if(callbackResults.Success())
+                {
+                    ShowSelectedLayout(GetDefaultLayoutViewType().GetData(), tabShowCallbackResults => 
+                    {
+                        callbackResults.SetResult(tabShowCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void HideTab(Action<Callback> callback = null)
             {
-                this.gameObject.Hide();
+                var callbackResults = new Callback(GetDefaultLayoutViewType());
+
+                if (callbackResults.Success())
+                {
+                    HideSelectedLayout(GetDefaultLayoutViewType().GetData(), tabHiddenCallbackResults =>
+                    {
+                        callbackResults.SetResult(tabHiddenCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -49237,6 +49406,11 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<T> _OnWidgetHiddenEvent;
             public static event ParamVoid<T> _OnWidgetTransitionInProgressEvent;
 
+
+            public static event ParamVoid<T> _OnTabViewShownEvent;
+            public static event ParamVoid<T> _OnTabViewHiddenEvent;
+            public static event ParamVoid<T> _OnTabViewTransitionInProgressEvent;
+
             public static event ParamVoid<T> _OnSelectableWidgetShownEvent;
             public static event ParamVoid<T> _OnSelectableWidgetHiddenEvent;
             public static event ParamVoid<T> _OnSelectableWidgetTransitionInProgressEvent;
@@ -49252,6 +49426,10 @@ namespace Com.RedicalGames.Filar
             public static void OnWidgetShownEvent(T widget) => _OnWidgetShownEvent?.Invoke(widget);
             public static void OnWidgetHiddenEvent(T widget) => _OnWidgetHiddenEvent?.Invoke(widget);
             public static void OnWidgetTransitionInProgressEvent(T widget) => _OnWidgetTransitionInProgressEvent?.Invoke(widget);
+
+            public static void OnTabViewShownEvent(T tabView) => _OnTabViewShownEvent?.Invoke(tabView);
+            public static void OnTabViewHiddenEvent(T tabView) => _OnTabViewHiddenEvent?.Invoke(tabView);
+            public static void OnTabViewTransitionInProgressEvent(T tabView) => _OnTabViewTransitionInProgressEvent?.Invoke(tabView);
 
             public static void OnSelectableWidgetShownEvent(T selectable) => _OnSelectableWidgetShownEvent?.Invoke(selectable);
             public static void OnSelectableWidgetHiddenEvent(T selectable) => _OnSelectableWidgetHiddenEvent?.Invoke(selectable);

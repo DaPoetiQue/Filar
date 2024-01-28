@@ -221,7 +221,7 @@ MonoBehaviour:
   screenWidgetType: 1
   type: 8
   widgetLayouts: []
-  defaultLayoutType: 0
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 13
   uIPlacementType: 0
   orderInLayer: 1

@@ -22200,7 +22200,7 @@ MonoBehaviour:
   - layoutName: Default Tab View
     layout: {fileID: 2455903829829930336}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 19
   uIPlacementType: 0
   orderInLayer: 0

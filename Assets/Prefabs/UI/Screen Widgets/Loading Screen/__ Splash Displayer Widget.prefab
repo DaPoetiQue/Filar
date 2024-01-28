@@ -418,7 +418,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -440,7 +439,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -604,7 +603,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -626,7 +624,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -792,7 +790,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -814,7 +811,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -981,7 +978,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1003,7 +999,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1168,7 +1164,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1190,7 +1185,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1354,7 +1349,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1376,7 +1370,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1538,7 +1532,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 0
     validationStatesInfo:
@@ -1560,7 +1553,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 0}
     dataPackets:
@@ -1721,7 +1714,6 @@ MonoBehaviour:
     selectable: 0
     visualizationType: 0
     selectionFrame:
-      name: 
       value: {fileID: 0}
     inputType: 8
     validationStatesInfo:
@@ -1743,7 +1735,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    fieldName: {fileID: 0}
+    title: {fileID: 0}
     fieldUIImageList: []
     value: {fileID: 2803885940288519434}
     dataPackets:
@@ -1995,6 +1987,11 @@ MonoBehaviour:
   titleDisplayer: {fileID: 0}
   screenWidgetType: 2
   type: 36
+  widgetLayouts:
+  - layoutName: Default Layout
+    layout: {fileID: 2803885941087977292}
+    viewType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 14
   uIPlacementType: 1
   orderInLayer: 0
@@ -2063,61 +2060,6 @@ MonoBehaviour:
               m_BoolArgument: 0
             m_CallState: 2
     parameterEventActions: []
-  eventActions:
-  - name: On Loading In Progress Event
-    eventType: 1
-    eventMethod:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7374042135323048747}
-          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
-            Assembly-CSharp
-          m_MethodName: OnLoadInProgressEvent
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - name: On Loading Completed Event
-    eventType: 2
-    eventMethod:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7374042135323048747}
-          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
-            Assembly-CSharp
-          m_MethodName: OnLoadCompletedEvent
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - name: On Network Failed Event
-    eventType: 8
-    eventMethod:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7374042135323048747}
-          m_TargetAssemblyTypeName: Com.RedicalGames.Filar.SplashDisplayerWidget,
-            Assembly-CSharp
-          m_MethodName: OnLoadCompletedEvent
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
   actionGroup:
   - name: Image Displayer
     inputActionGroupType: 8
@@ -2125,11 +2067,11 @@ MonoBehaviour:
     - {fileID: 2803885940288519432}
     initialize: 1
   screenType: 8
-  widgetLayouts:
-  - layoutName: Default Layout
-    layout: {fileID: 2803885941087977292}
-    viewType: 1
-  defaultLayoutType: 1
+  tabViewComponent:
+    name: 
+    tabLayout: {fileID: 0}
+    transitionType: 0
+    activeTabViewType: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -2286,9 +2228,10 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
+  parentScreen: {fileID: 0}
   transitionableSplashImageComponent:
     name: 
 --- !u!1 &2803885941493698669

@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 8185509116741132827}
   - component: {fileID: 7313415851276561638}
   m_Layer: 0
-  m_Name: '::: Post Screen Widget Container Background'
+  m_Name: ':: Post Screen Widget Container Background'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 1860498056780435330}
   - component: {fileID: 1522889585984016661}
   m_Layer: 0
-  m_Name: ':::: Tab View Layout Container'
+  m_Name: ':: Tab View Layout Container'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -683,7 +683,7 @@ GameObject:
   - component: {fileID: 3127868965908407449}
   - component: {fileID: 60649679879808561}
   m_Layer: 0
-  m_Name: __Open Help Button
+  m_Name: __Open Cart Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -987,7 +987,7 @@ MonoBehaviour:
       sceneAssetTransitionSpeed: 0
       isRootFolder: 0
       referencedActionButtonDataList: []
-      action: 69
+      action: 101
       tabID: 0
       navigationTabWidgetType: 0
       navigationWidgetVisibilityState: 0
@@ -4147,7 +4147,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: dc8a73214280b6a478bbb3a523b9d893, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d48b7f2fc0841404a886a1f3d464ecca, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4255,7 +4255,7 @@ MonoBehaviour:
   - layoutName: Default Layout
     layout: {fileID: 7195892893242820882}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 1
   uIPlacementContainerType: 14
   uIPlacementType: 0
   orderInLayer: 0
@@ -4296,7 +4296,7 @@ MonoBehaviour:
     name: Menu Tabs
     tabLayout: {fileID: 1860498056780435330}
     transitionType: 1
-    activeTabViewType: 1
+    activeTabViewType: 7
   selectableAssetType: 5
   blurScreen: 0
   scroller:
