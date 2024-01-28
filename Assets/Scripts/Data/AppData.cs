@@ -37782,6 +37782,9 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private bool isInitialized = false;
 
+            private int tabSelectionID = 1;
+            private int selectedTabID = 0;
+
             #endregion
 
             #region Main
@@ -37935,12 +37938,22 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
-                                                transitionableUIComponent = new TransitionableUIComponent(tabLayout, UITransitionType.Translate, UITransitionStateType.Once, appDatabaseManagerInstance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
+                                                SetTabNavigationButtonTitle(GetTabTitleAtIndex(tabSelectionID).GetData(), titleSetCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(titleSetCallbackResults);
 
-                                                isInitialized = true;
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+                                                        transitionableUIComponent = new TransitionableUIComponent(tabLayout, UITransitionType.Translate, UITransitionStateType.Once, appDatabaseManagerInstance.GetDefaultExecutionValue(RuntimeExecution.ScreenWidgetTransitionalSpeed).value);
 
-                                                callbackResults.result = $"Tab View Component : {GetName()} Has Been Initialized Successfully.";
+                                                        isInitialized = true;
+
+                                                        callbackResults.result = $"Tab View Component : {GetName()} Has Been Initialized Successfully.";
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -37970,6 +37983,8 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            #region Tab Navigation Button
+
             private CallbackData<InputActionHandler> GetTabNavigationButton()
             {
                 var callbackResults = new CallbackData<InputActionHandler>();
@@ -37987,6 +38002,69 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public void SetTabNavigationButtonTitle(string title, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabNavigationButton());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabNavigationButton().GetData().GetButtonComponent());
+
+                    if (callbackResults.Success())
+                    {
+                        var button = GetTabNavigationButton().GetData().GetButtonComponent().GetData();
+                        button.SetTitle(title);
+
+                        callbackResults.result = $"Set Action Button Title Success - Input Button's Title Has Been Successfully Set To : {title}.";
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetActionButtonIcon(InputActionButtonType actionType, Sprite icon, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabNavigationButton());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabNavigationButton().GetData().GetButtonComponent());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTabNavigationButton().GetData().GetButtonComponent().GetData().dataPackets.GetAction());
+
+                        if (callbackResults.Success())
+                        {
+                            if (GetTabNavigationButton().GetData().GetButtonComponent().GetData().dataPackets.GetAction().GetData() == actionType)
+                            {
+                                var button = GetTabNavigationButton().GetData().GetButtonComponent().GetData();
+                                //button.SetUIImageValue(icon, UIImageDisplayerType.ActionIcon);
+
+                                // callbackResults.result = $"Set Action Button Title Success - Input Button With Action Type : {actionType}'s Title Has Been Successfully Set To : {title}.";
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Set Action Button Title Failed - Input Button With Action Type : {actionType} Doesn't Match required Tab View Component Tab Navigation Button Action Type - Invalid Operation.";
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
             private void OnTabNavigationButtonPressedEvent(ButtonConfigDataPacket actionButton, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(actionButton.GetAction());
@@ -37995,11 +38073,63 @@ namespace Com.RedicalGames.Filar
                 {
                     if (actionButton.GetAction().GetData() == InputActionButtonType.SignInViewChangeButton)
                     {
+                        callbackResults.SetResult(GetTabCount(true));
 
-                        LogInfo($" __+Log_Cat:::: Switch Tab Executed", this);
+                        if (callbackResults.Success())
+                        {
+                            #region Tab Indexing
 
+                            if (tabSelectionID < GetTabCount(true).GetData())
+                                tabSelectionID++;
+                            else
+                                tabSelectionID = 0;
 
-                        ActionEvents.OnActionButtonPressedEvent(actionButton);
+                            #endregion
+
+                            #region Tab Selection ID
+
+                            if (selectedTabID < GetTabCount(true).GetData())
+                                selectedTabID++;
+                            else
+                                selectedTabID = 0;
+
+                            #endregion
+
+                            callbackResults.SetResult(GetTabTitleAtIndex(tabSelectionID));
+
+                            if (callbackResults.Success())
+                            {
+                                SetTabNavigationButtonTitle(GetTabTitleAtIndex(tabSelectionID).GetData(), titleSetCallbackResults =>
+                                {
+                                    callbackResults.SetResult(titleSetCallbackResults);
+
+                                    if(callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetTabViewTypeAtIndex(tabSelectionID));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var selectedTabViewType = GetTabViewTypeAtIndex(selectedTabID).GetData();
+
+                                            SelectTab(selectedTabViewType, tabSelectedCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(tabSelectedCallbackResults);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+
+                                ActionEvents.OnActionButtonPressedEvent(actionButton);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                 }
                 else
@@ -38008,6 +38138,57 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            private CallbackData<string> GetTabTitleAtIndex(int tabID)
+            {
+                var callbackResults = new CallbackData<string>(GetTabViewList());
+
+                if(callbackResults.Success())
+                {
+                    var titleInfo = GetTabViewList().GetData()[tabID].GetType().GetData().ToString();
+
+                    callbackResults.SetResult(Helpers.GetFormatedTextString(titleInfo, "View"));
+
+                    if (callbackResults.Success())
+                    {
+                        var title = Helpers.GetFormatedTextString(titleInfo, "View").GetData();
+
+                        callbackResults.result = $"Tab View Title At Tab ID : {tabID} - Is Set To : {title}";
+                        callbackResults.data = title;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackData<TabViewType> GetTabViewTypeAtIndex(int tabID)
+            {
+                var callbackResults = new CallbackData<TabViewType>(GetTabViewList());
+
+                if (callbackResults.Success())
+                {
+                    var viewType = GetTabViewList().GetData()[tabID].GetType().GetData();
+
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(viewType, "View Type", $"Get Tab View Type At Index : {tabID} Failed - Couldn't Find View Type - Invalid Index Operation - Index Could Be Out Of Range."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Tab View Type At Index : {tabID} Success - Found Tab View Of Type : {viewType}";
+                        callbackResults.data = viewType;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #region Transitionable UI Data
 
@@ -38055,7 +38236,6 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
-
 
             private CallbackData<object> GetTabViewTransitionInfo(TabViewType viewType)
             {
@@ -38153,6 +38333,10 @@ namespace Com.RedicalGames.Filar
                                 break;
 
                             case TransitionType.Translate:
+
+                                LogInfo($" __+Log_Cat:::: Switching Tab To : {viewType} Executed", this);
+
+
 
                                 break;
                         }
@@ -38353,6 +38537,22 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
+
+            public CallbackData<int> GetTabCount(bool incrementalCompare = false)
+            {
+                var callbackResults = new CallbackData<int>(GetTabViewList());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"There Are : {GetTabViewList().GetData().Count} Tabs Found For Tab View Compponent : {GetName()}";
+                    callbackResults.data = (incrementalCompare)? GetTabViewList().GetData().Count - 1 : GetTabViewList().GetData().Count;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
 
             public CallbackData<TabView<T>> GetTabView(TabViewType viewType)
             {
@@ -46567,6 +46767,52 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback.Invoke(callbackResults);
+            }
+
+            public static CallbackData<string> GetFormatedTextString(string value, string excludedText = "")
+            {
+                var callbackResults = new CallbackData<string>();
+
+                var formattedValue = value.Replace(excludedText, "");
+                formattedValue.Replace(" ", "");
+
+                if (!string.IsNullOrEmpty(formattedValue))
+                {
+                    var text = new StringBuilder();
+
+                    for (int i = 0; i < formattedValue.Length; i++)
+                    {
+                        string newText = formattedValue[i].ToString();
+
+                        if(char.IsUpper(newText[0]) && i != 0)
+                        {
+                            text.Append(" ").Append(newText);
+                        }
+                        else
+                            text.Append(newText);
+                    }
+
+                    if(text.Length > 0)
+                    {
+                        callbackResults.result = $"Add Spacing To String Success - Returning Formatted Text As : {text.ToString()}";
+                        callbackResults.data = text.ToString();
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Add Spacing To String Failed. The Parameter Value Is Null / Empty - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = ErrorCode;
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "Add Spacing To String Failed. The Parameter Value Is Null / Empty - Invalid Operation.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public static void GetValue(float value, Action<CallbackData<float>> callback, string callbackFailFallbackResults = null)
