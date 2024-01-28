@@ -4297,6 +4297,8 @@ MonoBehaviour:
     tabLayout: {fileID: 1860498056780435330}
     transitionType: 1
     activeTabViewType: 7
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 5
   blurScreen: 0
   scroller:
@@ -4456,7 +4458,6 @@ MonoBehaviour:
   initializeTabs: 1
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentScreen: {fileID: 0}
 --- !u!1 &3127868966497868697
 GameObject:
   m_ObjectHideFlags: 0
