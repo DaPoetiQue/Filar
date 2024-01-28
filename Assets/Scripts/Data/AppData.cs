@@ -21945,6 +21945,15 @@ namespace Com.RedicalGames.Filar
                 transitionRotation = targetPose.rotationAngle;
             }
 
+            private void SetTransitionDestination(object targetObject)
+            {
+                (Vector2 position, Vector2 scale, Vector3 rotationAngle)? targetPose = targetObject as (Vector2 position, Vector2 scale, Vector3 rotationAngle)?;
+
+                transitionPosition = (Vector2)targetPose?.position;
+                transitionScale = (Vector2)targetPose?.scale;
+                transitionRotation = (Vector3)targetPose?.rotationAngle;
+            }
+
             #endregion
 
             #region Set Target
@@ -22281,6 +22290,31 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
+                    SubscribeToEvents(subscribedToEventCallbackResults =>
+                    {
+                        callbackResults.SetResult(subscribedToEventCallbackResults);
+
+                        if (callbackResults.Success())
+                            SetCanTransition(true);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+
+            public void InvokeTransition(object transitionData, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    SetTransitionDestination(transitionData);
+
                     SubscribeToEvents(subscribedToEventCallbackResults =>
                     {
                         callbackResults.SetResult(subscribedToEventCallbackResults);
@@ -38306,40 +38340,83 @@ namespace Com.RedicalGames.Filar
 
                     if(callbackResults.Success())
                     {
-                        var tabViews = GetTabViewList().GetData();
-
-                        switch(GetTransitionType().GetData())
+                        SetActiveTabViewType(viewType, activeViewSelectedCallbackResults => 
                         {
-                            case TransitionType.Default:
+                            callbackResults.SetResult(activeViewSelectedCallbackResults);
 
-                                for (int i = 0; i < tabViews.Count; i++)
+                            if(callbackResults.Success())
+                            {
+                                var tabViews = GetTabViewList().GetData();
+
+                                switch (GetTransitionType().GetData())
                                 {
-                                    if (tabViews[i].GetType().GetData() == viewType)
-                                    {
-                                        tabViews[i].ShowTab(tabShownCallbackResults => 
+                                    case TransitionType.Default:
+
+                                        for (int i = 0; i < tabViews.Count; i++)
                                         {
-                                            callbackResults.SetResult(tabShownCallbackResults);
-                                        });
-                                    }
-                                    else
-                                    {
-                                        tabViews[i].HideTab(tabHiddenCallbackResults => 
+                                            if (tabViews[i].GetType().GetData() == viewType)
+                                            {
+                                                tabViews[i].ShowTab(tabShownCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(tabShownCallbackResults);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                tabViews[i].HideTab(tabHiddenCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(tabHiddenCallbackResults);
+                                                });
+                                            }
+                                        }
+
+                                        break;
+
+                                    case TransitionType.Translate:
+
+                                        callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(tabHiddenCallbackResults);
-                                        });
-                                    }
+                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                            callbackResults.SetResult(GetTabViewTransitionInfo(viewType));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var tabInfo = GetTabViewTransitionInfo(viewType).GetData();
+
+                                                callbackResults.SetResult(GetTabLayout());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(tabInfo, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
                                 }
-
-                                break;
-
-                            case TransitionType.Translate:
-
-                                LogInfo($" __+Log_Cat:::: Switching Tab To : {viewType} Executed", this);
-
-
-
-                                break;
-                        }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -38435,7 +38512,16 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(activeTabViewType, "Active Tab View Type", $"Set Active Tab View Type Failed - Active Tab View Type Parameter Value Is Set To Default : {activeTabViewType}"));
 
+                    if(callbackResults.Success())
+                    {
+                        this.activeTabViewType = activeTabViewType;
+
+                        callbackResults.result = $"Set Active Tab View Type Success - Active Tab View Type Has Been Successfully Assigned To  : {activeTabViewType}";
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
