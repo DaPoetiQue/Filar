@@ -99,9 +99,9 @@ namespace Com.RedicalGames.Filar
         public enum SignInState
         {
             None,
-            Guest,
-            SignIn,
-            SignOut
+            GuestSignIn,
+            SignedIn,
+            SignedOut
         }
 
         public enum AssetCategoryType : int
@@ -187,7 +187,7 @@ namespace Com.RedicalGames.Filar
             MessageDisplayerWidget,
             SignInWidget,
             SignInWarningWidget,
-            AnonymousSignInConfirmationWidget,
+            FeatureBlockerPopUpWidget,
             TermsAndConditionsWidget,
             PostsWidget,
             ImageDisplayerWidget,

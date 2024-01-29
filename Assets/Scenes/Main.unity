@@ -1170,7 +1170,7 @@ MonoBehaviour:
   - layoutName: Folder Creation Default View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -1192,6 +1192,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -1348,9 +1350,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &163116066
 GameObject:
   m_ObjectHideFlags: 0
@@ -1503,7 +1505,7 @@ MonoBehaviour:
   screenWidgetType: 0
   type: 0
   widgetLayouts: []
-  defaultLayoutType: 0
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -1641,7 +1643,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -1663,6 +1665,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -1819,9 +1823,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   thumbnailDisplayer: {fileID: 0}
   nameInputField: {fileID: 0}
   descriptionInputField: {fileID: 0}
@@ -2256,7 +2260,7 @@ MonoBehaviour:
   - layoutName: Loading Widget
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -2278,6 +2282,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -2434,9 +2440,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &295040661
 GameObject:
   m_ObjectHideFlags: 0
@@ -2493,7 +2499,7 @@ MonoBehaviour:
   - layoutName: Selection Widget
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -2515,6 +2521,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -2671,9 +2679,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &322984191
 GameObject:
   m_ObjectHideFlags: 0
@@ -2813,7 +2821,7 @@ MonoBehaviour:
   - layoutName: Selected Copy Options Widget
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -2835,6 +2843,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -2991,9 +3001,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &417544389
 GameObject:
   m_ObjectHideFlags: 0
@@ -4079,7 +4089,7 @@ MonoBehaviour:
   - layoutName: Rendering Settings Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -4101,6 +4111,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -4257,9 +4269,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   navigationWidget:
     navigationTabsList:
     - name: Lighting Settings Tab
@@ -7417,7 +7429,7 @@ MonoBehaviour:
   - layoutName: Color Picker Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -7439,6 +7451,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -7595,9 +7609,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &655414343
 GameObject:
   m_ObjectHideFlags: 0
@@ -7654,7 +7668,7 @@ MonoBehaviour:
   - layoutName: Scroller Navigation Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -7676,6 +7690,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -7832,9 +7848,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &672381473
 GameObject:
   m_ObjectHideFlags: 0
@@ -8633,7 +8649,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -8655,6 +8671,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -8811,9 +8829,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   showWidgetidgetScreenPoint: {x: 0, y: 150}
   hideWidgetidgetScreenPoint: {x: 0, y: -100}
 --- !u!1 &899887959
@@ -9451,7 +9469,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -9473,6 +9491,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -9629,9 +9649,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   thumbnailDisplayer: {fileID: 0}
   exportedAssetNameInputField:
     name: 
@@ -10056,7 +10076,7 @@ MonoBehaviour:
   - layoutName: Default Text Displayer
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -10078,6 +10098,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -10234,9 +10256,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &975396566
 GameObject:
   m_ObjectHideFlags: 0
@@ -10591,7 +10613,7 @@ MonoBehaviour:
   - layoutName: Default View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -10613,6 +10635,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -10769,9 +10793,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   folderStructureDataTemplate:
     name: 
     dataType: 0
@@ -11123,7 +11147,7 @@ MonoBehaviour:
   - layoutName: Warning Notifications Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -11145,6 +11169,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -11301,9 +11327,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &1213357639
 GameObject:
   m_ObjectHideFlags: 0
@@ -11360,7 +11386,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -11382,6 +11408,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -11538,9 +11566,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   xRotationInputField:
     name: X Rotation Property Field
     selectionStatesInfo:
@@ -12356,7 +12384,7 @@ MonoBehaviour:
   - layoutName: Main View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -12378,6 +12406,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -12534,9 +12564,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   view:
     name: 
     tutorialInfoList: []
@@ -13351,7 +13381,7 @@ MonoBehaviour:
   - layoutName: Snap Shot Displayer Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -13373,6 +13403,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -13529,9 +13561,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   imageDisplayer:
     name: Snapshot Displayer
     selectionStatesInfo:
@@ -13850,7 +13882,7 @@ MonoBehaviour:
   - layoutName: Main View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -13872,6 +13904,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -14028,9 +14062,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   view:
     name: 
     tutorialInfoList: []
@@ -14230,7 +14264,7 @@ MonoBehaviour:
   screenWidgetType: 0
   type: 0
   widgetLayouts: []
-  defaultLayoutType: 0
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -14488,7 +14522,7 @@ MonoBehaviour:
   - layoutName: Asset Preview Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -14510,6 +14544,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -14666,9 +14702,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   thumbnailDisplayer: {fileID: 0}
   descriptionDisplayer: {fileID: 0}
   screenTogglableWidgetsList:
@@ -15164,7 +15200,7 @@ MonoBehaviour:
   - layoutName: Publishing Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -15186,6 +15222,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -15342,9 +15380,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   thumbnailDisplayer: {fileID: 0}
 --- !u!1 &1700678334
 GameObject:
@@ -15493,7 +15531,7 @@ MonoBehaviour:
   - layoutName: Confirmation Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -15515,6 +15553,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -15671,9 +15711,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   thumbnailDisplayer: {fileID: 0}
   messageDisplayer: {fileID: 0}
   snapToSelection: 1
@@ -15733,7 +15773,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -15755,6 +15795,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -15911,9 +15953,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   showWidgetidgetScreenPoint: {x: 0, y: 45}
   hideWidgetidgetScreenPoint: {x: 0, y: -100}
 --- !u!1 &1813465766
@@ -16297,7 +16339,7 @@ MonoBehaviour:
   - layoutName: Default View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -16319,6 +16361,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -16475,9 +16519,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &1932710068
 GameObject:
   m_ObjectHideFlags: 0
@@ -16534,7 +16578,7 @@ MonoBehaviour:
   - layoutName: Text Displayer Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -16556,6 +16600,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -16712,9 +16758,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &1950216718
 GameObject:
   m_ObjectHideFlags: 0
@@ -16771,7 +16817,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -16793,6 +16839,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -16949,9 +16997,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
   messageDisplayer: {fileID: 0}
   snapToSelection: 0
 --- !u!1 &1958123331
@@ -17010,7 +17058,7 @@ MonoBehaviour:
   - layoutName: Selected File Options Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -17032,6 +17080,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -17188,9 +17238,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &1961201796
 GameObject:
   m_ObjectHideFlags: 0
@@ -17520,7 +17570,7 @@ MonoBehaviour:
   - layoutName: Pager Navigation Layout View
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -17542,6 +17592,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -17698,9 +17750,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!1 &2057037270
 GameObject:
   m_ObjectHideFlags: 0
@@ -19297,7 +19349,7 @@ MonoBehaviour:
   - layoutName: 
     layout: {fileID: 0}
     viewType: 1
-  defaultLayoutType: 1
+  defaultLayoutViewType: 0
   uIPlacementContainerType: 17
   uIPlacementType: 0
   orderInLayer: 0
@@ -19319,6 +19371,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -19475,9 +19529,9 @@ MonoBehaviour:
     visibleScreenPoint: {fileID: 0}
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
+  initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentWidget: {fileID: 0}
 --- !u!4 &95012362115287460
 Transform:
   m_ObjectHideFlags: 0

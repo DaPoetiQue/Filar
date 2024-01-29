@@ -35,12 +35,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Widget
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e4c80c2b86c4484408b5ea7bef4fbdf9
-    m_Address: Anonymous Sign_In Widget
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Widget
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cac99e6c78523e544986e557570bee69
     m_Address: Terms And Condition Widget
     m_ReadOnly: 0

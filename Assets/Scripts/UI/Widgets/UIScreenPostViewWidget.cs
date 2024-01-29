@@ -210,22 +210,93 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.SelectableWidgetType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(PostManager.Instance,"Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
+
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(actionType, "Action Type", $"On Action Button Event Failed - Action Type Parameter Value Is Set To Default : {actionType} - Invalid Operation"));
 
             if (callbackResults.Success())
             {
-                var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance").GetData();
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
-                switch (actionType)
+                if (callbackResults.Success())
                 {
-                    case AppData.InputActionButtonType.SelectPostButton:
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                        postManagerInstance.SelectPost(post, postSelectedCallbackResults => 
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                    if (callbackResults.Success())
+                    {
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
+
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(postSelectedCallbackResults);
-                        });
+                            var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance").GetData();
 
-                        break;
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+                            if (callbackResults.Success())
+                            {
+                                var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                                switch (screenWidgetType)
+                                {
+                                    case AppData.SelectableWidgetType.Post:
+
+                                        if (actionType == AppData.InputActionButtonType.SelectPostButton)
+                                        {
+                                            postManagerInstance.SelectPost(post, postSelectedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(postSelectedCallbackResults);
+                                            });
+                                        }
+                                        else
+                                        {
+                                            callbackResults.SetResult(profileManagerInstance.OnCheckProfileSignIn());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                switch (actionType)
+                                                {
+
+                                                    case AppData.InputActionButtonType.LikePostButton:
+
+                                                        break;
+
+                                                    case AppData.InputActionButtonType.DislikePostButton:
+
+                                                        break;
+
+                                                    case AppData.InputActionButtonType.ViewCommentsButton:
+
+                                                        break;
+
+                                                    case AppData.InputActionButtonType.SharePostButton:
+
+                                                        break;
+
+                                                    case AppData.InputActionButtonType.AddToCartButton:
+
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+
+                                        break;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
             }
             else

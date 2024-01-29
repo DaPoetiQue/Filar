@@ -97,6 +97,62 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public AppData.Callback OnCheckProfileSignIn(bool isProfileButton = false)
+        {
+            var callbackResults = new AppData.Callback(GetSignInState());
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                    if (callbackResults.Success())
+                    {
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                        if (GetSignInState().GetData() != AppData.SignInState.SignedIn)
+                        {
+                            if (isProfileButton)
+                            {
+                                #region Sign In
+
+                                #endregion
+                            }
+                            else
+                            {
+                                #region Feature Blocker
+
+                                var featureBlockerWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                featureBlockerWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.FeatureBlockerPopUpWidget);
+                                featureBlockerWidgetConfig.blurScreen = true;
+
+                                screen.ShowWidget(featureBlockerWidgetConfig);
+
+                                #endregion
+                            }
+
+                            callbackResults.result = $"On Check Profile Sign In Unsuccessful - Profile Is Not Signed In.";
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        }
+                        else
+                            callbackResults.result = $"Profile Is Signed In.";
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
         public async Task<AppData.Callback> SynchronizingProfile()
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Is Not Yet Initialized."));
@@ -171,7 +227,7 @@ namespace Com.RedicalGames.Filar
                         {
                             if (signedInTaskCompletion.Result.User.IsValid())
                             {
-                                SetSignInState(AppData.SignInState.Guest);
+                                SetSignInState(AppData.SignInState.GuestSignIn);
 
                                 callbackResults.result = "App Signed In Successgully.";
                                 callbackResults.data = default;

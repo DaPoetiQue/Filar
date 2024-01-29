@@ -129,7 +129,6 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-
                 callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
