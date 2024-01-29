@@ -327,7 +327,45 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            throw new System.NotImplementedException();
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(actionType, "Action Type", $"On Action Button Event Failed - Action Type Parameter Value Is Set To Default : {actionType} - Invalid Operation"));
+
+            if (callbackResults.Success())
+            {
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
+                {
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                    if (callbackResults.Success())
+                    {
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                        switch (actionType)
+                        {
+                            case AppData.InputActionButtonType.ConfirmationButton:
+
+
+                                break;
+
+                            case AppData.InputActionButtonType.Cancel:
+
+                                screen.HideScreenWidget(this);
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
@@ -337,22 +375,22 @@ namespace Com.RedicalGames.Filar
 
         protected override void ScrollerPosition(Vector2 position)
         {
-            throw new System.NotImplementedException();
+           
         }
 
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void OnScreenWidgetShownEvent()
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
@@ -362,7 +400,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+           
         }
 
         #endregion

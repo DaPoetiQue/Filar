@@ -41,6 +41,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Widget
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3fd54dca65ee0b4fa629bf930b33f08
+    m_Address: Confrimation Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

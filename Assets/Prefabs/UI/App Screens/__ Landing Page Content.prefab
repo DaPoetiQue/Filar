@@ -302,6 +302,12 @@ MonoBehaviour:
     containerType: 15
     initialVisibilityState: 1
     constriants: []
+  - name: Confirmation Pop Up
+    referenceType: 1
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants: []
   dynamicContainerList:
   - {fileID: 4483213448022437336}
   - {fileID: 976341724}

@@ -78,6 +78,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
+            SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Disabled);
             
         }
 
@@ -89,7 +90,31 @@ namespace Com.RedicalGames.Filar
         //    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
         //}
 
-        protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
+        protected override void OnScrollerValueChanged(Vector2 value)
+        {
+            if (OnScrollEnded(value))
+            {
+                var callbackResults = new AppData.Callback();
+
+                callbackResults.SetResult(GetActionButtonOfType(AppData.InputActionButtonType.AcceptTermsAndConditionsButton));
+
+                if (callbackResults.Success())
+                {
+                    var button = GetActionButtonOfType(AppData.InputActionButtonType.AcceptTermsAndConditionsButton).GetData();
+
+                    if (button.GetInputUIState() == AppData.InputUIState.Disabled)
+                        button.SetUIInputState(AppData.InputUIState.Enabled);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                return;
+
+            //scroller.Update();
+        }
+
+        private bool OnScrollEnded(Vector2 value) => value.y <= 0.0f;
 
         protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
         {
@@ -98,84 +123,139 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerComponentCallbackResults => 
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(actionType, "Action Type", $"On Action Button Event Failed - Action Type Parameter Value Is Set To Default : {actionType} - Invalid Operation"));
+
+            if (callbackResults.Success())
             {
-                if(screenManagerComponentCallbackResults.Success())
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                if (callbackResults.Success())
                 {
-                    var screenManager = screenManagerComponentCallbackResults.data;
+                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                    screenManager.GetScreen(screenManager.GetCurrentScreenType().GetData(), loadedScreenCallbacResults =>
+                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                    if (callbackResults.Success())
                     {
-                        if (loadedScreenCallbacResults.Success())
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                        var signInWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                        signInWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
+                        signInWidgetConfig.blurScreen = true;
+
+                        switch (actionType)
                         {
-                            var loadedScreen = loadedScreenCallbacResults.data;
+                            case AppData.InputActionButtonType.GoToWebsiteLinkButton:
 
-                            switch (actionType)
-                            {
-                                case AppData.InputActionButtonType.GoToWebsiteLinkButton:
 
-                                    AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, async networkManagerCallbackResults =>
-                                    {
-                                        if (networkManagerCallbackResults.Success())
-                                        {
-                                            var success = await networkManagerCallbackResults.data.CheckConnectionStatus();
+                                break;
 
-                                            if (success.Success())
-                                            {
-                                                if (!string.IsNullOrEmpty(dataPackets.externalLinkURL))
-                                                    Application.OpenURL(dataPackets.externalLinkURL);
-                                                else
-                                                    LogError("Open Terms And Conditions Website Failed - External URL Is Not Assigned.", this);
-                                            }
-                                            else
-                                            {
-                                                AppData.SceneConfigDataPacket networkDataPackets = new AppData.SceneConfigDataPacket();
+                            case AppData.InputActionButtonType.AcceptTermsAndConditionsButton:
 
-                                                dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
-                                                dataPackets.SetReferencedWidgetType(AppData.WidgetType.NetworkNotificationWidget);
-                                                dataPackets.SetScreenBlurState(true);
-                                                dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
+                                screen.HideScreenWidget(this);
 
-                                                loadedScreen.ShowWidget(networkDataPackets);
-                                                LogError("Network Connection Failed : Show Network Error Pop-Up", this);
-                                            }
-                                        }
-                                        else
-                                            Log(networkManagerCallbackResults.resultCode, networkManagerCallbackResults.result, this);
+                                screen.ShowWidget(signInWidgetConfig);
 
-                                    }, "Network Manager Instance Is Not Yet Initialized");
+                                break;
 
-                                    break;
+                            case AppData.InputActionButtonType.CloseButton:
 
-                                case AppData.InputActionButtonType.ConfirmationButton:
+                                screen.HideScreenWidget(this);
 
-                                    AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, profileManagerCallbackResults =>
-                                    {
-                                        if(profileManagerCallbackResults.Success())
-                                        {
-                                            var profileManager = profileManagerCallbackResults.data;
-                                            profileManager.AcceptTermsAndConditions();
-                                        }
-                                        else
-                                            Log(profileManagerCallbackResults.resultCode, profileManagerCallbackResults.result, this);
+                                screen.ShowWidget(signInWidgetConfig);
 
-                                    }, "Profile Manager Instance Is Not Yet Initialized");
-
-                                    break;
-
-                                case AppData.InputActionButtonType.CloseButton:
-
-                                    loadedScreen.HideScreenWidget(type);
-
-                                    break;
-                            }
+                                break;
                         }
-                    });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
-                else
-                    Log(screenManagerComponentCallbackResults.resultCode, screenManagerComponentCallbackResults.result, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            }, "Screen UI Manager Instance Is Not Yet Initialized.");
+            //AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerComponentCallbackResults => 
+            //{
+            //    if(screenManagerComponentCallbackResults.Success())
+            //    {
+            //        var screenManager = screenManagerComponentCallbackResults.data;
+
+            //        screenManager.GetScreen(screenManager.GetCurrentScreenType().GetData(), loadedScreenCallbacResults =>
+            //        {
+            //            if (loadedScreenCallbacResults.Success())
+            //            {
+            //                var loadedScreen = loadedScreenCallbacResults.data;
+
+            //                switch (actionType)
+            //                {
+            //                    case AppData.InputActionButtonType.GoToWebsiteLinkButton:
+
+            //                        AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, async networkManagerCallbackResults =>
+            //                        {
+            //                            if (networkManagerCallbackResults.Success())
+            //                            {
+            //                                var success = await networkManagerCallbackResults.data.CheckConnectionStatus();
+
+            //                                if (success.Success())
+            //                                {
+            //                                    if (!string.IsNullOrEmpty(dataPackets.externalLinkURL))
+            //                                        Application.OpenURL(dataPackets.externalLinkURL);
+            //                                    else
+            //                                        LogError("Open Terms And Conditions Website Failed - External URL Is Not Assigned.", this);
+            //                                }
+            //                                else
+            //                                {
+            //                                    AppData.SceneConfigDataPacket networkDataPackets = new AppData.SceneConfigDataPacket();
+
+            //                                    dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
+            //                                    dataPackets.SetReferencedWidgetType(AppData.WidgetType.NetworkNotificationWidget);
+            //                                    dataPackets.SetScreenBlurState(true);
+            //                                    dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
+
+            //                                    loadedScreen.ShowWidget(networkDataPackets);
+            //                                    LogError("Network Connection Failed : Show Network Error Pop-Up", this);
+            //                                }
+            //                            }
+            //                            else
+            //                                Log(networkManagerCallbackResults.resultCode, networkManagerCallbackResults.result, this);
+
+            //                        }, "Network Manager Instance Is Not Yet Initialized");
+
+            //                        break;
+
+            //                    case AppData.InputActionButtonType.ConfirmationButton:
+
+            //                        AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, profileManagerCallbackResults =>
+            //                        {
+            //                            if(profileManagerCallbackResults.Success())
+            //                            {
+            //                                var profileManager = profileManagerCallbackResults.data;
+            //                                profileManager.AcceptTermsAndConditions();
+            //                            }
+            //                            else
+            //                                Log(profileManagerCallbackResults.resultCode, profileManagerCallbackResults.result, this);
+
+            //                        }, "Profile Manager Instance Is Not Yet Initialized");
+
+            //                        break;
+
+            //                    case AppData.InputActionButtonType.CloseButton:
+
+            //                        loadedScreen.HideScreenWidget(type);
+
+            //                        break;
+            //                }
+            //            }
+            //        });
+            //    }
+            //    else
+            //        Log(screenManagerComponentCallbackResults.resultCode, screenManagerComponentCallbackResults.result, this);
+
+            //}, "Screen UI Manager Instance Is Not Yet Initialized.");
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
@@ -199,7 +279,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void OnScreenWidgetShownEvent()
@@ -219,7 +299,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+         
         }
 
         #endregion

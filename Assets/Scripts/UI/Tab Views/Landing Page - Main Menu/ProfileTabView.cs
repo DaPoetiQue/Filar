@@ -25,12 +25,42 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.TabViewType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            throw new NotImplementedException();
+            var callbackResults = new AppData.Callback();
+
+            switch (actionType)
+            {
+                case AppData.InputActionButtonType.OpenProjectButton:
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                        if (callbackResults.Success())
+                        {
+                            var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                            confirmationWidgetConfig.blurScreen = true;
+
+                            screen.ShowWidget(confirmationWidgetConfig);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+
+                    break;
+            }
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)

@@ -172,10 +172,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 149.375, y: -26.25}
-  m_SizeDelta: {x: 53.75, y: 52.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518915977806354
 CanvasRenderer:
@@ -4206,10 +4206,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 90.625, y: -26.25}
-  m_SizeDelta: {x: 53.75, y: 52.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518916246387773
 CanvasRenderer:
@@ -6720,10 +6720,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 208.125, y: -26.25}
-  m_SizeDelta: {x: 53.75, y: 52.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518916970556306
 CanvasRenderer:
@@ -12948,10 +12948,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 31.875, y: -26.25}
-  m_SizeDelta: {x: 53.75, y: 52.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518917824911222
 CanvasRenderer:
@@ -17014,6 +17014,9 @@ MonoBehaviour:
   screenType: 7
   parentType: 31
   tabViewMountReference: {fileID: 7295239882246529601}
+  tabbedContent:
+    name: 
+    tabs: []
 --- !u!1 &2464518917994983477
 GameObject:
   m_ObjectHideFlags: 0

@@ -107,15 +107,15 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (AppData.Helpers.IsSuccessCode(getButtonCallback.resultCode))
                                 {
-                                    foreach (var button in getButtonCallback.data)
-                                    {
-                                        if (button.dataPackets.selectionOption == AppData.SelectionOption.SelectPage)
-                                        {
-                                            button.SetTitle(title);
+                                    //foreach (var button in getButtonCallback.data)
+                                    //{
+                                    //    if (button.dataPackets.selectionOption == AppData.SelectionOption.SelectPage)
+                                    //    {
+                                    //        button.SetTitle(title);
 
-                                            button.SetUIInputState(AppData.InputUIState.Disabled);
-                                        }
-                                    }
+                                    //        button.SetUIInputState(AppData.InputUIState.Disabled);
+                                    //    }
+                                    //}
                                 }
                                 else
                                     LogError(getButtonCallback.result, this);
@@ -127,22 +127,22 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (AppData.Helpers.IsSuccessCode(getButtonCallback.resultCode))
                                 {
-                                    foreach (var button in getButtonCallback.data)
-                                    {
-                                        if (button.dataPackets.selectionOption == AppData.SelectionOption.SelectPage)
-                                        {
-                                            button.SetTitle(title);
+                                    //foreach (var button in getButtonCallback.data)
+                                    //{
+                                    //    if (button.dataPackets.selectionOption == AppData.SelectionOption.SelectPage)
+                                    //    {
+                                    //        button.SetTitle(title);
 
-                                            if (enableSelectionButton)
-                                            {
-                                                LogWarning($"Not All Widgets Selected - Enabled : {enableSelectionButton}.");
+                                    //        if (enableSelectionButton)
+                                    //        {
+                                    //            LogWarning($"Not All Widgets Selected - Enabled : {enableSelectionButton}.");
 
-                                                button.SetUIInputState(AppData.InputUIState.Enabled);
-                                            }
-                                            else
-                                                button.SetUIInputState(AppData.InputUIState.Disabled);
-                                        }
-                                    }
+                                    //            button.SetUIInputState(AppData.InputUIState.Enabled);
+                                    //        }
+                                    //        else
+                                    //            button.SetUIInputState(AppData.InputUIState.Disabled);
+                                    //    }
+                                    //}
                                 }
                                 else
                                     LogError(getButtonCallback.result, this);
