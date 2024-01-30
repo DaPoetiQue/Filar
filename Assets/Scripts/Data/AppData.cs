@@ -194,6 +194,13 @@ namespace Com.RedicalGames.Filar
             TitleDisplayerWidget
         }
 
+        public enum UIComponentType
+        {
+            None,
+            Options,
+            Toggle
+        }
+
         public enum SubWidgetType
         {
             None,
@@ -629,7 +636,9 @@ namespace Com.RedicalGames.Filar
             InputSlider = 5,
             DropDown = 6,
             Text = 7,
-            Image = 8
+            Image = 8,
+            Options = 9,
+            Toggle = 10
         }
 
         public enum ScreenType
@@ -39780,6 +39789,308 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Options Tab
+
+        [Serializable]
+        [RequireComponent(typeof(InputActionHandler))]
+        public abstract class UIBaseComponent : AppMonoBaseClass
+        {
+            #region Components
+
+            [SerializeField]
+            private UIComponentType type = UIComponentType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private TabPanelComponent panel = null;
+
+            [Space(5)]
+            [SerializeField]
+            private UIVisibilityState initialVisibilityState = UIVisibilityState.None;
+
+            private InputActionHandler button = null;
+
+            #endregion
+
+            #region Main
+
+            public void Initialized<T>(T baseType, Action<Callback> callback = null) where T : Enum
+            {
+                var callbackResults = new Callback(GetType());
+
+                if(callbackResults.Success())
+                {
+                    OnInitialization(onInitializationCallbackResults =>
+                    {
+                        callbackResults.SetResult(onInitializationCallbackResults);
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetPanel());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetOptionToggleButton());
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetInitialVisibilityState());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        #region Input Action
+
+                                        var action = GetOptionToggleButton().GetData();
+
+                                        callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", "Selectable Manager Instance Is Not Yet Initialized."));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                                            action.Init<ButtonConfigDataPacket>(initializationCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(initializationCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(action.GetButtonComponent());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var actionButton = action.GetButtonComponent().GetData();
+
+                                                        callbackResults.SetResult(actionButton.Initialized());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            callbackResults.SetResult(actionButton.Selectable());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(structureCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        var selectionSystem = structureCallbackResults.GetData();
+
+                                                                        selectionSystem.OnRegisterInputToSelectableEventListener(baseType, actionButton, selectableCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(selectableCallbackResults);
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                actionButton.Initialize(initializationCallbackResults =>
+                                                                                {
+                                                                                    callbackResults.SetResult(initializationCallbackResults);
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        callbackResults.SetResult(actionButton.GetValue());
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            actionButton.GetValue().GetData().onClick.AddListener(() =>
+                                                                                            {
+                                                                                                OnClickEvent(buttonClickedEventCallback =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(buttonClickedEventCallback);
+                                                                                                });
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                });
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                            else
+                                                            {
+                                                                actionButton.Initialize(initializationCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(initializationCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(actionButton.GetValue());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            actionButton.GetValue().GetData().onClick.AddListener(() =>
+                                                                            {
+                                                                                OnClickEvent(buttonClickedEventCallback =>
+                                                                                {
+                                                                                    callbackResults.SetResult(buttonClickedEventCallback);
+                                                                                });
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        #endregion
+
+                                        #region Layout Panel
+
+                                        switch (GetType().GetData())
+                                        {
+                                            case UIComponentType.Options:
+
+                                                if (GetInitialVisibilityState().GetData() == UIVisibilityState.Visible)
+                                                {
+                                                    GetPanel().GetData().ShowPanel(panelShownCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(panelShownCallbackResults);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    GetPanel().GetData().HidePanel(panelHiddenCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(panelHiddenCallbackResults);
+                                                    });
+                                                }
+
+                                                break;
+
+                                            case UIComponentType.Toggle:
+
+                                                break;
+                                        }
+
+                                        #endregion
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<InputActionHandler> GetOptionToggleButton()
+            {
+                var callbackResults = new CallbackData<InputActionHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(button, "Get Button", $"Get Option Toggle Button For : {GetName()} - Failed - There Is No Button Found - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Button Button For : {GetName()} - Success - The Button Has Been Successfully Found.";
+                    callbackResults.data = button;
+                }
+                else
+                {
+                    button = this.GetComponent<InputActionHandler>();
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(button, "Get Button", $"Get Option Toggle Button For : {GetName()} - Failed - There Is No Button Found - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Button Button For : {GetName()} - Success - The Button Has Been Successfully Found.";
+                        callbackResults.data = button;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+
+                return callbackResults;
+            }
+
+            protected CallbackData<UIVisibilityState> GetInitialVisibilityState()
+            {
+                var callbackResults = new CallbackData<UIVisibilityState>(Helpers.GetAppEnumValueValid(initialVisibilityState, "Initial Visibility State", $"Get Initial Visibility State For : {GetName()} - Failed - Initial Visibility State Is Set To Default : {initialVisibilityState}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Initial Visibility State For : {GetName()} - Success - Initial Visibility State Is Set To : {initialVisibilityState}";
+                    callbackResults.data = initialVisibilityState;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected CallbackData<TabPanelComponent> GetPanel()
+            {
+                var callbackResults = new CallbackData<TabPanelComponent>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(panel, "Panel", $"Get Panel For : {GetName()} - Failed - There Is No Panel Found - Please Assign The Panel In The Unity Inspector Panel - Invalide Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Panel For : {GetName()} - Success - Panel Has Been Successfully Found.";
+                    callbackResults.data = panel;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected new CallbackData<UIComponentType> GetType()
+            {
+                var callbackResults = new CallbackData<UIComponentType>(Helpers.GetAppEnumValueValid(type, "Type", $"Get Type For : {GetName()} - Failed - Type Is Set To Default : {type}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Type For : {GetName()} - Success - Type Is Set To : {type}";
+                    callbackResults.data = type;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected abstract void OnInitialization(Action<Callback> callback = null);
+            protected abstract void OnClickEvent(Action<Callback> callback = null);
+
+            #endregion
+        }
+
+        #endregion
 
         [Serializable]
         public abstract class SettingsWidget : AppMonoBaseClass, ISettingsWidget
