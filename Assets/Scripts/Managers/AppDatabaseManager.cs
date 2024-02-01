@@ -3948,6 +3948,12 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized.").GetData();
 
+                                                                    postManagerInstance.AddPostWidgets(postsAddedCallbackResults => 
+                                                                    {
+                                                                        callbackResults.SetResult(postsAddedCallbackResults);
+                                                                    
+                                                                    }, widgetsLoadTaskCallbacResults.GetData());
+
                                                                     //refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
                                                                     //AppData.ActionEvents.OnPostsInitializationCompletedEvent();
                                                                 }

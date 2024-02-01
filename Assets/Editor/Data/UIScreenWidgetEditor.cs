@@ -23,7 +23,9 @@ namespace Com.RedicalGames.Filar
                                   inputSliderComponentConfigProperty,
                                   sliderComponentConfigProperty,
                                   checkboxComponentConfigProperty,
-                                  dropdownComponentConfigProperty;
+                                  dropdownComponentConfigProperty,
+                                  optionComponentConfigProperty,
+                                  toggleComponentConfigProperty;
 
 
         #endregion
@@ -62,6 +64,8 @@ namespace Com.RedicalGames.Filar
             sliderComponentConfigProperty = serializedObject.FindProperty("sliderComponentConfig");
             checkboxComponentConfigProperty = serializedObject.FindProperty("checkboxComponentConfig");
             dropdownComponentConfigProperty = serializedObject.FindProperty("dropdownComponentConfig");
+            optionComponentConfigProperty = serializedObject.FindProperty("optionComponentConfig");
+            toggleComponentConfigProperty = serializedObject.FindProperty("toggleComponentConfig");
 
             #endregion
 
@@ -139,6 +143,19 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
+                    case AppData.InputType.Option:
+
+                        GUILayout.Space(2);
+                        EditorGUILayout.PropertyField(optionComponentConfigProperty, new GUIContent("Config"));
+
+                        break;
+
+                    case AppData.InputType.Toggle:
+
+                        GUILayout.Space(2);
+                        EditorGUILayout.PropertyField(toggleComponentConfigProperty, new GUIContent("Config"));
+
+                        break;
 
                     case AppData.InputType.Text:
 
@@ -151,9 +168,6 @@ namespace Com.RedicalGames.Filar
 
                         GUILayout.Space(2);
                         EditorGUILayout.PropertyField(imageDisplayerComponentConfigProperty, new GUIContent("Config"));
-
-                        GUILayout.Space(2);
-                        EditorGUILayout.PropertyField(imageDisplayerTransitionConfigProperty, new GUIContent("Image Transition Mounts"));
 
                         break;
                 }

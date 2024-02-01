@@ -1128,11 +1128,11 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataList<AppData.Post>> CreateUIScreenPostWidgetAsync(AppData.ScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataArray<AppData.SelectableWidget>> CreateUIScreenPostWidgetAsync(AppData.ScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
-                AppData.CallbackDataList<AppData.Post> callbackResults = new AppData.CallbackDataList<AppData.Post>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                var callbackResults = new AppData.CallbackDataArray<AppData.SelectableWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -1168,9 +1168,9 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var widgetPrefab = AppData.Helpers.UnityComponentValid(postWidget, "Post Widget Prefab Value").GetData();
 
-                                            List<AppData.Post> postDatas = new List<AppData.Post>();
+                                            List<AppData.SelectableWidget> loadedPostWidgetList = new List<AppData.SelectableWidget>();
 
-                                            callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(postDatas, posts));
+                                            callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(loadedPostWidgetList, posts));
 
                                             foreach (var post in posts)
                                             {
@@ -1196,7 +1196,8 @@ namespace Com.RedicalGames.Filar
 
                                                             callbackResults.SetResult(addContentAsyncTaskResults);
 
-                                                            postDatas.Add(post);
+                                                            if(!loadedPostWidgetList.Contains(widgetComponent))
+                                                                 loadedPostWidgetList.Add(widgetComponent);
 
                                                             callbackResults.result = $"Post Widget : { widgetComponent.name} Created.";
                                                         }
@@ -1216,7 +1217,7 @@ namespace Com.RedicalGames.Filar
                                                 await Task.Yield();
 
                                             callbackResults.result = "Posts Widgets Loaded.";
-                                            callbackResults.data = postDatas;
+                                            callbackResults.data = AppData.Helpers.GetArray(loadedPostWidgetList);
                                             callbackResults.resultCode = AppData.Helpers.SuccessCode;
                                         }
                                         else

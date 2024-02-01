@@ -33,6 +33,8 @@ namespace Com.RedicalGames.Filar
         public AppData.UISlider<AppData.SliderConfigDataPacket> sliderComponentConfig;
         public AppData.UICheckbox<AppData.CheckboxConfigDataPacket> checkboxComponentConfig;
         public AppData.UIDropDown<AppData.DropdownConfigDataPacket> dropdownComponentConfig;
+        public AppData.UIOption<AppData.OptionConfigDataPacket> optionComponentConfig;
+        public AppData.UIToggle<AppData.ToggleConfigDataPacket> toggleComponentConfig;
 
         #endregion
 
@@ -46,8 +48,6 @@ namespace Com.RedicalGames.Filar
         #region Transitions
 
         public List<AppData.TransitionableUIMountComponent<AppData.UIMountType>> transitionableUIMounts = new List<AppData.TransitionableUIMountComponent<AppData.UIMountType>>();
-
-        public bool CanTransition { get; private set; }
 
         #endregion
 
@@ -121,6 +121,28 @@ namespace Com.RedicalGames.Filar
                 case AppData.InputType.Checkbox:
 
                     GetInputDataPacket<AppData.CheckboxConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.Option:
+
+                    GetInputDataPacket<AppData.OptionConfigDataPacket>(inputCallbackResults =>
+                    {
+                        callbackResults.data = inputCallbackResults.data as T;
+                        callbackResults.result = inputCallbackResults.result;
+                        callbackResults.resultCode = inputCallbackResults.resultCode;
+                    });
+
+                    break;
+
+                case AppData.InputType.Toggle:
+
+                    GetInputDataPacket<AppData.ToggleConfigDataPacket>(inputCallbackResults =>
                     {
                         callbackResults.data = inputCallbackResults.data as T;
                         callbackResults.result = inputCallbackResults.result;
@@ -286,6 +308,40 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
+                    case AppData.InputType.Option:
+
+                        if (optionComponentConfig != null && optionComponentConfig.value != null)
+                        {
+                            callbackResults.result = (optionComponentConfig.value) ? $"Action Name : {textComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {optionComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = optionComponentConfig.dataPackets as T;
+                            callbackResults.resultCode = (optionComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Option Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+
+                        break;
+
+                    case AppData.InputType.Toggle:
+
+                        if (toggleComponentConfig != null && toggleComponentConfig.value != null)
+                        {
+                            callbackResults.result = (toggleComponentConfig.value) ? $"Action Name : {toggleComponentConfig.name} - Input Type Is Set To {inputType} Successfully" : $"Action Name : {toggleComponentConfig.name} - Input Type Is Set To {inputType} But Value Is Missing.";
+                            callbackResults.data = toggleComponentConfig.dataPackets as T;
+                            callbackResults.resultCode = (toggleComponentConfig.value) ? AppData.Helpers.SuccessCode : AppData.Helpers.ErrorCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Toggle Component Is Missing / Null / Not Found.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        }
+
+                        break;
+
                     case AppData.InputType.Text:
 
                         if (textComponentConfig != null && textComponentConfig.value != null)
@@ -370,6 +426,18 @@ namespace Com.RedicalGames.Filar
                 case AppData.InputType.DropDown:
 
                     hasComponent = dropdownComponentConfig != null && dropdownComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.Option:
+
+                    hasComponent = optionComponentConfig != null && optionComponentConfig.value != null;
+
+                    break;
+
+                case AppData.InputType.Toggle:
+
+                    hasComponent = toggleComponentConfig != null && toggleComponentConfig.value != null;
 
                     break;
 
@@ -527,6 +595,34 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public AppData.CallbackData<AppData.UIOption<AppData.OptionConfigDataPacket>> GetOptionComponent()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.UIOption<AppData.OptionConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(optionComponentConfig, "Option Component Config",
+             $"Option Component Config Not found For : {GetName()} - Invalid Operation.",
+             $"Option Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = optionComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<AppData.UIToggle<AppData.ToggleConfigDataPacket>> GetToggleComponent()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.UIToggle<AppData.ToggleConfigDataPacket>>(AppData.Helpers.GetAppComponentValid(toggleComponentConfig, "Toggle Component Config",
+             $"Toggle Component Config Not found For : {GetName()} - Invalid Operation.",
+             $"Toggle Component Has Been Successfully Found For : {GetName()}"));
+
+            if (callbackResults.Success())
+                callbackResults.data = toggleComponentConfig;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
         #endregion
 
         #region Get Displayer Components
@@ -560,7 +656,6 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
-
 
         #region Transitionable UI Mounts
 
