@@ -16,7 +16,19 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 9976cce07f6df344c8f04fb59e4821ca
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 0429f167351c95b4e9f6668a836d934a
+    m_Address: Project Creation Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4910e6b54fc64a547afb61636d8858a0
+    m_Address: Project Hub Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

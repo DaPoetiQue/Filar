@@ -14,7 +14,7 @@ namespace Com.RedicalGames.Filar
         private List<ScenePostContentHandler> postsContents = new List<ScenePostContentHandler>();
 
         [SerializeField]
-        private List<AppData.SelectableWidget> postWidgets = new List<AppData.SelectableWidget>();
+        private List<UIScreenPostViewWidget> postWidgets = new List<UIScreenPostViewWidget>();
 
         public bool HasPost { get; private set; }
 
@@ -264,7 +264,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void AddPostWidget(AppData.SelectableWidget postWidget, Action<AppData.Callback> callback = null)
+        public void AddPostWidget(UIScreenPostViewWidget postWidget, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(postWidget, "Post Widget", "Add Post Widget Failed - Post Widget Parameter Value Is Null -Invalid operation."));
 
@@ -297,7 +297,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void AddPostWidgets(Action<AppData.Callback> callback = null, params AppData.SelectableWidget[] postWidgetsParam)
+        public void AddPostWidgets(Action<AppData.Callback> callback = null, params UIScreenPostViewWidget[] postWidgetsParam)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(postWidgetsParam, "Post Widgets", "Add Post Widgets Failed - Post Widgets Param Value Is Null -Invalid operation."));
 
@@ -333,7 +333,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void RemovePostWidget(AppData.SelectableWidget postWidget, Action<AppData.Callback> callback = null)
+        public void RemovePostWidget(UIScreenPostViewWidget postWidget, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(GetPostWidgets());
 
@@ -373,7 +373,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void RemovePostWidgets(Action<AppData.Callback> callback = null, params AppData.SelectableWidget[] postWidgets)
+        public void RemovePostWidgets(Action<AppData.Callback> callback = null, params UIScreenPostViewWidget[] postWidgets)
         {
             var callbackResults = new AppData.Callback(GetPostWidgets());
 
@@ -519,13 +519,13 @@ namespace Com.RedicalGames.Filar
         }
 
 
-        public AppData.CallbackData<AppData.SelectableWidget> GetPostWidget(AppData.Post post)
+        public AppData.CallbackData<UIScreenPostViewWidget> GetPostWidget(AppData.Post post)
         {
-            var callbackResults = new AppData.CallbackData<AppData.SelectableWidget>(GetPostWidgets());
+            var callbackResults = new AppData.CallbackData<UIScreenPostViewWidget>(GetPostWidgets());
 
             if(callbackResults.Success())
             {
-                var postWidget = GetPostWidgets().GetData().Find(postWidget => postWidget.GetName() == post.GetName());
+                var postWidget = GetPostWidgets().GetData().Find(postWidget => postWidget.GetPost().GetData() == post);
 
                 callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(postWidget, "Post Widget", $"Failed To Find Post Widget For :{post.GetName()} - Invalid Operation."));
 
@@ -543,9 +543,9 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.CallbackDataList<AppData.SelectableWidget> GetPostWidgets()
+        public AppData.CallbackDataList<UIScreenPostViewWidget> GetPostWidgets()
         {
-            var callbackResults = new AppData.CallbackDataList<AppData.SelectableWidget>();
+            var callbackResults = new AppData.CallbackDataList<UIScreenPostViewWidget>();
 
             callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(postWidgets, "Post Widgets", "Get Post Widgets Failed - There Are No Post Widgets Found - Invalid Operation."));
 

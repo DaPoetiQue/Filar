@@ -48,7 +48,10 @@ namespace Com.RedicalGames.Filar
                             confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
                             confirmationWidgetConfig.blurScreen = true;
 
-                            screen.ShowWidget(confirmationWidgetConfig);
+                            //screen.ShowWidget(confirmationWidgetConfig);
+
+                            // If Cant Show Pop Uo - Go Directly To Screen.
+                            GoToProjectHub();
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -57,6 +60,27 @@ namespace Com.RedicalGames.Filar
                     break;
             }
         }
+
+
+        private void GoToProjectHub()
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var loadingManagerInstance = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+
+                loadingManagerInstance.LoadSelectedScreen(AppData.ScreenType.ProjectCreationScreen, loadedScreenCallbackResults => 
+                {
+                    callbackResults.SetResult(loadedScreenCallbackResults);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {

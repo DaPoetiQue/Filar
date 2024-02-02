@@ -3953,9 +3953,6 @@ namespace Com.RedicalGames.Filar
                                                                         callbackResults.SetResult(postsAddedCallbackResults);
                                                                     
                                                                     }, widgetsLoadTaskCallbacResults.GetData());
-
-                                                                    //refreshedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-                                                                    //AppData.ActionEvents.OnPostsInitializationCompletedEvent();
                                                                 }
                                                             }
 
@@ -8893,13 +8890,15 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackData<AppData.ScreenLoadInfoInstance> GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType screenType)
         {
-            AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
+            AppData.CallbackData<AppData.ScreenLoadInfoInstance> callbackResults = new AppData.CallbackData<AppData.ScreenLoadInfoInstance>();
+
+            callbackResults.SetResult(GetScreenLoadInfoInstanceLibrary().LibraryInitialized());
 
             if (callbackResults.Success())
             {
                 GetScreenLoadInfoInstanceLibrary().GetScreenLoadInfoInstance(screenType, screenLoadInfoCallbackResults =>
                 {
-                    callbackResults.SetResults(screenLoadInfoCallbackResults);
+                    callbackResults.SetResultsData(screenLoadInfoCallbackResults);
                 });
             }
 
@@ -8914,7 +8913,7 @@ namespace Com.RedicalGames.Filar
             {
                 GetScreenLoadInfoInstanceLibrary().GetInitialScreenLoadInfoInstance(screenLoadInfoCallbackResults =>
                 {
-                    callbackResults.SetResults(screenLoadInfoCallbackResults);
+                    callbackResults.SetResultsData(screenLoadInfoCallbackResults);
                 });
             }
 

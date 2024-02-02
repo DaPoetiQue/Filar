@@ -5,10 +5,6 @@ namespace Com.RedicalGames.Filar
 {
     public class UIScreenPostViewWidget : AppData.SelectableWidget
     {
-        #region Components
-
-        #endregion
-
         #region Main
 
         protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>>> callback)
@@ -24,6 +20,41 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        #region Post Data
+
+        private void SetPost(AppData.Post post, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(post, "Post", $"Set Post Failed - Post Parameter Value For : {GetName()} - Of Type : {GetType().GetData()} Is Not Assigned - Invalid Operation"));
+
+            if(callbackResults.Success())
+            {
+                this.post = post;
+                callbackResults.result = $"Set Post Success - Post Value For : {GetName()} - Of Type : {GetType().GetData()} Is Assigned Post : {post.GetName()}.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.Post> GetPost()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.Post>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(post, "Post", $"Get Post Failed - Post Value For : {GetName()} - Of Type : {GetType().GetData()} Is Not Assigned - Invalid Operation"));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Post Success - Post Value For : {GetName()} - Of Type : {GetType().GetData()} Is Assigned.";
+                callbackResults.data = post;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        #endregion
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>> OnGetState()
         {
@@ -78,119 +109,80 @@ namespace Com.RedicalGames.Filar
         {
             var callbackResults = new AppData.Callback();
 
-            #region Thumbnail
-
-            callbackResults.SetResult(GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail));
-
-            if(callbackResults.Success())
-                SetUIImageDisplayerValue(post.GetPostThumbnail(), AppData.ScreenImageType.Thumbnail);
-
-            #endregion
-
-            #region Post Title
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, post.GetTitle(), postTitleSetCallbackResults => 
+            SetPost(post, postSetCallbackResults => 
             {
-                callbackResults.SetResult(postTitleSetCallbackResults);       
+                callbackResults.SetResult(postSetCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    #region Thumbnail
+
+                    callbackResults.SetResult(GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail));
+
+                    if (callbackResults.Success())
+                        SetUIImageDisplayerValue(post.GetPostThumbnail(), AppData.ScreenImageType.Thumbnail);
+
+                    #endregion
+
+                    #region Post Title
+
+                    SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, post.GetTitle(), postTitleSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(postTitleSetCallbackResults);
+                    });
+
+                    #endregion
+
+                    #region Post Caption
+
+                    SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, post.GetCaption(), postCaptionSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(postCaptionSetCallbackResults);
+                    });
+
+                    #endregion
+
+                    #region Post Date Time
+
+                    var postCreationDateTime = AppData.Helpers.GetElapsedTime(new AppData.DateTimeComponent(new DateTime(post.creationDateTime)));
+
+                    SetUITextDisplayerValue(AppData.ScreenTextType.DateTimeDisplayer, postCreationDateTime, postDateTimeSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(postDateTimeSetCallbackResults);
+                    });
+
+                    #endregion
+
+                    #region Post Likes Count Displayer
+
+                    SetUITextDisplayerValue(AppData.ScreenTextType.PostLikeCountDisplayer, "24", postLikesCountSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(postLikesCountSetCallbackResults);
+                    });
+
+                    #endregion
+
+                    #region Post Dislikes Count Displayer
+
+                    SetUITextDisplayerValue(AppData.ScreenTextType.PostDislikeCountDisplayer, "2", postDislikesCountSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(postDislikesCountSetCallbackResults);
+                    });
+
+                    #endregion
+
+                    #region Post Comments Count Displayer
+
+                    SetUITextDisplayerValue(AppData.ScreenTextType.PostCommentsCountDisplayer, "8", postCommentsCountSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(postCommentsCountSetCallbackResults);
+                    });
+
+                    #endregion
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             });
-
-            #endregion
-
-            #region Post Caption
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, post.GetCaption(), postCaptionSetCallbackResults => 
-            {
-                callbackResults.SetResult(postCaptionSetCallbackResults);
-            });
-
-            #endregion
-
-            #region Post Date Time
-
-            var postCreationDateTime = AppData.Helpers.GetElapsedTime(new AppData.DateTimeComponent(new DateTime(post.creationDateTime)));
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.DateTimeDisplayer, postCreationDateTime, postDateTimeSetCallbackResults => 
-            {
-                callbackResults.SetResult(postDateTimeSetCallbackResults);
-            });
-
-            #endregion
-
-            #region Post Likes Count Displayer
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.PostLikeCountDisplayer, "24", postLikesCountSetCallbackResults =>
-            {
-                callbackResults.SetResult(postLikesCountSetCallbackResults);
-            });
-
-            #endregion
-
-            #region Post Dislikes Count Displayer
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.PostDislikeCountDisplayer, "2", postDislikesCountSetCallbackResults =>
-            {
-                callbackResults.SetResult(postDislikesCountSetCallbackResults);
-            });
-
-            #endregion
-
-            #region Post Comments Count Displayer
-
-            SetUITextDisplayerValue(AppData.ScreenTextType.PostCommentsCountDisplayer, "8", postCommentsCountSetCallbackResults =>
-            {
-                callbackResults.SetResult(postCommentsCountSetCallbackResults);
-            });
-
-            #endregion
-
-            //#region Thumbnail
-
-            ////AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults =>
-            ////{
-            ////    if (appDatabaseManagerCallbackResults.Success())
-            ////    {
-            ////        var appDatabaseManager = appDatabaseManagerCallbackResults.data;
-
-            ////        LogSuccess($" +++=================>>>>>>>>>> Get Post Results : {appDatabaseManager.GetPostContent(post).Result}", this);
-
-            ////        //if (appDatabaseManager.GetPostContent(post).Success())
-            ////        //{
-            ////        //    LogSuccess($" +++=================>>>>>>>>>> Thumbnail Results : {appDatabaseManager.GetPostContent(post).Result}", this);
-            ////        //}
-            ////        //else
-            ////        //    Log(appDatabaseManager.GetPostContent(post).ResultCode, appDatabaseManager.GetPostContent(post).Result, this);
-            ////    }
-            ////    else
-            ////        Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
-            ////});
-
-
-            //if (post.ThumbnailAssigned())
-            //{
-            //    GetUIImageDisplayer(AppData.ScreenImageType.Thumbnail, thumbnailCallbackResults =>
-            //    {
-            //        if (thumbnailCallbackResults.Success())
-            //            SetUIImageDisplayerValue(post.GetTexture2DThumbnail(thumbnailCallbackResults.data.mainTexture.width, thumbnailCallbackResults.data.mainTexture.width), AppData.ScreenImageType.Thumbnail);
-            //        else
-            //            Log(thumbnailCallbackResults.ResultCode, thumbnailCallbackResults.Result, this);
-            //    });
-            //}
-            //else
-            //{
-            //    AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, appDatabaseManagerCallbackResults => 
-            //    {
-            //        if(appDatabaseManagerCallbackResults.Success())
-            //        {
-            //            var appDatabaseManager = appDatabaseManagerCallbackResults.data;
-            //            SetUIImageDisplayerValue(appDatabaseManager.GetImageFromLibrary(AppData.UIImageType.ImagePlaceholder).value, AppData.ScreenImageType.Thumbnail);
-            //        }
-            //        else
-            //            Log(appDatabaseManagerCallbackResults.ResultCode, appDatabaseManagerCallbackResults.Result, this);
-
-            //    },  "App Database Manager Is Not Yet Initialized.");
-            //}
-
-            //#endregion
         }
 
         protected override void OnScreenWidgetShownEvent()

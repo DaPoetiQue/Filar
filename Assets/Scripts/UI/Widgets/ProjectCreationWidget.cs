@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class CreateNewProjectWidget : AppData.Widget
+    public class ProjectCreationWidget : AppData.Widget
     {
         #region Components
 
@@ -374,32 +374,32 @@ namespace Com.RedicalGames.Filar
 
         protected override void ScrollerPosition(Vector2 position)
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnScreenWidgetShownEvent()
         {
-            throw new NotImplementedException();
+         
         }
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
         {
-            throw new NotImplementedException();
+          
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
-            throw new NotImplementedException();
+          
         }
 
         #endregion

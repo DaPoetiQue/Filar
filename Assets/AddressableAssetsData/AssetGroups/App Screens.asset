@@ -35,6 +35,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c6485e6e662c4f479b748854faee896
+    m_Address: Project Creation Screen
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

@@ -1128,11 +1128,11 @@ namespace Com.RedicalGames.Filar
 
         #region Screen UI Widgets Creation
 
-        public async Task<AppData.CallbackDataArray<AppData.SelectableWidget>> CreateUIScreenPostWidgetAsync(AppData.ScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
+        public async Task<AppData.CallbackDataArray<UIScreenPostViewWidget>> CreateUIScreenPostWidgetAsync(AppData.ScreenType screenType, List<AppData.Post> posts, DynamicWidgetsContainer screenContentContainer)
         {
             try
             {
-                var callbackResults = new AppData.CallbackDataArray<AppData.SelectableWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
+                var callbackResults = new AppData.CallbackDataArray<UIScreenPostViewWidget>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
                 {
@@ -1168,7 +1168,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var widgetPrefab = AppData.Helpers.UnityComponentValid(postWidget, "Post Widget Prefab Value").GetData();
 
-                                            List<AppData.SelectableWidget> loadedPostWidgetList = new List<AppData.SelectableWidget>();
+                                            var loadedPostWidgetList = new List<UIScreenPostViewWidget>();
 
                                             callbackResults.SetResult(AppData.Helpers.ListComponentHasEqualDataSize(loadedPostWidgetList, posts));
 
@@ -1196,8 +1196,10 @@ namespace Com.RedicalGames.Filar
 
                                                             callbackResults.SetResult(addContentAsyncTaskResults);
 
-                                                            if(!loadedPostWidgetList.Contains(widgetComponent))
-                                                                 loadedPostWidgetList.Add(widgetComponent);
+                                                            var postWidget = widgetComponent as UIScreenPostViewWidget;
+
+                                                            if (!loadedPostWidgetList.Contains(postWidget))
+                                                                 loadedPostWidgetList.Add(postWidget);
 
                                                             callbackResults.result = $"Post Widget : { widgetComponent.name} Created.";
                                                         }

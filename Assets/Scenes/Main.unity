@@ -4283,6 +4283,7 @@ MonoBehaviour:
         actionButtonsList:
         - name: Close Widget Button
           selectionStatesInfo:
+            name: 
             states:
             - name: Normal
               value: {fileID: 0}
@@ -4464,7 +4465,6 @@ MonoBehaviour:
             toggleWidgets: []
             textWidgets: []
             imageWidgets: []
-          initialVisibilityState: 0
         actionDropDownList: []
         tabType: 2
         initialVisibilityState: 0
@@ -4474,6 +4474,7 @@ MonoBehaviour:
         actionButtonsList:
         - name: Close Widget Button
           selectionStatesInfo:
+            name: 
             states:
             - name: Normal
               value: {fileID: 0}
@@ -4655,7 +4656,6 @@ MonoBehaviour:
             toggleWidgets: []
             textWidgets: []
             imageWidgets: []
-          initialVisibilityState: 0
         actionDropDownList: []
         tabType: 1
         initialVisibilityState: 0
@@ -4663,6 +4663,7 @@ MonoBehaviour:
       actionButtonsList:
       - name: Create Skybox Button
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -4844,9 +4845,9 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
       - name: Edit Custom Skybox Button
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -5028,9 +5029,9 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
       - name: Color Picker Button
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -5212,10 +5213,10 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
       actionSlidersList:
       - name: Light Intensity Slider
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -5396,11 +5397,11 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
         initialMaxValue: 0
         valueType: 5
       - name: Skybox Exposure Slider
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -5581,11 +5582,11 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
         initialMaxValue: 0
         valueType: 6
       - name: Skybox Rotation Slider
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -5766,7 +5767,6 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
         initialMaxValue: 0
         valueType: 7
       initialVisibilityState: 1
@@ -5783,6 +5783,7 @@ MonoBehaviour:
         actionButtonsList:
         - name: Confirm Button
           selectionStatesInfo:
+            name: 
             states:
             - name: Normal
               value: {fileID: 0}
@@ -5964,9 +5965,9 @@ MonoBehaviour:
             toggleWidgets: []
             textWidgets: []
             imageWidgets: []
-          initialVisibilityState: 0
         - name: Cancel Button
           selectionStatesInfo:
+            name: 
             states:
             - name: Normal
               value: {fileID: 0}
@@ -6148,10 +6149,10 @@ MonoBehaviour:
             toggleWidgets: []
             textWidgets: []
             imageWidgets: []
-          initialVisibilityState: 0
         actionDropDownList:
         - name: Profile Type Selection
           selectionStatesInfo:
+            name: 
             states:
             - name: Normal
               value: {fileID: 0}
@@ -6330,7 +6331,6 @@ MonoBehaviour:
             toggleWidgets: []
             textWidgets: []
             imageWidgets: []
-          initialVisibilityState: 0
           arrowIcon: {fileID: 0}
         tabType: 0
         initialVisibilityState: 0
@@ -6338,6 +6338,7 @@ MonoBehaviour:
       actionButtonsList:
       - name: Create New Profile Button
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -6519,9 +6520,9 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
       - name: Duplicate Profile Button
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -6703,9 +6704,9 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
       - name: Clear All Profiles Button
         selectionStatesInfo:
+          name: 
           states:
           - name: Normal
             value: {fileID: 0}
@@ -6887,7 +6888,6 @@ MonoBehaviour:
           toggleWidgets: []
           textWidgets: []
           imageWidgets: []
-        initialVisibilityState: 0
       actionSlidersList: []
       initialVisibilityState: 0
       hasSubNavigationTabs: 1
@@ -9656,6 +9656,7 @@ MonoBehaviour:
   exportedAssetNameInputField:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -9831,7 +9832,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -9840,6 +9840,7 @@ MonoBehaviour:
   exportExtensionDropDown:
     name: Extension Types Dropdown
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -10018,7 +10019,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
 --- !u!1 &960794595
 GameObject:
@@ -11572,6 +11572,7 @@ MonoBehaviour:
   xRotationInputField:
     name: X Rotation Property Field
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -11750,7 +11751,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -11759,6 +11759,7 @@ MonoBehaviour:
   yRotationInputField:
     name: Y Rotation Property Field
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -11937,7 +11938,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -11946,6 +11946,7 @@ MonoBehaviour:
   zRotationInputField:
     name: Z Rotation Property Field
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -12124,7 +12125,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -13567,6 +13567,7 @@ MonoBehaviour:
   imageDisplayer:
     name: Snapshot Displayer
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -13748,7 +13749,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
 --- !u!1 &1395046590
 GameObject:
   m_ObjectHideFlags: 0
@@ -16283,6 +16283,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  postWidgets: []
 --- !u!1 &1892024579
 GameObject:
   m_ObjectHideFlags: 0
@@ -18341,6 +18342,19 @@ MonoBehaviour:
       - name: App Sign in Sequence
         sequenceID: 4
       initialScreen: 1
+      runtimeInstanceInfoList:
+      - name: Initial Screen Exit Deyal Instance
+        runtimeReference: 29
+      referencedScreen: {fileID: 0}
+    - name: Project Hub Screen Info Instance
+      screenConfigDataPacket:
+        name: Project Hub Screen
+        type: 6
+        loadTransitionType: 1
+      sequences:
+      - name: Tips 00 1
+        sequenceID: 0
+      initialScreen: 0
       runtimeInstanceInfoList:
       - name: Initial Screen Exit Deyal Instance
         runtimeReference: 29
