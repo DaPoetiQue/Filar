@@ -357,7 +357,96 @@ namespace Com.RedicalGames.Filar
 
                                                 if(callbackResults.Success())
                                                 {
+                                                    await Task.Delay(1000);
 
+                                                    if (screenLoadInfoInstance.HasSequenceInstances())
+                                                    {
+                                                        #region Staging Sequences
+
+                                                        GetLoadingSequence().StageSequence(async sequencesStagedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(sequencesStagedCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                await GetLoadingSequence().Process(loadingSequenceCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(loadingSequenceCallbackResults);
+
+                                                                    if (!callbackResults.Success())
+                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.resultCode, callbackResults.result, this);
+
+                                                        }, screenLoadInfoInstance.GetSequenceInstanceArray());
+
+                                                        #endregion
+
+                                                        #region Processing Loading Sequence
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var showScreenCallbackResultsTask = await screenUIManager.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.GetData());
+
+                                                            callbackResults.SetResult(showScreenCallbackResultsTask);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                callbackResults.SetResult(screenUIManager.GetCurrentScreen());
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var screen = screenUIManager.GetCurrentScreen().GetData();
+
+                                                                    screenLoadInfoInstance.SetReferencedScreen(screen);
+
+                                                                    while (GetLoadingSequence().IsRunning())
+                                                                        await Task.Yield();
+
+                                                                    callbackResults.SetResult(screenLoadInfoInstance.GetReferencedScreen());
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().GetData();
+
+                                                                        AppData.ActionEvents.OnInitializationCompletedEvent();
+
+                                                                        referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                                                        await screenUIManager.HideScreenAsync(loadingScreenDataPacketsCallbackResults.GetData());
+
+                                                                        int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
+                                                                        await Task.Delay(loadingScreenExitDelay);
+
+                                                                        callbackResults.SetResult(screenLoadInfoInstance.GetReferencedScreen());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
+                                                                            await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                            }
+                                                            else
+                                                                Log(callbackResults.resultCode, callbackResults.result, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.resultCode, callbackResults.result, this);
+
+                                                        #endregion
+
+                                                    }
+                                                    else
+                                                        LogWarning("Initial Load Screen Sequence Data Missing / Not Found.", this);
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -370,69 +459,6 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                    //if (callbackResults.Success())
-                                    //{
-                                    //    if (screenLoadInfoInstance.HasSequenceInstances())
-                                    //    {
-                                    //        #region Staging Sequences
-
-                                    //        GetLoadingSequence().StageSequence(async sequencesStagedCallbackResults =>
-                                    //        {
-                                    //            callbackResults.SetResult(sequencesStagedCallbackResults);
-
-                                    //            if (callbackResults.Success())
-                                    //            {
-                                    //                await GetLoadingSequence().Process(loadingSequenceCallbackResults =>
-                                    //                {
-                                    //                    callbackResults.SetResult(loadingSequenceCallbackResults);
-
-                                    //                    if (!callbackResults.Success())
-                                    //                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                    //                });
-                                    //            }
-
-                                    //        }, screenLoadInfoInstance.GetSequenceInstanceArray());
-
-                                    //        #endregion
-
-                                    //        #region Processing Loading Sequence
-
-                                    //        if (callbackResults.Success())
-                                    //        {
-                                    //            await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
-
-                                    //            while (GetLoadingSequence().IsRunning())
-                                    //                await Task.Yield();
-
-                                    //            var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
-
-                                    //            AppData.ActionEvents.OnInitializationCompletedEvent();
-
-                                    //            referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
-
-                                    //            await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
-
-                                    //            int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
-                                    //            await Task.Delay(loadingScreenExitDelay);
-
-                                    //            callbackResults.SetResult(screenLoadInfoInstance.GetReferencedScreen());
-
-                                    //            if (callbackResults.Success())
-                                    //            {
-                                    //                referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
-                                    //                await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
-                                    //            }
-                                    //        }
-                                    //        else
-                                    //            Log(callbackResults.resultCode, callbackResults.result, this);
-
-                                    //        #endregion
-
-                                    //    }
-                                    //    else
-                                    //        LogWarning("Initial Load Screen Sequence Data Missing / Not Found.", this);
-                                    //}
                                 }
                             }
                         }

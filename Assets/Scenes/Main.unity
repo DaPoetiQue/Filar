@@ -18353,7 +18353,9 @@ MonoBehaviour:
         loadTransitionType: 1
       sequences:
       - name: Tips 00 1
-        sequenceID: 0
+        sequenceID: 1
+      - name: Tips 00 2
+        sequenceID: 3
       initialScreen: 0
       runtimeInstanceInfoList:
       - name: Initial Screen Exit Deyal Instance

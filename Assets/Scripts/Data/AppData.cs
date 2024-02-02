@@ -51,6 +51,13 @@ namespace Com.RedicalGames.Filar
             HDRI
         }
 
+        public enum LoadState
+        {
+            None,
+            Config,
+            Default
+        }
+
         public enum TabViewType
         {
             None,
