@@ -30735,6 +30735,21 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public async Task<Callback> HideScreenWidgetAsync(Widget widget)
+            {
+                Callback callbackResults = new Callback(Helpers.GetAppComponentValid(widget, "Widget", "Hide Screen Widget Async Failed - Widget Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                return callbackResults;
+            }
+
             public void HideScreenWidget(Widget widget, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetWidgets());
@@ -40544,6 +40559,8 @@ namespace Com.RedicalGames.Filar
             public CallbackData<Widget> GetParentWidget()
             {
                 var callbackResults = new CallbackData<Widget>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(parentWidget, "Parent Widget", "Get Parent Widget Failed - Parent Widget Is Not Assigned - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {

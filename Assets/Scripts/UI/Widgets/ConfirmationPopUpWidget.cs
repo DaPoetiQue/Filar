@@ -22,6 +22,12 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         bool snapToSelection = false;
 
+        #region Events
+
+        private Action onCOnfirmActionEvent, onCancelActionEvent;
+
+        #endregion
+
         #endregion
 
         #region Main
@@ -305,6 +311,77 @@ namespace Com.RedicalGames.Filar
            
         }
 
+        public void RegisterOnConfirmEvent(Action eventMethod, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Register On Confirm Event Failed For : {GetName()} - Event Method Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                onCOnfirmActionEvent += eventMethod.Invoke;
+                callbackResults.result = $"Event Method : {eventMethod.Method.Name} Has Been Registered Successfully To On Confirm Action.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void RegisterOnCancelEvent(Action eventMethod, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Register On Cancel Event Failed For : {GetName()} - Event Method Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                onCancelActionEvent += eventMethod.Invoke;
+                callbackResults.result = $"Event Method : {eventMethod.Method.Name} Has Been Registered Successfully To On Cancel Action.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+
+        public void UnRegisterOnConfirmEvent(Action eventMethod, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Un-Register On Confirm Event Failed For : {GetName()} - Event Method Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                onCOnfirmActionEvent -= eventMethod.Invoke;
+                callbackResults.result = $"Event Method : {eventMethod.Method.Name} Has Been Un-Registered Successfully From On Confirm Action.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void UnRegisterOnCancelEvent(Action eventMethod, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", $"Un-Register On Cancel Event Failed For : {GetName()} - Event Method Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                onCancelActionEvent -= eventMethod.Invoke;
+                callbackResults.result = $"Event Method : {eventMethod.Method.Name} Has Been Un-Registered Successfully From On Cancel Action.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+
+            callback?.Invoke(callbackResults);
+        }
+
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
             throw new System.NotImplementedException();
@@ -333,7 +410,6 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-
                 callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
                 if (callbackResults.Success())
@@ -350,12 +426,15 @@ namespace Com.RedicalGames.Filar
                         {
                             case AppData.InputActionButtonType.ConfirmationButton:
 
+                                screen.HideScreenWidget(this);
+                                onCOnfirmActionEvent?.Invoke();
 
                                 break;
 
                             case AppData.InputActionButtonType.Cancel:
 
                                 screen.HideScreenWidget(this);
+                                onCancelActionEvent?.Invoke();
 
                                 break;
                         }

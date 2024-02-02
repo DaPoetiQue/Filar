@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -43,42 +44,137 @@ namespace Com.RedicalGames.Filar
                         {
                             var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+                            callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget));
 
-                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
-                            confirmationWidgetConfig.blurScreen = true;
+                            if (callbackResults.Success())
+                            {
+                                var confirmationWidget = screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget).GetData() as ConfirmationPopUpWidget;
 
-                            //screen.ShowWidget(confirmationWidgetConfig);
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(confirmationWidget, "Confirmation Widget", "Failed To Get Confirmation Widget - Invalid Operation."));
 
-                            // If Cant Show Pop Uo - Go Directly To Screen.
-                            GoToProjectHub();
+                                if(callbackResults.Success())
+                                {
+                                    confirmationWidget.RegisterOnConfirmEvent(GoToProjectHub, onConfirmRegisteredCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                                            confirmationWidgetConfig.blurScreen = true;
+
+                                            screen.ShowWidget(confirmationWidgetConfig);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                     break;
             }
         }
 
 
-        private void GoToProjectHub()
+        private async void GoToProjectHub()
         {
             var callbackResults = new AppData.Callback();
 
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var loadingManagerInstance = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                loadingManagerInstance.LoadSelectedScreen(AppData.ScreenType.ProjectCreationScreen, loadedScreenCallbackResults => 
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(loadedScreenCallbackResults);
-                });
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                        if (callbackResults.Success())
+                        {
+                            var assetBundles = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                            callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+
+                            if (callbackResults.Success())
+                            {
+                                await Task.Delay(500);
+
+                                var hideMenuCallbackResults = await screen.HideScreenWidgetAsync(GetParentWidget().GetData());
+
+                                callbackResults.SetResult(hideMenuCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+
+                                    var clearContainerCallbackResultsTask = await container.ClearAsync(true, 0.5f);
+
+                                    callbackResults.SetResult(clearContainerCallbackResultsTask);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetParentWidget());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var loadingManagerInstance = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+
+                                                loadingManagerInstance.LoadSelectedScreen(AppData.ScreenType.ProjectCreationScreen, loadedScreenCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(loadedScreenCallbackResults);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
 

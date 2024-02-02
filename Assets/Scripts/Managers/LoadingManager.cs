@@ -115,7 +115,7 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var screenUIManager = screenUIManagerInstanceCallbackResults.data;
+                            var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
 
                             if(OnShowSplashScreen && !screenLoadInfoInstance.InitialScreen())
                             {
@@ -172,7 +172,7 @@ namespace Com.RedicalGames.Filar
 
                                 AppData.CallbackData<AppData.ScreenConfigDataPacket> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.ScreenConfigDataPacket>();
 
-                                AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.ScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
+                                databaseManager.GetDataPacketsLibrary().GetDataPacket(AppData.ScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                                 {
                                     loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.result;
                                     loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.GetData().screenConfigDataPacket;
@@ -245,18 +245,18 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                await ScreenUIManager.Instance.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+                                                await screenUIManager.ShowScreenAsync(loadingScreenDataPacketsCallbackResults.GetData());
 
                                                 while (GetLoadingSequence().IsRunning())
                                                     await Task.Yield();
 
-                                                var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().data;
+                                                var referencedScreen = screenLoadInfoInstance.GetReferencedScreen().GetData();
 
                                                 AppData.ActionEvents.OnInitializationCompletedEvent();
 
                                                 referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
 
-                                                await ScreenUIManager.Instance.HideScreenAsync(loadingScreenDataPacketsCallbackResults.data);
+                                                await screenUIManager.HideScreenAsync(loadingScreenDataPacketsCallbackResults.GetData());
 
                                                 int loadingScreenExitDelay = AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.OnScreenChangedExitDelay).value);
                                                 await Task.Delay(loadingScreenExitDelay);
@@ -266,7 +266,7 @@ namespace Com.RedicalGames.Filar
                                                 if (callbackResults.Success())
                                                 {
                                                     referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
-                                                    await ScreenUIManager.Instance.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
+                                                    await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
                                                 }
                                             }
                                             else
@@ -286,7 +286,7 @@ namespace Com.RedicalGames.Filar
 
                                 AppData.CallbackData<AppData.ScreenConfigDataPacket> loadingScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.ScreenConfigDataPacket>();
 
-                                AppDatabaseManager.Instance.GetDataPacketsLibrary().GetDataPacket(AppData.ScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
+                                databaseManager.GetDataPacketsLibrary().GetDataPacket(AppData.ScreenType.LoadingScreen, getLoadingScreenDataPacketsCallbackResults =>
                                 {
                                     loadingScreenDataPacketsCallbackResults.result = getLoadingScreenDataPacketsCallbackResults.result;
                                     loadingScreenDataPacketsCallbackResults.data = getLoadingScreenDataPacketsCallbackResults.GetData().screenConfigDataPacket;
@@ -329,6 +329,47 @@ namespace Com.RedicalGames.Filar
                                     });
 
                                     #endregion
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(screenUIManager.GetCurrentScreenType());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var currentScreenType = screenUIManager.GetCurrentScreenType().GetData();
+
+                                            AppData.CallbackData<AppData.ScreenConfigDataPacket> currentScreenDataPacketsCallbackResults = new AppData.CallbackData<AppData.ScreenConfigDataPacket>();
+
+                                            databaseManager.GetDataPacketsLibrary().GetDataPacket(currentScreenType, getcurrentScreenDataPacketsCallbackResults =>
+                                            {
+                                                currentScreenDataPacketsCallbackResults.result = getcurrentScreenDataPacketsCallbackResults.result;
+                                                currentScreenDataPacketsCallbackResults.data = getcurrentScreenDataPacketsCallbackResults.GetData().screenConfigDataPacket;
+                                                currentScreenDataPacketsCallbackResults.resultCode = getcurrentScreenDataPacketsCallbackResults.resultCode;
+                                            });
+
+                                            callbackResults.SetResults(currentScreenDataPacketsCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var onHideCurrentScreenCallbackResultsTask = await screenUIManager.HideScreenAsync(currentScreenDataPacketsCallbackResults.GetData());
+
+                                                callbackResults.SetResult(onHideCurrentScreenCallbackResultsTask);
+
+                                                if(callbackResults.Success())
+                                                {
+
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                     //if (callbackResults.Success())
                                     //{
