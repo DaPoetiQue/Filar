@@ -897,6 +897,8 @@ namespace Com.RedicalGames.Filar
             ScreenWidgetScaleTransitionalSpeed,
             SplashImageChangeEventInterval,
             SplashImageTransitionSpeed,
+            PreviewModeOrbitDampingSpeed,
+            PreviewModeOrbitDistance,
             None
         }
 

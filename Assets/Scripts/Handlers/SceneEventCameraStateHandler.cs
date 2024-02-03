@@ -70,15 +70,17 @@ namespace Com.RedicalGames.Filar
 
         void Update()
         {
-            if (!interactable)
-                return;
+            //if (!interactable)
+            //    return;
 
-            OnEventCameraTransition();
+            //OnEventCameraTransition();
 
-            if (SelectableManager.Instance.GetSceneAssetInteractableMode() == AppData.SceneAssetInteractableMode.Orbit)
-                OnContentOrbitUpdate();
+            //if (SelectableManager.Instance.GetSceneAssetInteractableMode() == AppData.SceneAssetInteractableMode.Orbit)
+            //    OnContentOrbitUpdate();
 
-            OnCameraResetPoseTransition();
+            //OnCameraResetPoseTransition();
+
+            OnContentOrbitUpdate();
         }
 
         #endregion
