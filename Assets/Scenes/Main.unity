@@ -3493,7 +3493,6 @@ Transform:
   - {fileID: 511625444}
   - {fileID: 1854347471}
   - {fileID: 1506634472}
-  - {fileID: 1542325802}
   m_Father: {fileID: 555254953}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14906,7 +14905,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1542325802}
   m_Layer: 0
-  m_Name: Loaded Scene Content
+  m_Name: _App Scene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14920,12 +14919,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542325801}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.35, z: 4000}
+  m_LocalPosition: {x: 0, y: 0, z: 3875}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1675654960}
-  m_Father: {fileID: 555689118}
+  m_Father: {fileID: 2057037271}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1594336064
@@ -17783,6 +17782,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 555254953}
+  - {fileID: 1542325802}
   - {fileID: 174627421}
   m_Father: {fileID: 1129530511351204358}
   m_RootOrder: -1

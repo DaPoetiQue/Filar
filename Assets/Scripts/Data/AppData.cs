@@ -30217,6 +30217,54 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Screen Focus Events
+
+            protected void OnScreenEntered(Screen screen)
+            {
+                var callbackResults = new Callback(GetScreenType());
+
+                if (callbackResults.Success())
+                {
+                    switch (GetScreenType().GetData())
+                    {
+                        case ScreenType.ProjectCreationScreen:
+
+                            if(screen.GetType().GetData() == ScreenType.LandingPageScreen)
+                            {
+                                GetScreenView().GetActiveViewFader().GetData().SetFaderVisibilityValue(0.0f);
+                            }
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            protected void OnScreenExited(Screen screen)
+            {
+                var callbackResults = new Callback(GetScreenType());
+
+                if (callbackResults.Success())
+                {
+                    switch (GetScreenType().GetData())
+                    {
+                        case ScreenType.ProjectCreationScreen:
+
+                            if (screen.GetType().GetData() == ScreenType.LandingPageScreen)
+                            {
+                                GetScreenView().GetActiveViewFader().GetData().SetFaderVisibilityValue(1.0f);
+                            }
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            #endregion
+
             #region Widget Focus Events
 
             protected void OnWidgetFocused(Widget widget)
@@ -31033,9 +31081,9 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
+                    //callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
 
-                    if (callbackResults.UnSuccessful() && dataPackets.blurScreen)
+                    if (dataPackets.blurScreen)
                     {
                         GetScreenBlur().GetData().Show(dataPackets.GetReferencedUIScreenPlacementType().GetData().GetValue().GetData());
 

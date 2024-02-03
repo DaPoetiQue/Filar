@@ -65,65 +65,190 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            if (popUpType == type)
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
             {
-                switch(actionType)
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
                 {
-                    case AppData.InputActionButtonType.ConfirmationButton:
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                        OnDataValidation(newProjectStructureData, dataValidCallbackResults => 
+                    callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget));
+
+                    if (callbackResults.Success())
+                    {
+                        var confirmationWidget = screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget).GetData() as ConfirmationPopUpWidget;
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(confirmationWidget, "Confirmation Widget", "Failed To Get Confirmation Widget - Invalid Operation."));
+
+                        if (callbackResults.Success())
                         {
-                            if (dataValidCallbackResults.Success())
+                            confirmationWidget.ClearRegisteredEvents();
+
+                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                            confirmationWidgetConfig.blurScreen = true;
+                            confirmationWidgetConfig.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+
+                            switch (actionType)
                             {
-                                OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+                                case AppData.InputActionButtonType.CloseButton:
 
-                                if (AppDatabaseManager.Instance != null)
-                                {
-                                    AppDatabaseManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
+                                    confirmationWidget.RegisterConfirmationActionEvent(OnCancelledEvent, OnConfirmedEvent, onConfirmRegisteredCallbackResults =>
                                     {
-                                        if (createNewProjectCallbackResults.Success())
+                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                        if (callbackResults.Success())
+                                            screen.ShowWidget(confirmationWidgetConfig);
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+
+                                case AppData.InputActionButtonType.ConfirmationButton:
+
+                                    OnDataValidation(newProjectStructureData, dataValidCallbackResults =>
+                                    {
+                                        if (dataValidCallbackResults.Success())
                                         {
-                                            if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                            OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+
+                                            if (AppDatabaseManager.Instance != null)
                                             {
-                                                if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
-
-                                                StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults => 
+                                                AppDatabaseManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
                                                 {
-                                                    if (createdCallbackResults.Success())
+                                                    if (createNewProjectCallbackResults.Success())
                                                     {
-                                                        dataPackets.notification.message = createNewProjectCallbackResults.result;
+                                                        if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                                        {
+                                                            if (ScreenUIManager.Instance.GetCurrentScreen().Success())
+                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
 
-                                                        if (dataPackets.notification.showNotifications)
-                                                            NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+                                                            StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults =>
+                                                            {
+                                                                if (createdCallbackResults.Success())
+                                                                {
+                                                                    dataPackets.notification.message = createNewProjectCallbackResults.result;
 
-                                                        await ScreenUIManager.Instance.RefreshAsync();
+                                                                    if (dataPackets.notification.showNotifications)
+                                                                        NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+
+                                                                    await ScreenUIManager.Instance.RefreshAsync();
+                                                                }
+                                                                else
+                                                                    Log(createdCallbackResults.resultCode, createdCallbackResults.result, this);
+                                                            }));
+                                                        }
+                                                        else
+                                                            Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
                                                     }
                                                     else
-                                                        Log(createdCallbackResults.resultCode, createdCallbackResults.result, this);
-                                                }));
+                                                        Log(createNewProjectCallbackResults.resultCode, createNewProjectCallbackResults.result, this);
+                                                });
                                             }
                                             else
-                                                Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                                                LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
                                         }
                                         else
-                                            Log(createNewProjectCallbackResults.resultCode, createNewProjectCallbackResults.result, this);
+                                        {
+                                            OnInputFieldValidation(AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
+
+                                            Log(dataValidCallbackResults.resultCode, dataValidCallbackResults.result, this);
+                                        }
                                     });
-                                }
-                                else
-                                    LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
-                            }
-                            else
-                            {
-                                OnInputFieldValidation(AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
 
-                                Log(dataValidCallbackResults.resultCode, dataValidCallbackResults.result, this);
-                            }
-                        });
+                                    break;
 
-                        break;
+                                case AppData.InputActionButtonType.Cancel:
+
+                                    confirmationWidget.RegisterConfirmationActionEvent(OnCancelledEvent, OnConfirmedEvent, onConfirmRegisteredCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                        if (callbackResults.Success())
+                                            screen.ShowWidget(confirmationWidgetConfig);
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                    break;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnConfirmedEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    screen.HideScreenWidget(this, widgetHiddenCallbackResults => 
+                    {
+                        callbackResults.SetResult(widgetHiddenCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnCancelledEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    var createProjectWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                    createProjectWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ProjectCreationWidget);
+                    createProjectWidgetConfig.blurScreen = true;
+                    createProjectWidgetConfig.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
+
+                    screen.ShowWidget(createProjectWidgetConfig, showWidgetCallbackResults =>
+                    {
+                        callbackResults.SetResult(showWidgetCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         IEnumerator OnCreatedAsync(AppData.ProjectInfo projectInfo, Action<AppData.Callback> callback = null)

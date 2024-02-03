@@ -54,6 +54,8 @@ namespace Com.RedicalGames.Filar
 
                                 if(callbackResults.Success())
                                 {
+                                    confirmationWidget.ClearRegisteredEvents();
+
                                     confirmationWidget.RegisterOnConfirmEvent(GoToProjectHub, onConfirmRegisteredCallbackResults => 
                                     {
                                         callbackResults.SetResult(onConfirmRegisteredCallbackResults);

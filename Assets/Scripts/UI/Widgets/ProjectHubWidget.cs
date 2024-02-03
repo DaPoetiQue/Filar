@@ -83,8 +83,98 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget));
+
+                    if (callbackResults.Success())
+                    {
+                        switch (actionType)
+                        {
+                            case AppData.InputActionButtonType.GoToHomeButton:
+
+                                var confirmationWidget = screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget).GetData() as ConfirmationPopUpWidget;
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(confirmationWidget, "Confirmation Widget", "Failed To Get Confirmation Widget - Invalid Operation."));
+
+                                if (callbackResults.Success())
+                                {
+                                    confirmationWidget.ClearRegisteredEvents();
+
+                                    confirmationWidget.RegisterOnConfirmEvent(GoToHomeScreen, onConfirmRegisteredCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                                            confirmationWidgetConfig.blurScreen = true;
+
+                                            screen.ShowWidget(confirmationWidgetConfig);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case AppData.InputActionButtonType.CreateNewProjectButton:
+
+                                var newProjectWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                newProjectWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ProjectCreationWidget);
+                                newProjectWidgetConfig.blurScreen = true;
+
+                                screen.ShowWidget(newProjectWidgetConfig);
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
+
+
+        private void GoToHomeScreen()
+        {
+            var callbackResults = new AppData.Callback();
+
+           callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", "Loading Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var loadingManagerInstance = AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance").GetData();
+
+                loadingManagerInstance.LoadSelectedScreen(AppData.ScreenType.LandingPageScreen, loadedScreenCallbackResults =>
+                {
+                    callbackResults.SetResult(loadedScreenCallbackResults);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {

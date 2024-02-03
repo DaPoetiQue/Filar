@@ -24,7 +24,7 @@ namespace Com.RedicalGames.Filar
 
         #region Events
 
-        private Action onCOnfirmActionEvent, onCancelActionEvent;
+        private Action onConfirmActionEvent, onCancelActionEvent;
 
         #endregion
 
@@ -319,7 +319,7 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                onCOnfirmActionEvent += eventMethod.Invoke;
+                onConfirmActionEvent += eventMethod.Invoke;
                 callbackResults.result = $"Event Method : {eventMethod.Method.Name} Has Been Registered Successfully To On Confirm Action.";
             }
             else
@@ -346,8 +346,60 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public void RegisterConfirmationActionEvent(Action cancelEvent, Action confirmEvent, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback();
 
-        public void UnRegisterOnConfirmEvent(Action eventMethod, Action<AppData.Callback> callback)
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(cancelEvent, "Cancel Event", $"Register Confirmation Action Event Failed For : {GetName()} - Cancel Event Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(confirmEvent, "Confirm Event", $"Register Confirmation Action Event Failed For : {GetName()} - Confirm Event Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    onCancelActionEvent += cancelEvent.Invoke;
+                    onConfirmActionEvent += confirmEvent;
+
+                    callbackResults.result = $"Cancel Event Method : {cancelEvent.Method.Name} And Confirm Event Method : {confirmEvent.Method.Name} - Have Been Registered Successfully.";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void UnRegisterConfirmationActionEvent(Action cancelEvent, Action confirmEvent, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(cancelEvent, "Cancel Event", $"Un-Register Confirmation Action Event Failed For : {GetName()} - Cancel Event Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(confirmEvent, "Confirm Event", $"Un-Register Confirmation Action Event Failed For : {GetName()} - Confirm Event Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    onCancelActionEvent -= cancelEvent.Invoke;
+                    onConfirmActionEvent -= confirmEvent;
+
+                    callbackResults.result = $"Cancel Event Method : {cancelEvent.Method.Name} And Confrim Event Method : {confirmEvent.Method.Name} - Have Been Un-Registered Successfully.";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+
+        public void UnRegisterOnConfirmEvent(Action eventMethod, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
 
@@ -355,7 +407,7 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                onCOnfirmActionEvent -= eventMethod.Invoke;
+                onConfirmActionEvent -= eventMethod.Invoke;
                 callbackResults.result = $"Event Method : {eventMethod.Method.Name} Has Been Un-Registered Successfully From On Confirm Action.";
             }
             else
@@ -364,7 +416,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void UnRegisterOnCancelEvent(Action eventMethod, Action<AppData.Callback> callback)
+        public void UnRegisterOnCancelEvent(Action eventMethod, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
 
@@ -380,6 +432,12 @@ namespace Com.RedicalGames.Filar
 
 
             callback?.Invoke(callbackResults);
+        }
+
+        public void ClearRegisteredEvents()
+        {
+            onCancelActionEvent = null;
+            onConfirmActionEvent = null;
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
@@ -427,7 +485,7 @@ namespace Com.RedicalGames.Filar
                             case AppData.InputActionButtonType.ConfirmationButton:
 
                                 screen.HideScreenWidget(this);
-                                onCOnfirmActionEvent?.Invoke();
+                                onConfirmActionEvent?.Invoke();
 
                                 break;
 

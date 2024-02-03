@@ -43,6 +43,7 @@ namespace Com.RedicalGames.Filar
                 if (callbackResults.Success())
                 {
                     var screenInfo = appDatabaseManagerInstance.GetScreenLoadInfoInstanceFromLibrary(screenType).GetData();
+                    screenInfo.initialScreen = false;
 
                     await LoadScreen(screenInfo, loadInfoCallbackResults =>
                     {
