@@ -94,7 +94,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (SelectableManager.Instance.GetSceneAssetInteractableMode() == AppData.SceneAssetInteractableMode.Rotation)
                 {
-                    if (!SelectableManager.Instance.GetIsFingerOverAsset())
+                    if (SelectableManager.Instance.IsFingerOverSelectableAsset().UnSuccessful())
                         return;
 
                     if (Input.GetMouseButtonDown(0))

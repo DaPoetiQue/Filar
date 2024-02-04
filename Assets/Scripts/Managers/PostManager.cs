@@ -20,6 +20,8 @@ namespace Com.RedicalGames.Filar
 
         public int PostCount { get; private set; }
 
+        private bool inProgress = false;
+
         #endregion
 
         #region Main
@@ -30,6 +32,8 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Data Setters
+
+        private void SetInProgress(bool inProgress) => this.inProgress = inProgress;
 
         public void SetPost(AppData.Post post, Action<AppData.Callback> callback = null)
         {
@@ -159,6 +163,18 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        private void CancelActiveSelection(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(InProgress());
+
+            if(callbackResults.Success())
+                SetInProgress(false);
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         public async void SelectPost(AppData.Post post, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(GetPostContent(post));
@@ -171,42 +187,142 @@ namespace Com.RedicalGames.Filar
                 {
                     if (post != GetPost().GetData())
                     {
-                        SetPost(post, async postSetCallbackResults =>
+                        callbackResults.SetResult(InProgress());
+
+                        if(callbackResults.Success())
                         {
-                            callbackResults.SetResult(postSetCallbackResults);
-
-                            if (callbackResults.Success())
+                            CancelActiveSelection(selectionCancellledCallbackResults => 
                             {
-                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
+                                callbackResults.SetResult(selectionCancellledCallbackResults);
 
-                                if (callbackResults.Success())
+                                if(callbackResults.Success())
                                 {
-                                    var databaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
-
-                                    callbackResults.SetResult(databaseManagerInstance.GetAssetBundlesLibrary());
-
-                                    if (callbackResults.Success())
+                                    SetPost(post, async postSetCallbackResults =>
                                     {
-                                        var assetBundles = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
-
-                                        callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+                                        callbackResults.SetResult(postSetCallbackResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
-
-                                            var clearContainerCallbackResultsTask = await container.ClearAsync(true, 1.0f);
-
-                                            callbackResults.SetResult(clearContainerCallbackResultsTask);
+                                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
 
                                             if (callbackResults.Success())
                                             {
-                                                var postContent = GetPostContent(post).GetData();
+                                                var databaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
-                                                container.AddContent(postContent, false, true, true, contentAddedCallbackResults =>
+                                                callbackResults.SetResult(databaseManagerInstance.GetAssetBundlesLibrary());
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(contentAddedCallbackResults);
-                                                });
+                                                    var assetBundles = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                                    callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+
+                                                        SetInProgress(true);
+
+                                                        var clearContainerCallbackResultsTask = await container.ClearAsync(true, 1.0f);
+
+                                                        callbackResults.SetResult(clearContainerCallbackResultsTask);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            callbackResults.SetResult(InProgress());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                var postContent = GetPostContent(post).GetData();
+
+                                                                container.AddContent(postContent, false, true, true, contentAddedCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(contentAddedCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                        SetInProgress(false);
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                        {
+                            SetPost(post, async postSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(postSetCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var databaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                                        callbackResults.SetResult(databaseManagerInstance.GetAssetBundlesLibrary());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var assetBundles = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                            callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+
+                                                SetInProgress(true);
+
+                                                var clearContainerCallbackResultsTask = await container.ClearAsync(true, 1.0f);
+
+                                                callbackResults.SetResult(clearContainerCallbackResultsTask);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(InProgress());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var postContent = GetPostContent(post).GetData();
+
+                                                        container.AddContent(postContent, false, true, true, contentAddedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(contentAddedCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                SetInProgress(false);
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -219,10 +335,8 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+                            });
+                        }
                     }
                 }
                 else
@@ -450,6 +564,26 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Data Getters
+
+        private AppData.Callback InProgress()
+        {
+            var callbackResults = new AppData.Callback(GetPost());
+
+            if(callbackResults.Success())
+            {
+                if(inProgress)
+                    callbackResults.result = "Post Selection Is In Progress.";
+                else
+                {
+                    callbackResults.result = "Post Selection Is Not In Progress.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
 
         public AppData.CallbackData<AppData.Post> GetPost()
         {

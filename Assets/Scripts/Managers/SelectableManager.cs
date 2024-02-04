@@ -1205,9 +1205,22 @@ namespace Com.RedicalGames.Filar
 
         public void SetFingerOverAsset(bool isFingerOverAsset) => this.isFingerOverAsset = isFingerOverAsset;
 
-        public bool GetIsFingerOverAsset()
+        public AppData.Callback IsFingerOverSelectableAsset()
         {
-            return isFingerOverAsset;
+            var callbacResults = new AppData.Callback();
+
+            if(isFingerOverAsset)
+            {
+                callbacResults.result = "Finger Is Placed Over Selectable Asset.";
+                callbacResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbacResults.result = "Finger Is Not Placed Over Selectable Asset.";
+                callbacResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbacResults;
         }
 
         #region On UI Selection

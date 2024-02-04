@@ -76,9 +76,6 @@ namespace Com.RedicalGames.Filar
                         appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShownEvent, true);
                         appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHiddenEvent, true);
 
-                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShownEvent, AppData.EventType.OnWidgetShownEvent, true);
-                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHiddenEvent, AppData.EventType.OnWidgetHiddenEvent, true);
-
                         appEventsManagerInstance.OnEventSubscription(OnUpdateEvent, AppData.EventType.OnUpdate, true);
                     }
                     else
@@ -99,7 +96,10 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                this.screen = screen;
+                SetFocusedScreen(screen, screenFocusedCallbackResults => 
+                {
+                    callbackResults.SetResult(screenFocusedCallbackResults);
+                });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -111,37 +111,10 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                if(this.screen == screen)
-                    this.screen = null;
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-        }
-
-        #endregion
-
-        #region Widgets Events
-
-
-        private void OnWidgetShownEvent(AppData.Widget widget)
-        {
-            var callbackResults = new AppData.Callback(GetSceneEventCameras());
-
-            if (callbackResults.Success())
-            {
-
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-        }
-
-        private void OnWidgetHiddenEvent(AppData.Widget widget)
-        {
-            var callbackResults = new AppData.Callback(GetSceneEventCameras());
-
-            if (callbackResults.Success())
-            {
-
+                RemoveFocusedScreen(screen, focusedScreenRemovedCallbackResults => 
+                {
+                    callbackResults.SetResult(focusedScreenRemovedCallbackResults);
+                });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -151,38 +124,143 @@ namespace Com.RedicalGames.Filar
 
         private void OnUpdateEvent()
         {
-            if (Input.GetMouseButton(0) && SelectableManager.Instance.GetIsFingerOverAsset() && screen.Focused().Success())
+            var callbackResults = new AppData.Callback(GetFocusedScreen());
+
+            if (callbackResults.Success())
             {
-                currentX += Input.GetAxis("Mouse X") * rotationSpeed;
-                currentY -= Input.GetAxis("Mouse Y") * rotationSpeed;
+                callbackResults.SetResult(GetFocusedScreen().GetData().Focused());
 
-                currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle); // Clamp pitch angle
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(CanOrbit());
 
-                theSpeed = new Vector3(currentX, -currentY, 0.0F);
-                avgSpeed = Vector3.Lerp(avgSpeed, theSpeed, Time.deltaTime * 5);
+                    if (callbackResults.Success())
+                    {
+                        currentX += Input.GetAxis("Mouse X") * rotationSpeed;
+                        currentY -= Input.GetAxis("Mouse Y") * rotationSpeed;
+
+                        currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle); // Clamp pitch angle
+
+                        theSpeed = new Vector3(currentX, -currentY, 0.0F);
+                        avgSpeed = Vector3.Lerp(avgSpeed, theSpeed, Time.deltaTime * 5);
 
 
-                Vector3 direction = new Vector3(0, 0, -distance);
-                Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-                targetPosition = target.position + rotation * direction;
+                        Vector3 direction = new Vector3(0, 0, -distance);
+                        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
+                        targetPosition = target.position + rotation * direction;
+                    }
+                    else
+                    {
+                        float i = Time.deltaTime * lerpSpeed;
+                        theSpeed = Vector3.Lerp(theSpeed, Vector3.zero, i);
+                    }
+
+                    eventCameraScene.position = Vector3.Lerp(eventCameraScene.position, targetPosition, damping * Time.deltaTime);
+
+                    eventCameraScene.Rotate(Camera.main.transform.up * theSpeed.x * rotationSpeed, Space.World);
+                    eventCameraScene.Rotate(Camera.main.transform.right * theSpeed.y * rotationSpeed, Space.World);
+
+                    eventCameraScene.LookAt(target.position);
+                }
+                else
+                    return;
             }
             else
+                return;
+        }
+
+        private AppData.Callback CanOrbit()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", "Selectable Manager Instance Is Not Initialized Yet."));
+
+            if(callbackResults.Success())
             {
-                if (isDragging)
+                var selectableManagerInstance = AppData.Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                callbackResults.SetResult(selectableManagerInstance.IsFingerOverSelectableAsset());
+
+                if (callbackResults.Success())
                 {
-                    theSpeed = avgSpeed;
-                    isDragging = false;
+                    if (Input.GetMouseButton(0))
+                        callbackResults.result = "Can Orbit - Finger Is Successfully Placed Over A Selectable Asset.";
+                    else
+                    {
+                        callbackResults.result = "Can Not Orbit - Finger Is Not Placed Over A Selectable Asset.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
                 }
-                float i = Time.deltaTime * lerpSpeed;
-                theSpeed = Vector3.Lerp(theSpeed, Vector3.zero, i);
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            eventCameraScene.position = Vector3.Lerp(eventCameraScene.position, targetPosition, damping * Time.deltaTime);
+            return callbackResults;
+        }
 
-            eventCameraScene.Rotate(Camera.main.transform.up * theSpeed.x * rotationSpeed, Space.World);
-            eventCameraScene.Rotate(Camera.main.transform.right * theSpeed.y * rotationSpeed, Space.World);
+        #region Data Setters
 
-            eventCameraScene.LookAt(target.position);
+        private void SetFocusedScreen(Screen screen, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screen, "Screen", "Set Focused Screen Failed - Screen Parameter Value Is Missing / Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                this.screen = screen;
+                callbackResults.result = $"Set Focused Screen Success -Focused Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Has Been Successfully Assigned.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private void RemoveFocusedScreen(Screen screen, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screen, "Screen", "Remove Focused Screen Failed - Screen Parameter Value Is Missing / Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                if (this.screen == screen)
+                {
+                    this.screen = null;
+                    callbackResults.result = $"Remove Focused Screen Success -Focused Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Has Been Successfully Assigned.";
+                }
+                else
+                {
+                    callbackResults.result = $"Remove Focused Screen Failed -Focused Screen : {screen.GetName()} - Of Type : {screen.GetType().GetData()} Is Not Equal To Current Screen : {this.screen?.GetName()} - Of Type : {this.screen?.GetType()?.GetData()} - Invalid Operation..";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Data Getters
+
+        private AppData.CallbackData<Screen> GetFocusedScreen()
+        {
+            var callbackResults = new AppData.CallbackData<Screen>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screen, "Screen", "Get Focused Screen Failed - Screen Value Is Missing / Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Focused Screen Success -Focused Screen : {screen.GetName()} - Of Typ : {screen.GetType().GetData()} Has Been Successfully Found.";
+                callbackResults.data = screen;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         public AppData.CallbackData<AppData.SceneEventCamera> GetSceneEventCamera(AppData.ScreenType screenType)
@@ -227,6 +305,8 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
+
+        #endregion
 
         #region Camera Functions
 
