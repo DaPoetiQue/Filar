@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2464518915973843635}
   - component: {fileID: 2464518915973843633}
   - component: {fileID: 2464518915973843632}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 2464518915977806357}
   - component: {fileID: 2464518915977806356}
   - component: {fileID: 3142583646940633969}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __X Link Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,6 +283,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: Twitter Link Button Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -464,10 +465,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -646,7 +647,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -655,6 +655,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -833,7 +834,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -843,6 +843,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1023,12 +1024,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1207,13 +1208,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1392,11 +1393,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1575,10 +1938,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1760,7 +2123,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518915984209065
 GameObject:
@@ -1775,7 +2137,7 @@ GameObject:
   - component: {fileID: 2464518915984209061}
   - component: {fileID: 2464518915984209060}
   - component: {fileID: 2464518915984209063}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Email Sign In Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1901,7 +2263,7 @@ GameObject:
   - component: {fileID: 2464518915993421492}
   - component: {fileID: 2464518915993421495}
   - component: {fileID: 2464518915993421494}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2058,7 +2420,7 @@ GameObject:
   - component: {fileID: 2464518916040106449}
   - component: {fileID: 2464518916040106448}
   - component: {fileID: 7159563547705910054}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Sign In Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2193,6 +2555,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: Sign In Button Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2374,10 +2737,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2556,7 +2919,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -2565,6 +2927,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2743,7 +3106,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -2753,6 +3115,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2933,12 +3296,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -3117,13 +3480,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -3302,11 +3665,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -3485,10 +4210,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -3670,7 +4395,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518916073146687
 GameObject:
@@ -3683,7 +4407,7 @@ GameObject:
   - component: {fileID: 2464518916073146684}
   - component: {fileID: 2464518916073146682}
   - component: {fileID: 2464518916073146685}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Google Link
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3759,7 +4483,7 @@ GameObject:
   - component: {fileID: 2464518916096050952}
   - component: {fileID: 2464518916096050950}
   - component: {fileID: 2464518916096050953}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3835,7 +4559,7 @@ GameObject:
   - component: {fileID: 2464518916097796290}
   - component: {fileID: 2464518916097796288}
   - component: {fileID: 2464518916097796291}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Toggle Password Show Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3909,7 +4633,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2464518916147001431}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Forgot Password Button Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3949,7 +4673,7 @@ GameObject:
   - component: {fileID: 2464518916148106015}
   - component: {fileID: 2464518916148106014}
   - component: {fileID: 2464518916148106017}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4104,7 +4828,7 @@ GameObject:
   - component: {fileID: 2464518916184536241}
   - component: {fileID: 2464518916184536239}
   - component: {fileID: 2464518916184536238}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4182,7 +4906,7 @@ GameObject:
   - component: {fileID: 2464518916246387772}
   - component: {fileID: 2464518916246387775}
   - component: {fileID: 7443705130512240703}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Facebook Link Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4317,6 +5041,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: Facebook Link Button Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -4498,10 +5223,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -4680,7 +5405,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -4689,6 +5413,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -4867,7 +5592,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -4877,6 +5601,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -5057,12 +5782,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -5241,13 +5966,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -5426,11 +6151,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -5609,10 +6696,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -5794,7 +6881,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518916315039682
 GameObject:
@@ -5807,7 +6893,7 @@ GameObject:
   - component: {fileID: 2464518916315039683}
   - component: {fileID: 2464518916315039681}
   - component: {fileID: 2464518916315039680}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5884,7 +6970,7 @@ GameObject:
   - component: {fileID: 2464518916332452499}
   - component: {fileID: 2464518916332452498}
   - component: {fileID: 2464518916332452501}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Clear Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6004,7 +7090,7 @@ GameObject:
   - component: {fileID: 2464518916420911459}
   - component: {fileID: 2464518916420911457}
   - component: {fileID: 2464518916420911456}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Checkmark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6079,7 +7165,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2464518916440914004}
   - component: {fileID: 2464518916440914005}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Link Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6138,7 +7224,7 @@ GameObject:
   - component: {fileID: 2464518916442040088}
   - component: {fileID: 2464518916442040086}
   - component: {fileID: 2464518916442040089}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6214,7 +7300,7 @@ GameObject:
   - component: {fileID: 2464518916696151723}
   - component: {fileID: 2464518916696151721}
   - component: {fileID: 2464518916696151720}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Links Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6290,7 +7376,7 @@ GameObject:
   - component: {fileID: 2464518916754670583}
   - component: {fileID: 2464518916754670581}
   - component: {fileID: 2464518916754670580}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6367,7 +7453,7 @@ GameObject:
   - component: {fileID: 2464518916791180885}
   - component: {fileID: 2464518916791180884}
   - component: {fileID: 2464518916791180887}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: User Password Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6542,7 +7628,7 @@ GameObject:
   - component: {fileID: 2464518916836772999}
   - component: {fileID: 2464518916836772997}
   - component: {fileID: 2464518916836772996}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6618,7 +7704,7 @@ GameObject:
   - component: {fileID: 2464518916903485942}
   - component: {fileID: 2464518916903485940}
   - component: {fileID: 2464518916903485943}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6696,7 +7782,7 @@ GameObject:
   - component: {fileID: 2464518916970556309}
   - component: {fileID: 2464518916970556308}
   - component: {fileID: 884555536379587514}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Github Link Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6831,6 +7917,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: Github Link Button Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -7012,10 +8099,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -7194,7 +8281,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -7203,6 +8289,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -7381,7 +8468,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -7391,6 +8477,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -7571,12 +8658,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -7755,13 +8842,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -7940,11 +9027,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -8123,10 +9572,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -8308,7 +9757,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518916971767793
 GameObject:
@@ -8322,7 +9770,7 @@ GameObject:
   - component: {fileID: 2464518916971767788}
   - component: {fileID: 2464518916971767791}
   - component: {fileID: 8126243306172905684}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Sign In Email Input Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8414,6 +9862,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -8595,10 +10044,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   inputFieldComponentConfig:
     name: Sign In Email Input Field Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -8777,7 +10226,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
     clearButton: {fileID: 2464518917473664623}
     placeHolderText: info@filar.io
     placeholderTextDisplayer: {fileID: 2464518915993421495}
@@ -8786,6 +10234,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -8964,7 +10413,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -8974,6 +10422,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -9154,12 +10603,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -9338,13 +10787,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -9523,11 +10972,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -9706,10 +11517,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -9891,7 +11702,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518917028632868
 GameObject:
@@ -9904,7 +11714,7 @@ GameObject:
   - component: {fileID: 2464518917028632869}
   - component: {fileID: 2464518917028632867}
   - component: {fileID: 2464518917028632866}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Facebook Link
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9979,7 +11789,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2464518917073890254}
   - component: {fileID: 2464518917073890255}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10032,7 +11842,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2464518917122819181}
   - component: {fileID: 2464518917122819178}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Options Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10092,7 +11902,7 @@ GameObject:
   - component: {fileID: 2464518917177937260}
   - component: {fileID: 2464518917177937263}
   - component: {fileID: 2464518917177937262}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: User Email Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10268,7 +12078,7 @@ GameObject:
   - component: {fileID: 2464518917345785386}
   - component: {fileID: 2464518917345785389}
   - component: {fileID: 2464518917345785388}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Apps Sign In Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10363,7 +12173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2464518917346677993}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: User Email Field Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10402,7 +12212,7 @@ GameObject:
   - component: {fileID: 2464518917396395797}
   - component: {fileID: 2464518917396395795}
   - component: {fileID: 2464518917396395794}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: View Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10538,7 +12348,7 @@ GameObject:
   - component: {fileID: 2464518917473664621}
   - component: {fileID: 2464518917473664620}
   - component: {fileID: 2464518917473664623}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Clear Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10658,7 +12468,7 @@ GameObject:
   - component: {fileID: 2464518917473974949}
   - component: {fileID: 2464518917473974947}
   - component: {fileID: 2464518917473974946}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10734,7 +12544,7 @@ GameObject:
   - component: {fileID: 2464518917674198575}
   - component: {fileID: 2464518917674198573}
   - component: {fileID: 2464518917674198572}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10813,7 +12623,7 @@ GameObject:
   - component: {fileID: 2464518917694957825}
   - component: {fileID: 2464518917694957824}
   - component: {fileID: 2464518917694957827}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: _Default View Layout_
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10916,7 +12726,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2464518917722378202}
   - component: {fileID: 2464518917722378203}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sign In Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10975,7 +12785,7 @@ GameObject:
   - component: {fileID: 2464518917724395983}
   - component: {fileID: 2464518917724395981}
   - component: {fileID: 2464518917724395980}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sign In Footer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11043,7 +12853,7 @@ GameObject:
   - component: {fileID: 2464518917752666232}
   - component: {fileID: 2464518917752666230}
   - component: {fileID: 2464518917752666233}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Github Link
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11119,7 +12929,7 @@ GameObject:
   - component: {fileID: 2464518917755689370}
   - component: {fileID: 2464518917755689368}
   - component: {fileID: 2464518917755689371}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Remeber User Field Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11254,7 +13064,7 @@ GameObject:
   - component: {fileID: 2464518917764046597}
   - component: {fileID: 2464518917764046594}
   - component: {fileID: 7476802199355137803}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Remeber User Toggle Option
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11355,6 +13165,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -11536,10 +13347,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -11718,7 +13529,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -11727,6 +13537,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -11905,7 +13716,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -11915,6 +13725,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -12095,12 +13906,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: Remeber User Toggle Option Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -12279,13 +14090,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 1
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -12464,11 +14275,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -12647,10 +14820,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -12832,7 +15005,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518917778590081
 GameObject:
@@ -12845,7 +15017,7 @@ GameObject:
   - component: {fileID: 2464518917778590206}
   - component: {fileID: 2464518917778590204}
   - component: {fileID: 2464518917778590207}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Header Panel BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12924,7 +15096,7 @@ GameObject:
   - component: {fileID: 2464518917824911225}
   - component: {fileID: 2464518917824911224}
   - component: {fileID: 2715514293631295793}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Goolge Link Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13059,6 +15231,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: Goolge Link Button Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -13240,10 +15413,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -13422,7 +15595,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -13431,6 +15603,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -13609,7 +15782,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -13619,6 +15791,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -13799,12 +15972,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -13983,13 +16156,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -14168,11 +16341,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -14351,10 +16886,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -14536,7 +17071,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518917840456313
 GameObject:
@@ -14549,7 +17083,7 @@ GameObject:
   - component: {fileID: 2464518917840456310}
   - component: {fileID: 2464518917840456308}
   - component: {fileID: 2464518917840456311}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Selection Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14625,7 +17159,7 @@ GameObject:
   - component: {fileID: 2464518917861391767}
   - component: {fileID: 2464518917861391765}
   - component: {fileID: 2464518917861391764}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14760,7 +17294,7 @@ GameObject:
   - component: {fileID: 2464518917870057208}
   - component: {fileID: 2464518917870057206}
   - component: {fileID: 2464518917870057209}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Password Request Button Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14895,7 +17429,7 @@ GameObject:
   - component: {fileID: 2464518917881291009}
   - component: {fileID: 2464518917881291135}
   - component: {fileID: 2464518917881291134}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sign In Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15030,7 +17564,7 @@ GameObject:
   - component: {fileID: 2464518917946712430}
   - component: {fileID: 2464518917946712428}
   - component: {fileID: 2464518917946712431}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sign In Button Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15163,7 +17697,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2464518917964665807}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: User Password Input Field Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15204,7 +17738,7 @@ GameObject:
   - component: {fileID: 2464518917978208246}
   - component: {fileID: 2464518917978208249}
   - component: {fileID: 6344689658075299679}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Forgot Password Request Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15339,6 +17873,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: Forgot Password Request Button Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -15520,10 +18055,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -15702,7 +18237,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -15711,6 +18245,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -15889,7 +18424,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -15899,6 +18433,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -16079,12 +18614,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -16263,13 +18798,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -16448,11 +18983,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -16631,10 +19528,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -16816,7 +19713,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518917990706837
 GameObject:
@@ -16828,7 +19724,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2464518917990706834}
   - component: {fileID: 2464518917990706835}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16883,7 +19779,7 @@ GameObject:
   - component: {fileID: 2464518917993566822}
   - component: {fileID: 2464518917993566825}
   - component: {fileID: 8161780148779062433}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Sign In_Tab View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17029,7 +19925,7 @@ GameObject:
   - component: {fileID: 2464518917994983473}
   - component: {fileID: 2464518917994983472}
   - component: {fileID: 2464518917994983475}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Options Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17133,7 +20029,7 @@ GameObject:
   - component: {fileID: 2464518917996945415}
   - component: {fileID: 2464518917996945413}
   - component: {fileID: 2464518917996945412}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sign In Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17221,7 +20117,7 @@ GameObject:
   - component: {fileID: 2464518917999355657}
   - component: {fileID: 2464518917999355655}
   - component: {fileID: 2464518917999355654}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Content Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17354,7 +20250,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2464518918055476354}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sign In Text Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17394,7 +20290,7 @@ GameObject:
   - component: {fileID: 2464518918078565488}
   - component: {fileID: 2464518918078565491}
   - component: {fileID: 412574612215610640}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Sign In Password Input Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17487,6 +20383,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -17668,10 +20565,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   inputFieldComponentConfig:
     name: Sign In Password Input Field Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -17850,7 +20747,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 1
     clearButton: {fileID: 2464518916332452501}
     placeHolderText: '************'
     placeholderTextDisplayer: {fileID: 2464518916148106014}
@@ -17859,6 +20755,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -18037,7 +20934,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -18047,6 +20943,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -18227,12 +21124,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -18411,13 +21308,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -18596,11 +21493,373 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
+  optionComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
+    panel: {fileID: 0}
+    options: []
+  toggleComponentConfig:
+    name: 
+    selectionStatesInfo:
+      name: 
+      states:
+      - name: Normal
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 0
+      - name: Enabled
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 1
+      - name: Disabled
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        state: 2
+      - name: Selected
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        state: 3
+      inputState: 0
+    selectable: 0
+    visualizationType: 0
+    selectionFrame:
+      value: {fileID: 0}
+    inputType: 0
+    validationStatesInfo:
+      validate: 0
+      validationStates:
+      - name: Default
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 1
+      - name: Success
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 2
+      - name: Warning
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+        resultsType: 3
+      - name: Error
+        value: {fileID: 0}
+        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        resultsType: 4
+    title: {fileID: 0}
+    fieldUIImageList: []
+    value: {fileID: 0}
+    dataPackets:
+      name: 
+      externalLinkURL: 
+      selectionOption: 0
+      screenContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      sceneContainerData:
+        name: 
+        type: 0
+        viewSpace: 0
+      layoutViewType: 2
+      screenType: 0
+      stateType: 0
+      notification:
+        title: 
+        message: 
+        notificationType: 0
+        screenType: 0
+        screenPosition: 0
+        blurScreen: 0
+        blurLayer: 0
+        delay: 0
+        duration: 0
+        showNotifications: 0
+        proccessed: 0
+      screenWidgetPrefab: {fileID: 0}
+      dynamicWidgetsContainer: {fileID: 0}
+      sceneAsset:
+        name: 
+        modelAsset: {fileID: 0}
+        info:
+          fields: []
+        sceneObject:
+          info:
+            fields: []
+          value: {fileID: 0}
+        materialProperties:
+          mainTexturePath: 
+          normalMapTexturePath: 
+          aoMapTexturePath: 
+          glossiness: 0
+          bumpScale: 0
+          aoStrength: 0
+        sceneScale: 0
+        description: 
+        categoryType: 0
+        assetMode: 0
+        creationDateTime:
+          time: 
+          date: 
+          dateTime: 
+          second: 0
+          minute: 0
+          hour: 0
+          day: 
+          month: 
+          year: 
+          monthDay: 
+          dateTimeTick: 0
+        hasMLTFile: 0
+        storageData:
+          name: 
+          type: 0
+          path: 
+          projectDirectory: 
+          rootDirectory: 
+          directory: 
+        assetFields: []
+        dontShowMetadataWidget: 0
+        defaultWidgetActionState: 0
+        assetImportPosition: {x: 0, y: 0, z: 0}
+        assetImportRotation: {x: 0, y: 0, z: 0}
+      referencedScreenType:
+        name: 
+        value: 0
+      referencedWidgetType:
+        name: 
+        value: 0
+      referencedUIScreenPlacementType:
+        name: 
+        value: 0
+      overrideStateType:
+        name: 
+        value: 0
+      booleanOptionsGroup:
+        name: 
+        confiGroupDatas: []
+      clearContentContainer: 0
+      resetContentContainerPose: 0
+      scaleSceneAsset: 0
+      keepAssetWorldPose: 0
+      keepAssetCentered: 0
+      selectableAssetType: 0
+      sceneAssetScaleValueType: 0
+      dynamicWidgetsContainerOrientation: 0
+      widgetType: 0
+      widgetScreenPosition: {x: 0, y: 0}
+      assetFieldConfiguration: 0
+      storageDirectoryType: 0
+      folderStructureType: 0
+      requiredPermission: 0
+      screenRefreshLoadingItemType: 0
+      sceneMode: 0
+      sceneAssetMode: 0
+      blurScreen: 0
+      referencedUIScreenPlacementTypeDeprecated: 0
+      screenViewState: 0
+      refreshScreenOnLoad: 0
+      refreshSceneAssets: 0
+      refreshDuration: 0
+      widgetTitle: 
+      widgetTitleCharacterLimit: 0
+      popUpMessage: 
+      screenTransition: 0
+      screenTransitionSpeed: 0
+      canTransitionSceneAsset: 0
+      overrideSceneAssetTargetPosition: 0
+      sceneAssetTransitionalTargetPosition: {x: 0, y: 0, z: 0}
+      overrideSceneAssetTransitionSpeed: 0
+      sceneAssetTransitionSpeed: 0
+      isRootFolder: 0
+      referencedActionButtonDataList: []
+      action: 0
+    widgets:
+      objectWidget: []
+      buttonWidgets: []
+      toggleWidgets: []
+      textWidgets: []
+      imageWidgets: []
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -18779,10 +22038,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -18964,7 +22223,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &2464518918085548186
 GameObject:
@@ -18977,7 +22235,7 @@ GameObject:
   - component: {fileID: 2464518918085548187}
   - component: {fileID: 2464518918085548185}
   - component: {fileID: 2464518918085548184}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Twitter Link
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19053,7 +22311,7 @@ GameObject:
   - component: {fileID: 2464518918089567684}
   - component: {fileID: 2464518918089567682}
   - component: {fileID: 2464518918089567685}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Options Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19119,7 +22377,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4805752098344484022}
   - component: {fileID: 7295239882246529601}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Tab Mount
   m_TagString: Untagged
   m_Icon: {fileID: 0}

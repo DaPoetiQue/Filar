@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6372227947404938327}
   - component: {fileID: 6372227947404938326}
   - component: {fileID: 6372227947404938328}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Folder Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,7 +131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6372227947889552652}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UI Screen Text Displayer Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 6372227947901271606}
   - component: {fileID: 6372227947901271605}
   - component: {fileID: 6372227947901271604}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Spinner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 6372227948383590708}
   - component: {fileID: 6372227948383590707}
   - component: {fileID: 6372227948383590706}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Project Creation ==>> Fader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -379,7 +379,7 @@ GameObject:
   - component: {fileID: 6372227948440620897}
   - component: {fileID: 6372227948440620899}
   - component: {fileID: 6372227948440620898}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Search Results Not Found Screen Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -514,7 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6372227948730132262}
   - component: {fileID: 456058761540904501}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Project Creation Page Widgets Dynamic Default Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -577,7 +577,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6372227948871255285}
   - component: {fileID: 2426113259705439059}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Project Creation Page Widgets Dynamic Foreground Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -637,7 +637,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6372227948947501322}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Project Creation ==>> View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -680,7 +680,7 @@ GameObject:
   - component: {fileID: 6372227949013655473}
   - component: {fileID: 6372227949013655472}
   - component: {fileID: 6372227949013655375}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UI Text Displayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -813,7 +813,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6372227949039249239}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -851,7 +851,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6372227949187960322}
   - component: {fileID: 1029697818066176385}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __ Project Creation Screen Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -972,7 +972,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6372227949350724791}
   - component: {fileID: 6071271782366761675}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Project Creation Page Widgets Dynamic Background Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1034,7 +1034,7 @@ GameObject:
   - component: {fileID: 6372227949426747284}
   - component: {fileID: 6372227949426747286}
   - component: {fileID: 6372227949426747285}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Project Screen_Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1110,7 +1110,7 @@ GameObject:
   - component: {fileID: 6372227949525269493}
   - component: {fileID: 6372227949525269494}
   - component: {fileID: 6372227949525269495}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Button Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1243,7 +1243,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3578047478895968589}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}

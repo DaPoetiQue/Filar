@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3124893730188579240}
   - component: {fileID: 3124893730188579246}
   - component: {fileID: 3124893730188579247}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: App Logo Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 3124893730269818793}
   - component: {fileID: 3124893730269818794}
   - component: {fileID: 5347739412212791262}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Displayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,6 +177,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -358,10 +359,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -540,7 +541,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -549,6 +549,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -727,7 +728,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -737,6 +737,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -917,12 +918,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1101,13 +1102,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1286,11 +1287,11 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
   optionComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1467,12 +1468,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     panel: {fileID: 0}
     options: []
   toggleComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1649,10 +1650,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   textComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1831,10 +1832,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: Splash Image Displayer Config
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2016,7 +2017,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []
 --- !u!1 &3124893730721323488
 GameObject:
@@ -2030,7 +2030,7 @@ GameObject:
   - component: {fileID: 3124893730721323492}
   - component: {fileID: 3124893730721323493}
   - component: {fileID: 3124893730721323494}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2122,7 +2122,7 @@ GameObject:
   - component: {fileID: 3124893730846760568}
   - component: {fileID: 3124893730846760569}
   - component: {fileID: 3124893730846760570}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Displayer ==>> Fader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2210,7 +2210,7 @@ GameObject:
   - component: {fileID: 3124893731104184754}
   - component: {fileID: 3124893731104184753}
   - component: {fileID: 2129655445364099130}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __ Splash Image Displayer Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}

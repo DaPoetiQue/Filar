@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2502762273286867381}
   - component: {fileID: 1470510034125400447}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __ Copyright Text Displayer Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 2502762274360271207}
   - component: {fileID: 2502762274360271200}
   - component: {fileID: 528058120610102392}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: App Copyright Info Displayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,6 +410,7 @@ MonoBehaviour:
   buttonComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -591,10 +592,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -773,7 +774,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     clearButton: {fileID: 0}
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
@@ -782,6 +782,7 @@ MonoBehaviour:
   inputSliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -960,7 +961,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     slider: {fileID: 0}
     initialMaxValue: 0
     inputField: {fileID: 0}
@@ -970,6 +970,7 @@ MonoBehaviour:
   sliderComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1150,12 +1151,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     initialMaxValue: 0
     valueType: 0
   checkboxComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1334,13 +1335,13 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     actionType: 0
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1519,11 +1520,11 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     arrowIcon: {fileID: 0}
   optionComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1700,12 +1701,12 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
     panel: {fileID: 0}
     options: []
   toggleComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -1882,10 +1883,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   textComponentConfig:
     name: Copyright Text
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2064,10 +2065,10 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   imageComponentConfig:
     name: 
     selectionStatesInfo:
+      name: 
       states:
       - name: Normal
         value: {fileID: 0}
@@ -2249,5 +2250,4 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    initialVisibilityState: 0
   transitionableUIMounts: []

@@ -17003,6 +17003,8 @@ namespace Com.RedicalGames.Filar
         [Serializable]
         public struct SceneAssetPose
         {
+            #region Components
+
             public string name;
 
             [Space(5)]
@@ -17013,6 +17015,82 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             public Vector3 scale;
+
+            private bool initialized;
+
+            #endregion
+
+            public void Initialize(Transform assetTransform, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(assetTransform, "Asset Transform", "Scene Asset Pose Initialize Failed - Asset Transform Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    position = assetTransform.position;
+                    scale = assetTransform.localScale;
+                    rotation = assetTransform.rotation;
+
+                    callbackResults.result = $"Scene Asset Pose Initialize Success - Asset Transform Parameter Value : {assetTransform.name} Has Been Initialized Successfully.";                  
+                }
+
+                initialized = callbackResults.Success();
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<(Vector3 position, Vector3 scale, Quaternion rotation)> GetAssetPose()
+            {
+                var callbackResults = new CallbackData<(Vector3 position, Vector3 scale, Quaternion rotation)>(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = "Get Asset Pose Success -Asset Pose Has Been Assigned.";
+                    callbackResults.data = (position, scale, rotation);
+                }
+
+                return callbackResults;
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback();
+
+                if(initialized)
+                {
+                    callbackResults.result = $"Scene Asset Pose : {name} Has Been Initialized.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Scene Asset Pose : {name} Is Not Initialized.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback IsEqualToPose(Transform comparedTransform)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(comparedTransform, "Compared Transform", "Is Equal To Pose Failed - Compared Transform Parameter Value Is Null - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        if(comparedTransform.GetPose().Equals(GetAssetPose().GetData()))
+                            callbackResults.result = $"Is Equal To Pose Success- Pose Is Equal To : {comparedTransform.GetName()}'s Pose.";
+                        else
+                        {
+                            callbackResults.result = $"Is Equal To Pose Failed- Pose Is Not Equal To : {comparedTransform.GetName()}'s Pose.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
         }
 
         [Serializable]
@@ -51714,6 +51792,7 @@ namespace Com.RedicalGames.Filar
             OnSelectableWidgetHiddenEvent,
             OnSelectableWidgetTransitionInProgressEvent,
             OnActionButtonPressedEvent,
+            OnPostSelectedEvent
         }
 
         public enum TransitionableEventType
@@ -52696,6 +52775,8 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<T> _OnSelectableWidgetHiddenEvent;
             public static event ParamVoid<T> _OnSelectableWidgetTransitionInProgressEvent;
 
+            public static event ParamVoid<T> _OnPostSelectedEvent;
+
             #endregion
 
             #region Callbacks
@@ -52715,6 +52796,8 @@ namespace Com.RedicalGames.Filar
             public static void OnSelectableWidgetShownEvent(T selectable) => _OnSelectableWidgetShownEvent?.Invoke(selectable);
             public static void OnSelectableWidgetHiddenEvent(T selectable) => _OnSelectableWidgetHiddenEvent?.Invoke(selectable);
             public static void OnSelectableWidgetTransitionInProgressEvent(T selectable) => _OnSelectableWidgetTransitionInProgressEvent?.Invoke(selectable);
+
+            public static void OnPostSelectedEvent(T post) => _OnPostSelectedEvent?.Invoke(post);
 
             #endregion
         }

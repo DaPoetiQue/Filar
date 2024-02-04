@@ -96,7 +96,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void OnEventSubscription<T>(Action<T> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null) where T : AppMonoBaseClass
+        public void OnEventSubscription<T>(Action<T> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null) where T : class
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
 
@@ -186,6 +186,15 @@ namespace Com.RedicalGames.Filar
                                 AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventMethod.Invoke;
                             else
                                 AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnPostSelectedEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnPostSelectedEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnPostSelectedEvent -= eventMethod.Invoke;
 
                             break;
                     }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 45980627087666248}
   - component: {fileID: 45980627087666251}
   - component: {fileID: 45980627087666249}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Loading Page Screen_Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980627133997665}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980627494865641}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Hidden Mount Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 45980627546047773}
   - component: {fileID: 5195089712013303570}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __ Loading Screen Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ GameObject:
   m_Component:
   - component: {fileID: 45980627707284285}
   - component: {fileID: 3090725572040038037}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Loading Screen Widgets Dynamic Default Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -359,7 +359,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980627921224939}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397,7 +397,7 @@ GameObject:
   - component: {fileID: 45980628155826734}
   - component: {fileID: 45980628155826732}
   - component: {fileID: 45980628155826735}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Home Screen_Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -471,7 +471,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628181332839}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -508,7 +508,7 @@ GameObject:
   m_Component:
   - component: {fileID: 45980628361793436}
   - component: {fileID: 7921510361603200655}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Loading Screen Widgets Dynamic Foreground Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -569,7 +569,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628505518450}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Visible Mount Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -608,7 +608,7 @@ GameObject:
   - component: {fileID: 45980628541440882}
   - component: {fileID: 45980628541440885}
   - component: {fileID: 45980628541440884}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Loading Screen ==>> Fader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -694,7 +694,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628666593521}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Mount Points
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -732,7 +732,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628674590392}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Loading Screen ==>> View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -776,7 +776,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628693252298}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -813,7 +813,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628829262842}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Notifications
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -850,7 +850,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980628830645825}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Loading Screen Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -888,7 +888,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45980629172796482}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -926,7 +926,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7685170639638761031}
   - component: {fileID: 788115758341435691}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Loading Screen Widgets Dynamic BackGround Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -987,7 +987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3224757040882035339}
   - component: {fileID: 4827935478524396645}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Loading Screen Loading Item Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}

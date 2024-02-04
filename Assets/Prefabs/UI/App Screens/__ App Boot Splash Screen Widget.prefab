@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5110208478855157228}
   - component: {fileID: 1207815466596216749}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Splash Screen Title Widget Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 3265665339789098129}
   - component: {fileID: 3265665339789098135}
   - component: {fileID: 3265665339789098134}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Home Screen_Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665339848669259}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Screen ==>> View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665339886081096}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Widgets Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3265665340347939898}
   - component: {fileID: 4638276137863464579}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __ App Boot Splash Screen Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,7 +338,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665340351610167}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Screen Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -377,7 +377,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665340411234214}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -413,7 +413,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665340474928472}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -453,7 +453,7 @@ GameObject:
   - component: {fileID: 3265665340571076983}
   - component: {fileID: 3265665340571076982}
   - component: {fileID: 3265665340571076977}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Screen ==>> Fader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -541,7 +541,7 @@ GameObject:
   - component: {fileID: 3265665340726711770}
   - component: {fileID: 3265665340726711768}
   - component: {fileID: 3265665340726711771}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -618,7 +618,7 @@ GameObject:
   - component: {fileID: 3265665340838845932}
   - component: {fileID: 3265665340838845922}
   - component: {fileID: 3265665340838845933}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Splash Screen_Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -692,7 +692,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665340977770050}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -731,7 +731,7 @@ GameObject:
   - component: {fileID: 3265665341107432885}
   - component: {fileID: 3265665341107432875}
   - component: {fileID: 3265665341107432874}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -809,7 +809,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665341194908849}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -846,7 +846,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3265665341548095576}
   - component: {fileID: 4343902750515389455}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Splash Screen Widgets Body Dynamic Background Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -906,7 +906,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3265665341712371980}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Blur Content Layer_Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -943,7 +943,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2821576192809682851}
   - component: {fileID: 8631335616529975415}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Splash Screen Widgets Body Dynamic Default Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1004,7 +1004,7 @@ GameObject:
   m_Component:
   - component: {fileID: 906151151937034372}
   - component: {fileID: 7426857258340280479}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: Splash Screen Widgets Body Dynamic Foreground Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}

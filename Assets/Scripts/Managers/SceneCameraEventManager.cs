@@ -36,10 +36,13 @@ namespace Com.RedicalGames.Filar
 
         private Vector3 targetPosition;
 
+        private AppData.SceneAssetPose defaultEventCameraScenePose = new AppData.SceneAssetPose();
 
         private float lerpSpeed = 1.0F;
 
         private Screen screen = null;
+
+        private bool resetEventCameraScenePose = false;
 
         #endregion
 
@@ -53,30 +56,45 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
-            var callbackResults = new AppData.Callback(GetSceneEventCameras());
+            var callbackResults = new AppData.Callback(GetEventCameraScene());
 
             if (callbackResults.Success())
             {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Initialized Yet."));
+                callbackResults.SetResult(GetSceneEventCameras());
 
                 if (callbackResults.Success())
                 {
-                    var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
-
-                    rotationSpeed = appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.PreviewModeOrbitSpeed).value;
-                    damping = appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.PreviewModeOrbitDampingSpeed).value;
-                    distance = appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.PreviewModeOrbitDistance).value;
-
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Initialized Yet."));
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Initialized Yet."));
 
                     if (callbackResults.Success())
                     {
-                        var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
-                        appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShownEvent, true);
-                        appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHiddenEvent, true);
+                        rotationSpeed = appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.PreviewModeOrbitSpeed).value;
+                        damping = appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.PreviewModeOrbitDampingSpeed).value;
+                        distance = appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.PreviewModeOrbitDistance).value;
 
-                        appEventsManagerInstance.OnEventSubscription(OnUpdateEvent, AppData.EventType.OnUpdate, true);
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Initialized Yet."));
+
+                        if (callbackResults.Success())
+                        {
+                            var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                            appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShownEvent, true);
+                            appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHiddenEvent, true);
+
+                            appEventsManagerInstance.OnEventSubscription(OnUpdateEvent, AppData.EventType.OnUpdate, true);
+                            appEventsManagerInstance.OnEventSubscription(OnResetEventCameraScenePose, AppData.EventType.OnUpdate, true);
+
+                            appEventsManagerInstance.OnEventSubscription<AppData.Post>(OnPostSelected, AppData.EventType.OnPostSelectedEvent, true);
+
+                            SetDefaultEventCameraScenePose(GetEventCameraScene().GetData(), poseSetCallbackResults => 
+                            {
+                                callbackResults.SetResult(poseSetCallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -121,6 +139,43 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
+
+        private void OnPostSelected(AppData.Post post)
+        {
+            var callbackResults = new AppData.Callback(CameraPoseChanged());
+
+            if(callbackResults.Success())
+            {
+                ResetEventCameraScenePose(cameraPoseResetCallbackResults => 
+                {
+                    callbackResults.SetResult(cameraPoseResetCallbackResults);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void ResetEventCameraScenePose(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            LogInfo($" ___Losg_Cat:: Reset Camera Pose", this);
+
+            resetEventCameraScenePose = true;
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private void OnResetEventCameraScenePose()
+        {
+            //if (!resetEventCameraScenePose)
+            //    return;
+
+            //eventCameraScene.rotation = Quaternion.Slerp(eventCameraScene.rotation, GetDefaultEventCameraScenePose().GetData().rotation, rotationSpeed * Time.smoothDeltaTime);
+
+            //if (CameraPoseChanged().UnSuccessful())
+            //    resetEventCameraScenePose = false;
+        }
 
         private void OnUpdateEvent()
         {
@@ -200,6 +255,18 @@ namespace Com.RedicalGames.Filar
 
         #region Data Setters
 
+        private void SetDefaultEventCameraScenePose(Transform eventCameraSceneTransform, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            defaultEventCameraScenePose.Initialize(eventCameraSceneTransform, poseInitializationCallbackResults =>
+            {
+                callbackResults.SetResult(poseInitializationCallbackResults);
+            });
+
+            callback?.Invoke(callbackResults);
+        }
+
         private void SetFocusedScreen(Screen screen, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
@@ -245,6 +312,48 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Data Getters
+
+        private AppData.Callback CameraPoseChanged()
+        {
+            var callbackResults = new AppData.Callback(GetDefaultEventCameraScenePose());
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetDefaultEventCameraScenePose().GetData().IsEqualToPose(GetEventCameraScene().GetData()));
+
+                if (callbackResults.UnSuccessful())
+                {
+                    callbackResults.result = "Camera Pose Has Changed.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Camera Pose Hasn't Changed.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private AppData.CallbackData<AppData.SceneAssetPose> GetDefaultEventCameraScenePose()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SceneAssetPose>();
+
+            callbackResults.SetResult(defaultEventCameraScenePose.Initialized());
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = "Get Default Event Camera Scene Pose Success - Pose Data Successfully Initialized.";
+                callbackResults.data = defaultEventCameraScenePose;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
 
         private AppData.CallbackData<Screen> GetFocusedScreen()
         {
@@ -299,6 +408,23 @@ namespace Com.RedicalGames.Filar
             {
                 callbackResults.result = $"Get Scene Event Cameras Success - {sceneEventCameras.Count} : Scene Event Camera(s) Value Has Been Assigned Successfully.";
                 callbackResults.data = sceneEventCameras;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<Transform> GetEventCameraScene()
+        {
+            var callbackResults = new AppData.CallbackData<Transform>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventCameraScene, "Event Camera Scene", "Get Event Camera Scene Failed - Event Camera Scene Value Is Missing / Null - Invalid Opration."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Event Camera Scene Success - Event Camera Scene : {eventCameraScene.name} Value Has Been Assigned Successfully.";
+                callbackResults.data = eventCameraScene;
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

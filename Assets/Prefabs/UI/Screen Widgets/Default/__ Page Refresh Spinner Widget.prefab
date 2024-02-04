@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5229210467825463207}
   - component: {fileID: 5229210467825463200}
   - component: {fileID: 5229210467825463201}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Spinner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5229210468645156575}
   - component: {fileID: 8850287966637666786}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __ Page Refresh Spinner Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,6 +203,8 @@ MonoBehaviour:
     tabLayout: {fileID: 0}
     transitionType: 0
     activeTabViewType: 0
+    tabNavigationButton: {fileID: 0}
+    isInitialized: 0
   selectableAssetType: 0
   blurScreen: 0
   scroller:
@@ -362,4 +364,3 @@ MonoBehaviour:
   initializeTabs: 0
   dontShowAgain: 0
   isWidgetVisible: 0
-  parentScreen: {fileID: 0}

@@ -138,6 +138,25 @@ namespace Com.RedicalGames.Filar
         public static string GetName(this GameObject gameObject) => gameObject.name;
         public static RectTransform GetWidgetRect(this GameObject gameObject) => gameObject.GetComponent<RectTransform>();
 
+        public static string GetName(this Transform reference) => reference.name;
+
+        public static void SetPose(this Transform reference, (Vector3 position, Vector3 scale, Quaternion rotation) pose)
+        {
+            reference.position = pose.position;
+            reference.localScale = pose.scale;
+            reference.rotation = pose.rotation;
+        }
+
+        public static void SetLocalPose(this Transform reference, (Vector3 position, Vector3 scale, Quaternion rotation) pose)
+        {
+            reference.localPosition = pose.position;
+            reference.localScale = pose.scale;
+            reference.localRotation = pose.rotation;
+        }
+
+        public static (Vector3 position, Vector3 scale, Quaternion rotation) GetPose(this Transform reference) => (reference.position, reference.localScale, reference.rotation);
+        public static (Vector3 position, Vector3 scale, Quaternion rotation) GetLocalPose(this Transform reference) => (reference.localPosition, reference.localScale, reference.localRotation);
+
         #region Container Placements
 
         /// <summary>

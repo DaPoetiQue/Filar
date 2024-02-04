@@ -240,7 +240,10 @@ namespace Com.RedicalGames.Filar
                                                                     callbackResults.SetResult(contentAddedCallbackResults);
 
                                                                     if (callbackResults.Success())
+                                                                    {
                                                                         SetInProgress(false);
+                                                                        AppData.GenericActionEvents<AppData.Post>.OnPostSelectedEvent(post);
+                                                                    }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 });
@@ -313,7 +316,10 @@ namespace Com.RedicalGames.Filar
                                                             callbackResults.SetResult(contentAddedCallbackResults);
 
                                                             if (callbackResults.Success())
+                                                            {
                                                                 SetInProgress(false);
+                                                                AppData.GenericActionEvents<AppData.Post>.OnPostSelectedEvent(post);
+                                                            }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                         });

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7581722195879512005}
   - component: {fileID: 7488488677772525800}
   - component: {fileID: 2681765749411130225}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: View Layout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2818872647599668348}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Header Menu Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 6551817987802091504}
   - component: {fileID: 26747523923875974}
   - component: {fileID: 3417013597949266257}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Header Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 6814409830557672928}
   - component: {fileID: 2144527499463171710}
   - component: {fileID: 9052042846657066996}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Main Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6817956499695856853}
   - component: {fileID: 2238576666371664}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Cart_Tab View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,6 +357,9 @@ MonoBehaviour:
   screenType: 7
   parentType: 29
   tabViewMountReference: {fileID: 0}
+  tabbedContent:
+    name: 
+    tabs: []
 --- !u!1 &8216904312132874366
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,7 +371,7 @@ GameObject:
   - component: {fileID: 8638251007462564697}
   - component: {fileID: 776710909432680658}
   - component: {fileID: 2403723842101681792}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Footer Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -518,6 +521,10 @@ PrefabInstance:
     - target: {fileID: 6255988844187023824, guid: b435781244640404080816e5082b2ad4, type: 3}
       propertyPath: m_Name
       value: __Tab Title
+      objectReference: {fileID: 0}
+    - target: {fileID: 6255988844187023824, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

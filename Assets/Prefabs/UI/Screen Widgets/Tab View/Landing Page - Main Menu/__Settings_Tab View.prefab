@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9017721039984795184}
   - component: {fileID: 2852709882106464582}
   - component: {fileID: 622185035715008657}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Header Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 8743879000846808096}
   - component: {fileID: 4182505240524115902}
   - component: {fileID: 6509543415900104244}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Main Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 5692103630006425093}
   - component: {fileID: 4622292989434384680}
   - component: {fileID: 215699445115583153}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: View Layout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 5776114716055057049}
   - component: {fileID: 3246730610459181330}
   - component: {fileID: 473551018331918144}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Footer Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +314,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4203376459297299716}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Setting Menu Header Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -352,7 +352,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8743709458116820245}
   - component: {fileID: 2783719206004356663}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: __Settings_Tab View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -423,6 +423,9 @@ MonoBehaviour:
   screenType: 7
   parentType: 29
   tabViewMountReference: {fileID: 0}
+  tabbedContent:
+    name: 
+    tabs: []
 --- !u!1001 &8178781073655195031
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -522,6 +525,10 @@ PrefabInstance:
     - target: {fileID: 6255988844187023824, guid: b435781244640404080816e5082b2ad4, type: 3}
       propertyPath: m_Name
       value: __Tab Title
+      objectReference: {fileID: 0}
+    - target: {fileID: 6255988844187023824, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

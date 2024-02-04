@@ -866,7 +866,7 @@ GameObject:
   - component: {fileID: 156305369}
   - component: {fileID: 156305370}
   - component: {fileID: 156305371}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -943,6 +943,7 @@ MonoBehaviour:
   orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
+    name: 
     container: {fileID: 0}
   selectableWidgetType: 0
   orientation: 1
@@ -1846,7 +1847,7 @@ GameObject:
   - component: {fileID: 210237188}
   - component: {fileID: 210237187}
   - component: {fileID: 210237189}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scene Asset (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3245,7 +3246,7 @@ GameObject:
   - component: {fileID: 511625447}
   - component: {fileID: 511625446}
   - component: {fileID: 511625445}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Widgets Container (World Space)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3265,7 +3266,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1594336065}
-  m_Father: {fileID: 555689118}
+  m_Father: {fileID: 1382075968}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3445,10 +3446,10 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 44.87
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2423
+    m_Bits: 2391
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -3472,9 +3473,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 511625444}
-  - {fileID: 1854347471}
-  - {fileID: 1506634472}
+  - {fileID: 1382075968}
   m_Father: {fileID: 555254953}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7901,7 +7900,7 @@ GameObject:
   - component: {fileID: 672381474}
   - component: {fileID: 672381476}
   - component: {fileID: 672381475}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scene Asset Thumbnail Displayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8306,6 +8305,7 @@ MonoBehaviour:
   orderInLayerType: 0
   selectableContent: 0
   recycleContainer:
+    name: 
     container: {fileID: 2012478901}
 --- !u!1 &795621435
 GameObject:
@@ -8509,7 +8509,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 818750229}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Selection Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8546,7 +8546,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 832806208}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scroller Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10448,7 +10448,7 @@ GameObject:
   - component: {fileID: 1075238546}
   - component: {fileID: 1075238545}
   - component: {fileID: 1075238544}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10966,7 +10966,7 @@ GameObject:
   - component: {fileID: 1158572063}
   - component: {fileID: 1158572062}
   - component: {fileID: 1158572061}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scene Asset Thumbnail Displayer Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12744,7 +12744,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1268208009}
   - component: {fileID: 1268208011}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Screen Capture Safe Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12843,7 +12843,7 @@ GameObject:
   - component: {fileID: 1293189518}
   - component: {fileID: 1293189517}
   - component: {fileID: 1293189516}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13128,7 +13128,7 @@ GameObject:
   - component: {fileID: 1353265209}
   - component: {fileID: 1353265211}
   - component: {fileID: 1353265210}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scene Asset Thumbnail Displayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13258,6 +13258,84 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!1 &1382075967
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1382075968}
+  - component: {fileID: 1382075970}
+  m_Layer: 0
+  m_Name: Scene UI Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1382075968
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1382075967}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 511625444}
+  - {fileID: 1854347471}
+  - {fileID: 1506634472}
+  m_Father: {fileID: 555689118}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &1382075970
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1382075967}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 3
+  m_BackGroundColor: {r: 0.10196079, g: 0.098039225, b: 0.098039225, a: 1}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.01
+  far clip plane: 6000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 32
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
 --- !u!1 &1393967518
 GameObject:
   m_ObjectHideFlags: 0
@@ -13800,7 +13878,7 @@ GameObject:
   - component: {fileID: 1395046591}
   - component: {fileID: 1395046593}
   - component: {fileID: 1395046592}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scene Asset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14794,7 +14872,7 @@ GameObject:
   - component: {fileID: 1506634475}
   - component: {fileID: 1506634474}
   - component: {fileID: 1506634473}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Main Screen Space
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14814,7 +14892,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1268208009}
-  m_Father: {fileID: 555689118}
+  m_Father: {fileID: 1382075968}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -15009,7 +15087,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1594336065}
   - component: {fileID: 1594336066}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ':: App Screens Placement'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15072,7 +15150,7 @@ GameObject:
   - component: {fileID: 1613394472}
   - component: {fileID: 1613394471}
   - component: {fileID: 1613394470}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Back Button - Exit Screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15467,7 +15545,7 @@ GameObject:
   - component: {fileID: 1700678338}
   - component: {fileID: 1700678337}
   - component: {fileID: 1700678336}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Scene Asset Thumbnail Displayer Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16184,13 +16262,13 @@ GameObject:
   - component: {fileID: 1854347474}
   - component: {fileID: 1854347473}
   - component: {fileID: 1854347472}
-  m_Layer: 0
-  m_Name: Screen Widgets Container (Screen Space)
+  m_Layer: 5
+  m_Name: Screen Widgets Container (Screen Space) - (Disabled For Blocking UI)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1854347471
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16204,7 +16282,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2031855338}
-  m_Father: {fileID: 555689118}
+  m_Father: {fileID: 1382075968}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -17555,7 +17633,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2031855338}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: AR Screen Default Widgets
   m_TagString: Untagged
   m_Icon: {fileID: 0}
