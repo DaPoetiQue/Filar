@@ -39,6 +39,8 @@ namespace Com.RedicalGames.Filar
 
         private float lerpSpeed = 1.0F;
 
+        private Screen screen = null;
+
         #endregion
 
         #region Unity Callbacks
@@ -97,7 +99,7 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-
+                this.screen = screen;
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -109,7 +111,8 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-
+                if(this.screen == screen)
+                    this.screen = null;
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -148,7 +151,7 @@ namespace Com.RedicalGames.Filar
 
         private void OnUpdateEvent()
         {
-            if (Input.GetMouseButton(0) && SelectableManager.Instance.GetIsFingerOverAsset())
+            if (Input.GetMouseButton(0) && SelectableManager.Instance.GetIsFingerOverAsset() && screen.Focused().Success())
             {
                 currentX += Input.GetAxis("Mouse X") * rotationSpeed;
                 currentY -= Input.GetAxis("Mouse Y") * rotationSpeed;

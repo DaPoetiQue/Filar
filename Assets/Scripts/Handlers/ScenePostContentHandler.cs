@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,9 +13,46 @@ namespace Com.RedicalGames.Filar
 
         public AppData.Post post;
 
+        [SerializeField]
+        private List<SelectableSceneAssetHandler> selectableAssets = new List<SelectableSceneAssetHandler>();
+
         #endregion
 
         #region Main
+
+        public void Initialize(AppData.SceneEventCamera eventCamera, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetSelectableAssets());
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(eventCamera.GetEventCamera());
+
+                if(callbackResults.Success())
+                {
+                    foreach (var selectable in GetSelectableAssets().GetData())
+                    {
+                        selectable.SetEventCamera(eventCamera.GetEventCamera().GetData(), eventCameraSetCallbackResults => 
+                        {
+                            callbackResults.SetResult(eventCameraSetCallbackResults);
+                        });
+
+                        if(callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
 
         #region Data Setters
 
@@ -58,7 +96,22 @@ namespace Com.RedicalGames.Filar
 
         #region Data Getters
 
-        public GameObject GetModel() => model;
+        public AppData.CallbackData<GameObject> GetModel()
+        {
+            var callbackResults = new AppData.CallbackData<GameObject>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(model, "Model", $"Get Model Failed - Model Value For : {GetName()} Is Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Model Success - Model Value For : {GetName()} Has Been Successfully Initialized.";
+                callbackResults.data = model;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
 
         public AppData.CallbackData<AppData.Post> GetPost()
         {
@@ -66,6 +119,86 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
                 callbackResults.data = post;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackDataList<SelectableSceneAssetHandler> GetSelectableAssets()
+        {
+            var callbackResults = new AppData.CallbackDataList<SelectableSceneAssetHandler>(GetModel());
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(selectableAssets, "Selectable Assets", $"Get Selectable Assets Failed - There Are No Selectable Assets Found For : {GetName()} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Selectable Assets Success - {selectableAssets.Count} : Selectable Asset(s) Value For : {GetName()} Has Been Successfully Initialized.";
+                    callbackResults.data = selectableAssets;
+                }
+                else
+                {
+                    if(GetModel().GetData().transform.childCount > 0)
+                    {
+                        for (int i = 0; i < GetModel().GetData().transform.childCount; i++)
+                        {
+                            var selectable = GetModel().GetData().transform.GetChild(i).GetComponent<SelectableSceneAssetHandler>();
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(selectable, "Selectable", $"Get Selectable Assets Failed - Couldn't Find Selectable Component In Children For : {GetName()} At index : {i} - Invalid Operation."));
+
+                            if(callbackResults.Success())
+                            {
+                                if (!selectableAssets.Contains(selectable))
+                                {
+                                    selectableAssets.Add(selectable);
+
+                                    if (selectableAssets.Contains(selectable))
+                                        callbackResults.result = $"Add Selectable Asset Success : {selectable.GetName()} have Been Added To Selectable Assets For : {GetName()}";
+                                    else
+                                    {
+                                        callbackResults.result = $"Add Selectable Asset Failed - Selectable Asset : {selectable.GetName()} Couldn't Be Been Added To Selectable Assets For : {GetName()} - Invalid Operation.";
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    callbackResults.result = $"Add Selectable Asset Failed - Selectable Asset : {selectable.GetName()} Already Exists In Selectable Assets For : {GetName()} - Invalid Operation.";
+                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+
+                                    break;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(selectableAssets, "Selectable Assets", $"Get Selectable Assets Failed - There Are No Selectable Assets Found For : {GetName()} - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.result = $"Get Selectable Assets Success - {selectableAssets.Count} : Selectable Asset(s) Value For : {GetName()} Has Been Successfully Initialized.";
+                                callbackResults.data = selectableAssets;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Selectable Assets Failed - There Are No Selectable Assets Found For : {GetName()} - {GetName()}'s Child Count IS : {GetModel().GetData().transform.childCount} - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+            }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 

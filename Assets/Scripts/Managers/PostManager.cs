@@ -236,20 +236,36 @@ namespace Com.RedicalGames.Filar
                 {
                     var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
-                    var loadContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.GetPostContentAsync(post);
-                    callbackResults.SetResult(loadContentAsyncCallbackResultsTask);
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetPostContent(post));
+                        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());
 
                         if (callbackResults.Success())
                         {
-                            SetPost(post, postSetCallbackResults =>
-                            {
-                                callbackResults.SetResult(postSetCallbackResults);
+                            var loadContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.GetPostContentAsync(post, screenUIManagerInstance.GetCurrentScreenType().GetData());
+                            callbackResults.SetResult(loadContentAsyncCallbackResultsTask);
 
-                            });
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetPostContent(post));
+
+                                if (callbackResults.Success())
+                                {
+                                    SetPost(post, postSetCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(postSetCallbackResults);
+
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

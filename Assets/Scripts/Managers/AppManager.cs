@@ -453,7 +453,7 @@ namespace Com.RedicalGames.Filar
             {
                 var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
 
-                var downloadInitialPostContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.DownloadInitialPostContentAsync();
+                var downloadInitialPostContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.DownloadInitialPostContentAsync(AppData.ScreenType.LandingPageScreen);
 
                 callbackResults.SetResult(downloadInitialPostContentAsyncCallbackResultsTask);
 

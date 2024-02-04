@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -233,9 +234,17 @@ namespace Com.RedicalGames.Filar
                 meshRenderer.sharedMaterials = defaultMaterial;
         }
 
-        public void SetEventCamera(Camera camera)
+        public void SetEventCamera(Camera camera, Action<AppData.Callback> callback = null)
         {
-            eventCamera = camera;
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(camera, "Camera", "Set Event Camera Failed - Camera Parameter Value Is missing / Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                eventCamera = camera;
+                callbackResults.result = $"Set Event Camera Success - Scene Event Camera Has Been Set To : {camera.name}.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         public MeshRenderer GetSelectableAssetRenderer()

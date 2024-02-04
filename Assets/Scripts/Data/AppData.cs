@@ -4322,7 +4322,7 @@ namespace Com.RedicalGames.Filar
         #region Container Classes
 
         [Serializable]
-        public class ContentRecycleContainer
+        public class ContentRecycleContainer : DataDebugger
         {
             #region Components
 
@@ -4338,20 +4338,39 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
+            public CallbackData<Transform> GetContainer()
+            {
+                var callbackResults = new CallbackData<Transform>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(container, "Container", $"Get Container Failed - Container For : {GetName()} Is Missing / Null - Invalide Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Container Success - Container For : {GetName()} Has Been initialized Successfully.";
+                    callbackResults.data = container;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             #endregion
 
             public void AddContent<T>(T content, bool keepWorldPos, Action<Callback> callback = null) where T : ScenePostContentHandler
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetContainer());
 
-                if (container != null)
+                if (callbackResults.Success())
                 {
-                    if (content.GetModel() != null)
-                    {      
-                        content.GetModel().transform.SetParent(container, keepWorldPos);
-                        content.GetModel().SetActive(false);
+                    callbackResults.SetResult(content.GetModel());
 
-                        if (!content.GetModel().activeSelf && content.GetModel().transform.parent == container)
+                    if (callbackResults.Success())
+                    {
+                        content.GetModel().GetData().transform.SetParent(container, keepWorldPos);
+                        content.GetModel().GetData().SetActive(false);
+
+                        if (!content.GetModel().GetData().activeSelf && content.GetModel().GetData().transform.parent == container)
                         {
                             callbackResults.result = $"Added Content : {content.name} To Container : {container.name} Successfully.";
                             callbackResults.resultCode = Helpers.SuccessCode;
@@ -4363,18 +4382,12 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                     else
-                    {
-                        callbackResults.result = $"Failed To Add Content - Content Model Is Missing / Null Please Check Here.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Failed To Add Content : {content.name} - Container Is Null / Missing..";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                callback.Invoke(callbackResults);
+                callback?.Invoke(callbackResults);
             }
 
             public void ClearAll()
@@ -30179,6 +30192,35 @@ namespace Com.RedicalGames.Filar
             {
                 LogInfo($"Screen : {screen.name} - Refreshed Successfully", this, () => OnScreenRefreshed(screen));
             }
+
+            #region Focus State
+
+            public Callback Focused()
+            {
+                var callbackResults = new Callback(GetScreenBlur());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"Not Focused State - Screen : {GetName()} - Of Type : {GetType().GetData()} Is Not Focused - Screen Is Blurred.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Focus State Success - Screen : {GetName()} - Of Type : {GetType().GetData()} Is Focused - Screen Is Not Blurred.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #region UI Widgets States
 

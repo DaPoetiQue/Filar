@@ -4394,7 +4394,7 @@ namespace Com.RedicalGames.Filar
 
         #region Post Content
 
-        public async Task<AppData.Callback> DownloadInitialPostContentAsync()
+        public async Task<AppData.Callback> DownloadInitialPostContentAsync(AppData.ScreenType screenType)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
 
@@ -4447,7 +4447,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         var model = storedSessionDataCallbackResults.GetData();
 
-                                        model.GetModel().SetActive(true);
+                                        model.GetModel().GetData().SetActive(true);
 
                                         container.AddContent(model, false, true, true, contentAddedCallbackResults =>
                                         {
@@ -4456,37 +4456,56 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        var modelData = GetPostContentData(post).GetData().model;
-                                        var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
-
-                                        AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
-                                        var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
-
-                                        callbackResults.SetResult(modelTaskResults);
+                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance", "Scene Camera Event Manager Instance Is Not Yet Initialized."));
 
                                         if (callbackResults.Success())
                                         {
-                                            var model = modelTaskResults.data.AddComponent<ScenePostContentHandler>();
-                                            model.SetPost(post);
-                                            model.SetContent(modelTaskResults.data);
+                                            var sceneCameraEventManagerInstance = AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance").GetData();
 
-                                            var storeSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, model);
+                                            var modelData = GetPostContentData(post).GetData().model;
+                                            var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
 
-                                            callbackResults.SetResult(storeSessionDataCallbackResults);
+                                            AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
+                                            var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
+
+                                            callbackResults.SetResult(modelTaskResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                container.AddContent(model, false, false, true, contentAddedCallbackResults =>
+                                                var postContentHandler = modelTaskResults.GetData().AddComponent<ScenePostContentHandler>();
+                                                postContentHandler.SetPost(post);
+                                                postContentHandler.SetContent(modelTaskResults.GetData());
+
+                                                postContentHandler.Initialize(sceneCameraEventManagerInstance.GetSceneEventCamera(screenType).GetData(), selectableAssetsInitializationCallbackResults => 
                                                 {
-                                                    callbackResults.SetResult(contentAddedCallbackResults);
+                                                    callbackResults.SetResult(selectableAssetsInitializationCallbackResults);
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        postManagerInstance.AddPostsContents(postContentAddedCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(postContentAddedCallbackResults);
+                                                        var storeSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, postContentHandler);
 
-                                                        }, model);
+                                                        callbackResults.SetResult(storeSessionDataCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            container.AddContent(postContentHandler, false, false, true, contentAddedCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(contentAddedCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    postManagerInstance.AddPostsContents(postContentAddedCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(postContentAddedCallbackResults);
+
+                                                                    }, postContentHandler);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     }
                                                     else
                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -4500,7 +4519,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                 }
                                 else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this); ;
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -4517,7 +4536,7 @@ namespace Com.RedicalGames.Filar
         }
 
 
-        public async Task<AppData.Callback> GetPostContentAsync(AppData.Post post)
+        public async Task<AppData.Callback> GetPostContentAsync(AppData.Post post, AppData.ScreenType screenType)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance", "Post Manager Instance Is Not Yet Initialized."));
 
@@ -4568,7 +4587,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var model = storedSessionDataCallbackResults.GetData();
 
-                                            model.GetModel().SetActive(true);
+                                            model.GetModel().GetData().SetActive(true);
 
                                             container.AddContent(model, false, true, true, contentAddedCallbackResults =>
                                             {
@@ -4577,41 +4596,67 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                         {
-                                            var modelData = GetPostContentData(post).GetData().model;
-                                            var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
-
-                                            AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
-                                            var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
-
-                                            callbackResults.SetResult(modelTaskResults);
+                                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance", "Scene Camera Event Manager Instance Is Not Yet Initialized."));
 
                                             if (callbackResults.Success())
                                             {
-                                                var model = modelTaskResults.data.AddComponent<ScenePostContentHandler>();
-                                                model.SetPost(post);
-                                                model.SetContent(modelTaskResults.data);
+                                                var sceneCameraEventManagerInstance = AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance").GetData();
 
-                                                var storeSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, model);
+                                                var modelData = GetPostContentData(post).GetData().model;
+                                                var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
 
-                                                callbackResults.SetResult(storeSessionDataCallbackResults);
+                                                AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
+                                                var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
+
+                                                callbackResults.SetResult(modelTaskResults);
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                                    callbackResults.SetResult(sceneCameraEventManagerInstance.GetSceneEventCamera(screenType));
+
+                                                    if (callbackResults.Success())
                                                     {
-                                                        callbackResults.SetResult(contentAddedCallbackResults);
+                                                        var postContentHandler = modelTaskResults.GetData().AddComponent<ScenePostContentHandler>();
+                                                        postContentHandler.SetPost(post);
+                                                        postContentHandler.SetContent(modelTaskResults.GetData());
 
-                                                        if (callbackResults.Success())
+                                                        postContentHandler.Initialize(sceneCameraEventManagerInstance.GetSceneEventCamera(screenType).GetData(), selectableAssetsInitializationCallbackResults => 
                                                         {
-                                                            postManagerInstance.AddPostsContents(postContentAddedCallbackResults =>
-                                                            {
-                                                                callbackResults.SetResult(postContentAddedCallbackResults);
+                                                            callbackResults.SetResult(selectableAssetsInitializationCallbackResults);
 
-                                                            }, model);
-                                                        }
-                                                        else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    });
+                                                            if(callbackResults.Success())
+                                                            {
+                                                                var storeSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, postContentHandler);
+
+                                                                callbackResults.SetResult(storeSessionDataCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    container.AddContent(postContentHandler, false, true, true, contentAddedCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(contentAddedCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            postManagerInstance.AddPostsContents(postContentAddedCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(postContentAddedCallbackResults);
+
+                                                                            }, postContentHandler);
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
