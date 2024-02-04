@@ -11,6 +11,10 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         [SerializeField]
+        private List<AppData.SceneEventCamera> sceneEventCameras = new List<AppData.SceneEventCamera>();
+
+        [Space(5)]
+        [SerializeField]
         private Transform eventCameraScene = null;
 
         public Transform target; // Target object to orbit around
@@ -47,7 +51,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
-            var callbackResults = new AppData.Callback(GetSceneEventCameraContainerTransform());
+            var callbackResults = new AppData.Callback(GetSceneEventCameras());
 
             if (callbackResults.Success())
             {
@@ -89,7 +93,7 @@ namespace Com.RedicalGames.Filar
 
         private void OnScreenShownEvent(Screen screen)
         {
-            var callbackResults = new AppData.Callback(GetSceneEventCameraContainerTransform());
+            var callbackResults = new AppData.Callback(GetSceneEventCameras());
 
             if (callbackResults.Success())
             {
@@ -101,7 +105,7 @@ namespace Com.RedicalGames.Filar
 
         private void OnScreenHiddenEvent(Screen screen)
         {
-            var callbackResults = new AppData.Callback(GetSceneEventCameraContainerTransform());
+            var callbackResults = new AppData.Callback(GetSceneEventCameras());
 
             if (callbackResults.Success())
             {
@@ -118,7 +122,7 @@ namespace Com.RedicalGames.Filar
 
         private void OnWidgetShownEvent(AppData.Widget widget)
         {
-            var callbackResults = new AppData.Callback(GetSceneEventCameraContainerTransform());
+            var callbackResults = new AppData.Callback(GetSceneEventCameras());
 
             if (callbackResults.Success())
             {
@@ -130,7 +134,7 @@ namespace Com.RedicalGames.Filar
 
         private void OnWidgetHiddenEvent(AppData.Widget widget)
         {
-            var callbackResults = new AppData.Callback(GetSceneEventCameraContainerTransform());
+            var callbackResults = new AppData.Callback(GetSceneEventCameras());
 
             if (callbackResults.Success())
             {
@@ -144,8 +148,7 @@ namespace Com.RedicalGames.Filar
 
         private void OnUpdateEvent()
         {
-
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0) && SelectableManager.Instance.GetIsFingerOverAsset())
             {
                 currentX += Input.GetAxis("Mouse X") * rotationSpeed;
                 currentY -= Input.GetAxis("Mouse Y") * rotationSpeed;
@@ -179,16 +182,42 @@ namespace Com.RedicalGames.Filar
             eventCameraScene.LookAt(target.position);
         }
 
-        public AppData.CallbackData<Transform> GetSceneEventCameraContainerTransform()
+        public AppData.CallbackData<AppData.SceneEventCamera> GetSceneEventCamera(AppData.ScreenType screenType)
         {
-            var callbackResults = new AppData.CallbackData<Transform>();
+            var callbackResults = new AppData.CallbackData<AppData.SceneEventCamera>();
 
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventCameraScene, "Scene Event Camera Container Transform", "Get Scene Event Camera Container Transform Failed - Scene Event Camera Container Transform Value Is Missing / Null - Invalid Opration."));
+            callbackResults.SetResult(GetSceneEventCameras());
 
-            if(callbackResults.Success())
+            if (callbackResults.Success())
             {
-                callbackResults.result = "Get Scene Event CameraContainer Transform Success - Scene Event CameraContainer Transform Value Has Been Assigned Successfully.";
-                callbackResults.data = eventCameraScene;
+                var eventCamera = GetSceneEventCameras().GetData().Find(eventCam => eventCam.GetScreenType().GetData() == screenType);
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventCamera, "Event Camera", $"Get Event Camera Failed - Couldn't Find Event Camera For Screen Type : {screenType} In Scene Event Cameras - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Event Camera Success - Event Camera For Screen Type : {screenType} Has Been Successfully Found In Scene Event Cameras.";
+                    callbackResults.data = eventCamera;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackDataList<AppData.SceneEventCamera> GetSceneEventCameras()
+        {
+            var callbackResults = new AppData.CallbackDataList<AppData.SceneEventCamera>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(sceneEventCameras, "Scene Event Cameras", "Get Scene Event Camera Failed - Scene Event Cameras Are Missing / Null - Invalid Opration."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Scene Event Cameras Success - {sceneEventCameras.Count} : Scene Event Camera(s) Value Has Been Assigned Successfully.";
+                callbackResults.data = sceneEventCameras;
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

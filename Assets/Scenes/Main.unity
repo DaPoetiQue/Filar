@@ -3054,25 +3054,6 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  sceneEventCameraList:
-  - name: Global Event Camera
-    value: {fileID: 555689117}
-    eventCameraType: 2
-  - name: AR Event Camera
-    value: {fileID: 450849736}
-    eventCameraType: 1
-  defaultActiveEventCameraType: 2
-  targetTransitionPosition: {x: 0, y: -25, z: -150}
-  transitionalSpeed: 10
-  previewCamHeight: 1
-  previewCamDistance: -125
-  inverseOrbitX: 0
-  camPoseTarget: {fileID: 786316669}
-  previewFocusPoint: {fileID: 1875975046}
-  currentEventCamera:
-    name: 
-    value: {fileID: 0}
-    eventCameraType: 0
 --- !u!1 &428251000
 GameObject:
   m_ObjectHideFlags: 0
@@ -3546,6 +3527,11 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  sceneEventCameras:
+  - name: Landing Page Camera
+    eventCamera: {fileID: 555689117}
+    screenType: 7
+    active: 1
   eventCameraScene: {fileID: 555254953}
   target: {fileID: 786316669}
   minYAngle: 0

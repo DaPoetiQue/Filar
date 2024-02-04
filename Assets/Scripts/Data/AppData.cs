@@ -4130,6 +4130,102 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Event Cameras
+
+        [Serializable]
+        public class SceneEventCamera : DataDebugger
+        {
+            #region Components
+
+            [Header("Event Camera")]
+
+            [Space(5)]
+            [SerializeField]
+            private Camera eventCamera = null;
+
+            [Space(5)]
+            [SerializeField]
+            private ScreenType screenType = ScreenType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private bool active;
+
+            #endregion
+
+            #region Main
+
+            public CallbackData<Camera> GetEventCamera()
+            {
+                var callbackResults = new CallbackData<Camera>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(eventCamera, "Event Camera", $"Get Event Camera Failed - Event Camera : {GetName()} - For Screen : {GetScreenType().GetData()} Value Missing / Null - Invalid Operation"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Event Camera Success - Event Camera : {GetName()} - For Screen : {GetScreenType().GetData()} Has Been Successfully Found.";
+                    callbackResults.data = eventCamera;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenType> GetScreenType()
+            {
+                var callbackResults = new CallbackData<ScreenType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(screenType, "Screen Type", $"Get Screen Type Failed - Screen Type For : {GetName()} Value Is Set To Default : {screenType}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Screen Type Success - Screen Type For : {GetName()} Value Is Set To : {screenType}";
+                    callbackResults.data = screenType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public Callback Active()
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    if (active)
+                        callbackResults.result = $"Get Active Success - Scene Camera Event : {GetName()} For Screen : {screenType} Is Active.";
+                    else
+                    {
+                        callbackResults.result = $"Get Active Failed - Scene Camera Event : {GetName()} For Screen : {screenType} Is Not Active.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private Callback Initialized()
+            {
+                var callbackResults = new Callback(GetEventCamera());
+
+                if (callbackResults.Success())
+                    callbackResults.SetResult(GetScreenType());
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Refresh Data
 
         [Serializable]
@@ -7498,6 +7594,9 @@ namespace Com.RedicalGames.Filar
                                                         meshFilter.sharedMesh = meshAndMaterialData.mesh;
                                                         meshRenderer.sharedMaterial = meshAndMaterialData.material;
                                                         meshRenderer.UpdateGIMaterials();
+
+                                                        loadedGameObject.AddComponent<MeshCollider>().convex = true;
+                                                        loadedGameObject.AddComponent<SelectableSceneAssetHandler>();
 
                                                         if (gameObjectTransformData.transformInfo.childCount > 0)
                                                         {
@@ -26322,61 +26421,61 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        [Serializable]
-        public class SceneEventCamera
-        {
-            public string name;
+        //[Serializable]
+        //public class SceneEventCamera
+        //{
+        //    public string name;
 
-            [Space(5)]
-            public Camera value;
+        //    [Space(5)]
+        //    public Camera value;
 
-            [Space(5)]
-            public SceneEventCameraType eventCameraType;
+        //    [Space(5)]
+        //    public SceneEventCameraType eventCameraType;
 
-            SceneAssetPose defaultCameraPose;
+        //    SceneAssetPose defaultCameraPose;
 
-            public void Init()
-            {
-                if (value != null)
-                {
-                    SceneAssetPose assetPose = new SceneAssetPose
-                    {
-                        position = value.transform.position,
-                        rotation = value.transform.rotation,
-                        scale = value.transform.localScale
-                    };
+        //    public void Init()
+        //    {
+        //        if (value != null)
+        //        {
+        //            SceneAssetPose assetPose = new SceneAssetPose
+        //            {
+        //                position = value.transform.position,
+        //                rotation = value.transform.rotation,
+        //                scale = value.transform.localScale
+        //            };
 
-                    SetDefaultCameraPose(assetPose);
-                }
-                else
-                    Debug.LogWarning("--> RG_Unity - Init Failed : Scene Event Camera Value Is Missing / Null.");
-            }
+        //            SetDefaultCameraPose(assetPose);
+        //        }
+        //        else
+        //            Debug.LogWarning("--> RG_Unity - Init Failed : Scene Event Camera Value Is Missing / Null.");
+        //    }
 
-            public Transform GetCameraTransform()
-            {
-                return value?.transform;
-            }
+        //    public Transform GetCameraTransform()
+        //    {
+        //        return value?.transform;
+        //    }
 
-            public void EnableCamera()
-            {
-                value.enabled = true;
-            }
+        //    public void EnableCamera()
+        //    {
+        //        value.enabled = true;
+        //    }
 
-            public void DisableCamera()
-            {
-                value.enabled = false;
-            }
+        //    public void DisableCamera()
+        //    {
+        //        value.enabled = false;
+        //    }
 
-            public void SetDefaultCameraPose(SceneAssetPose assetPose)
-            {
-                defaultCameraPose = assetPose;
-            }
+        //    public void SetDefaultCameraPose(SceneAssetPose assetPose)
+        //    {
+        //        defaultCameraPose = assetPose;
+        //    }
 
-            public SceneAssetPose GetDefaultCameraPose()
-            {
-                return defaultCameraPose;
-            }
-        }
+        //    public SceneAssetPose GetDefaultCameraPose()
+        //    {
+        //        return defaultCameraPose;
+        //    }
+        //}
 
         [Serializable]
         public class AssetInfoWidgetContainer
